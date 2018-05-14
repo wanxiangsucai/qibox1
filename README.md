@@ -1,37 +1,18 @@
-# 齐博CMS之X1
+﻿齐博X1.0
+===========================
 
-#### 项目介绍
-基于thinkphp5开发的内容管理系统
-
-#### 软件架构
-软件架构说明
+齐博X1.0是集众家之所长再结合自身特色而开发出来的一套开源PHP系统。
 
 
-#### 安装教程
+在此非常感谢ThinkPHP提供那么优秀的免费开源底层，同时也要感谢DolphinPHP提供那么好用的ZBuilder编辑器，除此以外还要特别鸣谢layer、mui、bootstrap、jquery、ueditor等等开源底层JS脚本。
 
-1. xxxx
-2. xxxx
-3. xxxx
+同时也要感谢一下YZNCMS、YFCMF、hisiphp、fastadmin、ThinkCMF、cltphp、EacooPHP、
+lyadmin、sentcms、spfcms等等为PHP开源所做的贡献.
 
-#### 使用说明
+最后还要感谢一下 中电云集 http://www.chinaccnet.com/ 一直以来提供免费服务器赞助支持!
 
-1. xxxx
-2. xxxx
-3. xxxx
+===========================
 
-#### 参与贡献
+齐博X1.0是参阅众家之所长而开发出来的系统，秉承PHP开源精神，齐博X1.0框架永久开源免费使用（也可免费用于商业），不区分商业版与免费版。
 
-1. Fork 本项目
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
-
-
-#### 码云特技
-
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [http://git.mydoc.io/](http://git.mydoc.io/)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+但为了能持续发展，引入更多的开发者，后续的插件与模块会有免费与收费的区别。
