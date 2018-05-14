@@ -1,0 +1,218 @@
+body, form, ul, li, p, dl, dd, dt ,h,td,th,h2,h3{
+	margin: 0;
+	padding: 0;
+}
+body{
+	padding:0 5px 0 5px;
+}
+li,ul{
+	list-style: none;
+}
+table{
+	TABLE-LAYOUT: fixed;
+	WORD-WRAP: break-word;
+} 
+TD {
+	color: #333333;
+	VERTICAL-ALIGN: top;
+} 
+input,textarea{
+	border:1px solid #ccc;
+}
+a:link,a:visited,a:hover{
+	color:#1A62A4;
+}
+.tablewidth{
+	width:100%;
+	border:#B7B7B7 solid 1px;
+}
+.tablewidth .head,.tablewidth .head td,.tablewidth .head3 td{
+	background:url(head.gif);
+	COLOR:#1A62A4;
+	border-bottom:#B7B7B7 solid 1px;
+}
+.tablewidth .head td,.tablewidth .head td a{
+	COLOR: #1A62A4;
+}
+.tablewidth .head td font{
+	COLOR: #1A62A4;
+	font-weight:normal;
+}
+.red{
+	color:#FF0000;
+}
+.B{
+	font-weight:bold;
+}
+.MainCont{
+	width:100%;
+	clear:both;
+	border:#B7B7B7 solid 1px;
+	margin-bottom:10px;
+}
+.MainCont .head{
+	height:26px;
+	line-height:26px;
+	border:#FFF solid 1px;
+	overflow:hidden;
+	background:url(head.gif);
+}
+.MainCont .head .tag{
+	float:left;	
+	height:26px;
+	padding-left:15px;
+	background:url(tag.gif) 5px 5px no-repeat;
+	color:#1A62A4;
+}
+.MainCont .head .more{
+	float:right;
+	height:26px;
+	padding:0 10px 0 40px;
+	background:url(more.gif) right top no-repeat;
+}
+.showlink{
+	padding:3px 10px 3px 10px;
+	line-height:20px;
+	word-spacing:10px;
+}
+.MainCont .head .footlink{
+	float:left;
+	width:30%;
+	text-align:center;
+}
+.MainCont .head .footlink a:link{
+	line-height:26px;
+}
+.MainCont .head .footlinkl{
+	border-right:#b7b7b7 solid 1px;
+}
+.MainCont .head .footlinkc{
+	border-left:#FFF solid 1px;
+	border-right:#b7b7b7 solid 1px;
+}
+.MainCont .head .footlinkr{
+	border-left:#FFF solid 1px;
+}
+.MainCont .cont{
+	padding:5px;
+	border-top:#B7B7B7 solid 1px;
+}
+.baseinfotable{
+	margin-bottom:10px;
+}
+.mapnote .note1{
+	width:50%;
+	padding-right:5px;
+}
+div.sides{
+	border:#DDD dotted 1px;
+	margin-bottom:5px;
+}
+div.sides h3{
+	height:25px;
+	line-height:25px;
+	padding-left:10px;
+	border:#FFF solid 1px;
+	background:#EBEBEB;
+}
+div.sides ul{
+	padding:10px;
+}
+div.sides ul li{
+	padding:2px 0 2px 5px;
+	line-height:18px;
+}
+.SERVER_info td{
+	border-top:#B7B7B7 solid 1px;
+	width:50%;
+	padding:5px 5px 5px 10px;
+	line-height:20px;
+}
+.ListTopMenu{
+	margin-bottom:10px;
+	word-spacing:3px;
+}
+.ListTopMenu a{
+	border:#CBCBCB solid 1px;
+	padding:3px 5px 2px 5px;
+	background:url(butbg.gif) left bottom repeat-x;
+}
+.FormTable td{
+	border-top:#DDD solid 1px;
+	padding:5px;
+	line-height:18px;
+}
+.FormTable td td{
+	padding:0;
+	border-top:0;
+}
+.FormTable td.tdL{
+	width:30%;	
+	border-right:#DDD solid 1px;
+}
+.FormTable td.tdH{
+	background:#FAFAFA;
+	font-weight:bold;
+}
+.NoteList{
+	padding:10px;
+	border-top:#DDD solid 1px;
+}
+.NoteList li{
+	padding:3px 0 3px 5px;
+	line-height:18px;
+}
+.ListTable td{
+	border-top:#DDD solid 1px;
+	border-left:#DDD solid 1px;
+	text-align:center;
+	padding:5px;
+	line-height:18px;
+}
+.ListTable td.txL{
+	text-align:left;
+}
+.txC{
+	text-align:center;
+}
+.ListTable th{
+	border-top:#DDD solid 1px;
+	border-left:#DDD solid 1px;
+	padding:5px 0 5px 0;
+	background:#FAFAFA;
+}
+.ListTable tr.over td,.FormTable tr.over{
+	background:#FDFDFD;
+}
+.MainCont .ListBut{
+	border-top:#DDD solid 1px;
+	text-align:center;
+	padding:5px 0 5px 0;
+}
+.ShowPage{
+	border-top:#DDD solid 1px;
+	text-align:center;
+	padding:5px 0 5px 0;
+}
+.ShowPage a{
+	border:#DDD solid 1px;
+	padding:3px 5px 2px 5px;
+}
+.ChangeSel{
+	height:22px;
+	overflow:hidden;
+	padding:5px 0 0 3px;
+}
+.ChangeSel a{
+	display:block;
+	width:80px;
+	text-align:center;
+	line-height:25px;
+	float:left;
+	background:url(../button_b.gif) center top no-repeat;
+}
+.ChangeSel a.ck{
+	background:url(../button_a.gif) center top no-repeat;
+	color:#FFF;
+	font-weight:bold;
+}

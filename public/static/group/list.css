@@ -1,0 +1,241 @@
+﻿.MainContainer{
+	max-width:640px;
+	margin:auto;
+	background: #F5F5F5;
+}
+.ShowTypes{
+	height: 50px;
+	line-height: 50px;
+	overflow: hidden;
+	position: relative;
+	background: #FFF;
+}
+.ShowTypes:after{
+	content: '';
+	display: block;
+	width: 100%;
+	height: 1px;
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	background: #EEE;
+}
+.ShowTypes a{
+	display: block;
+	width:33.33%;
+	text-align: center;
+	height: 50px;
+	float: left;
+	position: relative;
+	overflow: hidden;
+	color: #666;
+}
+.ShowTypes a.ck{
+	color: #44C185;
+}
+.ShowTypes a.ck:after{
+	content: '';
+	display: block;
+	width: 100%;
+	height: 2px;
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	background: #44C185;
+}
+.ListBox{
+	background: #FFF;
+	padding: 0px 10px;
+}
+.ListBox .list{
+	padding: 15px 0;
+	border-bottom: #EEE solid 1px;
+}
+.ListBox .list ul{
+	display: table;
+	width:100%;
+}
+.ListBox .list ul li{
+	display: table-cell;
+	vertical-align: middle;
+}
+.ListBox .list ul li.img{
+	width:120px;
+}
+.ListBox .list ul li.img a{
+	display: block;
+	width:120px;
+	overflow: hidden;
+	position: relative;
+	border-radius: 5px;
+}
+.ListBox .list ul li.img a:before{
+	content: '';
+	display: block;
+	padding-top: 100%;
+}
+.ListBox .list ul li.img a img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left: 0;
+	top:0;
+}
+.ListBox .list ul li.img a span{
+	display: block;
+	width:20px;
+	height: 20px;
+	text-align: center;
+	line-height: 20px;
+	font-size:14px;
+	color: #FFF;
+	background: #AAA;
+	position: absolute;
+	left:5px;
+	top:0px;
+	box-shadow: 0px 0px 1px #FFF;
+}
+.ListBox .list ul li.join{
+	width:60px;
+}
+.ListBox .list ul li.join a{
+	display: block;
+	border:#44C185 solid 1px;
+	color: #44C185;
+	line-height: 35px;
+	text-align: center;
+	border-radius: 18px;
+}
+.ListBox .list ul li.img a span.num1{
+	background: #F30;
+}
+.ListBox .list ul li.img a span.num2{
+	background: #F60;
+}
+.ListBox .list ul li.img a span.num3{
+	background: #F90;
+}
+.ListBox .list ul li.info{
+	padding: 0px 10px;
+}
+.ListBox .list ul li.info div{
+	height:40px;
+	line-height: 40px;
+	overflow: hidden;
+	color: #888;
+}
+.ListBox .list ul li.info div.title{
+	font-size: 20px;
+	font-weight: bold;
+}
+.ListBox .list ul li.info div.other i:before{
+	margin-right: 3px;
+}
+.ListBox .list ul li.info div.other em{
+	display: inline-block;
+	margin-left: 10px;
+}
+.addGroup{
+	padding: 15px 10px;
+	background: #FFF;
+}
+.addGroup ul{
+	display: table;
+	width:100%;
+}
+.addGroup ul ol,.addGroup ul li{
+	display: table-cell;
+	vertical-align: middle;
+	font-size:20px;
+}
+.addGroup ul ol{
+	width:120px;
+	padding-right: 10px;
+}
+.addGroup ul ol a{
+	display: block;
+	border:#DDD solid 1px;
+	position: relative;
+	border-radius: 5px;
+}
+.addGroup ul ol a:before{
+	content: '';
+	display: block;
+	padding-top: 100%;
+}
+.addGroup ul ol a i{
+	position: absolute;
+	left:50%;
+	top: 50%;
+	font-size:36px;
+	font-weight: normal;
+	color: #CCC;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+@media (max-width: 500px) and (min-width:401px) {
+	.ListBox .list{
+		padding: 12px 0;
+	}
+	.ListBox .list ul li.img{
+		width:100px;
+	}
+	.ListBox .list ul li.img a{
+		width:100px;
+	}
+	.ListBox .list ul li.join{
+		width:50px;
+	}
+	.ListBox .list ul li.join a{
+		line-height: 30px;
+		font-size:14px;
+		border-radius: 15px;
+	}
+	.ListBox .list ul li.info div{
+		height:33px;
+		line-height: 33px;
+		font-size:16px;
+	}
+	.ListBox .list ul li.info div.title{
+		font-size: 18px;
+	}
+	.addGroup ul ol{
+		width:100px;
+	}
+}
+@media (max-width: 400px) {
+	.ListBox .list{
+		padding: 10px 0;
+	}
+	.ListBox .list ul li.img{
+		width:90px;
+	}
+	.ListBox .list ul li.img a{
+		width:90px;
+	}
+	.ListBox .list ul li.join{
+		width:40px;
+	}
+	.ListBox .list ul li.join a{
+		line-height: 26px;
+		font-size:14px;
+		border-radius: 13px;
+	}
+	.ListBox .list ul li.info div{
+		height:30px;
+		line-height: 30px;
+		font-size:14px;
+	}
+	.ListBox .list ul li.info div.title{
+		font-size: 16px;
+	}
+	.addGroup ul ol{
+		width:90px;
+	}
+}
+
+
+.MainContainer .ShowMores{
+	background:orange;border-radius:5px;padding:5px;color:#fff;text-align:center;
+}

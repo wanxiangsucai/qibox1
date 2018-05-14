@@ -1,0 +1,301 @@
+﻿.bbsContainer{
+	max-width: 640px;
+	overflow: hidden;
+	margin: auto;
+	background: #F5F5F5;
+}
+.bbsContainer .topBoxs{
+	display: table;
+	width: 100%;
+	background: #FFF;
+	border-bottom: #EEE solid 1px;
+}
+.bbsContainer .topBoxs li{
+	display: table-cell;
+	text-align: left;
+	vertical-align: middle;
+	padding: 15px 0;
+}
+.bbsContainer .topBoxs li.logo{
+	width:60px;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+.bbsContainer .topBoxs li.logo img{
+	max-height: 60px;
+	max-width: 60px;
+	border-radius: 50%;
+}
+.bbsContainer .topBoxs li.info span,.bbsContainer .topBoxs li.info em{
+	display: block;
+	height: 30px;
+	line-height: 30px;
+	overflow: hidden;
+	font-size: 16px;
+	color: #888;
+}
+.bbsContainer .topBoxs li.info span{
+	font-size: 20px;
+	color: #333;
+}
+.bbsContainer .topBoxs li.atten{
+	width:60px;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+.bbsContainer .topBoxs li.atten a{
+	display: block;
+	text-align: center;
+	line-height: 40px;
+	border: #2A87E5 solid 1px;
+	border-radius: 5px;
+	color: #2A87E5;
+	font-size:18px;
+}
+.bbsContainer .countInfo{
+	background: #FFF;
+	padding: 15px;
+	border-bottom: #EEE solid 1px;
+}
+.bbsContainer .countInfo ul{
+	display: table;
+	width: 100%;
+}
+.bbsContainer .countInfo ul ol,.bbsContainer .countInfo ul li{
+	display: table-cell;
+	width: 50%;
+	line-height: 50px;
+	font-size:18px;
+	text-align: center;
+	vertical-align: middle;
+}
+.bbsContainer .countInfo ul ol{
+	border-right: #EEE solid 1px;
+}
+.bbsContainer .countInfo ul span{
+	display: inline-block;
+	width:50px;
+	text-align: center;
+	background: #FFBB00;
+	color: #FFF;
+	margin-right: 10px;
+	border-radius: 50%;
+}
+.bbsContainer .countInfo ul li span{
+	background: #32C7B3;
+}
+.bbsContainer .ChangeShow{
+	background: #FFF;
+	margin-top: 15px;
+	box-shadow: 0px 0px 1px #DDD;
+}
+.bbsContainer .ChangeShow .types{
+	width:100%;
+	height: 50px;
+	line-height: 50px;
+	font-size:18px;
+	position: relative;
+}
+.bbsContainer .ChangeShow .types:before{
+	content: '';
+	display: block;
+	position: absolute;
+	width:100%;
+	height: 2px;
+	background: #EEE;
+	left:0;
+	bottom: 0;
+}
+.bbsContainer .ChangeShow .types li{
+	width:33.33%;
+	float: left;
+	text-align: center;
+	position: relative;
+}
+.bbsContainer .ChangeShow .types li.ck:after{
+	content: '';
+	display: block;
+	position: absolute;
+	width:100%;
+	height: 2px;
+	background: #333;
+	left:0;
+	bottom: 0;
+}
+.bbsContainer .ListType{
+	width: 100%;
+	overflow: hidden;
+}
+.bbsContainer .ListType li{
+	padding: 15px;
+	position: relative;
+}
+.bbsContainer .ListType li:before{
+	content: '';
+	display: block;
+	position: absolute;
+	width:100%;
+	height: 1px;
+	background: #EEE;
+	left:0;
+	top: -1px;
+}
+.bbsContainer .ListType li a{
+	display: block;
+	height: 25px;
+	line-height: 25px;
+	overflow: hidden;
+}
+.bbsContainer .ListType li a span,.bbsContainer .ListType li a em,.bbsContainer .ListType li a i{
+	display: inline-block;
+	margin-right: 10px;
+	background: #2A87E5;
+	padding: 0 8px;
+	color: #FFF;
+	border-radius: 5px;
+	font-style: normal;
+}
+.bbsContainer .ListType li a i{
+	background: #FFBB00;
+}
+.bbsContainer .ListType li a em{
+	background: #32C7B3;
+}
+.bbsContainer .countPost{
+	background: #FFF;
+	padding: 15px 0px;
+	margin-top: 15px;
+	box-shadow: 0px 0px 1px #DDD;
+}
+.bbsContainer .countPost ul{
+	display: table;
+	width: 100%;
+}
+.bbsContainer .countPost ul ol,.bbsContainer .countPost ul li{
+	display: table-cell;
+	width: 50%;
+	line-height: 35px;
+	text-align: center;
+	vertical-align: middle;
+}
+.bbsContainer .countPost ul ol{
+	border-right:#EEE solid 1px;
+}
+.bbsContainer .countPost ul i{
+	color: #22B09D;
+	padding-right: 10px;
+	font-size: 20px;
+}
+.ListInfos .lists{
+	background: #FFF;
+	padding: 15px;
+	margin-top: 15px;
+	box-shadow: 0px 0px 1px #DDD;
+}
+.ListInfos .lists ul{
+	display: table;
+	width: 100%;
+}
+.ListInfos .lists ul ol,.ListInfos .lists ul li{
+	display: table-cell;
+	vertical-align: middle;
+}
+.ListInfos .lists ul ol a{
+	display: block;
+	float: left;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	margin-right: 15px;
+	position: relative;
+	border-radius: 50%;
+}
+.ListInfos .lists ul ol a img{
+	position:absolute;
+	width:100%;
+	height: 100%;
+	left:50%;
+	top: 50%;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.ListInfos .lists ul ol div{
+	float: left;	
+}
+.ListInfos .lists ul ol div span,.ListInfos .lists ul ol div em{
+	display: block;
+	height: 25px;
+	line-height: 25px;
+	overflow: hidden;
+}
+.ListInfos .lists ul ol div em{
+	color: #999;
+	font-size:14px;
+}
+.ListInfos .lists ul li{
+	text-align: right;
+	color: #999;
+}
+.ListInfos .lists ul li i{
+	margin-right: 5px;
+}
+.ListInfos .lists ul li i.fa-commenting-o{
+	margin-left: 15px;
+}
+.ListInfos .lists .title{
+	padding-top: 10px;
+	line-height: 25px;
+}
+.ListInfos .lists .title span,.ListInfos .lists .title em,.ListInfos .lists .title i{
+	display: inline-block;
+	padding: 0 8px;
+	margin-right: 10px;
+	background: #2A87E5;
+	color: #FFF;
+	border-radius: 5px;
+	font-style: normal;
+}
+.ListInfos .lists .title em{
+	background: #32C7B3;
+}
+.ListInfos .lists .title i{
+	background: #FFBB00;
+}
+.ShowMoreInfo{
+	text-align: center;
+	padding: 20px;
+}
+.ShowMoreInfo span{
+	display: block;
+	line-height: 50px;
+	background: #E9E9E9;
+	color: #999;
+	border-radius: 5px;
+}
+.replayBox{
+	padding: 10px;
+}
+.replayBox ol textarea{
+	width:96%;
+	border: 0px;
+	padding: 5px 2%;
+	height: 80px;
+	box-shadow: 0px 0px 1px #CCC;
+}
+.replayBox li{
+	text-align: center;
+	padding: 10px 0 0 0;
+}
+.replayBox li button,.replayBox li span{
+	display: inline-block;
+	line-height: 35px;
+	border: 0px;
+	padding: 0 15px;
+	background: #DDD;
+	color: #FFF;
+}
+.replayBox li button{
+	margin-right: 15px;
+	background: #F90;
+}

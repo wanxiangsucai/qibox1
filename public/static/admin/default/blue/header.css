@@ -1,0 +1,111 @@
+body, form, ul, li, p, dl, dd, dt ,h,td,th,h3{
+	margin: 0;
+	padding: 0;
+}
+body{
+	font-size:12px;
+	background:url(body.gif) repeat-x;
+}
+li,ul{
+	list-style: none;
+} 
+TD {
+	color: #333333;
+	VERTICAL-ALIGN: top;
+} 
+input,textarea{
+	border:1px solid #ccc;
+}
+a {
+	color:#333;
+}
+a:link {
+	color:#333333;
+	text-decoration: none;
+}
+a:visited {
+	text-decoration: none;
+	color: #333333;
+}
+a:hover {
+	text-decoration: underline;
+	color: #4E667B;
+}
+a:active {
+	text-decoration: none;
+}
+/*
+*
+*/
+.HeaerContinuer{
+	height:80px;
+	overflow:hidden;
+	background:url(header.gif) repeat-x;
+	position:relative;
+}
+.HeaerContinuer .logo{
+	width:240px;
+	height:80px;
+	float:left;
+	overflow:hidden;
+}
+.atc_up,.atc_down{
+	width:15px;
+	height:23px;
+	position:absolute;
+	background:url(chmenu.gif);
+	top:35px;
+}
+.atc_up{
+	left:245px;
+}
+.atc_down{
+	left:265px;
+	background:url(chmenu.gif) -15px top no-repeat;
+}
+.atc_up span,.atc_down span{
+	display:block;
+	width:15px;
+	height:23px;
+	line-height:23px;
+	text-align:center;
+}
+.atc_up span.more{
+	background:url(chmenu.gif) left -23px no-repeat;
+}
+.atc_down span.more{
+	background:url(chmenu.gif) -15px -23px no-repeat;
+}
+.ListMenu{
+	width:736px;
+	height:36px;
+	overflow:hidden;
+	position:absolute;
+	top:27px;
+	left:290px;
+}
+#ListCompanys{
+	width:10000px;
+	position:absolute;
+}
+#ListCompanys ul{
+	height:36px;
+	float:left;
+}
+#ListCompanys ul li{
+	width:80px;
+	height:32px;
+	padding:4px 6px 0 6px;
+	overflow:hidden;
+	float:left;
+	text-align:center;
+	line-height:32px;
+	background:url(mbg.gif) center 3px no-repeat;
+	cursor:pointer;
+	font-size:14px;
+	font-weight:bold;
+}
+#ListCompanys ul li.ck{
+	background:url(mck.gif) center top no-repeat;
+	color:#FFF;
+}

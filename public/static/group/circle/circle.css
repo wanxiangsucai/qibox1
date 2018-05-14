@@ -1,0 +1,146 @@
+.cont {padding:15px; overflow:hidden; clear:both; background:#FFFFFF;}
+.green {color:#17a763;}
+.orange {color:#ff8400;}
+.img { float:left;}
+.word {float:right;}
+.showimg div {margin-top:10px;}
+.sub_head {width:100%; overflow:hidden; line-height:35px; height:35px; margin-bottom:15px; position:relative;}
+.sub_head .tag {position:absolute; left:0; top:0;}
+.sub_head .tag span {padding:10px 0 10px 30px; font-size:18px;}
+.sub_head .more {position:absolute; right:0; top:0;}
+.sub_head .more div {float:left; margin-left:15px;}
+
+body{
+	background:#f5f5f5;
+}
+
+.contbox {width:auto; background:#f5f5f5; overflow:hidden;}
+.content {width:1200px; margin:0 auto; overflow:hidden; margin-bottom:70px;}
+.maincont1,
+.maincont2,
+.maincont3,
+.maincont4,
+.maincont5,
+.maincont6 {width:100%; overflow:hidden; margin-top:25px;}
+
+.cont_banner {width:790px; float:left; overflow:hidden; position:relative; overflow:hidden;}
+.cont_banner .images {width:790px; height:385px; overflow:hidden;}
+.cont_banner .title {width:790px; height:55px; line-height:55px; position:absolute; bottom:0; left:0; background:#000000; opacity:0.5;}
+.cont_banner .title a {position:relative; color:#FFFFFF; padding-left:15px; font-size:18px;}
+.cont_mylist {width:385px; float:right; overflow:hidden;}
+.cont_mylist .myinfo {overflow:hidden; clear:both;}
+.myinfo .img { with:84px; height:84px; overflow:hidden; float:left;}
+.myinfo .word {float:right; width:240px;}
+.myinfo .wprd .w {line-height:25px; height:25px; overflow:hidden;}
+.myinfo .word .g { margin-top:25px;}
+.myinfo .word .g a {width:75px; height:30px; display:inline-block; line-height:30px; text-align:center; margin-right:15px; color:#FFFFFF;}
+.g .g_a1 {background:#1bb76d;}
+.g .g_a2 {background:#ff8400;}
+.myinfo .info .g a:hover {background:#999999;}
+.cont_list {overflow:hidden;}
+.cont_list ul {overflow:hidden; }
+.cont_list ul li {padding-top:21px; overflow:hidden; height:24px;}
+.cont_list ul li span {padding:2px 8px; display:inline-block; background:#999999; color:#FFFFFF; margin-right:10px;}
+
+/**modify**/
+.cont_search {overflow: hidden; width: 100%;}
+.cont_search .mysearch {width: 740px; padding: 25px; float: left; background: #fff;}
+.cont_search .search_box {width:505px; height:44px; background:#ff8400; position:relative; margin: 0 auto;}
+.search_box .select_box {border:none; padding-left:9px; padding-right: 9px; height:40px; position:absolute; top:2px; left:2px;}
+.search_box .text_box {width:355px; height:40px; border:none; background:#FFFFFF; color:#999999; position:absolute; top:2px; left:70px;}
+.search_box .text_box input {width:339px; height:25px; border: none; margin-top:7px; padding-left:15px; color:#999999;}
+.search_box .button_box {width:75px; height:40px; position:absolute; right:2px; top:2px; background:#ff8400 url(find.png) no-repeat center center; border:none;}
+.cont_search .write_box {float: right; width:315px; height:44px; padding: 25px 35px; text-align:center; line-height:44px; background: #fff;}
+.cont_search .write_box a {display: block; height: 44px; line-height: 44px; background: #1bb76d url(write.png) no-repeat 85px; center; padding-left:25px; font-size:18px; color:#FFFFFF;}
+
+.swiper-container {
+  width: 100%;
+  height: 100%;
+}
+.swiper-slide {
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.myvillage {position: relative; background: #fff;}
+.myvillage:before {content: ''; display: block; clear: both;}
+.myvillage .swiper-button-next, .myvillage .swiper-button-prev {width: 25px; height: 25px;}
+.myvillage .swiper-button-next {position: absolute; right: 0; top: -25px;}
+.myvillage .swiper-button-prev {position: absolute; left: 1135px; top: -25px;}
+.myvillage ul {overflow: hidden; width: 100%;}
+.myvillage .list {width: 33.33%; float: left; position: relative;}
+.myvillage .list:after {content: ''; display: block; width: 1px; height: 100%; background: #eaeaea; position: absolute; top: 0; right: -3px;}
+.myvillage .list:before {content: ''; display: block; width: 100%; height: 1px; background: #eaeaea; position: absolute; bottom: -2px; left: 0;}
+.myvillage .mylist {margin:25px; overflow: hidden;}
+.myvillage .mylist dl {display: table; width: 100%;}
+.mylist dl dt {width: 100px; height: 100px; border-radius: 3px; overflow: hidden; display: table-cell; vertical-align: middle;}
+.mylist dl dt a {display: flex; justify-contetn:center; align-items:center;}
+.mylist dl dt img {max-width: 100px; max-height: 100px; cursor: pointer;  transition: all 0.6s; }
+.mylist dl dt img:hover {transform: scale(1.4);}
+.mylist dl dd {display: table-cell; padding-left: 15px; vertical-align: top;}
+.mylist dl dd div {font-size: 14px; color: #333;}
+.mylist dl dd div span {display: block; line-height: 22px; overflow: hidden;}
+.mylist dl dd em {color: #ff8500;}
+.mylist dl dd i {color: #999;}
+.mylist h2 a {line-height: 30px; font-size: 18px; font-weight: normal; color: #1ab76c; overflow: hidden;}
+.mytopic {overflow: hidden;}
+.mytopic h3 {line-height: 30px; font-size: 14px; font-weight: normal; color: #ff8500;}
+.mytopic ul li {line-height: 22px; font-size: 12px; overflow: hidden;}
+/**modify end**/
+
+.cont_good {width:100%; overflow:hidden; position:relative; margin:15px 0;}
+.cont_good .prev {width:36px; height:74px; background:#d0d0d0 url(black.png) no-repeat left center; position:absolute; left:15px; top:15px; text-indent:-9999px;}
+.cont_good .prev:hover {background:#1bb76d url(black.png) no-repeat left center;}
+.cont_good .next {width:36px; height:74px; background:#d0d0d0 url(black.png) no-repeat right center; position:absolute; right:15px; top:15px;text-indent:-9999px;}
+.cont_good .next:hover {background:#1bb76d url(black.png) no-repeat right center;}
+.cont_good .piclistbox {width:995px; height:104px; overflow:hidden; margin:0 auto; position:relative;}
+.cont_good .piclistbox .piclist {overflow:hidden; clear:both; width:10000px; position:absolute; top:0; left:0;}
+.piclist .list {float:left; margin:0 20px;}
+
+.side_left {width:790px; float:left; overflow:hidden;}
+.side_mhead {width:100%; overflow:hidden;}
+.side_mhead .tit {line-height:35px; height:35px;}
+.side_mhead .tit span {border-left:5px solid #ff8400; padding-left:15px; font-size:18px;}
+.topics_list {float:left; width:225px; overflow:hidden; padding:13px;}
+.topics_list:hover {background:#e5f1e9;}
+.topics_list .topics {width:225px; overflow:hidden; position:relative; margin-bottom:10px;}
+.topics .title {position:absolute; bottom:0; left:0; width:100%; height:40px; line-height:40px; background:#000000; opacity:0.7;}
+.topics .title span {position:relative; color:#FFFFFF; padding-left:15px;}
+.side_right {width:385px; overflow:hidden; float:right;}
+.side_right dl {margin-bottom:10px;}
+.side_right dt {width:90px; height:90px; border-radius:45px; overflow:hidden;}
+.side_right dd {width:240px; overflow:hidden;}
+.side_right dd span {color:#999999; padding-left:0;}
+
+.share_left {width:790px; float:left; overflow:hidden;}
+.share_left dt {width:90px; height:90px; overflow:hidden;}
+.share_left dd {width:620px; position:relative;}
+.share_left dd p {line-height:25px; padding-left:25px; background:url(share_bg.png) no-repeat left top;}
+.share_left .come_from {position:absolute; bottom:-25px; right:0; font-size:14px; background:url(share_bg2.png) no-repeat left center, url(share_bg1.png) no-repeat right top; padding:0 25px 0 55px;}
+.share_left .peolist {padding:20px 0; margin-top:0;}
+.share_right {width:385px; float:right; overflow:hidden;}
+.share_head {width:100%; overflow:hidden; clear:both;}
+.share_head div {width:33%; height:40px; text-align:center; line-height:40px; border-right:1px solid #FFFFFF; float:left; background:#f5f5f5;font-size:16px;}
+.share_head div:hover {background:#ff8400;}
+.share_head div:hover a{color:#FFFFFF;}
+.share_head .share_nav {background:#ff8400;}
+.share_head .share_nav a {color:#FFFFFF;}
+.share_right_cont {overflow:hidden; padding:17px 0;}
+.share_cont_list,
+.share_cont_list ul {overflow:hidden; width:100%;}
+.share_cont_list ul li {width:100%; clear:both; line-height:35px;}
+.share_cont_list ul li span {float:right;}

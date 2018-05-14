@@ -1,0 +1,129 @@
+.MemberContainer{
+	max-width: 640px;
+	margin: 15px auto;
+	background: #F5F5F5;
+}
+.MemberContainer .ShowType{
+	height:45px;
+	line-height: 45px;
+	position: relative;
+	background: #FFF;
+	overflow: hidden;
+}
+.MemberContainer .ShowType:before{
+	content: '';
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 1px;
+	background: #EEE;
+	left:0;
+	bottom: 0px;
+}
+.MemberContainer .ShowType a{
+	display: block;
+	width:33.33%;
+	text-align: center;
+	float: left;
+	position: relative;
+}	
+.MemberContainer .ShowType a.ck{
+	color: #EF4C4C;
+}
+.MemberContainer .ShowType a.ck:before{
+	content: '';
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 2px;
+	background: #EF4C4C;
+	left:0;
+	bottom: 0px;
+}
+.ListMember .list{
+	background: #FFF;
+	margin-bottom: 10px;
+	padding: 15px 10px;
+}
+.ListMember .list dl{
+	display: table;
+	width: 100%;
+	border-bottom: #EEE solid 1px;
+}
+.ListMember .list dl dt,.ListMember .list dl dd{
+	display: table-cell;
+	padding-bottom: 10px;
+	vertical-align: middle;
+}
+.ListMember .list dl dt{
+	width:50px;
+	padding-right: 10px;
+}
+.ListMember .list dl dt span{
+	display: block;
+	width: 100%;
+	padding-top: 100%;
+	overflow: hidden;
+	position: relative;
+	border-radius: 50%;
+}
+.ListMember .list dl dt span img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left:0px;
+	top:0px;
+}
+.ListMember .list dl dd div{
+	height:22px;
+	line-height: 22px;
+	overflow: hidden;
+}
+.ListMember .list dl dd div.time{
+	padding-top: 5px;
+	font-size:14px;
+	color: #888;
+}
+.ListMember .list dl dd div.name span,.ListMember .list dl dd div.name em{
+	display: inline-block;
+	margin-left: 8px;
+	padding: 0 5px;
+	background: #FFBB00;
+	font-size: 14px;
+	color: #FFF;
+}
+.ListMember .list dl dd div.name span{
+	background: #EF4C4C;
+	padding: 0 8px;
+}
+.ListMember .butter{
+	display: table;
+	width: 100%;
+	margin-top: 10px;
+}
+.ListMember .butter span{
+	display: table-cell;
+	width:33.33%;
+	vertical-align: middle;
+}
+.ListMember .butter span a{
+	display: inline-block;
+	line-height: 35px;
+	border: #DDD solid 1px;
+	padding: 0px 10px;
+	color: #888;
+	font-size:14px;
+}
+.ListMember .butter span:nth-child(2){
+	text-align: center;
+}
+.ListMember .butter span:nth-child(3){
+	text-align: right;
+}
+.ShowMores{
+	background:orange;
+	color:#fff;
+	padding:5px;
+	text-align:center;
+	border:1px solid #fff;
+}

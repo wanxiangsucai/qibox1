@@ -1,0 +1,56 @@
+body, form, ul, li, p, dl, dd, dt ,h,td,th,h3{
+	margin: 0;
+	padding: 0;
+}
+a{
+	text-decoration:none;
+	color:#333;
+}
+body{
+	font-size:12px;
+}
+img{
+	border:0;
+}
+#menu_td .logo{
+	padding:20px 0 0 8px;
+	width:300px;
+}
+.top-menus{position:absolute;width:890px; top:0;}
+#more_left{float:left; cursor:pointer; width:23px; height:49px; background:url('all-bg.png') -48px -11px no-repeat; margin-top: 47px; margin-right: 20px;}
+#more_right{float:right; cursor:pointer; width:23px; height:49px; background:url('all-bg.png') -84px -11px no-repeat; margin-top: 47px; margin-left: 20px;}
+.topmenu {
+	height: 51px;
+	float: left;
+	min-width: 600px;
+	width: 805px;
+	font-size: 14px;
+	font-weight: bold;
+	color: #333;
+	padding:46px 0 0 0;
+	overflow:hidden;
+	left:43px;
+	position:absolute;
+}
+.topmenu ul {
+	margin: 0px;
+	padding: 0px;
+	list-style:none;
+}
+#top_menu_div{width:10000px; overflow:hidden; position:absolute;}
+.topmenu li {
+	float: left;
+	width:115px;
+	height:51px;
+	overflow:hidden;
+	text-align:center;
+	line-height:46px;
+	background:url('all-bg.png') -48px -128px no-repeat;
+}
+.topmenu li a{color:#fff;}
+.topmenu .menuon {
+	background:url('all-bg.png') -48px -189px no-repeat;
+}
+.topmenu .menuon a{
+	color:#FFF;
+}

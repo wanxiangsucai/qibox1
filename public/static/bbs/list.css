@@ -1,0 +1,837 @@
+﻿.MainContainer{
+	background: #F5F5F5;
+	padding: 20px;
+	font-size: 14px;
+}
+.Container{
+	display: table;
+	width: 1200px;
+	margin: auto;
+}
+.Container .LeftCnt,.Container .RightCnt{
+	display: table-cell;
+	vertical-align: top;
+}
+.Container .RightCnt{
+	width:320px;
+	padding-left: 20px;
+}
+.RightSide{
+	width:320px;
+	position: relative;
+}
+/*****/
+.LeftCnt .BaseInfo{
+	background: #FFF;
+	padding: 15px 20px;	
+	box-shadow: 0px 0px 2px #DDD;
+	border-radius: 3px;
+	margin-bottom: 20px;
+	line-height: 20px;
+	word-spacing: 15px;
+}
+.LeftCnt .BaseInfo:after{
+	content: '';
+	display: block;
+	clear: both;
+}
+.LeftCnt .BaseInfo dt{
+	float: left;
+}
+.LeftCnt .BaseInfo dt span{
+	color: #F60;
+	display: inline-block;
+	padding: 0 2px;
+}
+.LeftCnt .BaseInfo dd{
+	float: right;
+}
+.LeftCnt .BaseInfo dd i{
+	color: #1C9019;
+	padding-left: 5px;
+}
+/*****/
+.LeftCnt .ListBox{
+	background: #FFF;
+	box-shadow: 0px 0px 2px #DDD;
+	border-radius: 3px;
+}
+.LeftCnt .ListBox .head{
+	height: 65px;
+	line-height: 65px;
+	position: relative;
+	margin: 0 3px;
+}
+.LeftCnt .ListBox .head:before{
+	content: '';
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 2px;
+	background: #EDEDED;
+	left:0px;
+	bottom: 0px;
+}
+.LeftCnt .ListBox .head span{
+	display: block;
+	float: left;
+	padding: 0 20px;
+	font-size: 16px;
+	cursor: pointer;
+	color: #555;
+	position: relative;
+}
+.LeftCnt .ListBox .head span.ck:after{
+	content: '';
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 2px;
+	background: #37A5FC;
+	left:0px;
+	bottom: 0px;
+}
+/******/
+.ShowLists{
+	padding: 5px 15px;
+}
+.ShowLists .list{
+	display: table;
+	width: 100%;
+	border-bottom:#EDEDED solid 1px;
+}
+.ShowLists .list:hover{
+	background: #F9F9F9;
+}
+.ShowLists .list li{
+	display: table-cell;
+	padding: 15px 0;
+	vertical-align: middle;
+}
+.ShowLists .list li.icon{
+	width:50px;
+	padding-left:5px;
+	padding-right:10px;
+}
+.ShowLists .list li.icon a{
+	display: block;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	border-radius: 50%;
+	box-shadow:0px 0px 2px #CCC;
+	position: relative;
+}
+.ShowLists .list li.icon a img{
+	position:absolute;
+	width:100%;
+	height: 100%;
+	left:50%;
+	top: 50%;
+	border:0;
+	border-radius: 50%;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.ShowLists .list li.info .title{
+	height:25px;
+	line-height: 25px;
+	overflow: hidden;
+	margin-bottom: 5px;
+}
+.ShowLists .list li.info .title a{
+	font-size: 16px;
+}
+.ShowLists .list li.info .title span{
+	display: inline-block;
+	background: #43B3FF;
+	color: #FFF;
+	padding: 0px 10px;
+	margin-left: 5px;
+}
+.ShowLists .list li.info .title span.hot{
+	background: #F90;
+}
+.ShowLists .list li.info .title span.top{
+	background: #0CCCCE;
+}
+.ShowLists .list li.info .more{
+	height:20px;
+	line-height: 20px;
+	overflow: hidden;
+	color: #999;
+}
+.ShowLists .list li.info .more a{
+	color: #999;
+}
+.ShowLists .list li.info .more i{
+	margin-left: 10px;
+	padding-right: 3px;
+}
+.ShowLists .list li.hits,.ShowLists .list li.reply{
+	width:80px;
+	color: #888;
+	text-align: right;
+	line-height: 20px;
+}
+.ShowLists .list li.hits i,.ShowLists .list li.reply i{
+	padding-right: 3px;
+}
+.ShowLists .list li.reply{
+	padding-right: 5px;
+}
+.ShowMoreBBs{
+	text-align: center;
+	padding: 30px 0px;
+}
+.ShowMoreBBs button{
+	display: block;
+	width: 60%;
+	text-align: center;
+	line-height: 50px;
+	border: 0px;
+	background: #EDEDED;
+	font-size: 20px;
+	color: #888;
+	margin: auto;
+	border-radius: 8px;
+	cursor: pointer;
+	outline: none;
+}
+.ShowMoreBBs button:hover{
+	background: #F90;
+	color: #FFF;
+}
+/************/
+.RightBase1{
+	position: absolute;
+	width: 100%;
+	left: 0;
+}
+.RightBase dt{
+	background: #FFF;
+	box-shadow: 0px 0px 2px #DDD;
+	border-radius: 3px;
+	padding: 20px;
+	margin-bottom: 20px;
+}
+.RightBase dt button{
+	display: block;
+	width: 90%;
+	margin: 10px auto;
+	text-align: center;
+	line-height: 55px;
+	background: #27BBBF;
+	font-size: 20px;
+	color: #FFF;
+	border: 0px;
+	border-radius: 8px;
+}
+.RightBase dt button:hover{
+	background: #F60;
+}
+.RightBase dt ul{
+	display: table;
+	width: 100%;
+	margin: 20px 0px 15px 0px;
+}
+.RightBase dt ul ol,.RightBase dt ul li{
+	display: table-cell;
+	width: 50%;
+	text-align: center;
+	vertical-align: middle;
+	padding: 5px 0;
+}
+.RightBase dt ul li{
+	border-left:#DDD solid 1px;
+}
+.RightBase dt ul span,.RightBase dt ul em{
+	display: block;
+}
+.RightBase dt ul span{
+	color: #888;
+}
+.RightBase dt ul em{
+	padding-top: 15px;
+	font-size: 16px;
+}
+.RightBase dt ul ol em{
+	color:#F90;
+}
+.RightBase dt div{
+	border-top:#DDD solid 1px;
+	padding: 20px 5px 5px 5px;
+	color: #999;
+	word-spacing: 5px;
+}
+.RightBase dt div span,.RightBase dt div a{
+	color: #27BBBF;
+}
+.RightBase dd{
+	background: #FFF;
+	box-shadow: 0px 0px 2px #DDD;
+	border-radius: 3px;
+}
+.RightSide .h{
+	padding: 15px 0px;
+}
+.RightSide .h span{
+	display: block;
+	height: 20px;
+	line-height: 20px;
+	position: relative;
+	padding-left: 20px;
+	font-size: 18px;
+}
+.RightSide .h span:before{
+	content: '';
+	display: block;
+	position: absolute;
+	width:3px;
+	height: 100%;
+	left:0;
+	top:0;
+	background: #3499E7;
+}
+.RightBase dd ul{
+	padding: 0 10px 5px 10px;
+}
+.RightBase dd ul:after{
+	content: '';
+	display: block;
+	clear: both;
+}
+.RightBase dd ul li{
+	width:50%;
+	padding-bottom: 20px;
+	float: left;
+}
+.RightBase dd ul li a{
+	display: block;
+	margin: 0px 10px;
+	text-align: center;
+	height: 45px;
+	line-height: 45px;
+	padding: 0px 5px;
+	background: #F0F0F0;
+	font-size:16px;
+	color: #888;
+}
+.RightBase dd ul li a.ck{
+	background: #F90;
+	color: #FFF;
+}
+.RightBase dd ul li a:hover{
+	background: #F60;
+	color: #FFF;
+}
+/*****/
+.RightSide .SideMores,.RightSide .WXcode{
+	background: #FFF;
+	box-shadow: 0px 0px 2px #DDD;
+	border-radius: 3px;
+	margin-top: 20px;
+}
+.RightSide .ListMember{
+	padding:0 10px 10px 10px;
+}
+.RightSide .ListMember:after{
+	content: '';
+	display: block;
+	clear: both;	
+}
+.RightSide .ListMember li{
+	width: 50%;
+	overflow: hidden;
+	padding-bottom: 30px;
+	float: left;
+}
+.RightSide .ListMember li span{
+	display: block;
+	width: 75px;
+	height: 75px;
+	overflow: hidden;
+	position: relative;
+	margin: auto;
+	border-radius: 50%;
+}
+.RightSide .ListMember li span img{
+	position:absolute;
+	width:100%;
+	height: 100%;
+	left:50%;
+	top: 50%;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.RightSide .ListMember li em{
+	display: block;
+	text-align: center;
+	padding: 5px 10px 0px 10px;
+	height: 20px;
+	line-height: 20px;
+	overflow: hidden;
+	font-size: 16px;
+}
+.RightSide .MOreShow{
+	text-align: center;
+	padding: 10px 0 20px 0;
+}
+.RightSide .MOreShow button{
+	border: 0px;
+	background: none;
+	font-size: 18px;
+	color: #888;
+	cursor: pointer;
+	outline: none;
+}
+.RightSide .MOreShow button i{
+	padding-left: 5px;
+}
+.RightSide .MOreShow button:hover{
+	color: #F60;
+}
+.RightSide .ListNewfen li{
+	height: 35px;
+	line-height: 35px;
+	padding: 0 20px;
+	overflow: hidden;
+	font-size: 14px;
+}
+.RightSide .ListNewfen li:hover{
+	background: #F5F5F5;
+}
+.RightSide .FriendLink{
+	padding: 0 10px 10px 10px;
+}
+.RightSide .FriendLink li{
+	display: inline-block;
+	line-height: 35px;
+	padding: 0px 10px;
+	font-size: 16px;
+}
+.RightSide .WXcode dt{
+	text-align: center;
+	font-size: 18px;
+	padding-top: 20px;
+}
+.RightSide .WXcode dd{
+	text-align: center;
+	padding: 20px;
+}
+.RightSide .WXcode dd img{
+	width:200px;
+	height: 200px;
+}
+/*****/
+.topUpCont{
+	position: fixed;
+	width: 80px;
+	border: #DDD solid 1px;
+	background: #FFF;
+	z-index: 10000;
+	right:10px;
+	bottom: 10px;
+	border-radius: 5px;
+	text-align: center;
+	padding: 10px 0px;
+	line-height: 20px;
+	cursor: pointer;
+	color: #999;
+	display: none;
+}
+.topUpCont i{
+	font-size:20px
+}
+.topUpCont:hover{
+	border:#F60 solid 1px;
+	background: #F90;
+	color: #FFF;
+}
+/***内容页样式***/
+.ShowContent{
+	background: #FFF;
+	padding: 20px;	
+	box-shadow: 0px 0px 2px #DDD;
+	border-radius: 3px;
+}
+.ShowContent .topinfo:after{
+	content: '';
+	display: block;
+	clear: both;	
+}
+.ShowContent .topinfo .guide{
+	float: left;
+	line-height: 30px;
+	color: #999;
+}
+.ShowContent .topinfo .guide a{
+	color: #888;
+}
+.ShowContent .topinfo .SharBox{
+	float: right;
+	position: relative;
+}
+.ShowContent .topinfo .SharBox dt{
+	text-align: right;
+	line-height: 30px;
+	font-size: 16px;
+	color: #888;
+	cursor: pointer;
+}
+.ShowContent .topinfo .SharBox dt i{
+	color:#378FB3;
+	font-size: 18px;
+}
+.ShowContent .topinfo .SharBox dd{
+	position: absolute;
+	background: #FFF;
+	width: 200px;
+	box-shadow: 0px 0px 2px #666;
+	right: 0px;
+	top:35px;
+	border-radius: 5px;
+	text-align: center;
+	padding: 20px 0px;
+	display: none;
+}
+.ShowContent .topinfo .SharBox dd .exit{
+	position: absolute;
+	width:20px;
+	height: 20px;
+	text-align: center;
+	line-height: 20px;
+	background: #CCC;
+	color: #FFF;
+	top:-8px;
+	right:-8px;
+	cursor: pointer;
+}
+.ShowContent .topinfo .SharBox dd .exit:hover{
+	background: #F60;
+}
+.ShowContent .title{
+	padding:20px 0px;
+	line-height: 25px;
+	font-size: 24px;
+}
+.ShowContent .thebase{
+	background: #F5F5F5;
+	border-radius: 5px;
+}
+.ShowContent .thebase:after{
+	content: '';
+	display: block;
+	clear: both;
+}
+.ShowContent .thebase ul{
+	display: table;
+	float: left;
+}
+.ShowContent .thebase ul ol,.ShowContent .thebase ul li{
+	display: table-cell;
+	vertical-align: middle;
+	text-align: left;
+}
+.ShowContent .thebase ul ol{
+	width:60px;
+	padding: 10px 10px 10px 20px;
+}
+.ShowContent .thebase ul ol a{
+	display: block;
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+	position: relative;
+	border-radius: 50%;
+	box-shadow: 0px 0px 3px #000;
+}
+.ShowContent .thebase ul ol a img{
+	position:absolute;
+	width:100%;
+	height: 100%;
+	left:50%;
+	top: 50%;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.ShowContent .thebase ul li{
+	line-height: 25px;
+	color: #888;
+}
+.ShowContent .thebase ul li span{
+	display: inline-block;
+	font-size: 16px;
+	color: #333;
+	padding-right: 10px;
+}
+.ShowContent .thebase ul li a{
+	display: inline-block;
+	background: #F90;
+	color: #FFF;
+	padding: 0px 10px;
+	margin-top: 5px;
+	border-radius: 3px;
+}
+.ShowContent .thebase ul li a:hover{
+	background: #F60;
+}
+.ShowContent .thebase dl{
+	display: table;
+	float:right;
+}
+.ShowContent .thebase dl dt,.ShowContent .thebase dl dd{
+	display: table-cell;
+	padding: 10px 0px;
+	height: 60px;
+	vertical-align: middle;
+	font-size:18px;
+	color: #888;
+}
+.ShowContent .thebase dl dd{
+	padding-right: 20px;
+}
+.ShowContent .thebase dl i{
+	margin-left: 10px;
+	margin-right: 3px;
+}
+/***内容显示通用样式***/
+.content_html{
+	width: 100%;
+	margin: 25px 0px;
+	overflow: hidden;
+	line-height: 25px;
+	font-size: 16px;
+	color: #666;
+	word-wrap: break-word; 
+	word-break:break-all;
+}
+.content_html p{
+	padding: 5px 0px;
+}
+.content_html img{
+	max-width: 100%;
+}
+.content_act{
+	display: table;
+	width: 400px;
+	height: 160px;
+	margin: auto;
+}
+.content_act div{
+	display: table-cell;
+	width: 50%;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 20px;
+	color: #BBB;
+}
+.content_act div a{
+	color: #BBB;
+}
+.content_act div span{
+	display: block;
+	width: 80px;
+	height: 80px;
+	text-align: center;
+	line-height: 80px;
+	background: #F2F2F2;
+	margin: 0px auto 10px auto;
+	border-radius: 50%;
+	font-size:38px;
+}
+.content_act div span:hover{
+	background: #F60;
+	color: #FFF;
+}
+/*****/
+.ShowComment{
+	background: #FFF;
+	padding: 20px;
+	margin-top: 20px;
+	box-shadow:0px 0px 3px #CCC;
+	border-radius: 3px;
+}
+.ShowComment .head{
+	height: 40px;
+	border-bottom: #DDD solid 1px;
+	line-height: 30px;
+	font-size: 18px;
+}
+.ShowComment .head ol{
+	float:left;
+}
+.ShowComment .head li{
+	float:right;
+}
+.ListComment .lists{
+	padding: 20px 5px;
+	border-bottom: #DDD solid 1px;
+}
+.ListComment .lists:hover{
+	background: #FAFAFA;
+}
+.ListComment .lists ul{
+	display: table;
+	width:100%;
+}
+.ListComment .lists ul ol,.ListComment .lists ul li{
+	display: table-cell;
+	text-align: left;
+	vertical-align: top;
+}
+.ListComment .lists ul ol{
+	width:50px;
+	padding-right: 20px;
+}
+.ListComment .lists ul ol a{
+	display: block;
+	width:50px;
+	height: 50px;
+	overflow: hidden;
+	position: relative;
+	border-radius: 50%;
+	box-shadow: 0px 0px 8px #000;
+}
+.ListComment .lists ul ol a img{
+	position:absolute;
+	width:100%;
+	height: 100%;
+	left:50%;
+	top: 50%;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.ListComment .lists ul li .info{
+	height: 25px;
+	line-height: 25px;
+	overflow: hidden;
+}
+.ListComment .lists ul li .info a,.ListComment .lists ul li .info span,.ListComment .lists ul li .info em,.ListComment .lists ul li .info i{
+	display: block;
+	float: left;
+	font-size:16px;
+	color: #666;
+}
+.ListComment .lists ul li .info a{
+	font-weight: bold;
+	color: #2699F4;
+	padding-right: 10px;
+}
+.ListComment .lists ul li .info em{
+	color: #999;
+	padding-left: 10px;
+	font-size:12px;
+}
+.ListComment .lists ul li .info i{
+	float: right;
+	font-style: normal;
+}
+.ListComment .lists ul li .cnt{
+	width:100%;
+	overflow: hidden;
+	padding-top: 10px;
+	line-height: 20px;
+	word-wrap: break-word; 
+	word-break:break-all;
+	color: #666;
+}
+.ListComment .lists ul li .cnt img{
+	max-width: 100%;
+}
+.ListComment .lists .other{
+	text-align: right;
+	padding-top: 10px;
+	line-height: 20px;
+	font-size:18px;
+	color: #AAA;
+}
+.ListComment .lists .other a{
+	color: #AAA;
+}
+.ListComment .lists .other i{
+	padding-left: 10px;
+	padding-right: 3px;
+	cursor: pointer;
+}
+.ListComment .lists .other i:hover{
+	color: #F60;
+}
+.replaycomment dl{
+	background: #F5F5F5;
+	margin-top: 5px;
+	padding: 5px 30px 5px 5px;
+	border-radius: 5px;
+	line-height: 20px;
+	position: relative;
+}
+.replaycomment dl:after{
+	content: '';
+	display: block;
+	clear: both;
+}
+.replaycomment dl dt,.replaycomment dl dd{
+	float: left;
+	padding-left: 5px;
+}
+.replaycomment dl dd{
+	color: #888;
+}
+.replaycomment dl dd .fa-trash-o{
+	display: block;
+	width:15px;
+	height: 15px;
+	position: absolute;
+	right:2px;
+	top:8px;
+	cursor: pointer;
+}
+.replaycomment dl dd .fa-trash-o:hover{
+	color: #F30;
+}
+.ShowMoreComment{
+	text-align: center;
+	padding: 20px 0px;
+}
+.ShowMoreComment span{
+	font-size:18px;
+	color: #999;
+	cursor: pointer;
+}
+.ShowMoreComment span:hover{
+	color: #F60;
+}
+.ShowMoreComment span i{
+	padding-left: 5px;
+}
+/*****/
+#PostComment{
+	background: #FFF;
+	padding: 30px;
+	margin-top: 20px;
+	box-shadow:0px 0px 3px #CCC;
+	border-radius: 3px;
+}
+#PostComment .ueditor{
+	width: 800px;
+}
+#PostComment .submit{
+	text-align: right;
+	padding-top: 20px;
+}
+#PostComment .submit button{
+	background: #3790D0;
+	border: none;
+	padding: 10px 20px;
+	font-size: 20px;
+	color: #FFF;
+	border-radius: 3px;
+	cursor: pointer;
+}
+#PostComment .submit button:hover{
+	background: #F60;
+}

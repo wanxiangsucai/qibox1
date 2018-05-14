@@ -1,0 +1,165 @@
+﻿.bbsMyinfoBox{
+	max-width: 640px;
+	margin: auto;
+	background: #F5F5F5;
+}
+.HeaderBox{
+	position: relative;
+	background: url(bg.jpg) center center no-repeat;
+	background-size:100% auto ;
+}
+.HeaderBox:before{
+	content: '';
+	display: block;
+	padding-top: 32%;
+}
+.HeaderBox .insaide{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	overflow: hidden;
+	left:0;
+	top:0;
+}
+.HeaderBox .insaide ul{
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+.HeaderBox .insaide ul ol,.HeaderBox .insaide ul li{
+	display: table-cell;
+	vertical-align: middle;
+}
+.HeaderBox .insaide ul ol{
+	width:30%;
+}
+.HeaderBox .insaide ul ol a{
+	display: block;
+	width:80%;
+	margin: auto;
+	overflow: hidden;
+	position: relative;
+	border-radius: 50%;
+	box-shadow: 0px 0px 10px #333;
+}
+.HeaderBox .insaide ul ol a:before{
+	content: '';
+	display: block;
+	padding-top: 100%;
+}
+.HeaderBox .insaide ul ol a img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left:0;
+	top:0;
+}
+.HeaderBox .insaide ul li{
+	color: #FFF;
+	text-shadow: 1px 1px 1px #000;
+}
+.HeaderBox .insaide ul li .name{
+	line-height: 30px;
+	font-size:18px;
+}
+.HeaderBox .insaide ul li .group{
+	line-height: 20px;
+	font-size:14px;
+}
+.HeaderBox .insaide ul li button{
+	width:80px;
+	height: 30px;
+	text-align: center;
+	margin-top: 5px;
+	border:none;
+	background: #287CE5;
+	border-radius: 5px;
+	color: #FFF;
+	cursor: pointer;
+	box-shadow: 1px 1px 3px #000;
+}
+.HeaderBox .insaide ul li button.fa-plus{
+	margin-right: 10px;
+	background: #EF5C5C;
+}
+.HeaderBox .insaide ul li button.fa-plus:before{
+	margin-right: 5px;
+}
+.ShowType{
+	height:45px;
+	background: #FFF;
+}
+.ShowType div{
+	width:50%;
+	float: left;
+	text-align: center;
+	line-height: 45px;
+	overflow: hidden;
+	font-size:18px;
+	position: relative;
+}
+.ShowType div.ck{
+	color: #479DE8;
+}
+.ShowType div.ck:after{
+	content: '';
+	display: block;
+	position: absolute;
+	width:100%;
+	height: 2px;
+	background: #479DE8;
+	left:0;
+	bottom: 0px;
+}
+.ShowInfos .list{
+	margin-top: 15px;
+	background: #FFF;
+	padding: 15px;
+}
+.ShowInfos .list ul{
+	display: table;
+	width: 100%;
+}
+.ShowInfos .list ul li{
+	display: table-cell;
+	vertical-align: middle;
+}
+.ShowInfos .list ul li.icon{
+	width:50px;
+	padding-right: 10px;
+}
+.ShowInfos .list ul li.icon a{
+	display: block;
+	width:50px;
+	height: 50px;
+	overflow: hidden;
+	border-radius: 50%;
+}
+.ShowInfos .list ul li.icon a img{
+	width:50px;
+	height: 50px;
+}
+.ShowInfos .list ul li.name span,.ShowInfos .list ul li.name em{
+	display: block;
+	height: 23px;
+	line-height: 23px;
+	overflow: hidden;
+}
+.ShowInfos .list ul li.name em{
+	font-size:14px;
+	color: #999;
+}
+.ShowInfos .list ul li.more{
+	text-align: right;
+	color: #999;
+}
+.ShowInfos .list ul li.more span:before{
+	margin-right: 3px;
+}
+.ShowInfos .list ul li.more span.fa-commenting-o{
+	margin-left: 8px;
+}
+.ShowInfos .list .title{
+	margin-top: 5px;
+	line-height: 20px;
+}

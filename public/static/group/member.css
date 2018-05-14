@@ -1,0 +1,164 @@
+﻿.MainMemberBox{
+	max-width: 640px;
+	margin: auto;
+}
+.TopBox{
+  display: table;
+  width: 100%;
+  color: #FFF;  
+  background: #44C185;
+  font-size:16px;
+}
+.TopBox a{
+	color: #FFF;
+}
+.TopBox div{
+  display: table-cell;
+  vertical-align:middle;
+  height: 45px;
+  text-align: center;
+}
+.TopBox .home{
+  width:60px;
+}
+.TopBox .member{
+   width:40px;
+  font-size:20px;
+}
+.TopBox .name{
+  font-size:18px;
+}
+/*****/
+.ShowTypes{
+  height:60px;
+  line-height: 60px;
+  position: relative;
+  overflow: hidden;
+}
+.ShowTypes:after{
+  content: '';
+  display: block;
+  position: absolute;
+  width:100%;
+  height: 1px;
+  background: #CCC;
+  left:0;
+  bottom: 0;
+}
+.ShowTypes div{
+  width:50%;
+  height: 60px;
+  text-align: center;
+  float: left;
+  font-size:18px;
+  position: relative;
+}
+.ShowTypes .ck{
+  color: #44C185;
+}
+.ShowTypes .ck:after{
+  content: '';
+  display: block;
+  position: absolute;
+  width:100%;
+  height: 2px;
+  background: #44C185;
+  left:0;
+  bottom: 0;
+}
+/*****/
+.listmemberBox{
+  padding: 0 10px;
+  background: #FFF;
+}
+.listmemberBox .lists{
+  padding: 15px 0 15px 75px;
+  border-bottom: #DDD solid 1px;
+  position: relative;
+}
+.listmemberBox .lists .icon{
+  width:60px;
+  height: 60px;
+  overflow: hidden;
+  position: absolute;
+  left:0;
+  top:15px;
+  border-radius: 50%;
+}
+.listmemberBox .lists .icon img{
+  width:60px;
+  height:60px;
+}
+.listmemberBox .lists .infos .name,.listmemberBox .lists .infos .more{
+  height:30px;
+  overflow: hidden;
+  line-height: 30px;
+}
+.listmemberBox .lists .infos{
+  width:100%;
+}
+.listmemberBox .lists .infos .name div,.listmemberBox .lists .infos .more div{
+  float:left;
+}
+.listmemberBox .lists .infos .name .num{
+  color: #999;
+  margin-right: 10px;
+  font-size:14px;
+}
+.listmemberBox .lists .infos .name text{
+  font-size:18px;
+}
+.listmemberBox .lists .infos .iconfont {
+  line-height: 30px;
+  color: #888;
+  font-size:14px;
+}
+.listmemberBox .lists .infos .iconfont i{
+  margin-right: 5px;
+}
+.listmemberBox .lists .infos .more{
+    position: relative;
+}
+.listmemberBox .lists .infos .iconfont text{
+  color: #666;
+}
+.listmemberBox .lists .infos .time{
+    text-align: right;
+    width:120px;
+    position: absolute;
+    right: 0;
+    top:0;
+    font-size:14px;
+    color: #666;
+}
+/******/
+.listmemberBox .list1 .icon{
+  box-shadow: 0px 0px 5px #FFAD00;
+}
+.listmemberBox .list1 .infos .name .num{
+  color: #FFAD00;
+}
+.listmemberBox .list2 .icon{
+  box-shadow: 0px 0px 5px #FF6840;
+}
+.listmemberBox .list2 .infos .name .num{
+  color: #FF6840;
+}
+.listmemberBox .list3 .icon{
+  box-shadow: 0px 0px 5px #2CABEF;
+}
+.listmemberBox .list3 .infos .name .num{
+  color: #2CABEF;
+}
+.ShowMores{
+	padding: 20px;
+}
+.ShowMores span{
+	display: block;
+	text-align: center;
+	line-height: 50px;
+	background: #E9EBED;
+	color: #999;
+	font-size:20px;
+	border-radius: 5px;
+}

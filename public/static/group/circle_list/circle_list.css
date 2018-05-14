@@ -1,0 +1,103 @@
+.main {padding:15px; background:#FFFFFF; overflow:hidden;}
+.green {color:#1bb76d;}
+.orange {color:#ff8400;}
+body{
+	background:#f5f5f5;
+}
+.qb_pc_topBox{
+	background: #FFF;
+}
+.contbox {width:auto; background:#f5f5f5; overflow:hidden;}
+.content {width:1200px; margin:0 auto 70px auto; overflow:hidden;}
+
+.maincont1 {margin:25px 0; clear:both;}
+.maincont1 .showimg {width:38%; float:left;}
+.showimg .img {width:125px; overflow:hidden; float:left;}
+.showimg .word {width:290px; overflow:hidden; float:right; color:#666666;}
+.showimg .word div {margin-bottom:15px;}
+.showimg .word .join {font-size:18px;}
+.showimg .word .join .a_nav {display:inline-block; width:80px; height:25px; text-align:center; line-height:25px; color:#FFFFFF; background:#ff8400; font-size:14px; margin-left:15px;}
+.maincont1 .how {width:45%; float:right;}
+.how .h_nav {float:left; margin-right:50px; font-size:18px; padding-top:35px;position: relative;}
+.how .h_nav .R {display:inline-block; width:150px; height:42px; text-align:center; line-height:42px; color:#FFFFFF; background:#ff8400;}
+.how .h_nav .mores{
+	position:absolute;
+	width:150px;
+	left: 0;
+	top:75px;
+	display: none;
+}
+.how .h_nav .mores a{
+	display: block;
+	line-height: 25px;
+	background:#DDD;
+	text-align: center;
+	color: #888;
+	font-size: 16px;
+	border-top:#FFF solid 2px;
+}
+.how .h_nav:hover .mores{
+	display: block;
+}
+.how .h_nav .E {display:inline-block; width:180px; height:42px; text-align:center; line-height:42px; color:#FFFFFF; background:#1bb76d;}
+.how .h_code {float:right;}
+.how .h_code p {display:block; line-height:20px; text-align:center;}
+
+.maincont2 {width:100%; overflow:hidden; clear:both;}
+.maincont2 .left {width:820px; float:left; overflow:hidden;}
+.left .shead {width:100%; height:60px; border-bottom:1px solid #d9d9d9; line-height:60px; position:relative;}
+.left .shead .tag div {float:left; margin-right:15px; width:125px; text-align:center; font-size:18px;}
+.left .shead .tag div:hover a {color:#ff8400;}
+.left .shead .tag .first{width:125px; height:60px; border-bottom:1px solid #ff8400;}
+.left .shead .tag .first a {color:#ff8400;}
+.left .shead .more {position:absolute; right:0; top:0;}
+.left .shead .more div {float:left; margin-left:15px;}
+
+.left .listbox {overflow:hidden; width:100%; padding:25px 0;}
+.listbox .cont {overflow:hidden; width:100%;}
+.listbox .cont .list {width:100%; border-bottom:1px dotted #d9d9d9; overflow:hidden; padding:20px 0;}
+.list .list_left {float:left; width:520px; overflow:hidden;}
+.list .list_left div {margin-bottom:15px;}
+.list .list_left .title span {width:42px; height:30px; display:inline-block; background:url(list_style.png) no-repeat center center; text-align:center; line-height:30px;}
+.list .list_left .title a {font-size:16px; margin-left:15px;}
+.list .list_left .info,
+.list .list_left .pic {padding-left:57px; font-size:12px;}
+.list .list_right {float:right; width:225px;}
+.list .list_right div {margin-bottom:15px; color:#666666;}
+.list .list_right .n a {background:url(who.png) no-repeat left center; padding-left:25px;} 
+
+.jump {width:100%; overflow:hidden; text-align:center; margin:25px 0;}
+.jump a {padding:7px 15px; margin:0 3px; background:#f7f7f7; border:1px solid #d9d9d9; display:inline-block;}
+.jump a:hover {background:#ff8400; border-color:#ff8400;color:#FFFFFF;}
+.jump .second {background:#ff8400; border-color:#ff8400;color:#FFFFFF;}
+
+.maincont2 .right {width:345px; float:right; overflow:hidden;}
+.right .mhead {width:100%; height:45px; clear:both; border-bottom:1px solid #d9d9d9;}
+.right .mhead div {width:50%; float:left; text-align:center; line-height:45px;}
+.right .mhead div a {font-size:18px;}
+.right .mhead div:hover a {color:#ff8400;}
+.right .mhead .third a,
+.right .mhead .fourth a{color:#ff8400;}
+.right .mhead .third,
+.right .mhead .fourth{height:45px; width:50%; border-bottom:1px solid #ff8400;}
+.right .tbox {padding:15px 5px;}
+
+.right .listbox {overflow:hidden; width:100%;}
+.listbox .plist {overflow:hidden; clear:both;}
+.listbox .plist .picshow {width:88px; float:left; overflow:hidden; text-align:center; padding:15px 0; margin:0 34px;}
+.picshow .img {border:1px solid #d9d9d9; width:88px; height:88px;  border-radius:45px; overflow:hidden;}
+.picshow .info {margin-top:15px;}
+
+.cont .master {width:100%; overflow:hidden;}
+.cont_t {font-size:16px; margin-bottom:25px;}
+.cont_show {overflow:hidden; clear:both;}
+.cont_show_list {float:left; width:88px; margin:0 30px 50px 30px;}
+.cont_show_list .img {width:88px; height:88px; border-radius:50px; overflow:hidden;}
+.cont_show_list .info {line-height:35px; text-align:center;}
+
+.cont .product {width:240px; float:left; overflow:hidden; margin:10px; background:#f5f5f5;}
+.cont .product:hover {background:#e2e2e2;}
+.product .img {width:240px; overflow:hidden;}
+.product .info {width:100%; overflow:hidden; clear:both; margin-top:15px;}
+.product .info .w {width:50px; height:50px; border:1px solid #d9d9d9; border-radius:26px; float:left; overflow:hidden;}
+.product .info .t {float:left; padding-left:15px; line-height:25px;}

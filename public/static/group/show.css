@@ -1,0 +1,506 @@
+﻿.MainContainer{
+	max-width:640px;
+	margin:auto;
+	background: #F5F5F5;
+}
+.TopCntBox{
+	display: table;
+	width: 100%;
+	background: #44C185;
+	color: #FFF;
+	height: 50px;
+}
+.TopCntBox a{
+	color: #FFF;
+}
+.TopCntBox li{
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+}
+.TopCntBox li.home{
+	width:60px;
+}
+.TopCntBox li.member{
+	width:40px;
+}
+.ListBox{
+	background: #FFF;
+	padding: 15px 10px;
+	border-bottom: #EEE solid 1px;
+	position: relative;
+	z-index: 1000;
+}
+.ListBox .list ul{
+	display: table;
+	width:100%;
+}
+.ListBox .list ul li{
+	display: table-cell;
+	vertical-align: middle;
+}
+.ListBox .list ul li.img{
+	width:120px;
+}
+.ListBox .list ul li.img a{
+	display: block;
+	width:120px;
+	overflow: hidden;
+	position: relative;
+	border-radius: 5px;
+}
+.ListBox .list ul li.img a:before{
+	content: '';
+	display: block;
+	padding-top: 100%;
+}
+.ListBox .list ul li.img a img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left: 0;
+	top:0;
+}
+.ListBox .list ul li.join{
+	width:60px;
+}
+.ListBox .list ul li.join dl{
+	position: relative;
+}
+.ListBox .list ul li.join dl dd{
+	position: absolute;
+	width: 100%;	
+	left: 0;
+	top:40px;
+	display: none;	
+}
+.ListBox .list ul li.join dl dd em{
+	display: block;
+	text-align: center;
+	height: 11px;
+	line-height: 11px;
+	color: #999;
+}
+.ListBox .list ul li.join dl dd div{
+	width:100%;
+	border: #DDD solid 1px;
+	border-radius: 10px;
+	overflow: hidden;
+	background: rgba(255,255,255,0.6);
+}
+.ListBox .list ul li.join dl dd a{
+	display: block;
+	line-height: 35px;
+	text-align: center;
+	border-bottom: #DDD solid 1px;
+}
+.ListBox .list ul li.join span{
+	display: block;
+	background: #44C185;
+	color: #FFF;
+	line-height: 35px;
+	text-align: center;
+	border-radius: 18px;
+}
+.ListBox .list ul li.info{
+	padding: 0px 10px;
+}
+.ListBox .list ul li.info div{
+	height:40px;
+	line-height: 40px;
+	overflow: hidden;
+	color: #888;
+}
+.ListBox .list ul li.info div.title{
+	font-size: 20px;
+	font-weight: bold;
+}
+.ListBox .list ul li.info div.cnt span{
+	color: #F90;
+}
+.ListBox .list ul li.info div.other i:before{
+	margin-right: 3px;
+}
+.ListBox .list ul li.info div.other em{
+	display: inline-block;
+	margin-left: 10px;
+}
+.MainMenu{
+	background: #FFF;
+	padding: 15px 10px;
+}
+.MainMenu ul:after{
+	content: '';
+	display:block;
+	clear: both;
+}
+.MainMenu ul li{
+	width:25%;
+	float: left;
+	overflow: hidden;
+	position: relative;
+}
+.MainMenu ul li span,.MainMenu ul li em{
+	display: block;
+	width:60px;
+	overflow: hidden;
+	margin: auto;
+	text-align: center;
+	position: relative;
+}
+.MainMenu ul li span{
+	border-radius: 50%;
+	background: #23C075;
+	color: #FFF;
+}
+.MainMenu ul li em{
+	height: 20px;
+	overflow: hidden;
+	font-size:14px;
+}
+.MainMenu ul li:nth-child(2) span{
+	background: #F90;
+}
+.MainMenu ul li:nth-child(3) span{
+	background: #B01FE0;
+}
+.MainMenu ul li:nth-child(4) span{
+	background: #133CD7;
+}
+.MainMenu ul li span:before{
+	content: '';
+	display: block;
+	padding-top: 100%;
+}
+.MainMenu ul li span i{
+	position: absolute;
+	left:50%;
+	top: 50%;
+	font-size:30px;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.SideBox{
+	background: #FFF;
+	margin-top: 10px;
+	padding: 10px;
+	position: relative;
+}
+.hongbaoBox{
+	position: absolute;
+	width:60px;
+	right:5px;
+	top:0;
+}
+.hongbaoBox img{
+	width:100%;
+}
+.SideBox .head{
+	line-height: 35px;
+	height: 35px;
+	border-bottom: #EEE solid 1px;
+	overflow: hidden;
+}
+.SideBox .head .tag{
+	float: left;
+	font-size:18px;
+}
+.SideBox .head .more{
+	float:right;
+	color: #888;
+}
+.aboutcnt .nav{
+	height:40px;
+	line-height: 40px;
+	color: #888;
+}
+.aboutcnt .cnt{
+	color: #666;
+	width:100%;
+	overflow: hidden;
+}
+.listMember{
+	padding-top: 15px;
+}
+.listMember:after{
+	content: '';
+	display: block;
+	clear: both;
+	height: 10px;
+}
+.listMember li{
+	width:20%;
+	overflow: hidden;
+	float: left;
+}
+.listMember li span,.listMember li em{
+	display: block;
+	width:50px;
+	overflow: hidden;
+	margin: auto;
+	position: relative;
+	text-align: center;
+}
+.listMember li span{
+	border-radius: 50%;
+}
+.listMember li span:before{
+	content: '';
+	display: block;
+	padding-top: 100%;
+}
+.listMember li span img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left: 0;
+	top:0;
+}
+.listMember li em{
+	height: 20px;
+	line-height: 20px;
+	font-size:14px;
+}
+.JoinBut a{
+	display: block;
+	background: #44C185;
+	color: #FFF;
+	text-align: center;
+	line-height: 45px;
+	font-size:20px;
+	border-radius: 5px;
+}
+.listPhoto{
+	padding-top: 5px;
+}
+.listPhoto:after{
+	content: '';
+	display: block;
+	clear: both;
+}
+.listPhoto li{
+	width:50%;
+	padding-top: 10px;
+	float: left;
+	overflow: hidden;
+}
+.listPhoto li span,.listPhoto li em{
+	display: block;
+	margin: 0 5px;
+	position: relative;
+	overflow: hidden;
+}
+.listPhoto li span:before{
+	content: '';
+	display: block;
+	padding-top: 75%;
+}
+.listPhoto li span img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left: 0;
+	top:0;
+}
+.listPhoto li em{
+	height: 25px;
+	line-height: 25px;
+	color: #999;
+}
+.listBbs .lists ul{
+	display: table;
+	width:100%;
+	margin: 15px 0px 10px 0px;
+}
+.listBbs .lists ul li{
+	display: table-cell;
+	vertical-align: middle;
+}
+.listBbs .lists ul li.img{
+	width: 50px;
+	padding-right: 10px;
+}
+.listBbs .lists ul li.img a{
+	display: block;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	border-radius: 50%;
+}
+.listBbs .lists ul li.img img{
+	width: 50px;
+	height: 50px;
+}
+.listBbs .lists ul li.more{
+	text-align: right;
+}
+.listBbs .lists ul li.more span{
+	display: inline-block;
+	line-height: 30px;
+	padding: 0 5px;
+	background: #F90;
+	color: #FFF;
+	border-radius: 5px;
+}
+.listBbs .lists ul li.info span,.listBbs .lists ul li.info em{
+	display: block;
+	height: 25px;
+	line-height: 25px;
+	overflow: hidden;
+}
+.listBbs .lists ul li.info em{
+	color: #888;
+	font-size:14px;
+}
+.listBbs .lists dl dt{
+	padding-left: 5px;
+}
+.listBbs .lists dl dd:after{
+	content: '';
+	display: block;
+	clear: both;
+}
+.listBbs .lists dl dd div{
+	width:33.33%;
+	overflow: hidden;
+	float: left;
+}
+.listBbs .lists dl dd div span{
+	display: block;
+	margin:5px;
+	position: relative;
+}
+.listBbs .lists dl dd div span:before{
+	content: '';
+	display: block;
+	padding-top: 75%;
+}
+.listBbs .lists dl dd div span img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left: 0px;
+	top:0px;
+}
+.listBbs .lists .others{
+	line-height: 30px;
+	color: #AAA;
+	padding-left: 5px;
+}
+.listBbs .lists .others i:before{
+	margin-right: 3px;
+}
+.listBbs .lists .others em{
+	display: inline-block;
+	margin-left: 10px;
+}
+@media (max-width: 500px) and (min-width:401px) {
+	.ListBox .list ul li.img{
+		width:100px;
+	}
+	.ListBox .list ul li.img a{
+		width:100px;
+	}
+	.ListBox .list ul li.join{
+		width:50px;
+	}
+	.ListBox .list ul li.join sapn{
+		line-height: 30px;
+		font-size:14px;
+		border-radius: 15px;
+	}
+	.ListBox .list ul li.info div{
+		height:33px;
+		line-height: 33px;
+		font-size:16px;
+	}
+	.ListBox .list ul li.info div.title{
+		font-size: 18px;
+	}
+	.listBbs .lists dl dd div span{
+		margin:3px;
+	}
+}
+@media (max-width: 400px) {
+	.ListBox .list ul li.img{
+		width:90px;
+	}
+	.ListBox .list ul li.img a{
+		width:90px;
+	}
+	.ListBox .list ul li.join{
+		width:40px;
+	}
+	.ListBox .list ul li.join span{
+		line-height: 26px;
+		font-size:14px;
+		border-radius: 13px;
+	}
+	.ListBox .list ul li.info div{
+		height:30px;
+		line-height: 30px;
+		font-size:14px;
+	}
+	.ListBox .list ul li.info div.title{
+		font-size: 16px;
+	}
+	.listBbs .lists dl dd div span{
+		margin:2px;
+	}
+}
+/*****/
+.ShowMore1{
+	text-align: center;
+}
+.ShowMore1 span{
+	display:inline-block;
+	width:30px;
+	height: 25px;
+	background: url(more.png) no-repeat;
+	margin-top: 10px;
+}
+.ShowMore2{
+	clear: both;
+	width: 100%;
+	padding-top: 10px;
+}
+.ShowMore2 span{
+	display: block;
+	text-align: center;
+	margin: 0px 20px;
+	line-height: 45px;
+	background: #DDD;
+	color: #AAA;
+	border-radius: 5px;
+}
+/********/
+.MoreInfoBox{
+	position: fixed;
+	width:100%;
+	height: 100%;
+	z-index: 10000000;
+	left: 0px;
+	top:0px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	display: none;
+}
+.MoreInfoBox .BackBox{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	background: rgba(0,0,0,0.6);
+	left:0;
+	top:0;
+}
+.MoreInfoBox .ShowinfoBox{
+	background: #FFF;
+	position: relative;
+	border-radius: 5px;
+}
+.MoreInfoBox .ShowinfoBox img{
+	width:200px;
+	margin: 10px;
+}

@@ -1,0 +1,457 @@
+﻿.bbsContainer{
+	max-width: 640px;
+	overflow: hidden;
+	margin: auto;
+	background: #F5F5F5;
+}
+/*****/
+.replayBox{
+	padding: 10px;
+}
+.replayBox ol textarea{
+	width:96%;
+	border: 0px;
+	padding: 5px 2%;
+	height: 80px;
+	box-shadow: 0px 0px 1px #CCC;
+}
+.replayBox li{
+	text-align: center;
+	padding: 10px 0 0 0;
+}
+.replayBox li button,.replayBox li span{
+	display: inline-block;
+	line-height: 35px;
+	border: 0px;
+	padding: 0 15px;
+	background: #DDD;
+	color: #FFF;
+}
+.replayBox li button{
+	margin-right: 15px;
+	background: #F90;
+}
+/***********/
+.bbsContainer .topBoxs li.atten{
+	background:#fff;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+.bbsContainer .topBoxs li.atten a{
+	display: block;
+	text-align: center;
+	line-height: 40px;
+	border: #666 solid 1px;
+	border-radius: 5px;
+	color: #666;
+	font-size:18px;
+}
+
+.bbsContainer .ContentBox{
+	background: #FFF;
+	padding: 20px;
+	box-shadow: 0px 0px 2px #CCC;
+}
+.bbsContainer .ContentBox .title{
+	line-height: 25px;
+	font-size: 20px;
+}
+.bbsContainer .ContentBox .title span,.bbsContainer .ContentBox .title em{
+	display: inline-block;
+	background: #2D88E6;
+	margin-right: 8px;
+	padding: 0 5px;
+	border-radius: 5px;
+	color: #FFF;
+	font-size:16px;
+}
+.bbsContainer .ContentBox .title em{
+	background: #FB0;
+}
+.bbsContainer .ContentBox .thebase{
+	padding: 20px 0px;
+}
+.bbsContainer .ContentBox .thebase ul{
+	display: table;
+	width: 100%;
+}
+.bbsContainer .ContentBox .thebase ul ol,.bbsContainer .ContentBox .thebase ul li{
+	display: table-cell;
+	vertical-align: middle;
+}
+.bbsContainer .ContentBox .thebase ul ol a{
+	display: block;
+	float: left;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	border-radius: 50%;
+	margin-right: 10px;
+	position: relative;
+}
+.bbsContainer .ContentBox .thebase ul ol a img{
+	position:absolute;
+	width:100%;
+	height: 100%;
+	left:50%;
+	top: 50%;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.bbsContainer .ContentBox .thebase ul ol div{
+	float: left;
+}
+.bbsContainer .ContentBox .thebase ul ol div span,.bbsContainer .ContentBox .thebase ul ol div em{
+	display: block;
+	height: 25px;
+	line-height: 25px;
+	overflow: hidden;
+}
+.bbsContainer .ContentBox .thebase ul ol div em{
+	font-size:14px;
+	color: #999;
+}
+.bbsContainer .ContentBox .thebase ul li{
+	text-align: right;
+	font-size: 16px;
+	color: #AAA;
+}
+/*.bbsContainer .ContentBox .thebase ul li span{
+	color:#2D88E6;
+	font-size:14px;
+	display: inline-block;
+	margin-left: 3px;
+}
+.bbsContainer .ContentBox .thebase ul li .fa-thumbs-o-up{
+	margin-left: 6px;
+}*/
+.bbsContainer .ContentBox .thebase ul li i{
+	padding-left:3px;
+}
+.bbsContainer .contentHtml{
+	width: 100%;
+	overflow: hidden;
+	word-wrap: break-word; 
+	word-break:break-all;
+}
+.bbsContainer .contentHtml img{
+	max-width: 100%;
+}
+.bbsContainer .contentHtml p{
+	padding: 5px 0;
+}
+.bbsContainer .OtherAct{
+	text-align: center;
+	padding: 20px 0px 10px 0px;
+}
+.bbsContainer .OtherAct button{
+	background: #F5F5F5;
+	padding: 8px 10px;
+	border:0px;
+	font-size: 16px;
+	border-radius: 5px;
+	margin: 0px 5px;
+}
+.bbsContainer .CommentBox{
+	margin-top: 20px;
+	padding: 15px;
+	background: #FFF;
+}
+.bbsContainer .CommentBox .head{
+	height: 40px;
+	line-height: 30px;
+}
+.bbsContainer .CommentBox .head ol{
+	float: left;
+	font-size: 20px;
+}
+.bbsContainer .CommentBox .head li{
+	float:right;
+	color: #666;
+}
+.ListComment .lists{
+	border-top:#EEE solid 1px;
+	padding: 15px 0px;
+}
+.ListComment .lists ul{
+	display: table;
+	width: 100%;
+}
+.ListComment .lists ul ol,.ListComment .lists ul li{
+	display: table-cell;
+	vertical-align: top;
+}
+.ListComment .lists ul ol{
+	width: 50px;
+	padding-right: 10px;
+}
+.ListComment .lists ul ol a{
+	display: block;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	border-radius: 50%;
+	position: relative;
+}
+.ListComment .lists ul ol a img{
+	position:absolute;
+	width:100%;
+	height: 100%;
+	left:50%;
+	top: 50%;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.ListComment .lists ul li .infos{
+	height: 20px;
+	line-height: 20px;
+	overflow: hidden;
+}
+.ListComment .lists ul li .infos a,.ListComment .lists ul li .infos em,.ListComment .lists ul li .infos span{
+	display: block;
+	float: left;
+}
+.ListComment .lists ul li .infos em{
+	font-size:14px;
+	color: #999;
+	margin: 0 5px;
+}
+.ListComment .lists ul li .infos span{
+	float:right;
+	color: #888;
+}
+.ListComment .lists ul li .cnt{
+	padding: 5px 0;
+	line-height: 25px;
+	width: 100%;
+	overflow: hidden;
+	word-wrap: break-word; 
+	word-break:break-all;
+}
+.ListComment .lists ul li .cnt img{
+	max-width: 100%;
+}
+.replaycomment dl{
+	padding: 5px;
+	background: #F5F5F5;
+	border-radius: 5px;
+	margin-bottom: 5px;
+	color: #777;
+	font-size:14px;
+	line-height: 20px;
+}
+.replaycomment dl dt em{
+	display: inline-block;
+	margin-left: 5px;
+	color: #2D88E6;
+}
+.replaycomment dl dd{
+	position: relative;
+	padding-right: 20px;
+}
+.replaycomment dl dd .fa-trash-o{
+	display: block;
+	width:15px;
+	height: 15px;
+	position: absolute;
+	right:2px;
+	bottom:2px;
+	cursor: pointer;
+}
+.ListComment .lists .other{
+	text-align: right;
+	color: #999;
+}
+.ListComment .lists .other i{
+	margin-right: 2px;
+	margin-left: 8px;
+}
+.ShowMoreBox{
+	text-align: center;
+	border-top:#EEE solid 1px;
+	padding: 30px 10px;
+	color: #888;
+	display: none;
+}
+/****/
+.showdsBox .h{
+	text-align: center;
+	line-height: 35px;
+	color: #AAA;
+}
+.showdsBox .h span{
+	color: #F60;
+}
+/*.showdsBox dl{
+	width:100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: row;
+}*/
+.showdsBox dl{
+	height: 25px;
+	padding-right: 40px;
+	overflow: hidden;
+	position: relative;
+	margin: 5px 0px;
+}
+.showdsBox dl dt{
+	height: 25px;
+}
+.showdsBox dl dt a{
+	float: left;
+	display: flex;
+	flex-direction: row;
+}
+.showdsBox dl dt a{
+	padding-right: 10px;
+	line-height: 25px;
+}
+.showdsBox dl dt a span{
+	width:25px;
+	height: 25px;
+	overflow: hidden;
+	border-radius: 50%;
+	position: relative;
+}
+.showdsBox dl dt a span img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left: 0;
+	top:0;
+}
+.showdsBox dl dt a em{
+	color: #F60;
+}
+.showdsBox dl dd{
+	position:absolute;
+	width:40px;
+	height: 25px;
+	line-height: 25x;
+	text-align: right;
+	right: 0;
+	top:0;
+	font-size:14px;
+	color: #999;
+}
+.showdsBox dl dd i{
+	margin-left: 2px;
+}
+/********/
+.MoreInfoBox{
+	position: fixed;
+	width:100%;
+	height: 100%;
+	z-index: 10000000;
+	left: 0px;
+	top:0px;
+	display: none;
+}
+.MoreInfoBox .BackBox{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	background: rgba(0,0,0,0.6);
+	left:0;
+	top:0;
+}
+.MoreInfoBox .ShowinfoBox{
+	position: absolute;
+	width:80%;
+	height: 90%;
+	background: #FFF;
+	overflow-x: hidden;
+	overflow-y: auto;
+	left: 10%;
+	top:5%;
+	border-radius: 5px;
+}
+.MoreInfoBox .ShowinfoBox .h{
+	padding-top: 20px;
+	height: 20px;
+	line-height: 20px;
+	position: relative;
+	margin: 0px 10px;
+	text-align: center;
+}
+.MoreInfoBox .ShowinfoBox .h:before{
+	content: '';
+	display: block;
+	position: absolute;
+	width:100%;
+	height: 1px;
+	background: #DDD;
+	left: 0px;
+	bottom:10px;
+}
+.MoreInfoBox .ShowinfoBox .h span{
+	display: inline-block;
+	padding: 0 5px;
+	background: #FFF;
+	position: relative;
+}
+.MoreInfoBox .ShowinfoBox .ListBox{
+	padding: 0px 10px;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul{
+	display: table;
+	width: 100%;
+	border-bottom: #DDD solid 1px;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul li{
+	display: table-cell;
+	padding: 15px 0px;
+	vertical-align: middle;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul li.icon{
+	width:50px;
+	padding-right: 10px;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul li.icon a{
+	display: block;
+	width:50px;
+	height: 50px;
+	overflow: hidden;
+	border-radius: 50%;
+	position: relative;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul li.icon a img{
+	position: absolute;
+	width:100%;
+	height: 100%;
+	left: 0px;
+	top:0px;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul li.yen{
+	width:80px;
+	text-align: right;
+	color: #999;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul li.yen span{
+	color: #F60;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul li.info span,.MoreInfoBox .ShowinfoBox .ListBox ul li.info em{
+	display: block;
+	height:25px;
+	line-height: 25px;
+	overflow: hidden;
+}
+.MoreInfoBox .ShowinfoBox .ListBox ul li.info em{
+	font-size:14px;
+	color: #AAA;
+}
+.MoreInfoBox .ShowinfoBox .closeBox{
+	text-align: center;
+	padding: 10px 0px;
+}
+.MoreInfoBox .ShowinfoBox .closeBox span{
+	display:inline-block;
+	border: #F30 solid 1px;
+	background: #F90;
+	color: #FFF;
+	padding: 5px 10px;
+	border-radius: 5px;
+}

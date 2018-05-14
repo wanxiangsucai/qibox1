@@ -1,0 +1,142 @@
+﻿.addBox{
+	max-width: 640px;
+	overflow: hidden;
+	margin: auto;
+	background: #F5F5F5;
+}
+.addBox .topBoxs{
+	display: table;
+	width: 100%;
+	background: #FFF;
+	border-bottom: #EEE solid 1px;
+}
+.addBox .topBoxs li{
+	display: table-cell;
+	text-align: left;
+	vertical-align: middle;
+	padding: 10px 0;
+}
+.addBox .topBoxs li.logo{
+	width:50px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.addBox .topBoxs li.logo img{
+	max-height: 50px;
+	max-width: 50px;
+	border-radius: 50%;
+}
+.addBox .topBoxs li.info span{
+	font-size: 20px;
+}
+.addBox .topBoxs li.atten{
+	width:50px;
+	text-align: center;
+	font-size: 22px;
+}
+.addBox .type1{
+	margin: 10px 10px 0px 10px;
+	background: #FFF;
+	padding: 10px;
+}
+.addBox .type1 dl{
+	display: table;
+	width: 100%;
+}
+.addBox .type1 dl dt,.addBox .type1 dl dd{
+	display: table-cell;
+	vertical-align: middle;
+}
+.addBox .type1 dl dd{
+	text-align: right;
+}
+.addBox .types ol{
+	padding: 15px 10px 5px 12px;
+	line-height: 20px;
+}
+.addBox .types li{
+	margin: 0px 10px;
+}
+.addBox .types li.input1{
+	border: #DDD solid 1px;
+	background: #FFF;
+	border-radius: 5px;
+	padding: 5px;
+}
+.addBox .types li.input1 input[type=text]{
+	border: 0;
+	width: 100%;
+	outline: none;
+}
+.addBox .types li textarea{
+	border: 0px;
+	width:96%;
+	padding: 5px 2%;
+	background: #FFF;
+	outline: none;
+	box-shadow: 0px 0px 1px #666;
+	height: 150px;
+	border-radius: 5px;
+}
+.addBox .types li.ShowPicBox{
+	margin: 0 5px;
+}
+.addBox .ShowPicBox:after{
+	content: '';
+	display: block;
+	clear: both;
+}
+.addBox .ShowPicBox div{
+	width:25%;
+	float: left;
+	padding-bottom: 5px;
+	position: relative;
+}
+.addBox .ShowPicBox div span{
+	display: block;
+	border: #DDD solid 1px;
+	margin: 0 5px;
+	position: relative;
+	background: #FFF;
+}
+.addBox .ShowPicBox div span:before{
+	content: '';
+	display: block;
+	padding-top: 100%;
+}
+.addBox .ShowPicBox div span img,.addBox .ShowPicBox div span i{
+	position:absolute;
+	max-height:100%;
+	max-width:100%;
+	left:50%;
+	top: 50%;;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.addBox .ShowPicBox div span i{
+	font-size:30px;
+	color: #AAA;
+}
+.addBox .ShowPicBox div em{
+	display: block;
+	position: absolute;
+	width:20px;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	background: rgba(255,0,0,0.6);
+	color: #FFF;
+	right:5px;
+	top:0px;
+}
+.addBox button{
+	margin-top: 20px;
+	background: #318FED;
+	border: 0px;
+	width: 100%;
+	text-align: center;
+	height: 50px;
+	line-height: 50px;
+	color: #FFF;
+}
