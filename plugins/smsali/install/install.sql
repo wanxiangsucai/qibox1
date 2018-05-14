@@ -1,0 +1,4 @@
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, '阿里云短信模板', 'sms_template', '', 'text', '', 1, '', '模板中使用的变量只能是code,如果不是的话,请先修改或者重新申请一个把变量名换用code', 7, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, '阿里云短信签名', 'sms_sign_name', '', 'text', '', 1, '', '', 8, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, '阿里云短信接口密钥', 'sms_access_key', '', 'text', '', 1, '', '即AccessKeySecret', 9, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, '阿里云短信接口id', 'sms_access_id', '', 'text', '', 1, '', '即AccessKeyId', 10, 0);
