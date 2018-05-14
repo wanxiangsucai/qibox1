@@ -1,0 +1,105 @@
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style>
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{margin:0;padding:0;}
+body,button,input,select,textarea{color:#333;font-size:14px;}
+h1,h2,h3,h4,h5,h6{font-size:100%;}
+address,cite,dfn,em,var{font-style:normal;}
+code,kbd,pre,samp{font-family:courier new,courier,monospace;}
+small{font-size:12px;}
+ul,ol{list-style:none;}
+a{text-decoration:none;color:#2d374b;}
+a:hover {color:#d00;}
+table{border-collapse:collapse;border-spacing:0;}
+.ListTable{border-top:#DDD solid 1px;border-left:#DDD solid 1px;}
+.ListTable th,.ListTable td{border-bottom:#DDD solid 1px;border-right:#DDD solid 1px;padding:3px;color:666;vertical-align:middle;}
+.ListTable th{background:#EFEFEF;color:red;}
+.Nodata{line-height:30px;padding-left:20px;color:#F00;}
+.ShowPage{text-align:center;line-height:30px;}
+.ASC,.DESC{display:block; position:relative; padding-right:15px;}
+.ASC:after,.DESC:after{content:''; display:block;width:0;height:0; position:absolute; right:0; top:5px;border:6px solid transparent;}
+.DESC:after{border-top: 8px solid #999;border-bottom:0;}
+.ASC:after{border-bottom: 8px solid #999;border-top:0;}
+.SearchBox{padding:10px;}
+.SearchBox input[type=text]{width:100px; margin-right:10px;border:#DDD solid 1px; line-height:25px; text-indent:5px;}
+.SearchBox select{border:#DDD solid 1px; height:25px;}
+.SearchBox input[type=radio]{margin-left:10px;border:0;}
+.SearchBox input[type=submit]{ line-height:25px; border:#DDD solid 1px; padding:0 10px; background:#FFF; cursor:pointer; margin-left:10px;margin-right:10px;}
+/*****PC分页样式开始*****/
+.pagination{
+	text-align: center;
+	width: 100%;
+	clear: both;
+	padding: 10px 0;
+}
+.pagination li{
+	display: inline-block;
+	line-height: 30px;	
+	margin: 0 5px;	
+}
+.pagination li a,.pagination li span{
+	display: block;
+	border: #DDD solid 1px;
+	padding: 0 8px;
+	color: #666;
+}
+.pagination li a,.pagination li span{
+	color: #999;
+}
+.pagination li a:hover{
+	border:#F30 solid 1px;
+	background: #F60;
+	color: #FFF;
+}
+.pagination li.active span{
+	border:#21806E solid 1px;
+	background: #64C2B0;
+	color: #FFF;
+}
+/*****PC分页样式结束*****/
+</style>
+</head>
+<body>
+<table class="ListTable">
+ <tr>
+{volist name="titledb" id="value"}
+ 	<th><a href="{:url('showtable',['table'=>$table,'ordertype'=>$value,'orderby'=>($orderby=='desc'?'asc':'desc')])}" {eq name="ordertype" value="$value"}style="color:red;"{/eq}>{$value}</a></th>
+
+{/volist}
+
+
+ </tr>
+ 
+{volist name="listdb" id="rs"}
+  <tr>
+	{volist name="titledb" id="value"}
+    <td>{$rs[$value]}</td>
+	{/volist}
+  </tr>
+{/volist}
+
+</table>
+
+{empty name="listdb"}
+<div class="Nodata">当前数据表没有相应内容,记录为空!!</div>
+{/empty}
+<div class="SearchBox">
+<form name="form_order" method="get" action="">
+	关键词 <input name="keyword" type="text" value="{$keyword}"/>
+	字段
+	<select name="field"> 
+{volist name="titledb" id="value"}
+	  <option value="{$value}" {eq name="field" value="$value"}selected{/eq}>{$value}</option>
+{/volist}
+	</select>
+	<input name="types" type="radio" value="0" {empty name="types"}checked{/empty} /> 模糊
+	<input name="types" type="radio" value="1" {eq name="types" value="1"}checked{/eq} /> 精确
+	<input name="" type="submit" value="搜索">
+	<a href="{:url('showtable',['table'=>$table])}">查看全部</a>
+</form>
+</div>
+<div class="ShowPage">{$showpage}</div>
+</body>
+</html>

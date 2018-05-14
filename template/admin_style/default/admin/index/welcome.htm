@@ -1,0 +1,121 @@
+{extend name="index:layout" /}
+
+{block name="menu"}{/block}
+{block name="content"}
+<script type="text/javascript">
+<!--
+if (navigator.userAgent.indexOf("MSIE") >= 0) {
+	alert("请使用谷歌或火狐访问.其它浏览器无法正常操作与使用");
+}
+//-->
+</script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/admin/default/wlife/map.css">
+<div class="WelCome">管理人,欢迎来到后台系统管理</div>
+<div class="statisticsInfo">
+	<ul>
+		<li class="first">会员共有：<span>{$user_num}</span> 位</li>
+		<!--<li>商品共有：<span>0</span>件</li>-->
+		<li>CMS信息：<span>{$cms_num}</span> 条</li>
+		<!--<li>礼品共有：<span></span>件</li>-->
+	</ul>
+</div>
+<div class="OperationDeclaration">
+	<h3>使用提示</h3>
+	<ul>
+		<li>1、如要对首页进行重大修改，请手工修改模板文件/application/index/view/default/index/</li>
+		<li>2、如果不能进入后台，请修改文件/admin.php,查找define('SUPER_ADMIN',true)把开头的双斜杠去除;即能进入后台,重新设置管理员密码</li>
+		<li>3、数据库配置文件是/application/database.php,更换数据库帐号后,请修改此文件</li>
+		<li>4、网站在使用过程中,如果更新添加了数据,务必经常备份网站数据库</li>
+		<li>5、要修改网页内容显示,在相应的页面双击即可进行标签设置</li>
+	</ul>
+</div>
+<div class="OtherContent">
+	<h3 class="sever">服务器信息</h3>
+	<ul>
+		<li>
+			<dl>
+				<dt>服务端信息：{$systemMsg.SERVER_SOFTWARE}</dt>
+				<dd>邮件模式：{$systemMsg.sys_mail}</dd>
+			</dl>
+		</li>
+		<li>
+			<dl>
+				<dt>PHP版本：{$systemMsg.sysversion}</dt>
+				<dd>服务器IP：{$systemMsg.SERVER_ADDR}</dd>
+			</dl>
+		</li>
+		<li>
+			<dl>
+				<dt>MYSQL版本：{$systemMsg.mysqlVersion}</dt>
+				<dd>服务器端口：{$systemMsg.SERVER_PORT}</dd>
+			</dl>
+		</li>
+		<li>
+			<dl>
+				<dt>上传文件存放的临时目录：{$systemMsg.upload_tmp_dir}</dt>
+				<dd>服务器所在时间：{$systemMsg.systemtime}</dd>
+			</dl>
+		</li>
+		<li>
+			<dl>
+				<dt>网站所在磁盘物理位置：{$systemMsg.DOCUMENT_ROOT}</dt>
+				<dd>当前文件路径：{$systemMsg.SCRIPT_FILENAME}</dd>
+			</dl>
+		</li>
+		<li>
+			<dl>
+				<dt>Zend Optimizer版本：{$systemMsg.zendVersion}</dt>
+				<dd>当前登陆IP：{$systemMsg.onlineip}</dd>
+			</dl>
+		</li>
+		<li>
+			<dl>
+				<dt>当前域名：{$systemMsg.SERVER_NAME}</dt>
+				<dd><br/></dd>
+			</dl>
+		</li>
+		<li>是否允许文件上传：{$systemMsg.file_uploads}（如果不允许可把php.ini里的file_uploads=Off改成file_uploads=On，重启服务器即可）</li>
+		<li>最大上传限制：{$systemMsg.max_upload}（需更大可修改php.ini里的upload_max_filesize值，重启服务器即可）</li>
+		<li>最大执行时间：{$systemMsg.max_ex_time}（需更大可修改php.ini里的max_execution_time值，重启服务器即可）</li>
+		<li>空间限制内存：{$systemMsg.memory_user_tdmit}（需更大可修改php.ini里的memory_tdmit值，重启服务器即可）</li>
+		 
+		<li>是否支持采集：{$systemMsg.allow_url_fopen}（如果不支持可把php.ini里的allow_url_fopen=Off改成allow_url_fopen=On，重启服务器即可）</li>
+		<li>是否支持GD2库：{$systemMsg.gdpic}（如果不支持可把php.ini中;extension=php_gd2.dll前面的;去掉，重启服务器即可）</li>
+		<li>是否允许Cookie：{$systemMsg.ifcookie}（如果不允许可在Windows控制面板 ,"Internet选项" ,隐私设置中调整）</li>
+	</ul>
+</div>
+<div class="OtherContent">
+	<h3 class="team">开发团队</h3>
+	<ul>
+		<li>官方网站：http://www.php168.com</li>
+		<li>技术支持：http://bbs.php168.com</li>
+		<li>版本类型：{$webdb.QB_VERSION}</li>
+		<li>系统设计：龙城</li>
+		<li>特别鸣谢：<a href="http://www.qibo168.com" target="_blank">suifeng(随风)</a>、石头等版主 </li>
+	</ul>
+</div>
+{php}
+$array = @include(config('client_upgrade_edition')?:RUNTIME_PATH.'/client_upgrade_edition.php');
+{/php}
+<script type="text/javascript">
+//检查版本更新
+function check_upgrade(){
+	var now_edition = "{$array.md5}";
+	$.get("https://x1.php168.com/appstore/upgrade/get_edition.html",function(res){
+		if(res.code==0){
+			if(res.data.md5!=now_edition){
+				upgrade_edition = res.data.md5;
+				var msg = '你的系统需要升级<br>云端更新日期:'+res.data.time;
+				layer.confirm(msg, {
+					btn : [ '马上升级', '晚点再升级' ]
+				}, function(index) {
+					window.location.href="{:url('upgrade/index')}";
+				});
+			}
+		}
+	});
+}
+check_upgrade();
+</script>
+
+{/block}

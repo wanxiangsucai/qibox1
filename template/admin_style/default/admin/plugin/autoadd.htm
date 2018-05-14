@@ -1,0 +1,47 @@
+{extend name="index:layout" /}
+
+{block name="menu"}{/block}
+
+{block name="content"}
+<div class='ListLinkCont'>
+  <a href="index.php?lfj=$lfj&job=list">插件管理</a>
+  <a href="index.php?lfj=$lfj&job=add">手工添加新插件</a>
+  <a href="index.php?lfj=$lfj&job=autoadd">自动安装新插件</a>
+</div>
+
+<div class="MainContainers">
+  <div class="Header"><span class="tag">自动安装</span><span class="more">&gt;&gt;</span></div>
+  <div class="Conter">
+    <table class="ListTable">
+      <tr>
+        <th width="28%" class='Left'>关键字</th>
+        <th width="40%" class='Left'>插件名称</th>
+        <th width="32%">安装</th>
+      </tr>
+{php}
+  foreach($listdb AS $key=>$rs){
+{/php}
+      <tr bgcolor="#FFFFFF"> 
+        <td>$rs[keywords]</td>
+        <td>$rs[name]</td>
+        <td><a href="?lfj=$lfj&action=$job&hackdir=$rs[hackdir]">安装</a></td>
+      </tr>
+{php}
+  }
+{/php}
+   </table>
+   </div>
+  </div>
+
+   <br>
+
+<div class="MainContainers">
+  <div class="Header"><span class="tag">帮助说明</span></div>
+  <div class="Conter">
+    <ul class="notes">
+      <li>新增加一个插件,请把插件目录放在/hack/目录里,每个插件有一个必须的data.sql文件,这个文件包括了自动安装所需的SQL代码与插件所需要的数据库.</li>
+      <li> 插件里边可以增加一个install.php文件,里边可以放执行程序 <a href="?lfj=$lfj&action=$job&hackdir=$rs[hackdir]"></a></li>
+    </ul>
+  </div>
+</div>
+{/block}

@@ -1,0 +1,89 @@
+{extend name="index:layout" /}
+
+{block name="menu"}{/block}
+
+{block name="content"}
+
+{php}
+$webdb['weixin_welcome'] = stripslashes($webdb['weixin_welcome']);
+$webdb['weixin_problem'] = stripslashes($webdb['weixin_problem']);
+{/php}
+ 
+<style>
+.ListType .list{border:#DDD solid 1px; border-top:0;margin:2px auto 3px auto;}
+.ListType .list div{border-top:#DDD solid 1px;padding:5px 5px 5px 50px;position:relative;}
+.ListType .list div span{display:block;width:45px;height:30px;line-height:40px;text-align:right;position:absolute;top:0;left:0;}
+.ListType .list div.m-picUp input{}
+.ListType .list div textarea{border:#DDD solid 1px;height:100px;width:90%;} 
+.ListType .list div em{display:block;width:205px;height:28px;position:absolute;left:630px;top:7px;overflow:hidden;}
+</style>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function postdo(va){
+	document.form_work.jobs.value=va
+	document.form_work.submit();
+}
+function CheckAll(va){
+	form=document.form_work
+	for (var i=0;i<form.elements.length;i++){
+		var e = form.elements[i];
+		if(va=='all'){
+			e.checked = true;
+		}else{
+			e.checked == true ? e.checked = false : e.checked = true;
+		}
+	}
+}
+//-->
+</SCRIPT>
+
+<script type="text/javascript">
+function upfile(url,name,size,ty){
+	document.getElementById(ty).value=url;
+}
+</script>
+<form method="post" action="{:purl()}">
+<div class="MainContainers">
+  <div class="Header"><span class="tag">新用户关注微信时回复</span><span class="more">&gt;&gt;</span></div>
+  <div class="Conter">
+<table class="FormTable">
+    <tr>
+      <td class="tdL">新用户关注微信时回复的纯文本内容：</td>
+      <td class="tdR" align="left"><textarea name="webdbs[weixin_welcome]" cols="100" rows="5"  >{$webdb['weixin_welcome']}</textarea></td>
+    </tr>  
+	<tr>
+      <td class="tdL">新用户关注微信时回复的图文并茂内容：</td>
+      <td class="tdR">
+	  	<div class="ListType">
+			<div class="list">
+				<div><span>标题</span><input name="webdbs[weixin_welcome_title]" type="text" value="{$webdb['weixin_welcome_title']}" size="80" /></div>
+				<div><span>描述</span><textarea name="webdbs[weixin_welcome_desc]" cols="80" rows="5">{$webdb['weixin_welcome_desc']}</textarea></div>
+				<div class="m-picUp"><span>图片</span><input name="webdbs[weixin_welcome_pic]" type="text" id="weixin_welcome_pic" value="{$webdb['weixin_welcome_pic']}" size="80" /><em>
+				<iframe frameborder=0  style="height:30px; width:205px;" scrolling=no src='$webdb[www_url]/do/upfile.php?fn=upfile&dir=weixinautoreply&label=weixin_welcome_pic'></iframe></em></div>
+				<div><span>链接</span><input name="webdbs[weixin_welcome_link]" type="text" value="{$webdb['weixin_welcome_link']}" size="80" placeholder="请输入图片链接地址" /></div>
+			</div>
+		</div>
+	  </td>
+    </tr> 
+	
+	<tr>
+      <td class="tdL">回答不上用户问题时回复：</td>
+      <td class="tdR"><textarea name="webdbs[weixin_problem]" cols="80" rows="6"  >{$webdb['weixin_problem']}</textarea><span style="padding-left:30px;">管理员1小时内没有回复过任何内容，即视为离线</span></td>
+    </tr> 
+  </table>
+  <div class="submits"><input type="submit" name="Submit2" value=" 提 交 " /></div>
+  </div>
+</div>
+</form>
+
+<div class="MainContainers">
+	<div class="Header"><span class="tag">帮助说明</span></div>
+	<div class="Conter">
+		<ul class="notes">
+			<li>1、这里可以设置类似机器人回复微信用户提出的问题，你可以设置关键词，根据用户提出的问题中包含此关键字时，就回复对应的内容。回答不上的内容，就发给客服回复。</li>
+			<li> 2、排在最前面的会优先匹配。</li>
+			<li>3、非认证的公众号，不能同时使用纯文本与图文信息，如果要使用第二种图文方式的话，就请把第一项清空</li>
+		</ul>
+	</div>
+</div>
+{/block}

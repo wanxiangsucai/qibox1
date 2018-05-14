@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh_CN">
+<head>
+<meta charset="uft-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=8"><!-- 强制ie8,for 360 -->
+<meta name="viewport" content="width=device-width, initial-scale=1; maximum-scale=1.0; user-scalable=no;" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black"  />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>后台管理</title>
+<link rel="stylesheet" href="__STATIC__/admin/default/style.css" type="text/css">
+<link rel="stylesheet" href="__STATIC__/admin/default/base/base.css" type="text/css">
+<link rel="stylesheet" href="__STATIC__/css/qb_ui.css" type="text/css">
+<link rel="stylesheet" href="__STATIC__/icon/icon.css" type="text/css">
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/js/core/jquery.min.js"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/layer/layer.js"></SCRIPT>
+<!--
+<SCRIPT LANGUAGE="JavaScript">
+function get_obj(obj){
+   return document.getElementById(obj);
+}
+</SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" src="http://qym.net/images/default/default.js"></SCRIPT>
+<script type="text/javascript" src="http://qym.net/ewebeditor/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="http://qym.net/ewebeditor/baidu/editor_config.php"></script>
+<script type="text/javascript" src="http://qym.net/ewebeditor/baidu/editor_all.js"></script>
+<link rel="stylesheet" type="text/css" href="http://qym.net/ewebeditor/baidu/themes/default/ueditor.css"/>
+-->
+</head>
+<body>
+
+<div class='ListLinkCont'>
+{block name="menu"}菜单{/block}
+</div>
+{block name="content"}内容{/block}
+<style>
+.footer{background:#fff;padding:20px 0;}
+.footer ul{overflow:hidden;}
+.footer ul li{float:left; width:33.3%; height:30px; line-height:30px; }
+.footer ul li a{position:relative; display:block; width:160px; text-align:center; margin:0 auto; text-decoration:underline;}
+.footer ul li a:hover{color:#f40;}
+.footer ul li a:before{content:'';display:block; position:absolute; background:url('__STATIC__/admin/default/images/all-bg.png') no-repeat; width:30px; height:25px; }
+.footer ul li:first-child a:before{background-position:1px -273px;}
+.footer ul li:nth-child(2) a:before{background-position:1px -298px;}
+.footer ul li:last-child a:before{background-position:1px -319px;}
+.footer ul li a{font-size:16px; color:#666;}
+</style>
+<div class="footer">
+ <ul>
+   <li><a href="http://www.qibosoft.com/list-67-1.htm">官方动态</a></li>
+   <li><a href="http://bbs.qibosoft.com">官方论坛</a></li>
+   <li><a href="http://www.qibosoft.com">官方网站</a></li>
+ </ul>
+</div>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function show_help(di){
+	if(document.getElementById(di).style.display==''){
+		document.getElementById(di).style.display='none';
+	}else{
+		document.getElementById(di).style.display='';
+	}
+}
+function get_help(){
+	obj=document.body.getElementsByTagName("span");
+	for(var i=0;i< obj.length;i++ ){
+		if(obj[i].getAttribute("help")=='1'){
+			obj[i].className='Help';
+			obj[i].style.display='none';
+			var vid=Math.random()*1000000000000000000;
+			obj[i].id='a'+vid;
+
+			obj2=document.createElement("font");
+			obj2.innerHTML="<A href=\"javascript:show_help('a'+"+vid+");\" style='margin-left:5px;' title='点击查看更多帮助信息'><img src='__STATIC__/admin/default/images/help_icon.gif' border=0></A>";
+			obj[i].parentNode.insertBefore(obj2, obj[i]);
+		}
+	}
+}
+get_help();
+function set_class(){
+	obj=document.body.getElementsByTagName("input");
+	for(var i=0;i< obj.length;i++ ){
+		if(obj[i].type=='submit'||obj[i].type=='button'){
+			obj[i].className='submit';
+		}else if (obj[i].type=='radio'||obj[i].type=='checkbox'){
+			obj[i].style.border='0px;';
+		}else if(obj[i].type=='text'){
+			obj[i].className='input_text';
+		}
+	}
+	obj=document.body.getElementsByTagName("textarea");
+	for(var i=0;i< obj.length;i++ ){
+		obj[i].className='input_textarea';
+	}
+	if(document.getElementById("top_menu")!=null)
+	{
+		obj2=get_obj('top_menu').getElementsByTagName("td");
+	
+		for(var i=0;i< obj2.length;i++ ){
+			s=obj2[i].innerHTML;
+			s=s.replace(/\[</g, "<");
+			s=s.replace(/>\]/g, ">");
+			obj2[0].innerHTML=s;	
+		}
+	}
+	
+}
+set_class();
+clickEdit.init();	//生成一些快速操作按钮
+get_cache_button("0");	//生成表单中的数据恢复按钮
+$("table table td[align='center']").each(function(i){
+	this.style.textAlign='center';
+});
+$("table table tr[align='center'] td").each(function(i){
+	this.style.textAlign='center';
+});
+function loadJS(url,callback,charset){
+	var script = document.createElement('script');
+	script.onload = script.onreadystatechange = function (){	
+		if (script && script.readyState && /^(?!(?:loaded|complete)$)/.test(script.readyState)) return;
+		script.onload = script.onreadystatechange = null;
+		script.src = '';
+		script.parentNode.removeChild(script);
+		script = null;
+		if(callback)callback();
+	};
+	script.charset=charset || document.charset || document.characterSet;
+	script.src = url;
+	try {document.getElementsByTagName("head")[0].appendChild(script);} catch (e) {}
+}
+function initEditor(gid,w,h){
+	//loadJS('http://qym.net/ewebeditor/xheditor/xheditor-1.1.13-zh-cn.js',function(){$('#'+gid).xheditor({tools:'simple',width:w,height:h});});
+}
+//-->
+</SCRIPT>
+</body>
+</html>
+
+ 
