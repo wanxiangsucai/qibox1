@@ -1,0 +1,30 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}我发布的商品{/block}
+{block name="content"}
+<ul class="qb_ui_page_menu">
+	<li><a href="{:urls('index')}" class="blue si si-present"> 我的商品</a></li>
+	<li class="right"><a href="{:urls('postnew')}" class="red fa fa-sign-in"> 发布商品</a></li>
+</ul>
+<link rel="stylesheet" href="__STATIC__/css/waplistshop.css">
+<div class="MyshopBox">
+{volist name="listdb" id="rs"}
+	<div class="ListShop">
+		<dl>
+			<dt><a href="{$rs.url}"><img src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></dt>
+			<dd>
+				<div class="t"><a href="{$rs.url}" target="_blank">{$rs.title}</a></div>
+				<div class="f"><a href="{$rs.sort_url}" target="_blank">{$rs.sort_name}</a></div>
+				<div class="time">{$rs.time}</div>
+			</dd>
+		</dl>
+		<div class="submit">
+			<a href="{:urls('edit',['id'=>$rs['id']])}">修改</a>
+			<a href="{:urls('delete',['ids'=>$rs['id']])}" onclick="return confirm('你确认要删除吗?不可恢复');">删除</a>
+		</div>
+	</div>
+{/volist}
+	<div class="Showpage">{$pages}</div>
+</div>
+
+{/block}

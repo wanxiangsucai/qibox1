@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>会员中心</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="stylesheet" href="__STATIC__/css/base.css">
+	<link rel="stylesheet" href="__STATIC__/mui/css/mui.min.css">
+	<link rel="stylesheet" href="__STATIC__/icon/icon.css">
+	<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+	<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
+</head>
+<body>
+<style>
+.BaseInfos{
+	background:#60ABFF;
+	padding:30px 15px;
+}
+.BaseInfos ul{
+	display:table;
+	width:100%;
+	color:#FFF;
+}
+.BaseInfos ul ol,.BaseInfos ul li{
+	display:table-cell;
+	vertical-align:middle;
+}
+.BaseInfos ul ol{
+	width:80px;
+	padding-right:15px;
+}
+.BaseInfos ul ol img{
+	width:80px;
+	max-height:80px;
+	border-radius:50%;
+	border:#FFF solid 1px;
+	box-shadow: 2px 2px 3px #000;/**块阴影**/
+}
+.BaseInfos ul li{
+	line-height:25px;	
+	text-shadow: 1px 1px 1px #000;/**字体阴影**/
+}
+.BaseInfos ul li p{
+	color:#FFF;
+}
+.OtherInfos{
+	background:#FFF;
+	padding:15px 10px;
+}
+.OtherInfos ul{
+	display:table;
+	width:100%;
+}
+.OtherInfos ul li{
+	display:table-cell;
+	width:33%;
+	text-align:center;
+	vertical-align:middle;
+	color:#666;
+}
+.OtherInfos ul li.money{
+	border-left:#DDD solid 1px;
+	border-right:#DDD solid 1px;
+}
+.OtherInfos ul li .yz{
+	color:#F90;
+}
+.OtherInfos ul li .unyz{
+	color:#999;
+}
+@media (max-width: 2000px) and (min-width:601px) {
+	
+}
+@media (max-width: 600px) and (min-width:501px) { 
+	.BaseInfos ul ol{
+		width:70px;
+	}
+	.BaseInfos ul ol img{
+		width:70px;
+		max-height:70px;
+	}	
+}
+@media (max-width: 500px) {
+	.BaseInfos{
+		padding:20px 10px;
+	}
+	.BaseInfos ul ol{
+		width:60px;
+	}
+	.BaseInfos ul ol img{
+		width:60px;
+		max-height:60px;
+	}
+	.BaseInfos ul li{
+		line-height:20px;
+		font-size:14px;
+	}
+	.OtherInfos ul li{
+		font-size:14px;
+	}
+}
+</style>
+<div class="BaseInfos">
+	<ul>
+		<ol><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></ol>
+		<li>
+			<div>{$info.nickname} ({$info.groupid|getGroupByid})</div>
+			<p>注册日期 {$info.regdate|set_date}</p>
+		</li>
+	</ul>
+</div>
+<div class="OtherInfos">
+	<ul>
+{notempty name="info.yz"}
+		<li>
+			<div><i class="si si-user-following yz"></i></div>
+			<span>已认证</span> 
+		</li>
+{else /}
+		<li>
+			<div><i class="si si-user-unfollow nuyz"></i></div>
+			<span>未认证</span> 
+		</li>	
+{/notempty}
+		<li class="money">
+			<div><i class="fa fa-rmb"></i></div>
+			<span>余额{$info.rmb}元</span> 
+		</li>
+		<li>
+			<div><i class="fa fa-calendar-check-o"></i></div>
+			<span>签到</span> 
+		</li>		
+	</ul>
+</div>
+{foreach name="menu" id="vo"}
+	{empty name="vo.sons.1"}
+			<div class="mui-card">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">					
+						<i class="{$vo.icon|default='fa fa-sun-o'}" style="color:#009900;"></i>
+					<!--『{$vo.title}』「」-->{$vo.title}</li>
+					{foreach name="vo.sons.0.sons" id="rs"}
+					<li class="mui-table-view-cell">
+						<a href="{$rs.url}" class="mui-navigate-right">{$rs.title}</a>
+					</li>
+					{/foreach}
+				</ul>
+			</div>
+	{else}
+			<div class="mui-card">
+				<ul class="mui-table-view mui-table-view-chevron">
+					<li class="mui-table-view-cell"><i class="{$vo.icon|default='fa fa-th-large'}" style="color:#F90;"></i> {$vo.title}<!--『』--></li>
+					{foreach name="vo.sons" id="ar"}
+					<li class="mui-table-view-cell mui-collapse">							
+						<a class="mui-navigate-right" href="#">
+						&nbsp; &nbsp;&nbsp;<i class="{$ar.icon|default='si si-layers'}" style="color:#009900;"></i>
+						{$ar.title}</a>
+						<ul class="mui-table-view mui-table-view-chevron">
+							{foreach name="ar.sons" id="rs"}
+							<li class="mui-table-view-cell"><a class="mui-navigate-right" href="{$rs.url}">{$rs.title}</a></li>
+							{/foreach}
+						</ul>
+					</li>
+					{/foreach}
+				</ul>
+			</div>
+	{/empty}
+{/foreach}
+<div class="mui-content-padded">	
+	<button type="button" onclick="window.location.href='{:iurl('index/login/quit')}'" class="mui-btn mui-btn-warning mui-btn-block">退出登录</button>	 
+</div>
+<script src="__STATIC__/mui/js/mui.min.js"></script>
+{include file="index@footmenu" /}
+</body>
+</html>

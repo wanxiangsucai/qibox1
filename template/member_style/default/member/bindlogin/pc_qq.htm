@@ -1,0 +1,43 @@
+{extend name="$member_style_layout" /}
+ 
+{block name="content"}
+{include file="bindlogin/menu"}
+<div class="MainCont mtop10">
+	<div class="head"><div class="tag">绑定QQ一键登录</div></div>
+    <div class="cont">
+    	<form name="form1" method="post" action="{:urls('qq')}">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">        
+          </tr>
+		  <tr>
+			<th colspan="2">一个QQ只能对应绑定一个帐号!</th>
+          </tr>
+          <tr>
+            <td class="tdL"><br/></td>
+            <td class="tdR">
+            	
+				{notempty name='$userdb.qq_api'}<div style="color:red;">你当前的帐号已经绑定过QQ了,你也可以重新绑定其它QQ号码<br><br></div>{/notempty}
+				
+				<input onclick="window.location.href='{:get_url('qq_login')}&type=bind'" type="button" name="Submit" value="{notempty name='$userdb.qq_api'}重新绑定{else /}立即绑定{/notempty}">
+
+            </td>
+          </tr>
+		</table>
+        </form>
+ 
+    </div>
+</div>
+<div class="MainCont mtop10">
+	<div class="head">
+    	<div class="tag">说明</div>
+    </div>
+    <div class="cont">
+    	<ul class="aboutnote">
+			<li>1、如果你的QQ之前绑定了其它帐号的话,其它帐号将不能再用此QQ登录,一个QQ只能对应绑定一个帐号。</li> 
+        </ul>
+    </div>
+</div>
+
+
+
+
+{/block}

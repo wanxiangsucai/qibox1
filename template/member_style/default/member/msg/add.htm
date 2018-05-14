@@ -1,0 +1,77 @@
+{extend name="$member_style_layout" /}
+{block name="title"}短消息{/block}
+{block name="content"}
+{include file="msg/menu" /}
+<style>
+.PostMsg ul{
+	display: table;
+	width: 100%;
+	margin-bottom: 10px;
+	background: #FFF;
+}
+.PostMsg ul ol,.PostMsg ul li{
+	display: table-cell;
+	padding: 5px;
+	vertical-align: middle;
+}
+.PostMsg ul ol{
+	width: 70px;
+	text-align: right;
+}
+.PostMsg ul li input{
+	width: 98%;
+	border: #CCC solid 1px;
+	text-indent: 5px;
+}
+.PostMsg dl{
+	margin-bottom: 10px;
+	background: #FFF;
+	padding: 10px;
+}
+.PostMsg dl dt{
+	padding-bottom: 3px;
+}
+.PostMsg dl dd input{
+	width: 99%;
+	border: #CCC solid 1px;
+	text-indent: 5px;
+}
+.PostMsg dl dd textarea{
+	width: 97%;
+	border: #CCC solid 1px;
+	height: 80px;
+	padding: 5px 1%;
+}
+.PostMsg div{
+	text-align: center;
+}
+.PostMsg div button{
+	border: #F30 solid 1px;
+	background: #F60;
+	padding: 5px 20px;
+	color: #FFF;
+	border-radius: 5px;
+	cursor: pointer;
+}
+</style>
+<script>$('.fa-pencil').addClass('blue');</script>
+<div class="PostMsg">
+	<form name="form1" method="post" action="">
+		<ul>
+		 <ol>接收者：</ol>
+		 <li><input type="text" name="touser" placeholder="输入接收者" value="{$username}"/></li>
+		</ul>
+		<dl>
+		 <dt>标题：</dt>
+		 <dd><input type="text" name="title" placeholder="输入标题"/></dd>
+		</dl>
+		<dl>
+		  <dt>内容：</dt>
+		  <dd>
+			<textarea name='content' placeholder="输入内容"></textarea> 	
+		  </dd>
+		</dl>
+		<div><button type="submit">提交</button></div>
+	</form>
+</div>
+{/block}

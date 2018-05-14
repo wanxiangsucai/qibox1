@@ -1,0 +1,56 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}充值{/block}
+{block name="content"}
+<div class="WapFormContainer">
+	<div class="tag">提现</div>
+	<form name="form1" method="post" action="">
+		<ul>
+			<ol>可用余额为:</ol>
+			<li><span class="b red">{$userdb.rmb}</span>元</li>
+		</ul>
+		<ul>
+			<ol>提现金额为:(<span class="red">*</span>)</ol>
+			<li><input type="text" name="money" placeholder="输入金额"/></li>
+		</ul>
+		<ul>
+			<ol>支付密码:(<span class="red">*</span>)</ol>
+			<li><input type="password" name="pwd" placeholder="输入密码"/></li>
+		</ul>
+		<dl>
+            <dt>请选择提现到哪个收款帐户:(<span class="red">*</span>)</dt>
+            <dd>
+{notempty name="$userdb.weixin_api"}
+				<div><input type="radio" name="banktype" value="weixin 微信钱包" checked="true">微信钱包</div>
+{/notempty}
+{volist name="listdb" id="rs"}
+              <div><input type="radio" name="banktype" value="{$rs}">{$rs}</div>
+{/volist}
+          	</dd>     
+      	</dl>
+      	<ul>
+			<ol>收款人真实姓名:(<span class="red">*</span>)</ol>
+			<li><input type="text" name="truename" placeholder="输入姓名"/></li>
+		</ul>
+		<ul>
+			<ol>联系电话:(选填)</ol>
+			<li><input type="text" name="tel" placeholder="输入电话"/></li>
+		</ul>
+		<dl>
+	        <dt>提现备注:(选填)</dt>
+	        <dd><textarea name="why" placeholder="输入备注内容"></textarea></dd>
+	    </dl>
+	    <div class='butter'>
+            <button type="submit">提交</button>
+            <input type="hidden" name="step" value="2">            
+        </div>
+        <dl>
+			<dt>备注</dt>
+			<dd>
+			  	<div>1.提现金额将会被冻结不可用.</div>
+				<div>2.资料提交后,管理员需要1-2天时间审核处理,请耐心等待.</div>
+		  	</dd>          
+        </dl>
+	</form>
+</div>
+{/block}

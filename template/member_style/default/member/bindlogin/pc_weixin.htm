@@ -1,0 +1,42 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}绑定微信登录{/block}
+{block name="content"}
+{include file="bindlogin/menu"}
+<div class="MainCont mtop10">
+	<div class="head"><div class="tag">绑定微信登录</div></div>
+    <div class="cont">
+    	<div class="Showpage">
+		{notempty name='$userdb.weixin_api'}<div style="color:red;padding:10px;">你当前的帐号已经绑定过微信登录了,你也可以重新绑定其它微信帐号</div>{/notempty}
+		<div style="color:red;padding:10px;">{notempty name='$userdb.weixin_api'}你也可以用微信扫描下方二维码重新绑定{else /}请用微信扫描下方二维码立即绑定{/notempty}</div>
+        <img width="250" src="{:get_qrcode($url)}" />
+		</div>
+    </div>
+</div>
+<div class="MainCont mtop10">
+	<div class="head">
+    	<div class="tag">说明</div>
+    </div>
+    <div class="cont">
+    	<ul class="aboutnote">
+        	<li>1、如果你的微信之前绑定了其它帐号的话,其它帐号将不能再用此微信登录,一个微信只能对应绑定一个帐号。</li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+function countSecond(){
+	$.get("{:urls('ckbind')}?wxid={$userdb.weixin_api}&"+Math.random(), function(res){
+		if(res.code==0){
+			layer.alert('微信登录绑定成功');
+			//window.location.reload();
+		}else{
+			setTimeout("countSecond()",2000);
+		}
+	});	
+}
+countSecond()
+</script>
+
+
+{/block}

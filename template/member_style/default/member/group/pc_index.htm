@@ -1,0 +1,62 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}升级会员等级{/block}
+{block name="content"}
+<style>
+.fa-shopping-cart{background:#F60;color:#FFF;padding:5px 6px;}
+.fa-shopping-cart:before{padding-right:3px;}
+.fa-shopping-cart:hover{background:#F30;color:#FFF;}
+</style>
+<div class="MainCont">
+	<div class="head">
+    	<div class="tag">
+        	使用积分购买级别,从购买之日起，有效期为<span class="b red">{$webdb.group_expire_data}</span>天,你现在的级别是<span class="b blue">“{$userdb.groupid|getGroupByid}”</span>
+        </div>
+    </div>
+    <div class="cont">
+
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="ListTable">
+          
+		  <tr>
+            <th width="20%">相关说明</th>
+{volist name="groupdb" id="rs"}
+              <th>{$rs.title}</th>
+{/volist}
+
+          </tr>
+
+          <tr>
+            <td>所需积分</td>
+{volist name="groupdb" id="rs"}
+           <td><span class="b red">{$rs.level}</span>个</td>
+{/volist}
+          </tr>
+
+          <tr> 
+
+            <td>&nbsp;</td>
+{volist name="groupdb" id="rs"}
+            
+			<td>
+			{gt name="rs.level" value="0"}<a href="{:urls('buy',['gid'=>$rs['id']])}" class='fa fa-shopping-cart'>购买</a>{/gt}
+			</td>
+{/volist}
+          </tr>
+
+        </table>
+
+    </div>
+</div>
+<div class="MainCont mtop10">
+	<div class="head">
+    	<div class="tag">相关信息</div>
+    </div>
+    <div class="cont">
+    	<ul class="aboutnote">
+        	<li>1.购买用户级别,需要积分购买,你当前拥有的积分数是<span class="b red">{$userdb.money}</span> 个</li>
+            <li> 2.如果你的积分不足,你可以先在线充值.<a href="{:purl('marketing/jifen/add')}"><span class="b red">在线充值</span></a></li>
+        </ul>
+    </div>
+</div>
+
+{/block}

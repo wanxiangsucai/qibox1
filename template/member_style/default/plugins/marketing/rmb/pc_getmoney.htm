@@ -1,0 +1,63 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}充值{/block}
+{block name="content"}
+<div class="MainCont">
+	<div class="head"><div class="tag">提现</div></div>
+    <div class="cont">
+        <form name="form1" method="post" action="">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
+          <tr>
+            <td class="tdL" style="width:180px;">可用余额为:</td>
+            <td class="tdR"><span class="b red">{$userdb.rmb}</span>元</td>
+          </tr>
+          <tr>
+            <td class="tdL">提现金额为:(<span class="red">*</span>)</td>
+            <td class="tdR"><input type="text" name="money" size="5"> 元</td>
+          </tr>
+          <tr>
+            <td class="tdL">支付密码:(<span class="red">*</span>)</td>
+            <td class="tdR"><input type="password" name="pwd" size="20"></td>
+          </tr>
+          <tr>
+            <td class="tdL">提现到哪个收款帐户:(<span class="red">*</span>)</td>
+            <td class="tdR">
+{notempty name="$userdb.weixin_api"}
+				<div><input type="radio" name="banktype" value="weixin 微信钱包" checked="true">微信钱包</div>
+{/notempty}
+
+{volist name="listdb" id="rs"}
+              <div><input type="radio" name="banktype" value="{$rs}">{$rs}</div>
+{/volist}
+            </td>
+          </tr>
+          <tr>
+            <td class="tdL">收款人真实姓名:(<span class="red">*</span>)</td>
+            <td class="tdR"><input type="text" name="truename"></td>
+          </tr>
+          <tr>
+            <td class="tdL">联系电话:(选填)</td>
+            <td class="tdR"><input type="text" name="tel"></td>
+          </tr>
+          <tr>
+            <td class="tdL">提现备注:(选填)</td>
+            <td class="tdR"><textarea name="why" cols="50" rows="5"></textarea></td>
+          </tr>
+<!---->
+          <tr>
+            <td class="tdL"><br/></td>
+            <td class="tdR">
+            	<input type="submit" name="Submit" value="提交">
+                    <input type="hidden" name="step" value="2">
+            </td>
+          </tr>
+        </table>
+        </form>
+        <ul class="aboutnote">
+        	<li>1.提现金额将会被冻结不可用.</li>
+            <li>2.资料提交后,管理员需要1-2天时间审核处理,请耐心等待.</li>
+                    
+        </ul>
+    </div>
+</div>
+{/block}

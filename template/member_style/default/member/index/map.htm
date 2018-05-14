@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh_CN">
+<head>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1; maximum-scale=1.0; user-scalable=no;" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black"  />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>会员操作平台</title>
+<link rel="stylesheet" type="text/css" href="__STATIC__/member/default/base/base.css">
+<style>
+/**右外边距适当调小***/
+.guide{margin:0 2px 10px 0;}
+.MainCont{margin:0 2px 10px 0;}
+body .Notes{margin:0 2px 15px 0;}
+</style>
+</head>
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/admin/default/jquery-1.2.6.min.js"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/member/default/blue/blue.js"></SCRIPT> 
+<body>
+
+
+<link rel="stylesheet" type="text/css" href="__STATIC__/member/default/blue/map/map.css">
+<div class="Notes">
+	<div style="position:relative;"><span>提示： </span>严禁发布违法言论,否则后果自负!! <a href='' style='color:red;display:block;width:180px; position:absolute;top:0;right:5px;'> </a></div>
+</div>
+<div class="MainCont">
+	<div class="head"><div class="tag">帐号信息</div></div>
+    <div class="cont">
+    	<div class="MyInfo">
+        	<div class="img"><a href="{:get_url('user',['uid'=>$userdb['uid']])}" target="_blank"><img onerror="this.src='__STATIC__/index/base/noface.gif'" src="{$user.icon|tempdir}" width="50" /></a></div>
+            <div class="info">
+            	<div class="base">
+                	<div class="name"><a href="{:get_url('user',['uid'=>$userdb['uid']])}" target="_blank">{$user.username}</a> ID:{$user.uid}</div>
+                    <div class="yzmob"><a href="{:urls('yz/mob')}">立即验证手机</a></div>
+                </div>
+                <div class="list1">
+                	Email地址:{$user.email}  注册时间:{$user.regdate|set_date}
+                </div>
+                <div class="list2">
+                	上次访问时间:{$user.lastvist|date="Y-m-d H:i",###}  上次访问IP:{$user.lastip}
+                </div>
+            </div>
+            <div class="adds">
+            	<div class="rmb"><a href="{:purl('marketing/rmb/add')}">人民币充值</a></div>
+                <div class="zf"><a href="{:purl('marketing/jifen/add')}">积分充值</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="MainCont">
+	<div class="head"><div class="tag tag2">买家提醒</div><div class="tag">卖家提醒</div></div>
+    <div class="cont">
+    	<div class="shopinfo">
+        	<ul class="list1">
+            	<li>最近三个月共<span>0</span>笔买入交易</li>
+                <li class="m">您有<span>0</span>笔交易尚未付款</li>
+                <li class="m">您有<span>0</span>笔交易等待评价</li>
+            </ul>
+            <ul class="list2">
+            	<li>最近三个月共<span>0</span>笔买出交易</li>
+                <li class="m">您有<span>0</span>个订单尚未发货</li>
+                <li class="m">您有<span>0</span>件商品库存为零</li>
+            </ul>
+            <ul class="list3">
+            	<li class="but1"><a href="{:urls('shop/content/index')}">管理我的商品</a></li>
+                <li class="but2"><a href="{:urls('shop/order/index')}">查看我的订单</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="MainCont">
+	<div class="head"><div class="tag">财务信息</div></div>
+    <div class="cont">
+    	<ul class="rmbinfo">
+		<li><div class="tg">可用积分:</div><div><span>{$userdb.money}</span>个</div><div class="rmb"><a href="{:purl('marketing/jifen/index')}">明细查询</a></div><div class="add"><a href="{:purl('marketing/jifen/add')}">充值</a></div></li>
+		
+        	<li><div class="tg">可用余额:</div><div><span>{$userdb.rmb}</span>元</div><div class="rmb"><a href="{:purl('marketing/rmb/index')}">明细查询</a></div><div class="add"><a href="{:purl('marketing/rmb/add')}">充值</a></div><div class="free"><a href="{:purl('marketing/rmb/getmoney')}">提现</a></div></li>
+            <li><div class="tg">冻结余额:</div><div><span>{$userdb.rmb_freeze}</span>元</div></li>
+            <li><div class="tg">提款银行:</div><div><a href="{:purl('marketing/rmb/edit')}">设置银行帐号</a></div></li>
+        </ul>
+    </div>
+</div>
+<div class="MainCont">
+	<div class="head"><div class="tag">安全信息</div></div>
+    <div class="cont">
+    	<ul class="rmbinfo">
+            <li><div class="tg">登录密码:</div><div><a href="{:urls('user/edit')}">修改个人信息</a></div></li>
+            <li><div class="tg">支付密码:</div><div><a href="{:purl('marketing/rmb/pwd')}">修改支付密码</a></div></li>
+        </ul>
+    </div>
+</div>
+<!---->
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function set_class(){
+	obj=document.body.getElementsByTagName("input");
+	for(var i=0;i< obj.length;i++ ){
+		if(obj[i].type=='submit'||obj[i].type=='button'){
+			obj[i].className='submit';
+		}else if (obj[i].type=='radio'||obj[i].type=='checkbox'){
+			obj[i].style.border='0px;';
+		}else if(obj[i].type=='text'){
+			obj[i].className='input_text';
+		}
+	}
+	obj=document.body.getElementsByTagName("textarea");
+	for(var i=0;i< obj.length;i++ ){
+		obj[i].className='input_textarea';
+	}
+	if(document.getElementById("top_menu")!=null)
+	{
+		obj2=get_obj('top_menu').getElementsByTagName("td");
+	
+		for(var i=0;i< obj2.length;i++ ){
+			s=obj2[i].innerHTML;
+			s=s.replace(/\[|\]/g, "");
+			obj2[0].innerHTML=s;	
+		}
+	}
+	
+}
+set_class();
+
+
+ 
+
+function setbodyheight(){
+	$(document).ready(function(){
+		var height = $(document.body).height();
+		if(height<700)height=700;
+		window.parent.document.getElementById('win').style.height= height+'px';
+	});
+}
+window.setInterval('setbodyheight()',500);
+//-->
+</SCRIPT>
+
+
+
+</body>
+</html>

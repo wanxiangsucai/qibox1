@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>个人中心</title>
+<meta http-equiv="X-UA-Compatible" content="IE=8"><!-- 强制ie8,for 360 -->
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/pc_reset.css">
+<link rel="stylesheet" href="__STATIC__/icon/icon.css">
+<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+</head>
+<body>
+<link rel="stylesheet" href="__STATIC__/member/pcuser.css">
+<div class="TopContainer">
+	<div class="TopBox">
+		<div class="logo"><a href="/"><img src="__STATIC__/index/default/logo.png"></a></div>
+		<div class="MoreAct">
+			<a href="/" class="home">网站首页</a>			
+			{notempty name="userdb.uid"}
+			<a href="{:get_url('member')}" class='member'>会员中心</a> 
+			<a href="{:get_url('quit')}" class='quit'>退出</a>
+			{else /}
+			<a href="{:get_url('login')}" class='login'>登录</a> 
+			<a href="{:get_url('reg')}" class='reg'>注册</a>
+			{/notempty}
+		</div>
+	</div>
+</div>
+<div class="SideContainer">
+	<div class="BaseInfos">
+		<ul>
+			<ol>
+				<dl>
+					<dt>
+						<div><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></div>
+						<p>{$info.username}</p>
+						<button>{$info.groupid|getGroupByid}</button>
+					</dt>
+					<dd>
+						<h3>个人基本信息</h3>
+						<div>性别：{switch $info.sex}{case 1}男{/case}{case 2}女{/case}{default /}保密{/switch}</div>
+						<div>生日：{$info.bday}</div>
+						 
+						<div>联系QQ：{$info.oicq}</div>
+						<div>注册日期：{:date("Y-m-d H:i:s",$info.regdate)}</div>
+					</dd>
+				</dl>
+			</ol>
+			<li>
+				<dl>
+					<dt><span>个人财务相关信息</span></dt>
+					<dd>
+						<div>积分： <span>{$info.money} 个</span> </div>
+						<div>可用余额： <em>{$info.rmb} </em>元 </div>
+						<div>冻结余额：<em>{$info.rmb_freeze} </em>元</div>
+						 
+					</dd>
+				</dl>
+			</li>			
+		</ul>
+	</div>
+</div>
+<div class="SideContainer">
+	<div class="head"><i class="fa fa-exchange"></i>个人动态信息</div>
+	<div class="MoreCnt">
+		<div class="list1">最后登陆时间：{:date("Y-m-d H:i:s",$info.lastvist)}</div>
+
+		<div class="list1">最后登录IP：{$info.lastip}</div>
+
+
+	</div>
+</div>
+
+{if ($userdb.uid==$info.uid||$userdb.groupid==3)}
+<div class="SideContainer">
+	<div class="head"><i class="si si-lock"></i>我的私密资料</div>
+	<div class="MoreCnt">
+		<div class="list1">注册IP：{$info.regip}</div>
+		<div class="list1">真实姓名：{$info.truename}</div>
+		<div class="list1">身份证号码：{$info.idcard}</div>
+		<div class="list1">联系电话：{$info.mobphone}</div>
+		<div class="list1">联系地址：{$info.address}</div>
+		<div class="note">说明：以上私密资料只有本人与管理员才可查看,其它人无法查看!</div>
+	</div>
+</div>
+{/if}
+
+<div class="FootContainer">
+	Copyright@www.php168.com all rights reserved {$webdb.miibeian_gov_cn}<br/>
+	Powered by qibosoft Code © 2003-2018
+</div>
+<script>
+
+</script>
+</body>
+</html>

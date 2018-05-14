@@ -1,0 +1,34 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}修改订单{/block}
+
+{block name="content"}
+<link rel="stylesheet" type="text/css" href="/public/static/member/default/wap/post.css">
+<div class="FormContainer">
+    
+
+    	<form name="form1" method="post" action="?job=edit">
+
+<!----> 
+          <dl> 
+              <dt> 应付总额:</dt>
+              <dd><span class='input'><input type="text" name="totalmoney" style='width:156px;' value="90"></span> <span>元</span> </dd>
+          </dl>
+<!----> 
+			  
+          <dl> 
+              <dt>快递单号:</dt>
+              <dd><input type="text" name="emscode" size="50" value=""> 快递名称+单号 </dd>
+          </dl>
+        <div class='butter'>
+                <input type="submit" name="Submit" value="提交">
+                <input type="button" name="Submit2" onclick="window.location.href='?job=list'" value="返回">
+                <input type="hidden" name="step" value="2">
+                <input type="hidden" name="id" value="121">          
+        </div>
+
+        </form>
+
+</div>
+
+{/block}

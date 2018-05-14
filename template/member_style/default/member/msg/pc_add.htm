@@ -1,0 +1,39 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}短消息{/block}
+{block name="content"}
+{include file="msg/menu" /}
+<div class="MainCont mtop10">
+	<div class="head"><div class="tag">发短消息</div></div>
+    <div class="cont">
+    	<form name="form1" method="post" action="">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
+          <tr>
+            <td class="tdL">接收者:</td>
+            <td class="tdR"><input type="text" value="{$username}" name="touser"></td>
+          </tr>
+          <tr>
+            <td class="tdL">标题:</td>
+            <td class="tdR"><input type="text" name="title" size="70"></td>
+          </tr>
+          <tr>
+            <td class="tdL">内容:</td>
+            <td class="tdR"> 
+<textarea name="content" id="myEditor" style="width:650px;"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td class="tdL"><br/></td>
+            <td class="tdR">
+            	<input type="submit" name="Submit" value="提交">
+            </td>
+          </tr>
+         </table>
+         </form>
+    </div>
+</div>
+<div style="height:300px;"></div>
+
+
+
+{/block}

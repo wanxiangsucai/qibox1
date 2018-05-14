@@ -1,0 +1,237 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}我购买的商品{/block}
+{block name="content"}
+<div class="MainCont">
+	<div class="head"><div class="tag">编辑商品信息</div></div>
+    <div class="cont">
+	<form name="FORM" id="FORM" method="post" action="?action=postnew"  enctype="multipart/form-data">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
+          <tr>
+            <td class="tdL">商品名称:(<span class="red">*</span>)</td>
+            <td class="tdR"><input type="text" name="postdb[title]" class="text" placeholder="输入商品名称，仅限40字" value="" style="width:300px;" /></td>
+          </tr>
+          <tr>
+            <td class="tdL">所在区域(<span class="red">*</span>)</td>
+            <td class="tdR">
+<!---->
+<style>
+.ListArea:after{ content:''; display:block; width:100%; height:1px; clear:both;}
+.ListArea li{ float:left; padding-right:5px; width:80px;}
+.FormContainer dl dd .ListArea li select{ width:100%;}
+</style>
+			<ul class="ListArea">
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ul>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function choose_where(name,vals,sonval,checks){
+	$.get("/do/changearea.php?name="+name+"&vals="+ vals+"&sonval="+ sonval+"&"+Math.random(),function(d){
+		if(name=='area_id'){
+			$('.ListArea li').eq(0).html(d);
+			if(checks!=1){
+				$('.ListArea li').eq(1).html('');
+				$('.ListArea li').eq(2).html('');
+				$('.ListArea li').eq(3).html('');
+			}
+		}else if(name=='province_id'){
+			$('.ListArea li').eq(1).html(d);
+			if(checks!=1){
+				$('.ListArea li').eq(2).html('');
+				$('.ListArea li').eq(3).html('');
+			}
+		}else if(name=='city_id'){
+			$('.ListArea li').eq(2).html(d);
+			if(checks!=1){
+				$('.ListArea li').eq(3).html('');
+			}
+		}else if(name=='zone_id'){
+			$('.ListArea li').eq(3).html(d);
+		}
+	});
+}
+choose_where("area_id","1",'',1);
+choose_where("province_id","1","1",1);
+choose_where("city_id","1","",1);
+choose_where("zone_id","","",1);
+//-->
+</SCRIPT>
+			</td>
+          </tr>
+		  <tr>
+            <td class="tdL">商品价格：</td>
+            <td class="tdR"><input type="text" name="postdb[price]" class="text" placeholder="输入商品价格" value="" /> 元</td>
+          </tr>
+<!---->
+          <tr>
+            <td class="tdL">类型选择：</td>
+            <td class="tdR"><input type="radio" name="shoptypes[selecttype]" value="1" >启用 <input type="radio" name="shoptypes[selecttype]" value="0" checked>不启用 </td>
+          </tr>
+          <tr id="showselecttype">
+            <td class="tdL">综合类型：</td>
+            <td class="tdR">
+<style>
+.shop_type{
+	border:#DDD solid 1px;
+}
+.inputtext2{
+	width:70%;
+	border:#DDD solid 1px;
+}
+.inputtext3{
+	width:80%;
+	border:#DDD solid 1px;
+}
+.shop_type div.list ul,.shop_type div.list ul li div{
+	width:100%;
+	display: table;
+}
+.shop_type div.list ul{
+	border-top:#DDD solid 1px;
+}
+.shop_type div.list ul ol,.shop_type div.list ul li,.shop_type div.list ul li div span{
+	display: table-cell;
+	vertical-align:middle;
+	text-align:center;
+}
+.shop_type div.list ul.h{
+	background:#EFEFEF;
+	border-top:0;
+}
+.shop_type div.list ul ol{
+	width:40%;
+}
+.shop_type div.list ul li div{
+	border-top:#DDD solid 1px;
+}
+.shop_type div.list ul li div:nth-child(1){
+	border-top:0;
+}
+.shop_type div.list ul li div span{
+	width:30%;
+	border-left:#DDD solid 1px;
+	padding:5px 0 5px 0;
+}
+.shop_type div.list ul li div span:nth-child(1){
+	width:40%;
+}
+</style>
+			<div class="shop_type">
+				<div class="list">
+					<ul class="h">
+						<ol><input type="text" name="shoptypes[name1]" class='inputtext2' placeholder="填写类型1 比如：颜色" value=""/> <img src='../images/wap/menu_add1.gif' onClick="addShopType1()"/>
+						</ol>
+						<li>
+							<div>
+								<span><input type="text" name="shoptypes[name2]" class='inputtext3' placeholder="填写类型2 比如：尺寸" value=""/></span>
+								<span>价格(元)</span>
+								<span>库存量</span>
+							</div>
+						</li>
+					</ul>
+				</div>
+<!---->
+		<div class='list'><ul><ol><input type='text' name='shoptypes[type][0]' placeholder='填写颜色 比如：黑色' class='inputtext2'/> <img src='http://wx.php168.com/images/default/menu_add.gif' onClick="addShopType2(0)"/></ol><li><div><span><input type='text' name='shoptypes[type1][0][0]' placeholder='填写尺寸 比如：大码' class='inputtext3'/></span><span><input type='text' name='shoptypes[price][0][0]' class='inputtext3'/></span><span><input type='text' name='shoptypes[num][0][0]' class='inputtext3'/></span></div></li></ul></div><div class='list'><ul><ol><input type='text' name='shoptypes[type][1]' placeholder='填写颜色 比如：黑色' class='inputtext2'/> <img src='http://wx.php168.com/images/default/menu_add.gif' onClick="addShopType2(1)"/></ol><li><div><span><input type='text' name='shoptypes[type1][1][0]' placeholder='填写尺寸 比如：大码' class='inputtext3'/></span><span><input type='text' name='shoptypes[price][1][0]' class='inputtext3'/></span><span><input type='text' name='shoptypes[num][1][0]' class='inputtext3'/></span></div></li></ul></div><div class='list'><ul><ol><input type='text' name='shoptypes[type][2]' placeholder='填写颜色 比如：黑色' class='inputtext2'/> <img src='http://wx.php168.com/images/default/menu_add.gif' onClick="addShopType2(2)"/></ol><li><div><span><input type='text' name='shoptypes[type1][2][0]' placeholder='填写尺寸 比如：大码' class='inputtext3'/></span><span><input type='text' name='shoptypes[price][2][0]' class='inputtext3'/></span><span><input type='text' name='shoptypes[num][2][0]' class='inputtext3'/></span></div></li></ul></div>
+	</div>
+注：如果想删除商品类型1或类型2的相应项设置，只需要将对应项文本框的内容删除即可
+<script>
+function addShopType1(){
+	var list1=$('.shop_type').children().length-1;
+	var ListType1='<div class="list"><ul><ol><input type="text" name="shoptypes[type]['+list1+']" class="inputtext2"/> <img src="http://wx.php168.com/images/default/menu_add.gif" onClick="addShopType2('+list1+')"/></ol><li><div><span><input type="text" name="shoptypes[type1]['+list1+'][0]" class="inputtext3"/></span><span><input type="text" name="shoptypes[price]['+list1+'][0]" class="inputtext3"/></span><span><input type="text" name="shoptypes[num]['+list1+'][0]" class="inputtext3"/></span></div></li></ul></div>';
+	$(".shop_type").append(ListType1);
+}
+function addShopType2(num){
+	var thisobj=$('.shop_type').children().eq(num+1);
+	var list2=thisobj.find('li').children().length;
+	var ListType2='<div><span><input type="text" name="shoptypes[type1]['+num+']['+list2+']" class="inputtext3"/></span><span><input type="text" name="shoptypes[price]['+num+']['+list2+']" class="inputtext3"/></span><span><input type="text" name="shoptypes[num]['+num+']['+list2+']" class="inputtext3"/></span></div>';
+	thisobj.find('li').append(ListType2);
+}
+function ch_selectstyles(){
+	var selectstyles=$("input[name='shoptypes[selecttype]']:checked").val();
+	if(selectstyles==1){
+		$('#showselecttype').show();
+	}else{
+		$('#showselecttype').hide();
+	}
+}
+ch_selectstyles();
+$("input[name='shoptypes[selecttype]']").click(function(){
+	ch_selectstyles();
+});
+</script>
+		    </td>
+          </tr>
+          <tr>
+            <td class="tdL">图片：<img src='http://wx.php168.com/images/default/menu_add.gif' onClick="addpics()"/></td>
+            <td class="tdR" id="ListPics">
+<!---->	
+<div style='float:left;'><input  style='width:300px;' type='text' name='photodb[0]' id='out_url0' placeholder='请上传图片'/></div><div style='float:left;padding:2px 0 0 5px;'><iframe frameborder=0  scrolling=no src='http://wx.php168.com/do/upfile.php?fn=upfile&dir=qb_shop_/12&label=out_url0' style='width:220px;height:28px;'></iframe></div><div style='clear:both;'></div>	
+<script>
+function addpics(){	
+	var listpicnum=$('#ListPics').children().length; 
+	var Listpichtml="<div style='float:left;'><input class='upfile' type='text' name='photodb["+listpicnum+"]' id='out_url"+listpicnum+"' placeholder='请上传图片' style='width:300px;'/></div><div style='float:left;padding:2px 0 0 5px;'><iframe frameborder=0  scrolling=no src='http://wx.php168.com/do/upfile.php?fn=upfile&dir=qb_shop_/12&label=out_url"+listpicnum+"' style='width:220px;height:28px;'></iframe></div><div style='clear:both;'></div>";
+	$("#ListPics").append(Listpichtml);
+}
+</script>		
+		    </td>
+          </tr>
+          <tr style="display:none;">
+            <td class="tdL">赠送积分:</td>
+            <td class="tdR"><input type="text" name="postdb[money]" class="text" value=""/>个  
+( 客户在线成功付款则赠送相应的积分,
+<!---->
+将从你的帐户中扣除
+<!---->
+)
+		    </td>
+          </tr>
+<!---->
+          <tr style="display:none;">
+            <td class="tdL">标签:</td>
+            <td class="tdR"><input type="text" name="postdb[keywords]" class="text" value=""/> (多个用空格隔开)</td>
+          </tr>
+<!---->
+          <tr>
+            <td class="tdL">分销提成：</td>
+            <td class="tdR">1层客户<input type='text' class='text' name='postdb[scalemoney_1]'  style='width:40px;' value=''>元 　
+		 2层客户<input type='text' class='text' name='postdb[scalemoney_2]'  style='width:40px;' value=''>元 　
+		 3层客户<input type='text' class='text' name='postdb[scalemoney_3]'  style='width:40px;' value=''>元 （留空或为0则以系统为标准）
+		    </td>
+          </tr>
+<!---->
+          <tr>
+            <td class="tdL">市场价格：</td>
+            <td class="tdR"><input   type='text' class='text' name='postdb[market_price]' id='atc_market_price' style='width:100px;' value=''><span class='units'>元</span></td>
+          </tr>
+          <tr>
+            <td class="tdL">型号：</td>
+            <td class="tdR"><input   type='text' class='text' name='postdb[shoptype]' id='atc_shoptype' style='width:100px;' value=''><span class='units'></span></td>
+          </tr>
+          <tr>
+            <td class="tdL">库存量：</td>
+            <td class="tdR"><input   type='text' class='text' name='postdb[storage]' id='atc_storage' style='width:50px;' value='999'><span class='units'></span></td>
+          </tr>
+          <tr>
+            <td class="tdL">商品介绍：</td>
+            <td class="tdR"><script type='text/javascript'>loadBaiduEditorJs();</script>
+			<textarea name='postdb[content]' id='atc_content' style='width:600px;'></textarea> 
+			</td>
+          </tr>
+          <tr>
+            <td class="tdL"><br/></td>
+            <td class="tdR">
+				<input type="submit" name="Submit"  value="提 交"/>
+				<input type="hidden" name="fid" value="12"/>
+				<input type="hidden" name="id" value="0"/>
+		    </td>
+          </tr>
+	   </table>
+	</form>
+	</div>
+</div>
+
+
+{/block}

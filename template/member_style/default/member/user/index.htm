@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>个人信息</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<link rel="stylesheet" href="__STATIC__/css/base.css">
+	<link rel="stylesheet" href="__STATIC__/mui/css/mui.min.css">
+	<link rel="stylesheet" href="__STATIC__/icon/icon.css">
+	<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+	<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
+</head>
+<body>
+<link rel="stylesheet" href="__STATIC__/member/user.css">
+<div class="BaseInfos">
+	<ul>
+		<ol><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></ol>
+		<li>
+			<div>{$info.username} ({$info.groupid|getGroupByid})</div>
+			<p>注册日期 {$info.regdate|set_date}</p>
+		</li>
+	</ul>
+</div>
+<div class="OtherInfos">
+	<ul>
+{notempty name="info.yz"}
+		<li>
+			<div><i class="si si-user-following yz"></i></div>
+			<span>已审核</span> 
+		</li>
+{else /}
+		<li>
+			<div><i class="si si-user-unfollow nuyz"></i></div>
+			<span>未审核</span> 
+		</li>	
+{/notempty}
+		<li class="money">
+			<div><i class="fa fa-rmb"></i></div>
+			<span>余额{$info.rmb}元</span> 
+		</li>
+		<li>
+			<div><i class="fa fa-calendar-check-o"></i></div>
+			<span>签到</span> 
+		</li>		
+	</ul>
+</div>
+<div class="SideInfos">
+	<h3><i class="fa fa-user"></i>个人基本信息</h3>
+	<ul><ol>帐号</ol><li>{$info.username}</li></ul>
+	<ul><ol>昵称</ol><li>{$info.nickname}</li></ul>
+	<ul><ol>UID</ol><li>{$info.uid}</li></ul>
+	<ul><ol>性别</ol><li>{switch $info.sex}{case 1}男{/case}{case 2}女{/case}{default /}保密{/switch}</li></ul>
+	<ul><ol>生日</ol><li>{$info.bday}</li></ul>
+	<ul><ol>注册日期</ol><li>{:date("Y-m-d H:i:s",$info.regdate)}</li></ul>
+</div>
+<div class="SideInfos">
+	<h3><i class="fa fa-exchange"></i>个人动态信息</h3>
+	<ul><ol>最后登陆时间</ol><li>{:date("Y-m-d H:i:s",$info.lastvist)}</li></ul>
+	<ul><ol>最后登录IP</ol><li>{$info.lastip}</li></ul>
+</div>
+{if ($userdb.uid==$info.uid||$userdb.groupid==3)}
+<div class="SideInfos">
+	<h3><i class="si si-lock"></i>我的私密资料</h3>
+	<ul><ol>注册IP</ol><li>{$info.regip}</li></ul>
+	<ul><ol>真实姓名</ol><li>{$info.truename}</li></ul>
+	<ul><ol>身份证号码</ol><li>{$info.idcard}</li></ul>
+	<ul><ol>联系电话</ol><li>{$info.mobphone}</li></ul>
+	<ul><ol>联系地址</ol><li>{$info.address}</li></ul>
+	<div class="note">说明：以上私密资料只有本人与管理员才可查看,其它人无法查看!</div>	
+</div>
+{/if}
+</body>
+</html>

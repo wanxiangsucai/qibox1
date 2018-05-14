@@ -1,0 +1,30 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}平台结算帐号设置{/block}
+{block name="content"}
+<div class="WapFormContainer">
+	<div class="tag">支付密码设置</div>
+	<form name="form1" method="post" action="">
+		<ul>
+			<ol>新的支付密码:</ol>
+			<li><input type="password" name="pay_pwd" placeholder="输入新密码"/></li>
+		</ul>
+		<ul>
+			<ol>重复输入密码:</ol>
+			<li><input type="password" name="pay_pwd2" placeholder="重复新密码"/></li>
+		</ul>
+		<ul>
+			<ol>旧的支付密码:</ol>
+			<li><input type="password" name="old_pwd" placeholder="输入旧密码"/></li>
+		</ul>
+		<div class='butter'><button type="submit">提交</button></div>	
+		<dl>
+			<dt>备注:</dt>
+			<dd>
+			  	<div>1.支付密码很重要,涉及到你的人民币消费与取现等相关操作.请尽量不要跟登录密码一样.</div>
+			  	<div>2.除首次设置外,今后更改支付密码需要输入原密码,如果忘记原密码,请联系管理员!</div>
+		  	</dd>          
+	    </dl>
+	</form>
+</div>
+{/block}

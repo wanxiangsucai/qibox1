@@ -1,0 +1,51 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}我购买的商品{/block}
+{block name="content"}
+<link rel="stylesheet" href="__STATIC__/css/pcorder.css">
+{volist name="listdb" id="rs"}
+<div class="ListOrder">
+  <div class="company">
+    <span>{$rs.create_time}</span>
+    <a  target="_blank" href="{:get_url('user',"uid=$rs[shop_uid]")}">
+      <em>
+        <img src="{$rs.shop_uid|get_user_icon}" onerror="this.src='__STATIC__/index/base/noface.gif'"/></em>{$rs.shop_uid|get_user_name}</a>
+  </div>
+  <ul class="orderinfo">
+    <li class="shops">
+{volist name="rs.shop_db" id="vs"}
+		<div class='list'>
+			<div class='listtable'>
+			  <div class='img'>
+				<a href="{:iurl('content/show',['id'=>$vs['id']])}" target="_blank"><img src="{$vs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
+			  </div>
+			  <div class='t'>
+				<a href="{:iurl('content/show',['id'=>$vs['id']])}" target="_blank">{$vs.title}</a></div>
+			  <div class='price'>
+				<s>&yen;{$vs._price}</s>
+				<span>&yen;{$vs._price}</span></div>
+			  <div class='num'>X {$vs._num}</div></div>
+		  </div>
+{/volist}
+    </li>
+    <li class="totalmoney">&yen;{$rs.totalmoney}</li>
+    <li class="state">
+      <div>{eq name="$rs.pay_status" value="1"}
+  已付款 
+{else /}
+ <a href="{:urls('pay',['id'=>$rs['id']])}" title="点击在线支付">未付款</a>
+{/eq}</div>
+      <div></div>
+    </li>
+    <li class="action">
+      <a href="{:urls('show',['id'=>$rs['id']])}">查看</a>
+      <span style='display:;'>
+        <a href="{:urls('edit',['id'=>$rs['id']])}">修改</a></span>
+       
+    </li>
+  </ul>
+  <div class="otheraction">订单号：{$rs.order_sn}</span></div>
+</div>
+{/volist}
+<div class="OrderPage">{$pages}</div>
+{/block}

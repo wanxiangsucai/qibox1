@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black"  />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>wap会员中心</title>
+<link rel="stylesheet" type="text/css" href="__STATIC__/member/default/wap/global.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/member/default/wap/wap.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/wapmember.css">
+{block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
+{block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>{/block}
+{block name="head_layer_js"}<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>{/block}
+</head>
+<body>
+<header>
+	<div class="home"><a href="/" class="si si-home"> 首页</a></div>
+    <div class="web">{block name="title"}会员中心{/block}</div>
+    <div class="member"><a href="/member.php" class="fa fa-user-circle"></a></div>
+</header>
+{// 主体内容}
+{block name="content"}
+
+{/block}
+<div class="CopyRight">
+  <p>@{$webdb.webname} 版权所有</p>
+  <p>{$webdb.miibeian_gov_cn}</p>
+</div>
+{include file="index@footmenu" /}
+</body>
+</html>

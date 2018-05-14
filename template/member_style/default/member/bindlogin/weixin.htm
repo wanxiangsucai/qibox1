@@ -1,0 +1,58 @@
+{extend name="$member_style_layout" /}
+
+{block name="title"}绑定微信登录{/block}
+{block name="content"}
+{include file="bindlogin/menu"}
+<script>$('.fa-mobile-phone').addClass('blue');</script>
+<div class="MainCont">
+	<div class="head"><div class="tag">绑定微信登录</div></div>
+    <div class="cont">
+    	<div class="Showpage">
+        {notempty name='$userdb.weixin_api'}<div style="color:red;padding:10px;">你当前的帐号已经绑定过微信登录了,你也可以重新绑定其它微信帐号</div>{/notempty}
+        <input onclick="window.location.href='{$url}'" type="button" name="Submit" value="{notempty name='$userdb.weixin_api'}重新绑定{else /}立即绑定{/notempty}">
+		</div>
+    </div>
+</div>
+<div class="MainCont mtop10">
+	<div class="head">
+    	<div class="tag">说明</div>
+    </div>
+    <div class="cont">
+    	<ul class="aboutnote">
+        	<li>1、如果你的微信之前绑定了其它帐号的话,其它帐号将不能再用此微信登录,一个微信只能对应绑定一个帐号。</li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+function get_code_num(type){
+	var to='';
+	var obj = $(".yzuserfrom input[name='"+type+"']");
+	if(type=='mobphone'){
+		to = obj.val();
+		if(to==''){
+			obj.focus();
+			layer.msg('请先输入手机号码');
+			return false;
+		}
+	}else if(type=='email'){
+		to = obj.val();
+		if(to==''){
+			obj.focus();
+			layer.msg('请先输入邮箱');
+			return false;
+		}
+	}
+	layer.msg('请稍候,系统正在发送验证码!',{time:3000});
+	$.get("{:urls('getnum')}?type="+type+'&to='+ to +'&'+Math.random(),function(res){
+		layer.close();
+		if(res.code==0){
+			layer.alert('验证码已成功发出,请耐心等候,注意查收!');
+		}else{
+			layer.alert(res.msg);
+		}			
+	});
+}
+</script>
+
+{/block}
