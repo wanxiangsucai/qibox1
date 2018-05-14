@@ -1,0 +1,10 @@
+\thinkphp\library\think\Template.php
+修改函数parseTemplateFile($template)
+
+
+\thinkphp\library\think\db\Query.php
+1561行,解决一个BUG
+
+
+library\think\Model.php
+1721行,解决指针不在首位的问题
