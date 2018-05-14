@@ -1,0 +1,68 @@
+{extend name="$auto_tpl_base_layout" /}
+
+{block name="title"}
+内容页
+{/block}
+
+{block name="content"}
+<div class="mui-card">
+				<div class="mui-card-content">
+
+                                {empty name="form_items"}
+                                    {notempty name="empty_tips"}
+                                    <div class="form-empty">
+                                        <p class="text-center text-muted empty-info">
+                                            <i class="fa fa-database"></i> {$empty_tips}<br>
+                                        </p>
+                                    </div>
+                                    {/notempty}
+                                {else /}
+
+								<div class="mui-card-header mui-card-media">
+					<img src="{$info.icon|get_user_icon}" />
+					<div class="mui-media-body">
+						发布者：{$info.uid|get_user_name}
+						<p>发表于 {$info.create_time|date="y-m-d H:i:s",###}</p>
+					</div>
+					 
+				</div>
+                                    {volist name="form_items" id="form"}
+                                        {switch name="form.type"}
+
+                                            {case value="image"}
+                                                {// 单图片上传 }
+                                                {include file="./application/common/builder/showpage/items/image.html" type='' /}
+                                            {/case}
+
+                                            {case value="images"}
+                                                {// 多图片上传 }
+                                                {include file="./application/common/builder/showpage/items/images.html" type='' /}
+                                            {/case}
+
+                                            {case value="jcrop"}
+                                                {// 图片裁剪 }
+                                                {include file="./application/common/builder/showpage/items/jcrop.html" type='' /}
+                                            {/case}
+
+											{case value="textarea"}
+                                                {// 多行文本 }
+                                                {include file="./application/common/builder/showpage/items/content.html" type='' /}
+                                            {/case}
+											{case value="ueditor"}
+                                                {// 百度编辑器  }
+                                                {include file="./application/common/builder/showpage/items/content.html" type='' /}
+                                            {/case}
+
+                                            {default/}
+                                            
+												{// 单行文本 }
+                                                {include file="./application/common/builder/showpage/items/text.html" type='' /}
+												
+                                        {/switch}
+                                    {/volist}
+                                {/empty}
+                                </div>
+			</div>
+ 
+
+{/block}

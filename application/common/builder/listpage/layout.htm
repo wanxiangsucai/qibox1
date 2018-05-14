@@ -1,0 +1,84 @@
+{extend name="$auto_tpl_base_layout" /}
+
+{block name="title"}
+列表页
+{/block}
+
+{block name="content"}
+    
+			<div class="mui-content-padded">
+	 
+				<h5 style="margin-top: 10px;">请选择分类：</h5>	
+{volist name='m_list' id='vo'}
+				 
+				<a href="{:auto_url('index',['mid'=>$key])}"><button type="button" class="mui-btn {eq name="key" value='$mid'} mui-btn-primary{/eq}">
+					{$vo}
+				</button></a>
+				
+{/volist}
+			 
+				 
+		
+			</div>
+				
+                                    {volist name="row_list" id="row"}
+									<div class="mui-card">
+									
+									  <div class="mui-card-header mui-card-media">
+					<img src="{$row.uid|get_user_icon}" />
+					<div class="mui-media-body">
+						{$row.uid|get_user_name}
+						<p>发表于 {$row.create_time|date='Y-m-d H:i:s',###}</p>
+					</div>
+					<!--<img class="mui-pull-left" src="../images/logo.png" width="34px" height="34px" />
+					<h2>小M</h2>
+					<p>发表于 2016-06-30 15:30</p>-->
+				</div>
+									<div class="mui-card-content">
+									
+                                        {volist name="columns" id="column"}
+                                        
+                                      
+
+{php}
+if(is_array($column['type']) || $column['type'] == '' || $column['type'] == 'btn' || $column['type'] == 'text'){
+$value = $row[$column['name']];
+}else{
+$value = $row[$column['name'].'__'.$column['type']];
+}
+//if($i==count($columns))break;
+{/php}
+
+{php}
+if(in_array($column['type'],['picture','textarea','ueditor'])){
+{/php}
+                                <div class="mui-card-content">
+								<div class="mui-card-content-inner">
+								{$value}
+								</div>
+								</div>
+{php}
+}else{
+$title = $columns[$i-1]['title'];
+{/php}
+      <div class="mui-card-header"><p>{$title}</p><a href="{:iurl('show','id='.$row[id])}">{$value}</a></div>
+{php}
+}
+{/php}
+      
+                                        
+										
+										{/volist}
+                                     </div></div>
+                                    {/volist}
+
+                                    
+ 
+					 {// 分页 }
+ 					{notempty name="pages"}
+                             {$pages}
+                     {/notempty}
+
+			
+ 
+{/block}

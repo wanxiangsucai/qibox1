@@ -1,0 +1,225 @@
+<?php
+namespace app\common\controller\index;
+
+use app\common\controller\IndexBase;
+use app\common\traits\LabelEdit;
+
+
+abstract class Label extends IndexBase
+{
+    use LabelEdit;
+    protected $tab_ext ;
+    protected $form_items;
+    protected $model;                 //内容模型
+    protected $m_model;            //模块模型
+    protected $s_model;              //栏目模型
+    
+    protected function _initialize()
+    {
+        parent::_initialize();
+        if ($this->admin !== true) {
+            $this->error('你没权限!');
+        }
+        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        $dirname = $array[0][1];        
+        $this->model = get_model_class($dirname,'content');
+        $this->m_model = get_model_class($dirname,'module');
+        $this->s_model = get_model_class($dirname,'sort');
+        //底部按钮
+        $this->tab_ext = [
+                'addbtn'=>'<a href="'.auto_url('index/label/index',$this->get_parameter()).'"><button  type="button" class="btn btn-default">更换其它模块</button></a>
+                                   <button onclick="parent.layer.close(parent.layer.getFrameIndex(window.name));parent.location.reload();" type="button" class="btn btn-danger">关闭当前窗口</button>',
+                'hidebtn'=>'back',
+        ];
+    }
+    
+    
+    /**
+     * 通用标签设置
+     * @return mixed|string
+     */
+    public function tag_set()
+    {
+        if($this->request->isPost()){
+            $this->setTag_value("app\\".config('system_dirname')."\\model\\Content@labelGetList");
+            $_array = $this->get_post_data();
+            $this->save($_array);
+        }
+        
+        $info = $this->getTagInfo();
+        
+        if(empty($info) || empty($info['view_tpl'])){
+            //$info['view_tpl'] = $this->get_cache_tpl();
+        }
+        
+        $mid = input('mid');
+        if(empty($mid)&&!empty($info['cfg'])){
+            $mid = unserialize($info['cfg'])['mid'];
+        }
+        $mid || $mid=$this->m_model->getId();
+        
+        $url_array = $this->get_parameter();
+        //模型分类菜单
+        $nav = [];
+        foreach ($this->m_model->getTitleList() AS $key=>$value){
+            $nav[$key]=[
+                    'title'=>$value,
+                    'url'=>url('tag_set',array_merge($url_array,['mid'=>$key])),
+            ];
+        }
+        $this->tab_ext['nav'] =[
+                $nav,
+                $mid,
+        ];
+        
+        $cfg = cache('tag_default_'.input('name'));
+        
+        $this->form_items = [
+                ['hidden','mid',$mid],
+                ['hidden','type',config('system_dirname')],
+                ['radio','fidtype','栏目范围','',['不限','指定栏目','跟随栏目动态变化(仅适合列表页、内容页)'],0],
+                ['checkboxtree','fids','指定栏目','不选择将显示所有栏目，要显示子栏目的话，必须全选中',$this->s_model->getTreeTitle(0,$mid,false)],
+                ['number','rows','显示条数','',5],
+                ['number','leng','标题显示字数','',70],
+                ['number','cleng','内容显示字数','',250],
+                ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
+                ['radio','status','范围限制','',['不限','已审','推荐'],0],
+                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
+                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
+                ['radio','onlymy','是否只调用自己的','不适合在前台,更适合在会员中心调用',['否','是'],'0'],
+                ['text', 'where', 'where查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5又或者fid|in|2,4,6@uid|not in|5,8',$cfg['where']],
+                ['text', 'whereor', 'whereOr查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5',$cfg['whereor']],
+                ['textarea','view_tpl','模板代码','',$info['view_tpl']],
+                ['button', 'choose_style', [
+                        'title' => '点击选择模板',
+                        'icon' => 'fa fa-plus-circle',
+                        'href'=>url('index/label/choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
+                        //'data-url'=>url('choose_style',['type'=>'images']),
+                        'class'=>'form-btn btn btn-primary pop',
+                    ],
+                        'a'
+                ],
+        ];
+        
+        if($info['if_js']){ //APP站外调用,不使用模板,只要JSON数据
+            $num = count($this->form_items);
+            unset($this->form_items[$num-2] , $this->form_items[$num-1]);            
+        }
+        
+        $this->tab_ext['trigger'] = [
+                ['fidtype', '1', 'fids'],
+        ];
+        
+        return $this->editContent(unserialize($info['cfg']));
+    }
+    
+    /**
+     * 内容页设置标签模板
+     */
+    public function showpage_set(){
+        if($this->request->isPost()){
+            $this->setTag_value("@");
+            $_array = $this->get_post_data();
+            $this->save($_array);
+        }
+        $info = $this->getTagInfo();
+        
+        if(empty($info) || empty($info['view_tpl'])){
+            //$info['view_tpl'] = $this->get_showpage_cache_tpl();
+        }
+        
+        $this->form_items = [
+                ['hidden','type','showpage_set_'.config('system_dirname')],
+                ['textarea','view_tpl','模板代码','',$info['view_tpl']],
+                ['button', 'choose_style', [
+                        'title' => '点击选择模板',
+                        'icon' => 'fa fa-plus-circle',
+                        'href'=>url('index/label/choose_style',['type'=>'images','name'=>input('name'),'tpl_cache'=>'tags_showpage_tpl_'.input('pagename')]),
+                        //'data-url'=>url('choose_style',['type'=>'images']),
+                        'class'=>'form-btn btn btn-primary pop',
+                        ],
+                        'a'
+                ],
+        ];
+        return $this->editContent(unserialize($info['cfg']));
+    }
+    
+    /**
+     * 列表页标签设置
+     * @return mixed|string
+     */
+    public function listpage_set(){
+        
+        if($this->request->isPost()){
+            $this->setTag_value("@");
+            $_array = $this->get_post_data();
+            $this->save($_array);
+        }
+        $info = $this->getTagInfo();
+        
+        if(empty($info) || empty($info['view_tpl'])){
+            //$info['view_tpl'] = $this->get_listpage_cache_tpl();
+        }
+        
+
+        $this->form_items = [
+                //['hidden','div_width',input('div_width')],
+                //['hidden','div_height',input('div_height')],
+                ['hidden','type','listpage_set_'.config('system_dirname')],
+                ['number','rows','显示条数','',5],
+				['number','cleng','内容显示字数','',250],
+                ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
+                ['radio','status','范围限制','',['不限','已审','推荐'],0],
+                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
+                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
+                ['text', 'where', 'where查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5又或者fid|in|2,4,6@uid|not in|5,8'],
+                ['text', 'whereor', 'whereOr查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5'],
+                ['textarea','view_tpl','模板代码','',$info['view_tpl']],
+                ['button', 'choose_style', [
+                        'title' => '点击选择模板',
+                        'icon' => 'fa fa-plus-circle',
+                        'href'=>url('index/label/choose_style',['type'=>'title','name'=>input('name'),'tpl_cache'=>'tags_listpage_tpl_'.input('pagename')]),
+                        //'data-url'=>url('choose_style',['type'=>'images']),
+                        'class'=>'form-btn btn btn-primary pop',
+                        ],
+                        'a'
+                ],
+        ];        
+        return $this->editContent(unserialize($info['cfg']));
+    }
+    
+    private function get_showpage_cache_tpl(){
+        $_array = cache('tags_showpage_tpl_'.input('pagename'));
+        $_array && $code =trim($_array[input('name')]);
+        return $code;
+    }
+    
+    private function get_listpage_cache_tpl(){
+        $_array = cache('tags_listpage_tpl_'.input('pagename'));
+        $_array && $code =trim($_array[input('name')]);
+        return $code;
+    }
+    
+    private function get_cache_tpl(){
+        $_array = cache('tags_page_demo_tpl_'.input('pagename'));
+        $_array && $code =trim($_array[input('name')]['tpl']);
+        return $code;
+    }
+    
+
+
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

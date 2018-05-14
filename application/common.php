@@ -1,0 +1,2743 @@
+<?php
+// +----------------------------------------------------------------------
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: 流年 <liu21st@gmail.com>
+// +----------------------------------------------------------------------
+
+// 应用公共文件
+
+use app\common\model\Plugin;
+use app\common\model\Module;
+use app\common\model\User AS UserModel;
+use plugins\marketing\model\RmbConsume;
+use plugins\marketing\model\Moneylog;
+use think\Db;
+use think\Request;
+error_reporting(E_ERROR | E_PARSE );
+
+if (!function_exists('get_real_path')) {
+    /**
+     * 解决有的虚拟服务器不支持../这样的相对路径的问题
+     * @param unknown $path
+     * @return string
+     */
+    function get_real_path($path) {
+        if(!strstr($path,'..')){
+            return $path;
+        }
+        $path = str_replace('\\','/',$path);
+        $path = str_replace('//','/',$path);
+        $detail = explode('/',$path);
+        foreach($detail AS $key=>$value){
+            if($value=='.'||$value===''){
+                unset($detail[$key]);
+            }
+        }
+        $detail = array_values($detail);
+        $max = count($detail)-1;
+        for($i=$max;$i>=0;$i--){
+            if($detail[$i]=='..'){
+                unset($detail[$i]);
+                $j = $i-1;
+                if($detail[$j]=='..'){
+                    unset($detail[$j-1]);
+                    unset($detail[$j-2]);
+                    --$i;
+                    --$i;
+                }
+                unset($detail[$j]);
+                --$i;
+            }
+        }
+        return (substr($path,0,1)=='/'?'/':'').implode('/',$detail);
+    }
+}
+
+if (!function_exists('clear_js')) {
+    /**
+     * 过滤js内容
+     * @param string $str 要过滤的字符串
+     * @return mixed|string
+     */
+    function clear_js($str = '')
+    {
+        $search ="/<script[^>]*?>.*?<\/script>/si";
+        $str = preg_replace($search, '', $str);
+        return $str;
+    }
+}
+
+
+if (!function_exists('format_date')) {
+    /**
+     * 使用bootstrap-datepicker插件的时间格式来格式化时间戳
+     * @param null $time 时间戳
+     * @param string $format bootstrap-datepicker插件的时间格式 https://bootstrap-datepicker.readthedocs.io/en/stable/options.html#format
+     * @return false|string
+     */
+    function format_date($time = null, $format='yyyy-mm-dd') {
+        $format_map = [
+            'yyyy' => 'Y',
+            'yy'   => 'y',
+            'MM'   => 'F',
+            'M'    => 'M',
+            'mm'   => 'm',
+            'm'    => 'n',
+            'DD'   => 'l',
+            'D'    => 'D',
+            'dd'   => 'd',
+            'd'    => 'j',
+        ];
+
+        // 提取格式
+        preg_match_all('/([a-zA-Z]+)/', $format, $matches);
+        $replace = [];
+        foreach ($matches[1] as $match) {
+            $replace[] = isset($format_map[$match]) ? $format_map[$match] : '';
+        }
+
+        // 替换成date函数支持的格式
+        $format = str_replace($matches[1], $replace, $format);
+        $time = $time === null ? time() : intval($time);
+        return date($format, $time);
+    }
+}
+
+if (!function_exists('format_moment')) {
+    /**
+     * 使用momentjs的时间格式来格式化时间戳
+     * @param null $time 时间戳
+     * @param string $format momentjs的时间格式
+     * @return false|string
+     */
+    function format_moment($time = null, $format='YYYY-MM-DD HH:mm') {
+        $format_map = [
+            // 年、月、日
+            'YYYY' => 'Y',
+            'YY'   => 'y',
+//            'Y'    => '',
+            'Q'    => 'I',
+            'MMMM' => 'F',
+            'MMM'  => 'M',
+            'MM'   => 'm',
+            'M'    => 'n',
+            'DDDD' => '',
+            'DDD'  => '',
+            'DD'   => 'd',
+            'D'    => 'j',
+            'Do'   => 'jS',
+            'X'    => 'U',
+            'x'    => 'u',
+
+            // 星期
+//            'gggg' => '',
+//            'gg' => '',
+//            'ww' => '',
+//            'w' => '',
+            'e'    => 'w',
+            'dddd' => 'l',
+            'ddd'  => 'D',
+            'GGGG' => 'o',
+//            'GG' => '',
+            'WW' => 'W',
+            'W'  => 'W',
+            'E'  => 'N',
+
+            // 时、分、秒
+            'HH'  => 'H',
+            'H'   => 'G',
+            'hh'  => 'h',
+            'h'   => 'g',
+            'A'   => 'A',
+            'a'   => 'a',
+            'mm'  => 'i',
+            'm'   => 'i',
+            'ss'  => 's',
+            's'   => 's',
+//            'SSS' => '[B]',
+//            'SS'  => '[B]',
+//            'S'   => '[B]',
+            'ZZ'  => 'O',
+            'Z'   => 'P',
+        ];
+
+        // 提取格式
+        preg_match_all('/([a-zA-Z]+)/', $format, $matches);
+        $replace = [];
+        foreach ($matches[1] as $match) {
+            $replace[] = isset($format_map[$match]) ? $format_map[$match] : '';
+        }
+
+        // 替换成date函数支持的格式
+        $format = str_replace($matches[1], $replace, $format);
+        $time = $time === null ? time() : intval($time);
+        return date($format, $time);
+    }
+}
+
+if (!function_exists('get_file_name')) {
+    /**
+     * 根据附件id获取文件名
+     * @param string $id 附件id
+     * @return string
+     */
+    function get_file_name($id = '')
+    {
+        $name = model('admin/attachment')->getFileName($id);
+        if (!$name) {
+            return '没有找到文件';
+        }
+        return $name;
+    }
+}
+
+if (!function_exists('parse_name')) {
+    /**
+     * 字符串命名风格转换
+     * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
+     * @param string $name 字符串
+     * @param integer $type 转换类型
+     * @return string
+     */
+    function parse_name($name, $type = 0) {
+        if ($type) {
+            return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function($match){return strtoupper($match[1]);}, $name));
+        } else {
+            return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
+        }
+    }
+}
+
+if (!function_exists('hook_listen')) {
+      /**
+     * 监听标签的行为
+     * @param  string $tag    标签名称
+     * @param  mixed  $params 传入参数
+     * @param  mixed  $extra  额外参数
+     * @param  bool   $once   只获取一个有效返回值
+     * @return mixed
+     */
+    function hook_listen($tag = '', &$params = null, $extra = null, $once = false) {
+        return \think\Hook::listen($tag, $params, $extra, $once);
+    }
+}
+
+if (!function_exists('format_time')) {
+    /**
+     * 时间戳格式化
+     * @param string $time 时间戳
+     * @param string $format 输出格式
+     * @return false|string
+     */
+    function format_time($time = '', $format='Y-m-d H:i') {
+        return !$time ? '' : date($format, intval($time));
+    }
+}
+
+
+if (!function_exists('plugin_action_exists')) {
+    /**
+     * 检查插件控制器是否存在某操作
+     * @param string $name 插件名
+     * @param string $controller 控制器
+     * @param string $action 动作
+     * @return bool
+     */
+    function plugin_action_exists($name = '', $controller = '', $action = '')
+    {
+        $dir = '';
+        if (strpos($name, '/')) {
+            list($name, $controller, $action) = explode('/', $name);
+        }
+        if(strpos($controller,'.')){
+            list($dir,$controller) = explode('.', $controller);
+        }
+        $class = "plugins\\{$name}\\".ENTRANCE."\\". ($dir?"$dir\\":'') . format_class_name($controller);
+        return (method_exists($class, $action) ||method_exists($class, '_initialize'));
+    }
+}
+
+if (!function_exists('plugin_model_exists')) {
+    /**
+     * 检查插件模型是否存在
+     * @param string $name 插件名
+     * @return bool
+     */
+    function plugin_model_exists($name = '')
+    {
+        $class = "plugins\\{$name}\\model\\".format_class_name($name);
+        return class_exists($class);
+    }
+}
+
+
+
+if (!function_exists('downFile')) {
+    /**
+     * 下载远程文件
+     * @param unknown $url 远程文件网址
+     * @param string $filename 保存在空间上哪个目录
+     * @param number $type 下载方式
+     * @throws \Exception
+     * @return void|boolean
+     */
+    function downFile($url,$filename='',$type=0){
+        if($url==''){
+            return false;
+        }
+        if($type===1){
+            $fp_output = fopen($filename, 'w');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp_output);
+            curl_exec($ch);
+            curl_close($ch);
+            if(filesize($filename)>2){
+                return ;
+            }
+        }elseif($type===2){
+            ob_end_clean();
+            ob_start();
+            readfile($url);
+            $data=ob_get_contents();
+            ob_end_clean();
+            if($data!=''){
+                file_put_contents($filename,$data);
+                return ;
+            }
+        }
+        
+        if( copy($url,$filename) ){
+            return ;
+        }
+        
+        if(($data=file_get_contents($url))==false){
+//             $ch=curl_init();
+//             $timeout = 600;
+//             curl_setopt($ch,CURLOPT_URL,$url);
+//             curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+//             curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);//最长执行时间
+//             curl_setopt($ch,CURLOPT_TIMEOUT,$timeout);//最长等待时间
+//             $data=curl_exec($ch);
+//             curl_close($ch);
+            $data = http_curl($url);
+        }
+        if($data!=''){
+            write_file($filename,$data);
+        }
+    }
+}
+
+if (!function_exists('get_plugin_model')) {
+    /**
+     * 获取插件模型实例
+     * @param  string $name 插件名
+     * @return object
+     */
+    function get_plugin_model($name)
+    {
+        $class = "plugins\\{$name}\\model\\{$name}";
+        return new $class;
+    }
+}
+if (!function_exists('plugin_action')) {
+    /**
+     * 执行插件动作
+     * 也可以用这种方式调用：plugin_action('插件名/控制器/动作', [参数1,参数2...])
+     * @param string $name 插件名
+     * @param string $controller 控制器
+     * @param string $action 动作
+     * @param mixed $params 参数
+     * @return mixed
+     */
+    function plugin_action($name = '', $controller = '', $action = '', $params = [])
+    {
+        $dir = '';
+        if (strpos($name, '/')) {
+            $params = is_array($controller) ? $controller : (array)$controller;
+            list($name, $controller, $action) = explode('/', $name);
+        }
+        if (!is_array($params)) {
+            $params = (array)$params;
+        }
+        if(strpos($controller,'.')){
+            list($dir,$controller) = explode('.', $controller);
+        }
+        $class = "plugins\\{$name}\\".ENTRANCE."\\". ($dir?"$dir\\":'') . format_class_name($controller);
+        $obj = new $class;
+        
+        //反射，获取方法里边的参数
+        $_params = [];
+        if (!empty($params)) {
+            $_obj = new \ReflectionMethod($obj, $action);
+            $_array = $_obj->getParameters();
+            foreach($_array AS $value){
+                $_params[$value->name] = $params[$value->name];
+            }
+            
+            //类似给函数赋值一样，可以只给前面的赋值，后面的可以保留原值
+            if( end($_params)==''  ){
+                $ar = array_reverse($_params);
+                foreach($ar AS $key=>$value){
+                    if($value==''){
+                        unset($ar[$key]);
+                        break;
+                    }
+                }
+                $_params = array_reverse($ar);
+            }
+        }
+
+        //把插件的配置文件也像模块那样引入进去
+        if(is_file(ROOT_PATH."plugins/{$name}/config.php")){
+            $array = include(ROOT_PATH."plugins/{$name}/config.php");
+            config($array) ;
+        }
+        return call_user_func_array([$obj, $action], $_params);
+    }
+}
+
+if (!function_exists('full_url')) {
+    /**
+     * 补全缺少模块与控制器的URL
+     * @param string $url
+     * @return string
+     */
+    function full_url($url=''){
+        static $_m = null;
+        $_m===null && $_m = Request::instance()->dispatch();
+        $m = $_m['module'];
+        $detail = explode('/',$url);
+        if(count($detail)==1){
+            $url = $m[0] . '/' . $m[1] . '/' . $url;
+        }elseif(count($detail)==2){
+            $url = $m[0] . '/' . $url;
+        }
+        return $url;
+    }
+}
+
+if (!function_exists('urls')) {
+    /**
+     * 重写 url 对于缺少模块与控制器的URL地址,自动补上
+     * @param string $url
+     * @param string $vars
+     * @param string $suffix
+     * @param string $domain
+     * @return unknown
+     */
+    function urls($url = '', $vars = '', $suffix = true, $domain = false)
+    {
+        return url(full_url($url), $vars, $suffix, $domain);
+    }
+}
+
+if (!function_exists('auto_url')) {
+    /**
+     * 自适应插件或模块链接
+     * @param string $url
+     * @param string $vars
+     * @param string $suffix
+     * @param string $domain
+     * @return unknown
+     */
+    function auto_url($url = '', $vars = '', $suffix = true, $domain = false)
+    {
+        $detail = Request::instance()->dispatch();
+        if ($detail['module'][1]=='plugin' && $detail['module'][2]=='execute') {
+            return purl($url, $vars);
+        }else{
+            return url(full_url($url), $vars, $suffix, $domain);
+        }
+    }
+}
+
+if (!function_exists('purl')) {
+    /**
+     * 生成插件操作链接
+     * @param string $url 链接：插件名称/控制器/操作
+     * @param array $param 参数
+     * @param string $module 模块名，admin需要登录验证，index不需要登录验证
+     */
+    function purl($url = '', $param = [], $module = '')
+    {
+        $params = [];
+        if (strstr($url,'/')) {
+            $url = explode('/', $url);            
+            if( count($url)==3 ){
+                $params['plugin_name'] = $url[0];
+                $params['plugin_controller'] = $url[1];
+                $params['plugin_action'] = $url[2];                
+            }elseif(count($url)==2){
+                $params['plugin_name'] = input('route.plugin_name');
+                $params['plugin_controller'] = $url[0];
+                $params['plugin_action'] = $url[1];  
+            }
+        }else{
+            $params['plugin_name']    = input('plugin_name');
+            $params['plugin_controller'] = input('plugin_controller');            
+            $params['plugin_action'] = $url=='' ? input('plugin_action') : $url;
+        }
+        empty($param) && $param=[];
+        if (!is_array($param)) {
+            parse_str($param, $param);
+        }
+        // 合并参数
+        $params = array_merge($params, $param);
+        //没有特别指定的话，就进入相应的前台或后台
+        $module || $module = ENTRANCE;
+        $url = url($module .'/plugin/execute', $params);
+        if($module=='index' && ENTRANCE!='index'){
+            $url = str_replace(array('admin.php','member.php'), 'index.php', $url);
+        }elseif($module=='member' && ENTRANCE!='member'){
+            $url = str_replace(array('admin.php','index.php'), 'member.php', $url);
+        }
+        return $url;
+    }
+}
+
+
+if (!function_exists('iurl')) {
+    /**
+     * 强制使用前台URL地址,比如会员中心与后台是最常使用的.他们要访问前台内容
+     * @param string $url
+     * @param string $vars
+     * @param string $suffix
+     * @param string $domain
+     * @param string $type 频道或者是插件
+     * @return mixed
+     */
+    function iurl($url = '', $vars = '', $suffix = true, $domain = false , $type = '')
+    {
+        $detail = Request::instance()->dispatch();
+        
+        if($type==''){  //主要是标签那里使用,判断是频道还是插件
+            static $typedb = [];
+            $_detail = explode('/',$url);
+            if(count($_detail)==3){
+                $module = $_detail[0];
+                
+                if(empty($typedb[$module])){
+                    if(is_dir(APP_PATH.$module)){
+                        $typedb[$module] = 'module';
+                    }else{
+                        $typedb[$module] = 'plugin';
+                    }
+                }
+                
+                $type = $typedb[$module];
+            }
+        }
+        
+        if($type=='m'||$type=='module'){
+            $_url = url(full_url($url), $vars, $suffix, $domain);
+        }elseif($type=='plugin'){
+            $_url = purl($url, $vars, '');       
+        //是否在插件里
+        }elseif ($detail['module'][1]=='plugin' && $detail['module'][2]=='execute') {
+            //如果是index/xxx/xxx模块要特殊处理
+            $_url = preg_match('/^index\/([\w]+)\/([\w]+)/', $url) ? url($url, $vars, $suffix, $domain) : purl($url, $vars, 'index');
+        }else{
+            $_url = url(full_url($url), $vars, $suffix, $domain);
+        }
+        $url = str_replace(array('admin.php','member.php'), 'index.php', $_url);
+        if(!preg_match('/^index.php/', $url)){
+            //$url = '/index.php'.$url;
+        }
+        return $url;
+    }
+}
+
+if (!function_exists('murl')) {
+    //强制使用会员中心URL地址
+    function murl($url = '', $vars = '', $suffix = true, $domain = false,$type='')
+    {
+        $detail = Request::instance()->dispatch();
+        
+        if($type==''){
+            static $typedb = [];
+            $_detail = explode('/',$url);
+            if(count($_detail)==3){
+                $module = $_detail[0];
+                if(empty($typedb[$module])){
+                    if(is_dir(APP_PATH.$module)){
+                        $typedb[$module] = 'module';
+                    }else{
+                        $typedb[$module] = 'plugin';
+                    }
+                }
+                $type = $typedb[$module];
+            }
+        }
+        
+        if($type=='m'||$type=='module'){
+            $_url = url($url, $vars, $suffix, $domain);
+        }elseif($type=='p'||$type=='plugin'){
+            $_url = purl($url, $vars);
+        }
+        
+//         $_detail = explode('/',$url);
+//         if(count($_detail)==3){
+//             if($_detail[0]=='member'){
+//                 $_url = url($url, $vars, $suffix, $domain);
+//             }elseif($type=='p'){
+//                 $_url = purl($url, $vars);
+//             }
+//         }
+        
+        if(empty($_url)){
+            //是否是插件
+            if ($detail['module'][1]=='plugin' && $detail['module'][2]=='execute') {
+                $_url = purl($url, $vars, 'index');
+            }else{
+                $_url = url($url, $vars, $suffix, $domain);
+            }
+        }
+        if(preg_match('/^\/[\w]+\//', $_url)){
+            $url = '/member.php'.$_url;
+        }else{
+            $url = str_replace(['admin.php/admin','index.php/index'],'member.php/member', $_url);
+            $url = str_replace(['admin.php','index.php'],'member.php', $url);
+        }        
+
+        if(!preg_match('/^member.php/', $url)){
+            //$url = '/index.php'.$url;
+        }
+        return $url;
+    }
+}
+
+if (!function_exists('format_class_name')) {
+    function format_class_name($name){
+        $detail = explode('_',$name);
+        $classname = '';
+        foreach($detail AS $value){
+            $value && $classname .= ucfirst($value);
+        }
+        return $classname;
+    }
+}
+
+if (!function_exists('into_sql')) {
+    /**
+     * 批量导入SQL数据
+     * @param unknown $sql SQL数据,可以是多条
+     * @param string $replace_pre 默认true替换为当前数据表前缀
+     * @param number $type 2是遇到错误直接终止,1是显示错误,但不终止程序,0是屏蔽错误
+     */
+    function into_sql($sql, $replace_pre=true,$type=2){
+        if(preg_match('/\.sql$/', $sql)){
+            $sql = read_file($sql);
+        }
+        $prefix = $replace_pre===true ? ['qb_'=>config('database.prefix')] : [];
+        $sql_list = parse_sql($sql,$prefix);
+        $result = false;
+        foreach ($sql_list as $v) {
+            if($type==2){   //直接终止
+                $result = Db::execute($v);
+            }else{
+                try {
+                    $result = Db::execute($v);
+                } catch(\Exception $e) {
+                    if($type==1){   //显示错误,不终止后面的程序运行
+                        echo '<br>导入SQL失败，请检查install.sql的语句是否正确<pre>'.$v."\n\n".$e.'</pre>';
+                    }else{
+                        //为0的时候,屏蔽错误
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+}
+
+if (!function_exists('parse_sql')) {
+    /**
+     * 分割sql语句
+     * @param  string $content sql内容
+     * @param  array $prefix 替换前缀
+     * @param  bool $limit  如果为1，则只返回一条sql语句，默认返回所有     * 
+     * @return array|string 除去注释之后的sql语句数组或一条语句
+     */
+    function parse_sql($sql = '', $prefix = [], $limit = 0) {
+        // 被替换的前缀
+        $from = '';
+        // 要替换的前缀
+        $to = '';
+        
+        // 替换表前缀
+        if (!empty($prefix)) {
+            $to   = current($prefix);
+            $from = current(array_flip($prefix));
+        }
+        
+        if ($sql != '') {
+            // 纯sql内容
+            $pure_sql = [];
+            
+            // 多行注释标记
+            $comment = false;
+            
+            // 按行分割，兼容多个平台
+            $sql = str_replace(["\r\n", "\r"], "\n", $sql);
+            $sql = explode("\n", trim($sql));
+            
+            // 循环处理每一行
+            foreach ($sql as $key => $line) {
+                // 跳过空行
+                if ($line == '') {
+                    continue;
+                }
+                
+                // 跳过以#或者--开头的单行注释
+                if (preg_match("/^(#|--)/", $line)) {
+                    continue;
+                }
+                
+                // 跳过以/**/包裹起来的单行注释
+                if (preg_match("/^\/\*(.*?)\*\//", $line)) {
+                    continue;
+                }
+                
+                // 多行注释开始
+                if (substr($line, 0, 2) == '/*') {
+                    $comment = true;
+                    continue;
+                }
+                
+                // 多行注释结束
+                if (substr($line, -2) == '*/') {
+                    $comment = false;
+                    continue;
+                }
+                
+                // 多行注释没有结束，继续跳过
+                if ($comment) {
+                    continue;
+                }
+                
+                // 替换表前缀
+                if ($from != '') {
+                    $line = str_replace('`'.$from, '`'.$to, $line);
+                }
+                if ($line == 'BEGIN;' || $line =='COMMIT;') {
+                    continue;
+                }
+                // sql语句
+                array_push($pure_sql, $line);
+            }
+            
+            // 只返回一条语句
+            if ($limit == 1) {
+                return implode($pure_sql, "");
+            }
+            
+            // 以数组形式返回sql语句
+            $pure_sql = implode($pure_sql, "\n");
+            $pure_sql = explode(";\n", $pure_sql);
+            return $pure_sql;
+        } else {
+            return $limit == 1 ? '' : [];
+        }
+    }
+}
+
+if (!function_exists('parse_attr')) {
+    /**
+     * 解析配置
+     * @param string $value 配置值
+     * @return array|string
+     */
+    function parse_attr($value = '') {
+        $array = preg_split('/[ ,;\r\n]+/', trim($value, " ,;\r\n"));
+        if (strpos($value, ':')) {
+            $value  = array();
+            foreach ($array as $val) {
+                list($k, $v) = explode(strstr($val,':')?':':'|', $val);
+                $value[$k]   = $v;
+            }
+        } else {
+            $value = $array;
+        }
+        return $value;
+    }
+}
+
+
+if (!function_exists('get_file_path')) {
+    /**
+     * 获取附件路径
+     * @param int $id 附件id
+     * @return string
+     */
+    function get_file_path($id=0){
+        if(strstr($id,'uploads/')){
+            if(!is_numeric($id)){
+                return PUBLIC_URL.$id;
+            }
+            $path=model('admin/attachment')->getFilePath($id);
+            if(!$path){
+                return '/public/static/admin/img/none.png';
+            }
+            return $path;
+        }else{
+            return $id;
+        }
+    }
+}
+
+if (!function_exists('get_thumb')) {
+    /**
+     * 获取图片缩略图路径
+     * @param int $id 附件id
+     * @return string
+     */
+    function get_thumb($id=0){
+        if(strstr($id,'uploads/')){
+            if(!is_numeric($id)){
+                return PUBLIC_URL.$id;
+            }
+            $path=model('admin/attachment')->getThumbPath($id);
+            if(!$path){
+                return '/public/static/admin/img/none.png';
+            }
+            return $path;
+        }else{
+            return $id;
+        }
+    }
+    
+}
+if (!function_exists('get_level_data')) {
+    /**
+     * 获取联动数据
+     * @param string $table 表名
+     * @param  integer $pid 父级ID
+     * @param  string $pid_field 父级ID的字段名
+     * @return false|PDOStatement|string|\think\Collection
+     */
+    function get_level_data($table = '', $pid = 0, $pid_field = 'pid')
+    {
+        if ($table == '') {
+            return '';
+        }
+        
+        $data_list = Db::name($table)->where($pid_field, $pid)->select();
+        
+        if ($data_list) {
+            return $data_list;
+        } else {
+            return '';
+        }
+    }
+}
+
+if (!function_exists('get_level_pid')) {
+    /**
+     * 获取联动等级和父级id
+     * @param string $table 表名
+     * @param int $id 主键值
+     * @param string $id_field 主键名
+     * @param string $pid_field pid字段名
+     * @return mixed
+     */
+    function get_level_pid($table = '', $id = 1, $id_field = 'id', $pid_field = 'pid')
+    {
+        return Db::name($table)->where($id_field, $id)->value($pid_field);
+    }
+}
+
+if (!function_exists('get_level_key_data')) {
+    /**
+     * 反向获取联动数据
+     * @param string $table 表名
+     * @param string $id 主键值
+     * @param string $id_field 主键名
+     * @param string $name_field name字段名
+     * @param string $pid_field pid字段名
+     * @param int $level 级别
+     * @return array
+     */
+    function get_level_key_data($table = '', $id = '', $id_field = 'id', $name_field = 'name', $pid_field = 'pid', $level = 1)
+    {
+        $result = [];
+        $level_pid = get_level_pid($table, $id, $id_field, $pid_field);
+        $level_key[$level] = $level_pid;
+        $level_data[$level] = get_level_data($table, $level_pid, $pid_field);
+        
+        if ($level_pid != 0) {
+            $data = get_level_key_data($table, $level_pid, $id_field, $name_field, $pid_field, $level + 1);
+            $level_key = $level_key + $data['key'];
+            $level_data = $level_data + $data['data'];
+        }
+        $result['key'] = $level_key;
+        $result['data'] = $level_data;
+        
+        return $result;
+    }
+}
+if (!function_exists('format_linkage')) {
+    /**
+     * 格式化联动数据
+     * @param array $data 数据
+     * @author 蔡伟明 <314013107@qq.com>
+     * @return array
+     */
+    function format_linkage($data = [])
+    {
+        $list = [];
+        foreach ($data as $key => $value) {
+            $list[] = [
+                    'key'   => $key,
+                    'value' => $value
+            ];
+        }
+        return $list;
+    }
+}
+if (!function_exists('load_assets')) {
+    /**
+     * 加载静态资源
+     * @param string $assets 资源名称
+     * @param string $type 资源类型
+     * @return string
+     */
+    function load_assets($assets = '', $type = 'css')
+    {
+        $assets_list = config('assets.'. $assets);
+
+        $result = '';
+        foreach ($assets_list as $item) {
+            if ($type == 'css') {
+                $result .= '<link rel="stylesheet" href="'.$item.'">';
+            } else {
+                $result .= '<script src="'.$item.'"></script>';
+            }
+        }
+        return $result;
+    }
+}
+
+
+if (!function_exists('str_array')) {
+    /**
+     * 把换行符或者是,隔开的字符串转为数组
+     * @param string $value
+     * @return string|array|unknown[]
+     */
+    function str_array($value = '') {
+        $array = preg_split(strpos($value,"\n")?'/[\r\n]+/':'/[,]+/', trim($value, ",\r\n"));
+        if (strpos($value, '|')) {
+            $value  = array();
+            foreach ($array as $val) {
+                list($k, $v) = explode('|', $val);
+                $value[$k]   = $v;
+            }
+        } else {
+            $value = $array;
+        }
+        return $value;
+    }
+}
+
+if(!function_exists('get_post')){
+    /**
+     * 获取数据,POST优化级最高 然后是GET 最后是路由
+     * @param string $type 指定要什么数据
+     * @return mixed
+     */
+	function get_post($type=''){
+	    if($type=='post'){
+	        $array = input('post.');
+	    }elseif($type=='get'){
+	        $array = input('get.');
+	    }elseif($type=='route'){
+	        $array = input('route.');
+	    }else{
+	        //优先级 post > get > route
+	        $array_route = input('route.');
+	        is_array($array_route) || $array_route=[];
+	        $array_get = input('get.');
+	        is_array($array_get) || $array_get=[];
+	        $array_post = input('post.');
+	        is_array($array_post) || $array_post=[];
+	        $array = array_merge($array_route,$array_get,$array_post);
+	    }
+	    return $array;	    
+	}
+}
+
+//根据用户的用户组ID得到用户组的名称
+if (!function_exists('getGroupByid')) {
+    /**
+     * 取用户组的数据, 默认只取对应用户组ID的标题名称,也可以取用户组的所有数据
+     * @param unknown $gid 用户组ID,如果为NULL的话,就取出所有
+     * @param string $only_title 默认只取名称,设置为false的话,可以取所有数据
+     * @return unknown
+     */
+    function getGroupByid($gid = null , $only_title = true)
+    {
+		if($gid===''){
+			return ;
+		}
+        $group = cache('group_title');
+        if (empty($group)) {
+            $group = model('common/group')->getList();
+            cache('group_title',$group,3600);
+        }
+        if($gid>0){
+            return $only_title==true ? $group[$gid]['title'] : $group[$gid];            
+        }else{
+            if($only_title==true){
+                $array = [];
+                foreach($group AS $key=>$rs){
+                    $array[$rs['id']] = $rs['title'];
+                }
+                return $array;
+            }else{
+                return $group;
+            }
+        }        
+    }
+}
+
+if (!function_exists('get_user')) {
+
+    function get_user($value='',$type='uid'){
+        $rarray = [];		
+        if($type=='uid' && is_numeric($value)){
+		    if(!$rarray=cache('user_'.$value)){
+		        $mod = model('common/user');
+		        $rarray = $mod->getByid($value);
+		        cache('user_'.$value,$rarray,3600*12);
+		    }
+		}else{
+		    $mod = model('common/user');
+		    $rarray = $mod->getByName($value);
+		}
+		return $rarray;
+    }
+}
+
+if (!function_exists('get_user_name')) {
+    function get_user_name($value)
+    {
+        $info = get_user($value);
+        if( !empty($info)  ){
+            return $info['username'];
+        }
+    }
+}
+
+if (!function_exists('get_user_icon')) {
+    function get_user_icon($value)
+    {
+        static $domain = null;
+        if($domain === null){
+            $domain = request()->domain() ;
+        }
+        $info = get_user($value);
+        if(empty($info) || empty($info['icon'])){
+            return $domain.'/public/static/images/nobody.gif';
+        }
+        return tempdir($info['icon']);
+    }
+}
+if(!function_exists('getArray')){
+    function getArray($row_list)
+    {
+        if (is_array($row_list)) {
+            if (empty($row_list)) return [];
+            if (is_object(current($row_list))) {
+                $items = [];
+                foreach ($row_list as $key => $value) {
+                    $items[$key] = $value->toArray();
+                }
+                return $items;
+            }
+            return $row_list;
+        }
+        //if ($row_list->isEmpty()) return [];
+        if (is_object($row_list)) {
+            return $row_list->toArray();
+        }
+        return $row_list;
+    }
+}
+
+
+if(!function_exists('table_field')){
+    /**
+     * 数据表字段信息处理函数
+     * @param unknown $table 表名
+     * @param string $field 赋值的话,判断某个字段是否存在,留空的话,取所有字段
+     * @param string $add_pre 是否需要补全数据表前缀,true 需要再补全,false 不需要再补.
+     * @return boolean|unknown
+     */
+    function table_field($table,$field='',$add_pre=true){
+        $add_pre == true && $table = config('database.prefix') .$table;
+        $array = Db::getTableFields($table);
+        if(!empty($field)){
+            if(in_array($field,$array) ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{  //返回所有字段
+            return $array;
+        }
+      //$result = Db::query("SHOW CREATE TABLE `{$table}`");
+      //preg_match_all("/`([^`]+)`/is", $result[0]['Create Table'],$array);
+    }
+}
+
+if(!function_exists('is_table')){
+
+    /**
+     * 判断数据表是否存在
+     * @param unknown $table 数据表名,可以不加区分符前缀
+     * @param string $add_pre 默认值true 自动补全前缀
+     * @return boolean
+     */
+    function is_table($table,$add_pre=true){
+        $add_pre == true && $table = config('database.prefix') .$table;
+        $result = Db::query("SHOW TABLES LIKE '{$table}'");
+        return empty($result) ? false : true;
+    }
+}
+
+if(!function_exists('refreshto')){
+	function refreshto($url,$msg,$time=1){
+		header("location:$url");
+		exit;
+	}
+}
+
+if(!function_exists('jump')){
+	function jump($msg,$url,$time=1){
+		header("location:$url");
+		exit;
+	}
+}
+
+if(!function_exists('showmsg')){
+	function showmsg($msg){
+		die($msg);
+	}
+}
+
+if(!function_exists('showerr')){
+	function showerr($msg){
+		die($msg);
+	}
+}
+
+if(!function_exists('copy_dir')){    
+    /**
+     * 复制目录
+     * @param unknown $path 原目录名
+     * @param unknown $newp 新目录名
+     * @param string $isover 默认值为true 强制替换原来的文件
+     */
+    function copy_dir($path,$newp,$isover=true){
+        if(!is_dir($newp)){
+            if(!mkdir($newp)){
+                showerr($newp.'目录创建失败');
+            }
+        }
+        if (file_exists($path)){
+            if(is_file($path)){
+                if($isover==true || !is_file($newp)){
+                    copy($path,$newp);
+                }
+            } else{
+                $handle = opendir($path);
+                while (($file = readdir($handle))!=false) {
+                    if ( ($file!=".") && ($file!="..") ){
+                        if (is_dir("$path/$file")){
+                            copy_dir("$path/$file","$newp/$file",$isover);
+                        } else{
+                            if($isover==true || !is_file("$newp/$file")){
+                                copy("$path/$file","$newp/$file");
+                            }
+                        }
+                    }
+                }
+                closedir($handle);
+            }
+        }
+    }
+}
+
+if(!function_exists('sort_get_father')){
+    /**
+     * 模块中获取当前栏目的所有父ID
+     * @param number $id
+     * @param string $sys_type
+     * @return void|number
+     */
+    function sort_get_father($id=0,$sys_type=''){
+        if($id<1){
+            return ;
+        }
+        $array = sort_config($sys_type);
+        $pid = $array[$id]['pid'];
+        if($pid>0){
+            $farray[$pid] = $array[$pid]['name'];
+            $ar = sort_get_father($pid,$sys_type);
+            if(!empty($ar)){
+                $farray = $ar+$farray;
+            }
+            return $farray;
+        }
+    }
+}
+
+if(!function_exists('get_sort')){
+    
+    /**
+     * 获取频道的栏目相关信息
+     * @param number $id 为0时，取出所有栏目，大于0时，根据$type参数取值
+     * @param string $type 为某个字段名时取其对应的值,father时取出所有父级栏目,sons时取出所有子栏目,other时优先取子栏目,若无再取同级,若无再取父级兄弟栏目
+     * @param string $sys_type 指定频道模块
+     * @return void|number|number[]|array[]|unknown[]|number[]|unknown[]|array|unknown
+     */
+    function get_sort($id=0,$type='name',$sys_type=''){
+        $array = sort_config($sys_type);
+        if($id>0){
+            if($type=='father'){    //所有父栏目，也包括自身,一般用在面包屑导航
+                $farray = sort_get_father($id,$sys_type);
+                $self_array = [$id=>$array[$id]['name']];
+                return empty($farray) ? $self_array : $farray+$self_array;
+            }elseif($type=='sons'){  //所有子栏目，也包括自身，一般用在查询数据库
+                $s_array = [$id=>$id];
+                $_pid = 0;
+                foreach($array AS $key=>$rs){
+                    if(!$rs['pid'])continue;
+                    if($rs['pid']==$id||$rs['pid']==$_pid){
+                        $s_array[$key]=$key;
+                        $_pid = $key;
+                    }
+                }
+                return $s_array;
+            }elseif($type=='brother'){  //取同级栏目
+                $s_array = [];
+                $_pid = $array[$id]['pid'];
+                foreach($array AS $key=>$rs){
+                    if($rs['pid']==$_pid){
+                        $s_array[$key]=$rs['name'];
+                    }
+                }
+                return $s_array;
+            }elseif($type=='other'){    //取父级兄弟栏目及本级兄弟栏目及子栏目，一般用在栏目页面方便展示布局
+                $m_array = [];
+                $pid = $array[$id]['pid'];
+                $fpid = $pid ? $array[$pid]['pid'] : null;
+                $_pid = null;
+                foreach($array AS $key=>$rs){
+                    if($fpid!==null&&$rs['pid']==$fpid){  //父级栏目
+                        $m_array[$key] = $rs['name'];
+                    }elseif($rs['pid']==$pid){   //同级栏目
+                        $m_array[$key] = $rs['name'];
+                    }elseif ($rs['pid']==$_pid){    //子栏目
+                        $m_array[$key] = $rs['name'];
+                    }
+                    if($key==$id){
+                        $_pid = $id;
+                    }
+                }
+                return $m_array;
+            }elseif($type=='config'){
+                return $array[$id];
+            }elseif(isset($array[$id][$type])){
+                return $array[$id][$type];
+            }else{
+                return $array[$id];
+            }           
+        }elseif($type=='other' && $array){  //fid不存在的话,就只取一级栏目
+            $farray = [];
+            foreach($array AS $key=>$rs){
+                if($rs['pid']==0){
+                    $farray[$key]=$rs['name'];
+                }
+            }
+            return $farray;
+        }elseif ($type=='all'){
+            $farray = [];
+            foreach($array AS $key=>$rs){
+                $farray[$key]=$rs['name'];
+            }
+            return $farray;
+        }
+        return $array;
+    }
+}
+
+
+
+//模块的栏目配置参数
+if(!function_exists('sort_config')){
+    /**
+     * 获取模块里边的栏目配置参数
+     * @param string $sys_type 可以指定其他频道的目录名
+     * @param unknown $pid 可以指定只调取哪些父栏目的下的子栏目数据
+     * @return array|unknown
+     */
+    function sort_config($sys_type='',$pid=null){
+        if(empty($sys_type)){
+            $sys_type=config('system_dirname');
+        }
+        if(empty($sys_type)){
+            return [];
+        }
+        static $sort_array = [];
+        $array = $sort_array[$sys_type];
+        if(empty($array)){
+            $array = cache('sort_config_'.$sys_type);
+            if (empty($array)) {
+                //$array = model($sys_type.'/sort')->getTreeList();
+                $array = get_model_class($sys_type,'sort')->getTreeList();
+                cache('sort_config_'.$sys_type,$array);
+            }
+            $sort_array[$sys_type] = $array;
+        }
+        
+        if($pid!==null){    //取子栏目
+            foreach ($array AS $id=>$rs){
+                if($rs['pid']==$pid){
+                    $_array[$id] = $rs['name'];
+                }
+            }
+            return $_array;
+        }else{
+            return $array;
+        }        
+    }
+}
+
+if(!function_exists('modules_config')){
+    /**
+     * 获取系统安装的频道模块信息
+     * @param unknown $id 可以为频道ID也可以是频道目录名 为空的话,就是取出所有
+     * @param string $getcache 是否取缓存数据
+     * @return NULL|unknown|string|array|NULL[]|string|array|unknown|NULL[]
+     */
+    function modules_config($id=null , $getcache=true){
+        $array = $getcache===true ? cache('modules_config') : '';
+        if(empty($array)){
+            $result = Module::getList(['ifopen'=>1]);
+            foreach($result AS $rs){
+                $array[$rs['id']] = $rs;
+            }
+        }
+        if(is_numeric($id)){ //根据模块ID返回数组
+            return $array[$id];
+        }elseif($id!==null){ //根据模块目录名返回数组
+            foreach($array AS $rs){
+                if($rs['keywords']==$id){
+                    return $rs;
+                }
+            }
+        }else{
+            return $array;
+        }
+    }
+}
+
+
+if(!function_exists('plugins_config')){
+    /**
+     * 获取插件配置参数,也即缓存数据,可以给赋值数字或关键字目录名,取相应频道的配置参数,为NULL取所有频道的配置参数
+     * @param unknown $id 可为数字或目录名关键字,也可为null 为NULL的话,取出所有
+     * @param string $getcache 默认是取缓存,设置为false不要缓存
+     * @return NULL|unknown|string|array|NULL[]|string|array|unknown|NULL[]
+     */
+    function plugins_config($id=null , $getcache=true){
+        $array = $getcache===true ? cache('plugins_config') : '';
+        if(empty($array)){
+            $result = Plugin::getList(['ifopen'=>1]);
+            foreach($result AS $rs){
+                $array[$rs['id']] = $rs;
+            }
+        }        
+        if(is_numeric($id)){ //根据插件ID返回数组
+            return $array[$id];
+        }elseif($id!==null){ //根据插件目录名返回数组
+            foreach($array AS $rs){
+                if($rs['keywords']==$id){
+                    return $rs;
+                }
+            }
+        }else{
+            return $array;
+        }
+    }
+}
+
+
+if(!function_exists('get_ip')){
+    function get_ip(){        
+        static $onlineip  =   NULL;
+        if ($onlineip !== NULL) return $onlineip;
+        
+        if($_SERVER['HTTP_CLIENT_IP']){
+            $onlineip=$_SERVER['HTTP_CLIENT_IP'];
+        }elseif($_SERVER['HTTP_X_FORWARDED_FOR']){
+            $onlineip=$_SERVER['HTTP_X_FORWARDED_FOR'];	//HTTP_X_REAL_FORWARDED_FOR
+        }else{
+            $onlineip=$_SERVER['REMOTE_ADDR'];
+        }
+        $onlineip = preg_replace("/^([\d\.]+).*/", "\\1", filtrate($onlineip));
+        preg_match("/[\d\.]{7,15}/", $onlineip, $onlineipArray);
+        $onlineip = $onlineipArray[0] ? $onlineipArray[0] : '0.0.0.0';
+        return $onlineip;
+    }
+}
+
+if(!function_exists('set_date')){
+    function set_date($time,$format='Y-m-d H:i:s'){
+        return $time ? date($format,$time) : '';
+    }
+}
+
+if(!function_exists('mymd5')){
+	function mymd5($string,$action="EN",$rand=''){ //字符串加密和解密 
+		//global $webdb;
+		if($action=="DE"){//处理+号在URL传递过程中会异常
+			$string = str_replace('QIBO|ADD','+',$string);
+			$string = str_replace('QIBO|EDD','=',$string);
+		}
+		$secret_string = config('webdb.mymd5').$rand.'5*j,.^&;?.%#@!'; //绝密字符串,可以任意设定 
+		if(!is_string($string)){
+			$string=strval($string);
+		}
+		if($string==="") return ""; 
+		if($action=="EN") $md5code=substr(md5($string),8,10); 
+		else{ 
+			$md5code=substr($string,-10); 
+			$string=substr($string,0,strlen($string)-10); 
+		}
+		//$key = md5($md5code.$_SERVER["HTTP_USER_AGENT"].$secret_string);
+		$key = md5($md5code.$secret_string); 
+		$string = ($action=="EN"?$string:base64_decode($string)); 
+		$len = strlen($key); 
+		$code = "";
+		for($i=0; $i<strlen($string); $i++){ 
+			$k = $i%$len; 
+			$code .= $string[$i]^$key[$k]; 
+		}
+		$code = ($action == "DE" ? (substr(md5($code),8,10)==$md5code?$code:NULL) : base64_encode($code)."$md5code");
+		if($action=="EN"){//处理+号在URL传递过程中会异常
+			$code = str_replace('+','QIBO|ADD',$code);
+			$code = str_replace('=','QIBO|EDD',$code);
+		}
+		return $code; 
+	}
+}
+
+if(!function_exists('rands')){
+	function rands($length,$strtolower=1) {
+	    if (function_exists('openssl_random_pseudo_bytes')) {
+	        $hash = substr( bin2hex(openssl_random_pseudo_bytes($length*2)) , 0 , $length);
+	    }else{
+	        $hash = '';
+	        $chars = substr((double)microtime(),mt_rand(2,6)).'ABCDEFGHIJK'.substr(time(),-mt_rand(0,9)).'LMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+	        $max = strlen($chars) - 1;
+	        mt_srand((double)microtime() * 1000000);
+	        for($i = 0; $i < $length; $i++) {
+	            $hash .= $chars[mt_rand(0, $max)];
+	        }
+	    }
+		if($strtolower==1){
+			$hash=strtolower($hash);
+		}
+		return $hash;
+	}
+}
+
+if(!function_exists('filtrate')){
+	function filtrate($msg){
+		//$msg = str_replace('&','&amp;',$msg);
+		//$msg = str_replace(' ','&nbsp;',$msg);
+		$msg = str_replace('"','&quot;',$msg);
+		$msg = str_replace("'",'&#39;',$msg);
+		$msg = str_replace("<","&lt;",$msg);
+		$msg = str_replace(">","&gt;",$msg);
+		//$msg = str_replace("\t","   &nbsp;  &nbsp;",$msg);
+		//$msg = str_replace("\r","",$msg);
+		//$msg = str_replace("   "," &nbsp; ",$msg);
+		return $msg;
+	}
+}
+
+if(!function_exists('read_file')){
+	function read_file($filename,$method="rb"){
+		if($handle=@fopen($filename,$method)){
+			@flock($handle,LOCK_SH);
+			$filedata=@fread($handle,@filesize($filename));
+			@fclose($handle);
+		}
+		return $filedata;
+	}
+}
+
+if(!function_exists('write_file')){
+    /***
+     * 把内容写入文件
+     * @param unknown $filename 文件名
+     * @param unknown $data 内容
+     * @param string $method 默认不追加写入,要追加写入,可以改为 'a'
+     * @param number $iflock 锁定文件不能同时多个人同时写入
+     * @return number
+     */
+	function write_file($filename,$data,$method="rb+",$iflock=1){
+		@touch($filename);
+		$handle=@fopen($filename,$method);
+		if(!$handle){
+			return "此文件不可写:$filename";
+		}
+		if($iflock){
+			@flock($handle,LOCK_EX);
+		}
+		@fputs($handle,$data);
+		if($method=="rb+") @ftruncate($handle,strlen($data));
+		@fclose($handle);
+		@chmod($filename,0777);	
+		if( is_writable($filename) ){
+			return true;
+		}else{
+			return false;
+		}
+	}
+}
+
+if(!function_exists('query')){
+	function query($sql,$ar=[]){
+	
+		$table_pre = config('database.prefix');
+		$sql = str_replace([' qb_',' `qb_'],[" {$table_pre}"," `{$table_pre}"],$sql);
+		if( preg_match('/^(select|show) /i',trim($sql)) ){
+			return  Db::query($sql);
+		}else{
+			return  Db::execute($sql);
+		}		
+	}
+}
+
+if(!function_exists('set_v')){
+	function set_v($array=[],$obj=null){
+		if(!is_object($obj)){
+			return ;
+		}
+		foreach($array AS $key=>$value){			
+			$obj->assign($key, $value);
+		}
+	}
+}
+
+if(!function_exists('delete_attachment')){
+	function delete_attachment($a='',$b=''){
+
+	}
+}
+
+if(!function_exists('delete_dir')){
+    /**
+     * 删除整个目录
+     * @param unknown $path
+     * @return string
+     */
+    function delete_dir($path){
+        if (file_exists($path)){
+            if(is_file($path)){
+                if(	!@unlink($path)	){
+                    $show.="$path,";
+                }
+            } else{
+                $handle = opendir($path);
+                while (($file = readdir($handle))!='') {
+                    if (($file!=".") && ($file!="..") && ($file!="")){
+                        if (is_dir("$path/$file")){
+                            $show.=delete_dir("$path/$file");
+                        } else{
+                            if( !@unlink("$path/$file") ){
+                                $show.="$path/$file,";
+                            }
+                        }
+                    }
+                }
+                closedir($handle);
+                if(!@rmdir($path)){
+                    $show.="$path,";
+                }
+            }
+        }
+        return $show;
+    }
+}
+
+if(!function_exists('filtrate')){
+	function filtrate($msg){
+		//$msg = str_replace('&','&amp;',$msg);
+		//$msg = str_replace(' ','&nbsp;',$msg);
+		$msg = str_replace('"','&quot;',$msg);
+		$msg = str_replace("'",'&#39;',$msg);
+		$msg = str_replace("<","&lt;",$msg);
+		$msg = str_replace(">","&gt;",$msg);
+		//$msg = str_replace("\t","   &nbsp;  &nbsp;",$msg);
+		//$msg = str_replace("\r","",$msg);
+		//$msg = str_replace("   "," &nbsp; ",$msg);
+		return $msg;
+	}
+}
+
+
+if(!function_exists('get_word')){//echo mb_substr($str,0,4,'utf-8');
+	function get_word($string, $length, $more=1 ,$dot = '..') {
+		$more || $dot='';
+		if(strlen($string) <= $length) {
+			return $string;
+		}
+
+		$pre = chr(1);
+		$end = chr(1);
+		$string = str_replace(array('&amp;', '&quot;', '&lt;', '&gt;'), array($pre.'&'.$end, $pre.'"'.$end, $pre.'<'.$end, $pre.'>'.$end), $string);
+
+		$strcut = '';
+		if( 1 ) {
+
+			$n = $tn = $noc = 0;
+			while($n < strlen($string)) {
+
+				$t = ord($string[$n]);
+				if($t == 9 || $t == 10 || (32 <= $t && $t <= 126)) {
+					$tn = 1; $n++; $noc++;
+				} elseif(194 <= $t && $t <= 223) {
+					$tn = 2; $n += 2; $noc += 2;
+				} elseif(224 <= $t && $t <= 239) {
+					$tn = 3; $n += 3; $noc += 2;
+				} elseif(240 <= $t && $t <= 247) {
+					$tn = 4; $n += 4; $noc += 2;
+				} elseif(248 <= $t && $t <= 251) {
+					$tn = 5; $n += 5; $noc += 2;
+				} elseif($t == 252 || $t == 253) {
+					$tn = 6; $n += 6; $noc += 2;
+				} else {
+					$n++;
+				}
+
+				if($noc >= $length) {
+					break;
+				}
+
+			}
+			if($noc > $length) {
+				$n -= $tn;
+			}
+
+			$strcut = substr($string, 0, $n);
+
+		} else {
+			$_length = $length - 1;
+			for($i = 0; $i < $length; $i++) {
+				if(ord($string[$i]) <= 127) {
+					$strcut .= $string[$i];
+				} else if($i < $_length) {
+					$strcut .= $string[$i].$string[++$i];
+				}
+			}
+		}
+
+		$strcut = str_replace(array($pre.'&'.$end, $pre.'"'.$end, $pre.'<'.$end, $pre.'>'.$end), array('&amp;', '&quot;', '&lt;', '&gt;'), $strcut);
+
+		$pos = strrpos($strcut, chr(1));
+		if($pos !== false) {
+			$strcut = substr($strcut,0,$pos);
+		}
+		return $strcut.$dot;
+	}
+}
+
+
+if(!function_exists('tempdir')){
+    function tempdir($path='',$b=''){
+        if($path==''){
+            return ;
+        }
+        static $domain = null;
+        if($domain === null){
+            $domain = request()->domain() ;
+        }
+        if(!strstr($path,'http')&&!preg_match('/^\/public\//', $path)){
+            $path = $domain . PUBLIC_URL . $path;
+        }
+        return $path;
+	}
+}
+
+if (!function_exists('get_cookie')) {
+    function get_cookie($name){
+        return cookie($name);
+        //return $_COOKIE[$webdb['cookiePre'].$name];
+    }
+}
+
+if (!function_exists('set_cookie')) {
+    function set_cookie($name,$value,$cktime=0){
+        $value==='' && $value=null;
+        cookie($name,$value);
+//         return ;
+//         $webdb = config('webdb');
+//         $timestamp = time();
+//         if($cktime!=0){
+//             $cktime=$timestamp+$cktime;
+//         }
+//         if($value==''){
+//             $cktime=$timestamp-31536000;
+//         }
+//         $S = $_SERVER['SERVER_PORT'] == '443' ? 1:0;
+//         if($webdb['cookiePath']){
+//             $path=$webdb['cookiePath'];
+//         }else{
+//             $path="/";
+//         }
+//         $domain=$webdb['cookieDomain'];
+//         setCookie($webdb['cookiePre'].$name,$value,$cktime,$path,$domain,$S);
+    }
+}
+
+if (!function_exists('makeTemplate')) {
+    function makeTemplate($template,$check=true)
+    {
+        if ('' == pathinfo($template, PATHINFO_EXTENSION)) {
+            $detail = Request::instance()->dispatch();
+            if($detail['type']=='method'){
+                $_method = $detail['method'][1];
+                list(,,$_module,,$_controller) = explode('\\',$detail['method'][0]);
+            }else{
+                $_module = $detail['module'][0]?:'index';   //模块,针对主页短路由的特别处理
+                $_controller = $detail['module'][1]?:'index';   //控制器,针对主页短路由的特别处理
+                $_method = $detail['module'][2]?:'index';   //方法,针对主页短路由的特别处理
+            }            
+            if (strpos($template, '@')) {
+                list($module, $template) = explode('@', $template);
+            }
+            if (0 !== strpos($template, '/')) {
+                $template = str_replace(['/', ':'], config('template.view_depr'), $template);
+            } else {
+                $template = str_replace(['/', ':'], config('template.view_depr'), substr($template, 1));
+            }
+            if (config('template.view_base')) {
+                if( in_array($module,['index','member','admin']) ){    //member@xxx index@xxx admin@xxx 特殊处理
+                    $path   = config('template.view_base') .'../../'.$module.'_style/'.config('template.'.$module.'_style').'/'.$module.'/';
+                }elseif($_controller=='plugin'&&$_method=='execute'){
+                    $_module=input('param.plugin_action');
+                    $__module = isset($module) ? $module : input('param.plugin_name');
+                    $path   = config('template.view_base') .'plugins/'. $__module.'/'.input('param.plugin_controller').'/';
+                }else{
+                    $__module = isset($module) ? $module : $_module;
+                    $path   = config('template.view_base') . ($__module ? $__module . DS : '');
+                }
+            } else {
+                if($module=='index'){
+                     $path = APP_PATH . $module . DS . 'view' . DS . config('template.index_style') . DS;
+                }elseif($module=='member'){
+                     $path = APP_PATH . $module . DS . 'view' . DS . config('template.member_style') . DS;
+                     
+                }elseif($module=='admin'){
+                     $path = APP_PATH . $module . DS . 'view' . DS;
+                }else{
+                    $path = isset($module) ? APP_PATH . $module . DS . 'view' . DS . ENTRANCE . DS . config('template.index_style') . DS : config('template.view_path');
+                }
+            }
+            
+            //if (!strpos($template, '/')&&!$module) {
+            if (!$module) {
+                if($_controller=='plugin'&&$_method=='execute'){
+                    if (config('template.view_base')) {
+                        
+                    }else{
+                        $_method = input('param.plugin_action');
+                        $path = PLUGINS_PATH . input('param.plugin_name') . DS . 'view' . DS . ENTRANCE . DS;
+                        if(ENTRANCE === 'index'){
+                            $path .= config('template.index_style') . DS;
+                        }elseif(ENTRANCE === 'member'){
+                            $path .= config('template.member_style') . DS;
+                        }
+                        $path .= input('param.plugin_controller') . DS;
+                    }                    
+                }else{
+                    $path.=$_controller.DS;
+                }
+                if(empty($template)){
+                    $path.=$_method;
+                }
+            }
+            $template = ($path . $template . '.' . ltrim(config('template.view_suffix'), '.'));
+        }
+        $template = get_real_path($template);
+        if ($check!==true || is_file($template)) {
+            return $template;
+        }else{
+            //echo($template.'文件不存在!<br>');
+        }
+    }
+}
+
+if (!function_exists('getTemplate')) {
+    /**
+     * 取得模板的路径,同时也可以自动识别PC或WAP模板
+     * @param unknown $template 可以为空
+     * @return void|string
+     */
+    function getTemplate($template='' , $check=true)
+    {
+        $_template = $template;
+        $template = makeTemplate($template , $check);
+        if (empty($template)) {
+	        if( config('template.view_base') ){
+                if( config('template.default_view_base') ){ //没有使用默认风格
+                    $view_base = config('template.view_base');define('ffd', 2);
+                    $index_style = config('template.index_style');
+                    $member_style = config('template.member_style');
+                    $admin_style = config('template.admin_style');
+                    config('template.view_base',config('template.default_view_base'));
+                    config('template.index_style','default');
+                    config('template.member_style','default');
+                    config('template.admin_style','default');
+                    $template = makeTemplate($_template,true);
+                    config('template.view_base',$view_base);
+                    config('template.index_style',$index_style);
+                    config('template.member_style',$member_style);
+                    config('template.admin_style',$admin_style);
+                }
+            }else{
+                if(ENTRANCE === 'index'){
+                    if(config('template.default_view_path')!=''){   //寻找默认风格的模板    后台使用无效，不适用于后台
+                        $view_path = config('template.view_path');
+                        $style = config('template.index_style');
+                        $member_style = config('template.member_style');
+                        config('template.view_path',config('template.default_view_path'));
+                        config('template.index_style','default');
+                        config('template.member_style','default');
+                        $template = makeTemplate($_template,true);
+                        config('template.view_path',$view_path);
+                        config('template.index_style',$style);
+                        config('template.member_style',$member_style);
+                    }
+                }elseif(ENTRANCE === 'member'){
+                    if(config('template.member_style')!='default'){   //寻找默认风格的模板    后台使用无效，不适用于后台
+                        $view_path = config('template.view_path');
+                        $style = config('template.index_style');
+                        $member_style = config('template.member_style');
+                        config('template.view_path',config('template.default_view_path'));
+                        config('template.index_style','default');
+                        config('template.member_style','default');
+                        $template = makeTemplate($_template,true);
+                        config('template.view_path',$view_path);
+                        config('template.index_style',$style);
+                        config('template.member_style',$member_style);
+                    }
+                }
+            }            
+            if(empty($template)){
+                return ;
+            }
+        }
+        $array = pathinfo($template);
+        $name = $array['basename'];   //basename($template);
+        $path = $array['dirname'].'/';  //dirname($template);
+        
+        if(IN_WAP===true){
+            if(!preg_match('/^wap_/', $name)){
+                if(is_file($path.'wap_'.$name)){
+                    return $path.'wap_'.$name;
+                }
+            }            
+        }else{
+            if(!preg_match('/^pc_/', $name)){
+                if(is_file($path.'pc_'.$name)){
+                    return $path.'pc_'.$name;
+                }
+            }  
+        }
+        return $template;
+    }
+ }
+ 
+  if (!function_exists('sockOpenUrl')) {
+      function sockOpenUrl($url,$method='GET',$postValue='',$Referer='Y'){
+          if($Referer=='Y'){
+              $Referer=$url;
+          }
+          $method = strtoupper($method);
+          if(!$url){
+              return '';
+          }elseif(!preg_match("/^http/",$url)){
+              $url="http://$url";
+          }
+          $urldb=parse_url($url);
+          $port=$urldb['port']?$urldb['port']:(preg_match("/^https/",$url)?443:80);
+          $host=$urldb['host'];
+          $query='?'.$urldb['query'];
+          $path=$urldb['path']?$urldb['path']:'/';
+          $method=$method=='GET'?"GET":'POST';
+          
+          if(function_exists('fsockopen')){
+              $fp = fsockopen($host, $port, $errno, $errstr, 30);
+          }elseif(function_exists('pfsockopen')){
+              $fp = pfsockopen($host, $port, $errno, $errstr, 30);
+          }elseif(function_exists('stream_socket_client')){
+              $fp = stream_socket_client($host.':'.$port, $errno, $errstr, 30);
+          }else{
+              die("服务器不支持以下函数:fsockopen,pfsockopen,stream_socket_client操作失败!");
+          }
+          if(!$fp)
+          {
+              echo "$errstr ($errno)<br />\n";
+          }
+          else
+          {
+              $out = "$method $path$query HTTP/1.1\r\n";
+              $out .= "Host: $host\r\n";
+              $out .= "Cookie: c=1;c2=2\r\n";
+              $out .= "Referer: $Referer\r\n";
+              $out .= "Accept: */*\r\n";
+              $out .= "Connection: Close\r\n";
+              if ( $method == "POST" ) {
+                  $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
+                  $length = strlen($postValue);
+                  $out .= "Content-Length: $length\r\n";
+                  $out .= "\r\n";
+                  $out .= $postValue;
+              }else{
+                  $out .= "\r\n";
+              }
+              fwrite($fp, $out);
+              while (!feof($fp)) {
+                  $file.= fgets($fp, 256);
+              }
+              fclose($fp);
+              if(!$file){
+                  return '';
+              }
+              $ck=0;
+              $string='';
+              $detail=explode("\r\n",$file);
+              foreach( $detail AS $key=>$value){
+                  if($value==''){
+                      $ck++;
+                      if($ck==1){
+                          continue;
+                      }
+                  }
+                  if($ck){
+                      $stringdb[]=$value;
+                  }
+              }
+              $string=implode("\r\n",$stringdb);
+              //$string=preg_replace("/([\d]+)(.*)0/is","\\2",$string);
+              return $string;
+          }
+      }
+  }
+ 
+ if (!function_exists('http_curl')) {
+     function http_curl($url,$data = null){
+         $curl = curl_init();
+         curl_setopt($curl, CURLOPT_URL, $url);
+         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+         //curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+         //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+         //curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+         if (!empty($data)){
+             curl_setopt($curl, CURLOPT_POST, 1);
+             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+         }
+         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+         $output = curl_exec($curl);
+         if (curl_errno($curl)) {
+             echo 'Errno'.curl_error($curl);
+         }
+         curl_close($curl);
+         return $output;
+     }
+ }
+ 
+ if (!function_exists('wx_getAccessToken')) {
+     /**
+      * 获取微信的权限参数
+      * @return void|mixed|\think\cache\Driver|boolean
+      */
+     function wx_getAccessToken(){
+         if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
+             return ;
+         }
+         $access_token = cache('weixin_access_token');
+         if (empty($access_token)) {
+             $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.config('webdb.weixin_appid').'&secret='.config('webdb.weixin_appsecret');
+             $res = json_decode(http_curl($url));
+             $access_token = $res->access_token;
+             if ($access_token) {
+                 cache('weixin_access_token',$access_token,1800);
+             }
+         }
+         return $access_token;
+     }
+ }
+ 
+ if (!function_exists('wx_check_attention')) {
+     //检查是否有关注公众号
+     function wx_check_attention($openid){
+         if(!$openid){
+             return false;
+         }
+         $ac=wx_getAccessToken();
+         $s=json_decode( http_curl("https://api.weixin.qq.com/cgi-bin/user/info?access_token=$ac&openid=$openid&lang=zh_CN"));
+         if($s->subscribe==1){
+             return true;
+         }else{
+             return false;
+         }
+     }
+ }
+ 
+ if (!function_exists('in_weixin')) {
+     /**
+      * 是否在微信客户端浏览器中打开
+      * @return boolean
+      */
+     function in_weixin(){
+         if( strstr($_SERVER['HTTP_USER_AGENT'],"MicroMessenger") ){
+             return true;
+         }else{
+             return false;
+         }
+     }
+ }
+
+ 
+ if (!function_exists('send_wx_msg')) {
+     /**
+      * 给用户发送微信信息
+      * @param unknown $openid 微信ID 也可以是用户的UID
+      * @param unknown $content 内容
+      * @param array $array 资源ID
+      * @return void|boolean|mixed 发送成功则返回true 发送失败会返回相应的错误代码
+      */
+     function send_wx_msg($openid,$content,$array=[]){
+         if(class_exists("\\plugins\\weixin\\util\\Msg")){
+             static $obj=null;             
+             $obj===null && $obj = new \plugins\weixin\util\Msg;
+             if(is_numeric($openid)){
+                 $array = get_user($openid);
+                 $openid = $array['weixin_api'];
+                 if (empty($openid)) {
+                     return '用户WXID不存在';
+                 }
+             }
+             return $obj->send($openid,$content,$array);
+         }
+     }
+ }
+ 
+ if (!function_exists('post_olpay')) {
+     /**
+      * 支付接口
+      * @param array $array
+      *                     array('money'=>'支付金额','return_url'=>'支付成功后返回的网址','banktype'=>'支付方式微信还是支付宝','numcode'=>'订单号','title'=>'商品名称')
+      *                     bank,numcode,title 这3项可以为空,不过订单号numcode最好不为空,避免反复生成多余的订单
+      * @param string $jump 是否立即跳转到支付页,false的话,只取得支持链接
+      * @return string
+      */
+     function post_olpay( $array=['money'=>'','return_url'=>'','banktype'=>'','numcode'=>'','title'=>'']  , $jump = FALSE){
+         foreach ($array AS $key=>$value){
+             $url .= $key.'='.urlencode($value).'&';
+         }
+         $url='?'.$url;
+         $return_url = urlencode($array['return_url']);
+         unset($array['return_url']);
+         $url = iurl('index/pay/index').$url;   //参数不能放进路由,因为微信支付有授权目录的限制
+         if($jump==true){
+             header("location:$url");
+             exit;
+         }
+         return $url;
+     }
+ }
+ 
+ if (!function_exists('edit_user')) {
+     //修改用户资料
+     function edit_user($array=[]){
+         if (UserModel::edit_user($array)) {
+             return true;
+         }else{
+             return false;
+         }
+     }
+ }
+ 
+ if (!function_exists('add_rmb')) {
+     //人民币日志
+     function add_rmb($uid,$money,$freeze_money,$about=''){
+
+         $money = number_format($money,2);
+         $freeze_money = number_format($freeze_money,2);
+         if( !$uid || ($money==0&&$freeze_money==0) ){
+             return ;
+         }
+         $freeze = 0;
+         if($freeze_money == -$money){
+             $freeze = 1;	//冻结
+         }
+         
+         //setInc/setDec
+         $user = UserModel::get_info($uid);
+         UserModel::edit_user([
+                 'uid'=>$uid,
+                 'rmb'=>$money+$user['rmb'],
+                 'rmb_freeze'=>$freeze_money+$user['rmb_freeze'],
+         ]);
+         
+         //添加日志
+         RmbConsume::create([
+                 'uid'=>$uid,
+                 'money'=>$money,
+                 'about'=>$about,
+                 'posttime'=>time(),
+                 'freeze'=>$freeze,
+         ]);
+    }
+ }
+
+ if (!function_exists('add_jifen')) {
+     //积分日志
+     function add_jifen($uid,$money,$about=''){        
+         if ($money>0) {
+             UserModel::where('uid',$uid)->setInc('money',$money);
+         }else{
+             UserModel::where('uid',$uid)->setDec('money',abs($money));
+         }         
+         //添加日志
+         Moneylog::create([
+                 'uid'=>$uid,
+                 'money'=>$money,
+                 'about'=>$about,
+                 'posttime'=>time(),
+         ]);
+     }
+ }
+ 
+    //标签用到的
+if (!function_exists('run_label')) {
+        function run_label($tag_name,$cfg){
+            controller('index/labelShow')->get_label($tag_name,$cfg);
+        }
+}
+
+ if (!function_exists('label_ajax_url')) {
+     function label_ajax_url($tag_name='',$dirname){
+         controller('index/labelShow')->get_ajax_url($tag_name ,$dirname );
+     }
+ }
+ 
+ if (!function_exists('run_listpage_label')) {
+     function run_listpage_label($tag_name,$cfg){
+         return controller('index/labelShow')->listpage_label($tag_name,$cfg);  //返回分页代码
+     }
+ }
+ 
+ if (!function_exists('run_showpage_label')) {
+     function run_showpage_label($tag_name,$info,$cfg){
+         return controller('index/labelShow')->showpage_label($tag_name,$info,$cfg);    //返回分页代码
+     }
+ }
+ 
+ if (!function_exists('label_listpage_ajax_url')) {
+     function label_listpage_ajax_url($tag_name=''){
+         controller('index/labelShow')->get_listpage_ajax_url($tag_name);
+     }
+ }
+ 
+ if (!function_exists('run_comment_label')) {
+     function run_comment_label($tag_name,$info,$cfg){
+         controller('index/labelShow')->comment_label($tag_name,$info,$cfg);
+     }
+ }
+ 
+ if (!function_exists('reply_label')) {
+     function reply_label($tag_name,$info,$cfg){
+         controller('index/labelShow')->reply_label($tag_name,$info,$cfg);
+     }
+ }
+ 
+if (!function_exists('extend_form_item')) {
+     function extend_form_item($form, $_layout,$form_items){
+         print_r($form_items);exit;
+     }
+ }
+ 
+ if (!function_exists('get_dir_file')) {
+     /**
+      * 取某个目录下的所有指定类型的文件
+      * @param string $path
+      * @param string $_suffix 文件后缀,多个用逗号隔开,比如 'htm,txt'
+      * @return string
+      */
+     function get_dir_file($path='',$_suffix=''){
+         $suffix = explode(',', $_suffix);
+         $dir = opendir($path);
+         while (false!=($file=readdir($dir))){
+             if(is_file($path.'/'.$file)){
+                 $detail = explode('.', $file);
+                 if(in_array(end($detail), $suffix)){
+                     $array[] = $path.'/'.$file;
+                 }
+             }elseif($file!='.'&&$file!='..'){
+                 $_array = get_dir_file($path.'/'.$file,$_suffix);
+                 if(is_array($_array)){
+                     $array = $array ? array_merge($array,$_array) : $_array ;
+                 }
+             }            
+         }
+         return $array;
+     }
+ }
+ 
+ if (!function_exists('del_html')) {
+     function del_html($content=''){
+         $content=preg_replace('/<([^<]*)>/is',"",$content);	//把HTML代码过滤掉
+         return $content;
+     }
+ }
+ 
+ if (!function_exists('in_wap')) {
+     //检查是否为wap访问
+     function in_wap(){
+         $regex_match="/(iPad|nokia|iphone|android|motorola|^mot\-|softbank|foma|docomo|kddi|up\.browser|up\.link|";
+         $regex_match.="htc|dopod|blazer|netfront|helio|hosin|huawei|novarra|CoolPad|webos|techfaith|palmsource|";
+         $regex_match.="blackberry|alcatel|amoi|ktouch|nexian|samsung|^sam\-|s[cg]h|^lge|ericsson|philips|sagem|wellcom|bunjalloo|maui|";
+         $regex_match.="symbian|smartphone|midp|wap|phone|windows ce|iemobile|^spice|^bird|^zte\-|longcos|pantech|gionee|^sie\-|portalmmm|";
+         $regex_match.="jig\s browser|hiptop|^ucweb|^benq|haier|^lct|opera\s*mobi|opera\*mini|320x320|240x320|176x220";
+         $regex_match.=")/i";
+         return isset($_SERVER['HTTP_X_WAP_PROFILE']) or isset($_SERVER['HTTP_PROFILE']) or preg_match($regex_match, strtolower($_SERVER['HTTP_USER_AGENT']));
+     }
+ }
+ 
+ if (!function_exists('in_weixin')) {
+     //检查是否为wap访问
+     function in_weixin(){
+         if( strstr($_SERVER['HTTP_USER_AGENT'],"MicroMessenger")){
+             return true;
+         }else{
+             return false;
+         }
+     }
+ }
+ 
+ if (!function_exists('comment_api')) {
+     /**
+      * 各频道调用评论的接口
+      * @param string $type 参数有三个，分别是 posturl 获取评论提交的地址，pageurl 获取评论的分页，list或留空即代表获取评论内容
+      * @param number $aid 频道的内容ID
+      * @param unknown $sysid 频道模块的ID，一般可以自动获取
+      */
+     function comment_api($type='',$aid=0,$sysid=0,$cfg=[]){
+         static $data = null;
+         $order = $cfg['order'];
+         $by = $cfg['by'];
+         $status = $cfg['status'];
+         $page = $cfg['page'];
+         $rows = $cfg['rows'];
+         if(empty($sysid)){
+             $array = modules_config(config('system_dirname'));
+             $sysid = $array?$array['id']:0;
+         }
+         $parameter = ['name'=>$cfg['name'],'pagename'=>$cfg['pagename'],'sysid'=>$sysid,'aid'=>$aid,'rows'=>$rows,'order'=>$order,'by'=>$by,'status'=>$status];
+         if($type=='posturl'){
+             return purl('comment/api/add',$parameter);
+         }elseif($type=='pageurl'){
+             return purl('comment/api/ajax_get',$parameter);
+            // if(is_object($data)){
+                 //return $data->render();   //分页代码
+             //}             
+         }else{
+             $data = controller("plugins\\comment\\index\\Api")->get_list($sysid,$aid,$rows,$status,$order,$by,$page);
+             $listdb = $data ? getArray($data)['data'] : [];
+             return $listdb;
+         }
+     }
+ }
+ 
+ if (!function_exists('reply_api')) {
+     /**
+      * 论坛回复
+      * @param string $type 参数有三个，分别是 posturl 获取回复提交的地址，pageurl 获取回复的分页，list或留空即代表获取回复内容
+      * @param number $aid 频道的内容ID
+      */
+     function reply_api($type='',$aid=0,$cfg=[]){
+         static $data = null;
+         $order = $cfg['order'];
+         $by = $cfg['by'];
+         $status = $cfg['status'];
+         $page = $cfg['page'];
+         $rows = $cfg['rows'];
+         $parameter = ['name'=>$cfg['name'],'pagename'=>$cfg['pagename'],'aid'=>$aid,'rows'=>$rows,'order'=>$order,'by'=>$by,'status'=>$status];
+         if($type=='posturl'){
+             return auto_url('reply/add',$parameter);
+         }elseif($type=='pageurl'){
+             return auto_url('reply/ajax_get',$parameter);
+             // if(is_object($data)){
+             //return $data->render();   //分页代码
+             //}
+         }else{
+             $data = controller('Reply','index')->get_list($aid,$rows,$status,$order,$by,$page);
+             $listdb = $data ? getArray($data)['data'] : [];
+             return $listdb;
+         }
+     }
+ }
+ 
+ if (!function_exists('get_web_menu')) {
+     function get_web_menu($type=''){
+         if($type == 'wap'){
+             $_type = [0,2];
+         }elseif($type == 'wapfoot'){
+             $_type = [3];
+         }else{
+             $type = 'pc';
+             $_type = [0,1];
+         }
+         $array = cache('web_menu_'.$type);
+         if (empty($array)) {
+             $array = model('admin/webmenu')->getTreeList(['ifshow'=>1,'type'=>['in',$_type]]);
+             cache('web_menu_'.$type,$array);
+         }
+         return get_sons($array);
+     }
+ }
+ 
+ if (!function_exists('get_sons')) {
+     /**
+      * 树型数组取下级子数组
+      * @param unknown $array
+      * @return unknown[]|unknown
+      */
+     function get_sons($array){
+         if(empty($array)){
+             return ;
+         }
+         $listdb = [];
+         $pid = 0;
+         foreach ($array AS $key=>$rs){
+             if($rs['pid']){
+                 $listdb[$pid]['sons'][$rs['id']] = $rs;
+             }else{
+                 $listdb[$rs['id']] = $rs;
+                 $pid = $rs['id'];
+             }             
+         }
+         return $listdb;
+     }
+ }
+ 
+ if (!function_exists('getNavigation')) {
+     /**
+      * PC面包屑导航
+      * @param string $link_name
+      * @param string $link_url
+      * @param number $fid
+      */
+     function getNavigation($link_name='',$link_url='',$fid=0){
+         if($link_name&&$link_url){
+             if(strpos($link_url,'/')!==0&&strpos($link_url,'http')!==0){
+                 list($_path,$_parameter) = explode('|',$link_url);
+                 $link_url = iurl($_path,$_parameter);
+             }
+         }
+         $template = getTemplate('index@nav');
+         if(is_file($template)){
+             include($template);             
+         }
+//          $path = dirname(config('index_style_layout'));
+//          if(IN_WAP===true){
+//              if(is_file($file = $path.'/wap_nav.htm')){
+//                  include($file);
+//              }else{
+//                  @include($path.'/nav.htm');
+//              }          
+//          }else{
+//              if(is_file($file = $path.'/pc_nav.htm')){
+//                  include($file);
+//              }else{
+//                  @include($path.'/nav.htm');
+//              }
+//          }
+     }
+ }
+ 
+ if (!function_exists('get_url')) {
+     function get_url($type,$array=[]){
+         switch ($type){
+             case 'reg':
+                 $url = iurl('index/reg/index',$array);
+             break;
+             case 'login':
+                 $url = iurl('index/login/index',$array).'?fromurl='.urlencode(request()->url(true));
+             break;
+             case 'wx_login':
+                 $url = purl('weixin/login/index',$array).'?fromurl='.urlencode(request()->url(true));
+                 break;
+             case 'qq_login':
+                 $url = purl('login/qq/index',$array,'index').'?fromurl='.urlencode(request()->url(true));
+                 break;
+             case 'quit':
+                 $url = iurl('index/login/quit',$array);
+             break;
+             case 'from':
+                 $url = $GLOBALS['FROMURL'];
+                 break;
+             case 'location':
+                 $url = request()->url(true);
+                 break;
+             case 'home':
+                 $url = '/';
+              break;
+             case 'member':
+                 $url = '/member.php';
+                 break;
+             case 'user':
+                 $url = murl('member/user/index',is_numeric($array)?['uid'=>$array]:$array);
+                 break;
+              default:
+                  $url = preg_match('/^(http:|https:)/', $type)?$type:request()->domain().$type;
+         }
+         return $url;
+     }
+ }
+ 
+ 
+ if (!function_exists('M')) {
+     /**
+      * 查找具体某个频道模块的相关信息,比如频道ID 频道目录名关键字
+      * @param string $type key或keyword取目录名关键字,name值取名称,id值取模型的ID
+      * @return mixed|array|boolean|NULL|unknown
+      */
+     function M($type=''){
+         $dirname = config('system_dirname');
+         if ($type=='key'||$type=='keyword') {
+             return $dirname;
+         }elseif($type=='name'){
+             $array = modules_config();
+			 foreach($array AS $rs){
+				 if($rs['keywords']==$dirname){
+					 return $rs['name'];
+				 }
+			 }
+         }elseif($type=='id'){
+             $array = modules_config();
+             foreach($array AS $rs){
+                 if($rs['keywords']==$dirname){
+                     return $rs['id'];
+                 }
+             }
+         }else{
+             $array = modules_config();
+             foreach($array AS $rs){
+                 if($rs['keywords']==$dirname){
+                     return $rs;
+                 }
+             }
+         }
+     }
+ }
+ 
+ if(!function_exists('model_config')){
+     /**
+      * 获取频道的模型配置参数
+      * @param number $mid 模型ID,可为空,为空的话,就是取所有模型数据
+      * @param string $sys_type 特别指定哪个目录的频道
+      * @return array|unknown|mixed|\think\cache\Driver|boolean
+      */
+     function model_config($mid=0,$sys_type=''){
+         if(empty($sys_type)){
+             $sys_type=config('system_dirname');
+         }
+         if(empty($sys_type)){
+             return [];
+         }
+         $array = cache('model_config_'.$sys_type);
+         if (empty($array)) {
+             //$array = model($sys_type.'/module')->getList();
+             $array = get_model_class($sys_type,'module')->getList();
+             cache('model_config_'.$sys_type,$array);
+         }
+         return empty($mid) ? $array : $array[$mid];
+     }
+ }
+
+if (!function_exists('get_field')) {
+    /**
+     * 得到频道模型的字段相关信息
+     * @param number $mid
+     */
+    function get_field($mid=0,$dirname=''){
+        $dirname || $dirname = config('system_dirname');
+        $list_f = cache($dirname.'__field');
+        if (empty($list_f)) {
+            $array = get_model_class($dirname,'field')->getFields([]);
+            foreach($array AS $rs){
+                $list_f[$rs['mid']][$rs['name']] = $rs;
+            }
+            cache($dirname.'__field',$list_f);
+        }
+        return $list_f[$mid];        
+    }
+}
+
+if (!function_exists('send_mail')) {
+    /**
+     * 发送邮件 
+     * @param unknown $email 对方邮箱
+     * @param unknown $title 邮件标题
+     * @param unknown $content 邮件内容
+     * @return boolean|string 发送成功会返回true 发布失败会返回对应的错误代码
+     */
+    function send_mail($email='',$title='',$content=''){
+        $obj = new \app\common\util\Email;
+        return $obj->send($email,$title,$content);
+    }
+}
+
+if (!function_exists('send_sms')) {
+    /**
+     * 发送短信,主要用于验证码
+     * @param string $phone 手机号码
+     * @param string $msg 验证码内容
+     * @return boolean|string 发送成功会返回true 发布失败会返回对应的错误代码
+     */
+    function send_sms($phone='',$msg=''){
+        $obj = new \app\common\util\Sms;
+        return $obj->send($phone,$msg);
+    }
+}
+
+if (!function_exists('wx_share')) {
+    function wx_share($key=''){
+        if(!config('webdb.weixin_appid')){
+            return ;
+        }
+        require_once ROOT_PATH."plugins/weixin/api/weixin.jsdk.php";
+        static $signPackage = null;
+        if($signPackage == null){
+            $jssdk = new JSSDK(config('webdb.weixin_appid'), config('webdb.weixin_appsecret'));
+            $signPackage = $jssdk->GetSignPackage();
+        }
+        return $signPackage[$key];
+    }
+}
+
+if (!function_exists('get_model_class')) {
+    /**
+     * 取得对应的模型
+     * @param unknown $dirname 目录名
+     * @param unknown $type 类名
+     * @return unknown
+     */
+    function get_model_class($dirname,$type){
+        $dispatch = request()->dispatch();
+        if($dispatch['module'][1]=='plugin' && $dispatch['module'][2]=='execute'){
+            $path = 'plugins';
+        }else{
+            $path = 'app';
+        }
+        $classname = "$path\\$dirname\\model\\".ucfirst($type);
+        if(class_exists($classname)==false){
+            $_path =  $path=='app'?'plugins':'app';
+            $classname = "$_path\\$dirname\\model\\".ucfirst($type);
+        }
+        $obj = new $classname;
+        return $obj;
+    }    
+}
+
+if (!function_exists('login_user')) {
+    /**
+     * 用户登录后的个人信息
+     * @param string $key
+     * @return void|mixed|\think\cache\Driver|boolean|number|array|\think\db\false|PDOStatement|string|\think\Model
+     */
+    function login_user($key=''){
+        $array = UserModel::login_info();
+        if($key!=''){
+            return $array[$key];
+        }else{
+            return $array;
+        }
+    }
+}
+
+if (!function_exists('label_format_where')) {
+    /**
+     * 格式化标签查询语句
+     * @param string $code
+     * @return unknown
+     */
+    function label_format_where($code=''){
+        if($code==''){
+            return ;
+        }
+        if(strstr($code,'"')){
+            $array = json_decode($code,true);
+        }else{
+            $detail = explode('@',$code);
+            foreach($detail AS $str){
+                if(!strstr($str,'|')&&strstr($str,'=')){
+                    list($field,$value) = explode('=',$str);
+                    $array[trim($field)] = trim($value);
+                    continue;
+                }
+                list($field,$mod,$value) = explode('|',$str);
+                $field = trim($field);
+                $mod = trim($mod);
+                $value = trim($value);
+                if($mod=='='){
+                    $array[$field] = $value;
+                }else{
+                    if(strstr($value,',')){
+                        $value = explode(',',$value);
+                    }
+                    $array[$field] = [$mod,$value];
+                }
+            }
+        }
+        return $array;
+    }
+}
+
+if (!function_exists('url_clean_domain')) {
+    /**
+     * 把本站的HTTP地址过滤掉
+     * @param string $code
+     * @return unknown
+     */
+    function url_clean_domain($code=''){
+        static $domain = null;
+        if($domain === null){
+            $domain = request()->domain() ;
+        }
+        return str_replace($domain.PUBLIC_URL, '', $code);
+    }
+}
+
+if (!function_exists('get_qrcode')) {
+    function get_qrcode($url=''){
+        static $domain = '';
+        if($domain === ''){
+            $domain = request()->domain() ;
+        }
+        $url = preg_match('/^(https:|http:)/', $url) ? $url : $domain.$url;
+        return iurl('index/qrcode/index') . '?url=' . urlencode($url);
+    }
+}
+
+if (!function_exists('weixin_share')) {
+    function weixin_share($type=''){
+        if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
+            return ;
+        }
+        if(!in_weixin()){
+            return ;
+        }
+        static $array = [];
+        if(empty($array)){
+            $jssdk = new \app\common\util\Weixin_share(config('webdb.weixin_appid'),config('webdb.weixin_appsecret'));
+            $array = $jssdk->GetSignPackage();
+        }
+        if($type){
+            return $array[$type];
+        }else{
+            return $array;
+        }
+    }
+}
+
+if (!function_exists('weixin_login')) {
+    function weixin_login($url=''){
+        $url = $url=='' ? request()->url(true) : $url;
+        $url = purl('weixin/login/index') . '?fromurl=' . urlencode($url);
+        header("location:$url");
+        exit;
+    }
+}
+
+if (!function_exists('makepath')) {
+    /**
+     * 自动创建多级目录
+     * @param unknown $path
+     * @return string|mixed
+     */
+    function makepath($path){
+        //这个\没考虑
+        $path=str_replace("\\","/",$path);
+        $ROOT_PATH=str_replace("\\","/",ROOT_PATH);
+        $detail=explode("/",$path);
+        foreach($detail AS $key=>$value){
+            if($value==''&&$key!=0){
+                //continue;
+            }
+            $newpath.="$value/";
+            if((preg_match("/^\//",$newpath)||preg_match("/:/",$newpath))&&!strstr($newpath,$ROOT_PATH)){continue;}
+            if( !is_dir($newpath) ){
+                if(substr($newpath,-1)=='\\'||substr($newpath,-1)=='/')
+                {
+                    $_newpath=substr($newpath,0,-1);
+                }
+                else
+                {
+                    $_newpath=$newpath;
+                }
+                if(!is_dir($_newpath)&&!mkdir($_newpath)&&preg_match("/^\//",ROOT_PATH)){
+                    return false;
+                }
+                chmod($newpath,0777);
+            }
+        }
+        return $path;
+    }
+}
+
+
+if (!function_exists('get_pinyin')) {
+    /**
+     * 取得汉字的拼音
+     * @param string $word
+     * @return string|number
+     */
+    function get_pinyin($word=''){
+        $obj = new \pinyin\Py;
+        return $obj->change2pinyin($word);
+    }
+}
+
+if (!function_exists('get_md5_num')) {
+    /**
+     * 生成随机字串,主要用在手机或邮箱获取注册码的时候,防止用户中途又换了其它邮箱或手机号
+     * @param unknown $str
+     * @param number $num
+     * @return string
+     */
+    function get_md5_num($str,$num=6){
+        $str .= config('webdb.mymd5');
+        return substr(preg_replace('/(1|l|o|0|q|z)/i','',md5($str)),0,$num);
+    }
+}
+
+
+
+ 

@@ -1,0 +1,100 @@
+{extend name="$auto_tpl_base_layout" /}
+
+{block name="title"}
+列表页
+{/block}
+
+{block name="content"}
+    
+			<div class="mui-content-padded">
+	 
+				<h5 style="margin-top: 10px;">请选择模型分类：</h5>	
+{volist name='model_list' id='vo'}
+				 
+				<a href="{:auto_url('index',['mid'=>$key])}"><button type="button" class="mui-btn {eq name="key" value='$mid'} mui-btn-primary{/eq}">
+					{$vo}
+				</button></a>
+				
+{/volist}
+			 
+				 
+		
+			</div>
+				
+                                    {volist name="row_list" id="row"}
+									<div class="mui-card">
+									
+				<div class="mui-card-header">
+					
+					<div class="mui-card-content">
+						{notempty name="$row.sort_name"}
+							{$row.sort_name}
+						{else/}
+							{$row.mid_name}
+						{/notempty}
+						<p>发表于 {$row.create_time|date='Y-m-d H:i:s',###}</p>
+					</div>
+
+				</div>
+				{notempty name="$row.picurl"}
+								<div class="mui-card-content">
+									<img src="{$row.picurl|tempdir}"  style="max-width:100%;"/>
+								</div>
+				{/notempty}
+									<div class="mui-card-content">
+									
+                                        {volist name="columns" id="column"}
+                                        
+                                      
+
+{php}
+if(is_array($column['type']) || $column['type'] == '' || $column['type'] == 'btn' || $column['type'] == 'text'){
+$value = $row[$column['name']];
+}else{
+$value = $row[$column['name'].'__'.$column['type']];
+}
+//if($i==count($columns))break;
+{/php}
+
+{php}
+if(in_array($column['type'],['picture','textarea','ueditor'])){
+{/php}
+                                <div class="mui-card-content">
+								<div class="mui-card-content-inner">
+								{$value}
+								</div>
+								</div>
+{php}
+}else{
+$title = $columns[$i-1]['title'];
+{/php}
+      <div class="mui-card-header"><p>{$title}：{$value}</p> </div>
+{php}
+}
+{/php}
+      
+                                        
+										
+										{/volist}
+			<div class="mui-card-header">
+					<a href="{:auto_url('delete','ids='.$row[id])}" class="mui-card-link">删除</a>
+					<a href="{:iurl('show','id='.$row[id])}" target="_blank" class="mui-card-link">浏览</a>
+					<a href="{:auto_url('edit','id='.$row[id])}" class="mui-card-link">修改</a>
+				</div>
+
+                                     </div></div>
+                                    {/volist}
+
+                                    
+
+
+					{// 分页 }
+					{notempty name="pages"}
+                             {$pages}
+                     {/notempty}
+
+                                
+
+			
+ 
+{/block}

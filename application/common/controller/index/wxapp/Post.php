@@ -1,0 +1,185 @@
+<?php
+namespace app\common\controller\index\wxapp;
+
+use app\common\controller\IndexBase; 
+use app\index\controller\Attachment;
+use app\common\traits\ModuleContent;
+
+//小程序 发表内容处理
+abstract class Post extends IndexBase
+{
+    use ModuleContent;
+    protected $model;                  //内容
+    protected $s_model;                  //栏目
+    protected $mid;                    //模型ID
+    
+    protected function _initialize()
+    {
+        parent::_initialize();
+        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        $dirname = $array[0][1];
+        $this->model = get_model_class($dirname,'content');
+        $this->s_model = get_model_class($dirname,'sort');
+        $this->mid = 1;
+    }
+   
+    /**
+     * 上传图片
+     */
+    public function postFile(){
+        $obj = new Attachment();
+        $o = $obj->upload('wxapp','wxapp','wxapp');
+        $info = $o->getData();
+        if($info['code']){
+            $data['url'] = tempdir($info['id']);
+            return $this->ok_js($data, $info['info']);
+        }else{
+            return $this->err_js($info['info']);
+        }
+    }
+    
+
+    
+    /**
+     * 删除主题
+     * @param number $id 主题ID
+     * @return \think\response\Json
+     */
+    public function delete($id=0){
+        $rs = $this->model->getInfoByid($id , false);
+        if($rs['uid']!=$this->user['uid']&&!$this->admin){
+            return $this->err_js('你没权限');
+        }
+        
+        if($this->model->deleteData($id)){
+            return $this->ok_js([],'删除成功');
+        }else{
+            return $this->err_js('系统问题,删除失败!');
+        }
+    }
+    
+    /**
+     * 修改主题 
+     * @param number $id
+     * @return \think\response\Json
+     */
+    public function edit($id=0){        
+        $rs = $this->model->getInfoByid($id , false);
+        if($rs['uid']!=$this->user['uid']&&!$this->admin){
+            return $this->err_js('你没权限');
+        }
+        $data = input();
+        is_array($data['picurl']) && $data['picurl'] = implode(',', $data['picurl']);   //小程序传过来的是数组
+        $array = [
+                'id' =>$data['id'],
+                'content' =>$data['content'],
+                'fid' =>$data['fid'],
+                'title' =>$data['title'],
+                'ispic' =>$data['picurl']?1:0,
+                'picurl' =>$data['picurl'],
+                'update_time' => time(),
+        ];
+        $reult = $this->model->editData($rs['mid'],$array);
+        if($reult){
+            
+            //以下两行是接口
+            hook_listen('cms_edit_end',$data,$reult);
+            $this->end_edit($data['id'],$data);
+            
+            return $this->ok_js(['id'=>$id],'修改成功');
+        }else{
+            return $this->err_js('修改失败');
+        }    
+    }
+    
+    /**
+     * 保存数据
+     * @param number $mid
+     * @param array $data
+     * @return unknown
+     */
+    protected function savaNewData($mid=0,$data=[]){
+        $data['uid'] = $this->user['uid'];
+        return $this->model->addData($mid,$data);
+    }
+    
+    /**
+     * 新发表主题
+     * @return \think\response\Json
+     */
+    public function add($mid=1){
+        
+        $data = input();
+        
+        $result=$this->add_check($mid,$data['fid'],$data);
+        
+        if ($result!==true) {
+            return $this->err_js($result);
+        }
+        
+        if(!$this->user){
+            return $this->err_js('你还没登录');
+        }
+        unset($data['id']);
+        $data['mvurl'] = url_clean_domain($data['mvurl']);    //把http清除掉
+        is_array($data['picurl']) && $data['picurl'] = implode(',', $data['picurl']);   //小程序传过来的是数组
+        $data['picurl'] = url_clean_domain($data['picurl']);    //把http清除掉 
+        $id = $this->savaNewData($mid,$data);
+        
+        //以下两行是接口
+        hook_listen('cms_add_end',$id);
+        $this->end_add($id,$data);
+        
+        if($id){
+            return $this->ok_js(['id'=>$id],'提交成功');
+        }else{
+            return $this->err_js('提交失败');
+        }
+    }
+    
+    /**
+     * 获取栏目数据
+     * @return \think\response\Json
+     */
+    public function get_sort(){
+        $_array = $this->s_model->getTitleList();
+        $array = [];
+        foreach ($_array AS $key=>$value){
+            $array[] = [
+                    'id'=>$key,
+                    'name'=>$value
+            ];
+        }
+        return $this->ok_js($array);
+    }
+    
+    /**
+     * 主题点赞
+     * @param number $id 主题ID
+     * @return \think\response\Json
+     */
+    public function agree($id=0){
+        if(time()-get_cookie('TopicReply_'.$id)<3600){
+            return $this->err_js('一小时内,只能点赞一次!');
+        }
+        set_cookie('TopicReply_'.$id, time());
+        if($this->model->addAgree($id)){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('数据库执行失败');
+        }        
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

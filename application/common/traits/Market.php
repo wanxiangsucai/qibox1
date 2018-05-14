@@ -1,0 +1,360 @@
+<?php
+namespace app\common\traits;
+use app\common\util\Unzip;
+use think\Db;
+
+trait Market
+{
+    /**
+     * 下载云端模块,并执行安装
+     * @param number $id
+     * @return void|\think\response\Json
+     */
+    protected function getapp($id=0,$type='m'){
+        $keywords = input('keywords');
+        $appkey= input('appkey');
+        $domain= input('domain');
+        
+        //	    $price = input('price');
+        //	    $type = input('type');
+        // 	    $url = "http://qb.net/index.php/appstore/wxapp.getapp/down.html?id=$id&type=$type&appkey=$appkey&domain=$domain";
+        // 	    $string  = file_get_contents($url);
+        // 	    if($type=='check'){    //检查是否有权限安装
+        // 	        if(is_numeric($string) ){
+        // 	            if($string>0){
+        // 	                return $this->err_js('需要付费购买!',['money'=>$string],2);
+        // 	            }else{
+        // 	                return $this->ok_js([],'有权限安装');
+        // 	            }
+        // 	        }else{
+        // 	            return $this->err_js('获取云端数据失败!');
+        // 	        }
+        // 	    }
+        
+        //copy_dir(RUNTIME_PATH."model/$keywords",APP_PATH.$keywords);
+        
+        $basepath = $type=='m' ? APP_PATH : PLUGINS_PATH;
+        
+        if(!is_writable($basepath)){
+            return $this->err_js($basepath.'目录不可写,请先修改目录属性可写');
+        }elseif ( is_dir($basepath.$keywords) ){
+            return $this->err_js($basepath.$keywords.'目录已经存在了,无法安装此模块');
+        }
+        $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
+        $result = $this->downModel($url,$keywords,$type);
+        if($result!==true){
+            return $this->err_js($result);
+        }
+        
+        $result = $this->install($keywords,$type);
+        if($result!==true){
+            return $this->err_js($result);
+        }
+        
+        cache($type=='m' ?'modules_config':'plugins_config',null);
+        
+        return $this->ok_js(['url'=>url('group/admin_power',['id'=>$this->user['groupid']])],'模块安装成功,请设置一下后台权限');
+    }
+    
+    /**
+     * 云端下载模块
+     * @param unknown $url
+     * @param unknown $path
+     */
+    protected function downModel($url='',$path='',$type='m'){
+        set_time_limit(0); //防止下载超时
+        @unlink(RUNTIME_PATH.'temp.zip');
+        downFile($url,RUNTIME_PATH.'temp.zip');
+        if(!is_file(RUNTIME_PATH.'temp.zip')){
+            return '文件下载失败';
+        }elseif (filesize(RUNTIME_PATH.'temp.zip')<10){
+            return read_file(RUNTIME_PATH.'temp.zip')?:'下载内容为空';
+        }
+        delete_dir(RUNTIME_PATH.'model');
+        Unzip::unzip(RUNTIME_PATH.'temp.zip',RUNTIME_PATH.'model/');
+        if(!is_dir(RUNTIME_PATH.'model/')){
+            return '文件解压失败';
+        }
+        $ck = 0;
+        $dir = opendir(RUNTIME_PATH.'model/');
+        while(($file=readdir($dir))!==false){
+            if($file=='.'||$file=='..'){
+                continue ;
+            }
+            if($file=='static'){
+                //图片及JS CSS目录必须命名为static目录
+                copy_dir(RUNTIME_PATH."model/static",PUBLIC_PATH.'static',false);
+            }elseif($file=='template'){
+                //模板目录
+                copy_dir(RUNTIME_PATH."model/template",TEMPLATE_PATH,true);
+            }else{
+                if($type=='m'||$type=='p'){
+                    //模块或插件的程序目录
+                    copy_dir(RUNTIME_PATH."model/$file",($type=='m'?APP_PATH:PLUGINS_PATH).$path);
+                }elseif($type=='hook'){
+                    if(is_file(RUNTIME_PATH."model/$file")){
+                        copy(RUNTIME_PATH."model/$file",APP_PATH.'common/hook/'.$file);
+                    }else{
+                        return '钩子文件目录有误或者不存在';
+                    }
+                }
+            }
+            $ck++;
+        }
+        delete_dir(RUNTIME_PATH.'model');
+        unlink(RUNTIME_PATH.'temp.zip');
+        if($ck){
+            return true;
+        }else{
+            return '文件解压失败或者复制文件失败';
+        }        
+    }
+    
+    /**
+     * 复制数据表
+     * @param string $newpre 新表前缀
+     * @param string $oldpre 旧表前缀
+     */
+    protected function copy_table($newpre='',$oldpre=''){
+        $query=Db::query("SHOW TABLE STATUS");
+        foreach($query AS $rs){
+            if(!preg_match("/^$oldpre/i", $rs['Name'])){
+                continue;
+            }
+            $array = query("SHOW CREATE TABLE {$rs['Name']}")[0];
+            $array['Create Table'] = str_replace($oldpre,$newpre,$array['Create Table']);
+            Db::execute($array['Create Table']);
+            $newtable = str_replace($oldpre,$newpre,$rs['Name']);
+            Db::execute("INSERT INTO `{$newtable}` SELECT * FROM `{$rs['Name']}`");
+        }
+    }
+    
+    /**
+     * 所有文件替换新的类名
+     * @param unknown $oldkey
+     * @param unknown $newkey
+     */
+    protected function replace_class_name($oldkey,$newkey,$type='m'){
+        if($type=='m'){
+            $basepath = APP_PATH;
+            $basename = 'app';
+        }else{
+            $basepath = PLUGINS_PATH;
+            $basename = 'plugins';
+        }
+        $file_array = get_dir_file($basepath.$newkey,'php');
+        foreach ($file_array AS $file){
+            write_file($file, str_replace([" $basename\\$oldkey\\"," $basename\\$oldkey;"] , [" $basename\\$newkey\\"," $basename\\$newkey;"] , read_file($file)));
+        }
+    }
+    
+    /**
+     * 复制参数配置,包括参数分类分组
+     * @param unknown $old_id
+     * @param unknown $new_id
+     */
+    protected function copy_config($old_id,$new_id,$type='m'){
+        $_old_id = $type=='m' ? $old_id : -$old_id;
+        $config_group = Db::name('config_group')->where(['sys_id'=>$_old_id])->column(true);
+        foreach($config_group AS $rs){
+            $config = Db::name('config')->where(['type'=>$rs['id']])->column(true);
+            unset($rs['id']);
+            $rs['sys_id'] = $type=='m' ? $new_id : -$new_id;
+            $groupid = Db::name('config_group')->insert($rs,false,true);
+            foreach($config AS $vs){
+                unset($vs['id']);
+                $vs['sys_id'] = $type=='m' ? $new_id : -$new_id;
+                $vs['type'] = $groupid;    //新的分类ID
+                Db::name('config')->insert($vs);
+            }
+        }
+    }
+    
+    /**
+     * 执行安装模块
+     * @param unknown $keywords
+     */
+    protected function install($keywords,$type='m'){
+        $basepath = $type=='m' ? APP_PATH : PLUGINS_PATH;
+        
+        $info = @include $basepath."$keywords/install/info.php";
+        if(empty($info)){
+            return '安装配置文件不存在!';
+        }
+        into_sql(read_file($basepath."$keywords/install/install.sql"));
+        $result = $this->model->create($info);
+        if(empty($result)){
+            return '数据库安装执行失败!';
+        }
+        $model_id = $result->id;
+        
+        $list = 10;
+        $i = 0;
+        $sys_id = $type=='m' ? $model_id : -$model_id;
+        foreach($info['config_group'] AS $title){
+            $data = [
+                    'title'=>$title,
+                    'sys_id'=> $sys_id,
+                    'list'=>--$list,
+                    'ifsys'=>$type=='m'?0:$info['ifsys'],
+            ];
+            $i++;
+            //创建参数配置分类
+            $groupid = Db::name('config_group')->insert($data,false,true);
+            //修改入库前还没有进行分类的参数
+            Db::name('config')->where('type',-$i)->update(['type'=>$groupid,'sys_id'=>$sys_id]);
+        }
+        $this->run_install($model_id,$type,$keywords,'install');
+        return true;
+    }
+    
+    /**
+     * 卸载模块
+     * @param number $ids
+     */
+    protected function uninstall($ids=0,$type='m'){
+        $basepath = $type=='m' ? APP_PATH : PLUGINS_PATH;
+        
+        $id = intval($ids);
+        $info = $this->getInfoData($id);
+        if (empty($info)) return '缺少参数';
+        if (empty($info['keywords'])) return '目录名不存在';
+        
+        $this->run_install($id,$type,$info['keywords'],'uninstall');
+        
+        //删除频道模型记录表
+        $this->model->destroy($id);        
+        
+        //删除程序目录
+        delete_dir($basepath.$info['keywords']);
+        
+        //删除模板目录
+        $this->delete_template_file($info['keywords'],'index',$type);    //前台模板
+        $this->delete_template_file($info['keywords'],'admin',$type);    //后台模板
+        $this->delete_template_file($info['keywords'],'member',$type);    //会员中心模板
+        
+        //删除数据表
+        $oldpre = config('database.prefix').$info['keywords'].'_';
+        $query=Db::query("SHOW TABLE STATUS");
+        foreach($query AS $rs){
+            if(!preg_match("/^$oldpre/i", $rs['Name'])){
+                continue;
+            }
+            Db::execute("DROP TABLE IF EXISTS {$rs['Name']}");
+        }
+        
+        $_id = $type=='m' ? $id : -$id ;
+        //删除参数配置
+        Db::name('config_group')->where(['sys_id'=> $_id])->delete();
+        
+        Db::name('config')->where(['sys_id'=>$_id])->delete();
+        
+        return true;
+    }
+    
+    /**
+     * 复制模块
+     * @param array $info
+     * @param array $data
+     * @param string $type
+     * @return string|boolean
+     */
+    protected function copy_mod($info=[],$data=[],$type='m'){
+        $basepath = $type=='m' ? APP_PATH : PLUGINS_PATH;
+        if (is_dir($basepath.$data['keywords'])) {
+            return '当前目录已经存在了!';
+        }elseif(is_table($data['keywords'].'_content')) {
+            return '当前数据表已经存在了!';
+        }
+        
+        $array = [
+                'name'=>$data['name'],
+                'keywords'=>$data['keywords'],
+        ];
+        $result = $this->model->create($array);
+        $new_id = $result->id;
+        
+        //$old_id = $type=='m' ? modules_config($info['keywords'])['id'] : plugins_config($info['keywords'])['id'];
+        $old_id =  $info['id'];
+        
+        copy_dir($basepath.$info['keywords'], $basepath.$data['keywords']); //复制程序目录
+        $this->copy_template_file($info['keywords'],$data['keywords'],'index',$type);    //复制前台模板
+        $this->copy_template_file($info['keywords'],$data['keywords'],'admin',$type);    //复制后台模板
+        $this->copy_template_file($info['keywords'],$data['keywords'],'member',$type);    //复制会员中心模板
+        
+        $this->replace_class_name($info['keywords'],$data['keywords'],$type);
+        $this->copy_table(config('database.prefix').$data['keywords'].'_' , config('database.prefix').$info['keywords'].'_');
+        $this->copy_config($old_id,$new_id,$type);
+        $this->run_install($new_id,$type,$data['keywords'],'copyinstall');
+        return true;
+    }
+    
+    /**
+     * 复制模板文件
+     * @param string $old_dir 原来的模块目录
+     * @param string $new_dir 新模块的目录
+     * @param string $entrance 前台还是后台
+     * @param string $type 模块还是插件
+     */
+    protected function copy_template_file($old_dir='',$new_dir='',$entrance='index',$type='m'){
+        $basepath = TEMPLATE_PATH.$entrance.'_style/';
+        if($type=='p'){
+            $old_dir = 'plugins/'.$old_dir;
+            $new_dir = 'plugins/'.$new_dir;
+        }
+        $dir = opendir($basepath);
+        while (($file=readdir($dir))!==false) {
+            if($file!='.'&&$file!='..'&&is_dir($basepath.$file.'/'.$old_dir)){
+                copy_dir($basepath.$file.'/'.$old_dir, $basepath.$file.'/'.$new_dir);
+            }
+        }
+    }
+    
+    /**
+     * 执行脚本安装或卸载
+     * @param number $id 模块生成的ID
+     * @param string $type 频道或插件
+     * @param string $keyword 目录名关键字
+     * @param string $act 安装或复制或卸载
+     */
+    protected function run_install($id=0,$type='m',$keyword='',$act='install'){
+        if($type=='m'){
+            $class = "app\\$keyword\\install\\".ucfirst($act);
+        }else{
+            $class = "plugins\\$keyword\\install\\".ucfirst($act);
+        }
+        if(class_exists($class) && method_exists($class, 'run')){
+            $obj = new $class;
+            $obj->run($id);
+        }
+    }
+    
+    /**
+     * 删除模板目录
+     * @param string $old_dir
+     * @param string $entrance
+     * @param string $type
+     */
+    protected function delete_template_file($old_dir='',$entrance='index',$type='m'){
+        if($old_dir===''){
+            return ;
+        }
+        $basepath = TEMPLATE_PATH.$entrance.'_style/';
+        if($type=='p'){
+            $old_dir = 'plugins/'.$old_dir;
+        }
+        $dir = opendir($basepath);
+        while (($file=readdir($dir))!==false) {
+            if($file!='.'&&$file!='..'&&is_dir($basepath.$file.'/'.$old_dir)){
+                delete_dir($basepath.$file.'/'.$old_dir);
+            }
+        }
+    }
+    
+    
+}
+
+
+
+
+

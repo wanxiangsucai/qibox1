@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--[if IE 9]>         <html class="ie9 no-focus" lang="zh"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-focus" lang="zh"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    {block name="page-title"}<title>{$page_title|default='表单生成器'} | {:config('web_site_title')}</title>{/block}
+
+    <meta name="description" content="{:config('web_site_description')}">
+    <meta name="author" content="caiweiming">
+    <meta name="robots" content="noindex, nofollow">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0,user-scalable=0">
+
+
+
+
+    <!-- Stylesheets -->
+    <!-- Page JS Plugins CSS -->
+    {notempty name="_css_files"}
+            {volist name="_css_files" id="css"}
+            {:load_assets($css)}
+            {/volist}
+    {/notempty}
+
+    {block name="plugins-css"}{/block}
+
+    <!-- Bootstrap and OneUI CSS framework -->
+
+    <link rel="stylesheet" href="__STATIC__/libs/sweetalert/sweetalert.min.css">
+    <link rel="stylesheet" href="__STATIC__/libs/magnific-popup/magnific-popup.min.css">
+    <link rel="stylesheet" href="__STATIC__/admin/css/bootstrap.min.css">
+    <link rel="stylesheet" href="__STATIC__/admin/css/oneui.css">
+    <link rel="stylesheet" href="__STATIC__/admin/css/dolphin.css" id="css-main">
+
+    <link rel="stylesheet" id="css-theme" href="__STATIC__/admin/css/themes/default.min.css">
+
+    <!--页面css-->
+    {block name="style"}{/block}
+    {notempty name="_pop"}
+    <style>
+        #page-container.sidebar-l.sidebar-o {
+            padding-left: 0;
+        }
+        .header-navbar-fixed #main-container {
+            padding-top: 0;
+        }
+    </style>
+    {/notempty}
+    <!-- END Stylesheets -->
+
+    <!--插件css钩子-->
+
+    <!--自定义css-->
+    <link rel="stylesheet" href="__STATIC__/admin/css/custom.css">
+    <script>
+        // url
+        var dolphin = {
+            'jcrop_upload_url': '{:url((defined("IN_ADMIN")?"admin":(defined("IN_MEMBER")?"member":"index"))."/attachment/upload", ["dir" => "images", "from" => "jcrop", "module" => request()->module()])}',
+            'ueditor_upload_url': '{:url((defined("IN_ADMIN")?"admin":(defined("IN_MEMBER")?"member":"index"))."/attachment/upload", ["dir" => "images", "from" => "ueditor", "module" => request()->module()])}',
+            'ckeditor_img_upload_url': '{:url((defined("IN_ADMIN")?"admin":(defined("IN_MEMBER")?"member":"index"))."/attachment/upload", ["dir" => "images", "from" => "ckeditor", "module" => request()->module()])}',
+            'WebUploader_swf': '__STATIC__/libs/webuploader/Uploader.swf',
+            'file_upload_url': '{:url((defined("IN_ADMIN")?"admin":(defined("IN_MEMBER")?"member":"index"))."/attachment/upload", ["dir" => "files", "module" => request()->module()])}',
+            'image_upload_url': '{:url((defined("IN_ADMIN")?"admin":(defined("IN_MEMBER")?"member":"index"))."/attachment/upload", ["dir" => "images", "module" => request()->module()])}',
+            'upload_check_url': '{:url((defined("IN_ADMIN")?"admin":(defined("IN_MEMBER")?"member":"index"))."/ajax/check")}',
+            'get_level_data': '{:url((defined("IN_ADMIN")?"admin":(defined("IN_MEMBER")?"member":"index"))."/ajax/getLevelData")}',
+            'quick_edit_url': '{:auto_url("quickEdit")}',
+            'triggers': {$field_triggers|default=[]|json_encode}, // 触发器集合
+            'field_hide': '{$field_hide|default=""}', // 需要隐藏的字段
+            'field_values': '{$field_values|default=""}',
+            'validate': '{$validate|default=""}', // 验证器
+            'validate_fields': '{$validate_fields|default=""}', // 验证字段
+            'search_field': '{:input("param.search_field", "")}', // 搜索字段
+            // 字段过滤
+            '_filter': '{$Request.param._filter ? $Request.param._filter : (isset($_filter) ? $_filter : "")}',
+            '_filter_content': '{$Request.param._filter_content == '' ? (isset($_filter_content) ? $_filter_content : "") : $Request.param._filter_content}',
+            '_field_display': '{$Request.param._field_display ? $Request.param._field_display : (isset($_field_display) ? $_field_display : "")}',
+            '_field_clear': {$field_clear|default=[]|json_encode},
+            'get_filter_list': '{:url((defined("IN_ADMIN")?"admin":(defined("IN_MEMBER")?"member":"index"))."/ajax/getFilterList")}',
+            'curr_url': '{:url("", $Request.route)}',
+            'curr_params': {$Request.param|json_encode},
+            'layer': {:json_encode(config("zbuilder.pop"))}
+        };
+    </script>
+</head>
+<body>
+<!-- Page Container -->
+
+    <!-- Main Container -->
+    <main id="main-container">
+        <!-- Page Header -->
+        {block name="page-header"}
+       
+        {/block}
+        <!-- END Page Header -->
+
+        <!-- Page Content -->
+        <div class="content">
+            {// 页面提示钩子}
+             
+            {// 主体内容}
+            {block name="content"}{/block}
+        </div>
+        <!-- END Page Content -->
+    </main>
+    <!-- END Main Container -->
+
+
+</div>
+<!-- END Page Container -->
+
+
+
+<!-- OneUI Core JS: jQuery, Bootstrap, slimScroll, scrollLock, Appear, CountTo, Placeholder, Cookie and App.js -->
+
+<script src="__STATIC__/js/core/jquery.min.js"></script>
+<script src="__STATIC__/js/core/bootstrap.min.js"></script>
+<script src="__STATIC__/js/core/jquery.slimscroll.min.js"></script>
+<script src="__STATIC__/js/core/jquery.scrollLock.min.js"></script>
+<script src="__STATIC__/js/core/jquery.appear.min.js"></script>
+<script src="__STATIC__/js/core/jquery.countTo.min.js"></script>
+<script src="__STATIC__/js/core/jquery.placeholder.min.js"></script>
+<script src="__STATIC__/js/core/js.cookie.min.js"></script>
+<script src="__STATIC__/libs/magnific-popup/magnific-popup.min.js"></script>
+<script src="__STATIC__/js/app.js"></script>
+<script src="__STATIC__/js/dolphin.js"></script>
+<script src="__STATIC__/js/builder/form.js"></script>
+<script src="__STATIC__/js/builder/aside.js"></script>
+<script src="__STATIC__/js/builder/table.js"></script>
+<script src="__STATIC__/libs/bootstrap-notify/bootstrap-notify.min.js"></script>
+<script src="__STATIC__/libs/sweetalert/sweetalert.min.js"></script>
+<script src="__STATIC__/libs/js-xss/xss.min.js"></script>
+
+
+<!-- Page JS Plugins -->
+<script src="__STATIC__/libs/layer/layer.js"></script>
+{notempty name="_js_files"}
+        {volist name="_js_files" id="js"}
+        {:load_assets($js, 'js')}
+        {/volist}
+{/notempty}
+
+
+
+<script>
+    jQuery(function () {
+        App.initHelpers(['appear', 'slimscroll', 'magnific-popup', 'table-tools']);
+        {notempty name="_js_init"}
+        App.initHelpers({$_js_init});
+        {/notempty}
+    });
+</script>
+
+<!--页面js-->
+{block name="script"}{/block}
+
+<!--插件js钩子--> 
+
+{// 额外HTML代码 }
+{$extra_html|default=''}
+
+{php}if(ENTRANCE !== 'admin'&&IN_WAP===true):{/php}
+{include file="index@footmenu" /}
+{php}endif;{/php}
+</body>
+</html>

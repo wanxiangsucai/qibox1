@@ -1,0 +1,556 @@
+<?php
+namespace app\common\controller\index;
+
+use app\common\controller\IndexBase;
+use app\common\traits\ModuleContent;
+use app\index\model\Label AS LabelModel;
+
+//内容页及列表页的母类
+abstract class C extends IndexBase
+{
+    
+    use ModuleContent;
+    protected $model;                  //内容
+    protected $mid;                    //模型ID
+    protected $m_model;            //模块
+    protected $f_model;              //字段
+    protected $s_model;              //栏目
+    
+    protected function _initialize()
+    {
+        parent::_initialize();
+        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        $dirname = $array[0][1];
+        $this->model        = get_model_class($dirname,'content');
+        $this->s_model     = get_model_class($dirname,'sort');
+        $this->m_model   = get_model_class($dirname,'module');
+        $this->f_model     = get_model_class($dirname,'field');
+    }
+    
+    protected function view_check($info=[]){
+        if($info['status']==0 && !$this->admin && $this->user['uid']!=$info['uid']){
+            $this->error('内容还没通过审核,你不能查看!');
+        }
+    }
+    
+    /**
+     * 列表页
+     *          可以根据栏目ID或者模型ID，但不能为空，不然不知道调用什么字段
+     * @param number $fid 栏目ID,可为空
+     * @param number $mid 模型ID,不能为空
+     * @return mixed|string
+     */
+    public function index($fid=0,$mid=0)
+    {
+        if(!$mid && !$fid){
+            $this->error('参数不存在！');
+        }elseif($fid){ //根据栏目选择发表内容
+            $mid = $this->model->getMidByFid($fid);
+            if(empty($mid)){
+                $this->error('分类不存在!');
+            }
+        }
+        
+        $this->mid = $mid;
+        $m_info = model_config($this->mid);        
+        if(!$m_info){
+            $this->error('模型不存在!');
+        }
+        
+        
+        //$field_array = get_field($this->mid);
+        
+        $data_list = [];
+        //获取列表数据
+        //         $data_list = $this->getListData($fid ? ['fid'=>$fid] : ['mid'=>$mid]);
+        
+        $s_info = $fid ? $this->sortInfo($fid) : [];
+        
+        //如果某个模型有个性模板的话，就不调用母模板
+        $template = $this->get_tpl('list',$mid,$s_info);
+        
+        $GLOBALS['fid'] = $fid; //标签可能会用到
+        
+        //列表显示哪些自定义字段
+        //$tab_list = $this->getEasyIndexItems($field_array);
+        
+        //模板里要用到的变量值
+        $vars = [
+                //'listdb'=>$data_list,
+                'fid'=>$fid,
+                'mid'=>$mid,
+                //    'pages'=>$data_list->render(),
+                's_info'=>$s_info,
+                'info'=>$s_info,
+                'm_info'=>$m_info,
+        ];
+        
+        return $this->fetch($template,$vars);
+    }
+    
+    /**
+     * 更新点击率
+     * @param unknown $id
+     */
+    protected function updateView($id){
+        $this->model->addView($id);
+    }
+    
+    /**
+     * 内容页
+     * @param number $id 内容ID
+     * @return mixed|string
+     */
+    public function show($id=0)
+    {
+        $this->mid = $this->model->getMidById($id);
+        
+        if(empty($this->mid)){
+            $this->error('内容不存在!');
+        }
+        //获取内容数据
+        $info = $this->getInfoData($id);
+        Hook_listen('cms_content_show',$info);
+        
+        $this->view_check($info);
+        
+        $this->updateView($id);
+        
+        $info['field_array'] = $this->get_info_field($info);
+        
+        if($info['picurl']){
+            $detail = explode(',',$info['picurl']);
+            $info['picurl'] = tempdir($detail[0]);
+            foreach($detail AS $key=>$value){
+                $value && $info['picurls'][$key]['picurl'] = tempdir($value);
+            }
+        }
+        
+        if($info['field_array']['pics']['value']){  //图库特别处理
+            $info['picurls'] = $info['field_array']['pics']['value'];
+            $info['picurl'] = $info['field_array']['pics']['value'][0]['picurl'];
+        }
+        
+        $GLOBALS['fid'] = $info['fid']; //标签可能会用到
+        
+        $s_info = $this->sortInfo($info['fid']);
+        //如果某个模型有个性模板的话，就不调用母模板
+        $template = $this->get_tpl('show',$this->mid,$s_info);
+        
+        //$field_db = $this->getEasyFormItems();     //自定义字段
+        
+        //模板里要用到的变量值
+        $vars = [
+                'info'=>$info,
+                'id'=>$id,
+                'fid'=>$info['fid'],
+                'listdb'=>$info['picurls'],
+                's_info'=>$s_info,
+        ];
+        return $this->fetch($template,$vars);
+    }
+    
+    /**
+     * 列表页通过标签显示的数据
+     * @param array $cfg
+     * @return number|mixed|string|\think\Paginator
+     */
+    public function label_list_data($cfg = []){    
+        $map = [];
+        if($cfg['status']>0){
+            $map = [
+                    'status'=>['>=',$cfg['status']],    //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
+            ];
+        }
+        if($cfg['where']){  //用户自定义的查询语句
+            $_array = label_format_where($cfg['where']);
+            if($_array){
+                $map = array_merge($map,$_array);
+            }
+        }
+//         $whereor = [];
+//         if($cfg['whereor']){  //用户自定义的查询语句
+//             $_array = label_format_where($cfg['whereor']);
+//             if($_array){
+//                 $whereor = $_array;
+//             }
+//         }
+        return $this->label_get_list_data($cfg['fid'],$cfg['mid'],$cfg['rows'],$cfg['order'],$cfg['by'],$map);
+    }
+    
+    /**
+     * 列表页从数据库取数据
+     * @param number $fid 栏目ID
+     * @param number $mid   模型ID
+     * @param number $rows  每页几条
+     * @param string $order 按什么方式排序
+     * @param string $by    升序还是降序
+     * @return array|\think\Paginator|number|mixed|string
+     */
+    private function label_get_list_data($fid=0,$mid=0,$rows=5,$order='list',$by='desc',$map=[]){
+        if (!$fid && !$mid){
+            $mid = current(model_config())['id'];   //考虑给其它非列表页调用的时候,不存在fid 也不存在 mid
+            if(empty($mid)){
+                return [];
+            }            
+        }
+        
+        $by = $by == 'asc' ? 'asc' : 'desc';
+        $mid || $mid = $this->model->getMidByFid($fid);
+        $this->mid = $mid;  //getListData要用到的
+        $rows = intval( $rows<1 ? 10 : $rows);
+        $map['mid'] = $mid;
+        if($fid){
+           $fids = get_sort($fid,'sons') ;
+           $map['fid'] = $fids ? ['in',$fids] : $fid;
+        }        
+        $order = in_array($order, ['id','create_time','list','rand()','view']) ? $order : 'list';
+        return $this->getListData($map, "$order $by",  $rows , [] ,true);
+    }
+    
+    
+    /**
+     * APP或小程序 方式JSON调用数据  获取列表页的分页数据
+     * @param string $name 标签名
+     * @param string $page  页码数，第几页
+     * @param number $mid 模型ID
+     * @param number $fid 栏目ID
+     * @param number $rows 取几条数据
+     * @param string $order 按什么方法排序
+     * @param string $by    升序还是倒序
+     * @param string $type 数据查找条件
+     * @param string $where 多项组合查找条件
+     * @param string $status 字段查找条件
+     */
+    public function app_get($name='',$page='',$mid=0, $fid=0 ,$rows=0,$order='',$by='',$type='yz',$where='',$status=''){        
+        
+        $array = cache('config_app_tags');
+        if(empty($array)){
+            $array = LabelModel::where(['if_js'=>1])->column(true,'name');
+            cache('config_app_tags',$array);
+        }
+        
+        $tag_array = $array[$name];
+        if($tag_array){
+            $cfg = unserialize($tag_array['cfg']);
+            extract($cfg);
+        }else{
+            //这里需要对外面传进来的各项参数做一个过滤判断 
+        }
+        
+        $this->mid = $mid;
+        
+        $map = [];
+        if($status>0){
+            $map = [
+                    'status'=>['>=',$status],    //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
+            ];
+        }
+        if($type=='good'){  //取精华数据 这里容易跟上面的条件造成冲突,要注意
+            $map = ['status'=>2];
+        }
+        
+        if($where){  //用户自定义的查询语句
+            $_array = label_format_where($where);
+            if($_array){
+                $map = array_merge($map,$_array);
+            }
+        }
+        //         $whereor = [];
+        //         if($cfg['whereor']){  //用户自定义的查询语句
+        //             $_array = label_format_where($cfg['whereor']);
+        //             if($_array){
+        //                 $whereor = $_array;
+        //             }
+        //         }
+        
+        $data_list = $this->label_get_list_data($fid,$mid,$rows,$order,$by,$map);
+        $data_list->each(function($rs,$key){
+            unset($rs['content'],$rs['full_content']);
+            return $rs;
+        });
+        $data_list = getArray($data_list);
+        return $this->ok_js($data_list);
+    }
+    
+    /**
+     * AJAX 方式调用 无刷新获取列表页的分页数据
+     * @param string $name 标签名
+     * @param string $page  页码数，第几页
+     * @param string $pagename 模板文件名
+     * @param number $mid 模型ID
+     * @param number $fid 栏目ID
+     * @param number $rows 取几条数据
+     * @param string $order 按什么方法排序
+     * @param string $by    升序还是倒序
+     * @param string $type 数据查找条件
+     * @param string $data_type 取什么类型的数据，比如可以设置为json
+     */
+    public function ajax_get($name='',$page='' ,$pagename='',$mid=0, $fid=0 ,$rows=0,$order='',$by='',$type='yz'){
+        
+        //GET优先级比route高,方便重新再定义参数
+        $getData = input('get.');
+        $getData['mid'] && $mid = $getData['mid'];
+        $getData['fid'] && $fid = $getData['fid'];
+        $getData['rows'] && $rows = $getData['rows'];
+        $getData['order'] && $order = $getData['order'];
+        $getData['by'] && $by = $getData['by']; 
+        
+        //这里需要对外面传进来的各项参数做一个过滤判断 
+        
+        $data_type = input('data_type'); 
+        $this->mid = $mid;
+
+        $page_tpl = cache('tags_listpage_tpl_'.$pagename);  //多个标签的模板缓存
+        if(!empty($page_tpl)){
+            $view_tpl = $page_tpl[$name];
+        }
+        
+        $tag_array = cache('qb_tag_'.$name);    //数据库参数配置文件
+        if(empty($tag_array)){                             //数据库设定的模板优先
+            $tag_array = LabelModel::get_tag_data_cfg($name , $pagename);
+            //cache('qb_tag_'.$tag_name,$tag_array,$tag_array['cache_time']);
+            trim($tag_array['view_tpl']) && $view_tpl = $tag_array['view_tpl'];
+        }
+        if(empty($view_tpl)){
+            return $this->err_js('not_tpl');
+            //die('tpl not exists !');
+        }
+        $cfg = unserialize($tag_array['cfg']);
+        $map = [];
+        if($cfg['status']>0){
+            $map = [
+                    'status'=>['>=',$cfg['status']],    //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
+            ];
+        }
+        if($type=='good'){  //取精华数据 这里容易跟上面的条件造成冲突,要注意
+            $map = ['status'=>2];
+        }
+        
+        if($cfg['where']){  //用户自定义的查询语句
+            $_array = label_format_where($cfg['where']);
+            if($_array){
+                $map = array_merge($map,$_array);
+            }
+        }
+//         $whereor = [];
+//         if($cfg['whereor']){  //用户自定义的查询语句
+//             $_array = label_format_where($cfg['whereor']);
+//             if($_array){
+//                 $whereor = $_array;
+//             }
+//         }
+        
+        $data_list = $this->label_get_list_data($fid,$mid,$rows,$order,$by,$map);
+        $array = getArray($data_list);
+        $__LIST__ = $array['data'];
+        if(empty($__LIST__)){
+            //return $this->err_js('null');
+            //die('null');
+            $content = '';
+        }else{            
+            $val = $cfg['val'];
+            if(!empty($val)){
+                $$val = $__LIST__;
+            }
+            
+            eval('?>'.$view_tpl);
+            $content = ob_get_contents();
+            ob_end_clean();
+        }
+
+        $array['data'] = $content;
+        return $this->ok_js($array);
+    }
+    
+    /**
+     * 检查对应的模板是否存在,不存在就返回空值
+     * @param unknown $type list 或 show 页
+     * @return string
+     */
+    protected function check_file($filename){
+        static $path;
+		//static $default_path = null;
+        if(empty($path[config('template.index_style')])){
+            $path[config('template.index_style')] = dirname( makeTemplate('show',false) ).'/';
+        }
+        $file = $path[config('template.index_style')] . $filename . '.' . ltrim(config('template.view_suffix'), '.');
+		if(is_file($file)){
+           return $file;
+        }
+        
+        //寻找default默认风格的模板路径
+// 		if($default_path === null){
+// 			if(config('template.default_view_path')!=''){
+// 			    $view_path = config('template.view_path');
+// 			    config('template.view_path',config('template.default_view_path'));
+// 			    $default_path = dirname( makeTemplate('show',false) ).'/';
+// 			    config('template.view_path',$view_path);
+// 			}
+// 		}		
+// 		if($default_path!==null){
+// 		    $file = $default_path . $type . '.' . ltrim(config('template.view_suffix'), '.');
+// 		    if(is_file($file)){
+// 		        return $file;
+// 		    }
+// 		}
+    }
+    
+    /**
+     * 挑选模板 不存在就返回空值
+     * @param string $type 值为 list 或 show  
+     * @param number $mid 模型ID
+     * @param array $sort 栏目配置参数,比如设置了栏目模板
+     * @return string
+     */
+    protected function get_tpl($type='show',$mid=0,$sort=[]){
+        $template = '';
+        //栏目自定义模板，优先级最高
+        if($sort['template']){
+            $ar = unserialize($sort['template']);
+            if(IN_WAP===true){
+                if($type=='list' && $ar['waplist']){
+                    $template = TEMPLATE_PATH.'index_style/'.$ar['waplist'];
+                }elseif($type=='show' && $ar['wapshow']){
+                    $template = TEMPLATE_PATH.'index_style/'.$ar['wapshow'];
+                }
+            }else{
+                if($type=='list' && $ar['pclist']){
+                    $template = TEMPLATE_PATH.'index_style/'.$ar['pclist'];
+                }elseif($type=='show' && $ar['pcshow']){
+                    $template = TEMPLATE_PATH.'index_style/'.$ar['pcshow'];
+                }
+            }
+            if(!is_file($template)){
+                $template = '';
+            }
+        }
+        
+        //当前风格的模板
+        if (empty($template)) {
+            $template = $this->get_auto_tpl($type,$mid);
+        }
+        
+        if (empty($template)) { //新风格找不到的话,就寻找默认default模板
+            if(config('template.view_base')){
+                if( config('template.default_view_base') ){ //没有使用默认风格
+                    $view_base = config('template.view_base');
+                    $style = config('template.index_style');
+                    config('template.view_base',config('template.default_view_base'));
+                    config('template.index_style','default');   // check_file 此方法要用到
+                    $template = $this->get_auto_tpl($type,$mid);
+                    config('template.view_base',$view_base);
+                    config('template.index_style',$style);
+                }
+            }else{
+                if(config('template.default_view_path')!=''){
+                    $view_path = config('template.view_path');
+                    $style = config('template.index_style');
+                    config('template.view_path',config('template.default_view_path'));
+                    config('template.index_style','default');
+                    $template = $this->get_auto_tpl($type,$mid);
+                    config('template.view_path',$view_path);
+                    config('template.index_style',$style);
+                }
+            }
+        }
+        
+         return $template;
+    }
+    
+    /**
+     * 按优先级寻找模板 比如优先级序顺是 wap_show2(pc_show2) 最高,其次是 show2 接着是 wap_show(pc_show) 最后是 show
+     * @param string $type 可以为show 或 list
+     * @param number $mid 模型ID
+     * @return string
+     */
+    protected function get_auto_tpl($type='show',$mid=0){
+        //模型的模板优先级高于母模板
+        if(IN_WAP===true){
+            $template = $this->check_file('wap_'.$type.$mid);
+        }else{
+            $template = $this->check_file('pc_'.$type.$mid);
+        }
+        if(empty($template)){
+            $template = $this->check_file($type.$mid);
+        }
+        
+        //母模板
+        if(empty($template)){
+            if(IN_WAP===true){
+                $template = $this->check_file('wap_'.$type);
+            }else{
+                $template = $this->check_file('pc_'.$type);
+            }
+        }        
+        if(empty($template)){
+            $template = $this->check_file($type);
+        }
+        return $template;
+    }
+    
+    /**
+     * 获取下一页的内容
+     * @param unknown $id
+     * @return mixed|string
+     */
+    public function next($id)
+    {
+        $id = $this->model->getNextById($id,'sort');
+        if (empty($id)) {
+            $this->error('已经到尽头了');
+        }
+        return $this->show($id);
+    }
+    
+    /**
+     * 对内容页的自定义字段进行转义处理
+     * @param array $info
+     * @return unknown[]|string[]|array[]
+     */
+    protected function get_info_field(&$info=[]){
+        $_field_array = $this->getEasyFormItems();     //自定义字段
+        foreach ($_field_array AS $rs){
+            $type = $rs[0];
+            $value = $info[$rs[1]];
+            
+            if($type == 'images'||$type == 'files'){
+                $detail = explode(',',$value);
+				/*
+				修改了这里 初始化下数组 2018年4月24日
+				解决前台内容页面 爆 致命错误: Cannot use string offset as an array
+				*/
+                $value =[]; 
+                foreach($detail AS $key=>$va){
+                    if($type == 'images'){
+                        $va && $value[$key]['picurl'] = tempdir($va);
+                    }else{
+                        $va && $value[$key]['url'] = tempdir($va);
+                    }                    
+                }
+            }elseif($type == 'image'||$type == 'file'||$type == 'jcrop'){
+                $value && $value = tempdir($value);
+            }elseif($type == 'images2'){
+                //$value = unserialize($value);
+                $value = json_decode($value,true);
+                foreach($value AS $k=>$vs){
+                    $vs['picurl'] = tempdir($vs['picurl']);
+                    $value[$k] = $vs;
+                }
+            }elseif($type == 'select' || $type == 'radio'){
+                
+            }elseif($type == 'checkbox'){
+                
+            }
+            $field_array[$rs[1]] = [
+                    'type'=>$type,
+                    'name'=>$rs[1],
+                    'title'=>$rs[2],
+                    'value'=>$value,
+                    'options'=>$rs[4],
+            ];
+        }        
+        return $field_array;
+    }
+    
+}
