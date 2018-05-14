@@ -1,0 +1,43 @@
+﻿{extend name="$index_style_layout" /}
+
+<!--SEO相关-->
+{block name="head_title"}{$fid?($info['seo_title']?:$info['name']):$m_info['title']}{/block}
+{block name="head_keword"}{$fid?($info['seo_keywords']?:$info['name']):$m_info['title']}{/block}
+{block name="head_description"}{$info.seo_description}{/block}
+
+{block name="body_AllScorllSlide"}
+<!--通栏横幅图片__STATIC__/css/qb_ui.css中控制图片宽度百分百高度行内样式设置，如不设置不小于100px---->
+{qb:tag name="web_banner_pic01" type="image"}
+<!--
+<div class="qb_ui_AllscrollBanner" style="height:300px;">
+	<a href="#1"><img src="__STATIC__/images/s0.jpg"></a>
+</div>
+-->
+<div class="qb_ui_AllscrollBanner" style="height:300px;">
+	<a href="{$url}"><img src="{$picurl}"></a>
+</div>
+{/qb:tag}
+{/block}
+{block name="body_content"}
+<link rel="stylesheet" href="__STATIC__/index/default/pclist.css">
+<div class="ArticlMainContainer">
+	<div class="LeftsCnt">
+		{include file="content/left" /}
+	</div>
+	<div class="RightCnt">
+		<!--name是标签名，跟通用标签不能重名，rows取几条数据,order按什么方式排序，list代表可控排序，id即时间,view代表浏览量-->
+		{qb:listpage name="news_list_page_listdata0" rows="8" order="list"}
+			<ul class="qb_ui_ListArticleTimeTitleCnt">
+				<ol>
+					<dl><dt>{:date("d",$rs.create_time)}</dt><dd>{:date("Y-m",$rs.create_time)}</dd></dl>
+				</ol>
+				<li>
+					<h3><a href="{$rs.url}">{$rs.title|get_word=100}</a></h3>
+					<p>{$rs.content|get_word=200}</p>
+				</li>
+			</ul>
+		{/qb:listpage}
+		{$pages}
+	</div>
+</div>
+{/block}

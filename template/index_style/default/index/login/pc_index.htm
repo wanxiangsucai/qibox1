@@ -1,0 +1,67 @@
+{extend name="$index_style_layout" /}
+{block name="head_mui_css"}<!--不使用mui-->{/block}
+{block name="head_title"}用户登录{/block}
+{block name="nav"}
+<div class="qb_ui_Site_nav">
+	<ul>
+		<ol><i class="si si-home"></i>当前位置：</ol>
+		<li>
+			<a href='/' class="home">网站首页</a> <a href='#'>用户登录</a>
+		</li>
+	</ul>
+</div>
+{/block}
+{block name="body_content"}
+<link rel="stylesheet" href="__STATIC__/index/default/pclogin.css"> 
+<div class="UserLoginCont">
+	<div class="head"><i class="si si-lock-open"></i> 用户登录</div>
+	<div class="LoginCont">
+		<div class="Left">
+			<form class="mui-input-group" action="{:urls('login/index')}" method="post">
+				<div class="LoginBox">
+					<div class="h">已是会员，请登录</div>
+					<ul>
+						<li class="icon"><i class="fa fa-user-o"></i></li>
+						<ol>
+							<input type="text" name="username" minlength="3" maxlength="20" placeholder="请输入帐号" required/>
+						</ol>
+						<li><a href="{:urls('reg/index')}">注册帐号</a></li>
+					</ul>
+					<ul>
+						<li class="icon"><i class="si si-lock"></i></li>
+						<ol>
+							<input type="password" name="password" minlength="3" maxlength="30" placeholder="请输入密码" required/>
+						</ol>
+						<li><a href="{:urls('login/index')}?job=getpass">忘记密码</a></li>						
+					</ul>
+					<div class="butter"><input type="hidden" name="fromurl" value="{$fromurl}"><button type="submit">登录</button></div>
+				</div>
+			</form>
+		</div>
+		<div class="Right">
+			<h3>没有帐号？点击下面按钮马上注册</h3>
+			<p>你也可以用微信扫描下面二维码自动注册或自动登录</p>
+			<dl>
+				<dt><a href="{:urls('index/reg/index')}">马上注册</a></dt>
+				<dd>
+					<img src="{:purl('login/scan/qrcode',['type'=>'wx'])}"/>
+				</dd>
+			</dl>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function countSecond(){　
+	$.get("{:purl('login/scan/cklogin')}?"+Math.random(), function(data){
+		if(data=='ok'){
+			window.location.href="{:purl('login/scan/cklogin')}?type=success";
+		}else{
+			setTimeout("countSecond()",3000);
+		}
+	});	
+}
+countSecond()
+</script>
+
+{/block}

@@ -1,0 +1,46 @@
+{extend name="$index_style_layout" /}
+
+<!--SEO相关-->
+{block name="head_title"}{$info.title}{/block}
+{block name="head_keword"}{$info.title} {:get_sort($info.fid)}  {:M('name')}{/block}
+{block name="head_description"}{:get_word(del_html($info['content']),300)}{/block}
+
+{block name="body_content"}
+<link rel="stylesheet" href="__STATIC__/index/default/showpic.css">
+<div class="ShowPhotoCont">
+{qb:showpage name="photo_show_pic0"}
+	<div class="PhotoBox">
+		<div class="BigPic"><span><img src="{$listdb.0.picurl}" data-preview-src="" data-preview-group="1" /></span></div>
+		<ul class="MorePic">
+{volist name="listdb" id="rs"}
+			<li><span><img src="{$rs.picurl}" data-preview-src="" data-preview-group="1"/></span></li>
+{/volist}
+		</ul>
+	</div>
+{/qb:showpage}
+	<div class="ContentBox">
+		<div class="title">{$info.title}</div>
+		<div class="Cont">
+			<i class="glyphicon glyphicon-paperclip"></i>
+			{$info.content}
+		</div>
+	</div>
+	<!--引用评论碎片-->
+	{qb:comment name="commentwap02" rows='5' tpl="comment/wap01"}{/qb:comment}
+</div>
+
+<link rel="stylesheet" href="__STATIC__/css/mui-preview-image.css">
+<script type="text/javascript" src="__STATIC__/mui/js/mui.zoom.js"></script>
+<script type="text/javascript" src="__STATIC__/mui/js/mui.previewimage.js"></script>
+<script>
+mui.previewImage();
+$('.PhotoBox img').hover(
+	function(){
+		$(this).animate({"width":"150%"},300);
+	},
+	function(){
+		$(this).animate({"width":"100%"},300);
+	}
+);
+</script>
+{/block}

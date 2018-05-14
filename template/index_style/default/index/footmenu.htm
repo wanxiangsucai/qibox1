@@ -1,0 +1,21 @@
+<link rel="stylesheet" href="__STATIC__/index/default/footer.css"> 
+<div class="body_Footcont">
+	<div class="footer">
+		<ul>
+<!--
+			<li><a href="javascript:;history.go(-1);"><i class="si si-arrow-left"></i><span>返回</span></a></li>
+			<li><a href="{:iurl('cms/index/index')}"><i class="si si-present"></i><span>资讯</span></a></li>
+			<li><a href="{:get_url('index')}"><i class="si si-home"></i><span>首页</span></a></li>
+			<li><a href="{:iurl('shop/index/index')}" data="购物车{:iurl('shop/car/index')}"><i class="si si-basket"></i><span>商城</span></a></li>
+			<li><a href="{:get_url('member')}"><i class="si si-user"></i><span>会员中心</span></a></li>
+-->
+{volist name="'wapfoot'|get_web_menu" id="rs"}
+			<li><a href="{$rs.url}"><i class="{$rs.style|default='glyphicon glyphicon-star'}"></i><span>{$rs.name}</span></a></li>
+{/volist}
+
+		</ul>
+	</div>
+</div>
+
+
+ 

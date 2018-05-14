@@ -1,0 +1,62 @@
+{extend name="$index_style_layout" /}
+
+<!--SEO相关-->
+{block name="head_title"}{$fid?($info['seo_title']?:$info['name']):$m_info['title']}{/block}
+{block name="head_keword"}{$fid?($info['seo_keywords']?:$info['name']):$m_info['title']}{/block}
+{block name="head_description"}{$info.seo_description}{/block}
+
+{block name="body_AllScorllSlide"}
+<!--通栏横幅图片__STATIC__/css/qb_ui.css中控制图片宽度百分百高度行内样式设置，如不设置不小于100px---->
+<div class="qb_ui_AllscrollBanner" style="height:300px;">
+	<a href="#1"><img src="__STATIC__/images/s0.jpg"></a>
+</div>
+{/block}
+{block name="body_content"}
+<link rel="stylesheet" href="__STATIC__/index/default/pclist.css">
+<div class="ArticlMainContainer">
+	<div class="LeftsCnt">
+		{include file="content/left" /}
+	</div>
+	<div class="RightCnt">
+		<div class="ListInfoBox">
+		<!--name是标签名，跟通用标签不能重名，rows取几条数据,order按什么方式排序，list代表可控排序，id即时间,view代表浏览量-->
+		{qb:listpage name="news_listimg_page_listdata002" rows="5" order="list"}
+			<ul class="qb_ui_ListInfo_date_title_pics">
+				<ol>
+					<dl>
+						<dt><span>{:date("m-d",$rs['create_time'])}</span><em>{:date("Y",$rs['create_time'])}</em></dt>
+						<dd>
+							<h3><a href="{$rs.url}">{$rs.title|get_word=100}</a></h3>
+							<p>{$rs.content|get_word=200}</p>
+						</dd>
+					</dl>
+				</ol>
+				<li>
+				{volist name="rs.picurls" id="pic"}
+					<div><a href="{$rs.url}"><img src="{$pic}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></div>
+				{/volist}
+				</li>
+			</ul>
+		{/qb:listpage} 
+		</div>
+		<!---异步显示更多调用一个显示更多的碎片模块[shop@content/showmore]，需要预设置如下参数[listurl：访问地址][thispage：开始页][TheListObj：插入对象][ThisRows：条数][listshops：子对象条数]--->
+		<script>
+			var listurl='{qb:list_url name="news_listimg_page_listdata002"/}';	//news_listimg_page_listdata002 跟上面的标签名要一到致
+			var thispage=1;
+			var TheListObj=$('.ListInfoBox');
+			var ThisRows={$news_listimg_page_listdata002.rows};  //每页显示几条 $news_listimg_page_listdata002 跟上面的标签名要一到致,但是这里多了一个$
+			var listshops=$('.ListInfoBox').children().length;	//当前页面显示了几条内容
+		</script>
+		{include file="shop@content/showmore" /}
+		<!--{$pages} 这是传统分页-->
+	</div>
+</div>
+<script>
+function thisimg_over(imgobjs){
+	imgobjs.animate({"max-width":"150%"},300);
+}
+function thisimg_out(imgobjs){
+	imgobjs.animate({"max-width":"100%"},300);
+}
+</script>
+{/block}

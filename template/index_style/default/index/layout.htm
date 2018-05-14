@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{block name="head_title"}{$webdb.seo_title}{/block}</title>
+<meta name="keywords" content='{block name="head_keword"}{$webdb.seo_keyword}{/block}'>
+<meta name="description" content='{block name="head_description"}{$webdb.seo_description}{/block}'>
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+{block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/base.css">{/block}
+{block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
+{block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>{/block}
+{block name="head_layer_js"}<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>{/block}
+</head>
+<body>
+{block name="body_Headcont"}<link rel="stylesheet" href="__STATIC__/index/default/header.css">
+<div class="body_Hearcont">
+	<ul>
+		<ol><a href="/"><img src="{$webdb.logo|tempdir|default='__STATIC__/index/default/logo.png'}"></a></ol>
+		<li>
+		<!--form method="post" action="{:urls('index',$url_array)}">
+		<dl>
+			<dt><input type="text" name="keyword" placeholder="请输关键字" required/></dt>
+			<dd><button type="submit"><i class="fa fa-search"></i></button></dd>
+		</dl>
+		</form-->
+			<div class="HeadMoreMenu">
+				<div class="tag"><i class="si si-list" onclick="$('.HeadMoreMenu .lists').fadeIn();$('.HeadMoreMenu .lists div').animate({'width':'50%'},300);"></i></div>
+				<div class="lists">
+					<label onclick="$('.HeadMoreMenu .lists div').animate({'width':'0%'},300,function(){$('.HeadMoreMenu .lists').fadeOut();});"></label>
+					<div>
+{volist name="'wap'|get_web_menu" id="rs"}
+			<a href="{$rs.url}">{$rs.name}</a>
+	{notempty name="rs.sons"}
+			{volist name="rs.sons" id="vs"}
+					<a href="{$vs.url}">|-- {$vs.name}</a>
+			{/volist}				
+	{/notempty}		
+{/volist}
+						
+					</div>
+				</div>
+			</div>
+		</li>
+	</ul>
+</div>{/block}
+{block name="nav"}{qb:nav title="" url="" /}{/block}
+{block name="body_content"}页面主体部分内容{/block}	
+{block name="body_Footcont"}
+	{include file="index@footmenu" /}
+{/block}	
+</body>
+</html>

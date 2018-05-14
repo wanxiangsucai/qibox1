@@ -1,0 +1,28 @@
+{extend name="$index_style_layout" /}
+
+<!--SEO相关-->
+{block name="head_title"}{$webdb.mseo_title?:$webdb.seo_title}{/block}
+{block name="head_keword"}{$webdb.mseo_keyword?:$webdb.seo_keyword}{/block}
+{block name="head_description"}{$webdb.mseo_description?:$webdb.seo_description}{/block}
+
+{block name="body_content"}
+<style>
+.Show_Shop_List{max-width: 640px;margin: 10px auto;}
+.Show_Shop_List:after{content: '';display: block;clear: both;}	
+</style>
+	{include file="shop@content/wapsort" /}
+	<div class="Show_Shop_List">
+		{qb:listpage name="shop_index001" rows="10" order="list"}
+			{include file="shop@content/waplistshop2" /}			
+		{/qb:listpage}
+	</div>
+	<!---异步显示更多调用一个显示更多的碎片模块[shop@content/showmore]，需要预设置如下参数[listurl：访问地址][thispage：开始页][TheListObj：插入对象][ThisRows：条数][listshops：子对象条数]--->
+	<script>
+		var listurl='{qb:list_url name="shop_index001"/}';
+		var thispage=1;
+		var TheListObj=$('.Show_Shop_List');
+		var ThisRows={$shop_index001.rows};	//每页显示几条 务必要注意,这里的变量名shop_list02必须要与上面的标签名一样,并且前面有$
+		var listshops=$('.Show_Shop_List').children().length;
+	</script>
+	{include file="shop@content/showmore" /}
+{/block}

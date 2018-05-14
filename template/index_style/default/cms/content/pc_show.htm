@@ -1,0 +1,41 @@
+﻿{extend name="$index_style_layout" /}
+
+<!--SEO相关-->
+{block name="head_title"}{$info.title}{/block}
+{block name="head_keword"}{$info.title} {:get_sort($info.fid)}  {:M('name')}{/block}
+{block name="head_description"}{:get_word(del_html($info['content']),300)}{/block}
+
+{block name="body_AllScorllSlide"}
+<!--通栏横幅图片__STATIC__/css/qb_ui.css中控制图片宽度百分百高度行内样式设置，如不设置不小于100px---->
+{qb:tag name="cms_pc_show001" type="image"}
+<div class="qb_ui_AllscrollBanner" style="height:300px;">
+	<a href="#1"><img src="__STATIC__/images/s2.jpg"></a>
+</div>
+{/qb:tag}
+{/block}
+{block name="body_content"}
+<link rel="stylesheet" href="__STATIC__/index/default/pclist.css">
+<div class="ArticlMainContainer">
+	<div class="LeftsCnt">
+		{include file="content/left" /}
+	</div>
+	<div class="RightCnt">
+		<div class="ShowContent">
+			<div class="title">{$info.title}</div>
+			<div class="infos">
+				<span><i class="glyphicon glyphicon-time"></i> {:date("Y-m-d H:i:s",$info.create_time)}</span>
+				<span><i class="si si-eye"></i> {$info.view}</span> 
+			</div>
+			<div class="cnt">
+				{$info.content}
+			</div>
+		</div>
+		<!--自定义字段-->
+		{include file="content/field" /}
+		<!--引用评论碎片-->
+		{qb:comment name="commentpc01" rows='5'}
+			{include file="content/comment_pc" /}
+		{/qb:comment}
+	</div>
+</div>
+{/block}

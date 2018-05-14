@@ -1,0 +1,97 @@
+{extend name="$index_style_layout" /}
+
+<!--SEO相关-->
+{block name="head_title"}{$info.title}{/block}
+{block name="head_keword"}{$info.title} {:get_sort($info.fid)}  {:M('name')}{/block}
+{block name="head_description"}{:get_word(del_html($info['content']),300)}{/block}
+
+{block name="body_content"}
+<link rel="stylesheet" href="__STATIC__/index/default/article.css">
+<div class="ArticleContBox">
+	<div class="MainInfos">
+		<div class="title">{$info.title}</div>
+		<div class="infos">
+			<span><i class="glyphicon glyphicon-time"></i> {:date("Y-m-d H:i:s",$info.create_time)}</span>
+			<span><i class="si si-eye"></i> {$info.view}</span> 
+		</div>
+		<div class="ShowContent">
+			{$info.content}
+		</div>
+	</div>
+	<!--自定义字段-->
+	{include file="content/field" /}
+	<!--引用评论-->
+	{qb:comment name="commentwap01" rows='5'}
+		{include file="content/comment" /}
+	{/qb:comment}
+	<div class="ShowMoreInfos">
+		<div class="head"><i class="si si-book-open"></i> 更多阅读</div>
+		<div class="ListMoreInfos">
+{qb:tag name="news_list_page_listdata02" type="cms"}
+<!--
+			<div class="Lists">
+				<ul>
+					<li>
+						<div class="t"><a href="/index.php/news/content/show/id/4.html">山东乡村全面振兴：为乡村振兴注入新动能</a></div>
+						<div class="m"><span><i class="glyphicon glyphicon-time"></i> 2018-01-20</span><em> <i class="si si-eye"></i> 0</em></div>
+					</li>
+				</ul>
+			</div>
+			<div class="Lists">
+				<ul>
+					<ol><a href="#"><img src="__STATIC__/images/1.jpg" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></ol>
+					<li>
+						<div class="t"><a href="/index.php/news/content/show/id/4.html">山东乡村全面振兴：为乡村振兴注入新动能</a></div>
+						<div class="m"><span><i class="glyphicon glyphicon-time"></i> 2018-01-20</span><em> <i class="si si-eye"></i> 0</em></div>
+					</li>
+				</ul>
+			</div>
+-->
+			<div class="Lists">
+				<ul>
+{notempty name="rs.picurl"}
+					<ol><a href="{$rs.url}"><img src="{$rs.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></ol>
+{/notempty}
+					<li>
+						<div class="t"><a href="{$rs.url}">{$rs.title}</a></div>
+						<div class="m"><span><i class="glyphicon glyphicon-time"></i> {$rs.time}</span><em> <i class="si si-eye"></i> {$rs.view}</em></div>
+					</li>
+				</ul>
+			</div>
+{/qb:tag}
+
+		</div>
+		<div class="ShowMoreButter"><button type="butter" onclick="ShowMoreInfo()">查看更多</button></div>
+	</div>
+</div>
+<script>
+var morepage=1;
+var url='{qb:url name="news_list_page_listdata02" /}';//异步获取更多内容的url
+function ShowMoreInfo(){	
+	morepage++;	
+	$.get(url+morepage+'&'+Math.random(),function(res){
+		if(res.code==0){
+			if(res.data==''){
+				layer.msg("已经显示完了！",{time:500});
+				$('.ShowMoreButter button').attr('onclick','');
+				$('.ShowMoreButter button').html('显示完了');
+				$('.ShowMoreButter button').css({'background':'#CCC'});
+			}else{
+				res.data="<span class='pages"+morepage+"'>"+res.data+"</span>";			
+				$('.ListMoreInfos').append(res.data);
+				$('.ListMoreInfos .pages'+morepage).hide();
+				$('.ListMoreInfos .pages'+morepage).show(500);
+			}
+		}else{
+			layer.msg(res.msg,{time:2500});
+		}
+	});
+}
+function thisimg_over(imgobjs){
+	imgobjs.animate({"max-width":"150%","max-height":"150%"},300);
+}
+function thisimg_out(imgobjs){
+	imgobjs.animate({"max-width":"100%","max-height":"100%"},300);
+}
+</script>
+{/block}

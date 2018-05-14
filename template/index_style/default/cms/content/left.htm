@@ -1,0 +1,28 @@
+<link rel="stylesheet" href="__STATIC__/index/default/left.css">
+<div class="LeftBoxInfo">
+	<ul class="sorts">
+		{volist name="$fid|get_sort='other'" id="name"}
+			<li {eq name="$key" value="$fid"}class='ck'{/eq}><a href="{:urls('content/index',"fid=$key")}">{$name}</a></li>
+		{/volist}
+	</ul>
+	<div class="contact">
+		<div class="head">联系我们</div>
+		<div class="cnt">
+{qb:tag name="left_address001" type="text"}
+			<ul class="qq">
+				<li><a title="程序购买咨询" href=" http://wpa.qq.com/msgrd?v=3&uin=2680867060&site=qq&menu=yes" target="_blank"><img SRC='http://wpa.qq.com/pa?p=1:2680867060:41' ></a></li>
+				<li><a title="程序购买咨询" href=" http://wpa.qq.com/msgrd?v=3&uin=81684210&site=qq&menu=yes" target="_blank"><img SRC='http://wpa.qq.com/pa?p=1:81684210:41'></a></li>
+			</ul>
+			<ul class="time">
+				<ol><i class="glyphicon glyphicon-time"></i> 工作时间</ol>
+				<li>周一至周五：09:00-17:30</li>
+				<li>周六至周日：10:00-16:00</li>
+			</ul>
+			<ul class="tel">
+				<ol><i class="glyphicon glyphicon-headphones"></i> 联系电话</ol>
+				<li>唐先生：<a href="tel:15603012345">15603012345</a></li>
+			</ul>
+{/qb:tag}
+		</div>
+	</div>
+</div>

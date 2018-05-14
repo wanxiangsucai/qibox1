@@ -1,0 +1,88 @@
+﻿{extend name="$index_style_layout" /}
+{block name="head_title"}确定购买商品{/block}
+{block name="body_content"}
+<style>
+.PostOrder{
+	max-width: 640px;
+	margin:auto;
+	padding: 30px 0;
+}
+.PostOrder ul{
+	display: table;
+	width: 90%;
+	margin: 0 auto 15px auto;
+	border-bottom: #DDD solid 1px;
+}
+.PostOrder ul ol,.PostOrder ul li{
+	display: table-cell;
+	padding: 5px;
+	vertical-align: middle;
+}
+.PostOrder ul ol{
+	width:50px;
+	text-align: center;
+	font-size: 20px;
+	color: #666;
+}
+.PostOrder ul li input{
+	border: 0px;
+	width: 100%;
+	outline: none;
+}
+.PostOrder dl{
+	display: table;
+	width: 90%;
+	margin: 0 auto 15px auto;
+}
+.PostOrder dl dt,.PostOrder dl dd{
+	display: table-cell;
+	padding: 5px;
+	vertical-align: middle;
+}
+.PostOrder dl dt{
+	width:70px;
+}
+.PostOrder dl dd input[type="radio"]{
+	margin: 0 5px 0 10px;
+}
+.PostOrder div button{
+	display: block;
+	width:90%;
+	margin: 15px auto 0 auto;
+	border: 0px;
+	line-height: 50px;
+	background: #EBEEF0;
+	border-radius: 5px;
+	color: #888;
+	font-size: 20px;
+	cursor: pointer;
+}
+.PostOrder div button[type=submit]{
+	background: #257FED;
+	color: #FFF;
+}	
+</style>
+<div class="PostOrder">
+	<form action="{:urls('add')}" method="post">
+		<ul>
+			<ol><i class="si si-user"></i></ol>
+			<li><input type="text" name="linkman" placeholder="请输入联系人" ></li>
+		</ul>
+		<ul>
+			<ol><i class="fa fa-volume-control-phone"></i></ol>
+			<li><input type="text" name="telphone" placeholder="请输入联系电话" ></li>
+		</ul>
+		<dl>
+			<dt>支付类型</dt>
+			<dd>
+				<input type="radio" name="ifolpay" value="1" checked />在线付款
+				<input type="radio" name="ifolpay" value="0" />货到付款
+			</dd>
+		</dl>
+		<div>
+			<button type="submit">提交</button>
+			<button type="button" onclick="javascript:history.back(-1);return false;">返回</button>
+		</div>
+	</form>
+</div>
+{/block}

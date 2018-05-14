@@ -1,0 +1,253 @@
+{extend name="$index_style_layout" /}
+
+<!--SEO相关-->
+{block name="head_title"}{$info.title}{/block}
+{block name="head_keword"}{$info.title} {:get_sort($info.fid)}  {:M('name')}{/block}
+{block name="head_description"}{:get_word(del_html($info['content']),300)}{/block}
+
+{block name="body_content"}
+<!--幻灯片开始---->
+{qb:showpage name="shop_show_rollpic"}
+<link rel="stylesheet" href="__STATIC__/mui/css/mui.min.css">
+<script type="text/javascript" src="__STATIC__/mui/js/mui.min.js"></script>
+<link rel="stylesheet" href="__STATIC__/index/default/slider.css">
+<div id="slider" class="mui-slider" >
+	<div class="mui-slider-group mui-slider-loop">
+		<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="{:end($info['picurls'])['picurl']}"></a></div>
+{volist name="info.picurls" id="rs"}
+		<div class="mui-slider-item"><a href="#"><img src="{$rs.picurl}"></a></div>
+{/volist}
+		<div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="{$info.picurls.0.picurl}"></a></div>
+	</div>
+	<div class="mui-slider-indicator">
+{volist name="info.picurls" id="pic"}
+		<div class="mui-indicator {eq name='i' value='1'}mui-active{/eq}"></div>
+{/volist}
+	</div>
+</div>
+<script type="text/javascript" charset="utf-8">var slider = mui("#slider");</script>
+{/qb:showpage}
+<!--幻灯片结束---->
+{php}{/php}
+<link rel="stylesheet" href="__STATIC__/index/default/show.css">
+<div class="ShowContBox">
+	<div class="BaseInfos">
+		<div class="title">
+			<a href="#">限时特惠</a>
+			<span>{$info.title}</span>
+		</div>
+		<dl class="others">
+			<dt>
+				<div>&yen;<span>{$info.price}</span><em>起</em></div>
+				<p>&yen;3600</p>
+			</dt>
+			<dd>距离结束：<em>4134234</em> <span></span></dd>
+		</dl>
+		<!--a href="{:auto_url('order/add',['id'=>$id])}"><button type="butter">立即购买</button></a-->
+	</div>
+	<div style="background: #FFF;margin-top: 15px;">
+		<div class="qb_ui_wap_select_shoptype">
+{php}
+$field_array=get_field($info['mid']);
+$array1=get_shop_type('type1',$info);
+$array2=get_shop_type('type2',$info);
+$array3=get_shop_type('type3',$info);
+{/php}
+{notempty name="array1"}
+			<ul class="shoptype1">
+				<ol>{$field_array.type1.title}</ol>
+				<li>
+				{volist name="array1" id="rs"}
+					<div data-price="{$rs.price}">{$rs.title}</div>
+				{/volist}
+				</li>
+			</ul>
+{/notempty}
+{notempty name="array2"}
+			<ul class="shoptype2">
+				<ol>{$field_array.type2.title}</ol>
+				<li>
+				{volist name="array2" id="rs"}
+					<div>{$rs.title}</div>
+				{/volist}
+				</li>
+			</ul>
+{/notempty}
+{notempty name="array3"}
+			<ul class="shoptype3">
+				<ol>{$field_array.type3.title}</ol>
+				<li>
+				{volist name="array3" id="rs"}
+					<div>{$rs.title}</div>
+				{/volist}
+				</li>
+			</ul>
+{/notempty}
+			<dl>
+				<dt>购买数量</dt>
+				<dd class="chnageBuyNum">
+					<span class="fa fa-minus"></span>
+					<div><input type="text" value="1"/></div>
+					<em class="fa fa-plus"></em>
+				</dd>
+			</dl>
+			<div class="butters">
+				<span><button onclick="BuyThisShop(2)">立即购买</button></span>
+				<em><button onclick="BuyThisShop(1)">加入购物车</button></em>
+			</div>			
+		</div>
+		<script>
+			var type1=0;
+			var type2=0;
+			var type3=0;
+			var shopnum=1;
+			var shopprice="{$info.price}";
+			$('.shoptype1 li div').click(function(){
+				$('.shoptype1 li div').removeClass('ck');
+				$(this).addClass('ck');
+				type1=$(this).index()+1;
+				var thisprice = $(this).data('price');
+				if(thisprice>0){
+					$('.BaseInfos .others span').html(thisprice);
+				}else{
+					$('.BaseInfos .others span').html(shopprice);
+				}
+			});
+			$('.shoptype2 li div').click(function(){
+				$('.shoptype2 li div').removeClass('ck');
+				$(this).addClass('ck');
+				type2=$(this).index()+1;
+			});
+			$('.shoptype3 li div').click(function(){
+				$('.shoptype3 li div').removeClass('ck');
+				$(this).addClass('ck');
+				type3=$(this).index()+1;
+			});
+			$('.chnageBuyNum em').click(function(){
+				shopnum++;
+				$('.chnageBuyNum div input').val(shopnum);
+			});
+			$('.chnageBuyNum span').click(function(){
+				shopnum--;
+				if(shopnum<1){
+					layer.alert('购买数量不能小于1');
+					shopnum=1;
+				}
+				$('.chnageBuyNum div input').val(shopnum);
+			});
+			function BuyThisShop(totype){
+				if((type1==0&&$(".shoptype1").length>0)||(type2==0&&$(".shoptype2").length>0)||(type3==0&&$(".shoptype3").length>0)){
+					layer.alert('没有选择商品类型');
+				}else{
+					var gotourl="{:urls('car/act')}?shopid={$id}&type1="+type1+"&type2="+type2+"&type3="+type3+"&num="+shopnum;
+					$.get(gotourl+"&"+Math.random(),function(d){
+						if(d=='ok'){			
+							if(totype==1){
+								layer.msg('成功加入购物车');
+							}else{
+								window.location.href="{:urls('car/index')}";
+							}
+						}else{
+							layer.alert('操作错误！');
+						}
+					});					
+				}				
+			}
+			$('.chnageBuyNum div input').change(function(){
+				shopnum=parseInt($(this).val());
+				if(shopnum<1){
+					layer.alert('购买数量不能小于1');
+					shopnum=1;
+					$(this).val(shopnum);
+				}
+			});
+		</script>
+	</div>
+	<div class="ChangeShowCont">
+		<div class="mui-slider">
+			<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+				<a class="mui-control-item" href="#mobileitem1">产品介绍</a>
+				<a class="mui-control-item" href="#mobileitem2">购买注意事项</a>
+			</div>
+			<div class="mui-slider-progress-bar mui-col-xs-6"></div>
+			<div class="mui-slider-group">
+				<div id="mobileitem1" class="mui-slider-item mui-control-content mui-active">
+					<div class="contentinfo">
+					{$info.content}
+					</div>
+				</div>
+				<div id="mobileitem2" class="mui-slider-item mui-control-content">
+					<div class="contentinfo">
+					{qb:tag name="shop_notice_001" type="text"}购买注意事项!!{/qb:tag}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="TzContBoxs">
+		<div class="head"><i class="fa fa-send"></i>特惠推荐</div>
+		<div class="ListShops">
+{qb:tag name="shop_showpage_more001" type="shop"}
+			<div class="lists">
+				<ul>
+					<ol><a href="{$rs.url}"><img src="{$rs.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></ol>
+					<li>
+						<div class="title"><a href="{$rs.url}">{$rs.title}</a></div>
+						<div class="infos">
+							<div class="price">&yen;<span>2480</span><em>起</em></div>
+							<p>&yen;3600</p>
+						</div>
+					</li>
+				</ul>
+			</div>
+{/qb:tag}
+		</div>
+		<div class="ShowMoreInfo"><button type="butter" onclick="ShowMoreInfo()">查看更多</button></div>
+	</div>
+</div>
+<script type="text/javascript" src="__STATIC__/index/default/showtime.js"></script>
+<script type="text/javascript">
+var morepage=1;
+var url='{qb:url name="shop_showpage_more001" /}';//异步获取更多内容的url
+function ShowMoreInfo(){	
+	morepage++;	
+	$.get(url+morepage+'&'+Math.random(),function(res){
+		if(res.code==0){
+			if(res.data==''){
+				layer.msg("已经显示完了！",{time:500});
+				$('.ShowMoreInfo button').attr('onclick','');
+				$('.ShowMoreInfo button').html('显示完了');
+				$('.ShowMoreInfo button').css({'background':'#CCC'});
+			}else{
+				res.data="<span class='pages"+morepage+"'>"+res.data+"</span>";			
+				$('.ListShops').append(res.data);
+				$('.ListShops .pages'+morepage).hide();
+				$('.ListShops .pages'+morepage).show(500);
+			}
+		}else{
+			layer.msg(res.msg,{time:2500});
+		}
+	});
+}
+
+var checktime=0;
+function show_time(){
+	checktime++;
+	var thetime=parseInt($('.BaseInfos .others dd em').html())-checktime;
+	if(thetime>0){
+		$('.BaseInfos .others dd span').html(format_time(thetime));
+	}else{
+		$('.BaseInfos .others dd span').html('活动结束！');
+	}
+}
+setInterval("show_time()",1000);
+
+function thisimg_over(imgobjs){
+	imgobjs.animate({"max-width":"150%","max-height":"150%"},300);
+}
+function thisimg_out(imgobjs){
+	imgobjs.animate({"max-width":"100%","max-height":"100%"},300);
+}
+
+</script>
+{/block}
