@@ -53,7 +53,7 @@ INSERT INTO `qb_admin_menu` (`id`, `pid`, `type`, `name`, `url`, `target`, `ifsh
 (5, 4, 0, '用户资料管理', '/admin.php/admin/member/index.html', 0, 1, 0, '', 3, 0, ''),
 (6, 0, 0, '应用市场', '', 0, 1, 0, '', 3, 0, 'fa fa-fw fa-skyatlas'),
 (7, 6, 0, '频道应用市场', '/admin.php/admin/module/market.html', 0, 1, 0, '', 3, 0, ''),
-(8, 6, 0, '插件应用市场', '/admin.php/admin/module/market.html', 0, 1, 0, '', 3, 0, ''),
+(8, 6, 0, '插件应用市场', '/admin.php/admin/plugin/market.html', 0, 1, 0, '', 3, 0, ''),
 (9, 6, 0, '钩子接口应用市场', '/admin.php/admin/hook_plugin/market.html', 0, 1, 0, '', 3, 0, ''),
 (10, 6, 0, '风格市场', '/admin.php/admin/style/market.html', 0, 1, 0, '', 3, 0, '');
 
