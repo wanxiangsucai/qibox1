@@ -170,11 +170,13 @@ class Error extends Controller
                 }
             }
         }
+        $password_rand = rands(5);
         $array = [
                 'username'=>$username,
-                'password'=>md5($password),
+                'password_rand'=>$password_rand,
+                'password'=>md5($password.$password_rand),
         ];
-        Db::name("members")->where(['uid'=>1])->update($array);
+        Db::name("memberdata")->where(['uid'=>1])->update($array);
         $array = [
                 'username'=>$username,
                 'regip'=>get_ip(),
