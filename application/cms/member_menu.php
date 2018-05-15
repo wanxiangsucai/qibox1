@@ -15,6 +15,10 @@ return array(
 										'title'=>'发布内容',
 										'link'=>'content/postnew',
 									),
+								        array(
+								                'title'=>'采集公众号文章',
+								                'link'=>'content/copynews',
+								        ),
 								),
 							),
 				),

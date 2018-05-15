@@ -230,7 +230,7 @@ class Api extends IndexBase
             return $listdb;
         }
         $listdb->each(function($rs,$key){
-            $rs['time'] = self::format_time(strtotime($rs['create_time']));
+            $rs['time'] = format_time(strtotime($rs['create_time']),true);
             $rs['username'] = get_user_name($rs['uid']);
             $rs['icon'] = get_user_icon($rs['uid']);            
             if($rs['reply']){
@@ -245,25 +245,7 @@ class Api extends IndexBase
         return $listdb;
     }
     
-    private function format_time($time){
-        $_time = time() - $time;
-        if($_time<60){
-            $msg = '刚刚';
-        }elseif($_time<1800){
-            $msg = intval($_time/60).'分钟前';
-        }elseif($_time<3600){
-            $msg = '半小时前';
-        }elseif($_time<3600*24){
-            $msg = intval($_time/3600).'小时前';
-        }elseif($_time<3600*24*30){
-            $msg = intval($_time/(3600*24)).'天前';
-        }elseif($_time<3600*24*30*12){
-            $msg = intval($_time/(3600*24*30)).'个月前';
-        }else{
-            $msg = date('Y-m-d H:i',$time);
-        }
-        return $msg;
-    }
+
 	
 	public function delete($ids){
 	    if (empty($ids)) {

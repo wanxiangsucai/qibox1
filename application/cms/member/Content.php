@@ -14,4 +14,14 @@ class Content extends C
 	    return $this->fetch();
 	}
 	
+	/**
+	 * 采集公众号的文章
+	 * @param number $fid
+	 * @return mixed|string
+	 */
+	public function copynews($fid=0){
+	    $this->assign('fid',$fid);
+	    return $this->fetch();
+	}
+	
 }

@@ -68,7 +68,7 @@ abstract class Post extends IndexBase
         if($rs['uid']!=$this->user['uid']&&!$this->admin){
             return $this->err_js('你没权限');
         }
-        $data = input();
+        $data = get_post();
         is_array($data['picurl']) && $data['picurl'] = implode(',', $data['picurl']);   //小程序传过来的是数组
         $array = [
                 'id' =>$data['id'],
@@ -109,7 +109,7 @@ abstract class Post extends IndexBase
      */
     public function add($mid=1){
         
-        $data = input();
+        $data = get_post();
         
         $result=$this->add_check($mid,$data['fid'],$data);
         

@@ -88,7 +88,7 @@ abstract class Reply extends Model
         if($result){
             hook_listen(config('system_dirname').'_model_replyadd_end',$data,$result->id);    //成功发表信息后的钩子
             self::$content_model->addReply($id);
-            self::$content_model->editData(0,['id'=>$id,'list'=>time()]);
+            self::$content_model->editData(0,['id'=>$id,'replyuser'=>login_user('username'),'list'=>time()]);
             if($pid){
                 self::where('id','=',$pid)->setInc('reply',1);      //引用评论
                 self::where('id','=',$pid)->update(['id'=>$pid,'list'=>time()]);

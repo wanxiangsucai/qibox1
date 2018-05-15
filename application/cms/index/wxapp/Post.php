@@ -47,6 +47,29 @@ class Post extends _Post
         }
         return parent::add($mid);
     }
+	
+    /**
+     * 采集公众号的文章
+     * @param number $mid
+     * @return void|\think\response\Json|\think\response\Json
+     */
+	public function copynews($mid=1){
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+            if(!$data['fid']){
+                return $this->err_js('你没有选择栏目!');
+            }
+            if(!strstr($data['mpurl'],'mp.weixin.qq.com')&&!strstr($data['mpurl'],'toutiao.com')&&!strstr($data['mpurl'],request()->domain())){
+                return $this->err_js('请粘贴公众号网址！');
+            }
+            $array = \app\common\util\CopyMp::get_weixin_article($data['mpurl'],$data['fid']);
+            if($array['title']==''||$array['content']==''){
+                return $this->err_js('采集失败');
+            }
+            $this->request->post($array);
+            return parent::add($mid);
+        }
+    }
     
     /**
      * 获取栏目数据

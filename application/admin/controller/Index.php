@@ -77,7 +77,7 @@ class Index extends AdminBase
 		$map=[];
 		$map['uid']  = ['>',0];
         $this->assign('user_num', User::where($map)->count('uid') );
-        $this->assign('cms_num', Db::name('cms_content')->count('id') );
+        is_table('cms_content') && $this->assign('cms_num', Db::name('cms_content')->count('id') );
         $this->assign('systemMsg', self::get_system_info());
 		return $this->fetch();
 	}
