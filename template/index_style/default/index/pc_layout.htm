@@ -17,10 +17,10 @@
 <div class="qb_pc_topBox">
 	<ul>		
 {notempty name="$userdb"}
-		<ol>{$userdb.username} 您好！欢迎来到齐博软件</ol>
+		<ol>{$userdb.username} 您好！欢迎来到{$webdb.webname}</ol>
 		<li><a href="{:get_url('member')}" target="_blank">进入会员中心</a> <a href="{:get_url('quit')}" target="_blank">安全退出</a></li>
 {else /}
-		<ol>您好！欢迎来到齐博软件</ol>
+		<ol>您好！欢迎来到{$webdb.webname}</ol>
 		<li>
 			{include file="index@min_login" /}
 		</li>
