@@ -93,17 +93,17 @@ class User extends Model
 		if(!$rs){
 			return 0;
 		}
-		if(defined("UC_CONNECT")){
-			if(md5(md5($password).$rs['salt'])==$rs['password']){
-				return $rs;
-			}
-		}else{
+// 		if(defined("UC_CONNECT")){
+// 			if(md5(md5($password).$rs['salt'])==$rs['password']){
+// 				return $rs;
+// 			}
+// 		}else{
 			if($ckmd5 && strlen($password)==32 && $password==$rs['password'] ){
 				return $rs;
-			}elseif(md5($password)==$rs['password']){
+			}elseif(md5($password.$rs['password_rand'])==$rs['password']){
 				return $rs;
 			}
-		}
+// 		}
 		return -1;
 	}
 	
@@ -266,7 +266,8 @@ class User extends Model
         
 		//用户昵称
 		$array['nickname'] = $array['username'];
-		$array['password'] = md5 ($array['password']);
+		$array['password_rand'] = rands(rand(5,10));
+		$array['password'] = md5 ($array['password'].$array['password_rand']);
 
 		if($result = self::create($array)){		
 		    return $result->uid;
@@ -290,7 +291,8 @@ class User extends Model
 	        }
 	    }
 	    if($array['password']){
-	        $array['password'] = md5($array['password']);
+	        $array['password_rand'] = rands(rand(5,10));
+	        $array['password'] = md5($array['password'].$array['password_rand']);
 	    }
 		
 		if(self::update($array)){
@@ -312,7 +314,8 @@ class User extends Model
 			}
 		}
 		if($array['password']){
-		    $array['password'] = md5($array['password']);
+		    $array['password_rand'] = rands(rand(5,10));
+		    $array['password'] = md5($array['password'].$array['password_rand']);
 		}
 
 // 		if(preg_match("/^pwbbs/",config('webdb.passport_type'))){

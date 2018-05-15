@@ -15,6 +15,7 @@ class Alonepage extends IndexBase
         }
         AlonepageModel::where('id',$id)->setInc('view',1);
         $this->assign('info', $info);
+		$this->assign('fid','alonepage'.$id);	//这里纯属是给PC头部菜单做选中样式调用
         return $this->fetch($template);
     }
 }

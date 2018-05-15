@@ -16,6 +16,7 @@ class Getpassword extends IndexBase
         if( time()-get_cookie('send_num') <120 ){
             return $this->err_js('2分钟后,才能再次获取验证码!');
         }
+        $to = mymd5($to,'DE');
         $num = cache(get_cookie('user_sid').'_reg') ?: rand(1000,9999);
         $send_num = get_md5_num($to.$num,6);
         $title = '来自《'.config('webdb.webname').'》的验证码,请注册查收';
@@ -47,6 +48,7 @@ class Getpassword extends IndexBase
      */
     public function check_num($num='',$field=''){
         //邮箱注册码与手机注册码,不建议同时启用,所以这里没分开处理
+        $field = mymd5($field,'DE');
         $_num = cache(get_cookie('user_sid').'_reg');
         $send_num = get_md5_num($field.$_num,6);
         if( $num ==  $send_num){
@@ -62,7 +64,12 @@ class Getpassword extends IndexBase
         if($username!=''){
             $info = UserModel::get_info($username,'username');
             if($info){
-                return $this->ok_js($info);
+                $array = [
+                        'uid'=>$info['uid'],
+                        'email'=>mymd5($info['email']),
+                        'mobphone'=>$info['mobphone']?mymd5($info['mobphone']):'',
+                ];
+                return $this->ok_js($array);
             }else{
                 return $this->err_js('用户不存在!');
             }

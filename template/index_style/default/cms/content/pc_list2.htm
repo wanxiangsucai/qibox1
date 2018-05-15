@@ -33,7 +33,7 @@
 				</ol>
 				<li>
 				{volist name="rs.picurls" id="pic"}
-					<div><a href="{$rs.url}"><img src="{$pic}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></div>
+					{if ($key<5)}<div><a href="{$rs.url}"><img src="{$pic}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></div>{/if}
 				{/volist}
 				</li>
 			</ul>

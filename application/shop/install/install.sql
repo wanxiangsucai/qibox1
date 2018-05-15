@@ -8,6 +8,10 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 
 
 
+--
+-- 表的结构 `qb_shop_car`
+--
+
 DROP TABLE IF EXISTS `qb_shop_car`;
 CREATE TABLE IF NOT EXISTS `qb_shop_car` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增值',
@@ -23,13 +27,7 @@ CREATE TABLE IF NOT EXISTS `qb_shop_car` (
   PRIMARY KEY (`id`),
   KEY `shopid` (`shopid`,`uid`),
   KEY `uid` (`uid`,`update_time`,`ifchoose`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='购物车' AUTO_INCREMENT=2 ;
-
---
--- 转存表中的数据 `qb_shop_car`
---
-
-INSERT INTO `qb_shop_car` (`id`, `shopid`, `type1`, `type2`, `type3`, `num`, `create_time`, `update_time`, `ifchoose`, `uid`) VALUES(1, 3, 3, 1, 0, 8, 1521779315, 1521780887, 1, 5);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='购物车' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -51,11 +49,9 @@ CREATE TABLE IF NOT EXISTS `qb_shop_content` (
 -- 转存表中的数据 `qb_shop_content`
 --
 
-INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES(3, 1, 1);
-INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES(2, 1, 1);
-INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES(4, 1, 1);
-INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES(5, 1, 1);
-INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES(6, 1, 1);
+INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES
+(3, 1, 1),
+(2, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -107,11 +103,9 @@ CREATE TABLE IF NOT EXISTS `qb_shop_content1` (
 -- 转存表中的数据 `qb_shop_content1`
 --
 
-INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES(3, 1, 1, '魅族手机M9最新款', 1, 1, 25, 1, 0, 1517981293, 1523952575, 0, 'uploads/images/20180208/c30043460273133c77ddb0ccc93d7f9d.jpg', '<p>这是手机哦</p>', '10.22', 0, 0, 0, 0, 0, '["16G|32","32G","64G|45"]', '["红色","白色"]', '[]', 30);
-INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES(2, 1, 1, '女人裤子最新款', 1, 1, 234, 1, 0, 1516259334, 1521098081, 0, 'uploads/images/20180315/bde984aaef393d496a50d3847282f7b5.jpg', '<p>王猛不避讳自己性格的“弱点”：“内向，敏感，不善交际”。他认为，这正与父母有关，“我母亲一直倾向于把我关在家里，按自己的喜好包办事情。”</p><p>王猛至今记忆深刻的一件事发生在小学一二年级——班里文艺演出要求穿齐膝短裤。“母亲却不由分说让我穿长裤，我提出带上短裤备用也没被准许。”王猛说，从小到大几乎所有的衣服都是按照父母的意愿和审美来置办的，几乎没有一次是按照自己的意愿来进行选择的。</p><p>王猛五六年级时，对奥数很有感觉，一开始母亲并不乐意让他去。有次参加奥数考试，携带的文件夹不见了，找回后发现被划坏并涂抹，“回到家后，母亲不但没有安慰我，反而说‘这下你知道外面的世界很精彩了吧’！”</p><p>高中毕业前，所有的社交圈子几乎都在生活的大院里，“朋友，都是父母认识、了解或者听过的”。高中时，王猛曾强烈要求到外面的学校上学，但遭到父母的拒绝。尽管后来考上北大，也因社交障碍很难与人交往。</p><p><br/></p>', '20.02', 0, 0, 0, 0, 0, '["大份|10","中份|20","小份|40"]', '["XX","XL","XXXL"]', '["红","黄","蓝"]', 30);
-INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES(4, 1, 1, 'test', 0, 1, 0, 1, 0, 1523498601, 1523952604, 0, '', '<p>testsssssssss<br/></p>', '0.00', 0, 0, 0, 0, 0, '', '', '', 0);
-INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES(5, 1, 1, 'fdasfd', 0, 1, 2, 1, 0, 1523498648, 0, 0, '', '<p>afdsafds</p>', '0.00', 0, 0, 0, 0, 0, '', '', '', 0);
-INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES(6, 1, 1, 'efdsa', 0, 1, 6, 1, 0, 1523501487, 0, 0, '', '<p>fdsafds</p>', '0.00', 0, 0, 0, 0, 0, '', '', '', 0);
+INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES
+(3, 1, 1, '魅族蓝牙小音箱', 1, 1, 36, 1, 0, 1517981293, 1526352423, 0, 'uploads/images/20180302/CnQOjVikE4qAYN55AAMAoDa-ghQ407.jpg', '<p><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/CnQOjVij_geANlzXAAJ4JdyIZ7g421.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/Cix_s1ij_giAVoRwAALyOhoZT6k135.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/Cix_s1ij_giAcddhAAIAdrNbQ5I909.jpg"/></p>', '100.22', 0, 0, 0, 0, 0, '["16G|32","32G","64G|45"]', '["红色","白色"]', '[]', 30),
+(2, 1, 1, '魅族手机M9最新款隆重上市了', 1, 1, 243, 1, 0, 1516259334, 1526352365, 0, 'uploads/images/20180302/Cgbj0FnCGy2AQhMOAA5ZxbK1GIo722.jpg', '<p><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgOAf_cEAAHV1O1wNn4780.jpg"/><a href="https://detail.meizu.com/item/spx.html" target="_blank"><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/03/86/Cgbj0FqzftuAFRuEAAFDN8UQ57I852.jpg"/></a><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgOADH3rAAJvD1XrMDg850.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgOAV3G7AAVRP964D3A280.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgWAbRd5AAFG0cWJKug303.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgWAZNLyAAHNcu8f9V8672.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgWAMuu2AAVk0BJBeg4924.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgaAPMMqAAJ5D3ohZpM015.jpg"/></p>', '2020.02', 0, 0, 0, 0, 0, '["大份|10","中份|20","小份|40"]', '["XX","XL","XXXL"]', '["红","黄","蓝"]', 30);
 
 -- --------------------------------------------------------
 
@@ -152,13 +146,14 @@ CREATE TABLE IF NOT EXISTS `qb_shop_field` (
 -- 转存表中的数据 `qb_shop_field`
 --
 
-INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(10, 'title', '商品名称', 'text', 'varchar(256) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 100, 1, 1, 1, '');
-INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(11, 'picurl', '商品介绍图', 'images', 'text NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 98, 0, 0, 0, '');
-INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(12, 'content', '商品介绍', 'ueditor', 'text NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '');
-INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(47, 'price', '商品价格', 'money', 'decimal(10, 2 ) UNSIGNED NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 99, 0, 0, 0, '');
-INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(48, 'type1', '型号', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性');
-INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(49, 'type2', '尺寸', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性');
-INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(50, 'type3', '颜色', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES
+(10, 'title', '商品名称', 'text', 'varchar(256) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 100, 1, 1, 1, ''),
+(11, 'picurl', '商品介绍图', 'images', 'text NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 98, 0, 0, 0, ''),
+(12, 'content', '商品介绍', 'ueditor', 'text NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, ''),
+(47, 'price', '商品价格', 'money', 'decimal(10, 2 ) UNSIGNED NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 99, 0, 0, 0, ''),
+(48, 'type1', '型号', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性'),
+(49, 'type2', '尺寸', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性'),
+(50, 'type3', '颜色', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性');
 
 -- --------------------------------------------------------
 
@@ -183,7 +178,8 @@ CREATE TABLE IF NOT EXISTS `qb_shop_module` (
 -- 转存表中的数据 `qb_shop_module`
 --
 
-INSERT INTO `qb_shop_module` (`id`, `keyword`, `title`, `layout`, `icon`, `list`, `create_time`, `status`) VALUES(1, '', '商品模型', '', '', 100, 1515221331, 0);
+INSERT INTO `qb_shop_module` (`id`, `keyword`, `title`, `layout`, `icon`, `list`, `create_time`, `status`) VALUES
+(1, '', '商品模型', '', '', 100, 1515221331, 0);
 
 -- --------------------------------------------------------
 
@@ -222,24 +218,7 @@ CREATE TABLE IF NOT EXISTS `qb_shop_order` (
   KEY `create_time` (`create_time`),
   KEY `uid` (`uid`),
   KEY `order_sn` (`order_sn`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='商品订单' AUTO_INCREMENT=15 ;
-
---
--- 转存表中的数据 `qb_shop_order`
---
-
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(4, 'kqlub2z6wb', '3-1-2-0-0,2-3-2-2-2', 1, 1, '50.22', '0.00', '50.22', '0.00', 0, 1519631489, 0, 0, '', '', '', '', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(3, 'hdy36zdk4a', '3-2-2-0-0', 1, 1, '10.22', '0.00', '10.22', '0.00', 0, 1519631402, 0, 0, '', '张三', '', '13585544', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(5, 'g1um11j3ep', '3-1-2-0-0,2-3-2-2-2', 1, 1, '50.22', '0.00', '50.22', '0.00', 0, 1519633419, 0, 0, '', '', '', '', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(6, '1os5nkh7bf', '3-1-2-0-0,2-3-2-2-2', 1, 1, '50.22', '0.00', '50.22', '0.00', 0, 1519633465, 0, 0, '', '', '', '', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(7, 'w4z3313pe5', '3-1-2-0-0,2-3-2-2-2', 1, 1, '50.22', '0.00', '50.22', '0.00', 0, 1519633593, 0, 0, '', '', '', '', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(8, '001ea0616d', '3-2-1-1-1,2-4-1-1-1', 1, 5, '30.22', '0.00', '30.22', '0.00', 0, 1521192321, 0, 0, '', '张三69999', '市桥103号3', '13654545454', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(9, 'd1f1b3ddf7', '3-2-1-1-1,2-4-1-1-1', 1, 5, '30.22', '0.00', '30.22', '0.00', 0, 1521193985, 0, 0, '', '李四88', '天河区123号', '18698545212', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(10, 'e78456b589', '3-2-1-1-1,2-4-1-1-1', 1, 5, '30.22', '0.00', '30.22', '0.00', 0, 1521194239, 0, 0, '', '李四88', '天河区123号', '18698545212', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(11, '0bb7cba27c', '3-2-1-1-1,2-4-1-1-1', 1, 5, '30.22', '0.00', '30.22', '0.00', 0, 1521195905, 0, 0, '', '李四88', '天河区123号', '18698545212', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(12, 'eda3dfc0dc', '3-2-1-1-1,2-4-1-1-1', 1, 5, '30.22', '0.00', '30.22', '0.00', 0, 1521196062, 0, 0, '', '李四88', '天河区123号', '18698545212', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(13, '3febf9e176', '3-2-1-1-1', 1, 5, '10.22', '0.00', '10.22', '0.00', 0, 1521196820, 0, 0, '', '李四88', '天河区123号', '18698545212', 0, 0, 0, 0, '', '', '', '');
-INSERT INTO `qb_shop_order` (`id`, `order_sn`, `shop`, `shop_uid`, `uid`, `totalmoney`, `shipping_price`, `pay_money`, `user_rmb`, `user_jf`, `create_time`, `pay_time`, `pay_status`, `pay_name`, `linkman`, `address`, `telphone`, `shipping_time`, `receive_time`, `receive_status`, `shipping_status`, `shipping_name`, `shipping_code`, `user_note`, `admin_note`) VALUES(14, '43b8404376', '2-1-1-1-1', 1, 5, '20.00', '0.00', '20.00', '0.00', 0, 1521528492, 0, 0, '', '张三69999', '市桥103号3', '13654545454', 0, 0, 0, 0, '', '', '', '');
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='商品订单' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -258,9 +237,9 @@ CREATE TABLE IF NOT EXISTS `qb_shop_sort` (
   `template` varchar(255) NOT NULL COMMENT '模板',
   `allowpost` varchar(100) NOT NULL COMMENT '允许发布信息的用户组',
   `allowview` varchar(100) NOT NULL COMMENT '允许浏览内容的用户组',
-  `seo_title` int(100) NOT NULL COMMENT 'SEO标题',
-  `seo_keywords` int(100) NOT NULL COMMENT 'SEO关键字',
-  `seo_description` int(150) NOT NULL COMMENT 'SEO描述',
+  `seo_title` varchar(255) NOT NULL COMMENT 'SEO标题',
+  `seo_keywords` varchar(255) NOT NULL COMMENT 'SEO关键字',
+  `seo_description` varchar(255) NOT NULL COMMENT 'SEO描述',
   PRIMARY KEY (`id`),
   KEY `mid` (`mid`),
   KEY `pid` (`pid`),
@@ -271,5 +250,8 @@ CREATE TABLE IF NOT EXISTS `qb_shop_sort` (
 -- 转存表中的数据 `qb_shop_sort`
 --
 
-INSERT INTO `qb_shop_sort` (`id`, `pid`, `mid`, `name`, `list`, `logo`, `template`, `allowpost`, `allowview`, `seo_title`, `seo_keywords`, `seo_description`) VALUES(1, 0, 1, '数码产品', 0, '', '', '', '', 0, 0, 0);
-INSERT INTO `qb_shop_sort` (`id`, `pid`, `mid`, `name`, `list`, `logo`, `template`, `allowpost`, `allowview`, `seo_title`, `seo_keywords`, `seo_description`) VALUES(2, 0, 1, '家居用品', 0, '', '', '', '', 0, 0, 0);
+INSERT INTO `qb_shop_sort` (`id`, `pid`, `mid`, `name`, `list`, `logo`, `template`, `allowpost`, `allowview`, `seo_title`, `seo_keywords`, `seo_description`) VALUES
+(1, 0, 1, '数码产品', 0, '', '', '', '', '', '', ''),
+(2, 0, 1, '家居用品', 0, '', '', '', '', '', '', '');
+
+

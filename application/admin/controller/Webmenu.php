@@ -126,7 +126,7 @@ class Webmenu extends AdminBase
 	    ->addRadio('ifshow','是否隐藏','',['隐藏','显示(不隐藏)'])
 	    ->addNumber('list','排序值')
 	    ->addIcon('style','图标')
-	    ->addText('activate','选中属性[:频道链接填上频道的目录名时,呆在该频道的话,菜单就是选中状态,一般留空]')
+	    ->addText('activate','选中属性[:频道链接填上频道的目录名时,呆在该频道的话,菜单就是选中状态,一般留空]','主页就输入index,商城就输入shop以此类推,不过最好是后面加个-横框线因为栏目的话,可以定义为shop-18')
 	    ->addHidden('id',$id);
 
 	    return $form->fetch();
