@@ -72,7 +72,7 @@ class Login extends IndexBase
                 
             }else{      //注册与登录
                 
-                $rs && $ps = UserModel::get_passport($rs['uid'],'uid');
+                $rs && $ps = UserModel::get_info($rs['uid'],'uid');
                 
                 if(empty($rs['username']) || empty($ps)){
                     $this->success( '你还没有注册，现在自动注册一个帐号!' , purl('reg/index',['openid'=>$openid]) );

@@ -1,9 +1,13 @@
 <?php
 namespace app\common\util;
 use app\common\builder\Form as BuilderForm;
+use app\common\traits\AddEditList;
+
 class Form{
+    use AddEditList;
     public static $Btable;
     protected static $instance;
+    protected static $info=[];   //纯属给个性模板使用的
     
     /**
      * 创建表单
@@ -14,6 +18,7 @@ class Form{
      * @param array $info 从数据库取出的内容数据，如果是新发布，可以为空
      */
     public static function make($tab_list=[],$info=[]){
+        self::$info = getArray($info);     //纯属给个性模板使用的
         self::$Btable = BuilderForm::make() -> addFormItems($tab_list) -> setFormdata($info);
         if (is_null(self::$instance)) {
             self::$instance = new static();
@@ -569,6 +574,9 @@ class Form{
      * @return mixed
      */
     public static function fetch($template = '', $vars = [], $replace = [], $config = []){
+        if(empty($template)&&$template = static::get_template('')){   //如果模板存在的话,就用实际的后台个性模板         
+            $vars = array_merge($vars,['info'=>self::$info]);
+        }
         return self::$Btable->fetch($template, $vars, $replace, $config);
     }
 }

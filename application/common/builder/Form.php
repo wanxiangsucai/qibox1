@@ -2195,10 +2195,6 @@ class Form extends ZBuilder
      */
     public function fetch($template = '', $vars = [], $replace = [], $config = [])
     {
-        if (!empty($vars)) {
-            $this->_vars['form_data'] = array_merge($this->_vars['form_data'], $vars);
-        }
-
         // 设置表单值
         $this->setFormValue();
 
@@ -2246,6 +2242,11 @@ class Form extends ZBuilder
 
         // 处理额外按钮
         $this->_vars['btn_extra'] = implode(' ', $this->_vars['btn_extra']);
+        
+        if (!empty($vars)) {
+            //$this->_vars['form_data'] = is_array($this->_vars['form_data'])?array_merge($this->_vars['form_data'], $vars):$vars;
+            $this->_vars = array_merge($this->_vars, $vars);
+        }
         
         // 实例化视图并渲染
         return parent::fetch($this->_template, $this->_vars, $replace, $config);

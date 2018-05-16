@@ -1,0 +1,85 @@
+{extend name="index:layout" /}
+
+{block name="menu"}{/block}
+
+{block name="content"}
+
+<form name="formlist" method="post" action="index.php?lfj=$lfj&action=order">
+<div class="MainContainers">
+  <div class="Header"><span class="tag">系统模块管理</span><span class="more">&gt;&gt;</span></div>
+  <div class="Conter">
+
+    <table class="ListTable">
+        <tr> 
+          <th width="4%">ID</th>
+          <th width="13%">系统名称</th>
+          <th >数据表前缀</th>
+          <th width="10%">存放目录</th>
+          <th width="9%">系统类型</th>
+          <th width="7%">收费(元/年)</th>
+          <th width="12%">销量</th>
+          <th width="10%">排序值</th>
+          <th width="6%">状态</th>
+          <th width="6%">修改</th>
+          <th width="6%">复制</th>
+          <th width="6%">卸载</th>
+        </tr>
+{php}
+$listdb = getArray($listdb);
+    foreach($listdb AS $key=>$rs){
+{/php}
+        <tr> 
+          <td class='b red'>$rs[id]</td>
+          <td class='Left'> <a href="$rs[url]"  style="color:$rs[titlecolor];" target="_blank">$rs[name]</a></td>
+          <td class='Left'>$rs[pre]</td>
+          <td class='Left'>$rs[dirname]</td>
+          <td >$rs[type]</td>
+          <td class='center'><input type="text" name="postmoneydb[$rs[id]]" size="4" value="$rs[money]"></td>
+          <td>$rs[NUM]</td>
+          <td> 
+            <input type="text" name="postdb[$rs[id]]" size="5" value="$rs[list]">
+          </td>
+          <td align="center"> 
+{php}
+    if($rs[ifclose]){
+{/php}
+            <img src="../images/default/check_error.gif" alt="当前系统已被停用"> 
+{php}
+    }
+{/php}
+          </td>
+          <!-- <td align="center"> -->
+          <td><a href="index.php?lfj=$lfj&job=mod&id=$rs[id]" class='edit'></a></td>
+          <td><a href="index.php?lfj=$lfj&job=copy&id=$rs[id]"><img src="../member/images/icon_add.gif" border="0"></a> </td>
+          <td><a href="index.php?lfj=$lfj&action=del&id=$rs[id]" onclick="return confirm('严重警告!你确认要删除本模块吗?本模块的所有数据与涉及的所有程序文件都会被清空。请点击取消,即可放弃本次操作!');" class='del'></a></td>
+         <!--  <a href="index.php?lfj=$lfj&job=mod&id=$rs[id]"><img alt='修改设置' src='../member/images/icon_manage2.gif' border=0></a> 
+            &nbsp; 
+            <a href="index.php?lfj=$lfj&job=copy&id=$rs[id]"><img src="../member/images/icon_add.gif" border="0"></a> 
+            &nbsp;
+            <a href="index.php?lfj=$lfj&action=del&id=$rs[id]" onclick="return confirm('严重警告!你确认要删除本模块吗?本模块的所有数据与涉及的所有程序文件都会被清空。请点击取消,即可放弃本次操作!');"><img alt='点击删除' src='../member/images/del_icon2.gif' border=0></a>  -->
+          <!-- </td> -->
+        </tr>
+{php}
+    }
+{/php}
+      <tr>  
+        <td colspan='12' class='Left'>
+        <!--<span class="b red">提示说明：</span><br />
+        1.请确认以上每一项都正确.如果某个系统修改目录后或后台目录后,请必须修改以上设置,否则会造成不可意料的不能正常访问的问题存在 。<br />
+        2.二级域名的设置,需要同时修改域名供应商那里的指向,同时还要在服务器单独的绑定模块系统目录,才能正常使用用.否则必须留空-->
+        </td>
+      </tr>
+        <tr bgcolor="#FFFFFF" class="trA " onmouseover="this.className='trB '" onmouseout="this.className='trA '"> 
+          <td colspan="10" align="center">
+            <!-- <input type="submit" name="Submit" value="修改排序"> -->
+            <div class="submits"><input type='submit' name='w' value='修改以上设置' /></div>
+          </td>
+        </tr>
+      </table>
+  </div>
+</div>
+</form>
+
+<br />
+
+{/block}

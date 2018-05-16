@@ -68,7 +68,7 @@ class Member extends AdminBase
     	    }
     	}
 	    
-	    $info = $this->model->get_allInfo($id);
+	    $info = $this->model->get_info($id);
 	    
 	    $listgroup = $this->Gmodel->getTitleList();
 	    $this->form_items = [

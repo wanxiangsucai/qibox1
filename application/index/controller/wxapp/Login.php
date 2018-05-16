@@ -78,7 +78,7 @@ class Login extends IndexBase
         }        
         UserModel::login($user['username'], '', '',true);   //这个并不能真正的登录.只是做一些登录的操作日志及其它接口处理
         
-        $user = UserModel::get_passport($user['uid']);
+        $user = UserModel::get_info($user['uid']);
         cache($skey,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t$sessionKey",3600*72);
         $data = [
                 'meta'=>[
@@ -87,7 +87,7 @@ class Login extends IndexBase
                 ],
                 'data'=>[
                         'token'=>$skey,
-                        'userInfo'=>UserModel::get_allInfo($user['uid']),
+                        'userInfo'=>UserModel::get_info($user['uid']),
                 ],
         ];
         return json($data);
@@ -105,7 +105,7 @@ class Login extends IndexBase
         $msg = '调用失败';
         if($uid&&$username){
             $code = 0;
-            $userInfo = UserModel::get_allInfo($uid);
+            $userInfo = UserModel::get_info($uid);
             $msg = '调用成功';
         }
         $data = [

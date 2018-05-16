@@ -183,6 +183,14 @@ trait AddEditList {
 	 * @return mixed|string
 	 */
 	protected function getAdminTable($data_list = []) {
+	    
+	    $template = $this->get_template('',$this->mid);
+	    if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
+	        $this->assign('listdb',$data_list);
+	        $this->assign('mid',$this->mid);
+	        return $this->fetch($template);
+	    }
+	    
 		// 显示的字段信息
 		$tab_list = $this -> getListItems();
 
@@ -256,9 +264,55 @@ trait AddEditList {
 
 
 		$list_table -> addRightButtons($right_button); // 添加右侧按钮
-
+		
 		return $list_table -> fetch();
 	} 
+	
+	/**
+	 * 取模板路径
+	 * @param string $type 方法名,也即文件名
+	 * @param string $mid 模型ID,可为空
+	 * @return string
+	 */
+	protected static function get_template($type='',$mid=''){
+	    if($type==''){
+	        //$type = $this->request->action();
+	        $type = request()->action();
+	    }
+	    //当前风格的模板
+	    $template = static::search_tpl($type,$mid);
+	    
+	    if (empty($template)) { //新风格找不到的话,就寻找默认default模板
+	        if( config('template.default_view_base') ){ //没有使用默认风格
+	            $view_base = config('template.view_base');
+	            $style = config('template.index_style');
+	            config('template.view_base',config('template.default_view_base'));
+	            config('template.index_style','default');   // check_file 此方法要用到
+	            $template = static::search_tpl($type,$mid);
+	            config('template.view_base',$view_base);
+	            config('template.index_style',$style);
+	        }
+	    }
+	    return $template;
+	}
+	
+	/**
+	 * 查找路径
+	 * @param string $type 方法名,也即文件名
+	 * @param string $mid 模型ID,可为空
+	 * @return string
+	 */
+	protected static function search_tpl($type='',$mid=''){
+	    $filename = $type.$mid;
+	    static $path;
+	    if(empty($path)){
+	        $path = dirname( makeTemplate('index',false) ).'/'; //取得路径,避免反复找路径
+	    }
+	    $file = $path . $filename . '.' . ltrim(config('template.view_suffix'), '.');
+	    if(is_file($file)&&filesize($file)){
+	        return $file;
+	    }
+	}
     
 	/**
 	 * 辅栏目添加内容
@@ -271,6 +325,13 @@ trait AddEditList {
 		$tab_list = $this -> getListItems(); 
 		// 数据内容
 		$data_list = $this -> getListData($map, $order);
+		
+		$template = $this->get_template('',$this->mid);
+		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
+		    $this->assign('listdb',$data_list);
+		    $this->assign('mid',$this->mid);
+		    return $this->fetch($template);
+		}
 
 		$list_table = Table :: make() -> addColumns($tab_list) -> setRowList($data_list) -> setTableName('list_all') -> addOrder('id'); 
 		// ->addTopButton('back', ['href' => url('advert/index')]) // 批量添加顶部按钮
@@ -352,7 +413,15 @@ trait AddEditList {
 			} else {
 				$this -> error('添加失败');
 			} 
-		} 
+		}
+		
+		$template = $this->get_template('',$this->mid);
+		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
+		    //$this->assign('listdb',$data_list);
+		    $this->assign('mid',$this->mid);
+		    return $this->fetch($template,$vars);
+		}
+		
 		// 要填写的表单字段
 		$tab_list = $this -> getFormItems(false);
 
@@ -453,7 +522,15 @@ trait AddEditList {
 			} else {
 				$this -> error('修改失败');
 			} 
-		} 
+		}
+		
+		$template = $this->get_template('',$this->mid);
+		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
+		    $this->assign('info',$info);
+		    $this->assign('mid',$this->mid);
+		    return $this->fetch($template);
+		}
+		
 		// 表单填写项目
 		$tab_list = $this -> getFormItems(true);
 		$form_table = Form :: make($type) -> addFormItems($tab_list) -> setFormdata($info); 

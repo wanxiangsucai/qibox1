@@ -84,7 +84,7 @@ abstract class C extends AdminBase
 
         $this->tab_ext['page_title'] = '发布 '.$this->m_model->getNameById($this->mid);
 
-        return $this->addContent();
+        return $this->addContent('index',['fid'=>$fid]);
     }
     
     /**
@@ -385,6 +385,7 @@ abstract class C extends AdminBase
             //return $data;
         }
     }
+    
     
     /**
      * 导出excel表格

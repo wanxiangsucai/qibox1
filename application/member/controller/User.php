@@ -38,7 +38,7 @@ class User extends MemberBase
     public function edit()
     {
         
-        $info = $this->model->get_allInfo($this->user['uid']);
+        $info = $this->model->get_info($this->user['uid']);
         
         $this->form_items = [
                 ['hidden', 'uid'],

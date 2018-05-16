@@ -42,14 +42,18 @@ class Msg extends MemberBase
             $info = get_user($data['touser'],'username');
             if (!$info) {
                 $this->error('该用户不存在!');
-            }elseif (!$data['title']) {
-                $this->error('标题不能为空');
             }elseif (!$data['content']) {
                 $this->error('内容不能为空');
             }
+            if (!$data['title']) {
+                $data['title'] = '来自 '.$this->user['username'].' 的私信';
+            }
             $data['touid'] = $info['uid'];
             $data['uid'] = $this->user['uid'];
-            if(Model::create($data)){
+            $result = Model::create($data);
+            if($result){
+                $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('show',['id'=>$result->id])).'">点击查收</a>';
+                send_wx_msg($info['weixin_api'], $content);
                 $this->success('发送成功','index');
             }else{
                 $this->error('发送失败');
@@ -66,6 +70,7 @@ class Msg extends MemberBase
         if(!$info){
             $this->error('没有相应的内容');
         }
+        Model::update(['id'=>$id,'ifread'=>1]);
         $this->assign('info',$info);
         return $this->fetch();
     }

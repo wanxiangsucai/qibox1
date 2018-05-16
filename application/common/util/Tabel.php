@@ -1,11 +1,14 @@
 <?php
 namespace app\common\util;
 use app\common\builder\Table as BuilderTable;
+use app\common\traits\AddEditList;
 
 class Tabel{
     
+    use AddEditList;
     public static $Btable;
     protected static $instance;
+    protected static $listdb=[];   //纯属给个性模板使用的
     
     /**
      * 创建显示列表的table表格
@@ -16,6 +19,7 @@ class Tabel{
 	 * 第四项是默认值，第五项是参数，常用为数组
      */
     public static function make($data_list=[],$tab_list=[],$right_button='',$top_button_delete=true){
+        self::$listdb = $data_list;     //纯属给个性模板使用的
         self::$Btable = BuilderTable::make()->addColumns($tab_list)->setRowList($data_list);
 
 	    if(!empty($right_button)){
@@ -191,7 +195,10 @@ class Tabel{
 	 * @param array  $config   模板参数
 	 * @return mixed
 	 */
-	public static function fetch($template = '', $vars = [], $replace = [], $config = []){
+	public static function fetch($template = '', $vars = [], $replace = [], $config = []){	    
+	    if(empty($template)&&$template = static::get_template('')){    //如果模板存在的话,就用实际的后台个性模板
+	        $vars = array_merge($vars,['listdb'=>self::$listdb]);
+	    }
 	    return self::$Btable->fetch($template, $vars, $replace, $config);
 	}
 	

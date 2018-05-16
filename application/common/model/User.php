@@ -2,7 +2,7 @@
 namespace app\common\model;
 
 use think\Model;
-use think\Db;
+//use think\Db;
 
 
 class User extends Model
@@ -18,13 +18,22 @@ class User extends Model
     // 自动写入时间戳
     protected $autoWriteTimestamp = false;
 
-
+    /**
+     * 根据帐号获取用户信息
+     * @param string $name 帐号
+     * @return unknown
+     */
     public static function getByName($name = '')
     {
         $result = self::get(['username' => $name]);
         return is_object($result) ? $result->toArray() : $result;
     }
 	
+    /**
+     * 根据UID获取用户信息
+     * @param string $id 用户UID
+     * @return unknown
+     */
 	public static function getById($id = '')
     {
         $result = self::get(['uid' => $id]);
@@ -32,21 +41,10 @@ class User extends Model
     }
 	
 	
-	//仅获取用户通行证的帐号密码信息
-    public static function get_passport($value,$type='uid') {
-//         if(config('webdb.passport_type')){
-//             return Db::table(self::$passport_table)->where($type=='uid'?'uid':'username',$value)->find();
-//         }else{
-//             return Db::name(self::$passport_table)->where($type=='uid'?'uid':'username',$value)->find();
-//         }        
-        $array = getArray(self::where($type=='uid'?'uid':'username',$value)->find());
-        return $array;
-	}
-	
 	/**
-	 * 仅获取用户详细信息
-	 * @param unknown $value
-	 * @param string $type
+	 * 获取某个用户的所有信息
+	 * @param unknown $value 可以是数组
+	 * @param string $type 可以取任何字段
 	 * @return \app\common\model\User|NULL
 	 */
 	public static function get_info($value,$type='uid'){
@@ -61,53 +59,32 @@ class User extends Model
 	    return is_object($result) ? $result->toArray() : $result;
 	}
 	
-	//获取用户所有信息
-	public static function get_allInfo($value,$type='uid'){
-
-	    $array1 = self::get_passport($value,$type);
-		if(!$array1){
-			return ;
-		}
-		
-		$array2 = self::get_info($value,$type);
-		if(!empty($array2)){
-		    $array1 = array_merge($array1,$array2);
-		}else{
-		    //论坛过来的用户，自动注册一个帐号
-			$array = array(
-				'uid'=>$array1['uid'],
-				'username'=>$array1['username'],
-				'email'=>$array1['email'],
-				'yz'=>1,
-			);
-			self::register_data($array);
-			//add_user($array1[uid],$webdb[regmoney],'注册得分');
-			$array1['yz']=1;
-		}
-		return $array1;
-	}
-	
-	//检查密码是否正确
-	public static function check_password($username,$password,$ckmd5=false,$type='username'){
-	    $rs = self::get_passport($username,$type=='username'?'username':'uid');
+	/**
+	 * 检查密码是否正确,密码正确,返回用户所有信息, 用户不存在,返回0, 密码不正确返回-1
+	 * @param string $username 默认是用户帐号,也可以是UID或手机号,要重新定义$type值
+	 * @param string $password 密码,也可以是加密后的密码,但用的很少,一般是原始密码
+	 * @param string $type 对应第一项的字段,默认是username
+	 * @param string $checkmd5
+	 * @return number|unknown
+	 */
+	public static function check_password($username='',$password='',$type='username',$checkmd5=false){
+	    $rs = self::get_info($username,$type);
 		if(!$rs){
 			return 0;
 		}
-// 		if(defined("UC_CONNECT")){
-// 			if(md5(md5($password).$rs['salt'])==$rs['password']){
-// 				return $rs;
-// 			}
-// 		}else{
-			if($ckmd5 && strlen($password)==32 && $password==$rs['password'] ){
-				return $rs;
-			}elseif(md5($password.$rs['password_rand'])==$rs['password']){
-				return $rs;
-			}
-// 		}
+		if($checkmd5===true && strlen($password)==32 && $password==$rs['password'] ){
+		    return $rs;
+		}elseif(static::md5pwd($password,$rs['password_rand'])==$rs['password']){
+		    return $rs;
+		}
 		return -1;
 	}
 	
-	//检查用户名是否合法
+	/**
+	 * 检查帐号即用户名是否合法,合法返回true,不合法返回false
+	 * @param unknown $username
+	 * @return boolean
+	 */
 	public static function check_username($username) {
 		$guestexp = '\xA1\xA1|\xAC\xA3|^Guest|^\xD3\xCE\xBF\xCD|\xB9\x43\xAB\xC8';
 		$len = strlen($username);
@@ -118,27 +95,34 @@ class User extends Model
 		}
 	}
 	
-	//检查用户名是否存在
-	public static function check_userexists($username) {
-		return self::get_passport($username,'username');
+	/**
+	 * 检查用户名是否存在,存在返回
+	 * @param unknown $value
+	 * @return unknown
+	 */
+	public static function check_userexists($value) {
+	    $info = self::get(['username'=>$value]);
+	    return $info?$info:false;
 	}
 
-	//检查邮箱是否存在
+	/**
+	 * 检查邮箱是否存在
+	 * @param unknown $value
+	 * @return boolean|unknown
+	 */
 	public static function check_emailexists($value) {
-		
-// 		if(config('webdb.passport_type')){
-// 		    $rs = Db::name(self::$passport_table)->where('email',$value)->find();
-// 		}else{
-// 		    $rs = self::get(['email'=>$value]);
-// 		}	
 	    $rs = self::get(['email'=>$value]);
-		return $rs;
+	    return $rs?$rs:false;
 	}
 	
-	//用户注册
+	/**
+	 * 用户注册 注册成功,只返回UID数值,不成功,返回对应的提示字符串
+	 * @param unknown $array
+	 * @return string|mixed
+	 */
 	public static function register_user($array){
 	    
-	    if(self::get_passport($array['username'],'username')){
+	    if(self::get_info($array['username'],'username')){
 	        return '当前用户已经存在了';
 	    }
 	    if(config('webdb.forbidRegName')!=''){
@@ -153,8 +137,8 @@ class User extends Model
 	        return '邮箱不能为空';
 	    }elseif(!$array['password']){
 	        return '密码不能为空';
-	    }elseif(strlen($array['username'])>40||strlen($array['username'])<3){
-	        return '用户名不能小于3个字节或大于40个字节';
+	    }elseif(strlen($array['username'])>50||strlen($array['username'])<3){
+	        return '用户名不能小于3个字节或大于50个字节';
 	    }elseif (strlen($array['password'])>30 || strlen($array['password'])<5){
 	        return '密码不能小于5个字符或大于30个字符';
 	    }elseif(!preg_match("/^[-a-zA-Z0-9_\.]+\@([0-9A-Za-z][0-9A-Za-z-]+\.)+[A-Za-z]{2,5}$/",$array['email'])){
@@ -162,6 +146,7 @@ class User extends Model
 	    }elseif( config('webdb.emailOnly') && self::check_emailexists($array['email'])){
 	        return "当前邮箱“{$array['email']}”已被注册了,请更换一个邮箱!";
 	    }
+	    
 	    $S_key=array('|',' ','',"'",'"','/','*',',','~',';','<','>','$',"\\","\r","\t","\n","`","!","?","%","^");
 	    
 	    //后来增加
@@ -169,94 +154,34 @@ class User extends Model
 	    
 	    foreach($S_key as $value){
 	        if (strpos($array['username'],$value)!==false){
-	            //write_file(ROOT_PATH."/cache/name.txt","$array[username]\r\n",'a');
 	            return "用户名中包含有禁止的符号“{$value}”";
 	        }
 	        if (strpos($array['password'],$value)!==false){
-	            return "密码中包含有禁止的符号“{$value}”";
+	            //return "密码中包含有禁止的符号“{$value}”";
 	        }
+	    }
+	    if($array['username']==''){
+	        return '用户名为空了!';
 	    }
 	    
 	    foreach($array AS $key=>$value){
 	        $array[$key] = filtrate($value);
 	    }
 	    hook_listen('user_add_begin',$array);
-// 	    $array['uid'] = self::register_passport($array);
-// 	    if(!is_numeric($array['uid'])){
-// 	        return "主表创建用户失败";
-// 	    }
-	    if(($array['uid'] = self::register_data($array))==false){
+
+	    if(($array['uid'] = static::insert_data($array))==false){
 	        return "创建用户失败";
 	    }
 	    hook_listen('user_add_end',$array);
 	    return $array['uid'];
 	}
 	
-	//注册用户通行证,帐号与密码是必须信息
-	public static function register_passport($array) {
-
-// 		if(preg_match("/^pwbbs/",config('webdb.passport_type'))){
-
-// 			$data = [
-// 			        'password'=>md5($array['password']),
-// 			        'username'=>$array['username'],
-// 			        'password'=>$array['password'],
-// 			        'email'=>$array['email'],
-// 			        'groupid'=>-1,
-// 			        'memberid'=>8,
-// 			        'regdate'=>time(),
-// 			        'yz'=>1,
-// 			        'lastvisit'=>time(),
-// 			        'onlineip'=>'',
-// 			];
-// 			if( !$uid = Db::name(self::$passport_table)->insertGetId($data) ){
-// 			    showerr( '论坛创建用户失败，主表无法写入！');
-// 			}
-// 			$data['uid'] = $uid;
-			
-// 			if (!$result = Db::table(config('webdb.passport_pre'))->insert($data)) {
-// 			    showerr( '论坛创建用户失败，副表无法写入！');
-// 			}
-// 		}elseif(defined("UC_CONNECT")){
-// 			$uid = uc_user_register($array['username'], $array['password'], $array['email']);
-// 			if($uid=='-1'){
-// 				showerr('用户名不合法');
-// 			}elseif($uid=='-2'){
-// 				showerr('包含不允许注册的词语');
-// 			}elseif($uid=='-3'){
-// 				showerr('用户名已经存在');
-// 			}elseif($uid=='-4'){
-// 				showerr('email 格式有误');
-// 			}elseif($uid=='-5'){
-// 				showerr('email 不允许注册');
-// 			}elseif($uid=='-6'){
-// 				showerr('该 email 已经被注册');
-// 			}
-// 			//if($uid&&eregi("^dzbbs7",$webdb['passport_type'])){ //DZ论坛相关用户表
-// 				//$this->db->query("INSERT INTO {$webdb[passport_pre]}memberfields SET uid='$uid'");
-// 				//$pwd=md5($array[password]);
-// 				//$this->db->query("INSERT INTO {$webdb[passport_pre]}members SET uid='$uid',username='$array[username]',password='$pwd',groupid=10,regip='$onlineip',regdate='$timestamp',email='$array[email]',newsletter='1',timeoffset='9999',editormode=2,customshow=26");
-// 			//}
-// 		}else{
-// 			$data = [
-// 			        'password'=>md5($array['password']),
-// 			        'username'=>$array['username'],
-// 			];
-// 			if( !$uid = Db::name(self::$passport_table)->insertGetId($data) ){			   
-// 			    showerr( '创建用户失败，主表无法写入！');
-// 			}
-// 		}
-		
-// 		return $uid;
-	}
-	
-	//注册用户详细信息
-	public static function register_data($array){
-
-		//if(!$array['uid']||!$array['username']){
-	    if($array['username']==''){
-			return false;
-		}
+	/**
+	 * 注册用户信息入库,成功返回uid,失败返回false
+	 * @param unknown $array
+	 * @return boolean|unknown
+	 */
+	protected static function insert_data($array){
 		$array['groupid'] || $array['groupid']=8;
 		isset($array['yz']) || $array['yz']=1;
 		$array['regdate'] = time();
@@ -267,22 +192,24 @@ class User extends Model
 		//用户昵称
 		$array['nickname'] = $array['username'];
 		$array['password_rand'] = rands(rand(5,10));
-		$array['password'] = md5 ($array['password'].$array['password_rand']);
+		$array['password'] = static::md5pwd ($array['password'],$array['password_rand']);
 
-		if($result = self::create($array)){		
+		if( ($result = self::create($array))!=false){
 		    return $result->uid;
 		}
 		return false;
 	}
 	
-	//修改用户任意信息
+	/**
+	 * 修改用户任意信息,修改成功 返回true
+	 * @param unknown $array 数值当中必须要存在uid
+	 * @return string|boolean
+	 */
 	public static function edit_user($array) {
         
 	    cache('user_'.$array['uid'],null);
 	    
 	    hook_listen('user_edit_begin',$array);
-	    
-		//self::edit_passport($array);
 		
 	    if( config('webdb.emailOnly') && $array['email'] ){
 	        $r = self::check_emailexists($array['email']);
@@ -290,9 +217,10 @@ class User extends Model
 	            return "当前邮箱存在了,请更换一个!";
 	        }
 	    }
+	    
 	    if($array['password']){
 	        $array['password_rand'] = rands(rand(5,10));
-	        $array['password'] = md5($array['password'].$array['password_rand']);
+	        $array['password'] = static::md5pwd($array['password'],$array['password_rand']);
 	    }
 		
 		if(self::update($array)){
@@ -300,68 +228,19 @@ class User extends Model
 		    hook_listen('user_edit_end',$array);
 		    return true;
 		}else{
-		    return false;
+		    return '数据库修改失败';
 		}
 	}
 
-	//仅修改通行证邮箱与密码
-	public static function edit_passport($array) {
-
-		if( config('webdb.emailOnly') && $array['email'] ){
-			$r = self::check_emailexists($array['email']);
-			if($r && $r['uid']!=$array['uid']){				
-				showerr("当前邮箱存在了,请更换一个!");
-			}
-		}
-		if($array['password']){
-		    $array['password_rand'] = rands(rand(5,10));
-		    $array['password'] = md5($array['password'].$array['password_rand']);
-		}
-
-// 		if(preg_match("/^pwbbs/",config('webdb.passport_type'))){
-// 			if($array['password']){
-// 				$array['password'] = md5($array['password']);
-// 			}
-			
-// 			if (Db::name(self::$passport_table)->update($array)) {
-// 			    return true;
-// 			} else {
-// 			    return false;
-// 			}
-			
-// 		}elseif(defined("UC_CONNECT")){
-// 			$rs = uc_user_edit($array['username'] , '' , $array['password'] , $array['email'] , 1 );
-// 			return $rs;
-// 		}else{
-// 			if($array['password']){
-// 				$array['password'] = md5($array['password']);
-// 				if (Db::name(self::$passport_table)->update($array)) {
-// 				    return true;
-// 				} else {
-// 				    return false;
-// 				}
-// 			}			
-// 		}
-
-		
-		if (self::update($array)) {
-		    return true;
-		} else {
-		    return false;
-		}
-	}
 	
-	//删除会员
-	public static function delete_user($uid) {
+	/**
+	 * 删除会员
+	 * @param unknown $uid
+	 * @return boolean
+	 */
+	public static function delete_user($uid=0) {
 	    hook_listen('user_delete_begin',$uid);
-// 		if(preg_match("/^pwbbs/",config('webdb.passport_type'))){		    
-// 		    Db::name(self::$passport_table)->delete($uid);
-// 		    Db::table(config('webdb.passport_pre').'memberdata')->delete($uid);
-// 		}elseif(defined("UC_CONNECT")){
-// 			//uc_user_delete($uid);
-// 		}else{
-// 		    Db::name(self::$passport_table)->delete($uid);
-// 		}
+
 		if(self::destroy($uid)){
 		    cache('user_'.$uid,null);
 		    hook_listen('user_delete_end',$uid);
@@ -369,20 +248,47 @@ class User extends Model
 		}
 	}
 	
-	//获取会员总数
-	public static function total_num($sql = '') {
-	    $rs = Db::query('SELECT COUNT(*) AS NUM FROM '.config('database.prefix').'memberdata '.$sql);
-		return $rs['NUM'];
+	/**
+	 * 获取会员总数
+	 * @param array $map 查询条件
+	 * @return mixed
+	 */
+	public static function total_num($map = []) {
+	    return self::where($map)->count('uid');
 	}
 	
-	//获取一批会员资料信息
-	public static function get_list($start, $num, $sql) {
-	    return Db::query('SELECT * FROM '.config('database.prefix').'memberdata '." $sql LIMIT $start, $num");
+	/**
+	 * 获取一批会员资料信息
+	 * @param array $map 查询条件
+	 * @param number $rows 每页几条
+	 * @param string $order 排序方式
+	 * @param array $pages 分页格式
+	 * @return unknown
+	 */
+	public static function get_list($map=[], $rows=10, $order='uid desc',$pages=[]) {
+	    $data_list = self::where($map)->order($order)->paginate(
+	            empty($rows)?null:$rows,    //每页显示几条记录
+	            empty($pages[0])?false:$pages[0],
+	            empty($pages[1])?[]:$pages[1]
+	           );
+	    $data_list->each(function($rs,$key){
+	        $rs['icon'] && $rs['icon'] = tempdir($rs['icon']);
+	    });
+	    return $data_list;
 	}
 	
 	
-	//用户登录
-	public static function login($username,$password,$cookietime=null,$not_pwd=false,$type='username'){
+	
+	/**
+	 * 用户登录,登录成功返回用户的所有信息, 0代表用户不存在,-1代表密码错误
+	 * @param string $username 用户名或者是手机号
+	 * @param string $password 原始密码
+	 * @param unknown $cookietime 登录有效时长
+	 * @param string $not_pwd 是否不需要密码,比如QQ或微信登录
+	 * @param string $type 用户的方式,帐号还是手机号还是邮箱
+	 * @return number|unknown 登录成功返回用户的所有信息, 0代表用户不存在,-1代表密码错误
+	 */
+	public static function login($username='',$password='',$cookietime=null,$not_pwd=false,$type='username'){
 	    if(!table_field('memberdata','password_rand')){    //升级数据库
 	        into_sql(APP_PATH.'common/upgrade/5.sql');
 	    }
@@ -398,12 +304,13 @@ class User extends Model
             return 0;
         }
 		if($not_pwd){	//不需要知道原始密码就能登录
-		    $rs = self::get_passport($username,$type=='username'?'username':'uid');
+		    $rs = static::get_info($username,$type);
 		}else{
-		    $rs = self::check_password($username,$password);
+		    $rs = static::check_password($username,$password,$type);
 			if(!is_array($rs)){
 				return $rs;		//0为用户不存在,-1为密码不正确
 			}
+			
 			$data = [
 			        'uid'=>$rs['uid'],
 			        'lastvist'=>time(),
@@ -411,20 +318,9 @@ class User extends Model
 			];
 			self::edit_user($data);
 		}
-// 		if(preg_match("/^pwbbs/",config('webdb.passport_type'))){
-// 		    if(!empty($db_ifsafecv)){
-// 		        $_r = self::get_passport($username,$type=='username'?'name':'uid');
-// 				$safecv = $_r['safecv'];
-// 			}
-// 			//set_cookie(CookiePre().'_winduser',StrCode($rs['uid']."\t".PwdCode($rs['password'])."\t$safecv"),$cookietime);
-// 			//set_cookie('lastvisit','',0);			
-// 		}else{
-			set_cookie("passport","{$rs['uid']}\t$username\t".mymd5($rs['password'],'EN'),$cookietime);
-//		}
-// 		if(defined("UC_CONNECT")){
-// 			global $uc_login_code;
-// 			//$uc_login_code=uc_user_synlogin($rs['uid']);
-// 		}
+
+		set_cookie("passport","{$rs['uid']}\t$username\t".mymd5($rs['password'],'EN'),$cookietime);
+
 		$array = [
 		        'uid'=>$rs['uid'],
 		        'username'=>$username,
@@ -434,27 +330,25 @@ class User extends Model
 		        'type'=>$type,
 		];
 		hook_listen('user_login_end', $array);
-		return $rs['uid'];
+		return $rs;
 	}
 	
-	//用户退出
+	/**
+	 * 用户退出
+	 * @param number $uid
+	 */
 	public static function quit($uid=0){
-
-// 		if( preg_match("/^pwbbs/",config('webdb.passport_type')) ){
-// 			//set_cookie(CookiePre().'_winduser','');
-// 		}else{
-			set_cookie('passport','');
-// 		}
+		set_cookie('passport',null);
 		cache('user_'.$uid,null);
 		set_cookie('token_secret','');
 		setcookie('adminID','',0,'/');	//同步后台退出
-		if(defined('UC_CONNECT')){
-			//global $uc_login_code;
-			//$uc_login_code = uc_user_synlogout();
-		}
 		hook_listen('user_quit_end',$uid);
 	}
 	
+	/**
+	 * 获取用户的登录token
+	 * @return unknown[]|array[]
+	 */
 	public static  function get_token(){
 	    $token = input('token');
 	    if($token && cache($token)){   //APP或小程序
@@ -470,40 +364,74 @@ class User extends Model
 	    }
 	}
 	
-	//用户登录状态的信息
-	public static function login_info(){
-        
+	/**
+	 * 用户登录状态的信息
+	 * @return void|mixed|\think\cache\Driver|boolean
+	 */
+	public static function login_info(){        
 	    if(!$token=self::get_token()){
-	        return ;
-	    }
-	    
+	        return false;
+	    }	    
 	    $usr_info = cache('user_'.$token['uid']);
 	    if(empty($usr_info['password'])){
-	        $usr_info = self::get_allInfo(intval($token['uid']));
+	        $usr_info = self::get_info(intval($token['uid']));
 	        cache('user_'.$usr_info['uid'],$usr_info,3600);
 	    }
 	    if( mymd5($usr_info['password'],'EN') != $token['password'] ){
 	        self::quit($usr_info['uid']);
-			return ;
+	        return false;
 		}
 		return $usr_info;
 	}
 
-	//检查微信openid是否存在
+	/**
+	 * 检查微信openid是否存在
+	 * @param unknown $openid
+	 * @return unknown
+	 */
 	public static function check_wxIdExists($openid) {
 		return self::get(['weixin_api'=>$openid]);
 	}
 	
-	//检查微信openid是否存在
+	/**
+	 * 检查QQ的openid是否存在
+	 * @param unknown $openid
+	 * @return unknown
+	 */
 	public static function check_qqIdExists($openid) {
 	    return self::get(['qq_api'=>$openid]);
 	}
 	
-	//检查小程序openid是否存在
+	/**
+	 * 检查小程序openid是否存在
+	 * @param unknown $openid
+	 * @return unknown
+	 */
 	public static function check_wxappIdExists($openid) {
 	    return self::get(['wxapp_api'=>$openid]);
 	}
 	
+	/**
+	 * 密码加密方式
+	 * @param string $password 原始密码
+	 * @param string $pwdRand 随机串
+	 * @return string
+	 */
+	protected static function md5pwd($password='',$pwdRand=''){
+	    switch (config('md5_pwd_type')){
+	        case 1:
+	            return md5(md5($password).$pwdRand);
+	            break;
+	        case 2:
+	            return md5($password.md5($pwdRand));
+	            break;
+	        case 3:
+	            return md5(md5($password.$pwdRand));
+	            break;
+	        default:
+	            return md5($password.$pwdRand);
+	    }
+	}
 	
 	/**
 	 * 会员标签调用数据
@@ -539,18 +467,6 @@ class User extends Model
 	        }
 	    }
 	    
-	    //         $array = User::where($map)->whereOr($whereor)->order($cfg['order'],$cfg['by'])->limit($min,$cfg['rows'])->column(true);
-	    //         foreach ($array AS $key=>$rs){
-	    //             $rs['title'] = $rs['username'];
-	    //             $rs['full_lastvist'] = $rs['lastvist'];
-	    //             $rs['lastvist'] = date('Y-m-d H:i',$rs['lastvist']);
-	    //             $rs['full_regdate'] = $rs['regdate'];
-	    //             $rs['regdate'] = date('Y-m-d H:i',$rs['regdate']);
-	    //             $rs['icon'] = $rs['picurl'] = tempdir($rs['icon']);
-	    //             $rs['url'] = get_url('user',['uid'=>$rs['uid']]);
-	    //             $array[$key] = $rs;
-	    //         }
-	    
 	    $array = self::where($map)->whereOr($whereor)->order($cfg['order'],$cfg['by'])->limit($min,$cfg['rows'])->paginate($cfg['rows'],false,['page'=>$page]);
 	    $array->each(function($rs,$key){
 	        $rs['title'] = $rs['username'];
@@ -563,8 +479,7 @@ class User extends Model
 	        $rs['group_name'] = getGroupByid($rs['groupid']);
 	        return $rs;
 	    });
-	        return $array;
+	    return $array;
 	}
-	
 	
 }

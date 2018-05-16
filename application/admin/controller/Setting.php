@@ -106,7 +106,7 @@ class Setting extends AdminBase
         foreach($list_data AS $rs){
             $data[$rs['c_key']] = $rs['c_value'];
         }
-        		
+        $this->mid = $group;    //纯属为了模板考虑的
 		return $this->editContent($data);
     }
 

@@ -141,7 +141,7 @@ class Reg extends IndexBase
             hook_listen('reg_by_hand_end',$uid,$data);
             
             $result = UserModel::login($data['username'],$data['password'],$data['cookietime']);   //帐号同时实现登录
-            if($result>0){
+            if(is_array($result)){
                 $this->success('注册成功','index/index');
             }else{
                 $this->error('注册失败！');

@@ -55,7 +55,7 @@ class Qq extends IndexBase
                 
             }else{      //注册与登录
                 
-                $rs && $userdb = UserModel::get_passport($rs['uid'],'uid');                
+                $rs && $userdb = UserModel::get_info($rs['uid'],'uid');                
                 
                 //还没有注册，自动注册一个帐号
                 if(empty($rs['username']) || empty($userdb)){
