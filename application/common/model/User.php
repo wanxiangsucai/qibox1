@@ -218,9 +218,11 @@ class User extends Model
 	        }
 	    }
 	    
-	    if($array['password']){
+	    if($array['password'] && strlen($array['password'])<32){
 	        $array['password_rand'] = rands(rand(5,10));
 	        $array['password'] = static::md5pwd($array['password'],$array['password_rand']);
+	    }else{
+	        unset($array['password'],$array['password_rand']);
 	    }
 		
 		if(self::update($array)){
