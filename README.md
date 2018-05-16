@@ -23,3 +23,5 @@
 
 
 ![后台一键同步升级](https://gitee.com/uploads/images/2018/0516/151957_184f4d97_1663089.jpeg "1.jpg")
+
+![丰富的云市场](https://gitee.com/uploads/images/2018/0516/152152_9deb2c8c_1663089.jpeg "2.jpg")
