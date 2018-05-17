@@ -45,7 +45,7 @@ class Plugin extends AdminBase
 				['ifopen', '启用或停用', 'yesno'],
 				['author', '开发者', 'link','__author_url__','blank'],
 				['list', '排序值', 'text.edit'],
-		        ['version', '最后更新', 'callback',function($value,$rs){
+		        ['version', '版本更新', 'callback',function($value=''){
 		            list($time) = explode("\t",$value);
 		            return $time;
 		        }],

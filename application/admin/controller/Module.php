@@ -45,7 +45,7 @@ class Module extends AdminBase
 				['list', '排序', 'text'],
 		        ['ifsys', '顶部菜单', 'yesno'],
 				['ifopen', '开放与否', 'yesno'],
-		        ['version', '最后更新', 'callback',function($value,$rs){
+		        ['version', '版本更新', 'callback',function($value=''){
 		            list($time) = explode("\t",$value);
 		            return $time;
 		        }],
@@ -57,6 +57,9 @@ class Module extends AdminBase
 	
 	
 	public function index() {
+	    if(!table_field('module','version_id')){    //升级数据库
+	        into_sql(APP_PATH.'common/upgrade/6.sql');
+	    }
 	    return $this -> getAdminTable(self :: getListData($map = [], $order = []));
 	}
 	
