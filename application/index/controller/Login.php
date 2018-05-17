@@ -66,6 +66,9 @@ class Login extends IndexBase
         }
         if(IS_POST){
             $data= get_post('post');
+            if(empty($data['cookietime'])){
+                $data['cookietime'] = $this->webdb['login_time']?:3600*24*7;
+            } 
             $result = UserModel::login($data['username'],$data['password'],$data['cookietime']);
             if($result==0){
                 $this->error("当前用户不存在,请重新输入");

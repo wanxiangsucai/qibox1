@@ -46,7 +46,7 @@ trait Market
             return $this->err_js($result);
         }
         
-        $result = $this->install($keywords,$type);
+        $result = $this->install($keywords,$type,$id);
         if($result!==true){
             return $this->err_js($result);
         }
@@ -84,10 +84,10 @@ trait Market
             if($file=='static'){
                 //图片及JS CSS目录必须命名为static目录
                 copy_dir(RUNTIME_PATH."model/static",PUBLIC_PATH.'static',false);
-            }elseif($file=='template'){
-                //模板目录
-                copy_dir(RUNTIME_PATH."model/template",TEMPLATE_PATH,true);
-            }else{
+//             }elseif($file=='template'){
+//                 //模板目录
+//                 copy_dir(RUNTIME_PATH."model/template",TEMPLATE_PATH,true);
+            }elseif(!in_array($file,['application','extend','plugins','public','template','thinkphp','vendor','admin.php','index.php','member.php'])){
                 if($type=='m'||$type=='p'){
                     //模块或插件的程序目录
                     copy_dir(RUNTIME_PATH."model/$file",($type=='m'?APP_PATH:PLUGINS_PATH).$path);
@@ -98,6 +98,8 @@ trait Market
                         return '钩子文件目录有误或者不存在';
                     }
                 }
+            }else{
+                copy_dir(RUNTIME_PATH."model/$file",ROOT_PATH.$path);   //可以复制任何对应目录的文件
             }
             $ck++;
         }
@@ -170,11 +172,15 @@ trait Market
         }
     }
     
+
     /**
-     * 执行安装模块
-     * @param unknown $keywords
+     * 执行安装模块插件
+     * @param unknown $keywords 目录名即关键字
+     * @param string $type 模块还是插件
+     * @param number $version_id 云端对应的ID,方便日后升级核对
+     * @return string|boolean
      */
-    protected function install($keywords,$type='m'){
+    protected function install($keywords,$type='m',$version_id=0){
         $basepath = $type=='m' ? APP_PATH : PLUGINS_PATH;
         
         $info = @include $basepath."$keywords/install/info.php";
@@ -182,6 +188,7 @@ trait Market
             return '安装配置文件不存在!';
         }
         into_sql(read_file($basepath."$keywords/install/install.sql"));
+        $info['version_id'] = intval($version_id);
         $result = $this->model->create($info);
         if(empty($result)){
             return '数据库安装执行失败!';

@@ -60,15 +60,17 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
   </div>
 </div>
 <script language=JavaScript>
-var upgrade_edition='';
+var upgrade_edition = '';
+var upgrade_data = {};
 //检查版本更新
 function check_upgrade(){
 	var now_edition = "{$upgrade.md5}";
-	$.get("https://x1.php168.com/appstore/upgrade/get_edition.html?"+Math.random(),function(res){
+	$.post("https://x1.php168.com/appstore/upgrade/get_edition.html?"+Math.random(),{app_edition:"{:get_app_upgrade_edition()}",sys_edition:now_edition}).success( function(res){
 		if(res.code==0){
-			if(res.data.md5!=now_edition){
+			upgrade_data = res.data;
+			if(res.data.md5!=now_edition||typeof(res.data.upgrade_msg) != "undefined"){
 				upgrade_edition = res.data.md5;
-				var msg = '你的系统需要升级<br>云端更新日期:'+res.data.time;
+				var msg = typeof(res.data.upgrade_msg) != "undefined" ? res.data.upgrade_msg : '你的系统需要升级<br>云端更新日期:'+res.data.time;
 				$(".upgrade_msg").html(msg);
 				layer.confirm(msg, {
 					btn : [ '查看需要升级的文件', '晚点再升级' ]
@@ -91,14 +93,14 @@ check_upgrade();
 function down_file_list(){
 	layer.alert('需要一点时间,请稍候,正在从云端下载升级文件列表');
 	var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
-	$.get("{:urls('check_files')}?upgrade_edition="+upgrade_edition,function(res){
+	$.post("{:urls('check_files')}?upgrade_edition="+upgrade_edition,upgrade_data).success(function(res){
 		layer.closeAll();
 		if(res.code==0){
 			var str = '';
 			res.data.forEach(function(rs){
 				str +='<tr>'+
 						  '<td class="b red"> <input type="checkbox" name="filedb[]" value="'+rs.file+'"checked></td>'+   
-						  '<td class="Left">'+rs.file+'</td>'+   
+						  '<td class="Left">'+rs.showfile+'</td>'+   
 						  '<td><div align="center">'+rs.ctime+'</div></td>'+
 						  '<td>'+rs.time+'</td>'+
 						  '<td><a href="{:urls("view_file")}?filename='+rs.file+'" target="_blank">查看</a></td>'+
@@ -138,7 +140,7 @@ function sys_upgrade(){
 //全部升级完毕
 function end_up(){
 		layer.msg('全部文件升级成功');
-		$.get("{:urls('sysup')}?upgrade_edition="+upgrade_edition,function(res){
+		$.post("{:urls('sysup')}?upgrade_edition="+upgrade_edition,upgrade_data).success(function(res){
 			if(res.code==0){			
 				layer.alert('本次升级完毕,'+ok_num+'个文件升级成功!');
 			}else{
@@ -152,7 +154,7 @@ var ckfile_num = 0;	//选中的升级文件个数
 var ok_num = 0;	//成功升级文件个数
 //一个一个的文件升级
 function upgrade_file(filename,obj){	
-	$.get("{:urls('sysup')}?filename="+filename,function(res){
+	$.post("{:urls('sysup')}?filename="+filename,upgrade_data).success(function(res){
 		
 		if(res.code==0){			
 			//layer.msg('文件:'+filename+' 升级成功');

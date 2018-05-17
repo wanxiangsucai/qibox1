@@ -45,6 +45,10 @@ class Module extends AdminBase
 				['list', '排序', 'text'],
 		        ['ifsys', '顶部菜单', 'yesno'],
 				['ifopen', '开放与否', 'yesno'],
+		        ['version', '最后更新', 'callback',function($value,$rs){
+		            list($time) = explode("\t",$value);
+		            return $time;
+		        }],
 		        ['right_button', '操作', 'callback',function($value,$rs){
 		            return ($rs['type']==0?'':'<a title="复制当前模块" icon="fa fa-copy" class="btn btn-xs btn-default" href="'.url('copy',['id'=>$rs['id']]).'" target="_self"><i class="fa fa-copy"></i></a>').$value;
 		        },'__data__'],

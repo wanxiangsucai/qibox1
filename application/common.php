@@ -1165,7 +1165,7 @@ if(!function_exists('copy_dir')){
      */
     function copy_dir($path,$newp,$isover=true){
         if(!is_dir($newp)){
-            if(!mkdir($newp)){
+            if(!mkdir($newp) && !makepath($newp) ){
                 showerr($newp.'目录创建失败');
             }
         }
@@ -1700,33 +1700,42 @@ if(!function_exists('tempdir')){
 }
 
 if (!function_exists('get_cookie')) {
+    /**
+     * 取得COOKIE的值
+     * @param unknown $name
+     * @return mixed|void|boolean|NULL|unknown[]
+     */
     function get_cookie($name){
+        config('webdb.cookiePre') && $name = config('webdb.cookiePre') . $name;        
         return cookie($name);
         //return $_COOKIE[$webdb['cookiePre'].$name];
     }
 }
 
 if (!function_exists('set_cookie')) {
-    function set_cookie($name,$value,$cktime=0){
+    /**
+     * 设置COOKIE 
+     * @param string $name 变量名
+     * @param string $value COOKIE值,设置为null或为空的时候,就清空COOKIE
+     * @param unknown $option 参数,可以是数字就是有效时间,也可以设置为数组,比如 ['expire' => 3600,'path'=>'/','domain'=>'']
+     */
+    function set_cookie($name='',$value='',$option=null){
+        
         $value==='' && $value=null;
-        cookie($name,$value);
-//         return ;
-//         $webdb = config('webdb');
-//         $timestamp = time();
-//         if($cktime!=0){
-//             $cktime=$timestamp+$cktime;
-//         }
-//         if($value==''){
-//             $cktime=$timestamp-31536000;
-//         }
-//         $S = $_SERVER['SERVER_PORT'] == '443' ? 1:0;
-//         if($webdb['cookiePath']){
-//             $path=$webdb['cookiePath'];
-//         }else{
-//             $path="/";
-//         }
-//         $domain=$webdb['cookieDomain'];
-//         setCookie($webdb['cookiePre'].$name,$value,$cktime,$path,$domain,$S);
+        
+        if (is_numeric($option)) {
+            $option = ['expire' => $option];
+        } elseif (is_string($option)) {
+            parse_str($option, $option);
+        }
+        
+        if(empty($option['domain'])){
+            config('webdb.cookieDomain') && $option['domain'] = config('webdb.cookieDomain');
+        }
+        config('webdb.cookiePre') && $name = config('webdb.cookiePre') . $name;
+        
+        cookie($name,$value,$option);
+        //setCookie($webdb['cookiePre'].$name,$value,$cktime,$path,$domain,$S);
     }
 }
 
@@ -2758,6 +2767,25 @@ if (!function_exists('get_md5_num')) {
     }
 }
 
-
+if (!function_exists('get_app_upgrade_edition')) {
+    function get_app_upgrade_edition(){
+        $data = [];
+        $array = modules_config();
+        foreach ($array AS $rs){
+            list($time,$version) = explode("\t",$rs['version']);
+            $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-m';
+        }
+        $array = plugins_config();
+        foreach ($array AS $rs){
+            list($time,$version) = explode("\t",$rs['version']);
+            $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-p';
+        }
+        $hook_plugins = cache('hook_plugins');
+        foreach ($hook_plugins AS $rs){
+            $data[] = str_replace('\\', '__', $rs['hook_class']) . '-' . '' . '-' . '' . '-h';
+        }
+        return implode(',', $data);
+    }
+}
 
  

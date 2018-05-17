@@ -45,6 +45,10 @@ class Plugin extends AdminBase
 				['ifopen', '启用或停用', 'yesno'],
 				['author', '开发者', 'link','__author_url__','blank'],
 				['list', '排序值', 'text.edit'],
+		        ['version', '最后更新', 'callback',function($value,$rs){
+		            list($time) = explode("\t",$value);
+		            return $time;
+		        }],
     		    ['right_button', '操作', 'callback',function($value,$rs){
     		        return ($rs['type']==0?'':'<a title="复制当前插件" icon="fa fa-copy" class="btn btn-xs btn-default" href="'.url('copy',['id'=>$rs['id']]).'" target="_self"><i class="fa fa-copy"></i></a>').$value;
     		    },'__data__'],

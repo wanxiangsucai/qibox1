@@ -2,7 +2,8 @@
 namespace app\admin\controller;
 
 use app\common\controller\AdminBase; 
-
+use app\common\model\Module;
+use app\common\model\Plugin;
 
 class Upgrade extends AdminBase
 {
@@ -26,6 +27,28 @@ class Upgrade extends AdminBase
 	 * @return boolean|string
 	 */
 	private function writelog($upgrade_edition=''){
+	    $data = $this->request->post();
+	    if($data['m']){
+	        $array = modules_config();
+	        foreach ($array AS $rs){
+	            $de = $data['m'][$rs['keywords']];
+	            if($de){
+	                $vs = $de['time']."\t".$de['md5'];
+	                Module::update(['id'=>$rs['id'],'version'=>$vs]);
+	            }
+	        }
+	    }
+	    if($data['p']){
+	        $array = plugins_config();
+	        foreach ($array AS $rs){
+	            $de = $data['p'][$rs['keywords']];
+	            if($de){
+	                $vs = $de['time']."\t".$de['md5'];
+	                Plugin::update(['id'=>$rs['id'],'version'=>$vs]);
+	            }
+	        }
+	    }
+	    
 	    if( file_put_contents(config('client_upgrade_edition'), '<?php return ["md5"=>"'.$upgrade_edition.'","time"=>"'.date('Y-m-d H:i').'",];') ){
 	        return true;
 	    }else{
@@ -74,8 +97,9 @@ class Upgrade extends AdminBase
 	    }
 	}
 	
+	
 	/**
-	 * 开始升级,一个一个的文件升级
+	 * 正式执行开始升级,一个一个的文件升级替换
 	 */
 	public function sysup($filename='',$upgrade_edition=''){
 	    if($upgrade_edition){  //升级完毕,写入升级信息日志
@@ -93,6 +117,7 @@ class Upgrade extends AdminBase
 	    
 	    $str = $this->get_server_file($filename);
 	    if($str){
+	        $filename = $this->format_filename($filename); //针对模块或插件的升级做替换处理
 	        $this->bakfile($filename);
 	        makepath(dirname(ROOT_PATH.$filename));    //检查并生成目录
 	        if( file_put_contents(ROOT_PATH.$filename, $str) ){
@@ -107,31 +132,47 @@ class Upgrade extends AdminBase
 	    }
 	}
 	
+	/**
+	 * 升级前,可以查看任何一个文件的源代码
+	 * @param string $filename
+	 */
 	public function view_file($filename=''){
 	    $str = $this->get_server_file($filename);
+	    $str = str_replace(['<','>'], ['&lt;','&gt;'], $str);
 	    echo '<textarea style="width:100%;height:100%;">'.$str.'</textarea>';
 	    die();
 	}
 	
 	/**
-	 * 核对需要升级文件
+	 * 针对要升级的模块与插件的文件名特别处理, 替换后,// 双斜杠开头的文件就是插件或模块升级的文件
+	 * @param string $filename
+	 * @return string|mixed
+	 */
+	protected function format_filename($filename=''){
+	    return strstr($filename,'/../../') ? preg_replace('/^\/..\/..\/([\w]+)/','/',$filename) : $filename;
+	}
+	
+	/**
+	 * 核对需要升级文件,展示出来给用户挑选哪些不想升级
 	 * @return void|\think\response\Json
 	 */
 	public function check_files($upgrade_edition=''){
 	    set_time_limit(0); //防止超时
 	    $array = $this->getfile();
 	    if(empty($array)){
-	        return $this->err_js('获取云端数据失败,请晚点再偿试');
+	        return $this->err_js('获取云端文件列表数据失败,请晚点再偿试');
 	    }
 	    $data = [];
 	    foreach($array AS $rs){
-	        $file = ROOT_PATH.$rs['file'];
+	        $showfile = $this->format_filename($rs['file']);
+	        $file = ROOT_PATH.$showfile;
 	        if(is_file($file.'.lock')){
 	            continue;  //用户不想升级的文件
 	        }
 	        if(!is_file($file) || md5_file($file)!=$rs['md5']){
 	            $data[]=[
 	                    'file'=>$rs['file'],
+	                    'showfile'=>$showfile,
 	                    'ctime'=>is_file($file)?date('Y-m-d H:i',filemtime($file)):'缺失的文件',
 	                    'time'=>date('Y-m-d H:i',$rs['time']),
 	            ];
@@ -145,6 +186,11 @@ class Upgrade extends AdminBase
 	    }
 	}
 	
+	/**
+	 * 获取云端的某个最新文件
+	 * @param unknown $filename
+	 * @return string|mixed
+	 */
 	protected function get_server_file($filename){
 	    $str = http_curl('https://x1.php168.com/appstore/Upgrade/make_client_file.html?filename='.$filename.'&domain='.$this->request->domain());
 	    if(substr($str,0,2)=='QB'){    //文件核对,防止网络故障,抓取一些出错信息
@@ -155,8 +201,12 @@ class Upgrade extends AdminBase
 	    return $str;
 	}
 	
-	protected function getfile(){error_reporting(7);
-	   $str = http_curl('https://x1.php168.com/appstore/Upgrade/get_list_file.html?domain='.$this->request->domain());
+	/**
+	 * 获取云端的最新文件列表
+	 * @return string|mixed
+	 */
+	protected function getfile(){
+	    $str = http_curl('https://x1.php168.com/appstore/Upgrade/get_list_file.html?domain='.$this->request->domain(),['app_edition'=>get_app_upgrade_edition()]);
 	    return $str ? json_decode($str,true) : '';
 	}
 

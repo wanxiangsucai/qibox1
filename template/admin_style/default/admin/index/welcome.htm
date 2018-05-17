@@ -101,11 +101,11 @@ $array = @include(config('client_upgrade_edition')?:RUNTIME_PATH.'/client_upgrad
 //检查版本更新
 function check_upgrade(){
 	var now_edition = "{$array.md5}";
-	$.get("https://x1.php168.com/appstore/upgrade/get_edition.html",function(res){
+	$.post("https://x1.php168.com/appstore/upgrade/get_edition.html",{app_edition:"{:get_app_upgrade_edition()}",sys_edition:now_edition}).success(function(res){
 		if(res.code==0){
-			if(res.data.md5!=now_edition){
-				upgrade_edition = res.data.md5;
-				var msg = '你的系统需要升级<br>云端更新日期:'+res.data.time;
+			if(res.data.md5!=now_edition||typeof(res.data.upgrade_msg) != "undefined"){
+				//upgrade_edition = res.data.md5;
+				var msg = typeof(res.data.upgrade_msg) != "undefined" ? res.data.upgrade_msg : '你的系统需要升级<br>云端更新日期:'+res.data.time;
 				layer.confirm(msg, {
 					btn : [ '马上升级', '晚点再升级' ]
 				}, function(index) {
