@@ -99,7 +99,7 @@ trait Market
                     }
                 }
             }else{
-                copy_dir(RUNTIME_PATH."model/$file",ROOT_PATH.$path);   //可以复制任何对应目录的文件
+                copy_dir(RUNTIME_PATH."model/$file",ROOT_PATH.$file);   //可以复制任何对应目录的文件
             }
             $ck++;
         }
