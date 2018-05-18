@@ -1,6 +1,4 @@
 
--- --------------------------------------------------------
-
 --
 -- 表的结构 `qb_address`
 --
@@ -352,7 +350,7 @@ DROP TABLE IF EXISTS `qb_cms_field`;
 CREATE TABLE IF NOT EXISTS `qb_cms_field` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '字段名称',
   `name` varchar(32) NOT NULL,
-  `title` varchar(32) NOT NULL DEFAULT '' COMMENT '字段标题',
+  `title` varchar(60) NOT NULL DEFAULT '' COMMENT '字段标题',
   `type` varchar(32) NOT NULL DEFAULT '' COMMENT '字段类型',
   `field_type` varchar(128) NOT NULL DEFAULT '' COMMENT '字段定义',
   `value` text COMMENT '默认值',
@@ -532,7 +530,7 @@ CREATE TABLE IF NOT EXISTS `qb_config` (
   KEY `list` (`list`),
   KEY `sys_type` (`sys_id`),
   KEY `c_key` (`c_key`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统参数配置' AUTO_INCREMENT=642 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统参数配置' AUTO_INCREMENT=643 ;
 
 --
 -- 转存表中的数据 `qb_config`
@@ -590,7 +588,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 (366, 4, '微信支付接口KEY（商户API密钥）', 'weixin_paykey', '', 'text', '', 1, '', '认证服务号才有的微信支付功能，留空就不能收款，填写后，才能在线收款', 79, 0),
 (405, 1, '备案号', 'miibeian_gov_cn', '京ICP备050453号', '', '', 1, '', '', 0, 0),
 (425, 1, '积分名称', 'MoneyName', '金币', 'text', '', 1, '', '可以取名为积分、金币', 0, 0),
-(433, 1, '站点加密字符串', 'mymd5', '0c4d46cd2d7464e', 'text', '', 1, '', '设置后就不要随意修改，不然会影响到之前的数据', 0, 0),
+(433, 1, '站点加密字符串', 'mymd5', '240f9d65f90', 'text', '', 1, '', '设置后就不要随意修改，不然会影响到之前的数据', 0, 0),
 (439, 11, 'wap版支付宝接口合作者身份', 'wap_ali_partner', '', 'text', '', 1, '', '', 98, 0),
 (440, 11, 'wap版支付宝接口私钥', 'wap_ali_private_key', '', 'text', '', 1, '', '这一项可以留空，使用默认的', 96, 0),
 (441, 11, 'wap版支付宝接口公钥', 'wap_ali_public_key', '', 'text', '', 1, '', '', 97, 0),
@@ -650,7 +648,8 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 (635, 31, '阿里云短信接口id', 'sms_access_id', '', 'text', '', 1, '', '即AccessKeyId', 10, -11),
 (639, 8, '注册是否启用邮箱获取验证码', 'reg_email_num', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '务必先配置好邮箱接口', 102, 0),
 (640, 8, '注册是否启用手机短信获取验证码', 'reg_phone_num', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '务必先配置好短信接口', 101, 0),
-(641, 8, '是否启用微信公众号获取验证码', 'reg_weixin_num', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '用户需要先关注公众号,然后回复验证码,才能收到验证码', 100, 0);
+(641, 8, '是否启用微信公众号获取验证码', 'reg_weixin_num', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '用户需要先关注公众号,然后回复验证码,才能收到验证码', 100, 0),
+(642, 8, '前台显示用户的帐号还是昵称', 'show_nickname', '1', 'radio', '0|显示帐号\r\n1|显示昵称', 1, '', '昵称可以随意修改,帐号是固定的', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -922,7 +921,7 @@ CREATE TABLE IF NOT EXISTS `qb_memberdata` (
 --
 
 INSERT INTO `qb_memberdata` (`uid`, `password`, `password_rand`, `username`, `nickname`, `qq_api`, `weixin_api`, `wxapp_api`, `groupid`, `grouptype`, `groups`, `yz`, `money`, `oltime`, `lastvist`, `lastip`, `regdate`, `regip`, `sex`, `bday`, `icon`, `introduce`, `qq`, `email`, `provinceid`, `cityid`, `address`, `mobphone`, `idcard`, `truename`, `config`, `email_yz`, `mob_yz`, `idcard_yz`, `rmb`, `rmb_freeze`, `rmb_pwd`, `introducer_1`, `introducer_2`, `introducer_3`, `wx_attention`, `sendmsg`) VALUES
-(1, '21232f297a57a5a743894a0e4a801fc3', '', 'admin', '我是超管', '', 'wf', '', 3, 1, '', 1, 186, 8774571, 1526353836, '127.0.0.1', 1526353825, '127.0.0.1', 1, '1890-00-00', 'uploads/images/20180320/719d42cdf564010d411f2be85c5f47b9.jpeg', 'fdfdf', '', 'bb@126.com', 0, 1, 'cvbnmmm', '13399999999', '', '张学友', 'a:4:{s:7:"endtime";s:0:"";s:9:"alipay_id";s:6:"666666";s:4:"bank";s:114:"62223333333333373 张三 中国工商银行北京**支行\n62284444444919 张三 中国农业银行北京***分行";s:7:"pay_pwd";s:1:"3";}', 0, 0, 0, '77.90', '359.00', 'e10adc3949ba59abbe56e057f20f883e', 22, 0, 0, 0, 'a:1:{s:6:"RegMsg";i:1;}');
+(1, '46eefdbfacd3cea08516cf7c0ef625a9', '97a09', 'admin', '我是超管', '', 'wf', '', 3, 1, '', 1, 186, 8774571, 1526353836, '127.0.0.1', 1526606275, '127.0.0.1', 1, '1890-00-00', 'uploads/images/20180320/719d42cdf564010d411f2be85c5f47b9.jpeg', 'fdfdf', '', 'bb@126.com', 0, 1, 'cvbnmmm', '13399999999', '', '张学友', 'a:4:{s:7:"endtime";s:0:"";s:9:"alipay_id";s:6:"666666";s:4:"bank";s:114:"62223333333333373 张三 中国工商银行北京**支行\n62284444444919 张三 中国农业银行北京***分行";s:7:"pay_pwd";s:1:"3";}', 0, 0, 0, '77.90', '359.00', 'e10adc3949ba59abbe56e057f20f883e', 22, 0, 0, 0, 'a:1:{s:6:"RegMsg";i:1;}');
 
 -- --------------------------------------------------------
 
@@ -946,8 +945,9 @@ CREATE TABLE IF NOT EXISTS `qb_module` (
   `ifopen` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否启用',
   `ifsys` tinyint(1) NOT NULL DEFAULT '0',
   `about` text NOT NULL COMMENT '介绍',
-  `version` varchar(20) NOT NULL COMMENT '版本号',
+  `version` varchar(60) NOT NULL COMMENT '版本信息',
   `icon` varchar(64) NOT NULL COMMENT '图标',
+  `version_id` mediumint(7) NOT NULL COMMENT '对应官方的APP应用ID,升级用来核对',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='频道模块列表' AUTO_INCREMENT=3 ;
 
@@ -955,9 +955,9 @@ CREATE TABLE IF NOT EXISTS `qb_module` (
 -- 转存表中的数据 `qb_module`
 --
 
-INSERT INTO `qb_module` (`id`, `author`, `author_url`, `type`, `name`, `keywords`, `domain`, `config`, `list`, `admingroup`, `adminmember`, `ifopen`, `ifsys`, `about`, `version`, `icon`) VALUES
-(1, '', '', 1, 'CMS模块', 'cms', '', '', 0, '', '', 1, 0, '', '', 'fa fa-fw fa-file-text'),
-(2, '', '', 1, '商城', 'shop', '', '', -1, '', '', 1, 0, '', '', 'fa fa-shopping-bag');
+INSERT INTO `qb_module` (`id`, `author`, `author_url`, `type`, `name`, `keywords`, `domain`, `config`, `list`, `admingroup`, `adminmember`, `ifopen`, `ifsys`, `about`, `version`, `icon`, `version_id`) VALUES
+(1, '', '', 1, 'CMS模块', 'cms', '', '', 0, '', '', 1, 0, '', '', 'fa fa-fw fa-file-text', 0),
+(2, '', '', 1, '商城', 'shop', '', '', -1, '', '', 1, 0, '', '', 'fa fa-shopping-bag', 0);
 
 -- --------------------------------------------------------
 
@@ -1035,12 +1035,13 @@ CREATE TABLE IF NOT EXISTS `qb_plugin` (
   `author` varchar(32) NOT NULL DEFAULT '' COMMENT '开发者',
   `author_url` varchar(255) NOT NULL DEFAULT '' COMMENT '开发者网站或演示网址',
   `config` text NOT NULL COMMENT '配置信息',
-  `version` varchar(16) NOT NULL DEFAULT '' COMMENT '版本号',
+  `version` varchar(60) NOT NULL DEFAULT '' COMMENT '版本信息',
   `admin` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '是否有后台管理',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '安装时间',
   `list` int(11) NOT NULL DEFAULT '100' COMMENT '排序',
   `ifopen` tinyint(2) NOT NULL DEFAULT '1' COMMENT '是否启用',
   `ifsys` tinyint(1) NOT NULL COMMENT '是否是系统插件不可删除与复制',
+  `version_id` mediumint(7) NOT NULL COMMENT '对应官方的APP应用ID,升级用来核对',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='插件列表' AUTO_INCREMENT=12 ;
 
@@ -1048,17 +1049,17 @@ CREATE TABLE IF NOT EXISTS `qb_plugin` (
 -- 转存表中的数据 `qb_plugin`
 --
 
-INSERT INTO `qb_plugin` (`id`, `type`, `keywords`, `name`, `icon`, `about`, `author`, `author_url`, `config`, `version`, `admin`, `create_time`, `list`, `ifopen`, `ifsys`) VALUES
-(1, 0, 'log', '系统日志', 'fa fa-fw fa-info-circle', '在后台首页显示服务器信息', '', '', '', '1.0.0', 0, 1477757503, 1004, 1, 1),
-(2, 0, 'weixin', '微信相关功能', 'fa fa-fw fa-comments', '', '', '', '', '1.0.0', 0, 1477755780, 1002, 1, 0),
-(4, 0, 'config_set', '开发者功能', 'fa fa-fw fa-gears', '', '', '', '', '', 0, 0, 900, 1, 1),
-(5, 0, 'marketing', '营销功能', 'fa fa-fw fa-users', '', '', '', '', '', 0, 0, 100, 1, 1),
-(6, 0, 'alipay', '支付宝接口', 'fa fa-fw fa-briefcase', '', '', '', '', '', 0, 0, 100, 1, 0),
-(7, 0, 'area', '城市地区管理', 'fa fa-fw fa-flag', '', '', '', '', '', 0, 0, 100, 1, 1),
-(8, 0, 'comment', '评论', 'fa fa-fw fa-bullhorn', '', '', '', '', '', 0, 1517134278, 100, 1, 0),
-(9, 0, 'login', '第三方登录接口', 'fa fa-fw fa-handshake-o', '', '', '', '', '', 0, 0, 100, 1, 0),
-(10, 0, 'label', '标签管理', 'fa fa-fw fa-sticky-note-o', '', '', '', '', '', 0, 0, 100, 1, 0),
-(11, 0, 'smsali', '阿里云短信接口', 'si si-envelope-letter', '', 'SuiFeng', 'http://www.php168.com', '', '1.0', 0, 0, 100, 1, 1);
+INSERT INTO `qb_plugin` (`id`, `type`, `keywords`, `name`, `icon`, `about`, `author`, `author_url`, `config`, `version`, `admin`, `create_time`, `list`, `ifopen`, `ifsys`, `version_id`) VALUES
+(1, 0, 'log', '系统日志', 'fa fa-fw fa-info-circle', '在后台首页显示服务器信息', '', '', '', '1.0.0', 0, 1477757503, 1004, 1, 1, 0),
+(2, 0, 'weixin', '微信相关功能', 'fa fa-fw fa-comments', '', '', '', '', '1.0.0', 0, 1477755780, 1002, 1, 0, 0),
+(4, 0, 'config_set', '开发者功能', 'fa fa-fw fa-gears', '', '', '', '', '', 0, 0, 900, 1, 1, 0),
+(5, 0, 'marketing', '营销功能', 'fa fa-fw fa-users', '', '', '', '', '', 0, 0, 100, 1, 1, 0),
+(6, 0, 'alipay', '支付宝接口', 'fa fa-fw fa-briefcase', '', '', '', '', '', 0, 0, 100, 1, 0, 0),
+(7, 0, 'area', '城市地区管理', 'fa fa-fw fa-flag', '', '', '', '', '', 0, 0, 100, 1, 1, 0),
+(8, 0, 'comment', '评论', 'fa fa-fw fa-bullhorn', '', '', '', '', '', 0, 1517134278, 100, 1, 0, 0),
+(9, 0, 'login', '第三方登录接口', 'fa fa-fw fa-handshake-o', '', '', '', '', '', 0, 0, 100, 1, 0, 0),
+(10, 0, 'label', '标签管理', 'fa fa-fw fa-sticky-note-o', '', '', '', '', '', 0, 0, 100, 1, 0, 0),
+(11, 0, 'smsali', '阿里云短信接口', 'si si-envelope-letter', '', 'SuiFeng', 'http://www.php168.com', '', '1.0', 0, 0, 100, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -1273,7 +1274,7 @@ DROP TABLE IF EXISTS `qb_shop_field`;
 CREATE TABLE IF NOT EXISTS `qb_shop_field` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '字段名称',
   `name` varchar(32) NOT NULL,
-  `title` varchar(32) NOT NULL DEFAULT '' COMMENT '字段标题',
+  `title` varchar(60) NOT NULL DEFAULT '' COMMENT '字段标题',
   `type` varchar(32) NOT NULL DEFAULT '' COMMENT '字段类型',
   `field_type` varchar(128) NOT NULL DEFAULT '' COMMENT '字段定义',
   `value` text COMMENT '默认值',
@@ -1439,7 +1440,7 @@ INSERT INTO `qb_webmenu` (`id`, `pid`, `type`, `name`, `url`, `target`, `ifshow`
 (1, 0, 1, '网上商城', '/index.php/shop/', 0, 1, 100, '', 'shop'),
 (24, 0, 1, '图片专栏', '/index.php/cms/list-14.html', 0, 1, 0, '', 'cms-14'),
 (23, 0, 1, '娱乐新闻', '/index.php/cms/list-9.html', 0, 1, 10, '', 'cms-9'),
-(22, 0, 1, '联系我们', '/index.php/index/alonepage/index/id/8.html', 0, 1, 0, '', 'index-alonepage8'),
+(22, 0, 1, '联系我们', '/index.php/page/8.html', 0, 1, 0, '', 'index-alonepage8'),
 (18, 0, 1, '新闻资讯', '/index.php/cms/', 0, 1, 11, '', 'cms-'),
 (21, 0, 1, '网站首页', '/index.php', 0, 1, 101, '', 'index-'),
 (26, 0, 3, '我的圈子', '/index.php/qun/content/my.html', 0, 1, 10, 'glyphicon glyphicon-star', ''),
@@ -1542,12 +1543,3 @@ CREATE TABLE IF NOT EXISTS `qb_weixinyznum` (
   KEY `username` (`username`,`num`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8;
 
-ALTER TABLE  `qb_cms_field` CHANGE  `title`  `title` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题';
-ALTER TABLE  `qb_shop_field` CHANGE  `title`  `title` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题';
-
-ALTER TABLE  `qb_module` CHANGE  `version`  `version` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT  '版本信息';
-ALTER TABLE  `qb_plugin` CHANGE  `version`  `version` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '版本信息';
-ALTER TABLE  `qb_module` ADD  `version_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '对应官方的APP应用ID,升级用来核对';
-ALTER TABLE  `qb_plugin` ADD  `version_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '对应官方的APP应用ID,升级用来核对';
-
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', 8, '前台显示用户的帐号还是昵称', 'show_nickname', '1', 'radio', '0|显示帐号\r\n1|显示昵称', 1, '', '昵称可以随意修改,帐号是固定的', 0, 0);
