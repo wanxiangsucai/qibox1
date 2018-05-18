@@ -75,17 +75,17 @@
 </article>
 <div class="mod-share">
     <a class="share-btn" onClick="ShareAppMessage();ShareTimeline();SharShowMessage();"><i class="glyphicon glyphicon-share"></i>发送给朋友</a>
-    <a class="share-btn" onClick="ShareAppMessage();ShareTimeline();SharShowMessage();"><i class="si si-support"></i>分享赚佣金</a>
+    <a class="share-btn" onClick="ShareAppMessage();ShareTimeline();SharShowMessage();"><i class="si si-support"></i>分享朋友圈</a>
 </div>
 <div class="Share_Message" onClick="SharHiddenMessage();"></div>
-<script src="__STATIC__/js/jweixin-1.0.0.js"></script>
+<script src="__STATIC__/js/jweixin-1.2.0.js"></script>
 <script type="text/javascript">
   wx.config({
     debug: false,
-    appId: "{:wx_share('appId')}",
-    timestamp: {:wx_share('timestamp')},
-    nonceStr: "{:wx_share('nonceStr')}",
-    signature: "{:wx_share('signature')}",
+    appId: "{:weixin_share('appId')}",
+    timestamp: {:weixin_share('timestamp')},
+    nonceStr: "{:weixin_share('nonceStr')}",
+    signature: "{:weixin_share('signature')}",
     jsApiList: [
         'checkJsApi',
 		'onMenuShareTimeline',
@@ -99,7 +99,7 @@ $('.article-container section img').attr('width','');
 function ShareTimeline(){
     wx.onMenuShareTimeline({
       title: '{$info.title}',
-      link: '{:get_url('location')}',
+      link: "{:get_url('location')}",
       imgUrl: '{$info.picurl}',
       trigger: function (res) {
         // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
@@ -124,7 +124,7 @@ function ShareAppMessage(){
 	wx.onMenuShareAppMessage({
       title: '{$info.title}',
       desc: '{$info.title}',
-      link: '{:get_url('location')}',
+      link: "{:get_url('location')}",
       imgUrl: '{$info.picurl}',
       trigger: function (res) {
         // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回

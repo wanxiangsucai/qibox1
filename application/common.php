@@ -573,7 +573,15 @@ if (!function_exists('iurl')) {
 }
 
 if (!function_exists('murl')) {
-    //强制使用会员中心URL地址
+    /**
+     * 强制使用会员中心URL地址
+     * @param string $url
+     * @param string $vars
+     * @param string $suffix
+     * @param string $domain
+     * @param string $type 强制指定频道或插件
+     * @return string|mixed
+     */
     function murl($url = '', $vars = '', $suffix = true, $domain = false,$type='')
     {
         $detail = Request::instance()->dispatch();
@@ -632,6 +640,11 @@ if (!function_exists('murl')) {
 }
 
 if (!function_exists('format_class_name')) {
+    /**
+     * 主要是插件那里用到,统一TP那样的文件命名原理,文件名中的某个大写字母,在URL中要用_隔开
+     * @param unknown $name
+     * @return string
+     */
     function format_class_name($name){
         $detail = explode('_',$name);
         $classname = '';
@@ -1026,7 +1039,12 @@ if (!function_exists('getGroupByid')) {
 }
 
 if (!function_exists('get_user')) {
-
+    /**
+     * 一般是根据UID获取用户的信息.
+     * @param string $value UID值
+     * @param string $type 一般都是UID,默认也是
+     * @return array
+     */
     function get_user($value='',$type='uid'){
         $rarray = [];		
         if($type=='uid' && is_numeric($value)){
@@ -1044,16 +1062,26 @@ if (!function_exists('get_user')) {
 }
 
 if (!function_exists('get_user_name')) {
+    /**
+     * 获取用户帐号或昵称
+     * @param unknown $value
+     * @return unknown|mixed
+     */
     function get_user_name($value)
     {
         $info = get_user($value);
         if( !empty($info)  ){
-            return $info['username'];
+            return config('webdb.show_nickname') ? $info['nickname'] : $info['username'];
         }
     }
 }
 
 if (!function_exists('get_user_icon')) {
+    /**
+     * 获取用户头像
+     * @param unknown $value
+     * @return string|void|string
+     */
     function get_user_icon($value)
     {
         static $domain = null;
@@ -1068,6 +1096,11 @@ if (!function_exists('get_user_icon')) {
     }
 }
 if(!function_exists('getArray')){
+    /**
+     * 把数据库取出的对象数据转成数组
+     * @param unknown $row_list
+     * @return array|NULL[]|unknown
+     */
     function getArray($row_list)
     {
         if (is_array($row_list)) {
@@ -1425,6 +1458,13 @@ if(!function_exists('set_date')){
 }
 
 if(!function_exists('mymd5')){
+    /**
+     * 站点私有的加密与解密函数.
+     * @param unknown $string
+     * @param string $action 默认EN加密,DE解密
+     * @param string $rand 加密混淆码
+     * @return string|mixed|string|NULL|boolean
+     */
 	function mymd5($string,$action="EN",$rand=''){ //字符串加密和解密 
 		//global $webdb;
 		if($action=="DE"){//处理+号在URL传递过程中会异常
@@ -1460,7 +1500,13 @@ if(!function_exists('mymd5')){
 }
 
 if(!function_exists('rands')){
-	function rands($length,$strtolower=1) {
+    /**
+     * 生成随机数,
+     * @param unknown $length
+     * @param number $strtolower 为true的时候,强制转为小写
+     * @return string
+     */
+	function rands($length,$strtolower=true) {
 	    if (function_exists('openssl_random_pseudo_bytes')) {
 	        $hash = substr( bin2hex(openssl_random_pseudo_bytes($length*2)) , 0 , $length);
 	    }else{
@@ -1472,7 +1518,7 @@ if(!function_exists('rands')){
 	            $hash .= $chars[mt_rand(0, $max)];
 	        }
 	    }
-		if($strtolower==1){
+		if($strtolower){
 			$hash=strtolower($hash);
 		}
 		return $hash;
@@ -1480,6 +1526,11 @@ if(!function_exists('rands')){
 }
 
 if(!function_exists('filtrate')){
+    /**
+     * 过滤一些不太安全的字符
+     * @param unknown $msg
+     * @return mixed
+     */
 	function filtrate($msg){
 		//$msg = str_replace('&','&amp;',$msg);
 		//$msg = str_replace(' ','&nbsp;',$msg);
@@ -1495,6 +1546,12 @@ if(!function_exists('filtrate')){
 }
 
 if(!function_exists('read_file')){
+    /**
+     * 读文件,相当于file_get_contents函数
+     * @param unknown $filename
+     * @param string $method
+     * @return unknown
+     */
 	function read_file($filename,$method="rb"){
 		if($handle=@fopen($filename,$method)){
 			@flock($handle,LOCK_SH);
@@ -1536,8 +1593,13 @@ if(!function_exists('write_file')){
 }
 
 if(!function_exists('query')){
-	function query($sql,$ar=[]){
-	
+    /**
+     * 执行原生数据库代码
+     * @param unknown $sql
+     * @param array $ar
+     * @return mixed|number
+     */
+	function query($sql,$ar=[]){	
 		$table_pre = config('database.prefix');
 		$sql = str_replace([' qb_',' `qb_'],[" {$table_pre}"," `{$table_pre}"],$sql);
 		if( preg_match('/^(select|show) /i',trim($sql)) ){
@@ -1548,20 +1610,9 @@ if(!function_exists('query')){
 	}
 }
 
-if(!function_exists('set_v')){
-	function set_v($array=[],$obj=null){
-		if(!is_object($obj)){
-			return ;
-		}
-		foreach($array AS $key=>$value){			
-			$obj->assign($key, $value);
-		}
-	}
-}
 
 if(!function_exists('delete_attachment')){
 	function delete_attachment($a='',$b=''){
-
 	}
 }
 
@@ -1600,23 +1651,17 @@ if(!function_exists('delete_dir')){
     }
 }
 
-if(!function_exists('filtrate')){
-	function filtrate($msg){
-		//$msg = str_replace('&','&amp;',$msg);
-		//$msg = str_replace(' ','&nbsp;',$msg);
-		$msg = str_replace('"','&quot;',$msg);
-		$msg = str_replace("'",'&#39;',$msg);
-		$msg = str_replace("<","&lt;",$msg);
-		$msg = str_replace(">","&gt;",$msg);
-		//$msg = str_replace("\t","   &nbsp;  &nbsp;",$msg);
-		//$msg = str_replace("\r","",$msg);
-		//$msg = str_replace("   "," &nbsp; ",$msg);
-		return $msg;
-	}
-}
 
 
-if(!function_exists('get_word')){//echo mb_substr($str,0,4,'utf-8');
+if(!function_exists('get_word')){
+    /**
+     * 截取多少个字符
+     * @param unknown $string
+     * @param unknown $length
+     * @param number $more
+     * @param string $dot
+     * @return unknown|string
+     */
 	function get_word($string, $length, $more=1 ,$dot = '..') {
 		$more || $dot='';
 		if(strlen($string) <= $length) {
@@ -1684,7 +1729,12 @@ if(!function_exists('get_word')){//echo mb_substr($str,0,4,'utf-8');
 
 
 if(!function_exists('tempdir')){
-    function tempdir($path='',$b=''){
+    /**
+     * 取得文件的显示路径
+     * @param string $path
+     * @return void|string
+     */
+    function tempdir($path=''){
         if($path==''){
             return ;
         }
@@ -1692,7 +1742,7 @@ if(!function_exists('tempdir')){
         if($domain === null){
             $domain = request()->domain() ;
         }
-        if(!strstr($path,'http')&&!preg_match('/^\/public\//', $path)){
+        if(!preg_match('/^(http|https):/', $path)&&!preg_match('/^\/public\//', $path)){
             $path = $domain . PUBLIC_URL . $path;
         }
         return $path;
@@ -1705,7 +1755,7 @@ if (!function_exists('get_cookie')) {
      * @param unknown $name
      * @return mixed|void|boolean|NULL|unknown[]
      */
-    function get_cookie($name){
+    function get_cookie($name=''){
         config('webdb.cookiePre') && $name = config('webdb.cookiePre') . $name;        
         return cookie($name);
         //return $_COOKIE[$webdb['cookiePre'].$name];
@@ -1740,6 +1790,12 @@ if (!function_exists('set_cookie')) {
 }
 
 if (!function_exists('makeTemplate')) {
+    /**
+     * 模板路径处理函数
+     * @param unknown $template
+     * @param string $check 是否检查文件是否存在
+     * @return string
+     */
     function makeTemplate($template,$check=true)
     {
         if ('' == pathinfo($template, PATHINFO_EXTENSION)) {
@@ -1899,6 +1955,7 @@ if (!function_exists('getTemplate')) {
  }
  
   if (!function_exists('sockOpenUrl')) {
+      //通过sock方式访问远程数据.
       function sockOpenUrl($url,$method='GET',$postValue='',$Referer='Y'){
           if($Referer=='Y'){
               $Referer=$url;
@@ -1976,6 +2033,12 @@ if (!function_exists('getTemplate')) {
   }
  
  if (!function_exists('http_curl')) {
+     /**
+      * 访问远程数据.微信接口,最常用
+      * @param unknown $url
+      * @param unknown $data 数组方式POST数据
+      * @return mixed
+      */
      function http_curl($url,$data = null){
          $curl = curl_init();
          curl_setopt($curl, CURLOPT_URL, $url);
@@ -2021,11 +2084,22 @@ if (!function_exists('getTemplate')) {
  }
  
  if (!function_exists('wx_check_attention')) {
-     //检查是否有关注公众号
-     function wx_check_attention($openid){
+     /**
+      * 检查是否有关注公众号
+      * @param unknown $openid 可以是用户UID,也可以是用户的公众号ID
+      * @return boolean
+      */
+     function wx_check_attention($openid=''){
          if(!$openid){
              return false;
          }
+         if(is_numeric($openid)){
+             $array = get_user($openid);
+             $openid = $array['weixin_api'];
+             if (empty($openid)) {
+                 return false;
+             }
+         }         
          $ac=wx_getAccessToken();
          $s=json_decode( http_curl("https://api.weixin.qq.com/cgi-bin/user/info?access_token=$ac&openid=$openid&lang=zh_CN"));
          if($s->subscribe==1){
@@ -2036,19 +2110,7 @@ if (!function_exists('getTemplate')) {
      }
  }
  
- if (!function_exists('in_weixin')) {
-     /**
-      * 是否在微信客户端浏览器中打开
-      * @return boolean
-      */
-     function in_weixin(){
-         if( strstr($_SERVER['HTTP_USER_AGENT'],"MicroMessenger") ){
-             return true;
-         }else{
-             return false;
-         }
-     }
- }
+
 
  
  if (!function_exists('send_wx_msg')) {
@@ -2101,7 +2163,11 @@ if (!function_exists('getTemplate')) {
  }
  
  if (!function_exists('edit_user')) {
-     //修改用户资料
+     /**
+      * 修改用户任意资料
+      * @param array $array
+      * @return boolean
+      */
      function edit_user($array=[]){
          if (UserModel::edit_user($array)) {
              return true;
@@ -2112,7 +2178,13 @@ if (!function_exists('getTemplate')) {
  }
  
  if (!function_exists('add_rmb')) {
-     //人民币日志
+     /**
+      * 人民币日志,用户的余额增或减
+      * @param unknown $uid
+      * @param unknown $money 变动的金额,可以是负数
+      * @param unknown $freeze_money 这项是正数,冻结金额,这里冻结的话,上面的值要对应的为负数
+      * @param string $about 附注说明
+      */
      function add_rmb($uid,$money,$freeze_money,$about=''){
 
          $money = number_format($money,2);
@@ -2145,7 +2217,12 @@ if (!function_exists('getTemplate')) {
  }
 
  if (!function_exists('add_jifen')) {
-     //积分日志
+     /**
+      * 积分日志
+      * @param unknown $uid 用户UID
+      * @param unknown $money 可以是负数,就是减积分
+      * @param string $about 附注说明
+      */
      function add_jifen($uid,$money,$about=''){        
          if ($money>0) {
              UserModel::where('uid',$uid)->setInc('money',$money);
@@ -2162,52 +2239,91 @@ if (!function_exists('getTemplate')) {
      }
  }
  
-    //标签用到的
+
 if (!function_exists('run_label')) {
+    /**
+     * 通用标签用的
+     * @param unknown $tag_name
+     * @param unknown $cfg
+     */
         function run_label($tag_name,$cfg){
             controller('index/labelShow')->get_label($tag_name,$cfg);
         }
 }
 
  if (!function_exists('label_ajax_url')) {
+     /**
+      * 通用标签的分页AJAX地址
+      * @param string $tag_name
+      * @param unknown $dirname
+      */
      function label_ajax_url($tag_name='',$dirname){
          controller('index/labelShow')->get_ajax_url($tag_name ,$dirname );
      }
  }
  
  if (!function_exists('run_listpage_label')) {
+     /**
+      * 列表页标签
+      * @param unknown $tag_name
+      * @param unknown $cfg
+      * @return unknown
+      */
      function run_listpage_label($tag_name,$cfg){
          return controller('index/labelShow')->listpage_label($tag_name,$cfg);  //返回分页代码
      }
  }
  
  if (!function_exists('run_showpage_label')) {
+     /**
+      * 列表页显示分页
+      * @param unknown $tag_name
+      * @param unknown $info
+      * @param unknown $cfg
+      * @return unknown
+      */
      function run_showpage_label($tag_name,$info,$cfg){
          return controller('index/labelShow')->showpage_label($tag_name,$info,$cfg);    //返回分页代码
      }
  }
  
  if (!function_exists('label_listpage_ajax_url')) {
+     /**
+      * 列表页的分页AJAX地址
+      * @param string $tag_name
+      */
      function label_listpage_ajax_url($tag_name=''){
          controller('index/labelShow')->get_listpage_ajax_url($tag_name);
      }
  }
  
  if (!function_exists('run_comment_label')) {
+     /**
+      * 评论标签
+      * @param unknown $tag_name
+      * @param unknown $info
+      * @param unknown $cfg
+      */
      function run_comment_label($tag_name,$info,$cfg){
          controller('index/labelShow')->comment_label($tag_name,$info,$cfg);
      }
  }
  
  if (!function_exists('reply_label')) {
+     /**
+      * 论坛回复标签
+      * @param unknown $tag_name
+      * @param unknown $info
+      * @param unknown $cfg
+      */
      function reply_label($tag_name,$info,$cfg){
          controller('index/labelShow')->reply_label($tag_name,$info,$cfg);
      }
  }
  
 if (!function_exists('extend_form_item')) {
+    //编辑器用的
      function extend_form_item($form, $_layout,$form_items){
-         print_r($form_items);exit;
      }
  }
  
@@ -2239,6 +2355,11 @@ if (!function_exists('extend_form_item')) {
  }
  
  if (!function_exists('del_html')) {
+     /**
+      * 清除html代码
+      * @param string $content
+      * @return mixed
+      */
      function del_html($content=''){
          $content=preg_replace('/<([^<]*)>/is',"",$content);	//把HTML代码过滤掉
          return $content;
@@ -2246,7 +2367,10 @@ if (!function_exists('extend_form_item')) {
  }
  
  if (!function_exists('in_wap')) {
-     //检查是否为wap访问
+     /**
+      * 检查是否为wap访问,也包含微信端
+      * @return boolean
+      */
      function in_wap(){
          $regex_match="/(iPad|nokia|iphone|android|motorola|^mot\-|softbank|foma|docomo|kddi|up\.browser|up\.link|";
          $regex_match.="htc|dopod|blazer|netfront|helio|hosin|huawei|novarra|CoolPad|webos|techfaith|palmsource|";
@@ -2259,9 +2383,12 @@ if (!function_exists('extend_form_item')) {
  }
  
  if (!function_exists('in_weixin')) {
-     //检查是否为wap访问
+     /**
+      * 是否在微信客户端浏览器中打开
+      * @return boolean
+      */
      function in_weixin(){
-         if( strstr($_SERVER['HTTP_USER_AGENT'],"MicroMessenger")){
+         if( strstr($_SERVER['HTTP_USER_AGENT'],"MicroMessenger") ){
              return true;
          }else{
              return false;
@@ -2333,6 +2460,11 @@ if (!function_exists('extend_form_item')) {
  }
  
  if (!function_exists('get_web_menu')) {
+     /**
+      * 获取网站头部菜单数据
+      * @param string $type 可以取值pc或wap
+      * @return unknown[]|unknown
+      */
      function get_web_menu($type=''){
          if($type == 'wap'){
              $_type = [0,2];
@@ -2411,39 +2543,45 @@ if (!function_exists('extend_form_item')) {
  }
  
  if (!function_exists('get_url')) {
+     /**
+      * 获取各种网址,用得很频繁
+      * @param unknown $type
+      * @param array $array
+      * @return string|unknown
+      */
      function get_url($type,$array=[]){
          switch ($type){
-             case 'reg':
+             case 'reg':    //通用注册
                  $url = iurl('index/reg/index',$array);
              break;
-             case 'login':
+             case 'login':  //通用登录
                  $url = iurl('index/login/index',$array).'?fromurl='.urlencode(request()->url(true));
              break;
-             case 'wx_login':
+             case 'wx_login':   //微信登录
                  $url = purl('weixin/login/index',$array).'?fromurl='.urlencode(request()->url(true));
                  break;
-             case 'qq_login':
+             case 'qq_login':   //QQ登录
                  $url = purl('login/qq/index',$array,'index').'?fromurl='.urlencode(request()->url(true));
                  break;
-             case 'quit':
+             case 'quit':   //退出
                  $url = iurl('index/login/quit',$array);
              break;
-             case 'from':
-                 $url = $GLOBALS['FROMURL'];
+             case 'from':   //来源地址
+                 $url = $_SERVER["HTTP_REFERER"];
                  break;
-             case 'location':
+             case 'location':   //当前网址
                  $url = request()->url(true);
                  break;
-             case 'home':
+             case 'home':   //访问主页
                  $url = '/';
               break;
-             case 'member':
+             case 'member':  //会员中心
                  $url = '/member.php';
                  break;
-             case 'user':
+             case 'user':   //用户的主页
                  $url = murl('member/user/index',is_numeric($array)?['uid'=>$array]:$array);
                  break;
-              default:
+              default:  //把网址加上http域名
                   $url = preg_match('/^(http:|https:)/', $type)?$type:request()->domain().$type;
          }
          return $url;
@@ -2556,20 +2694,7 @@ if (!function_exists('send_sms')) {
     }
 }
 
-if (!function_exists('wx_share')) {
-    function wx_share($key=''){
-        if(!config('webdb.weixin_appid')){
-            return ;
-        }
-        require_once ROOT_PATH."plugins/weixin/api/weixin.jsdk.php";
-        static $signPackage = null;
-        if($signPackage == null){
-            $jssdk = new JSSDK(config('webdb.weixin_appid'), config('webdb.weixin_appsecret'));
-            $signPackage = $jssdk->GetSignPackage();
-        }
-        return $signPackage[$key];
-    }
-}
+
 
 if (!function_exists('get_model_class')) {
     /**
@@ -2665,6 +2790,11 @@ if (!function_exists('url_clean_domain')) {
 }
 
 if (!function_exists('get_qrcode')) {
+    /**
+     * 获取某个网址的二维码
+     * @param string $url
+     * @return string
+     */
     function get_qrcode($url=''){
         static $domain = '';
         if($domain === ''){
@@ -2675,7 +2805,32 @@ if (!function_exists('get_qrcode')) {
     }
 }
 
+if (!function_exists('wx_share')) {
+    /**
+     * 微信JS接口
+     * @param string $key
+     * @return void|string|number|NULL
+     */
+//     function wx_share($key=''){
+//         if(!config('webdb.weixin_appid')){
+//             return ;
+//         }
+//         require_once ROOT_PATH."plugins/weixin/api/weixin.jsdk.php";
+//         static $signPackage = null;
+//         if($signPackage == null){
+//             $jssdk = new JSSDK(config('webdb.weixin_appid'), config('webdb.weixin_appsecret'));
+//             $signPackage = $jssdk->GetSignPackage();
+//         }
+//         return $signPackage[$key];
+//     }
+}
+
 if (!function_exists('weixin_share')) {
+    /**
+     * 微信JS接口
+     * @param string $key
+     * @return void|string|number|NULL
+     */
     function weixin_share($type=''){
         if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
             return ;
@@ -2697,6 +2852,10 @@ if (!function_exists('weixin_share')) {
 }
 
 if (!function_exists('weixin_login')) {
+    /**
+     * 强制微信登录
+     * @param string $url 登录成功后,返回的地址
+     */
     function weixin_login($url=''){
         $url = $url=='' ? request()->url(true) : $url;
         $url = purl('weixin/login/index') . '?fromurl=' . urlencode($url);
@@ -2768,6 +2927,10 @@ if (!function_exists('get_md5_num')) {
 }
 
 if (!function_exists('get_app_upgrade_edition')) {
+    /**
+     * 同步升级版本信息的判断
+     * @return string
+     */
     function get_app_upgrade_edition(){
         $data = [];
         $array = modules_config();

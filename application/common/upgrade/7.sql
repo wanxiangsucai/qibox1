@@ -1,0 +1,2 @@
+﻿
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', 8, '前台显示用户的帐号还是昵称', 'show_nickname', '1', 'radio', '0|显示帐号\r\n1|显示昵称', 1, '', '昵称可以随意修改,帐号是固定的', 0, 0);

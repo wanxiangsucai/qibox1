@@ -1549,3 +1549,5 @@ ALTER TABLE  `qb_module` CHANGE  `version`  `version` VARCHAR( 60 ) CHARACTER SE
 ALTER TABLE  `qb_plugin` CHANGE  `version`  `version` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '版本信息';
 ALTER TABLE  `qb_module` ADD  `version_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '对应官方的APP应用ID,升级用来核对';
 ALTER TABLE  `qb_plugin` ADD  `version_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '对应官方的APP应用ID,升级用来核对';
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', 8, '前台显示用户的帐号还是昵称', 'show_nickname', '1', 'radio', '0|显示帐号\r\n1|显示昵称', 1, '', '昵称可以随意修改,帐号是固定的', 0, 0);

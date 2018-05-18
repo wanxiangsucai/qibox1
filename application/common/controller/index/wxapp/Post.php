@@ -127,7 +127,7 @@ abstract class Post extends IndexBase
         $id = $this->savaNewData($mid,$data);
         
         //以下两行是接口
-        hook_listen('cms_add_end',$id);
+        hook_listen('cms_add_end',$id,['data' =>$data, 'module' =>$this->request->module()]);
         $this->end_add($id,$data);
         
         if($id){
