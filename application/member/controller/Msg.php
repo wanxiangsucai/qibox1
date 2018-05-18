@@ -28,7 +28,7 @@ class Msg extends MemberBase
 
     public function delete($id)
     {
-        if (Model::destroy([$id])) {
+        if (Model::where(['id'=>$id,'uid'=>$this->user['uid']])->delete()) {
             $this->success('删除成功','index');
         }else{
             $this->error('删除失败');
@@ -66,11 +66,14 @@ class Msg extends MemberBase
     
     public function show($id=0)
     {
-        $info = Model::find($id);
+        $info = Model::where(['id'=>$id])->find();
         if(!$info){
-            $this->error('没有相应的内容');
-        }
-        Model::update(['id'=>$id,'ifread'=>1]);
+            $this->error('内容不存在');
+        }elseif($info['uid']!=$this->user['uid']&&$info['touid']!=$this->user['uid']){
+            $this->error('你无权查看');
+        }elseif($info['touid']==$this->user['uid']){
+            Model::update(['id'=>$id,'ifread'=>1]);
+        }        
         $this->assign('info',$info);
         return $this->fetch();
     }
@@ -78,7 +81,6 @@ class Msg extends MemberBase
     public function clean()
     {
         $touid=$this->user['uid'];
-       // if(Model::destroy(['touid' => $touid])){
         if(Model::where('touid','=',$touid)->delete()){
             $this->success('清空成功','index');
         }else{

@@ -79,7 +79,6 @@ class Setting extends AdminBase
                     if(class_exists($class_name)&&method_exists($class_name, $action)){
                         $obj = new $class_name;
                         $_params = $params ? json_decode($params,true) : [] ;
-                        
                         //$rs['options'] = $obj->$action();
                         $rs['options'] = call_user_func_array([$obj, $action], $_params);
                     }
