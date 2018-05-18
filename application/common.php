@@ -663,7 +663,7 @@ if (!function_exists('into_sql')) {
      * @param number $type 2是遇到错误直接终止,1是显示错误,但不终止程序,0是屏蔽错误
      */
     function into_sql($sql, $replace_pre=true,$type=2){
-        if(preg_match('/\.sql$/', $sql)){
+        if(preg_match('/\.sql$/', $sql)||is_file($sql)){
             $sql = check_bom(read_file($sql));
         }
         $prefix = $replace_pre===true ? ['qb_'=>config('database.prefix')] : [];
@@ -2959,7 +2959,7 @@ if (!function_exists('check_bom')) {
      * @return boolean|string
      */
     function check_bom($filename='',$onlycheck=false){
-        $contents = file_get_contents($filename);
+        $contents = is_file($filename) ? file_get_contents($filename) : $filename;
         $charset[1] = substr($contents, 0, 1);
         $charset[2] = substr($contents, 1, 1);
         $charset[3] = substr($contents, 2, 1);
