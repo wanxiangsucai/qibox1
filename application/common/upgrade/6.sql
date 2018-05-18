@@ -1,4 +1,4 @@
-﻿ALTER TABLE  `qb_appstore_field` CHANGE  `title`  `title` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题';
+ALTER TABLE  `qb_appstore_field` CHANGE  `title`  `title` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题';
 
 ALTER TABLE  `qb_form_field` CHANGE  `title`  `title` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题';
 ALTER TABLE  `qb_bbs_field` CHANGE  `title`  `title` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题';
