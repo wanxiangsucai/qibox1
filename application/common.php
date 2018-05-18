@@ -664,7 +664,7 @@ if (!function_exists('into_sql')) {
      */
     function into_sql($sql, $replace_pre=true,$type=2){
         if(preg_match('/\.sql$/', $sql)){
-            $sql = read_file($sql);
+            $sql = check_bom(read_file($sql));
         }
         $prefix = $replace_pre===true ? ['qb_'=>config('database.prefix')] : [];
         $sql_list = parse_sql($sql,$prefix);
@@ -2951,4 +2951,28 @@ if (!function_exists('get_app_upgrade_edition')) {
     }
 }
 
+if (!function_exists('check_bom')) {
+    /**
+     * 检查文件是否包含UTF8+BOM看不到的三个字符.
+     * @param string $filename
+     * @param string $onlycheck 为false时返回去除BOM后的内容,为TRUE的话,仅仅做检查文件是否包含BOM
+     * @return boolean|string
+     */
+    function check_bom($filename='',$onlycheck=false){
+        $contents = file_get_contents($filename);
+        $charset[1] = substr($contents, 0, 1);
+        $charset[2] = substr($contents, 1, 1);
+        $charset[3] = substr($contents, 2, 1);
+        if(ord($charset[1]) == 239 && ord($charset[2]) == 187 && ord($charset[3]) == 191){
+            if($onlycheck==true){
+                return true;
+            }else{
+                $contents = substr($contents, 3);
+            }
+        }
+        if($onlycheck==false){
+            return $contents;
+        }
+    }
+}
  
