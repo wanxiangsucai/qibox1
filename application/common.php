@@ -18,6 +18,7 @@ use plugins\marketing\model\RmbConsume;
 use plugins\marketing\model\Moneylog;
 use think\Db;
 use think\Request;
+use app\common\util\Style;
 error_reporting(E_ERROR | E_PARSE );
 
 if (!function_exists('get_real_path')) {
@@ -2970,10 +2971,28 @@ if (!function_exists('get_app_upgrade_edition')) {
             list($time,$version) = explode("\t",$rs['version']);
             $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-p';
         }
+        $_hook = [];
         $hook_plugins = cache('hook_plugins');
         foreach ($hook_plugins AS $rs){
+            if($_hook[$rs['hook_class']] )continue;
             $data[] = str_replace('\\', '__', $rs['hook_class']) . '-' . '' . '-' . '' . '-h';
+            $_hook[$rs['hook_class']] = true;
         }
+        $style_array = Style::get_style('index');
+        foreach ($style_array AS $key=>$name){
+            $version = $version_id = '';
+            $data[] = $key . '-' . $version . '-' . $version_id . '-index_style';
+        }
+        $style_array = Style::get_style('member');
+        foreach ($style_array AS $key=>$name){
+            $version = $version_id = '';
+            $data[] = $key . '-' . $version . '-' . $version_id . '-member_style';
+        }
+        $style_array = Style::get_style('admin');
+        foreach ($style_array AS $key=>$name){
+            $version = $version_id = '';
+            $data[] = $key . '-' . $version . '-' . $version_id . '-admin_style';
+        }        
         return implode(',', $data);
     }
 }

@@ -149,7 +149,11 @@ class Upgrade extends AdminBase
 	 * @return string|mixed
 	 */
 	protected function format_filename($filename=''){
-	    return strstr($filename,'/../../') ? preg_replace('/^\/..\/..\/([\w]+)/','/',$filename) : $filename;
+	    if(strstr($filename,'/../../')){
+	        $filename = str_replace(['/../../template/','/../../plugin/','/../../hook/'], '/../../', $filename);
+	        $filename = preg_replace('/^\/..\/..\/([\w]+)/','/',$filename);
+	    }
+	    return $filename;
 	}
 	
 	/**
