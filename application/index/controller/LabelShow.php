@@ -791,6 +791,9 @@ class LabelShow extends IndexBase
             }
             //未入库前,标签默认指定的频道数据作为演示用
             $cfg['mid'] || $cfg['mid'] = 1; //指定模型效率会高点,但前提是模型1必须要存在,不然就会报错
+            if($type=='member'&&empty($cfg['class'])){
+                $cfg['class'] = "app\\common\\model\\User@labelGet";
+            }
             if(    ($type&&( modules_config($type)||plugins_config($type) ))    ||    $cfg['class']    ){
                 if($tpl_have_edit || empty( cache('tag_default_'.$tag_name) )){   //没入库前,也方便AJAX获取更多分页使用
                     cache('tag_default_'.$tag_name,$cfg,3600);

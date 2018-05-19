@@ -40,11 +40,17 @@ class Member extends AdminBase
 		        ['yz', '审核', 'switch'],
 			];
 		$this -> tab_ext['search'] = ['username'=>'用户名','uid'=>'用户ID','regip'=>'注册IP'];
-		$this -> tab_ext['order'] = 'money,rmb';
+		$this -> tab_ext['order'] = 'money,rmb,uid';
 		$this -> tab_ext['filter_search'] = [
 		        'groupid'=>getGroupByid(),
 		];
 	}
+	
+	public function index() {
+	    $order = 'uid desc';
+	    $map = [];
+	    return $this -> getAdminTable(self::getListData($map, $order ));
+	} 
 	
 	//修改用户
 	public function edit($id = null)

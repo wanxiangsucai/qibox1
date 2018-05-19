@@ -1599,14 +1599,41 @@ if(!function_exists('query')){
      * @param array $ar
      * @return mixed|number
      */
-	function query($sql,$ar=[]){	
-		$table_pre = config('database.prefix');
-		$sql = str_replace([' qb_',' `qb_'],[" {$table_pre}"," `{$table_pre}"],$sql);
-		if( preg_match('/^(select|show) /i',trim($sql)) ){
-			return  Db::query($sql);
-		}else{
-			return  Db::execute($sql);
-		}		
+	function query($sql,$array=[]){	
+	    if(preg_match('/^([\w]+)$/i', $sql)){
+	        $result = false;
+	        $obj = Db::name($sql)->where($array['where']);
+	        $array['alias'] && $obj->alias($array['alias']);
+	        $array['join'] && $obj->join($array['join']);
+	        $array['union'] && $obj->union($array['union']);
+	        $array['field'] && $obj->field($array['field']);
+	        $array['having'] && $obj->having($array['having']);
+	        $array['group'] && $obj->group($array['group']);
+	        $array['order'] && $obj->order($array['order']);	        	        
+	        $array['limit'] && $obj->limit($array['limit']);
+	        $array['page'] && $obj->page($array['page']);	        
+	        $array['value'] && $result = $obj->value($array['value']);
+	        $array['column'] && $result = $obj->column($array['column']);
+	        $array['count'] && $result = $obj->count($array['count']);
+	        $array['max'] && $result = $obj->max($array['max']);
+	        $array['min'] && $result = $obj->min($array['min']);
+	        $array['sum'] && $result = $obj->min($array['sum']);
+	        $array['avg'] && $result = $obj->min($array['avg']);     //获取平均值
+	        if($array['type']=='one'){
+	            $result = getArray($obj->find());
+	        }elseif($result===false){
+	            $result = getArray($obj->select());
+	        }
+	        return $result;
+	    }else{
+	        $table_pre = config('database.prefix');
+	        $sql = str_replace([' qb_',' `qb_'],[" {$table_pre}"," `{$table_pre}"],$sql);
+	        if( preg_match('/^(select|show) /i',trim($sql)) ){
+	            return  Db::query($sql);
+	        }else{
+	            return  Db::execute($sql);
+	        }
+	    }				
 	}
 }
 

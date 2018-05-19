@@ -26,7 +26,7 @@ var Dolphin = function () {
                 // 不存在“.target-form”元素则返回false
                 if (undefined === form.get(0)) return false;
                 // 节点标签名为FORM表单
-                if ("FORM" === form.get(0).nodeName) {return true;	//调试
+                if ("FORM" === form.get(0).nodeName) {//return true;	//调试
                     ajax_url = ajax_url || form.get(0).action;
 
                     // 提交确认

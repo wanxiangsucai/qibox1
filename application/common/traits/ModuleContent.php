@@ -513,18 +513,16 @@ trait ModuleContent
 	            if(get_cookie('cms_title')==md5($data['title'])){
 	                return '请不要重复发表相同的主题!';
 	            }
-	            set_cookie('cms_title', md5($data['title']));
 	        }
 	        if($data['content']){
 	            if(get_cookie('cms_content')==md5($data['content'])){
 	                return '请不要重复发表相同的内容!';
 	            }
-	            set_cookie('cms_content', md5($data['content']));
 	        }
 	    }
-
+	    
 	    $data = array_merge(input(),$data);
-	    $array = explode(',','view,status,replynum,usernum,agree,reward');
+	    $array = explode(',','view,replynum,usernum,agree,reward');
 	    foreach($array AS $key){
 	        unset($data[$key]);
 	    }
@@ -569,6 +567,8 @@ trait ModuleContent
 	 * @param number $data 内容数据
 	 */
 	protected function end_add($id=0,$data=[]){
+	    set_cookie('cms_title', md5($data['title']));
+	    set_cookie('cms_content', md5($data['content']));
 	}
 	
 	/**
