@@ -447,7 +447,7 @@ abstract class C extends Model
      * @return unknown
      */
     protected static function format_data($info=[] , $cfg=[] , $_dirname='' , $_sort_array=[]) {
-        self::InitKey();
+        //self::InitKey(); //2018-5-19日修改,有的服务器会报错Cannot instantiate abstract class app\common\model\C
         if($_dirname!==''){
             $dirname = $_dirname;
         }else{
