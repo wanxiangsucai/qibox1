@@ -128,12 +128,15 @@ trait LabelEdit {
     protected function save($array){
         $result = LabelModel::save_data($array);
         if($result===true){
-            echo '<script type="text/javascript">
+			if($this->request->isAjax()){
+				$this->success('设置成功');
+			}else{
+				echo '<script type="text/javascript">
                     parent.layer.msg("设置成功!"); 
                     parent.layer.close(parent.layer.getFrameIndex(window.name));parent.location.reload();
                     </script>';
-            exit;
-            //$this->success('设置成功',$this->fromurl);
+				exit;
+			}            
         }else{
             $this->error('设置失败'.$result);
         }

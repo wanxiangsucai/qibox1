@@ -55,7 +55,7 @@ class HookPlugin extends AdminBase
             return $this->err_js($result);
         }
         
-        $result = $this->install($keywords);
+        $result = $this->install($keywords,$id);
         if($result!==true){
             unlink(APP_PATH.'common/hook/'.ucfirst($keywords));
             return $this->err_js($result);
@@ -64,13 +64,14 @@ class HookPlugin extends AdminBase
         return $this->ok_js(['url'=>url('hook_plugin/index')],'钩子安装成功,请在钩子设置那里选择启用');
         
     }
-    
+
     /**
      * 入库处理
      * @param unknown $keywords
+     * @param unknown $id 服务端对应的ID
      * @return string|boolean
      */
-    protected function install($keywords){
+    protected function install($keywords,$id=0){
         $classname = "app\\common\hook\\".ucfirst($keywords);
         if(!class_exists($classname)||!method_exists($classname,'run')){
             return '钩子程序代码不符合规则!';
@@ -81,6 +82,7 @@ class HookPlugin extends AdminBase
             return '钩子程序代码不完整,缺少配置参数!';
         }
         $info['hook_class'] = $classname;
+        $info['version_id'] = $id;
         $result = $this->model->create($info);
         if( method_exists($classname,'install') ){
             $class->install($result->id);
