@@ -215,13 +215,13 @@ if (!function_exists('parse_name')) {
 }
 
 if (!function_exists('hook_listen')) {
-      /**
+    /**
      * 监听标签的行为
      * @param  string $tag    标签名称
      * @param  mixed  $params 传入参数
      * @param  mixed  $extra  额外参数
      * @param  bool   $once   只获取一个有效返回值
-     * @return mixed
+     * @return string|mixed|mixed[]
      */
     function hook_listen($tag = '', &$params = null, $extra = null, $once = false) {
         return \think\Hook::listen($tag, $params, $extra, $once);
@@ -1630,9 +1630,17 @@ if(!function_exists('query')){
 	        $table_pre = config('database.prefix');
 	        $sql = str_replace([' qb_',' `qb_'],[" {$table_pre}"," `{$table_pre}"],$sql);
 	        if( preg_match('/^(select|show) /i',trim($sql)) ){
-	            return  Db::query($sql);
+	            try {
+	                $result = Db::query($sql);
+	            } catch(\Exception $e) {
+	                return 'SQL执行失败，请检查语句是否正确<pre>'.$sql."\n\n".$e.'</pre>';
+	            }
 	        }else{
-	            return  Db::execute($sql);
+	            try {
+	                $result = Db::execute($sql);
+	            } catch(\Exception $e) {
+	                return 'SQL执行失败，请检查语句是否正确<pre>'.$sql."\n\n".$e.'</pre>';
+	            }
 	        }
 	    }				
 	}
@@ -2781,7 +2789,12 @@ if (!function_exists('label_format_where')) {
             foreach($detail AS $str){
                 if(!strstr($str,'|')&&strstr($str,'=')){
                     list($field,$value) = explode('=',$str);
-                    $array[trim($field)] = trim($value);
+                    if(strstr($value,',')){
+                        $value = explode(',',$value);
+                        $array[trim($field)] = ['in',$value];
+                    }else{
+                        $array[trim($field)] = trim($value);
+                    }                    
                     continue;
                 }
                 list($field,$mod,$value) = explode('|',$str);

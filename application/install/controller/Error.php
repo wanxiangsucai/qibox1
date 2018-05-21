@@ -165,7 +165,7 @@ class Error extends Controller
                     try {
                         Db::execute($v);
                     } catch(\Exception $e) {
-                        return $this->error('导入SQL失败，请检查install.sql的语句是否正确');
+                        return $this->error('导入SQL失败，请检查install.sql的语句是否正确:'.$v."      ".$e);
                     }
                 }
             }

@@ -13,6 +13,8 @@
 {block name="head_layer_js"}<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>{/block}
 </head>
 <body>
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
+{:hook_listen('layout_body_head',$userdb,$webdb,true)}
 {block name="body_Headcont"}<link rel="stylesheet" href="__STATIC__/index/default/pcheader.css"> 
 <div class="qb_pc_topBox">
 	<ul>		
@@ -82,7 +84,9 @@ $('.Logo_Menu dl').hover(
 {/block}
 <!--下面这一行是导航条-->
 {block name="nav"}{qb:nav title="" url="" /}{/block}
-{block name="body_content"}页面主体部分内容{/block}	
+{block name="body_content"}页面主体部分内容{/block}
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
+{:hook_listen('layout_body',$userdb,$webdb,true)}
 {block name="body_Footcont"}
 <link rel="stylesheet" href="__STATIC__/index/default/pcfooter.css"> 
 <div class="body_Footcont">
@@ -102,5 +106,7 @@ $('.Logo_Menu dl').hover(
 	</ul>
 </div>
 {/block}
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
+{:hook_listen('layout_body_foot',$userdb,$webdb,true)}
 </body>
 </html>

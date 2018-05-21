@@ -8,3 +8,7 @@
 
 library\think\Model.php
 1721行,解决指针不在首位的问题
+
+
+thinkphp\library\think\App.php
+152行 增加对pjax 的设置项 配置文件增加 'default_pjax_return'     => 'html',

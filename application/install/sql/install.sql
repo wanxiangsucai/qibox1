@@ -1,3 +1,4 @@
+-- --------------------------------------------------------
 
 --
 -- 表的结构 `qb_address`
@@ -530,7 +531,7 @@ CREATE TABLE IF NOT EXISTS `qb_config` (
   KEY `list` (`list`),
   KEY `sys_type` (`sys_id`),
   KEY `c_key` (`c_key`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统参数配置' AUTO_INCREMENT=643 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统参数配置' AUTO_INCREMENT=645 ;
 
 --
 -- 转存表中的数据 `qb_config`
@@ -565,7 +566,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 (305, 1, '远程附件地址', 'remote_updir', 'upload_files/web1', 'text', '', 1, '', '', 0, 0),
 (306, 1, '上传文件的最大尺寸', 'upfileMaxSize', '', '', '', 1, '', '', 0, 0),
 (307, 1, '允许上传文件的类型', 'upfileType', '.rar .txt .jpg .gif .bmp .png .zip .mp3 .wma .wmv .mpeg .mpg .rm .ram .htm .doc .swf .avi .flv .sql .doc .ppt .xls .chm .pdf .mp4 .pem', '', '', 1, '', '', 0, 0),
-(311, 1, '会员中心风格', 'member_style', 'default', 'select', 'app\\common\\util\\Style@listMemberStyle', 1, '', '', 0, 0),
+(643, 1, '会员中心风格', 'member_style', 'default', 'select', 'app\\common\\util\\Style@get_style@["member"]', 1, '', '', 98, 0),
 (313, 1, '站点关闭原因', 'close_why', '网站维护当中,暂停访问.', 'text', '', 1, '', '', 0, 0),
 (318, 11, 'PC版支付宝接口帐号', 'alipay_id', '', 'text', '', 1, '', '邮箱或手机号', 89, 0),
 (320, 1, '站点SEO关键字', 'seo_keyword', '', 'text', '', 1, '', '', 998, 0),
@@ -588,7 +589,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 (366, 4, '微信支付接口KEY（商户API密钥）', 'weixin_paykey', '', 'text', '', 1, '', '认证服务号才有的微信支付功能，留空就不能收款，填写后，才能在线收款', 79, 0),
 (405, 1, '备案号', 'miibeian_gov_cn', '京ICP备050453号', '', '', 1, '', '', 0, 0),
 (425, 1, '积分名称', 'MoneyName', '金币', 'text', '', 1, '', '可以取名为积分、金币', 0, 0),
-(433, 1, '站点加密字符串', 'mymd5', '240f9d65f90', 'text', '', 1, '', '设置后就不要随意修改，不然会影响到之前的数据', 0, 0),
+(433, 1, '站点加密字符串', 'mymd5', 'd612f19c764a69f3305', 'text', '', 1, '', '设置后就不要随意修改，不然会影响到之前的数据', 0, 0),
 (439, 11, 'wap版支付宝接口合作者身份', 'wap_ali_partner', '', 'text', '', 1, '', '', 98, 0),
 (440, 11, 'wap版支付宝接口私钥', 'wap_ali_private_key', '', 'text', '', 1, '', '这一项可以留空，使用默认的', 96, 0),
 (441, 11, 'wap版支付宝接口公钥', 'wap_ali_public_key', '', 'text', '', 1, '', '', 97, 0),
@@ -649,7 +650,8 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 (639, 8, '注册是否启用邮箱获取验证码', 'reg_email_num', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '务必先配置好邮箱接口', 102, 0),
 (640, 8, '注册是否启用手机短信获取验证码', 'reg_phone_num', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '务必先配置好短信接口', 101, 0),
 (641, 8, '是否启用微信公众号获取验证码', 'reg_weixin_num', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '用户需要先关注公众号,然后回复验证码,才能收到验证码', 100, 0),
-(642, 8, '前台显示用户的帐号还是昵称', 'show_nickname', '1', 'radio', '0|显示帐号\r\n1|显示昵称', 1, '', '昵称可以随意修改,帐号是固定的', 0, 0);
+(642, 8, '前台显示用户的帐号还是昵称', 'show_nickname', '1', 'radio', '0|显示帐号\r\n1|显示昵称', 1, '', '昵称可以随意修改,帐号是固定的', 0, 0),
+(644, 1, '后台风格', 'admin_style', 'default', 'select', 'app\\common\\util\\Style@get_style@["admin"]', 1, '', '', 97, 0);
 
 -- --------------------------------------------------------
 
@@ -734,7 +736,7 @@ CREATE TABLE IF NOT EXISTS `qb_hook` (
   `list` int(10) NOT NULL COMMENT '排序值',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='接口(钩子)列表' AUTO_INCREMENT=19 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='接口(钩子)列表' AUTO_INCREMENT=22 ;
 
 --
 -- 转存表中的数据 `qb_hook`
@@ -758,7 +760,10 @@ INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES
 (15, 'user_login_begin', '用户登录之前', 1, 0),
 (16, 'user_login_end', '用户登录之后', 1, 0),
 (17, 'user_quit_end', '用户退出登录', 1, 0),
-(18, 'cms_content_show', '内容展示页接口', 1, 0);
+(18, 'cms_content_show', '内容展示页接口', 1, 0),
+(19, 'layout_body_head', '前台布局模板头部', 1, 0),
+(20, 'layout_body', '前台布局模板版权信息之上', 1, 0),
+(21, 'layout_body_foot', '前台布局模板底部', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -837,7 +842,17 @@ CREATE TABLE IF NOT EXISTS `qb_log_action` (
   `content` text COLLATE utf8_bin NOT NULL COMMENT '͡ݻքŚɝ',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`,`create_time`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='۳̨әطɕ־' AUTO_INCREMENT=20 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='۳̨әطɕ־' AUTO_INCREMENT=24 ;
+
+--
+-- 转存表中的数据 `qb_log_action`
+--
+
+INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES
+(20, 1, 1526869213, '127.0.0.1', 'admin', 'hook', 'add', '', '{"name":"layout_body_head","about":"\\u524d\\u53f0\\u5e03\\u5c40\\u6a21\\u677f\\u5934\\u90e8","ifopen":"1"}'),
+(21, 1, 1526869262, '127.0.0.1', 'admin', 'hook', 'add', '', '{"name":"layout_body","about":"\\u524d\\u53f0\\u5e03\\u5c40\\u6a21\\u677f\\u7248\\u6743\\u4fe1\\u606f\\u4e4b\\u4e0a","ifopen":"1"}'),
+(22, 1, 1526869287, '127.0.0.1', 'admin', 'hook', 'add', '', '{"name":"layout_body_foot","about":"\\u524d\\u53f0\\u5e03\\u5c40\\u6a21\\u677f\\u5e95\\u90e8","ifopen":"1"}'),
+(23, 1, 1526869306, '127.0.0.1', 'admin', 'setting', 'index', '', '{"group":"1","webname":"\\u9f50\\u535aX1.0","seo_title":"\\u9f50\\u535a\\u8457\\u540d\\u7684\\u5f00\\u6e90\\u8f6f\\u4ef6\\u63d0\\u4f9b\\u5546","web_open":"1","style":"default","member_style":"default","admin_style":"default","forbid_show_bug":"1","remote_updir":"upload_files\\/web1","upfileType":".rar .txt .jpg .gif .bmp .png .zip .mp3 .wma .wmv .mpeg .mpg .rm .ram .htm .doc .swf .avi .flv .sql ..","close_why":"\\u7f51\\u7ad9\\u7ef4\\u62a4\\u5f53\\u4e2d,\\u6682\\u505c\\u8bbf\\u95ee.","miibeian_gov_cn":"\\u4eacICP\\u5907050453\\u53f7","MoneyName":"\\u91d1\\u5e01","mymd5":"d612f19c764a69f3305","MoneyDW":"\\u5143","group_expire_data":"365","copyright":"\\u8054\\u7cfb\\u7535\\u8bdd:020-28998648 @\\u5e7f\\u5dde\\u9f50\\u535a\\u7f51\\u7edc\\u79d1\\u6280\\u6709\\u9650\\u516c\\u53f8"}');
 
 -- --------------------------------------------------------
 
@@ -855,7 +870,15 @@ CREATE TABLE IF NOT EXISTS `qb_log_login` (
   `password` varchar(32) COLLATE utf8_bin NOT NULL COMMENT 'և¼Ĝë',
   PRIMARY KEY (`id`),
   KEY `create_time` (`create_time`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='ԃۧև¼ɕ־' AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='ԃۧև¼ɕ־' AUTO_INCREMENT=5 ;
+
+--
+-- 转存表中的数据 `qb_log_login`
+--
+
+INSERT INTO `qb_log_login` (`id`, `type`, `ip`, `create_time`, `username`, `password`) VALUES
+(3, 1, '127.0.0.1', 1526868885, 'admin', '21232f297a57a5a743894a0e4a801fc3'),
+(4, 1, '127.0.0.1', 1526869218, 'admin', '21232f297a57a5a743894a0e4a801fc3');
 
 -- --------------------------------------------------------
 
@@ -921,7 +944,7 @@ CREATE TABLE IF NOT EXISTS `qb_memberdata` (
 --
 
 INSERT INTO `qb_memberdata` (`uid`, `password`, `password_rand`, `username`, `nickname`, `qq_api`, `weixin_api`, `wxapp_api`, `groupid`, `grouptype`, `groups`, `yz`, `money`, `oltime`, `lastvist`, `lastip`, `regdate`, `regip`, `sex`, `bday`, `icon`, `introduce`, `qq`, `email`, `provinceid`, `cityid`, `address`, `mobphone`, `idcard`, `truename`, `config`, `email_yz`, `mob_yz`, `idcard_yz`, `rmb`, `rmb_freeze`, `rmb_pwd`, `introducer_1`, `introducer_2`, `introducer_3`, `wx_attention`, `sendmsg`) VALUES
-(1, '46eefdbfacd3cea08516cf7c0ef625a9', '97a09', 'admin', '我是超管', '', 'wf', '', 3, 1, '', 1, 186, 8774571, 1526353836, '127.0.0.1', 1526606275, '127.0.0.1', 1, '1890-00-00', 'uploads/images/20180320/719d42cdf564010d411f2be85c5f47b9.jpeg', 'fdfdf', '', 'bb@126.com', 0, 1, 'cvbnmmm', '13399999999', '', '张学友', 'a:4:{s:7:"endtime";s:0:"";s:9:"alipay_id";s:6:"666666";s:4:"bank";s:114:"62223333333333373 张三 中国工商银行北京**支行\n62284444444919 张三 中国农业银行北京***分行";s:7:"pay_pwd";s:1:"3";}', 0, 0, 0, '77.90', '359.00', 'e10adc3949ba59abbe56e057f20f883e', 22, 0, 0, 0, 'a:1:{s:6:"RegMsg";i:1;}');
+(1, 'dc553b4d767255fd59288db0b526b64c', 'c0f88', 'admin', '我是超管', '', 'wf', '', 3, 1, '', 1, 186, 8774571, 1526869218, '127.0.0.1', 1526868880, '127.0.0.1', 1, '1890-00-00', 'uploads/images/20180320/719d42cdf564010d411f2be85c5f47b9.jpeg', 'fdfdf', '', 'bb@126.com', 0, 1, 'cvbnmmm', '13399999999', '', '张学友', 'a:4:{s:7:"endtime";s:0:"";s:9:"alipay_id";s:6:"666666";s:4:"bank";s:114:"62223333333333373 张三 中国工商银行北京**支行\n62284444444919 张三 中国农业银行北京***分行";s:7:"pay_pwd";s:1:"3";}', 0, 0, 0, '77.90', '359.00', 'e10adc3949ba59abbe56e057f20f883e', 22, 0, 0, 0, 'a:1:{s:6:"RegMsg";i:1;}');
 
 -- --------------------------------------------------------
 
@@ -1543,6 +1566,3 @@ CREATE TABLE IF NOT EXISTS `qb_weixinyznum` (
   KEY `username` (`username`,`num`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8;
 
-DELETE FROM  `qb_config` WHERE  `c_key` =  'member_style';
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', 1, '会员中心风格', 'member_style', 'default', 'select', 'app\\common\\util\\Style@get_style@["member"]', 1, '', '', 98, 0);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', 1, '后台风格', 'admin_style', 'layui', 'select', 'app\\common\\util\\Style@get_style@["admin"]', 1, '', '', 97, 0);

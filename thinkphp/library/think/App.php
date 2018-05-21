@@ -149,10 +149,15 @@ class App
             $response = $data;
         } elseif (!is_null($data)) {
             // 默认自动识别响应输出类型
-            $type = $request->isAjax() ?
-            Config::get('default_ajax_return') :
-            Config::get('default_return_type');
-
+            $type = $request->isAjax() ?Config::get('default_ajax_return') :Config::get('default_return_type');
+			/*
+			增加对PJAX的判断 因为pjax 需要返回html 配置文件新增  'default_pjax_return'     => 'html',
+			*/
+			if ($request->isPjax()) {
+                $type = Config::get('default_pjax_return');
+            }
+			 
+			/*end*/
             $response = Response::create($data, $type);
         } else {
             $response = Response::create();
