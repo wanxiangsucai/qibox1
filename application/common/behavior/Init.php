@@ -174,5 +174,6 @@ class Init
             
         }
         
+        query("SET sql_mode=''");        
     }
 }

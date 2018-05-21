@@ -1642,6 +1642,7 @@ if(!function_exists('query')){
 	                return 'SQL执行失败，请检查语句是否正确<pre>'.$sql."\n\n".$e.'</pre>';
 	            }
 	        }
+	        return $result;
 	    }				
 	}
 }
