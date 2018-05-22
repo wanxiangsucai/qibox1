@@ -61,6 +61,7 @@
                                     </div>
                                     {/notempty}
                                 {else /}
+									{:hook_listen('template_form_head',$form_items,$form_items,true)}
                                     {volist name="form_items" id="form"}
                                         {switch name="form.type"}
                                             {case value="bmap"}
@@ -268,6 +269,7 @@
                                             {:extend_form_item($form, $_layout,$form_items)}
                                         {/switch}
                                     {/volist}
+									{:hook_listen('template_form_foot',$form_items,$form_items,true)}
                                 {/empty}
                                 <div class="form-group col-md-12 col-xs-12">
                                     <div class="col-xs-12">

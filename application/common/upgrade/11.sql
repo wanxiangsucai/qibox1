@@ -1,0 +1,2 @@
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'template_form_head', '内容发布页表单模板上面的接口', 1, 0);
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'template_form_foot', '内容发布页表单模板下面的接口', 1, 0);

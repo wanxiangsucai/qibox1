@@ -27,6 +27,7 @@ class Setting extends AdminBase
     
     public function clearcache(){
         delete_dir(RUNTIME_PATH.'temp');
+        delete_dir(RUNTIME_PATH.'log');
         Cache::clear();
         
         $this->success('清除成功','index/welcome');

@@ -1569,3 +1569,6 @@ CREATE TABLE IF NOT EXISTS `qb_weixinyznum` (
 ALTER TABLE `qb_msg` DROP INDEX  `touid` ,ADD INDEX  `touid` (  `touid` ,  `ifread` );
 
 ALTER TABLE  `qb_hook_plugin` ADD  `version` VARCHAR( 60 ) NOT NULL COMMENT  '版本信息',ADD  `version_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '云端对应的ID';
+
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'template_form_head', '内容发布页表单模板上面的接口', 1, 0);
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'template_form_foot', '内容发布页表单模板下面的接口', 1, 0);
