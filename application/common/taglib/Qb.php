@@ -68,12 +68,19 @@ class Qb extends TagLib{
         $sql = $tag['sql'];   //SQL查询
         $type = $sql?'sql':$tag['type'];
         $name = preg_match('/^([-\w]+)$/',$tag['name']) ?$tag['name']:md5($tag['name']);
-        $rows = empty($tag['rows']) ?5: intval($tag['rows']);   //取数据库的多少条记录
+        if(preg_match('/^([\d]+),([\d]+)$/', $tag['rows'])){
+            $rows = $tag['rows'];
+        }else{
+            $rows = intval($tag['rows']);
+        }
+        if( empty($rows) ){
+            $rows = 5;  //取数据库的多少条记录
+        }
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $val = $tag['val'];
         $status = $tag['status'];   //审核或推荐
         $order = $tag['order']; //按什么排序
-        $rows = $tag['rows'];   //取数据库的多少条记录
+        //$rows = $tag['rows'];   //取数据库的多少条记录
         $by = $tag['by'];   //升序还是降序
         $status = $tag['status'];   //审核或推荐
         $where = $tag['where'];   //条件查询

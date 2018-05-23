@@ -5,6 +5,7 @@ use app\common\controller\AdminBase;
 use app\common\traits\AddEditList;
 //use app\common\model\Plugin as PluginModel;
 use app\common\traits\Market;
+use app\common\model\Market AS MarketModel;
 
 class Style extends AdminBase
 {
@@ -51,6 +52,21 @@ class Style extends AdminBase
 	    if($result!==true){
 	        return $this->err_js($result);
 	    }
+	    
+	    $url = "https://x1.php168.com/appstore/getapp/info.html?id=$id&domain=$domain&appkey=$appkey";
+	    if(($str=file_get_contents($url))==false){
+	        $str = http_curl($url);
+	    }
+	    $info = json_decode($str,true);
+	    
+	    $data = [
+	            'type'=>$info['type']?:'',
+	            'keywords'=>$keywords,
+	            'version_id'=>$id,
+	            'author'=>$info['author']?:'',
+	            'author_url'=>$info['author_url']?:'',
+	    ];
+	    MarketModel::create($data);
 	    
 // 	    $result = $this->install($keywords,$type);
 // 	    if($result!==true){

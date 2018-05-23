@@ -29,11 +29,10 @@ class AdminBase extends Base
                     }
                 }else{
                     if($this->route[0]=='admin' && $this->route[1]=='index' && $this->route[2]==''){
-                        header('location:'.url('index/login'));exit;
+                        header('location:'.iurl('index/login/index'));exit;
                     }
-                    $this->success('请先登录',url('index/login'),'',0);
-                }
-                
+                    $this->success('请先登录',iurl('index/login/index'),'',0);
+                }                
             }else{
                 if($this->check_power()!==true){
                     $this->error('你没有权限!!');

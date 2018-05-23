@@ -41,8 +41,9 @@ abstract class Index extends IndexBase
             $order = 'id desc';
         }elseif($type=='reply'){
             $order = 'list desc';
-        }        
-        $array = getArray( $this->model->getListByMid($this->mid,$map,$order,$rows) );
+        }
+        $mid = $this->model->getMidByFid($fid) ?: $this->mid ;
+        $array = getArray( $this->model->getListByMid($mid,$map,$order,$rows) );
         foreach($array['data'] AS $key => $rs){
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
             $array['data'][$key] = $rs;

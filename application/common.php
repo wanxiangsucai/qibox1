@@ -2989,7 +2989,8 @@ if (!function_exists('get_app_upgrade_edition')) {
         $hook_plugins = cache('hook_plugins');
         foreach ($hook_plugins AS $rs){
             if($_hook[$rs['hook_class']] )continue;
-            $data[] = str_replace('\\', '__', $rs['hook_class']) . '-' . '' . '-' . '' . '-h';
+            list($time,$version) = explode("\t",$rs['version']);
+            $data[] = str_replace('\\', '__', $rs['hook_class']) . '-' . $version . '-' . $rs['version_id'] . '-h';
             $_hook[$rs['hook_class']] = true;
         }
         $style_array = Style::get_style('index');
@@ -3006,7 +3007,12 @@ if (!function_exists('get_app_upgrade_edition')) {
         foreach ($style_array AS $key=>$name){
             $version = $version_id = '';
             $data[] = $key . '-' . $version . '-' . $version_id . '-admin_style';
-        }        
+        }
+        $array = \app\common\model\Market::get_list();
+        foreach ($array AS $rs){
+            list($time,$version) = explode("\t",$rs['version']);
+            $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-'.$rs['type'];
+        }
         return implode(',', $data);
     }
 }

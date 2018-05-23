@@ -4,6 +4,8 @@ namespace app\admin\controller;
 use app\common\controller\AdminBase; 
 use app\common\model\Module;
 use app\common\model\Plugin;
+use app\common\model\Hook_plugin;
+use app\common\model\Market as MarketModel;
 
 class Upgrade extends AdminBase
 {
@@ -48,11 +50,42 @@ class Upgrade extends AdminBase
 	            }
 	        }
 	    }
+	    if($data['h']){
+	        $array = cache('hook_plugins');
+	        foreach ($array AS $rs){
+	            $de = $data['h'][$rs['version_id']];
+	            if($de){
+	                $vs = $de['time']."\t".$de['md5'];
+	                Hook_plugin::update(['id'=>$rs['id'],'version'=>$vs]);
+	            }
+	        }
+	    }
+	    $this->upgrade_mark($data['admin_style'],'admin_style');
+	    $this->upgrade_mark($data['index_style'],'index_style');
+	    $this->upgrade_mark($data['member_style'],'member_style');
 	    
 	    if( file_put_contents(config('client_upgrade_edition'), '<?php return ["md5"=>"'.$upgrade_edition.'","time"=>"'.date('Y-m-d H:i').'",];') ){
 	        return true;
 	    }else{
 	        return '权限不足,日志写入失败';
+	    }
+	}
+	
+	/**
+	 * 应用市场,比如风格更新升级日志
+	 * @param array $data
+	 * @param string $type 比如admin_style index_style member_style
+	 */
+	private function upgrade_mark($data=[],$type=''){
+	    if($data){
+	        $array = MarketModel::get_list(['type'=>$type]);
+	        foreach ($array AS $rs){
+	            $de = $data[$rs['version_id']];
+	            if($de){
+	                $vs = $de['time']."\t".$de['md5'];
+	                MarketModel::update(['id'=>$rs['id'],'version'=>$vs]);
+	            }
+	        }
 	    }
 	}
 	
@@ -110,12 +143,12 @@ class Upgrade extends AdminBase
 	            return $this->err_js($result);
 	        }
 	    }
-	    
+	    list($filename,$id) = explode(',',$filename);
 	    if($filename==''){
 	        return $this->err_js('文件不存在!');
 	    }
 	    
-	    $str = $this->get_server_file($filename);
+	    $str = $this->get_server_file($filename,$id);
 	    if($str){
 	        $filename = $this->format_filename($filename); //针对模块或插件的升级做替换处理
 	        $this->bakfile($filename);
@@ -136,8 +169,8 @@ class Upgrade extends AdminBase
 	 * 升级前,可以查看任何一个文件的源代码
 	 * @param string $filename
 	 */
-	public function view_file($filename=''){
-	    $str = $this->get_server_file($filename);
+	public function view_file($filename='',$id=0){
+	    $str = $this->get_server_file($filename,$id);
 	    $str = str_replace(['<','>'], ['&lt;','&gt;'], $str);
 	    echo '<textarea style="width:100%;height:100%;">'.$str.'</textarea>';
 	    die();
@@ -158,6 +191,7 @@ class Upgrade extends AdminBase
 	
 	/**
 	 * 核对需要升级文件,展示出来给用户挑选哪些不想升级
+	 * 这里的升级文件列表,即有系统的,也有频道插件与风格的
 	 * @return void|\think\response\Json
 	 */
 	public function check_files($upgrade_edition=''){
@@ -171,12 +205,13 @@ class Upgrade extends AdminBase
 	        $showfile = $this->format_filename($rs['file']);
 	        $file = ROOT_PATH.$showfile;
 	        if(is_file($file.'.lock')){
-	            continue;  //用户不想升级的文件
+	            continue;          //用户不想升级的文件
 	        }
 	        if(!is_file($file) || md5_file($file)!=$rs['md5']){
 	            $data[]=[
 	                    'file'=>$rs['file'],
 	                    'showfile'=>$showfile,
+	                    'id'=>$rs['id'],
 	                    'ctime'=>is_file($file)?date('Y-m-d H:i',filemtime($file)):'缺失的文件',
 	                    'time'=>date('Y-m-d H:i',$rs['time']),
 	            ];
@@ -192,11 +227,13 @@ class Upgrade extends AdminBase
 	
 	/**
 	 * 获取云端的某个最新文件
-	 * @param unknown $filename
+	 * @param string $filename 升级的文件名
+	 * @param number $id 对应云端的插件ID
 	 * @return string|mixed
 	 */
-	protected function get_server_file($filename){
-	    $str = http_curl('https://x1.php168.com/appstore/Upgrade/make_client_file.html?filename='.$filename.'&domain='.$this->request->domain());
+	protected function get_server_file($filename='',$id=0){
+	    @set_time_limit(600);  //防止超时
+	    $str = http_curl('https://x1.php168.com/appstore/upgrade/make_client_file.html?filename='.$filename.'&id='.$id.'&appkey='.$this->webdb['mymd5'].'&domain='.urlencode($this->request->domain()));
 	    if(substr($str,0,2)=='QB'){    //文件核对,防止网络故障,抓取一些出错信息
 	        $str = substr($str,2);
 	    }else{
@@ -210,7 +247,7 @@ class Upgrade extends AdminBase
 	 * @return string|mixed
 	 */
 	protected function getfile(){
-	    $str = http_curl('https://x1.php168.com/appstore/Upgrade/get_list_file.html?domain='.$this->request->domain(),['app_edition'=>get_app_upgrade_edition()]);
+	    $str = http_curl('https://x1.php168.com/appstore/upgrade/get_list_file.html?domain='.$this->request->domain(),['app_edition'=>get_app_upgrade_edition()]);
 	    return $str ? json_decode($str,true) : '';
 	}
 

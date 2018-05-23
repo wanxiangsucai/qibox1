@@ -99,11 +99,11 @@ function down_file_list(){
 			var str = '';
 			res.data.forEach(function(rs){
 				str +='<tr>'+
-						  '<td class="b red"> <input type="checkbox" name="filedb[]" value="'+rs.file+'"checked></td>'+   
+						  '<td class="b red"> <input type="checkbox" name="filedb[]" value="'+rs.file+','+rs.id+'"checked></td>'+   
 						  '<td class="Left">'+rs.showfile+'</td>'+   
 						  '<td><div align="center">'+rs.ctime+'</div></td>'+
 						  '<td>'+rs.time+'</td>'+
-						  '<td><a href="{:urls("view_file")}?filename='+rs.file+'" target="_blank">查看</a></td>'+
+						  '<td><a href="{:urls("view_file")}?filename='+rs.file+'&id='+rs.id+'" target="_blank">查看</a></td>'+
 					  '</tr>';
 			});
 			//$(".contents").html(str);
