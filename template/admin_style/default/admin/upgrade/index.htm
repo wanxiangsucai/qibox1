@@ -115,7 +115,12 @@ function down_file_list(){
 		}
 	}).fail(function (res) {
 		layer.closeAll();
-		layer.alert('通信失败,可能你的后台权限不足');
+		//layer.alert('通信失败,可能你的后台权限不足');
+		layer.confirm('通信失败,你是否要新开窗口查看一下详情？', {
+            btn : [ '查看详情', '取消' ]
+        }, function(index) {
+            window.open("{:urls('check_files')}?upgrade_edition="+upgrade_edition);
+        });
 	});
 }
 
