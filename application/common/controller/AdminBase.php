@@ -29,9 +29,9 @@ class AdminBase extends Base
                     }
                 }else{
                     if($this->route[0]=='admin' && $this->route[1]=='index' && $this->route[2]==''){
-                        header('location:'.iurl('index/login/index'));exit;
+                        header('location:'.url('admin/index/login'));exit;
                     }
-                    $this->success('请先登录',iurl('index/login/index'),'',0);
+                    $this->success('请先登录',url('admin/index/login'),'',0);
                 }                
             }else{
                 if($this->check_power()!==true){
