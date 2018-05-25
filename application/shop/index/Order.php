@@ -9,8 +9,8 @@ use app\shop\model\Car as CarModel;
 class Order extends IndexBase
 {    
     //付款成功
-    public function endpay($order_ids = ''){
-        if(OrderModel::pay($order_ids)){
+    public function endpay($order_id = ''){
+        if(OrderModel::pay($order_id)){
             $this -> success('支付成功', '/');
         }else{
             $this->error('支付失败');
@@ -33,7 +33,7 @@ class Order extends IndexBase
                 $money = 0;
                 foreach ($shop_array AS $rs){   //某个商家的多个商品
                     $_shop[] = $rs['_car_']['shopid'] . '-' . $rs['_car_']['num']  . '-' . $rs['_car_']['type1'] . '-' .$rs['_car_']['type2'] . '-' .$rs['_car_']['type3'];
-                    $money += get_shop_price($rs,$rs['_car_']['type1']);
+                    $money += get_shop_price($rs,$rs['_car_']['type1']-1);
                 }
                 $data['shop'] = implode(',', $_shop);
                 $data['order_sn'] = rands(10);      //订单号
@@ -55,8 +55,8 @@ class Order extends IndexBase
                 if ($data['ifolpay']==1) {
                     $order_ids = implode(',', $order_ids);
                     $url = post_olpay([
-                                    //'money'=>$total_money,
-                                    'money'=>'0.01',    //调试
+                                    'money'=>$total_money,
+                                    //'money'=>'0.01',    //调试
                                     'return_url'=>url('endpay',['order_id'=>$order_ids]),
                                     'banktype'=>'alipay',
                                     'numcode'=>$data['order_sn'],

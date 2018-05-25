@@ -39,6 +39,7 @@ if(!function_exists('get_shop_type')){
     
     /**
      * 取得商品的实际价格,商品属性1可以自定商品价格
+     * 第二项,取得商品的实际价格,因为属性1可以定义价格,数组下标要减1,因为购物车入库时加了1
      * @param array $info 商品信息
      * @param number $key 用户选中属性1的具体某项
      */

@@ -43,7 +43,7 @@ class Pc_alipay extends Pay{
         if($pay_end_data_numcode){
             $result = $this->have_pay($pay_end_data_numcode);
             if($result==1){
-                $this->success('已经支付过了',$this->return_url); 
+                $this->success('已支付成功!!',$this->return_url); 
             }elseif($result==-1){
                 $this->success('订单丢失，请联系管理员，请截图保留该订单号'.$pay_end_data_numcode,$this->return_url);
             }elseif($result=='ok'){
