@@ -22,8 +22,16 @@ class User extends MemberBase
     }
     public function index($uid=0)
     {
-        $info = UserModel::getById($uid)?:$this->user;
+        if($uid){
+            $info = UserModel::getById($uid);
+            if(empty($info)){
+                $this->error('该用户不存在!');
+            }
+        }else{
+            $info = $this->user;
+        }
         $this->assign('info',$info);
+        $this->assign('uid',$info['uid']);
         return $this->fetch();
     }
 

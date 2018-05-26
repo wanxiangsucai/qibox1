@@ -7,6 +7,7 @@
 <link rel="stylesheet" type="text/css" href="__STATIC__/css/pc_reset.css">
 <link rel="stylesheet" href="__STATIC__/icon/icon.css">
 <script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 </head>
 <body>
 <link rel="stylesheet" href="__STATIC__/member/pcuser.css">
@@ -33,15 +34,15 @@
 					<dt>
 						<div><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></div>
 						<p>{$info.username}</p>
-						<button>{$info.groupid|getGroupByid}</button>
+						<button onclick="send_msg()"><i class="fa fa-fw fa-comment"></i> 给TA发短消息</button>
 					</dt>
 					<dd>
 						<h3>个人基本信息</h3>
 						<div>昵称：{$info.nickname}</div>
+						<div>级别：{$info.groupid|getGroupByid}</div>
 						<div>UID：{$info.uid}</div>
 						<div>性别：{switch $info.sex}{case 1}男{/case}{case 2}女{/case}{default /}保密{/switch}</div>
-						<div>生日：{$info.bday}</div>
-						 
+						<div>生日：{$info.bday}</div>						 
 						<div>联系QQ：{$info.oicq}</div>
 						<div>注册日期：{:date("Y-m-d H:i:s",$info.regdate)}</div>
 					</dd>
@@ -61,16 +62,77 @@
 		</ul>
 	</div>
 </div>
+<script type="text/javascript">
+function send_msg(){
+	layer.open({
+	  type: 2,
+	  title: '给他发消息',
+	  shadeClose: true,
+	  shade: false,
+	  maxmin: true, //开启最大化最小化按钮
+	  area: ["850px", "650px"],
+	  content: "{:url('member/msg/add',['uid'=>$info['uid']])}",
+	});
+}
+</script>
 <div class="SideContainer">
-	<div class="head"><i class="fa fa-exchange"></i>个人动态信息</div>
+	<div class="head"><i class="fa fa-fw fa-book"></i>我发的文章</div>
 	<div class="MoreCnt">
-		<div class="list1">最后登陆时间：{:date("Y-m-d H:i:s",$info.lastvist)}</div>
-
-		<div class="list1">最后登录IP：{$info.lastip}</div>
-
-
+	{qb:tag name="wap_member_homepage_001" union="uid" type="cms" rows="6" mid="1" order="id" by="desc"}
+		<div class="list1">{$i}、<a href="{$rs.url}" target="_blank">{$rs.title|get_word=85}</a> <span style="float:right;margin-right:10px;">[{:date("y-m-d",$rs.create_time)}]</span></div>
+	{/qb:tag}
 	</div>
 </div>
+
+<div class="SideContainer">
+	<div class="head"><i class="fa fa-fw fa-file-text-o"></i>我的论坛贴子</div>
+	<div class="MoreCnt member_bbs">
+	{qb:tag name="wap_member_homepage_002" union="uid" type="bbs" rows="6" mid="1" order="id" by="desc"}
+		<div class="list1"><span class="gi">{$i}</span>、<a href="{$rs.url}" target="_blank">{$rs.title|get_word=85}</a> <span style="float:right;margin-right:10px;">[{:date("y-m-d",$rs.create_time)}]</span></div>
+	{/qb:tag}
+	</div>
+</div>
+<script type="text/javascript">
+var Mpage=1;
+function ShowMoreBBs(){
+	Mpage++;
+	$.get('{qb:url name="wap_member_homepage_002" /}'+Mpage,function(res){
+		if(res.code==0){
+			if(res.data==''){
+				layer.msg("已经显示完了！",{time:500});
+			}else{				
+				$('.member_bbs').append(res.data);
+				set_i_num();
+				scroll_get = true;
+			}
+		}else{
+			layer.msg(res.msg,{time:2500});
+		}
+	});
+}
+
+//滚动显示更多
+var scroll_get = true;	//做个标志,不要反反复复的加载
+$(document).ready(function () {
+	$(window).scroll(function () {
+		if (scroll_get==true &&  (200 + $(window).scrollTop())>($(document).height() - $(window).height())) {
+			scroll_get = false;
+			layer.msg('内容加截中,请稍候',{time:1000});
+			ShowMoreBBs();
+		}
+	});
+});
+
+//设置贴子序号
+function set_i_num(){
+	var j = 0;
+	$('.member_bbs .gi').each(function(){
+		j++;
+		$(this).html(j);
+	});
+}
+
+</script>
 
 {if ($userdb.uid==$info.uid||$userdb.groupid==3)}
 <div class="SideContainer">

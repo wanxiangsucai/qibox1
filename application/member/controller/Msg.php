@@ -35,7 +35,7 @@ class Msg extends MemberBase
         }
     }
     
-    public function add($username='')
+    public function add($username='',$uid=0)
     {
         if($this->request->isPost()){
             $data = $this->request->post();
@@ -59,7 +59,9 @@ class Msg extends MemberBase
                 $this->error('发送失败');
             }
         }
-        //$info = get_user($username,'username');
+        if($uid){
+            $username = get_user($uid)['username'];
+        }
         $this->assign('username',$username);
         return $this->fetch();
     }
