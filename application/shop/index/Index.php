@@ -5,8 +5,6 @@ namespace app\shop\index;
 class Index extends Content
 {
 	public function index(){
-// 	    $list = Db::name('rmb_consume')->where([])->paginate();
-// 	    print_r($list->render());exit;
 	    $mid = $this->m_model-> getId();
 	    $this->assign('mid',$mid);
 	    return $this->fetch();

@@ -215,8 +215,8 @@
 	<div class="OtherLogin">
 		<div class="h"><span>其他登录方式</span></div>
 		<div class="c">
-			<a href="{:purl('login/qq/index')}?fromurl={$fromurl}"><i class="fa fa-fw fa-qq"></i></a>
-			<a href="{:purl('weixin/login/index')}?fromurl={$fromurl}" class="wx"><i class="fa fa-fw fa-weixin"></i></a>
+			{if (!in_wxapp())}<a href="{:purl('login/qq/index')}?fromurl={$fromurl}"><i class="fa fa-fw fa-qq"></i></a>{/if}
+			{if (in_weixin()||in_wxapp())}<a href="{:purl('weixin/login/index')}?fromurl={$fromurl}" class="wx"><i class="fa fa-fw fa-weixin"></i></a>{/if}
 		</div>
 	</div>
 </form>

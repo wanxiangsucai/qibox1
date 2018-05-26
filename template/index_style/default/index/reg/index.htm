@@ -269,8 +269,8 @@ header ul ol{
 	<div class="OtherLogin">
 		<div class="h"><span>推荐使用第三方一键注册登录</span></div>
 		<div class="c">
-			<a href="{:urls('qq/login/index')}"><i class="fa fa-fw fa-qq"></i></a>
-			<a href="{:purl('weixin/login/index')}" class="wx"><i class="fa fa-fw fa-weixin"></i></a>
+			{if (!in_wxapp())}<a href="{:purl('login/qq/index')}"><i class="fa fa-fw fa-qq"></i></a>{/if}
+			{if (in_weixin()||in_wxapp())}<a href="{:purl('weixin/login/index')}" class="wx"><i class="fa fa-fw fa-weixin"></i></a>{/if}
 		</div>
 	</div>
 </form>

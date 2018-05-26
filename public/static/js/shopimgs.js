@@ -30,7 +30,7 @@ function nextShowImg(){
 	if(NowShowNum<imgNums){
 		changeShowImg(NowShowNum);
 	}else{
-		layer.msg('已是最后一张了！');
+		//layer.msg('已是最后一张了！');
 		NowShowNum=-1;
 	}
 }

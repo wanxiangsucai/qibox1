@@ -1,11 +1,10 @@
 <?php
 namespace app\shop\index\wxapp;
 
-use app\common\controller\IndexBase;
-use app\shop\model\Content as ContentModel;
+use app\common\controller\index\wxapp\Show AS _Show; 
 
 //小程序 内容详情页
-class Show extends IndexBase
+class Show extends _Show
 {
     
     /**
@@ -14,7 +13,7 @@ class Show extends IndexBase
      * @return \think\response\Json
      */
     public function index($id=0){
-        $rs = ContentModel::getInfoByid($id , true);
+        $rs = $this->model->getInfoByid($id , true);
         if(empty($rs['picurls'])){
             $rs['picurls'] = [$rs['picurl']];
         }

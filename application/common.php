@@ -2421,11 +2421,25 @@ if (!function_exists('extend_form_item')) {
  
  if (!function_exists('in_weixin')) {
      /**
-      * 是否在微信客户端浏览器中打开
+      * 是否在微信客户端浏览器中打开 , 注意 如果在小程序中打开,也返回true
       * @return boolean
       */
      function in_weixin(){
          if( strstr($_SERVER['HTTP_USER_AGENT'],"MicroMessenger") ){
+             return true;
+         }else{
+             return false;
+         }
+     }
+ }
+ 
+ if (!function_exists('in_wxapp')) {
+     /**
+      * 是否在小程序中打开 , 注意 苹果系统不存在miniProgram 无法判断
+      * @return boolean
+      */
+     function in_wxapp(){
+         if( strstr($_SERVER['HTTP_USER_AGENT'],"miniProgram") ){
              return true;
          }else{
              return false;

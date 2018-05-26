@@ -1,22 +1,21 @@
 <?php
 namespace app\shop\index\wxapp;
 
-use app\common\controller\IndexBase; 
-use app\shop\model\Sort as SortModel;
+use app\common\controller\index\wxapp\Sorts AS _Sort;
 
 //小程序 获取栏目信息
-class Sorts extends IndexBase
+class Sorts extends _Sort
 {
+    /**
+     * 获取栏目数据
+     * @return \think\response\Json
+     */
     public function index(){
-        $array = getArray(SortModel::getList());
-        $items = [];        
-        foreach($array AS $rs){
-            $items[] = [
-                    'id' => $rs['id'],
-                    'name' => $rs['name'],
-            ];
-        }
-        return $this->ok_js($items);
+        return parent::index();
+    }
+    
+    public function hot(){
+        return parent::hot();
     }
 }
 

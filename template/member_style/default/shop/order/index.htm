@@ -17,9 +17,9 @@
 	</ul>
 	{volist name="rs.shop_db" id="vs"}
 	<ul class="listshop">
-		<li class="img"><a href="{:urls('content/show',['id'=>$vs['id']])}"><img src="{$vs.picurl}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></li>
+		<li class="img"><a href="{:iurl('content/show',['id'=>$vs['id']])}"><img src="{$vs.picurl}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></li>
 		<li class="infos">
-			<div><a href="{:urls('content/show',['id'=>$vs['id']])}">{$vs.title}</a></div>
+			<div><a href="{:iurl('content/show',['id'=>$vs['id']])}">{$vs.title}</a></div>
 			<p>
 				{notempty name="$vs._type1"}{$vs._type1} &nbsp; {/notempty}
 				{notempty name="$vs._type2"}{$vs._type2} &nbsp; {/notempty}

@@ -1,11 +1,10 @@
 <?php
 namespace app\shop\index\wxapp;
 
-use app\common\controller\IndexBase;
-use app\shop\model\Content as ContentModel;
+use app\common\controller\index\wxapp\Index AS _Index; 
 
 //小程序显示内容
-class Index extends IndexBase
+class Index extends _Index
 {
     /**
      * 内容列表
@@ -18,14 +17,13 @@ class Index extends IndexBase
         $fid && $map = ['fid'=>$fid];
         $rows || $rows = 4;        
         $order = 'id desc';        
-        $array = getArray( ContentModel::getListByMid(1,$map,$order,$rows) );
+        $array = getArray( $this->model->getListByMid(1,$map,$order,$rows) );
         $items = [];
         foreach($array['data'] AS $key=>$rs){
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
             unset($rs['content'],$rs['full_content']);
             $array['data'][$key] = $rs;
         }
-        
         return $this->ok_js($array);
     }
     
@@ -37,7 +35,7 @@ class Index extends IndexBase
         $map = ['status'=>2];
         $map['ispic'] = 1;
         $rows = 4;
-        $array = getArray( ContentModel::getListByMid(1,$map,'id desc',$rows) );
+        $array = getArray( $this->model->getListByMid(1,$map,'id desc',$rows) );
         $items = [];        
         foreach($array['data'] AS $rs){
             $items[] = [
@@ -45,7 +43,7 @@ class Index extends IndexBase
                     'name' => $rs['title'],
                     'picurl' => $rs['picurl'],
             ];
-        }        
+        }
         return $this->ok_js($items);
     }
 }

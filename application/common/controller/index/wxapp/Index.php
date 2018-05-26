@@ -22,7 +22,7 @@ abstract class Index extends IndexBase
     }
     
     /**
-     * 首页列表数据
+     * 列表数据
      * @param number $fid 栏目ID
      * @param string $type 类型筛选
      * @return \think\response\Json
