@@ -92,7 +92,7 @@
 
 
 
-教程地址 [https://www.kancloud.cn/php168/x1_of_qibo/635138](/https://www.kancloud.cn/php168/x1_of_qibo/635138)
+ [教程地址](https://www.kancloud.cn/php168/x1_of_qibo/635138)
 
 
 
