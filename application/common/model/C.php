@@ -568,6 +568,7 @@ abstract class C extends Model
     public static function labelGetList($tag_array='' , $page=0){
         self::InitKey();
         $cfg = unserialize($tag_array['cfg']);
+
         $mid = $cfg['mid'];
         $rows = $cfg['rows'] ? $cfg['rows'] : 5;
         $page = intval($page);
@@ -639,7 +640,13 @@ abstract class C extends Model
                 }
             }
             //$data = Db::name(self::getTableByMid($mid))->where($map)->whereOr($whereor)->limit($min,$rows)->order($order,$by)->column(true);
-            $data = Db::name(self::getTableByMid($mid))->where($map)->whereOr($whereor)->order($order,$by)->paginate($rows,false,['page'=>$page]);
+            $obj = Db::name(self::getTableByMid($mid)) -> where($map) -> whereOr($whereor);
+            if(strstr($order,'rand()')){
+                $obj -> orderRaw('rand()');
+            }else{
+                $obj -> order($order,$by);
+           }
+           $data =  $obj -> paginate($rows,false,['page'=>$page]);
         }else{
             //务必要先选择模型，跨表查询效率非常低            
 //             $list = Db::name(self::$base_table)->limit($min,$rows)->order('id',$by)->column('id,mid');

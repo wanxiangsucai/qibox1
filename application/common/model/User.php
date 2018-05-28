@@ -468,8 +468,13 @@ class User extends Model
 	            $whereor = $_array;
 	        }
 	    }
-	    
-	    $array = self::where($map)->whereOr($whereor)->order($cfg['order'],$cfg['by'])->limit($min,$cfg['rows'])->paginate($cfg['rows'],false,['page'=>$page]);
+	    $obj = self::where($map)->whereOr($whereor);
+	    if(strstr($cfg['order'],'rand()')){
+	        $obj -> orderRaw('rand()');
+	    }else{
+	        $obj -> order($cfg['order'],$cfg['by']);
+	    }	    
+	    $array = $obj -> paginate($cfg['rows'],false,['page'=>$page]);
 	    $array->each(function($rs,$key){
 	        $rs['title'] = $rs['username'];
 	        $rs['full_lastvist'] = $rs['lastvist'];
