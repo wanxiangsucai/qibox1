@@ -1,4 +1,15 @@
-        function uploadBtnChange(fileName,textName,pics,callback){
+var exif_obj = false;
+//异步加载 /public/static/js/exif.js
+jQuery.getScript("/public/static/js/exif.js")
+    .done(function() {
+        exif_obj = true;
+    })
+    .fail(function() {
+        layer.msg('/public/static/js/exif.js加载失败',{time:800});
+	});
+
+
+		function uploadBtnChange(fileName,textName,pics,callback){
             var scope = this;
 			//var pics = [];
             if(window.File && window.FileReader && window.FileList && window.Blob){ 
@@ -17,6 +28,17 @@
         }
 
         function processfile(file,compressValue,pics,callback) {
+			var Orientation = 0;
+			var alltags = {};
+			//获取图片的参数信息
+			if(exif_obj==true){
+				EXIF.getData(file, function(){
+					alltags = EXIF.pretty(this);
+					//EXIF.getAllTags(this);
+					Orientation = EXIF.getTag(this, 'Orientation');
+				});
+			}
+
             var reader = new FileReader();
             reader.onload = function (event) {
                 var blob = new Blob([event.target.result]); 
@@ -27,7 +49,8 @@
                 image.onload = function() {
                     var resized = resizeUpImages(image);					
 					if(resized){
-						$.post(severUrl, {'imgBase64':resized}).done(function (res) {
+						// alert( alltags );
+						$.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':alltags}).done(function (res) {
 							 if(res.code==1){
 								 pics.push(res.path);
 								 compressValue.value = pics.join(',');

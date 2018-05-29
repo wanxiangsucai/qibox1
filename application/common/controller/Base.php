@@ -200,7 +200,7 @@ class Base extends Controller
             if(ENTRANCE=='member'&&input('uid')==''){
                 $this->assign('uid',$this->user['uid']);    //默认把当前用户的UID放进模板,方便标签调用
             }
-        }
+	    }
         
         $_vars = [
                 'admin'=>$this->admin,

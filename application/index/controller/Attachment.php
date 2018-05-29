@@ -30,8 +30,9 @@ class Attachment extends IndexBase
      * @return unknown|\think\response\Json|string|string|\think\response\Json
      */
     protected function upBase64Pic($dir='',$from='',$module=''){
-        
-        $base64_image_content = $this->request->post('imgBase64');
+        $data = $this->request->post();
+        $base64_image_content = $data['imgBase64'];
+        $Orientation = $data['Orientation'];
         if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)){
             $type = $result[2];
             $new_file = config('upload_path') . DS . $dir . DS . date('Ymd') . DS ;
@@ -53,12 +54,52 @@ class Attachment extends IndexBase
                         'path'=>$path . $name,
                         'url'=>PUBLIC_URL . $path . $name,
                 ];
+                $this->rotate_jpg($new_file , $Orientation);
                 return $this->succeFile($from , $path.$name , $file_info);
             }else{
                 return $this->errFile($from,'文件写入失败！');
             }
         }else{
             return $this->errFile($from,'文件获取失败！');
+        }
+    }
+    
+    /**
+     * 针对手机横拍的相片,摆正它
+     * @param string $source_file 图片绝对路径
+     * @param unknown $Orientation 是否已传递旋转角度过去
+     * @return void|boolean
+     */
+    protected function rotate_jpg($source_file='',$Orientation=null){
+        if(!preg_match('/(.jpg|.jpeg)$/',$source_file)){
+            return ;
+        }
+        $dest_file = $source_file;
+        
+        if($Orientation===null){
+            if(!function_exists('exif_read_data')){
+                return ;
+            }
+            $exif = exif_read_data($source_file);
+            $Orientation = $exif['Orientation'];
+        }
+        
+        $data = imagecreatefromstring( file_get_contents($source_file) );
+        
+        if(!empty($Orientation)){
+            switch($Orientation){
+                case 8:
+                    $data = imagerotate($data, 90, 0);
+                    break;
+                case 3:
+                    $data = imagerotate($data, 180, 0);
+                    break;
+                case 6:
+                    $data = imagerotate($data, -90, 0);
+                    break;
+            }
+            imagejpeg($data, $dest_file);            
+            return true;
         }
     }
 
