@@ -32,19 +32,15 @@ class Index extends _Index
      * @return \think\response\Json
      */
     public function banner(){
-        $map = ['status'=>2];
+        $map = [];
         $map['ispic'] = 1;
         $rows = 4;
-        $array = getArray( $this->model->getListByMid(1,$map,'id desc',$rows) );
-        $items = [];        
-        foreach($array['data'] AS $rs){
-            $items[] = [
-                    'id' => $rs['id'],
-                    'name' => $rs['title'],
-                    'picurl' => $rs['picurl'],
-            ];
-        }
-        return $this->ok_js($items);
+        $array = $this->model->getListByMid(1,$map,'id desc',$rows);
+        $array->each(function(&$rs){
+            unset($rs['content'],$rs['full_content']);
+            return $rs;
+        });
+        return $this->ok_js($array);
     }
 }
 

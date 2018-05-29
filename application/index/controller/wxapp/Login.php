@@ -30,67 +30,38 @@ class Login extends IndexBase
      */
     public function index($code='',$encryptedData='',$iv=''){
         if($code=='the code is a mock one'||empty($code)){
-            $data = [
-                    'meta'=>[
-                            'code'=>1,
-                            'message'=>'无法登录,code 获取失败',
-                    ],
-                    'data'=>[
-                            'code'=>$code,
-                            'token'=>'',                            
-                    ],
-            ];
-            return json($data);
+            return $this->err_js('无法登录,code 获取失败');
         }
         $array = AuthAPI::login($code, $encryptedData, $iv);
+        if(!is_array($array)){
+            return $this->err_js($array);
+        }
         $skey = $array['skey'];
         $sessionKey = $array['sessionKey'];
         $info = $array['userinfo'];
         $openid = $info['openId'];
         
         if (empty($openid)) {
-            $data = [
-                    'meta'=>[
-                            'code'=>1,
-                            'message'=>'登录失败,openid获取不到',
-                    ],
-                    'data'=>[
-                            'token'=>''
-                    ],
-            ];
-            return json($data);
+            return $this->err_js('登录失败,openid获取不到');
         }
+        
         $user = UserModel::check_wxappIdExists($openid);
         if(empty($user)){
             $user = UserModel::api_reg($openid,$info);
             if(empty($user['uid'])){
-                $data = [
-                        'meta'=>[
-                                'code'=>1,
-                                'message'=>'注册失败',
-                        ],
-                        'data'=>[
-                                'msg'=>$user
-                        ],
-                ];
-                return json($data);
+                return $this->err_js('注册失败');
             }
-        }        
+        }
+        
         UserModel::login($user['username'], '', '',true);   //这个并不能真正的登录.只是做一些登录的操作日志及其它接口处理
         
         $user = UserModel::get_info($user['uid']);
         cache($skey,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t$sessionKey",3600*72);
-        $data = [
-                'meta'=>[
-                        'code'=>0,
-                        'message'=>'登录成功',
-                ],
-                'data'=>[
-                        'token'=>$skey,
-                        'userInfo'=>UserModel::get_info($user['uid']),
-                ],
+        $array = [
+                'token'=>$skey,
+                'userInfo'=>UserModel::get_info($user['uid']),
         ];
-        return json($data);
+        return $this->ok_js($array);
     }
     
     /**

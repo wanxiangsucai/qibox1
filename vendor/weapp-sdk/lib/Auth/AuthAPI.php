@@ -11,7 +11,7 @@ use \QCloud_WeApp_SDK\Helper\Request as Request;
 
 class AuthAPI {
     /**
-     * 用户登录接口
+     * 用户登录接口,验证失败时,返回错误代码字符串
      * @param {string} $code        wx.login 颁发的 code
      * @param {string} $encryptData 加密过的用户信息
      * @param {string} $iv          解密用户信息的向量
@@ -20,6 +20,10 @@ class AuthAPI {
     public static function login($code, $encryptData, $iv) {
         // 1. 获取 session key
         $sessionKey = self::getSessionKey($code);
+        
+        if(is_array($sessionKey)){  //session key获取不到
+            return $sessionKey['errmsg'];
+        }
 
         // 2. 生成 3rd key (skey)
         $skey = sha1($sessionKey . mt_rand());
@@ -75,7 +79,7 @@ class AuthAPI {
      * 通过 code 换取 session key
      * @param {string} $code
      */
-    public static function getSessionKey ($code) {
+    public static function getSessionKey($code) {
         $useQcProxy = Conf::getUseQcloudLogin();
 
         /**
@@ -89,9 +93,13 @@ class AuthAPI {
             list($session_key, $openid) = array_values(self::useQcloudProxyGetSessionKey($secretId, $secretKey, $code));
             return $session_key;
         } else {
-            $appId = Conf::getAppId();
-            $appSecret = Conf::getAppSecret();
-            list($session_key, $openid) = array_values(self::getSessionKeyDirectly($appId, $appSecret, $code));
+            $appId = config('webdb.wxapp_appid');//Conf::getAppId();
+            $appSecret = config('webdb.wxapp_appsecret');//Conf::getAppSecret();
+            $array = self::getSessionKeyDirectly($appId, $appSecret, $code);
+            if(!is_array($array)){      //验证失败,返回的字符串
+                return ['errmsg'=>$array];
+            }
+            list($session_key, $openid) = array_values($array);
             return $session_key;
         }
     }
@@ -117,7 +125,8 @@ class AuthAPI {
         ]));
 
         if ($status !== 200 || !$body || isset($body['errcode'])) {
-            throw new Exception(Constants::E_PROXY_LOGIN_FAILED . ': ' . json_encode($body));
+            return $status !== 200 ? '无法打开微信服务器' : $appId.'验证失败,错误代码是: ' . $body['errcode'] . ' 详情:' . $body['errmsg'];
+            //throw new Exception(Constants::E_PROXY_LOGIN_FAILED . ': ' . json_encode($body));
         }
 
         return $body;

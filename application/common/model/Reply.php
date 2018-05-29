@@ -121,7 +121,7 @@ abstract class Reply extends Model
                 empty($pages[1])?[]:$pages[1]
                 );
         
-        $data_list->each(function($rs,$key){
+        $data_list->each(function(&$rs,$key){
             $rs['username'] = get_user_name($rs['uid']);
             $rs['user_icon'] = get_user_icon($rs['uid']);
             if($rs['mvurl']){
