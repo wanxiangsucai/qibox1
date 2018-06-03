@@ -1,5 +1,5 @@
 <?php
-namespace app\common\Field;
+namespace app\common\field;
 
 /**
  * 表单自定义字段

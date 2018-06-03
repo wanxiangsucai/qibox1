@@ -1,5 +1,5 @@
 <?php
-namespace app\common\Field;
+namespace app\common\field;
 
 /**
  * 自定义字段 POST数据的转义

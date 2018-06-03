@@ -1,5 +1,5 @@
 <?php
-namespace app\common\Field;
+namespace app\common\field;
 
 /**
  * 内容页自定义字段
