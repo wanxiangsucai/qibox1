@@ -73,17 +73,22 @@ class HookPlugin extends AdminBase
      */
     protected function install($keywords,$id=0){
         $classname = "app\\common\hook\\".ucfirst($keywords);
-        if(!class_exists($classname)||!method_exists($classname,'run')){
-            return '钩子程序代码不符合规则!';
+        if(!class_exists($classname)){
+            return '钩子程序代码不符合规则!'.$classname;
         }
         $class = new $classname;
         $info = $class->info;
-        if(empty($info['hook_key'])){
+        if(empty($info)){
             return '钩子程序代码不完整,缺少配置参数!';
         }
-        $info['hook_class'] = $classname;
-        $info['version_id'] = $id;
-        $result = $this->model->create($info);
+        $detail = explode(',',$info['hook_key']);
+        foreach($detail AS $value){
+            $info['hook_key'] = $value;
+            $info['hook_class'] = $classname;
+            $info['version_id'] = $id;
+            $result = $this->model->create($info);
+        }
+        
         if( method_exists($classname,'install') ){
             $class->install($result->id);
         }
