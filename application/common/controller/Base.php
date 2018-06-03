@@ -120,6 +120,15 @@ class Base extends Controller
     }
     
     protected function ok_js($data=[],$msg='操作成功',$page_rows=0){
+        if(is_string($data)){
+            if(input('debug')){ //调试,查看原始数据
+                return $data;
+            }
+            return json(['code'=>0,
+                            'msg'=>$msg,
+                            'data'=>$data,                            
+                            ]);
+        }
         $array = $data = getArray($data);
         if(isset($array['data']) && isset($array['total'])){
             $data = $array['data'];

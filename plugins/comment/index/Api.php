@@ -15,6 +15,12 @@ class Api extends IndexBase
         $this->model = new contentModel();
     }
     
+    public function act($type='',$id=0,$sysid=0,$aid=0,$rows=0,$status=0,$order='',$by='',$page=0){
+        if($type=='delete'){
+            return $this->delete($id);
+        }
+    }
+    
     /**
      * 被各频道调用发布评论接口
      * @param number $sysid
@@ -249,14 +255,17 @@ class Api extends IndexBase
 	
 	public function delete($ids){
 	    if (empty($ids)) {
-	        $this -> error('ID有误');
+	        return $this->err_js('ID有误');
 	    }
 	    $ids = is_array($ids)?$ids:[$ids];
 	    $info = contentModel::get($ids[0]);
+	    if($info['uid']!=$this->user['uid'] && !$this->admin){
+	        return $this->err_js('你没权限');
+	    }
 	    if (contentModel::destroy($ids)) {
-	        $this->success('删除成功',purl('index',['sysid'=>$info['sysid']]));
+	        return $this->ok_js();
 	    } else {
-	        $this->error('删除失败');
+	        return $this->err_js('删除失败');
 	    }
 	}
 	

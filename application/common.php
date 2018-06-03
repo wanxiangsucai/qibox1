@@ -14,11 +14,8 @@
 use app\common\model\Plugin;
 use app\common\model\Module;
 use app\common\model\User AS UserModel;
-use plugins\marketing\model\RmbConsume;
-use plugins\marketing\model\Moneylog;
 use think\Db;
 use think\Request;
-use app\common\util\Style;
 error_reporting(E_ERROR | E_PARSE );
 
 if (!function_exists('get_real_path')) {
@@ -782,16 +779,37 @@ if (!function_exists('parse_sql')) {
 
 if (!function_exists('parse_attr')) {
     /**
-     * 解析配置
+     * 把字符串转为数组 跟下面那个函数有重复
      * @param string $value 配置值
      * @return array|string
      */
     function parse_attr($value = '') {
         $array = preg_split('/[ ,;\r\n]+/', trim($value, " ,;\r\n"));
-        if (strpos($value, ':')) {
+        if (strpos($value, ':')||strpos($value, '|')) {
             $value  = array();
             foreach ($array as $val) {
-                list($k, $v) = explode(strstr($val,':')?':':'|', $val);
+                list($k, $v) = explode( strpos($val,'|')?'|':':' , $val);
+                $value[$k]   = $v;
+            }
+        } else {
+            $value = $array;
+        }
+        return $value;
+    }
+}
+
+if (!function_exists('str_array')) {
+    /**
+     * 把换行符或者是,隔开的字符串转为数组 跟上面那个函数有重复
+     * @param string $value
+     * @return string|array|unknown[]
+     */
+    function str_array($value = '') {
+        $array = preg_split(strpos($value,"\n")?'/[\r\n]+/':'/[,]+/', trim($value, ",\r\n"));
+        if (strpos($value, '|')) {
+            $value  = array();
+            foreach ($array as $val) {
+                list($k, $v) = explode('|', $val);
                 $value[$k]   = $v;
             }
         } else {
@@ -957,27 +975,6 @@ if (!function_exists('load_assets')) {
 }
 
 
-if (!function_exists('str_array')) {
-    /**
-     * 把换行符或者是,隔开的字符串转为数组
-     * @param string $value
-     * @return string|array|unknown[]
-     */
-    function str_array($value = '') {
-        $array = preg_split(strpos($value,"\n")?'/[\r\n]+/':'/[,]+/', trim($value, ",\r\n"));
-        if (strpos($value, '|')) {
-            $value  = array();
-            foreach ($array as $val) {
-                list($k, $v) = explode('|', $val);
-                $value[$k]   = $v;
-            }
-        } else {
-            $value = $array;
-        }
-        return $value;
-    }
-}
-
 if(!function_exists('get_post')){
     /**
      * 获取数据,POST优化级最高 然后是GET 最后是路由
@@ -1049,11 +1046,16 @@ if (!function_exists('get_user')) {
     function get_user($value='',$type='uid'){
         $rarray = [];		
         if($type=='uid' && is_numeric($value)){
-		    if(!$rarray=cache('user_'.$value)){
-		        $mod = model('common/user');
-		        $rarray = $mod->getByid($value);
-		        cache('user_'.$value,$rarray,3600*12);
-		    }
+            static $user_array = [];
+            $rarray = $user_array[$value];
+            if($rarray===null){
+                if(!$rarray=cache('user_'.$value)){
+                    $mod = model('common/user');
+                    $rarray = $mod->getByid($value) ?: [];
+                    cache('user_'.$value,$rarray,3600*12);
+                }
+                $user_array[$value] = $rarray;
+            }		    
 		}else{
 		    $mod = model('common/user');
 		    $rarray = $mod->getByName($value);
@@ -1254,31 +1256,35 @@ if(!function_exists('sort_get_father')){
 if(!function_exists('get_sort')){
     
     /**
-     * 获取频道的栏目相关信息
+     * 获取具体某个频道下面的栏目相关信息
      * @param number $id 为0时，取出所有栏目，大于0时，根据$type参数取值
-     * @param string $type 为某个字段名时取其对应的值,father时取出所有父级栏目,sons时取出所有子栏目,other时优先取子栏目,若无再取同级,若无再取父级兄弟栏目
+     * @param string $field 取某个字段对应的值,config或者是不存在的字段名,则取出所有配置参数
+     * @param string $type father时取出所有父级栏目,sons时取出所有下一级栏目,other时优先取子栏目,若无再取同级,若无再取父级兄弟栏目
      * @param string $sys_type 指定频道模块
      * @return void|number|number[]|array[]|unknown[]|number[]|unknown[]|array|unknown
      */
-    function get_sort($id=0,$type='name',$sys_type=''){
+    function get_sort($id=0,$field='name',$type='',$sys_type=''){
         $array = sort_config($sys_type);
+        $_type = $type==='' ? $field : $type;   //兼容处理
         if($id>0){
-            if($type=='father'){    //所有父栏目，也包括自身,一般用在面包屑导航
+            if($_type=='father'){    //所有父栏目，也包括自身,一般用在面包屑导航
                 $farray = sort_get_father($id,$sys_type);
                 $self_array = [$id=>$array[$id]['name']];
                 return empty($farray) ? $self_array : $farray+$self_array;
-            }elseif($type=='sons'){  //所有子栏目，也包括自身，一般用在查询数据库
-                $s_array = [$id=>$id];
+            }elseif($_type=='sons'){  //所有下一级级栏目，也包括自身，一般用在查询数据库
+                $s_array = [
+                        $id => $field=='name' ? $array[$id]['name'] : $id,
+                ];
                 $_pid = 0;
                 foreach($array AS $key=>$rs){
                     if(!$rs['pid'])continue;
                     if($rs['pid']==$id||$rs['pid']==$_pid){
-                        $s_array[$key]=$key;
+                        $s_array[$key] = $field=='name' ? $array[$key]['name'] : $key;
                         $_pid = $key;
                     }
                 }
                 return $s_array;
-            }elseif($type=='brother'){  //取同级栏目
+            }elseif($_type=='brother'){  //取同级栏目
                 $s_array = [];
                 $_pid = $array[$id]['pid'];
                 foreach($array AS $key=>$rs){
@@ -1287,7 +1293,7 @@ if(!function_exists('get_sort')){
                     }
                 }
                 return $s_array;
-            }elseif($type=='other'){    //取父级兄弟栏目及本级兄弟栏目及子栏目，一般用在栏目页面方便展示布局
+            }elseif($_type=='other'){    //取父级兄弟栏目及本级兄弟栏目及子栏目，一般用在栏目页面方便展示布局
                 $m_array = [];
                 $pid = $array[$id]['pid'];
                 $fpid = $pid ? $array[$pid]['pid'] : null;
@@ -1305,14 +1311,14 @@ if(!function_exists('get_sort')){
                     }
                 }
                 return $m_array;
-            }elseif($type=='config'){
+            }elseif($_type=='config'){
                 return $array[$id];
-            }elseif(isset($array[$id][$type])){
-                return $array[$id][$type];
+            }elseif(isset($array[$id][$_type])){
+                return $array[$id][$_type];
             }else{
                 return $array[$id];
-            }           
-        }elseif($type=='other' && $array){  //fid不存在的话,就只取一级栏目
+            }
+        }elseif($_type=='other' && $array){  //fid不存在的话,就只取一级栏目
             $farray = [];
             foreach($array AS $key=>$rs){
                 if($rs['pid']==0){
@@ -1320,7 +1326,7 @@ if(!function_exists('get_sort')){
                 }
             }
             return $farray;
-        }elseif ($type=='all'){
+        }elseif ($_type=='all'){
             $farray = [];
             foreach($array AS $key=>$rs){
                 $farray[$key]=$rs['name'];
@@ -2243,7 +2249,7 @@ if (!function_exists('getTemplate')) {
          ]);
          
          //添加日志
-         RmbConsume::create([
+         \plugins\marketing\model\RmbConsume::create([
                  'uid'=>$uid,
                  'money'=>$money,
                  'about'=>$about,
@@ -2267,7 +2273,7 @@ if (!function_exists('getTemplate')) {
              UserModel::where('uid',$uid)->setDec('money',abs($money));
          }         
          //添加日志
-         Moneylog::create([
+         \plugins\marketing\model\Moneylog::create([
                  'uid'=>$uid,
                  'money'=>$money,
                  'about'=>$about,
@@ -2286,6 +2292,17 @@ if (!function_exists('run_label')) {
         function run_label($tag_name,$cfg){
             controller('index/labelShow')->get_label($tag_name,$cfg);
         }
+}
+
+if (!function_exists('run_form_label')) {
+    /**
+     * 表单标签
+     * @param unknown $tag_name
+     * @param unknown $cfg
+     */
+    function run_form_label($tag_name,$cfg){
+        controller('index/labelShow')->get_form_label($tag_name,$cfg);
+    }
 }
 
  if (!function_exists('label_ajax_url')) {
@@ -2470,9 +2487,8 @@ if (!function_exists('extend_form_item')) {
              return purl('comment/api/add',$parameter);
          }elseif($type=='pageurl'){
              return purl('comment/api/ajax_get',$parameter);
-            // if(is_object($data)){
-                 //return $data->render();   //分页代码
-             //}             
+         }elseif($type=='apiurl'){
+             return purl('comment/api/act',$parameter);
          }else{
              $data = controller("plugins\\comment\\index\\Api")->get_list($sysid,$aid,$rows,$status,$order,$by,$page);
              $listdb = $data ? getArray($data)['data'] : [];
@@ -2688,12 +2704,17 @@ if (!function_exists('extend_form_item')) {
          }
          if(empty($sys_type)){
              return [];
-         }
-         $array = cache('model_config_'.$sys_type);
-         if (empty($array)) {
-             //$array = model($sys_type.'/module')->getList();
-             $array = get_model_class($sys_type,'module')->getList();
-             cache('model_config_'.$sys_type,$array);
+         }         
+         static $model_array = [];
+         $array = $model_array[$sys_type];
+         if(empty($array)){
+             $array = cache('model_config_'.$sys_type);
+             if (empty($array)) {
+                 //$array = model($sys_type.'/module')->getList();
+                 $array = get_model_class($sys_type,'module')->getList();
+                 cache('model_config_'.$sys_type,$array);
+             }
+             $model_array[$sys_type] = $array;
          }
          return empty($mid) ? $array : $array[$mid];
      }
@@ -2701,19 +2722,25 @@ if (!function_exists('extend_form_item')) {
 
 if (!function_exists('get_field')) {
     /**
-     * 得到频道模型的字段相关信息
-     * @param number $mid
+     * 取得具体某个频道的模型的字段配置信息
+     * @param number $mid 模型ID
+     * @param string $dirname 频道目录名,可为空
      */
     function get_field($mid=0,$dirname=''){
         $dirname || $dirname = config('system_dirname');
-        $list_f = cache($dirname.'__field');
-        if (empty($list_f)) {
-            $array = get_model_class($dirname,'field')->getFields([]);
-            foreach($array AS $rs){
-                $list_f[$rs['mid']][$rs['name']] = $rs;
+        static $field_array = [];
+        $list_f = $field_array[$dirname];
+        if(empty($list_f)){
+            $list_f = cache($dirname.'__field');
+            if (empty($list_f)) {
+                $array = get_model_class($dirname,'field')->getFields([]);
+                foreach($array AS $rs){
+                    $list_f[$rs['mid']][$rs['name']] = $rs;
+                }
+                cache($dirname.'__field',$list_f);
             }
-            cache($dirname.'__field',$list_f);
-        }
+            $field_array[$dirname] = $list_f;
+        }        
         return $list_f[$mid];        
     }
 }
@@ -2778,7 +2805,10 @@ if (!function_exists('login_user')) {
      * @return void|mixed|\think\cache\Driver|boolean|number|array|\think\db\false|PDOStatement|string|\think\Model
      */
     function login_user($key=''){
-        $array = UserModel::login_info();
+        static $array = [];
+        if(empty($array)){
+            $array = UserModel::login_info();
+        }        
         if($key!=''){
             return $array[$key];
         }else{
@@ -3007,17 +3037,17 @@ if (!function_exists('get_app_upgrade_edition')) {
             $data[] = str_replace('\\', '__', $rs['hook_class']) . '-' . $version . '-' . $rs['version_id'] . '-h';
             $_hook[$rs['hook_class']] = true;
         }
-        $style_array = Style::get_style('index');
+        $style_array = \app\common\util\Style::get_style('index');
         foreach ($style_array AS $key=>$name){
             $version = $version_id = '';
             $data[] = $key . '-' . $version . '-' . $version_id . '-index_style';
         }
-        $style_array = Style::get_style('member');
+        $style_array = \app\common\util\Style::get_style('member');
         foreach ($style_array AS $key=>$name){
             $version = $version_id = '';
             $data[] = $key . '-' . $version . '-' . $version_id . '-member_style';
         }
-        $style_array = Style::get_style('admin');
+        $style_array = \app\common\util\Style::get_style('admin');
         foreach ($style_array AS $key=>$name){
             $version = $version_id = '';
             $data[] = $key . '-' . $version . '-' . $version_id . '-admin_style';
@@ -3053,6 +3083,106 @@ if (!function_exists('check_bom')) {
         if($onlycheck==false){
             return $contents;
         }
+    }
+}
+
+if(!function_exists('get_filter_fields')){
+    /**
+     * 获取列表页的筛选字段
+     * @param number $mid 模型ID
+     */
+    function get_filter_fields($mid=0){
+        $array = app\common\util\Field_filter::get_field($mid);
+        foreach ($array AS $name=>$rs){
+            $url = app\common\util\Field_filter::make_url($name,$mid);  //其它字段的网址
+            $_ar = [];
+            foreach($rs['options'] AS $k=>$v){
+                $_ar[] = [
+                        'key'=>$k,
+                        'title'=>$v,
+                        'url'=>  $url . $name . '=' . $k,
+                ];
+            }
+            $rs['opt'] = $_ar;
+            $rs['opt_url'] = $url;
+            $array[$name] = $rs;
+        }
+        return $array;
+    }    
+}
+
+if(!function_exists('format_field')){
+    /**
+     * 自定义字段前台转义后显示
+     * @param array $info 信息原始内容
+     * @param string $field 是否只转义某个字段
+     * @param string $pagetype 参数主要是show 或 list 哪个页面使用,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
+     * @param string $sysname 频道目录名,默认为空,即当前频道
+     * @return string|\app\common\Field\string[]|\app\common\Field\unknown[]|\app\common\Field\mixed[]
+     */
+    function format_field($info=[],$field='',$pagetype='list',$sysname=''){
+        $field_array = get_field($info['mid'],$sysname);
+        $value = '';
+        if($field){
+            $value = \app\common\Field\Index::get_field($field_array[$field],$info,$pagetype);
+        }else{
+            foreach($field_array AS $name=>$rs){
+                $info[$name] = \app\common\Field\Index::get_field($rs,$info,$pagetype);
+            }
+        }        
+        return $field ? $value : $info;
+    }
+}
+
+if(!function_exists('get_area')){
+    /**
+     * 获取地区数据,如果第三项不为0的话,则获取其子栏目的数据,这个时候,前两项设置无效
+     * @param number $id 某个地区的ID
+     * @param string $field 可以取值为name 名称 或 pid 父ID 
+     * @param number $pid 指定父ID
+     */
+    function get_area($id=0,$field='name',$pid=0){
+        if(empty($id) && empty($pid)){
+            return ;
+        }
+        $area_array = cache('area_cache');
+        if(empty($area_array)){
+            $array= \plugins\area\model\Area::get_all();
+            $fup = [];
+            foreach ($array AS $rs){
+                $fup[$rs['pid']][$rs['id']] = $rs['name'];
+            }
+            $area_array = [
+                    'list'=>$array,
+                    'fup'=>$fup
+            ];
+            cache('area_cache',$area_array);
+        }
+        if($pid){
+            return is_numeric($pid) ? $area_array['fup'][$pid] : reset($area_array['fup']);
+        }else{
+            return $area_array['list'][$id][$field];
+        }
+    }
+    
+}
+
+if(!function_exists('make_area_url')){
+    /**
+     * 生成筛选项的网址参数
+     * @param string $type 过滤哪项参数,多个用逗号隔开
+     * @return string
+     */
+    function make_filter_url($type='zone_id'){
+        $url = '';
+        $type_array = explode(',',$type);
+        $array = input();
+        foreach ($array AS $key=>$value){
+            if(!in_array($key, $type_array)){
+                $url .= $key.'='.urlencode($value) . '&' ;
+            }
+        }
+        return $url;
     }
 }
  

@@ -46,8 +46,9 @@ abstract class Post extends IndexBase
      * @return \think\response\Json
      */
     public function delete($id=0){
-        $rs = $this->model->getInfoByid($id , false);
-        if($rs['uid']!=$this->user['uid']&&!$this->admin){
+        $info = $this->model->getInfoByid($id , false);
+        $this->mid = $info['mid'];
+        if($info['uid']!=$this->user['uid']&&!$this->admin){
             return $this->err_js('你没权限');
         }
         
@@ -64,26 +65,39 @@ abstract class Post extends IndexBase
      * @return \think\response\Json
      */
     public function edit($id=0){        
-        $rs = $this->model->getInfoByid($id , false);
-        if($rs['uid']!=$this->user['uid']&&!$this->admin){
-            return $this->err_js('你没权限');
-        }
+        $info = $this->model->getInfoByid($id , false);
+        $this->mid = $info['mid'];
         $data = get_post();
+//         if($info['uid']!=$this->user['uid']&&!$this->admin){
+//             return $this->err_js('你没权限');
+//         }
+
         is_array($data['picurl']) && $data['picurl'] = implode(',', $data['picurl']);   //小程序传过来的是数组
-        $array = [
-                'id' =>$data['id'],
-                'content' =>$data['content'],
-                'fid' =>$data['fid'],
-                'title' =>$data['title'],
-                'ispic' =>$data['picurl']?1:0,
-                'picurl' =>$data['picurl'],
-                'update_time' => time(),
-        ];
-        $reult = $this->model->editData($rs['mid'],$array);
+        
+        $result = $this->edit_check($id,$info,$data);
+        if($result!==true){
+            return $this->err_js($result);
+        }
+        
+        $data = $this->format_post_data($data);
+       
+        //unset($data['uid'],$data['status'],$data['view'],$data['mid'],$data['list']);
+        //$data['ispic'] = empty($data['picurl']) ? 0 : 1 ;
+//         $array = [
+//                 'id' =>$data['id'],
+//                 'content' =>$data['content'],
+//                 'fid' =>$data['fid'],
+//                 'title' =>$data['title'],
+//                 'ispic' =>$data['picurl']?1:0,
+//                 'picurl' =>$data['picurl'],
+//                 'update_time' => time(),
+//         ];
+        $reult = $this->model->editData($info['mid'],$data);
         if($reult){
             
             //以下两行是接口
-            hook_listen('cms_edit_end',$data,$reult);
+            //hook_listen('cms_edit_end',$data,$reult);
+            hook_listen('cms_edit_end',$data,['result' =>$result, 'module' =>$this->request->module()]);
             $this->end_edit($data['id'],$data);
             
             return $this->ok_js(['id'=>$id],'修改成功');
@@ -99,7 +113,6 @@ abstract class Post extends IndexBase
      * @return unknown
      */
     protected function savaNewData($mid=0,$data=[]){
-        $data['uid'] = $this->user['uid'];
         return $this->model->addData($mid,$data);
     }
     
@@ -108,32 +121,36 @@ abstract class Post extends IndexBase
      * @return \think\response\Json
      */
     public function add($mid=1){
-        
+        $this->mid = $mid;
         $data = get_post();
         
         $result=$this->add_check($mid,$data['fid'],$data);
-        
+
         if ($result!==true) {
             return $this->err_js($result);
         }
         
-        if(!$this->user){
-            return $this->err_js('你还没登录');
-        }
+//         if(!$this->user){
+//             return $this->err_js('你还没登录');
+//         }
         unset($data['id']);
         $data['mvurl'] = url_clean_domain($data['mvurl']);    //把http清除掉
         is_array($data['picurl']) && $data['picurl'] = implode(',', $data['picurl']);   //小程序传过来的是数组
         $data['picurl'] = url_clean_domain($data['picurl']);    //把http清除掉 
+        $data['uid'] = $this->user['uid'];
+        $data = $this->format_post_data($data);
+        
         $id = $this->savaNewData($mid,$data);
         
-        //以下两行是接口
-        hook_listen('cms_add_end',$id,['data' =>$data, 'module' =>$this->request->module()]);
-        $this->end_add($id,$data);
-        
-        if($id){
+        if(is_numeric($id)){
+            
+            //以下两行是接口
+            hook_listen('cms_add_end',$id,['data' =>$data, 'module' =>$this->request->module()]);
+            $this->end_add($id,$data);
+            
             return $this->ok_js(['id'=>$id],'提交成功');
         }else{
-            return $this->err_js('提交失败');
+            return $this->err_js('添加内容失败,详情如下:'.$id);
         }
     }
     

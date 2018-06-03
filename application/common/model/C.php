@@ -107,6 +107,7 @@ abstract class C extends Model
         if(empty($table)){
             return false;
         }
+        $data['ispic'] = $data['picurl']?1:0;
         $data['update_time'] = time();        
         //try {
             hook_listen(config('system_dirname').'_model_edit_begin',$data,$mid);   //修改信息前的钩子,可以设置禁止修改或者是把修改内容做替换处理
@@ -125,12 +126,12 @@ abstract class C extends Model
      * 新增加内容 mid 参数是必须的,不然不知道是哪个模型
      * @param number $mid 模型ID是必须的.
      * @param array $data 要插入的数据
-     * @return boolean|unknown 若插入成功,会返回ID值
+     * @return boolean|unknown 若插入成功,会返回ID值, 否则返回报错信息
      */
     public static function addData($mid=0,&$data=[]){
         self::InitKey();
         if (empty($mid)) {
-            return false;
+            return 'mid不存在';
         }
         $data['mid'] = $mid;
         $data['uid'] || $data['uid'] = intval(login_user('uid'));
@@ -139,21 +140,22 @@ abstract class C extends Model
             hook_listen(config('system_dirname').'_model_add_begin',$data,$mid);    //入库前的钩子,可以在这里设置禁止发布信息
             $data['id'] = Db::name( self::$base_table )->insertGetId($data);
         } catch(\Exception $e) {
-            return false;
+            return '索引表插入失败';
         }        
         if( empty($data['id']) ){
-            return false;
+            return '新增ID不存在';
         }
         $data['create_time'] || $data['create_time'] = time();
         $data['list'] = time();
         $data['ip'] = get_ip();
-        $data['picurl'] && $data['ispic'] = 1 ;        
+        $data['picurl'] && $data['ispic'] = 1 ;
         
         $table = self::getTableByMid($mid); //内容主表
         try {
             $result = Db::name($table)->insert($data);  //insert 成功只返回true 不会返回ID值 insertGetId才返回ID值,或者给insert补全其它参数
         } catch(\Exception $e) {
-            return false;
+            Db::name( self::$base_table )->where('id',$data['id'])->delete();
+            return '内容表数据插入失败';
         }
         
         if ($result) {
@@ -312,7 +314,8 @@ abstract class C extends Model
     /**
      * 通过ID获取某条内容数据
      * @param number $id 内容ID
-     * @return void|array|\think\db\false|PDOStatement|string|\think\Model
+     * @param string $format 是否转义,比如修改内容就不要转义
+     * @return void|\app\common\model\unknown|array|\think\db\false|PDOStatement|string|\think\Model
      */
     public static function getInfoByid($id=0,$format=FALSE){
         self::InitKey();
@@ -448,7 +451,7 @@ abstract class C extends Model
      */
     protected static function format_data($info=[] , $cfg=[] , $_dirname='' , $_sort_array=[]) {
         //self::InitKey(); //2018-5-19日修改,有的服务器会报错Cannot instantiate abstract class app\common\model\C
-        if($_dirname!==''){
+        if($_dirname){
             $dirname = $_dirname;
         }else{
             //                 preg_match_all('/([_a-z]+)/',get_called_class(),$array);
@@ -456,71 +459,76 @@ abstract class C extends Model
             $dirname = self::$model_key;
         }
         
-        static $field_db = [];
-        if(empty($field_db[$dirname])){
-            $field_db[$dirname] = get_field($info['mid'],$dirname);
-        }
-        
         static $m_or_p = [];
         if( empty($m_or_p[$dirname]) ){
             $m_or_p[$dirname] = modules_config($dirname) ? 'module' : 'plugin';
         }
         
-        foreach ($field_db[$dirname] AS $_field=>$rs){
-            if(!isset($info[$_field])){
-                continue ;
-            }
-            if($rs['type']=='radio'||$rs['type']=='select'||$rs['type']=='checkbox'){
-                $_farray = [];
-                $detail = explode("\r\n",$rs['options']);
-                foreach($detail AS $value){
-                    if($value===''){
-                        continue;
-                    }
-                    list($_k,$_v) = explode('|',$value);
-                    $_farray[$_k] = $_v;
-                }
-                if($rs['type']=='radio'||$rs['type']=='select'){
-                    $info[$_field] = $_farray[$info[$_field]];
-                }else{
-                    $_far = [];
-                    $_fv = explode(',',$info[$_field]);
-                    foreach($_fv AS $_fvs){
-                        if($_fvs===''){
-                            continue;
-                        }
-                        $_far[] = $_farray[$_fvs];
-                    }
-                    $info[$_field] = implode(',', $_far);
-                }
-            }elseif($rs['type']=='date'){
-                $info[$_field] = date('Y-m-d',$info[$_field]);
-            }elseif($rs['type']=='datetime'){
-                $info[$_field] = date('Y-m-d H:i',$info[$_field]);
-            }
-        }        
+//         static $field_db = [];
+//         if(empty($field_db[$dirname])){
+//             $field_db[$dirname] = get_field($info['mid'],$dirname);
+//         }
+//         //字段转义
+//         foreach ($field_db[$dirname] AS $_field=>$rs){
+//             if(!isset($info[$_field])){
+//                 continue ;
+//             }
+//             if($rs['type']=='radio'||$rs['type']=='select'||$rs['type']=='checkbox'){
+//                 $_farray = parse_attr($rs['options']);
+//                 if($rs['type']=='radio'||$rs['type']=='select'){
+//                     $info[$_field] = $_farray[$info[$_field]];
+//                 }else{
+//                     $_far = [];
+//                     $_fv = explode(',',$info[$_field]);
+//                     foreach($_fv AS $_fvs){
+//                         if($_fvs===''){
+//                             continue;
+//                         }
+//                         $_far[] = $_farray[$_fvs];
+//                     }
+//                     $info[$_field] = implode(',', $_far);
+//                 }
+//             }elseif($rs['type']=='date'){
+//                 $info[$_field] = date('Y-m-d',$info[$_field]);
+//             }elseif($rs['type']=='datetime'){
+//                 $info[$_field] = date('Y-m-d H:i',$info[$_field]);
+//             }
+//         }
         
-        static $sort_array = [];    //用数组的原因是考虑到像主页同时会调用多个频道的数据
-        if(empty($sort_array[$dirname])){    //避免反复执行
-            if(!empty($_sort_array)){
-                $sort_array[$dirname] = $_sort_array;
-            }else{
-                $sort_array[$dirname] = sort_config($dirname);    //获取栏目数据
-            }
+//         static $sort_array = [];    //用数组的原因是考虑到像主页同时会调用多个频道的数据
+//         if(empty($sort_array[$dirname])){    //避免反复执行
+//             if(!empty($_sort_array)){
+//                 $sort_array[$dirname] = $_sort_array;
+//             }else{
+//                 $sort_array[$dirname] = sort_config($dirname);    //获取栏目数据
+//             }
+//         }
+        $sort_array = sort_config($dirname);    //获取栏目数据
+        
+        $info = format_field($info,'','list',$dirname);     //对原始数据进行转义前台显示
+        
+        
+        if(empty($info['picurl']) && $info['pics']){    //CMS图库模型特别处理
+//             $_picarray = [];
+//             $info['pics'] = json_decode($info['pics'],true);
+//             foreach ($info['pics'] AS $ps){
+//                 $_picarray[] = $ps['picurl'];
+//             }
+//             $info['picurl'] = implode(',', $_picarray);
+            $info['picurl'] = $info['pics'];
         }
-        if(empty($info['picurl']) && $info['pics']){    //图库模型特别处理
-            $_picarray = [];
-            $info['pics'] = json_decode($info['pics'],true);
-            foreach ($info['pics'] AS $ps){
-                $_picarray[] = $ps['picurl'];
-            }
-            $info['picurl'] = implode(',', $_picarray);
-        }
+        
         if($info['picurl']){
-            $detail = explode(',',$info['picurl']);
-            $info['picurl'] = tempdir($detail[0]);
-            foreach($detail AS $value){
-                $value && $info['picurls'][] = tempdir($value);
+//             $detail = explode(',',$info['picurl']);
+//             $info['picurl'] = tempdir($detail[0]);
+//             foreach($detail AS $value){
+//                 $value && $info['picurls'][] = tempdir($value);
+//             }
+            if(is_array($info['picurl'])){
+                $value = $info['picurl'];
+                unset($info['picurl']);
+                $info['picurl'] = $value[0]['picurl'];
+                $info['picurls'] = $value;
             }
         }
         
@@ -532,16 +540,6 @@ abstract class C extends Model
             $info['image_type']=0;
         }
         
-        //         if($info['pics']){      //特别针对图库处理
-        //             $info['picurls'] = [];
-        //             $info['picurl'] = null;
-        //             $_pics = json_decode($info['pics'],true);
-        //             foreach($_pics AS $k=>$vs){
-        //                 $pic = tempdir($vs['picurl']);
-        //                 $info['picurls'][]  = $pic;
-        //                 $info['picurl'] || $info['picurl']  = $pic;
-        //             }
-        //         }
         
         $cfg['leng'] && $info['title'] = get_word($info['full_title'] = $info['title'], $cfg['leng']);
         $info['full_content'] = $info['content'];   //原始内容数据
@@ -549,7 +547,7 @@ abstract class C extends Model
         $cfg['cleng'] && $info['content'] = get_word($info['content'], $cfg['cleng']);
         
         $info['url'] = iurl($dirname.'/content/show',['id'=>$info['id']],true,false,$m_or_p[$dirname]);
-        $info['sort_name'] = $sort_array[$dirname][$info['fid']]['name'];
+        $info['sort_name'] = $sort_array[$info['fid']]['name'];
         $info['mid_name'] = model_config($info['mid'],$dirname)['name'];
         $info['sort_url'] = iurl($dirname.'/content/index',['fid'=>$info['fid']],true,false,$m_or_p[$dirname]);
         $info['time'] = date('Y-m-d H:i',$info['full_time'] = $info['create_time']);
@@ -587,6 +585,7 @@ abstract class C extends Model
         $dirname = self::$model_key;
         $sort_array = sort_config($dirname);    //获取栏目数据
         if($cfg['fid']){
+            $mid = $sort_array[$cfg['fid']]['mid'];
             //$map['fid'] = $cfg['fid'];
             $map['fid'] = ['in',array_values(get_sort($cfg['fid'],'sons'))];    //把所有子栏目也读取出来
         }

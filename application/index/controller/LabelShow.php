@@ -360,6 +360,7 @@ class LabelShow extends IndexBase
 //         $pagename = md5( basename($cfg['dirname']) );
         $pagename = md5( $cfg['dirname'] );
         $cache_time = $cfg['cache_time'];
+        $filtrate_field = $cfg['field'];         //循环中过滤不显示的字段
         $cfg_array =  [
                 'pagename'=>$pagename,
                 'tpl'=>$cfg['tpl'],
@@ -406,8 +407,108 @@ class LabelShow extends IndexBase
         }else{
             $tpl = $label_tags_tpl[$tag_name];
         }
+        
+        if($filtrate_field){    //设置了循环不显示哪些字段
+            $tpl = $this->get_showpage_field($tpl , $info , $filtrate_field);
+        }
+        
         $listdb = $info['picurls']; //这样就可以调用通用标签的幻灯片模板了
         eval('?>'.$tpl);
+    }
+    
+    
+    /**
+     * 表单标签
+     * @param string $tag_name
+     * @param array $cfg
+     */
+    public function get_form_label($tag_name='',$cfg=[]){
+        $mod = $cfg['mod'];     //指定频道
+        $field = $cfg['field'];     //过滤的字段
+        $mid = $cfg['mid'] ? $cfg['mid'] : 1;       //哪个模型
+        $info = $cfg['info'] ? $cfg['info'] : [];       //内容信息
+        $page_demo_tpl_tags = self::get_page_demo_tpl($cfg['dirname']);
+        $tplcode = $page_demo_tpl_tags[$tag_name]['tpl'] ;
+        $tpl = $this->get_form_field($tplcode,$info,$mid,$field,$mod);
+        eval('?>'.$tpl);
+    }
+    
+    /**
+     * 表单字段
+     * @param unknown $tplcode 模板
+     * @param array $info 信息内容
+     * @param number $mid 模型ID
+     * @param string $field 过滤的字段
+     * @param string $mod 频道目录名
+     * @return string|mixed
+     */
+    private function get_form_field($tplcode,$info=[],$mid=0,$field='',$mod=''){
+        $filtrate_field = explode(',',$field);  //过滤的字段
+        $array = get_field($mid,$mod);
+        $obj = new \app\common\Field\Form;
+        $code = '';
+        foreach ($array AS $rs){
+            if(in_array($rs['name'], $filtrate_field)){
+                continue;
+            }
+            $fields = $obj->get_field($rs,$info);
+            $code .= str_replace(['{title}','{value}','{about}','{need}'], [
+                    $fields['title'],
+                    $fields['value'],
+                    $fields['about'],
+                    $fields['need'],
+            ], $tplcode);
+        }
+        return $code;
+    }
+    
+    /**
+     * 获取表单中的自定义字段
+     * @param unknown $tplcode 原始模板
+     * @param array $info 数据库取出的内容信息
+     * @param string $field 过滤的字段
+     * @return string|mixed
+     */
+    private function get_showpage_field($tplcode,$info=[],$field=''){
+        $filtrate_field = explode(',',$field);  //过滤的字段
+        $array = get_field($info['mid']);
+        $code = '';
+        foreach ($array AS $rs){
+            if(in_array($rs['name'], $filtrate_field)){
+                continue;
+            }
+            if($info[$rs['name']]===''||$info[$rs['name']]===null){
+                continue;
+            }
+            //$fields = \app\common\Field\Show::get_field($rs,$info);
+            $code .= str_replace(['{title}','{value}'], [
+                    $rs['title'],
+                    $info[$rs['name']],
+                    //$fields['value'],
+            ], $tplcode);
+        }
+        return $code;
+    }
+    
+    /**
+     * 列表显示的字段,要过滤一些指定的字段
+     * @param array $fields 某个模型的所有字段
+     * @param string $filtrate 过滤循环显示的字段
+     * @return unknown[]
+     */
+    private function list_show_field($fields=[],$filtrate=''){
+        $detail = explode(',',$filtrate);
+        $array = [];
+        foreach($fields AS $key=>$rs){
+            if(empty($rs['listshow'])){
+                continue;   //后台没设置在列表显示
+            }
+            if(in_array($rs['name'], $detail)){
+                continue;
+            }
+            $array[$rs['name']] = $rs;
+        }
+        return $array;
     }
     
     /**
@@ -419,6 +520,7 @@ class LabelShow extends IndexBase
 //         $pagename = md5( basename($cfg['dirname']) );
         $pagename = md5( $cfg['dirname'] );
         $cache_time = $cfg['cache_time'];
+        $filtrate_field = $cfg['field'];    //要过滤循环显示的字段
         $cfg['page'] || $cfg['page']=input('get.page');
         //fid mid 不能用缓存
         $cfg_array =  [
@@ -467,6 +569,9 @@ class LabelShow extends IndexBase
 
         echo self::pri_jsfile($pagename);                                                               //输出JS文件
         echo  self::pri_tag_div($tag_name,'listpage_set_'.$type,$tag_array);             //输出标签的操作层
+        
+        //指定了过滤字段,代表想要取某些字段的数值
+        $fields = $filtrate_field ? $this->list_show_field( get_field($cfg['mid'],$type) , $filtrate_field ) : [];
         
         $__LIST__= $tag_data ? getArray($tag_data)['data'] : [];
         if(empty($__LIST__)){     //没数据
@@ -606,11 +711,12 @@ class LabelShow extends IndexBase
             }else{
                 $_label_tag_tpl= str_replace(array('<!--COMMENT','COMMENT-->'),'',$array[0][$key]);
                 $_label_tag_tpl= preg_replace("/<!--(.*?)-->/is",'',$_label_tag_tpl);  //把标签名的注释符去掉
-                $_label_tag_tpl= str_replace(array('{posturl}','{pageurl}'),array(
+                $_label_tag_tpl= str_replace(array('{posturl}','{pageurl}','{apiurl}'),array(
                         //comment_api('posturl',$aid,$sysid,$cfg),
                         //comment_api('pageurl',$aid,$sysid,$cfg),
                         '<?php echo comment_api("posturl",$aid,$sysid,$cfg_array); ?>',
                         '<?php echo comment_api("pageurl",$aid,$sysid,$cfg_array); ?>',
+                        '<?php echo comment_api("apiurl",$aid,$sysid,$cfg_array); ?>',
                          ),
                         $_label_tag_tpl);
             }
@@ -663,10 +769,15 @@ class LabelShow extends IndexBase
      * @return mixed[]
      */
     private function get_page_demo_tpl($dirname=''){
-        preg_match_all("/<!--QB(.*?)QB-->/is",file_get_contents($dirname),$array);  //取得每一块标签数据
+        static $template_codes = [];
+        $template_code = $template_codes[$dirname];     //模板源代码
+        if($template_code==''){
+            $template_code = $template_codes[$dirname] = file_get_contents($dirname);
+        }
+        preg_match_all("/<!--QB(.*?)QB-->/is",$template_code,$array);  //取得每一块标签数据
         foreach($array[1] AS $key=>$tag_code){
             preg_match_all("/<!--(.*?)-->/is",$tag_code,$array2);   //取得每一块标签数据的标签名与模板代码
-            list($_label_tag_name,$type,$tpl) = explode("\t",$array2[1][0]);
+            list($_label_tag_name,$type,$tpl) = explode("\t",$array2[1][0]);    //标签变量名,取哪个类型的数据,指定公共模板文件路径
             $_label_tag_demo = $array2[1][1];
             
             if(!empty($tpl)){   //指定模板
@@ -676,7 +787,7 @@ class LabelShow extends IndexBase
                 }else{
                     $_label_tag_tpl = $_label_tag_demo = "标签名为：{$_label_tag_name} 指定的模板文件 {$tpl} 不存在";
                 }
-            }else{      //截取模板
+            }else{      //把标签里边包含的代码当作模板处理
                 $_label_tag_tpl = str_replace(array('<!--QB','QB-->'),'',$array[0][$key]);
                 $_label_tag_tpl = preg_replace("/<!--(.*?)-->/is",'',$_label_tag_tpl);               //把标签名的注释符去掉
             }
@@ -734,6 +845,7 @@ class LabelShow extends IndexBase
         }
         return $array;
     }
+
     
     /**
      * 获取通用标签
@@ -741,10 +853,18 @@ class LabelShow extends IndexBase
      * @param unknown $cfg
      */
     public function get_label($tag_name='',$cfg=[]){
+        $filtrate_field = $cfg['field'];                                 //循环字段指定不显示哪些
         $val = $cfg['val'];                                                 //取得数据后，赋值到这个变量名, 分页的话,没做处理会得不到
         $list = $cfg['list'];                                                //foreach输出 AS 后面的变量名
         $type = $cfg['type']?$cfg['type']:'choose';            //选择哪种标签，图片或代码等等
 //         $pagename = md5( basename($cfg['dirname']) );       //模板目录名
+        //if(empty($cfg['mid']))unset($cfg['mid']);       //避免影响到union那里动态调用mid
+        if($cfg['mid']==-1){    // mid=-1 时 , 标志取所有模型的数据, 一般不建议这么做,效率非常低
+            unset($cfg['mid']);
+            $get_all_model = true;
+        }else{
+            $get_all_model = false;
+        }
         static $pagename = null;    //避免重复执行
         $pagename===null && $pagename = md5( $cfg['dirname'] );       //模板目录名
         $ifdata = intval($cfg['ifdata']);                            //是否只要原始数据
@@ -779,7 +899,6 @@ class LabelShow extends IndexBase
                 $page_demo_tpl_tags['_filemtime_'] = $filemtime;
                 cache('tags_page_demo_tpl_'.$pagename,$page_demo_tpl_tags,3600);
             }
-            
         }
         
         echo self::pri_jsfile($pagename);                                   //输出JS文件
@@ -790,7 +909,9 @@ class LabelShow extends IndexBase
                 $cfg['class'] = "app\\index\\controller\\LabelShow@labelGetSql";
             }
             //未入库前,标签默认指定的频道数据作为演示用
-            $cfg['mid'] || $cfg['mid'] = 1; //指定模型效率会高点,但前提是模型1必须要存在,不然就会报错
+            if(empty($cfg['mid']) && !$get_all_model && !in_array('mid',explode(',',$cfg['union']))){
+                $cfg['mid'] = 1; //指定模型效率会高点,但前提是模型1必须要存在,不然就会报错
+            }
             if($type=='member'&&empty($cfg['class'])){
                 $cfg['class'] = "app\\common\\model\\User@labelGet";
             }
@@ -802,6 +923,9 @@ class LabelShow extends IndexBase
         }
         
         self::tag_cfg_parameter($tag_name,$cfg);  //把$cfg存放起来,给get_ajax_url使用
+        
+        //指定了过滤字段,代表想要取某些字段的数值,一般用在列表页,不适合聚合信息页多个频道混调
+        $fields = ($filtrate_field && $cfg['mid']) ? $this->list_show_field( get_field($cfg['mid']) , $filtrate_field ) : [];
         
         if($cfg['js']){ //ajax显示数据,可以加快页面的打开速度
             $ajaxurl = $this->build_tag_ajax_url( array_merge(

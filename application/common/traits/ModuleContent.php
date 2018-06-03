@@ -54,7 +54,7 @@ trait ModuleContent
 	protected function saveAdd($mid=0,$fid=0,$data=[]){
 
 	    //主要针对多选项的数组进行处理
-	    $data = self::format_post_data($data);
+	    $data = $this->format_post_data($data);
 	    
 	    if(!empty($this->validate)){
 	        // 验证
@@ -65,14 +65,15 @@ trait ModuleContent
 	    $data['mid'] = $this->mid;	    
 	    $id = $this->model->addData($this->mid,$data);	
 	    
-	    //以下两行是接口
-	    hook_listen('cms_add_end',$id,['data' =>$data, 'module' =>$this->request->module()]);	    
-	    $this->end_add($id,$data);
-	    
-	    if($id){
-	        $this->success( '提交成功' , auto_url('index',$fid ? ['fid'=>$fid] : ['mid'=>$mid]) );
+	    if(is_numeric($id)){
+
+			//以下两行是接口
+			hook_listen('cms_add_end',$id,['data' =>$data, 'module' =>$this->request->module()]);	    
+			$this->end_add($id,$data);
+
+	        $this->success('新增成功', auto_url('index',$fid ? ['fid'=>$fid] : ['mid'=>$mid]) );
 	    }else{
-	        $this -> error('添加失败');
+	        $this -> error('新增失败:'.$id);
 	    }
 	}
 	
@@ -83,15 +84,14 @@ trait ModuleContent
 	protected function saveEdit($mid=0,$data=[]){	    
 	    
 	    //主要针对多选项的数组进行处理
-	    $data = self::format_post_data($data);
+	    $data = $this->format_post_data($data);
 	    
 	    // 验证
-	    if(!empty($this->validate)){
-	        // 验证
-	        $result = $this->validate($data, $this->validate);
-	        if(true !== $result) $this->error($result);
-	    }
-	    $data['ispic'] = empty($data['picurl']) ? 0 : 1 ;
+// 	    if(!empty($this->validate)){
+// 	        $result = $this->validate($data, $this->validate);
+// 	        if(true !== $result) $this->error($result);
+// 	    }
+	    //$data['ispic'] = empty($data['picurl']) ? 0 : 1 ;
 
 	    $result = $this->model->editData($this->mid,$data);
 	    
@@ -366,51 +366,57 @@ trait ModuleContent
 	 * @return number
 	 */
 	protected function format_post_data($data){
-	    $field_array = $this->f_model->getFields(['mid'=>$this->mid]);
-	    
+	    //$field_array = $this->f_model->getFields(['mid'=>$this->mid]);
+	    $field_array = get_field($this->mid);
 	    foreach ($field_array as $rs) {
-	        $name = $rs['name'];
-	        $type = $rs['type'];
-	        if (!isset($data[$name])) {
-	            switch ($type) {
-	                // 开关
-	                case 'switch':
-	                    $data[$name] = 0;
-	                    break;
-	                case 'checkbox':
-	                    $data[$name] = '';
-	                    break;
-	            }
-	        } else {
-	            // 如果值是数组则转换成字符串，适用于复选框等类型
-	            if (is_array($data[$name])) {
-	                $data[$name] = implode(',', $data[$name]);
-	            }
-	            switch ($type) {
-	                // 开关
-	                case 'switch':
-	                    $data[$name] = 1;
-	                    break;
-	                case 'images2':
-	                    //$data[$name] = serialize(array_values($data['images2'][$name]));
-	                    //$data[$name] = json_encode(array_values($data['images2'][$name])); 
-	                    break;
-	                    // 日期时间
-	                case 'date':
-	                case 'time':
-	                case 'datetime':
-	                    $data[$name] = strtotime($data[$name]);
-	                    break;
-	            }
+	        $value = \app\common\Field\Post::format($rs,$data);
+	        if($value!==null){     //这里要做个判断,MYSQL高版本,不能任意字段随意插入null
+	            $data[$rs['name']] = $value;
 	        }
+// 	        $name = $rs['name'];
+// 	        $type = $rs['type'];
+// 	        if (!isset($data[$name])) {
+// 	            switch ($type) {
+// 	                // 开关
+// 	                case 'switch':
+// 	                    $data[$name] = 0;
+// 	                    break;
+// 	                case 'checkbox':
+// 	                    $data[$name] = '';
+// 	                    break;
+// 	            }
+// 	        } else {
+// 	            // 如果值是数组则转换成字符串，适用于复选框等类型
+// 	            if (is_array($data[$name])) {
+// 	                $data[$name] = implode(',', $data[$name]);
+// 	                $type == 'checkbox' && $data[$name] = ','.$data[$name] .',';   //方便搜索 like %,$value,%
+// 	            }
+// 	            switch ($type) {
+// 	                // 开关
+// 	                case 'switch':
+// 	                    $data[$name] = 1;
+// 	                    break;
+// 	                case 'images2':
+// 	                    //$data[$name] = serialize(array_values($data['images2'][$name]));
+// 	                    //$data[$name] = json_encode(array_values($data['images2'][$name])); 
+// 	                    break;
+// 	                    // 日期时间
+// 	                case 'date':
+// 	                case 'time':
+// 	                case 'datetime':
+// 	                    $data[$name] = strtotime($data[$name]);
+// 	                    break;
+// 	            }
+// 	        }
 	    }
 	    return $data;
 	}
 	
 	
 	/**
-	 * 获取单条内容信息,修改内容时要用到
-	 * @param number $id
+	 * 获取单条内容信息,修改内容时要用到 内容显示页也会用到
+	 * @param number $id 内容ID
+	 * @param string $format  是否转义, 修改内容时不允许转义,必须取数据库的原始数据, 内容页也不建议使用
 	 * @return unknown
 	 */
 	protected function getInfoData($id=0,$format=false)
@@ -489,6 +495,9 @@ trait ModuleContent
 	    if(!$this->user){
 	        return '请先登录!';
 	    }
+	    if($mid && !get_field($mid)){
+	        return '模型不存在!';
+	    }
 	    if(!$this->admin && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
 	        return '你所在用户组没权限发表!';
 	    }
@@ -522,7 +531,7 @@ trait ModuleContent
 	    }
 	    
 	    $data = array_merge(input(),$data);
-	    $array = explode(',','view,replynum,usernum,agree,reward');
+	    $array = explode(',','view,replynum,usernum,agree,reward,list');
 	    foreach($array AS $key){
 	        unset($data[$key]);
 	    }
@@ -542,9 +551,18 @@ trait ModuleContent
 	    if($info['uid']!=$this->user['uid']&&empty($this->admin)){
 	        return '你没权限!';
 	    }
-	    if(isset($data['map'])){
-	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
+	    if($data){
+    	    if(isset($data['map'])){
+    	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
+    	    }
+    	    unset($data['uid'],$data['status'],$data['view'],$data['mid'],$data['list']);
+    	    $data['ispic'] = empty($data['picurl']) ? 0 : 1 ;
+    	    if(!empty($this->validate)){
+    	        $result = $this->validate($data, $this->validate);
+    	        if(true !== $result) return $result;
+    	    }
 	    }
+	    
 	    return true;
 	}
 

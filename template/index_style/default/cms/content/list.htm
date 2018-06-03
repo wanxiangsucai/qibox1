@@ -25,12 +25,12 @@
 			<ul>
 	{switch name="rs.image_type"}
 		{case value="1"}
-				<ol><a href="#"><img src="{$rs.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
+				<ol><a href="#"><img src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
 				<li><a href="#">{$rs.content|get_word=80}</a></li>
 		{/case}
 		{case value="2"}
 			{volist name="rs.picurls" id="imgurl"}
-				<ol><a href="#"><img src="{$imgurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
+				<ol><a href="#"><img src="{$imgurl}" onerror="this.src='__STATIC__/images/nopic.png'" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
 
 			{/volist}
 		{/case}

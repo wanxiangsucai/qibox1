@@ -6,14 +6,15 @@ class Qb extends TagLib{
      * 定义标签列表
      */
     protected $tags   =  [
-            'tag'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,js,union', 'close' => 1],
+            'tag'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,fid,js,union,field', 'close' => 1],  //field 过滤循环不显示的字段,多个用,号隔开
             'url'      => ['attr' => 'name', 'close' => 0],
             'nav'      => ['attr' => 'name,title,url', 'close' => 0],
-            'listpage'      => ['attr' => 'name,time,rows,val,list,order,by,tpl,where', 'close' => 1],
+            'listpage'      => ['attr' => 'name,time,rows,val,list,order,by,tpl,where,field', 'close' => 1],  //field 过滤不显示的字段,多个用,号隔开
             'list_url'      => ['attr' => 'name', 'close' => 0],
-            'showpage'      => ['attr' => 'name,time,type,tpl,val', 'close' => 1],
+            'showpage'      => ['attr' => 'name,time,type,tpl,val,field', 'close' => 1],    //field 过滤循环不显示的字段,多个用,号隔开
             'comment'      => ['attr' => 'name,time,rows,list,order,by,status,tpl,aid,sysid,where', 'close' => 1],  //这个是评论插件
             'reply'      => ['attr' => 'name,time,rows,list,order,by,status,tpl,aid,where', 'close' => 1],    //这个是论坛的回复,功能跟评论插件没太大区别
+            'form'  => ['attr' => 'name,info,mid,field,mod', 'close' => 1],     //field 过滤循环不显示的字段,多个用,号隔开
     ];
     
     /**
@@ -60,14 +61,13 @@ class Qb extends TagLib{
      * @param unknown $content 各项参数
      * @return string
      */
-    public function tagTag($tag, $content)
-    {
+    public function tagTag($tag, $content){     //$content 的内容就是 <!--###break###--!>
         if(empty($tag['name'])){
             return '******标签缺少命名*******'.$content;
         }
         $sql = $tag['sql'];   //SQL查询
         $type = $sql?'sql':$tag['type'];
-        $name = preg_match('/^([-\w]+)$/',$tag['name']) ?$tag['name']:md5($tag['name']);
+        $name = $this->getName($tag['name']);
         if(preg_match('/^([\d]+),([\d]+)$/', $tag['rows'])){
             $rows = $tag['rows'];
         }else{
@@ -85,6 +85,9 @@ class Qb extends TagLib{
         $status = $tag['status'];   //审核或推荐
         $where = $tag['where'];   //条件查询
         $mid = $tag['mid'];   //指定模型
+        $fid = $tag['fid'];   //指定栏目
+        $str_mid = $mid ? ",'mid'=>'$mid'" : ''; 
+        $str_fid = $fid ? ",'fid'=>'$fid'" : ''; 
         $whereor = $tag['whereor'];   //条件查询        
         $class = $tag['class']; //调取数据执行的类
         $tpl = $tag['tpl']; //指定默认模板
@@ -102,7 +105,21 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' QB--><?php endif; ?>';
-        $parse .= '<?php '."\$$name = run_label('$name',[$union'val'=>'$val','list'=>'$list','type'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by','status'=>'$status','where'=>'$where','whereor'=>'$whereor','sql'=>'$sql','js'=>'$js','mid'=>'$mid','cache_time'=>'$cache_time']);".' ?>';
+        $parse .= '<?php '."\$$name = run_label('$name',[$union'val'=>'$val','list'=>'$list','type'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by','status'=>'$status','where'=>'$where','whereor'=>'$whereor','sql'=>'$sql','js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
+        return $parse;
+    }
+    
+    
+    public function tagForm($tag,$content){         //$content 的内容就是 <!--###break###--!>
+        $name = $this->getName($tag['name']);
+        $mid = $tag['mid'] ? ($tag['mid'][0]=='$'?substr($tag['mid'], 1):$tag['mid']) : 'mid';     //型模id变量名
+        $info = $tag['info'] ? ($tag['info'][0]=='$'?substr($tag['info'], 1):$tag['mid']) : 'info';     //内容信息变量名
+        $mod = $tag['mod'];     //模块
+        $field = $tag['field'];     //过滤的字段
+        $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--QB '."<!--$name\t$mod--> ";
+        $parse .= $content.'  ';
+        $parse .= ' QB--><?php endif; ?>';
+        $parse .= '<?php '."run_form_label('$name',['mid'=>\$$mid,'info'=>\$$info,'field'=>'$field','mod'=>'$mod','dirname'=>__FILE__,]);".' ?>';
         return $parse;
     }
     
@@ -128,6 +145,15 @@ class Qb extends TagLib{
     }
     
     /**
+     * 每个标签的变量名
+     * @param string $name
+     * @return string
+     */
+    private function getName($name=''){
+        return preg_match('/^([-\w]+)$/',$name) ? $name : md5($name);
+    }
+    
+    /**
      * 评论插件,给各个频道调用的评论接口
      * @param unknown $tag 标签名
      * @param unknown $content 各项参数
@@ -149,7 +175,7 @@ class Qb extends TagLib{
         //$class = $tag['class']; //调取数据执行的类
         $tpl = $tag['tpl'];
         $type = $tag['type'];
-        $name = preg_match('/^([-\w]+)$/',$tag['name']) ?$tag['name']:md5($tag['name']);        
+        $name = $this->getName($tag['name']);        
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--COMMENT'."<!--$name\t$type\t$tpl-->";
@@ -180,7 +206,7 @@ class Qb extends TagLib{
         //$class = $tag['class']; //调取数据执行的类
         $tpl = $tag['tpl'];
         $type = $tag['type'];
-        $name = preg_match('/^([-\w]+)$/',$tag['name']) ?$tag['name']:md5($tag['name']);
+        $name = $this->getName($tag['name']);
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--REPLY'."<!--$name\t$type\t$tpl-->";
@@ -199,12 +225,13 @@ class Qb extends TagLib{
     public function tagShowpage($tag, $content)
     {
         if(empty($tag['name'])){
-            return '******标签缺少命名*******'.$content;
+           // return '******标签缺少命名*******'.$content;
         }
         $type = $tag['type'];
         $tpl = $tag['tpl'];
+        $field = $tag['field'];     //过滤循环的字段
         $val = $tag['val']?$tag['val']:'info';
-        $name = preg_match('/^([-\w]+)$/',$tag['name']) ?$tag['name']:md5($tag['name']);
+        $name = $this->getName($tag['name']);
         $rows = empty($tag['rows']) ?10: intval($tag['rows']);   //取数据库的多少条记录
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $order = empty($order)?'id':$order;
@@ -213,7 +240,7 @@ class Qb extends TagLib{
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--SHOWPAGE '."<!--$name\t$type\t$tpl-->";
         $parse .= $content;
         $parse .= ' SHOWPAGE--><?php endif; ?>';
-        $parse .= '<?php '."run_showpage_label('$name',\$$val,['page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','cache_time'=>'$cache_time']);".' ?>';
+        $parse .= '<?php '."run_showpage_label('$name',\$$val,['page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','field'=>'$field','cache_time'=>'$cache_time']);".' ?>';
         return $parse;
     }
     
@@ -229,11 +256,12 @@ class Qb extends TagLib{
             return '******标签缺少命名*******'.$content;
         }
         $type = $tag['type'];
+        $field = $tag['field'];     //过滤循环的字段
         $val = $tag['val'];
         $tpl = $tag['tpl'];
         $by = $tag['by'];
         $order = $tag['order'];
-        $name = preg_match('/^([-\w]+)$/',$tag['name']) ?$tag['name']:md5($tag['name']);
+        $name = $this->getName($tag['name']);
         $rows = empty($tag['rows']) ?10: intval($tag['rows']);   //取数据库的多少条记录
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $order = empty($order)?'id':$order;
@@ -249,7 +277,7 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' LISTPAGE--><?php endif; ?>';
-        $parse .= '<?php $__array__='."run_listpage_label('$name',['mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
+        $parse .= '<?php $__array__='."run_listpage_label('$name',['mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'field'=>'$field','val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
         $parse .='$pages=$__array__[\'pages\'];$'.$name.'=$__array__[\'cfg\']; ?>';
         return $parse;
     }

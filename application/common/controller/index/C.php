@@ -69,7 +69,7 @@ abstract class C extends IndexBase
         //如果某个模型有个性模板的话，就不调用母模板
         $template = $this->get_tpl('list',$mid,$s_info);
         
-        $GLOBALS['fid'] = $fid; //标签可能会用到
+        $GLOBALS['fid'] = $fid;     //标签有时会用到
         
         //列表显示哪些自定义字段
         //$tab_list = $this->getEasyIndexItems($field_array);
@@ -108,32 +108,48 @@ abstract class C extends IndexBase
         if(empty($this->mid)){
             $this->error('内容不存在!');
         }
+        
         //获取内容数据
         $info = $this->getInfoData($id);
+        
         Hook_listen('cms_content_show',$info);
         
         $this->view_check($info);
         
         $this->updateView($id);
         
-        $info['field_array'] = $this->get_info_field($info);
+        //以下 picurl pics图库模型 是CMS模型,常用的几个字段,提前转义了          
+//         if($info['picurl']){
+//             $detail = explode(',',$info['picurl']);
+//             $info['picurl'] = tempdir($detail[0]);
+//             foreach($detail AS $key=>$value){
+//                 $value && $info['picurls'][$key]['picurl'] = tempdir($value);
+//             }
+//         }
+
+        $info['field_array'] = $this->get_field_fullurl($info);     //这行必须放在 format_field 的前面,这里要用到原始数据
+        $info = format_field($info,'','show');  
         
-        if($info['picurl']){
-            $detail = explode(',',$info['picurl']);
-            $info['picurl'] = tempdir($detail[0]);
-            foreach($detail AS $key=>$value){
-                $value && $info['picurls'][$key]['picurl'] = tempdir($value);
+        //下面代码主要是避免 format_field 函数里边强行把picurl输出<img 这样的内容,导致无法对图片做个性显示
+        if($info['field_array']['pics']['value']){  //CMS图库特别处理
+            $info['picurls'] = $info['field_array']['pics']['value'];
+            $info['picurl'] = $info['field_array']['pics']['value'][0]['picurl'];
+        }else{
+            $_picurl = $info['field_array']['picurl']['value'];
+            if(is_array($_picurl)){
+                $info['picurl'] = $_picurl[0]['picurl'];
+                $info['picurls'] = $_picurl;
+            }else{
+                $info['picurl'] = $_picurl;
             }
         }
         
-        if($info['field_array']['pics']['value']){  //图库特别处理
-            $info['picurls'] = $info['field_array']['pics']['value'];
-            $info['picurl'] = $info['field_array']['pics']['value'][0]['picurl'];
-        }
         
-        $GLOBALS['fid'] = $info['fid']; //标签可能会用到
+         $GLOBALS['fid'] = $info['fid'];     //标签有时会用到
         
+        //栏目配置信息
         $s_info = $this->sortInfo($info['fid']);
+        
         //如果某个模型有个性模板的话，就不调用母模板
         $template = $this->get_tpl('show',$this->mid,$s_info);
         
@@ -144,10 +160,41 @@ abstract class C extends IndexBase
                 'info'=>$info,
                 'id'=>$id,
                 'fid'=>$info['fid'],
+                'mid'=>$info['mid'],
                 'listdb'=>$info['picurls'],
                 's_info'=>$s_info,
         ];
         return $this->fetch($template,$vars);
+    }
+    
+    /**
+     * 列表页用到的筛选字段的处理
+     * @param number $mid 模型ID
+     * @return mixed[]
+     */
+    private function map_filter_field($mid=0){
+        $data = input();
+        $map = [];
+        unset($data['fid'],$data['mid'],$data['page']);
+        if(count($data)>0){
+            //$farray = get_filter_fields($mid);     //仅限于筛选字段
+            $farray = get_field($mid);
+            foreach($data AS $key=>$value){
+                if($farray[$key]){   //判断字段是否存在,其实不判断也问题不大的.不过这里可以根据字段类型,扩展为别的字段查询,使用like语句
+//                     if( in_array($farray[$key]['type'], ['radio','select']) ){
+//                         $map[$key] = $value;
+//                     }elseif($farray[$key]['type']=='checkbox'){
+//                         $map[$key] = ['like',"%,$value,%"];
+//                     }else{
+//                         $map[$key] = ['like',"%$value%"];
+//                     }         
+                    $map[$key] = \app\common\Field\Search::get_map($farray[$key]['type'],$value);
+                }elseif(in_array($key, ['province_id','city_id','zone_id','street_id'])){
+                    $map[$key] = $value;
+                }
+            }
+        }
+        return $map;
     }
     
     /**
@@ -157,11 +204,15 @@ abstract class C extends IndexBase
      */
     public function label_list_data($cfg = []){    
         $map = [];
-        if($cfg['status']>0){
-            $map = [
-                    'status'=>['>=',$cfg['status']],    //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
-            ];
+        //筛选字段的处理
+        if(function_exists('get_filter_fields')){
+            $map = $this->map_filter_field($cfg['mid']);
         }
+        
+        if($cfg['status']>0){
+            $map['status'] = ['>=',$cfg['status']];    //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
+        }
+        
         if($cfg['where']){  //用户自定义的查询语句
             $_array = label_format_where($cfg['where']);
             if($_array){
@@ -203,7 +254,7 @@ abstract class C extends IndexBase
         if($fid){
            $fids = get_sort($fid,'sons') ;
            $map['fid'] = $fids ? ['in',$fids] : $fid;
-        }        
+        }
         $order = in_array($order, ['id','create_time','list','rand()','view']) ? $order : 'list';
         return $this->getListData($map, "$order $by",  $rows , [] ,true);
     }
@@ -504,53 +555,80 @@ abstract class C extends IndexBase
     }
     
     /**
-     * 对内容页的自定义字段进行转义处理
+     * 自定义字段 仅做附件的路径补全处理 , 其它类型不做转义，附件建议自己处理，不要使用系统自动输出
      * @param array $info
      * @return unknown[]|string[]|array[]
      */
-    protected function get_info_field(&$info=[]){
-        $_field_array = $this->getEasyFormItems();     //自定义字段
-        foreach ($_field_array AS $rs){
-            $type = $rs[0];
-            $value = $info[$rs[1]];
-            
-            if($type == 'images'||$type == 'files'){
-                $detail = explode(',',$value);
-				/*
-				修改了这里 初始化下数组 2018年4月24日
-				解决前台内容页面 爆 致命错误: Cannot use string offset as an array
-				*/
-                $value =[]; 
-                foreach($detail AS $key=>$va){
-                    if($type == 'images'){
-                        $va && $value[$key]['picurl'] = tempdir($va);
-                    }else{
-                        $va && $value[$key]['url'] = tempdir($va);
-                    }                    
-                }
-            }elseif($type == 'image'||$type == 'file'||$type == 'jcrop'){
-                $value && $value = tempdir($value);
-            }elseif($type == 'images2'){
-                //$value = unserialize($value);
-                $value = json_decode($value,true);
-                foreach($value AS $k=>$vs){
-                    $vs['picurl'] = tempdir($vs['picurl']);
-                    $value[$k] = $vs;
-                }
-            }elseif($type == 'select' || $type == 'radio'){
-                
-            }elseif($type == 'checkbox'){
-                
+    protected function get_field_fullurl(&$info=[]){
+        $_field_array = get_field($info['mid']);
+        foreach ($_field_array AS $name=>$rs){
+            $type = $rs['type'];
+            $value = $info[$name];            
+//             if($type == 'images'||$type == 'files'){
+//                 $detail = explode(',',$value);
+//                 $value = []; 
+//                 foreach($detail AS $va){
+//                     if($type == 'images'){
+//                         $va && $value[]['picurl'] = tempdir($va);
+//                     }else{
+//                         $va && $value[]['url'] = tempdir($va);
+//                     }                    
+//                 }
+//             }elseif($type == 'image'||$type == 'file'||$type == 'jcrop'){
+//                 $value && $value = tempdir($value);
+//             }elseif($type == 'images2'){
+//                 $value = json_decode($value,true);
+//                 foreach($value AS $k=>$vs){
+//                     $vs['picurl'] = tempdir($vs['picurl']);
+//                     $value[$k] = $vs;
+//                 }
+//             }
+
+            if(in_array($type,['images','files','image','file','jcrop','images2'])){                
+                $value = \app\common\Field\Show::format_url($rs,$info);                
+            }else{
+                //$value = \app\common\Field\Show::get_field($rs,$info);   
             }
-            $field_array[$rs[1]] = [
+            
+            $field_array[$name] = [
                     'type'=>$type,
-                    'name'=>$rs[1],
-                    'title'=>$rs[2],
+                    'name'=>$name,
+                    'title'=>$rs['title'],
                     'value'=>$value,
-                    'options'=>$rs[4],
+                    'options'=>$rs['options'],
             ];
-        }        
+        }
         return $field_array;
+    }
+    
+    public function add($fid=0,$mid=0){
+        if(!$mid && !$fid){
+            $this->error('参数不存在！');
+        }elseif($fid){ //根据栏目选择发表内容
+            $mid = $this->model->getMidByFid($fid);
+            if(empty($mid)){
+                $this->error('分类不存在!');
+            }
+        }
+        $this->assign('fid',$fid);
+        $this->assign('mid',$mid);
+        $template = $this->get_tpl('post',$this->mid);
+        return $this->fetch('post');
+    }
+    
+    public function choose(){
+        
+    }
+    
+    public function edit($id=0){
+        if (empty($id)) $this -> error('缺少参数');
+        $info = $this -> getInfoData($id);
+        if (empty($info)) $this -> error('内容不存在');
+        $this->assign('info',$info);
+        $this->assign('id',$id);
+        $this->assign('mid',$info['mid']);
+        $this->assign('fid',$info['fid']);
+        return $this->fetch('post');
     }
     
 }
