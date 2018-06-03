@@ -369,7 +369,7 @@ trait ModuleContent
 	    //$field_array = $this->f_model->getFields(['mid'=>$this->mid]);
 	    $field_array = get_field($this->mid);
 	    foreach ($field_array as $rs) {
-	        $value = \app\common\Field\Post::format($rs,$data);
+	        $value = \app\common\field\Post::format($rs,$data);
 	        if($value!==null){     //这里要做个判断,MYSQL高版本,不能任意字段随意插入null
 	            $data[$rs['name']] = $value;
 	        }

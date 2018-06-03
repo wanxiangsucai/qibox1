@@ -188,7 +188,7 @@ abstract class C extends IndexBase
 //                     }else{
 //                         $map[$key] = ['like',"%$value%"];
 //                     }         
-                    $map[$key] = \app\common\Field\Search::get_map($farray[$key]['type'],$value);
+                    $map[$key] = \app\common\field\Search::get_map($farray[$key]['type'],$value);
                 }elseif(in_array($key, ['province_id','city_id','zone_id','street_id'])){
                     $map[$key] = $value;
                 }
@@ -585,9 +585,9 @@ abstract class C extends IndexBase
 //             }
 
             if(in_array($type,['images','files','image','file','jcrop','images2'])){                
-                $value = \app\common\Field\Show::format_url($rs,$info);                
+                $value = \app\common\field\Show::format_url($rs,$info);                
             }else{
-                //$value = \app\common\Field\Show::get_field($rs,$info);   
+                //$value = \app\common\field\Show::get_field($rs,$info);   
             }
             
             $field_array[$name] = [

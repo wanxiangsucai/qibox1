@@ -48,13 +48,16 @@ Route::group(['name'=>'qun','ext'=>'html'], [
         'index'	=> 'qun/index/index',
 ]);
 
-
 Route::group(['name'=>'p','ext'=>'html'], [
 		'<plugin_name>-<plugin_controller>-<plugin_action>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => '[a-z_0-9]+',]], //必须放在第一行,位置不能移后
         '<plugin_name>-<plugin_controller>-<plugin_action>-<id>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => 'content','plugin_action' => 'show','id' => '\d+',]],
        '<plugin_name>-<plugin_controller>-<plugin_action>-<mid>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => 'index','mid' => '\d+',]],
        '<plugin_name>-<plugin_controller>-<plugin_action>-<fid>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => 'index','fid' => '\d+',]],
         '<plugin_name>-<plugin_controller>-<plugin_action>'	=>['index/plugin/execute',['method'=>'get|post'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => '[a-z_0-9]+',]],
+]);
+
+Route::group(['name'=>'page','ext'=>'html'], [
+        '<id>$'	=>['index/alonepage/index',['method'=>'get'],['id' => '\d+']],
 ]);
 
 return [

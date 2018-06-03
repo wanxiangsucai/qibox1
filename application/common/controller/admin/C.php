@@ -38,6 +38,9 @@ abstract class C extends AdminBase
      */
     public function add($fid=0,$mid=0)
     {
+        $data = $this->request->post();
+        isset($data['fid']) && $fid = $data['fid'];
+        
         if (config('post_need_sort') && !$fid && $mid) {
             return self::postnew($mid); //必须指定栏目才能发布
         }elseif(!$mid && !$fid){
@@ -47,13 +50,19 @@ abstract class C extends AdminBase
         }        
         $this->mid = $mid;
         
+        //接口
+        hook_listen('cms_add_begin',$data);
+        if (($result=$this->add_check($mid,$fid,$data))!==true) {
+            $this->error($result);
+        }
+        
         // 保存数据
         if ($this -> request -> isPost()) {
-            $data = $this->request->post();
+//             $data = $this->request->post();
             
-            if(isset($data['map'])){
-                list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
-            }
+//             if(isset($data['map'])){
+//                 list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
+//             }
             
             $this->saveAdd($mid,$fid,$data);            
         }
@@ -65,11 +74,11 @@ abstract class C extends AdminBase
         //如果栏目存在才显示栏目选择项
         if( config('post_need_sort') ){
             $this->form_items = array_merge(
-                    [
-                            [ 'select','fid','所属栏目','',$sort_array,$fid],
-                           // [ 'linkages','street_id','所属地区','','area',4],
-                    ],
-                    $this->getEasyFormItems()
+                        [
+                                [ 'select','fid','所属栏目','',$sort_array,$fid],
+                               // [ 'linkages','street_id','所属地区','','area',4],
+                        ],
+                        $this->getEasyFormItems()
                     );
         }
         

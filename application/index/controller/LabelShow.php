@@ -445,7 +445,7 @@ class LabelShow extends IndexBase
     private function get_form_field($tplcode,$info=[],$mid=0,$field='',$mod=''){
         $filtrate_field = explode(',',$field);  //过滤的字段
         $array = get_field($mid,$mod);
-        $obj = new \app\common\Field\Form;
+        $obj = new \app\common\field\Form;
         $code = '';
         foreach ($array AS $rs){
             if(in_array($rs['name'], $filtrate_field)){
@@ -480,7 +480,7 @@ class LabelShow extends IndexBase
             if($info[$rs['name']]===''||$info[$rs['name']]===null){
                 continue;
             }
-            //$fields = \app\common\Field\Show::get_field($rs,$info);
+            //$fields = \app\common\field\Show::get_field($rs,$info);
             $code .= str_replace(['{title}','{value}'], [
                     $rs['title'],
                     $info[$rs['name']],

@@ -3118,16 +3118,16 @@ if(!function_exists('format_field')){
      * @param string $field 是否只转义某个字段
      * @param string $pagetype 参数主要是show 或 list 哪个页面使用,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
      * @param string $sysname 频道目录名,默认为空,即当前频道
-     * @return string|\app\common\Field\string[]|\app\common\Field\unknown[]|\app\common\Field\mixed[]
+     * @return string|\app\common\field\string[]|\app\common\Field\unknown[]|\app\common\Field\mixed[]
      */
     function format_field($info=[],$field='',$pagetype='list',$sysname=''){
         $field_array = get_field($info['mid'],$sysname);
         $value = '';
         if($field){
-            $value = \app\common\Field\Index::get_field($field_array[$field],$info,$pagetype);
+            $value = \app\common\field\Index::get_field($field_array[$field],$info,$pagetype);
         }else{
             foreach($field_array AS $name=>$rs){
-                $info[$name] = \app\common\Field\Index::get_field($rs,$info,$pagetype);
+                $info[$name] = \app\common\field\Index::get_field($rs,$info,$pagetype);
             }
         }        
         return $field ? $value : $info;
