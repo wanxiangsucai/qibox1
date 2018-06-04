@@ -178,13 +178,14 @@ function showlist(){
 									'<div class="butter">'+
 										'<a href="javascript::" onclick="setup_app('+rs.id+',\''+rs.app_keywords+'\','+rs.price+')" class="fa fa-cloud-download">在线安装</a>'+
 										'<a href="https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html" target="_blank" class="fa fa-bolt">装前必读</a>'+
-					{eq name="$fid" value="4"}'<a href="'+rs.author_url+'" target="_blank" class="fa fa-bolt">风格演示</a>'+{/eq}
+					{eq name="$fid" value="4"}'<a class="demo_url" href="'+rs.author_url+'" target="_blank" class="fa fa-bolt">风格演示</a>'+{/eq}
 									'</div>'+
 								'</dd>'+
 							'</dl>'+
 						'</li>';
 				});
 				$('.Markercontents').append(str);
+				hide_demo();
 			}
 		}else{
 			layer.msg(res.msg,{time:2500});
@@ -192,6 +193,12 @@ function showlist(){
 	});
 }
 showlist();
+
+function hide_demo(){
+	$('.Markercontents a.demo_url').each(function(){
+		if($(this).attr('href')=='')$(this).hide();
+	});
+}
 
 var have_pay = [];
 function setup_app(id,keywords,price,have_open_layer){
