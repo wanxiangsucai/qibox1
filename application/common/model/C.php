@@ -32,7 +32,7 @@ abstract class C extends Model
      * @return string
      */
     public static function getTableByMid($mid=0){
-        self::InitKey();
+        empty(self::$model_key) && self::InitKey();
         return self::$base_table.$mid;
     }
     
