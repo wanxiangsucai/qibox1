@@ -75,13 +75,13 @@ class Setting extends AdminBase
             empty($rs['form_type']) && $rs['form_type'] = 'text';
             empty($rs['title']) && $rs['title'] = '未命名的字段：'.$rs['c_key'];
             if( in_array($rs['form_type'],['radio','select','checkbox','checkboxtree']) && !empty($rs['options']) ){
-                if(preg_match('/^[a-z]+(\\\[_a-z]+)+@[_a-z]+/is',$rs['options'])){
+                if(preg_match('/^[a-z]+(\\\[_a-z]+)+@[_a-z]+/i',$rs['options'])){
                     list($class_name,$action,$params) = explode('@',$rs['options']);
                     if(class_exists($class_name)&&method_exists($class_name, $action)){
                         $obj = new $class_name;
-                        $_params = $params ? json_decode($params,true) : [] ;
+                        $_params = $params!='' ? json_decode($params,true) : [] ;
                         //$rs['options'] = $obj->$action();
-                        $rs['options'] = call_user_func_array([$obj, $action], $_params);
+                        $rs['options'] = call_user_func_array([$obj, $action], isset($_params[0])?$_params:[$_params]);
                     }
                 }else{
                     $rs['options'] = str_array($rs['options']);

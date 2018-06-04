@@ -20,8 +20,7 @@ class City extends AdminBase
         $this->model = new AreaModel();
     }
     
-	public function index($pid=0)
-	{
+	public function index($pid=0){
 	    $ids = $map = [];
 	    
 	    if($pid){
@@ -30,7 +29,7 @@ class City extends AdminBase
 	        $map['level'] = $this->cfg_level ;
 	    }
 	    
-	    $listdb = AreaModel::where($map)->order( $this->getOrder('list desc') )->select();
+	    $listdb = AreaModel::where($map)->order( $this->getOrder('list desc') )->paginate(50,false,['query'=>request()->param()]);
 	    foreach ($listdb AS $rs){
 	        $ids[] = $rs['pid'];
 	    }

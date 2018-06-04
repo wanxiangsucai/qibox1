@@ -3118,7 +3118,7 @@ if(!function_exists('format_field')){
      * @param string $field 是否只转义某个字段
      * @param string $pagetype 参数主要是show 或 list 哪个页面使用,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
      * @param string $sysname 频道目录名,默认为空,即当前频道
-     * @return string|\app\common\field\string[]|\app\common\Field\unknown[]|\app\common\Field\mixed[]
+     * @return string|\app\common\field\string[]|\app\common\field\unknown[]|\app\common\Field\mixed[]
      */
     function format_field($info=[],$field='',$pagetype='list',$sysname=''){
         $field_array = get_field($info['mid'],$sysname);
@@ -3141,8 +3141,8 @@ if(!function_exists('get_area')){
      * @param string $field 可以取值为name 名称 或 pid 父ID 
      * @param number $pid 指定父ID
      */
-    function get_area($id=0,$field='name',$pid=0){
-        if(empty($id) && empty($pid)){
+    function get_area($id=0,$field='name',$pid=null){
+        if($id==0 && $pid===null){
             return ;
         }
         $area_array = cache('area_cache');
@@ -3158,7 +3158,7 @@ if(!function_exists('get_area')){
             ];
             cache('area_cache',$area_array);
         }
-        if($pid){
+        if($pid!==null){
             return is_numeric($pid) ? $area_array['fup'][$pid] : reset($area_array['fup']);
         }else{
             return $area_array['list'][$id][$field];
@@ -3185,4 +3185,84 @@ if(!function_exists('make_area_url')){
         return $url;
     }
 }
- 
+
+if(!function_exists('get_state')){
+    /**
+     * 自定义通用状态助手
+     * @access public
+     * @param int $state 状态
+     * @param array  $array 自定义数组
+     * @return string
+     */
+    function get_state($state,$array=['禁用','正常']) {
+        if(is_string($array)){
+            $array = explode(',',$array);
+        }
+        return $array[$state];
+    }
+}
+
+
+if(!function_exists('fun')){
+    /**
+     * 扩展函数,第一项是函数文件名@方法名,之后可以设置任意多项参数,它会对应到你自己定义的函数,比如这里第二项,会对应到你的函数第一项
+     * 自定义的函数当中,要用到引用传参数的话,只能是第一项使用
+     * @param string $fun 文件名@方法名
+     * @param unknown $quote 可定义引用传参数,自定义的函数当中,只能是第一项使用,其它项无法传递
+     * @return void|mixed
+     */
+    function fun($fun='sort@get',&$quote=null){
+        static $fun_array = [];
+        list($class_name,$action) = explode('@',$fun);
+        $class = "app\\common\\fun\\".ucfirst($class_name);
+        $obj = $fun_array[$class_name];
+        if(empty($obj)){
+            if(!class_exists($class)){
+                return ;
+            }
+            $obj = $fun_array[$class_name] = new $class;
+        }
+        if(!method_exists($obj, $action)){
+            return ;
+        }
+        
+        $params = func_get_args();
+        unset($params[0]);
+        $params = array_values($params);
+        
+        static $default_params_array = [];
+        $_params = $default_params_array[$fun];
+        if (!isset($_params)) {
+            $_params = [];
+            $_obj = new \ReflectionMethod($obj, $action);
+            $_array = $_obj->getParameters();
+            foreach($_array AS $key=>$value){
+                if($value->isOptional()){
+                    $_params[$key] = $value->getDefaultValue();
+                }else{
+                    $_params[$key] = null;
+                }
+            }
+            $default_params_array[$fun] = $_params;
+        }
+        
+        foreach($_params AS $key=>$value){
+            if(isset($params[$key])){
+                $_params[$key] = $params[$key];
+            }
+        }
+        
+        try {
+            $reuslt = $_obj->invokeArgs($obj, $_params);
+        } catch(\Exception $e) {
+            $_params[0] = &$quote;
+            arsort($_params);
+            $reuslt = $_obj->invokeArgs($obj, $_params);
+        }
+        
+        return $reuslt;
+        //return call_user_func_array([$obj, $action], $_params);     //这个函数没办法处理传递引用参数
+    }
+}
+
+
