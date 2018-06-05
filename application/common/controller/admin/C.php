@@ -41,13 +41,13 @@ abstract class C extends AdminBase
         $data = $this->request->post();
         isset($data['fid']) && $fid = $data['fid'];
         
-        if (config('post_need_sort') && !$fid && $mid) {
-            return self::postnew($mid); //必须指定栏目才能发布
-        }elseif(!$mid && !$fid){
-            $this->error('参数有误！');
-        }elseif($fid && !$mid){ //根据栏目选择发表内容
+        if($fid && !$mid){ 
             $mid = $this->model->getMidByFid($fid);
-        }        
+        }elseif( !$fid && !$mid ){  //栏目与模型都为空
+            return self::postnew($mid);
+        }elseif( config('post_need_sort') && !$fid ){  //指定必须要选择栏目的频道
+            return self::postnew($mid);
+        }
         $this->mid = $mid;
         
         //接口
