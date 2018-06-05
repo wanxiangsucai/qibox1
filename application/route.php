@@ -48,12 +48,30 @@ Route::group(['name'=>'qun','ext'=>'html'], [
         'index'	=> 'qun/index/index',
 ]);
 
+Route::group(['name'=>'hy','ext'=>'html'], [
+        'show-<id>$'	=>['hy/content/show',['method'=>'get'],['id' => '\d+']],
+        'list-<fid>$'=>['hy/content/index',['method'=>'get'],['fid' => '\d+']],
+        'mid-<mid>$'=>['hy/content/index',['method'=>'get'],['mid' => '\d+']],
+        'show'	=> 'hy/content/show',
+        'list'	=> 'hy/content/index',
+        'index'	=> 'hy/index/index',
+]);
+
+Route::group(['name'=>'fenlei','ext'=>'html'], [
+        'show-<id>$'	=>['fenlei/content/show',['method'=>'get'],['id' => '\d+']],
+        'list-<fid>$'=>['fenlei/content/index',['method'=>'get'],['fid' => '\d+']],
+        'mid-<mid>$'=>['fenlei/content/index',['method'=>'get'],['mid' => '\d+']],
+        'show'	=> 'fenlei/content/show',
+        'list'	=> 'fenlei/content/index',
+        'index'	=> 'fenlei/index/index',
+]);
+
 Route::group(['name'=>'p','ext'=>'html'], [
 		'<plugin_name>-<plugin_controller>-<plugin_action>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => '[a-z_0-9]+',]], //必须放在第一行,位置不能移后
         '<plugin_name>-<plugin_controller>-<plugin_action>-<id>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => 'content','plugin_action' => 'show','id' => '\d+',]],
        '<plugin_name>-<plugin_controller>-<plugin_action>-<mid>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => 'index','mid' => '\d+',]],
        '<plugin_name>-<plugin_controller>-<plugin_action>-<fid>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => 'index','fid' => '\d+',]],
-        '<plugin_name>-<plugin_controller>-<plugin_action>'	=>['index/plugin/execute',['method'=>'get|post'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => '[a-z_0-9]+',]],
+        '<plugin_name>-<plugin_controller>-<plugin_action>'	=>['index/plugin/execute',['method'=>'get|post'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9\.]+','plugin_action' => '[a-z_0-9]+',]],
 ]);
 
 Route::group(['name'=>'page','ext'=>'html'], [
