@@ -10,10 +10,10 @@
 <div class="ShowPhotoCont">
 {qb:showpage name="photo_show_pic0"}
 	<div class="PhotoBox">
-		<div class="BigPic"><span><img src="{$listdb.0.picurl}" data-preview-src="" data-preview-group="1" /></span></div>
+		<div class="BigPic"><span><a href="{$rs.picurl}"><img src="{$listdb.0.picurl}" data-preview-src="" data-preview-group="1" /></a></span></div>
 		<ul class="MorePic">
 {volist name="listdb" id="rs"}
-			<li><span><img src="{$rs.picurl}" data-preview-src="" data-preview-group="1"/></span></li>
+			<li><span><a href="{$rs.picurl}"><img src="{$rs.picurl}" data-preview-src="" data-preview-group="1"/></a></span></li>
 {/volist}
 		</ul>
 	</div>
@@ -28,12 +28,7 @@
 	<!--引用评论碎片-->
 	{qb:comment name="commentwap02" rows='5' tpl="comment/wap01"}{/qb:comment}
 </div>
-
-<link rel="stylesheet" href="__STATIC__/css/mui-preview-image.css">
-<script type="text/javascript" src="__STATIC__/mui/js/mui.zoom.js"></script>
-<script type="text/javascript" src="__STATIC__/mui/js/mui.previewimage.js"></script>
 <script>
-mui.previewImage();
 $('.PhotoBox img').hover(
 	function(){
 		$(this).animate({"width":"150%"},300);
