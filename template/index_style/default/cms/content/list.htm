@@ -30,7 +30,7 @@
 		{/case}
 		{case value="2"}
 			{volist name="rs.picurls" id="imgurl"}
-				<ol><a href="#"><img src="{$imgurl}" onerror="this.src='__STATIC__/images/nopic.png'" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
+				<ol><a href="#"><img src="{$imgurl.picurl}" onerror="this.src='__STATIC__/images/nopic.png'" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
 
 			{/volist}
 		{/case}
