@@ -17,6 +17,8 @@ class Setting extends AdminBase
     protected $list_items;
     protected $tab_ext;
     protected $group = 'base';
+    protected $_config = [];    //系统强制要补上的字段
+    protected $config = [];    //频道或插件强制要补上的字段
 
     protected function _initialize()
     {
@@ -25,6 +27,35 @@ class Setting extends AdminBase
         $this->tab_ext = [ 'help_msg'=>'系统参数配置',];
     }
     
+    /**
+     * 补全系统强制要加上的字段
+     * @param number $group 分组ID
+     */
+    protected function add_config($group=0){
+        if (empty($group)) {
+            return ;
+        }
+        $gdb = GroupModel::where('id',$group)->find();
+        if($gdb['sys_id']==0){
+            $array = $this->_config;
+        }else{
+            $array = $this->config;
+        }
+        
+        foreach ($array AS $rs){
+            $realut = ConfigModel::where(['c_key'=>$rs['c_key'],'sys_id'=>$gdb['sys_id'],])->find();
+            if(empty($realut)){
+                $rs['sys_id'] = $gdb['sys_id'];
+                $rs['type'] = $group;
+                $rs['ifsys'] = $gdb['sys_id']>0 ? 0 : $rs['ifsys'];
+                ConfigModel::create($rs);
+            }
+        }
+    }
+    
+    /**
+     * 清除缓存
+     */
     public function clearcache(){
         delete_dir(RUNTIME_PATH.'temp');
         delete_dir(RUNTIME_PATH.'log');
@@ -62,6 +93,8 @@ class Setting extends AdminBase
                 $this->success('修改成功');
             }            
         }
+        
+        $this->add_config($group);      //补全字段
         
         //某分类下的所有参数选项
         $list_data = empty($group) ? [] : $this->model->getListByGroup($group);

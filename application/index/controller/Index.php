@@ -13,9 +13,11 @@ class Index extends IndexBase
 //             cache('web_menu_wapfoot',1);
 //             $this->redirect(url('cms/index/index'),301);
 //         }
-        if( ($sysname = $this->webdb['set_module_index'])!=false ){
+        if( ($sysname = $this->webdb['set_module_index'])!='' ){
             //return $this->redirect($sysname.'/index/index');
-            $this->redirect(url($sysname.'/index/index'),301);
+            if(is_dir(APP_PATH.$sysname)){
+                $this->redirect(url($sysname.'/index/index'),301);
+            }            
         }
 		return $this->fetch('../index');
     }

@@ -304,9 +304,10 @@ trait AddEditList {
 	 */
 	protected static function search_tpl($type='',$mid=''){
 	    $filename = $type.$mid;
-	    static $path;
-	    if(empty($path)){
-	        $path = dirname( makeTemplate('index',false) ).'/'; //取得路径,避免反复找路径
+	    static $path_array = [];
+	    $path = $path_array[config('template.view_base')];
+	    if(empty($path)){  //避免反复找路径
+	        $path_array[config('template.view_base')] = $path = dirname( makeTemplate('index',false) ).'/'; //取得路径
 	    }
 	    $file = $path . $filename . '.' . ltrim(config('template.view_suffix'), '.');
 	    if(is_file($file)&&filesize($file)){

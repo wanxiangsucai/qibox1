@@ -1126,7 +1126,7 @@ INSERT INTO `qb_config` VALUES ('523','4','小程序AppID','wxapp_appid','','tex
 INSERT INTO `qb_config` VALUES ('524','4','小程序密钥','wxapp_appsecret','','text','','1','','','150','-2');
 INSERT INTO `qb_config` VALUES ('535','4','小程序支付接口（商户号）','wxapp_payid','','text','','1','','','149','-2');
 INSERT INTO `qb_config` VALUES ('536','4','小程序支付接口KEY（商户API密钥）','wxapp_paykey','','text','','1','','','148','-2');
-INSERT INTO `qb_config` VALUES ('557','1','是否定义频道当作默认主页','set_module_index','0','select','app\\common\\util\\Module@getTitleList@{\"title\":\"不使用频道做主页\",\"type\":\"keywords\"}','1','','','0','0');
+INSERT INTO `qb_config` VALUES ('557','1','是否定义频道当作默认主页','set_module_index','0','select','app\\common\\util\\Module@getTitleList@[\"不使用频道做主页\",\"keywords\"]','1','','','0','0');
 INSERT INTO `qb_config` VALUES ('616','1','网站LOGO','logo','','image','','1','','','0','0');
 INSERT INTO `qb_config` VALUES ('631','1','是否隐藏前台网址中的index.php文件名','hiden_index_php','0','radio','0|显示\r\n1|隐藏','1','','如果空间不支持,就选择显示,不然前台页面会无法打开','0','0');
 INSERT INTO `qb_config` VALUES ('632','31','阿里云短信模板','sms_template','','text','','1','','模板中使用的变量只能是code,如果不是的话,请先修改或者重新申请一个把变量名换用code','7','-11');

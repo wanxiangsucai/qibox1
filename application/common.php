@@ -3206,12 +3206,11 @@ if(!function_exists('get_state')){
 if(!function_exists('fun')){
     /**
      * 扩展函数,第一项是函数文件名@方法名,之后可以设置任意多项参数,它会对应到你自己定义的函数,比如这里第二项,会对应到你的函数第一项
-     * 自定义的函数当中,要用到引用传参数的话,只能是第一项使用
+     * 注意,唯一不足的是:用不了引用参数
      * @param string $fun 文件名@方法名
-     * @param unknown $quote 可定义引用传参数,自定义的函数当中,只能是第一项使用,其它项无法传递
      * @return void|mixed
      */
-    function fun($fun='sort@get',&$quote=null){
+    function fun($fun='sort@get'){
         static $fun_array = [];
         list($class_name,$action) = explode('@',$fun);
         $class = "app\\common\\fun\\".ucfirst($class_name);
@@ -3252,15 +3251,16 @@ if(!function_exists('fun')){
             }
         }
         
-        try {
-            $reuslt = $_obj->invokeArgs($obj, $_params);
-        } catch(\Exception $e) {
-            $_params[0] = &$quote;
-            arsort($_params);
-            $reuslt = $_obj->invokeArgs($obj, $_params);
-        }
+        return call_user_func_array([$obj, $action], $_params);     //这个函数没办法处理传递引用参数 func_get_args 也是变量的复制,没办法传递
+//         try {
+//             $reuslt = $_obj->invokeArgs($obj, $_params);
+//         } catch(\Exception $e) {
+//             $_params[0] = &$quote;
+//             arsort($_params);
+//             $reuslt = $_obj->invokeArgs($obj, $_params);
+//         }
         
-        return $reuslt;
+//         return $reuslt;
         //return call_user_func_array([$obj, $action], $_params);     //这个函数没办法处理传递引用参数
     }
 }

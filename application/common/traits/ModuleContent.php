@@ -498,8 +498,9 @@ trait ModuleContent
 	    if($mid && !get_field($mid)){
 	        return '模型不存在!';
 	    }
+
 	    if(!$this->admin && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
-	        return '你所在用户组没权限发表!';
+	        return '你所在用户组没权限!';
 	    }
 	    if(!$this->admin && config('webdb.post_auto_pass_group') && !in_array($this->user['groupid'], config('webdb.post_auto_pass_group'))){
 	        $data['status'] = 0;
@@ -535,9 +536,10 @@ trait ModuleContent
 	    foreach($array AS $key){
 	        unset($data[$key]);
 	    }
-	    if(isset($data['map'])){
+	    if(isset($data['map'])&&strstr($data['map'],',')){
 	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
 	    }
+
 	    return true;
 	}
 	

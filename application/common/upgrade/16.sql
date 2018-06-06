@@ -1,0 +1,1 @@
+UPDATE qb_config SET  `options` =  'app\\common\\util\\Module@getTitleList@["不使用频道做主页","keywords"]',`c_value` =''  WHERE    `c_key` ='set_module_index';
