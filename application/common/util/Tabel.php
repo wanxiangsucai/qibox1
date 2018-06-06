@@ -8,7 +8,8 @@ class Tabel{
     use AddEditList;
     public static $Btable;
     protected static $instance;
-    protected static $listdb=[];   //纯属给个性模板使用的
+    protected static $listdb=[];   //列表数据
+    protected static $f_array=[];   //字段信息
     
     /**
      * 创建显示列表的table表格
@@ -20,6 +21,7 @@ class Tabel{
      */
     public static function make($data_list=[],$tab_list=[],$right_button='',$top_button_delete=true){
         self::$listdb = $data_list;     //纯属给个性模板使用的
+        self::$f_array = $tab_list;     //纯属给个性模板使用的
         self::$Btable = BuilderTable::make()->addColumns($tab_list)->setRowList($data_list);
 
 	    if(!empty($right_button)){
@@ -197,7 +199,7 @@ class Tabel{
 	 */
 	public static function fetch($template = '', $vars = [], $replace = [], $config = []){	    
 	    if(empty($template)&&$template = static::get_template('')){    //如果模板存在的话,就用实际的后台个性模板
-	        $vars = array_merge($vars,['listdb'=>self::$listdb]);
+	        $vars = array_merge($vars,['listdb'=>self::$listdb,'f_array'=>self::$f_array]);
 	    }
 	    return self::$Btable->fetch($template, $vars, $replace, $config);
 	}

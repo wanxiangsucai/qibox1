@@ -7,7 +7,8 @@ class Form{
     use AddEditList;
     public static $Btable;
     protected static $instance;
-    protected static $info=[];   //纯属给个性模板使用的
+    protected static $info=[];   //内容信息
+    protected static $f_array=[];   //字段信息
     
     /**
      * 创建表单
@@ -19,6 +20,7 @@ class Form{
      */
     public static function make($tab_list=[],$info=[]){
         self::$info = getArray($info);     //纯属给个性模板使用的
+        self::$f_array = $tab_list;
         self::$Btable = BuilderForm::make() -> addFormItems($tab_list) -> setFormdata($info);
         if (is_null(self::$instance)) {
             self::$instance = new static();
@@ -575,7 +577,7 @@ class Form{
      */
     public static function fetch($template = '', $vars = [], $replace = [], $config = []){
         if(empty($template)&&$template = static::get_template('')){   //如果模板存在的话,就用实际的后台个性模板         
-            $vars = array_merge($vars,['info'=>self::$info]);
+            $vars = array_merge($vars,['info'=>self::$info,'f_array'=>self::$f_array]);
         }
         return self::$Btable->fetch($template, $vars, $replace, $config);
     }

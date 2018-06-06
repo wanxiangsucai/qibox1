@@ -186,7 +186,8 @@ trait AddEditList {
 	    
 	    $template = $this->get_template('',$this->mid);
 	    if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
-	        $this->assign('listdb',$data_list);
+	        $array = getArray($data_list);
+	        $this->assign('listdb',isset($array['data'])?$array['data']:$array);
 	        $this->assign('mid',$this->mid);
 	        return $this->fetch($template);
 	    }
@@ -420,6 +421,7 @@ trait AddEditList {
 		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 		    //$this->assign('listdb',$data_list);
 		    $this->assign('mid',$this->mid);
+		    $this->assign('f_array',$this -> form_items);
 		    return $this->fetch($template,$vars);
 		}
 		
@@ -528,6 +530,7 @@ trait AddEditList {
 		$template = $this->get_template('',$this->mid);
 		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 		    $this->assign('info',$info);
+		    $this->assign('f_array',$this -> form_items);
 		    $this->assign('mid',$this->mid);
 		    return $this->fetch($template);
 		}

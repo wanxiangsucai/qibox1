@@ -450,7 +450,15 @@ if (!function_exists('urls')) {
      */
     function urls($url = '', $vars = '', $suffix = true, $domain = false)
     {
-        return url(full_url($url), $vars, $suffix, $domain);
+        $url  = full_url($url);
+        list($module) = explode('/',$url);
+        $_url = url($url, $vars, $suffix, $domain);
+        if($module=='index' && ENTRANCE!='index'){
+            $_url = str_replace(array('admin.php','member.php'), 'index.php', $_url);
+        }elseif($module=='member' && ENTRANCE!='member'){
+            $_url = str_replace(array('admin.php','index.php'), 'member.php', $_url);
+        }
+        return $_url ;
     }
 }
 
@@ -3054,6 +3062,9 @@ if (!function_exists('get_app_upgrade_edition')) {
         }
         $array = \app\common\model\Market::get_list();
         foreach ($array AS $rs){
+            if(in_array($rs['type'],['admin_style','index_style','member_style'])&&!is_dir(TEMPLATE_PATH.$rs['type'].'/'.$rs['keywords'])){
+                \app\common\model\Market::destroy($rs['id']);   //用户把目录删除的话,就把数据库的信息也清空掉
+            }
             list($time,$version) = explode("\t",$rs['version']);
             $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-'.$rs['type'];
         }

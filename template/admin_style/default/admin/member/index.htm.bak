@@ -74,44 +74,30 @@ $ck=$type==$t?' selected  style="color:red;"':'';
     <th width="8%">关注</th>
 	 <th width="5%">角色</th>
   </tr>
-{php}
-foreach($listdb AS $key=>$rs){
-$rs[_regip]=ipfrom($rs[regip]);
-$rs[_lastip]=ipfrom($rs[lastip]);
-{/php}
+{volist name="listdb" id="rs"}
   <tr> 
-    <td><input type="checkbox" name="uid_db[]" value="$rs[uid]">
-$rs[uid]</td>
-      <td><img src="$rs[icon]" onerror="this.src='../images/default/noface.gif'" width=60 height="60"><br />
- <a href="$webdb[www_url]/member/userinfo.php?uid=$rs[uid]" title="所在城市: " onclick="$rs[alert]" target="_blank">$rs[username]</a> 
+    <td><input type="checkbox" name="uid_db[]" value="{$rs.uid}">{$rs.uid}</td>
+      <td><img src="$rs[icon]" onerror="this.src='__STATIC__/images/nobody.gif'" width="60" height="60"><br />
+          <a href="$webdb[www_url]/member/userinfo.php?uid=$rs[uid]" target="_blank">{$rs.username}</a> 
       </td>
-      <td>注册:$rs[regdate]<br>访问:$rs[lastvist]</td>
-    <td>注册:$rs[regip]<br>$rs[_regip]<br/>
-      访问:$rs[lastip]<br>$rs[_lastip]</td>
-    <td>{$rs[money]} 个 </td>
-    <td><span class="red">{$rs[rmb]}元</span><br><a href="index.php?lfj=$lfj&job=rmbconsume&uid=$rs[uid]">明细</a></td>
-    <td> 
-{php}
-if($rs[groupid]||$rs[regdate]){
-{/php}
-      <a href="index.php?lfj=$lfj&job=editmember&uid=$rs[uid]" onclick="$rs[alert]" title="修改会员资料" class='edit'></a>
-      <a href="index.php?lfj=$lfj&action=delete&uid=$rs[uid]" onclick="{$rs[alert]};return confirm('你确实要删除此会员吗?不可恢复,请慎重!')" title="删除当前会员" class='del'></a> 
-{php}
-}
-{/php}
+      <td>注册:{$rs.regdate}<br>访问:{$rs.lastvist}</td>
+    <td>注册:{$rs.regip}<br/>
+      访问:{$rs.lastip}</td>
+    <td>{$rs.money} 个 </td>
+    <td><span class="red">{$rs.rmb}元</span><br><a href="index.php?lfj=$lfj&job=rmbconsume&uid=$rs[uid]">明细</a></td>
+    <td>  
+      <a href="index.php?lfj=$lfj&job=editmember&uid=$rs[uid]"  title="修改会员资料" class='edit'></a>
+      <a href="index.php?lfj=$lfj&action=delete&uid=$rs[uid]" onclick="{$rs[alert]};return confirm('你确实要删除此会员吗?不可恢复,请慎重!')" title="删除当前会员" class='del'></a>  
     </td>
     <td>
-		$rs[yzHy] $rs[downqy] 
-		<span class="wx_attention$rs[uid]">$rs[yz]</span>
-<script type="text/javascript">
-check_wx_attention($rs[uid]);
-</script>
+		<span class="wx_attention$rs[uid]">{$rs.yz}</span>
+		<script type="text/javascript">
+		check_wx_attention({$rs.uid});
+		</script>
 	</td>
 	 <td> <a href="index.php?lfj=page&amp;job=member&amp;uid=$rs[uid]" alt='以他的角色进入会员中心' target="_blank" ><img src='images/man.png' border="0" /></a>  </td>
   </tr>
-{php}
-}
-{/php}
+{/volist}
   </table>
       <div class="ShowPage">$showpage</div>
       <div class="AtcCont">

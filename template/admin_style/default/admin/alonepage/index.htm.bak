@@ -6,30 +6,23 @@
 
 <form name="form1" method="post" action="index.php?lfj=$lfj&action=$job">
     <div class="MainContainers">
-    <div class="Header"><span class="tag">单篇文章独立页面管理</span><span class="more">&gt;&gt;</span></div>
-    <!-- <div class="Header"><span class="tag"></span><span class="more">&gt;&gt;</span></div> -->
+    <div class="Header"><span class="tag">单篇文章独立页面管理</span></div>
     <div class="Conter">
-
       <table class="ListTable">
           <tr> 
-            <th width="9%">序号 </th>
-            <th width="30%">单独页名称</th>
-            <th width="18%">用户</th>
-            <!-- <td width="17%" align="center">&nbsp;</td> -->
-            <th width="10%">修改</th>
-            <th width="10%">删除</th>
+            <th width="5%">序号 </th>
+            <th>单独页名称</th>
+            <th>用户</th>
+            <th>修改</th>
+            <th>删除</th>
           </tr>
-{php}
-      foreach($listdb AS $key=>$rs){
-{/php}
+{volist name="listdb" id="rs"}
           <tr> 
             <td class="b red">$rs[id]</td>
             <td class="Left"><a href="$webdb[www_url]/do/alonepage.php?id=$rs[id]" target="_blank">$rs[title]</a></td>
-            <td><!--$rs[_ifclose]-->
-            <a href="$webdb[www_url]/member/homepage.php?uid=$rs[uid]">$rs[username]</a></td>
-            <!-- <td width="17%" align="center">&nbsp; --><!--<a href="$webdb[www_url]/do/alonepage.php?id=$rs[id]" target="_blank"> 
-              </a><a href="$webdb[www_url]/do/alonepage.php?id=$rs[id]&jobs=show" title="更新标签"><img src="images/icon_updatalabel.gif" border="0"></a> -->
-            <!-- </td> -->
+            <td>
+            <a href="$webdb[www_url]/member/homepage.php?uid=$rs[uid]">$rs[username]</a>
+			</td>
             <td>
              <a href="index.php?lfj=$lfj&job=edit&id=$rs[id]&uid=$uid&pageid=$pageid" class="edit">修改</a>
              <a href="$webdb[www_url]/do/alonepage.php?id=$rs[id]&job=makehtml" target="_blank"></a>
@@ -37,16 +30,8 @@
             <td>
               <a href="index.php?lfj=$lfj&action=delete&id=$rs[id]&uid=$uid&pageid=$pageid"  onclick="return confirm('删除后不可恢复,你确实要删除吗?')" class="del">
             </td>
-
-            <!-- <td width="29%" align="center">
-            <a href="index.php?lfj=$lfj&action=delete&id=$rs[id]&uid=$uid&pageid=$pageid"  onclick="return confirm('删除后不可恢复,你确实要删除吗?')"><img alt='点击删除' src='../member/images/del_icon2.gif' border=0></a> 
-
-              <a href="index.php?lfj=$lfj&job=edit&id=$rs[id]&uid=$uid&pageid=$pageid"><img alt='点击修改' src='../member/images/button_edit.png' border=0></a> 
-              <a href="$webdb[www_url]/do/alonepage.php?id=$rs[id]&job=makehtml" target="_blank"></a></td> -->
           </tr>
-{php}
-}
-{/php}
+{/volist}
           <tr bgcolor="#FFFFFF">
             <td colspan="5" align="center">{$showpage} </td>
           </tr>

@@ -13,7 +13,7 @@ class Base
      * @param string $type 表单类型
      * @param array $field 某个字段的配置参数
      * @param array $info 信息内容
-     * @param string $pagetype 参数主要是show 或 list 哪个页面使用,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
+     * @param string $pagetype 参数主要是show 或 list 哪个页面使用,表单页用不到,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
      * @return mixed
      */
     protected static function get_item($type='',$field=[],$info=[],$pagetype='show'){

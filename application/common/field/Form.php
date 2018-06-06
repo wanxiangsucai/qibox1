@@ -29,15 +29,23 @@ class Form extends Base
         
         if ( ($show = self::get_item($field['type'],$field,$info)) !='' ) {    //个性定义的表单模板,优先级最高
             
+        }elseif ($field['type'] == 'jcrop') {    // 截图
+            
+            $show = self::get_item('image',$field,$info);
+            
+        }elseif ($field['type'] == 'hidden') {    // 隐藏域
+            
+            $show = "<input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
+            
         }elseif ($field['type'] == 'textarea') {    // 多行文本框
             
             $field_inputwidth = 'width:90%;';
             $field_inputheight = 'height:300px;';
-            $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' class='c_{$name}' style='{$field_inputwidth}{$field_inputheight}'>{$info[$name]}</textarea>";
-       
+            $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' placeholder='请输入{$field[title]}' class='layui-textarea c_{$name}' style='{$field_inputwidth}{$field_inputheight}'>{$info[$name]}</textarea>";
+            
         }elseif ($field['type'] == 'select') {      // 下拉框
             
-            $detail = parse_attr($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : parse_attr($field['options']);
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' selected ':'';
                 $_show .= "<option value='$key' $cked>$value</option>";
@@ -46,20 +54,20 @@ class Form extends Base
         
         }elseif ($field['type'] == 'radio') {    // 单选按钮
             
-            $detail = parse_attr($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : parse_attr($field['options']);
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' checked ':'';
-                $_show .= " <input $ifmust type='radio' name='{$name}' value='$key' {$cked}> $value ";
+                $_show .= "<input $ifmust type='radio' name='{$name}' value='$key' {$cked} title='$value'><span class='m_title'> $value </span>";
             }
             $show = $_show ;
        
         }elseif ($field['type'] == 'checkbox') {    // 多选按钮
             
             $_detail = explode(',',$info[$name]);
-            $detail = parse_attr($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : parse_attr($field['options']);
             foreach ($detail as $key => $value) {
                 $cked = in_array($key, $_detail)?' checked ':'';
-                $_show .= " <input $ifmust type='checkbox' name='{$name}[]' value='$key' {$cked}> $value ";
+                $_show .= " <input $ifmust type='checkbox' name='{$name}[]' value='$key' {$cked}  title='$value'><span class='m_title'> $value </span>";
             }            
             $show = "$_show ";
             
@@ -74,7 +82,7 @@ class Form extends Base
             }
             
             $field_inputwidth = 'width:90%;';
-            $show = " <input $ifmust $jsck type='text' name='{$name}' id='atc_{$name}' style='{$field_inputwidth}' class='c_{$name}' value='{$info[$name]}' />";
+            $show = " <input placeholder='请输入{$field[title]}' $ifmust $jsck type='text' name='{$name}' id='atc_{$name}' style='{$field_inputwidth}' class='layui-input c_{$name}' value='{$info[$name]}' />";
             
         }
         
@@ -83,6 +91,7 @@ class Form extends Base
                 'title'=>$field['title'],
                 'need'=>$mustfill,
                 'about'=>$field['about'],
+                'ifhide'=>$field['type'] == 'hidden' ? true : false,
         ];        
     }
     

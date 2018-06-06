@@ -423,43 +423,43 @@ class LabelShow extends IndexBase
      * @param array $cfg
      */
     public function get_form_label($tag_name='',$cfg=[]){
+        $f_array = $cfg['f_array'];     //程序中定义的字段
         $mod = $cfg['mod'];     //指定频道
         $field = $cfg['field'];     //过滤的字段
         $mid = $cfg['mid'] ? $cfg['mid'] : 1;       //哪个模型
         $info = $cfg['info'] ? $cfg['info'] : [];       //内容信息
         $page_demo_tpl_tags = self::get_page_demo_tpl($cfg['dirname']);
         $tplcode = $page_demo_tpl_tags[$tag_name]['tpl'] ;
-        $tpl = $this->get_form_field($tplcode,$info,$mid,$field,$mod);
-        eval('?>'.$tpl);
+        $tplcode = str_replace(['{title}','{value}','{about}','{need}'], ['<?php echo $rs["title"]; ?>','<?php echo $rs["value"]; ?>','<?php echo $rs["about"]; ?>','<?php echo $rs["need"]; ?>'], $tplcode);
+        $__LIST__ = $this->get_form_field($info,$mid,$field,$mod,$f_array);
+        eval('?>'.$tplcode);
     }
     
     /**
      * 表单字段
-     * @param unknown $tplcode 模板
      * @param array $info 信息内容
      * @param number $mid 模型ID
      * @param string $field 过滤的字段
      * @param string $mod 频道目录名
+     * @param array $f_array 程序中定义的字段数组
      * @return string|mixed
      */
-    private function get_form_field($tplcode,$info=[],$mid=0,$field='',$mod=''){
+    private function get_form_field($info=[],$mid=0,$field='',$mod='',$f_array=[]){
         $filtrate_field = explode(',',$field);  //过滤的字段
-        $array = get_field($mid,$mod);
+        if(is_array($f_array)&&!empty($f_array)){
+            $array = \app\common\field\Format::form_fields($f_array);  //程序中定义的表单字段
+        }else{
+            $array = get_field($mid,$mod);
+        }
         $obj = new \app\common\field\Form;
-        $code = '';
+        $data = [];
         foreach ($array AS $rs){
             if(in_array($rs['name'], $filtrate_field)){
                 continue;
             }
-            $fields = $obj->get_field($rs,$info);
-            $code .= str_replace(['{title}','{value}','{about}','{need}'], [
-                    $fields['title'],
-                    $fields['value'],
-                    $fields['about'],
-                    $fields['need'],
-            ], $tplcode);
+            $data[] = array_merge($rs,$obj->get_field($rs,$info));
         }
-        return $code;
+        return $data;
     }
     
     /**

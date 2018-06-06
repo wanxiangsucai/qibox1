@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{$webdb.webname}</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="__STATIC__/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="__STATIC__/layui/css/admin.css" media="all">
+  <link rel="stylesheet" href="__STATIC__/icon/icon.css">
+  <script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+</head>
+<body>
+ <div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+      <div class="layui-col-md12">
+        <div class="layui-card">
+          <div class="layui-card-header">修改个人信息</div>
+          <div class="layui-card-body" pad15>
+<form method="post" action="" class="layui-form">
+{qb:form f_array="$f_array" field=""}
+			 <div class="layui-form-item {if in_array($rs['type'],['textarea','ueditor'])}layui-form-text{/if}">
+                <label class="layui-form-label">{$rs.title}</label>
+                <div class="{if in_array($rs['type'],['text','select'])}layui-input-inline{else /}layui-input-block{/if}">
+                  {$rs.value}
+                </div>
+                <div class="layui-form-mid layui-word-aux">{$rs.about}</div>
+              </div>
+{/qb:form}
+              <div class="layui-form-item">
+                <div class="layui-input-block">                  
+                  <button type="reset" class="layui-btn layui-btn-primary">返回</button>
+				  <button class="layui-btn" lay-submit>确认修改</button>
+                </div>
+              </div>
+</form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="__STATIC__/layui/layui.js"></script>  
+<script type="text/javascript">
+layui.use('form', function(){
+  var form = layui.form;
+});
+</script>
+</body>
+</html>

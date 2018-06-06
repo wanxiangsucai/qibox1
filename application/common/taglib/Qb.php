@@ -14,7 +14,8 @@ class Qb extends TagLib{
             'showpage'      => ['attr' => 'name,time,type,tpl,val,field', 'close' => 1],    //field 过滤循环不显示的字段,多个用,号隔开
             'comment'      => ['attr' => 'name,time,rows,list,order,by,status,tpl,aid,sysid,where', 'close' => 1],  //这个是评论插件
             'reply'      => ['attr' => 'name,time,rows,list,order,by,status,tpl,aid,where', 'close' => 1],    //这个是论坛的回复,功能跟评论插件没太大区别
-            'form'  => ['attr' => 'name,info,mid,field,mod', 'close' => 1],     //field 过滤循环不显示的字段,多个用,号隔开
+            'form'  => ['attr' => 'name,info,mid,field,mod,f_array', 'close' => 1],     //field 过滤循环不显示的字段,多个用,号隔开,f_array是程序中自由定义的字段
+            'table' => ['attr' => 'name,listdb,mid,field,mod,f_array', 'close' => 1],   //后台列表
     ];
     
     /**
@@ -116,10 +117,17 @@ class Qb extends TagLib{
         $info = $tag['info'] ? ($tag['info'][0]=='$'?substr($tag['info'], 1):$tag['mid']) : 'info';     //内容信息变量名
         $mod = $tag['mod'];     //模块
         $field = $tag['field'];     //过滤的字段
+        $_farray = $tag['f_array'] ? "'f_array'=>\$".($tag['f_array'][0]=='$'?substr($tag['f_array'], 1):$tag['f_array']).',' : ''; 
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--QB '."<!--$name\t$mod--> ";
+        $parse .= '{volist name="__LIST__" id="rs"}';
+        $parse .= '{if $rs["ifhide"]}';
+        $parse .= ' {$rs.value} ';
+        $parse .= '{else /}';
         $parse .= $content.'  ';
+        $parse .= '{/if}';
+        $parse .= '{/volist}';
         $parse .= ' QB--><?php endif; ?>';
-        $parse .= '<?php '."run_form_label('$name',['mid'=>\$$mid,'info'=>\$$info,'field'=>'$field','mod'=>'$mod','dirname'=>__FILE__,]);".' ?>';
+        $parse .= '<?php '."run_form_label('$name',[$_farray'mid'=>\$$mid,'info'=>\$$info,'field'=>'$field','mod'=>'$mod','dirname'=>__FILE__,]);".' ?>';
         return $parse;
     }
     

@@ -1,7 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<!--
--->
 <head>
 <title>后台管理</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -10,11 +8,6 @@
 <link rel="stylesheet" type="text/css" href="__STATIC__/admin/default/wlife/base.css">
 <link rel="stylesheet" href="__STATIC__/icon/icon.css">
 <link rel="stylesheet" type="text/css" href="__STATIC__/admin/default/wlife/index.css">
-<SCRIPT type=text/javascript>
-$(document).ready(function(){
-	
-});
-</SCRIPT>
 </head>
 <body>
 <div class="AdminIndexBox">
@@ -44,10 +37,17 @@ $(document).ready(function(){
 	</div>
 </div>
 <script type="text/javascript">
-$('.AdminIndexBox .LeftIndexBox').height($(window).height()-97);
-$('.AdminIndexBox .RightIndexBox').height($(window).height()-97);
-$('.AdminIndexBox .RightIndexBox').width($(window).width()-280);
-$('.AdminIndexBox .LeftIndexBox iframe').height($(window).height()-97);
+function set_table_size(){
+	$('.AdminIndexBox .LeftIndexBox').height($(window).height()-97);
+	$('.AdminIndexBox .RightIndexBox').height($(window).height()-97);
+	$('.AdminIndexBox .RightIndexBox').width($(window).width()-280);
+	$('.AdminIndexBox .LeftIndexBox iframe').height($(window).height()-97);
+}
+set_table_size();
+$(window).resize(function() {
+	set_table_size();
+});
+
 var topmenu_width=120;
 var topmenu_length=$('.TopMenus .ListMenu ul li').length;
 var ListMenu_w=$('.TopMenus .ListMenu').width();
@@ -60,7 +60,6 @@ var changeMenu_num=Math.ceil(topmenu_length / listMenu_num);//切换显示次数
 if(changeMenu_num>1){
 	$('.ChangeShow li').addClass('ck');
 }
-
 var nowtopmenu=1;
 function next_topmenu(){	
 	nowtopmenu++;
