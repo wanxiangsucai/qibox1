@@ -63,7 +63,7 @@ class Database {
     
     function create_table($table,$repair=false){
         //global  $repair;//,$mysqlversion,$Charset;
-        $show="DROP TABLE IF EXISTS $table;\n";
+        $show="DROP TABLE IF EXISTS `$table`;\n";
         if($repair){
             Db::execute("OPTIMIZE TABLE `$table`");
         }

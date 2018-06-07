@@ -2,7 +2,7 @@
 
 <!--SEO相关-->
 {block name="head_title"}{$info.title}{/block}
-{block name="head_keword"}{$info.title} {:get_sort($info.fid)}  {:M('name')}{/block}
+{block name="head_keword"}{$info.keywords?:$info.title}  {$s_info.name} {/block}
 {block name="head_description"}{:get_word(del_html($info['content']),300)}{/block}
 
 {block name="body_AllScorllSlide"}
