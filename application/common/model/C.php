@@ -548,7 +548,7 @@ abstract class C extends Model
         
         $info['url'] = iurl($dirname.'/content/show',['id'=>$info['id']],true,false,$m_or_p[$dirname]);
         $info['sort_name'] = $sort_array[$info['fid']]['name'];
-        $info['mid_name'] = model_config($info['mid'],$dirname)['name'];
+        $info['mid_name'] = model_config($info['mid'],$dirname)['title'];
         $info['sort_url'] = iurl($dirname.'/content/index',['fid'=>$info['fid']],true,false,$m_or_p[$dirname]);
         $info['time'] = date('Y-m-d H:i',$info['full_time'] = $info['create_time']);
         $info['username'] = get_user_name($info['uid']);

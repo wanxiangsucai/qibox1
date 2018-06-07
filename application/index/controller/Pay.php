@@ -100,7 +100,7 @@ class Pay extends IndexBase
                 'banktype'=>$array['bankname'],
                 'callback_class'=>mymd5(urldecode(input()['callback_class']),'DE'),     //支付成功后，后台执行的类
         ];
-        file_put_contents(ROOT_PATH.'AA.txt', $this->weburl,FILE_APPEND);
+        //file_put_contents(ROOT_PATH.'AA.txt', $this->weburl,FILE_APPEND);
 
         if(PayModel::get(['numcode'=>$numcode])==false){
             PayModel::create($data);
@@ -136,14 +136,18 @@ class Pay extends IndexBase
         }
     }
     
-    //支付后台执行各种功能模块的应用
+    /**
+     * 支付成功,异步执行各种功能模块的应用 格式是 mymd5("app\\shop\\model\\Order@pay@5")
+     * @param unknown $code
+     */
     protected function run_callback($code){
-        //'app-shop-model-Order@pay@order_id|5'
+        //'app-shop-model-Order@pay@order_id|5' //弃用这种格式了
         $detail = explode('@',$code);
-        $class = str_replace('-', '\\', $detail[0]);
+        $class = str_replace('-', '\\', $detail[0]);    //兼容以前用-隔开目录名的情况
         $action = $detail[1];
         $ar = explode('|',$detail[2]);
-        $_params = [$ar[0]=>$ar[1]];
+        //$_params = [$ar[0]=>$ar[1]];
+        $_params = $ar;
         if(class_exists($class)&&method_exists($class,$action)){
             $obj = new $class;
             call_user_func_array([$obj, $action], $_params);
@@ -159,7 +163,7 @@ class Pay extends IndexBase
         print<<<EOT
  <html>
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=gbk"/>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <script type="text/javascript" src="/public/static/js/core/jquery.min.js"></script>
                 

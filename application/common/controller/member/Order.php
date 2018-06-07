@@ -36,7 +36,7 @@ abstract class Order extends MemberBase
                 'return_url'=>url('pay',['id'=>$id,'havepay'=>1]),
                 'banktype'=>in_weixin() ? 'weixin' : 'alipay' , //在微信端,就用微信支付,否则就用支付宝支付
                 'numcode'=>$info['order_sn'],
-                'callback_class'=>mymd5('app-'.config('system_dirname').'-model-Order@pay@order_id|'.$id),
+                'callback_class'=>mymd5('app\\'.config('system_dirname').'\\model\\Order@pay@'.$id),
         ] , true);
         
     }

@@ -82,8 +82,7 @@ abstract class Order extends IndexBase
                                     'return_url'=>url('endpay',['order_id'=>$order_ids]),
                                     'banktype'=>in_weixin() ? 'weixin' : 'alipay' , //在微信端,就用微信支付,否则就用支付宝支付
                                     'numcode'=>$data['order_sn'],
-                                    'callback_class'=>mymd5('app-'.config('system_dirname').'-model-Order@pay@ids|'.$order_ids),
-                                    //'callback_class'=>mymd5('app-'.config('system_dirname').'-model-Order@pay@order_id|'.$order_ids),
+                                    'callback_class'=>mymd5('app\\'.config('system_dirname').'\\model\\Order@pay@'.$order_ids),
                             ]);
                 }
                 $this -> success('订单提交成功', $url);

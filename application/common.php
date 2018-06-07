@@ -2191,13 +2191,22 @@ if (!function_exists('getTemplate')) {
  if (!function_exists('post_olpay')) {
      /**
       * 支付接口
-      * @param array $array
-      *                     array('money'=>'支付金额','return_url'=>'支付成功后返回的网址','banktype'=>'支付方式微信还是支付宝','numcode'=>'订单号','title'=>'商品名称')
+      * @param array $array =array(
+      *                     'money'=>'支付金额',                            //单位是元,比如 0.02
+      *                     'return_url'=>'支付成功后返回的网址',     //回调网址最好加上http://开头,不加也可以
+      *                     'banktype'=>'支付方式微信还是支付宝',  //参数是 weixin 或者是 alipay
+      *                     'numcode'=>'订单号',                           //可以留空, 最好不为空,避免反复生成多余的订单
+      *                     'title'=>'商品名称',
+      *                     'callback_class'=>'',                                //可以为空,即不做处理, 支付成功后,异步处理的回调类,比如 mymd5("app\\shop\\model\\Order@pay@5") 最后一项是参数,多个参数用'|'隔开
+      *                     );
       *                     bank,numcode,title 这3项可以为空,不过订单号numcode最好不为空,避免反复生成多余的订单
-      * @param string $jump 是否立即跳转到支付页,false的话,只取得支持链接
+      *                     支付成功后要异步在后端执行操作的话,请传入回调执行参数 callback_class
+      *                     callback_class=>mymd5("app\\shop\\model\\Order@pay@5") 最后一项是参数,多个参数用'|'隔开
+      *                     这里的callback_class参数不能明名传输,必须要用mymd5加密.这个是可解密的函数
+      * @param string $jump 是否立即跳转到支付页,false的话,只取得支付链接的地址,不马上跳转
       * @return string
       */
-     function post_olpay( $array=['money'=>'','return_url'=>'','banktype'=>'','numcode'=>'','title'=>'']  , $jump = FALSE){
+     function post_olpay( $array=['money'=>'','return_url'=>'','banktype'=>'','numcode'=>'','title'=>'','callback_class'=>'']  , $jump = FALSE){
          foreach ($array AS $key=>$value){
              $url .= $key.'='.urlencode($value).'&';
          }
