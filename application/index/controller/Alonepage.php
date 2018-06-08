@@ -8,7 +8,7 @@ class Alonepage extends IndexBase
 
     public function index ($id = 0)
     {
-        $info = AlonepageModel::get($id);
+        $info = getArray(AlonepageModel::get($id));
         $template = '';
         if ($info['template'] && is_file(APP_PATH . $info['template'])) {
             $template = getTemplate(APP_PATH . $info['template']);  //如果不用pc_或wap_开头的文件名,能自动识别PC或WAP模板
