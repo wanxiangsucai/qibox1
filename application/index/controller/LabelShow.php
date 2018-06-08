@@ -409,13 +409,52 @@ class LabelShow extends IndexBase
         }
         
         if($filtrate_field){    //设置了循环不显示哪些字段
-            $tpl = $this->get_showpage_field($tpl , $info , $filtrate_field);
+            $this->showpage_field($tpl , $info , $filtrate_field,$cfg['val']);
+        }else{
+            $listdb = $info['picurls'];     //这样就可以调用通用标签的幻灯片模板了
+            eval('?>'.$tpl);
         }
-        
-        $listdb = $info['picurls']; //这样就可以调用通用标签的幻灯片模板了
-        eval('?>'.$tpl);
     }
     
+    
+    /**
+     * 解释内容页的自定义字段
+     * @param unknown $tplcode 原始模板
+     * @param array $info 数据库取出的内容信息
+     * @param string $field 过滤的字段
+     * @param string $val 用户定义的循环变量名
+     * @return string|mixed
+     */
+    private function showpage_field($tplcode,$_info=[],$field='',$val='info'){
+        $tplcode = $this->replace_field($tplcode);
+        $filtrate_field = explode(',',$field);  //过滤的字段
+        $array = get_field($_info['mid']);
+        $_val = [];
+        foreach ($array AS $rs){
+            if(in_array($rs['name'], $filtrate_field)){
+                continue;
+            }
+            if($_info[$rs['name']]===''||$_info[$rs['name']]===null){
+                continue;
+            }
+            $_val[] = array_merge($rs,
+                    [
+                            'title' => $rs['title'],
+                            'value' => $_info[$rs['name']],
+                    ]) ;
+        }
+        $$val = $_val;
+        eval('?>'.$tplcode);
+    }
+    
+    /**
+     * 转义表单与内容页用户定义的字段
+     * @param string $tplcode
+     * @return mixed
+     */
+    protected function replace_field($tplcode=''){
+        return str_replace(['{title}','{value}','{about}','{need}'], ['<?php echo $rs["title"]; ?>','<?php echo $rs["value"]; ?>','<?php echo $rs["about"]; ?>','<?php echo $rs["need"]; ?>'], $tplcode);
+    }
     
     /**
      * 表单标签
@@ -430,7 +469,7 @@ class LabelShow extends IndexBase
         $info = $cfg['info'] ? $cfg['info'] : [];       //内容信息
         $page_demo_tpl_tags = self::get_page_demo_tpl($cfg['dirname']);
         $tplcode = $page_demo_tpl_tags[$tag_name]['tpl'] ;
-        $tplcode = str_replace(['{title}','{value}','{about}','{need}'], ['<?php echo $rs["title"]; ?>','<?php echo $rs["value"]; ?>','<?php echo $rs["about"]; ?>','<?php echo $rs["need"]; ?>'], $tplcode);
+        $tplcode = $this->replace_field($tplcode);
         $__LIST__ = $this->get_form_field($info,$mid,$field,$mod,$f_array);
         eval('?>'.$tplcode);
     }
@@ -457,38 +496,12 @@ class LabelShow extends IndexBase
             if(in_array($rs['name'], $filtrate_field)){
                 continue;
             }
-            $data[] = array_merge($rs,$obj->get_field($rs,$info));
+            $data[] = array_merge($rs,$obj->get_field($rs,$info));      //取得每一项表单的最终转义后的效果
         }
         return $data;
     }
     
-    /**
-     * 获取表单中的自定义字段
-     * @param unknown $tplcode 原始模板
-     * @param array $info 数据库取出的内容信息
-     * @param string $field 过滤的字段
-     * @return string|mixed
-     */
-    private function get_showpage_field($tplcode,$info=[],$field=''){
-        $filtrate_field = explode(',',$field);  //过滤的字段
-        $array = get_field($info['mid']);
-        $code = '';
-        foreach ($array AS $rs){
-            if(in_array($rs['name'], $filtrate_field)){
-                continue;
-            }
-            if($info[$rs['name']]===''||$info[$rs['name']]===null){
-                continue;
-            }
-            //$fields = \app\common\field\Show::get_field($rs,$info);
-            $code .= str_replace(['{title}','{value}'], [
-                    $rs['title'],
-                    $info[$rs['name']],
-                    //$fields['value'],
-            ], $tplcode);
-        }
-        return $code;
-    }
+
     
     /**
      * 列表显示的字段,要过滤一些指定的字段

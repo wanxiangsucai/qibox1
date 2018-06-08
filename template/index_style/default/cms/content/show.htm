@@ -18,8 +18,17 @@
 			{$info.content}
 		</div>
 	</div>
-	<!--自定义字段-->
-	{include file="content/field" /}
+<!--显示自定义字段内容 field="picurl,title,content,keywords" 就是过滤掉不在里边重复显示的字段-->
+  	<div class="OtherInfos">
+{qb:showpage field="picurl,title,content,keywords"}
+		<div class="SideBox">
+			<div class="tag"><span>{$rs.title}</span></div>
+			<div class="cont">{$rs.value}
+			</div>
+		</div>
+{/qb:showpage}
+	</div>
+
 	<!--引用评论-->
 	{qb:comment name="commentwap01" rows='5'}
 		{include file="content/comment" /}

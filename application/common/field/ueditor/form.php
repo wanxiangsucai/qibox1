@@ -1,11 +1,12 @@
 <?php
 function_exists('urls') || die('ERR');
 
-$serverurl = urls("index/attachment/upload","dir=images&from=ueditor&module=".config('system_dirname'));
-return <<<EOT
 
-<div style="max-width:80%;">
-<script id="{$name}" class="js-ueditor" name="{$name}" type="text/plain">{$info[$name]}</script>
+
+$jscode = '';
+if(fun('field@load_js',$field['type'])){
+	$serverurl = urls("index/attachment/upload","dir=images&from=ueditor&module=".request()->dispatch()['module'][0]);
+	$jscode = <<<EOT
 <script type="text/javascript"> 
 jQuery(document).ready(function() {
 	$('.js-ueditor').each(function(){
@@ -22,6 +23,16 @@ jQuery(document).ready(function() {
 </script>
 <script src="__STATIC__/libs/ueditor/ueditor.config.js"></script>
 <script src="__STATIC__/libs/ueditor/ueditor.all.min.js"></script>
+
+EOT;
+
+}
+
+return <<<EOT
+
+<div style="max-width:80%;">
+<script id="{$name}" class="js-ueditor" name="{$name}" type="text/plain">{$info[$name]}</script>
+$jscode
 </div>
 
 EOT;

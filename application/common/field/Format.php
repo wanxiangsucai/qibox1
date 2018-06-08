@@ -13,6 +13,9 @@ class Format
     public static function form_fields($data=[]){
         $array = [];
         foreach($data AS $rs){
+            if($rs['0']=='hidden'){     //隐藏域有点特殊
+                $rs['5'] = $rs['2'];
+            }
             $array[$rs[1]] = [
                     'type'=>$rs['0'],
                     'name'=>$rs['1'],

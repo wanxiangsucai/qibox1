@@ -1,0 +1,25 @@
+<div class="MainContainers">
+<form name="form2" method="post" action="">
+  <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</span> </div>
+  <div class="Conter">
+    <table class="FormTable">
+<!-- 参数 field="pic,tit" 代表过滤哪些字段不显示出来 里边支持TP标签 -->
+{qb:form field="" f_array="$f_array"}
+	<tr> 
+      <td class='tdL'>{$rs.title}: </td>
+      <td class='tdR'> 
+        {$rs.value}<br>{$rs.about}
+      </td>
+    </tr>
+{/qb:form}
+    </table>
+    <div class='submits'>
+		{notempty name=":input('id')"}<input type="hidden" name="id" value="{:input('id')}">{/notempty}
+		<input type="button" onclick="window.history.back()" style="color:#555;margin-right:30px;" onmouseout="$(this).css({'background':'#eee'})" onmouseover="$(this).css({'background':'orange'})" value="取消返回">
+
+        <input type="submit" name="Submit" value="确认提交">    
+    </div>
+</div>
+
+</form>
+</div>

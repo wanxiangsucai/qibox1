@@ -1,8 +1,13 @@
 <?php
 function_exists('urls') || die('ERR');
 
-$serverurl = urls('index/attachment/upload','dir=images&from=base64&module='.config('system_dirname'));
-return <<<EOT
+
+$jscode = '';
+if(fun('field@load_js',$field['type'])){
+
+	$serverurl = urls('index/attachment/upload','dir=images&from=base64&module='.request()->dispatch()['module'][0]);
+	$jscode = <<<EOT
+
 <style type="text/css">
 .uploadImg ol{
 	line-height: 35px;
@@ -72,17 +77,6 @@ return <<<EOT
 	background:rgba(255,60,0,0.6);
 }
 </style>
-
-<div class="uploadImge_{$name}">
-		<ul class="uploadImg">
-			<div style="display:none;">
-				<input type="file" accept="image/*" multiple/> 
-				<input type="text" name="{$name}" value="{$info[$name]}" class="input_value" style="width:100%;" />				
-			</div>			 
-			<li class="upbtn"><i class="si si-camera"></i></li>
-		</ul>
-		<div class="ListImgs"></div>
-</div>
 
 <script type="text/javascript" src="__STATIC__/js/exif.js"></script>
 <script type="text/javascript">
@@ -223,6 +217,25 @@ jQuery(document).ready(function() {
 });
 
 </script>
+
+EOT;
+
+}
+
+
+return <<<EOT
+
+$jscode
+<div class="uploadImge_{$name}">
+		<ul class="uploadImg">
+			<div style="display:none;">
+				<input type="file" accept="image/*" multiple/> 
+				<input type="text" name="{$name}" value="{$info[$name]}" class="input_value" style="width:100%;" />				
+			</div>			 
+			<li class="upbtn"><i class="si si-camera"></i></li>
+		</ul>
+		<div class="ListImgs"></div>
+</div>
 
 EOT;
 ;

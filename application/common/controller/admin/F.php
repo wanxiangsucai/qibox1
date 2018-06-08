@@ -93,6 +93,18 @@ abstract class F extends AdminBase
     //列出模型下的所有字段
     public function index($mid=0)
     {
+        if ($this->request->isPost()) {
+            //修改字段排序
+            $data = $this->request->Post();
+            foreach($data['orderdb'] AS $id=>$list){
+                $map = [
+                        'id'=>$id,
+                        'list'=>$list
+                ];
+                $this->model->update($map); 
+            }
+            $this->success('修改成功');
+        }
         if(empty($mid)){
             $this->error('ID不存在');
         }

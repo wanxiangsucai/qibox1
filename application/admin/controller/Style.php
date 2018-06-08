@@ -18,11 +18,6 @@ class Style extends AdminBase
 				'page_title'=>'风格管理',
 				];
 	
-	protected function _initialize()
-    {
-	}
-
-	
 	/**
 	 * 应用市场
 	 */
@@ -32,7 +27,7 @@ class Style extends AdminBase
 	        return $this->get_style($id,'style');
 	    }
 	    $this->assign('fid',4);	
-	    return $this->fetch('../module/market');
+	    return $this->fetch();
 	}
 	
 	protected function get_style($id=0,$type='style'){

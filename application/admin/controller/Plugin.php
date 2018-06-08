@@ -167,7 +167,7 @@ class Plugin extends AdminBase
 	        return $this->getapp($id,'p');
 	    }
 	    $this->assign('fid',2);	
-	    return $this->fetch('../module/market');
+	    return $this->fetch();
 	}
 	
 	/**

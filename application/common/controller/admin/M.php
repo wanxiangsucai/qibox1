@@ -27,8 +27,7 @@ abstract class M extends AdminBase
         
         $this->form_items = [
                 ['text', 'title', '模型名称'],
-                ['text', 'layout', '模板路径','必须填写完整的路径，留空则使用默认的'],
-                
+                ['text', 'layout', '模板路径','一般请留空,则使用默认的,否则要填写完整的路径'],                
         ];
         
         $this->list_items = [

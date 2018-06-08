@@ -164,16 +164,17 @@ trait AddEditList {
 	
 	/**
 	 * 列表要显示的数据
-	 * @param array $map
-	 * @param array $order
+	 * @param array $map 查询条件
+	 * @param array $order 排序方式
+	 * @param unknown $rows 每页显示多少条
 	 * @return unknown
 	 */
-	protected function getListData($map = [], $order = []) {
+	protected function getListData($map = [], $order = [],$rows=20) {
 		$map = array_merge($this -> getMap(), $map);
 		
 		$order = $this -> getOrder() ? $this -> getOrder() : $order ;
 
-		$data_list = $this -> model -> where($map) -> order($order) -> paginate();
+		$data_list = $this -> model -> where($map) -> order($order) -> paginate($rows);
 		return $data_list;
 	}
 	
@@ -189,6 +190,7 @@ trait AddEditList {
 	        $array = getArray($data_list);
 	        $this->assign('listdb',isset($array['data'])?$array['data']:$array);
 	        $this->assign('mid',$this->mid);
+	        $this->assign('tab_ext',$this->tab_ext);	
 	        return $this->fetch($template);
 	    }
 	    
@@ -277,8 +279,11 @@ trait AddEditList {
 	 */
 	protected static function get_template($type='',$mid=''){
 	    if($type==''){
-	        //$type = $this->request->action();
-	        $type = request()->action();
+	       if(defined('IN_PLUGIN')){
+	           $type = input('param.plugin_action');
+	       }else{
+	           $type = request()->action();
+	       }	        
 	    }
 	    //当前风格的模板
 	    $template = static::search_tpl($type,$mid);
@@ -313,6 +318,11 @@ trait AddEditList {
 	    $file = $path . $filename . '.' . ltrim(config('template.view_suffix'), '.');
 	    if(is_file($file)&&filesize($file)){
 	        return $file;
+	    }elseif($mid){ //寻找母模板
+	        $file = $path . $type . '.' . ltrim(config('template.view_suffix'), '.');
+	        if(is_file($file)&&filesize($file)){
+	            return $file;
+	        }
 	    }
 	}
     
@@ -422,6 +432,7 @@ trait AddEditList {
 		    //$this->assign('listdb',$data_list);
 		    $this->assign('mid',$this->mid);
 		    $this->assign('f_array',$this -> form_items);
+		    $this->assign('tab_ext',$this->tab_ext);	
 		    return $this->fetch($template,$vars);
 		}
 		
@@ -532,6 +543,7 @@ trait AddEditList {
 		    $this->assign('info',$info);
 		    $this->assign('f_array',$this -> form_items);
 		    $this->assign('mid',$this->mid);
+		    $this->assign('tab_ext',$this->tab_ext);		    
 		    return $this->fetch($template);
 		}
 		
@@ -606,8 +618,20 @@ trait AddEditList {
 	 * @return mixed|string
 	 */
 	public function index() {
+	    if ($this->request->isPost()) {
+	        //修改排序
+	        $data = $this->request->Post();
+	        foreach($data['orderdb'] AS $id=>$list){
+	            $map = [
+	                    'id'=>$id,
+	                    'list'=>$list
+	            ];
+	            $this->model->update($map);
+	        }
+	        $this->success('修改成功');
+	    }
 		return $this -> getAdminTable(self::getListData($map = [], $order = []));
-	} 
+	}
     
 	/**
 	 * 默认发布页

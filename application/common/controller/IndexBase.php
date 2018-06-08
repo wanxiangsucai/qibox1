@@ -1,5 +1,4 @@
 <?php
-
 namespace app\common\controller;
 
 
@@ -18,20 +17,9 @@ class IndexBase extends Base
         //自动模板的布局母模板
         $this->assign('auto_tpl_base_layout', APP_PATH.'member/view/default/layout.htm');
       
-        //这里设置无效
-        /*
-        if($this->route[0]=='index'||empty($this->route[0])){
-            
-            if($this->route[1]=='plugin'){
-                config('template.view_path', ROOT_PATH.'plugins/'. input('plugin_name'). '/view/index/default/');
-            }else{
-                
-            }
-            
-        }else{
-            //config('template.view_path', APP_PATH. $this->route[0]. '/view/index/default/');
+        if( isset($this->webdb['web_open']) && empty($this->webdb['web_open']) && empty($this->admin) ){
+            $this->error('网站维护当中,暂停访问!');
         }
-        */
         
         
     }

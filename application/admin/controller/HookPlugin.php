@@ -108,7 +108,7 @@ class HookPlugin extends AdminBase
             return $this->get_hook($id,'hook');
         }
         $this->assign('fid',3);
-        return $this->fetch('../module/market');
+        return $this->fetch();
     }
     
     protected function _initialize()

@@ -246,9 +246,15 @@ class Qb extends TagLib{
         $by = empty($by)?'desc':$by;
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--SHOWPAGE '."<!--$name\t$type\t$tpl-->";
-        $parse .= $content;
+        if(!empty($field)&&empty($tag['val'])){
+            $parse .= '{volist name="'.$val.'" id="rs"}';
+            $parse .= $content.'  ';
+            $parse .= '{/volist}';
+        }else{
+            $parse .= $content;
+        }        
         $parse .= ' SHOWPAGE--><?php endif; ?>';
-        $parse .= '<?php '."run_showpage_label('$name',\$$val,['page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','field'=>'$field','cache_time'=>'$cache_time']);".' ?>';
+        $parse .= '<?php '."run_showpage_label('$name',\$info,['page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','field'=>'$field','val'=>'$val','cache_time'=>'$cache_time']);".' ?>';
         return $parse;
     }
     
