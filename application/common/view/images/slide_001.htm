@@ -1,4 +1,4 @@
-<link href="__STATIC__/images/template/images/slide_001/style.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo config('view_replace_str.__STATIC__'); ?>/images/template/images/slide_001/style.css" rel="stylesheet" type="text/css" />
 <!--宽度与高度在这里对应的做修改即可-->
 <div class="slider_box001" style="width:<?php echo $pic_width>10?$pic_width:400;?>px;height:<?php echo $pic_height>10?$pic_height:300;?>px;">
         <a class="control001 prev"></a><a class="control001 next abs"></a><!--翻页按钮，移动端可删除,幻灯片太小的话,也建议删除-->
@@ -10,7 +10,7 @@
             </ul>
         </div>
 </div>
-<script src="__STATIC__/images/template/images/slide_001/YuxiSlider.jQuery.min.js"></script>
+<script src="<?php echo config('view_replace_str.__STATIC__'); ?>/images/template/images/slide_001/YuxiSlider.jQuery.min.js"></script>
 <script type="text/javascript">
 $(".slider_box001").each(function(){
 	var obj = $(this);
