@@ -218,8 +218,7 @@ jQuery(document).ready(function() {
 
         // 将上传实例存起来
         webuploader.push(uploader);
-    });
- 
+    }); 
 });
 </script>
 

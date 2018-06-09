@@ -5,10 +5,31 @@ namespace app\common\field;
  * 表单自定义字段
  */
 class Form extends Base
-{    
+{
+    /**
+     * 取字段的值, 对于 数组变量名比如 postdb[title] 要特别处理
+     * @param string $name
+     * @param array $info
+     * @return unknown|string
+     */
+    public static function get_field_value($name='',$info=[]){
+        if(strstr($name,'[')){
+            $detail = explode('[',str_replace(']', '', $name));
+            if(count($detail)==2){
+                return $info[$detail[0]][$detail[1]];
+            }elseif(count($detail)==3){
+                return $info[$detail[0]][$detail[1]][$detail[3]];
+            }else{
+                return '不能太多项了!';
+            }
+        }else{
+            return $info[$name];
+        }
+    }
+    
     /**
      * 取得某个字段的表单HTML代码
-     * @param array $field 具体某个字段的配置参数
+     * @param array $field 具体某个字段的配置参数, 只能是数据库中的格式,不能是程序中定义的数字下标的格式
      * @param array $info 信息内容
      * @return string[]|unknown[]|mixed[]
      */
@@ -23,13 +44,15 @@ class Form extends Base
         $_show = $show = '';
         $name = $field['name'];
         
-        if(!isset($info[$name]) && $field['value']){
-            $info[$name] = $field['value'];         //修改的时候,如果变量不存在,就使用字段的默认值
-        }
+        $info[$name] = self::get_field_value($name,$info);
         
-        if(empty($info)){   //新发表,就用初始值
-            $info[$name] = $field['value'];
+        if(!isset($info[$name]) && $field['value']){
+            $info[$name] = $field['value'];         //新发表 或 修改的时候,如果变量不存在,就使用字段的默认值
         }
+
+//         if(empty($info)){   //新发表,就用初始值
+//             $info[$name] = $field['value'];
+//         }
         
         if ( ($show = self::get_item($field['type'],$field,$info)) !='' ) {    //个性定义的表单模板,优先级最高
             
@@ -109,14 +132,13 @@ class Form extends Base
             }else{
                 $type = 'text';
             }
-            
             $step = $field['type']=='money' ? " step='0.01' " : '';
             
             //$field_inputwidth = 'width:90%;';
             $show = " <input $readonly placeholder='请输入{$field[title]}' $step $ifmust $jsck type='$type' name='{$name}' id='atc_{$name}' style='{$field_inputwidth}' class='layui-input c_{$name}' value='{$info[$name]}' />";
-            
+
         }
-        
+
         return [
                 'value'=>$show,
                 'title'=>$field['title'],

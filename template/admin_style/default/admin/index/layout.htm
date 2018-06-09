@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="__STATIC__/admin/default/base/base.css" type="text/css">
 <link rel="stylesheet" href="__STATIC__/css/qb_ui.css" type="text/css">
 <link rel="stylesheet" href="__STATIC__/icon/icon.css" type="text/css">
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css" media="all">
+<link rel="stylesheet" href="__STATIC__/layui/css/admin.css" media="all">
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/js/core/jquery.min.js"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/layer/layer.js"></SCRIPT>
 </head>
@@ -35,7 +37,13 @@
    <li><a href="http://www.qibosoft.com">官方网站</a></li>
  </ul>
 </div>
-<SCRIPT LANGUAGE="JavaScript"> 
+<script src="__STATIC__/layui/layui.js"></script>  
+<script type="text/javascript">
+layui.use(['form','element'], function(){
+  var form = layui.form;
+  var element = layui.element;
+});
+
 if (navigator.userAgent.indexOf("MSIE") >= 0) {
 	alert("请使用谷歌或火狐访问后台.其它浏览器兼容性比较差,有些功能会无法操作与使用");
 }
@@ -45,7 +53,8 @@ $(".ListLinkCont a").each(function(){
 		$(this).addClass('blue');
 	}
 });
-</SCRIPT>
+
+</script>
 </body>
 </html>
 

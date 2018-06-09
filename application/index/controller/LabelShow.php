@@ -248,13 +248,14 @@ class LabelShow extends IndexBase
             is_array($_cfg) && $cfg_array = array_merge($cfg_array,$_cfg);    //数据库的参数配置优先级更高
         }
         
-        $tag_data = cache('qb_tag_data_'.$tag_name.$aid);    //首页缓存文件
-        if($cfg['page']>1 || empty($tag_data)){     //第2页以上不用缓存
-            $tag_data = comment_api('list',$aid,$sysid,$cfg_array);
-            //$tag_data = controller("plugins\\comment\\index\\Api")->get_list($sysid,$aid,$rows,$_type,$order,$by,$page);
-            //cache('qb_tag_data_'.$tag_name.$aid,$tag_array,$tag_array['cache_time']);
+        $list_data = cache('qb_tag_data_'.$tag_name.$aid);    //首页缓存文件        
+        if($cfg['page']>1 || empty($list_data)){     //第2页以上不用缓存
+            $list_data = getArray( comment_api('list',$aid,$sysid,$cfg_array) );
+            //cache('qb_tag_data_'.$tag_name.$aid,$list_data,$tag_array['cache_time']);
         }
-        
+        $tag_data = $list_data['data'];     //评论内容
+        $total = $list_data['total'];           //评论总数,不包括引用评论
+
         if($filemtime!=$label_tags_tpl['_filemtime_']){
             $label_tags_tpl = self::get_comment_tpl($cfg['dirname'],$aid,$sysid,$cfg_array);
             $label_tags_tpl['_filemtime_'] = $filemtime;
@@ -486,11 +487,11 @@ class LabelShow extends IndexBase
     private function get_form_field($info=[],$mid=0,$field='',$mod='',$f_array=[]){
         $filtrate_field = explode(',',$field);  //过滤的字段
         if(is_array($f_array)&&!empty($f_array)){
-            $array = \app\common\field\Format::form_fields($f_array);  //程序中定义的表单字段
+            $array = \app\common\field\Format::form_fields($f_array);  //把程序中定义的表单字段 转成跟数据库取出的格式一样
         }else{
             $array = get_field($mid,$mod);
         }
-        $obj = new \app\common\field\Form;
+        $obj = new \app\common\field\Form;      //目标是把字段转成对应的各种输入样式
         $data = [];
         foreach ($array AS $rs){
             if(in_array($rs['name'], $filtrate_field)){

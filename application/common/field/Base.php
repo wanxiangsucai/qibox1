@@ -17,17 +17,21 @@ class Base
      * @return mixed
      */
     protected static function get_item($type='',$field=[],$info=[],$pagetype='show'){
+        if($type==''){
+            return ;
+        }
         $file = __DIR__ . '/'  . $type . '/' . static::$pagetype . '.php';
         $string = '';
         $name = $field['name'];
         if(is_file($file)){
             $string = include($file);
+        }else{
+            return ;
         }
         $static = config('view_replace_str.__STATIC__');
         $string = str_replace(['__STATIC__'], [$static], $string);
         return $string;
     }
-    
     
     /**
      * 取得某个字段转义后的HTML代码

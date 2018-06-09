@@ -57,6 +57,9 @@ class Module extends AdminBase
 	
 	
 	public function index() {
+	    if ($this->request->isPost()) {
+	        return $this->edit_order();
+	    }
 	    if(!table_field('module','version_id')){    //升级数据库
 	        into_sql(APP_PATH.'common/upgrade/6.sql');
 	    }

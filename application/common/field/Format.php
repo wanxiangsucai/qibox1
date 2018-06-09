@@ -7,23 +7,36 @@ namespace app\common\field;
 class Format
 {    
     /**
-     * post表单字段的处理
+     * 把程序中定义的字段,转成跟数据库中的格式类似,程序中定义的是以数组下标为数字开始的 比如 [ ['text','title','标题'] ]
      * @param array $data
      */
     public static function form_fields($data=[]){
         $array = [];
         foreach($data AS $rs){
-            if($rs['0']=='hidden'){     //隐藏域有点特殊
-                $rs['5'] = $rs['2'];
-            }
-            $array[$rs[1]] = [
-                    'type'=>$rs['0'],
-                    'name'=>$rs['1'],
-                    'title'=>$rs['2'],
-                    'about'=>$rs['3'],
-                    'options'=>$rs['4'],
-                    'value'=>$rs['5'],
-            ];
+            if(in_array($rs['0'], ['select','checkbox','radio'])){
+                $array[$rs[1]] = [
+                        'type'=>$rs['0'],
+                        'name'=>$rs['1'],
+                        'title'=>$rs['2'],
+                        'about'=>$rs['3'],
+                        'options'=>$rs['4'],
+                        'value'=>$rs['5'],
+                ];
+            }elseif($rs['0']=='hidden'){    //隐藏域有点特殊
+                $array[$rs[1]] = [
+                        'type'=>$rs['0'],
+                        'name'=>$rs['1'],
+                        'value'=>$rs['2'],
+                ];
+            }else{
+                $array[$rs[1]] = [
+                        'type'=>$rs['0'],
+                        'name'=>$rs['1'],
+                        'title'=>$rs['2'],
+                        'about'=>$rs['3'],
+                        'value'=>$rs['4'],
+                ];
+            }            
         }
         return $array;
     }

@@ -6,7 +6,8 @@ $jscode = '';
 if(fun('field@load_js',$field['type'])){
 	$jscode = <<<EOT
 <script type="text/javascript">
-$('.list_array').each(function () {
+jQuery(document).ready(function() {
+	$('.list_array').each(function () {
 		var base = $(this);
 		var basehtml = base.find('div.input-group:first').prop("outerHTML");
 		//base.append(basehtml);
@@ -58,6 +59,7 @@ $('.list_array').each(function () {
 			);
 		}
 		del_act();
+	});
 });
 </script>
 

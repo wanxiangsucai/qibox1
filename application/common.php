@@ -2508,8 +2508,8 @@ if (!function_exists('extend_form_item')) {
              return purl('comment/api/act',$parameter);
          }else{
              $data = controller("plugins\\comment\\index\\Api")->get_list($sysid,$aid,$rows,$status,$order,$by,$page);
-             $listdb = $data ? getArray($data)['data'] : [];
-             return $listdb;
+             //$data = $data ? getArray($data)['data'] : [];
+             return $data;
          }
      }
  }

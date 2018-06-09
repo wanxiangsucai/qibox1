@@ -2,7 +2,7 @@
 
 {block name="content"}
 <div class="MainContainers">
-<form name="form2" method="post" action="">
+<form name="form2" method="post" action="" class="layui-form">
 
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</span> </div>
   <div class="Conter">
@@ -10,7 +10,7 @@
 {qb:form field="title" f_array="$f_array"}
 	<tr> 
       <td class='tdL'>{$rs.title}: </td>
-      <td class='tdR'> 
+      <td class="tdR {if in_array($rs['type'],['text','password','number','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
 {if ($rs['name']=='waterpos')}
          {volist name=":explode('<input',$rs['value'])" id="vs"}
 		 	{gt name="key" value="0"}<input{$vs} {if ($key==1||$key%3==1)}<br>{/if} {/gt}

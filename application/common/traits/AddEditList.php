@@ -191,6 +191,7 @@ trait AddEditList {
 	        $this->assign('listdb',isset($array['data'])?$array['data']:$array);
 	        $this->assign('mid',$this->mid);
 	        $this->assign('tab_ext',$this->tab_ext);	
+	        $this->assign('f_array',$this->list_items);
 	        return $this->fetch($template);
 	    }
 	    
@@ -620,17 +621,24 @@ trait AddEditList {
 	public function index() {
 	    if ($this->request->isPost()) {
 	        //修改排序
-	        $data = $this->request->Post();
-	        foreach($data['orderdb'] AS $id=>$list){
-	            $map = [
-	                    'id'=>$id,
-	                    'list'=>$list
-	            ];
-	            $this->model->update($map);
-	        }
-	        $this->success('修改成功');
+	        return $this->edit_order();
 	    }
 		return $this -> getAdminTable(self::getListData($map = [], $order = []));
+	}
+	
+	/**
+	 * 列表页修改排序
+	 */
+	protected function edit_order(){
+	    $data = $this->request->Post();
+	    foreach($data['orderdb'] AS $id=>$list){
+	        $map = [
+	                'id'=>$id,
+	                'list'=>$list
+	        ];
+	        $this->model->update($map);
+	    }
+	    $this->success('修改成功');
 	}
     
 	/**

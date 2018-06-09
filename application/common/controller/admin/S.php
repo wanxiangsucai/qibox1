@@ -78,18 +78,24 @@ abstract class S extends AdminBase
         }
     }
     
+    /**
+     * 修改栏目信息
+     * @param unknown $id
+     * @return mixed|string
+     */
     public function edit($id = null)
     {
         if($this->request->isPost()){
-            $data = $this -> request -> post();
-            $data['allowpost'] = implode(',', $data['allowpost']);
-            $data['allowview'] = implode(',', $data['allowview']);
-            $data['template'] = $this->get_tpl($data);
-            if (!empty($this -> validate)) {
-                // 验证
+            $data = $this -> request -> post();            
+            if (!empty($this -> validate)) {    // 验证
                 $result = $this -> validate($data, $this -> validate);
                 if (true !== $result) $this -> error($result);
-            }
+            } 
+            
+            $data['allowpost'] = implode(',', $data['allowpost']);  //允许发布内容的用户组
+            $data['allowview'] = implode(',', $data['allowview']);  //允许查看内容的用户组
+            $data['template'] = $this->get_tpl($data);                  //栏目自定义模板
+            
             
             if ($this -> model -> update($data)) {
                 $this -> success('修改成功', 'index');

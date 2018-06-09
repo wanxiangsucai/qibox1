@@ -1,0 +1,47 @@
+<form name="form1" method="post" action="">
+<div class="MainContainers">
+  <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {else /} 内容管理 {/if}</span></div>
+  <div class="Conter">
+
+    <table class="ListTable">
+	<th width="5%">ID</th>
+	<!-- 自定义字段 -->
+	{volist name=":fun('field@fields_to_table',$f_array,[])" id="vs"}
+      <th>{$vs.title}</th>
+	{/volist}
+	
+	<!-- 更多菜单 -->
+	{volist name=":fun('field@get_rbtn',$tab_ext['right_button'],[])" id="vs"}
+      <th>{$vs.title}</th>
+	{/volist}
+
+      <th width="8%">删除</th>
+      <th width="8%">修改</th>      
+    </tr>
+
+
+{volist name="listdb" id="rs"}
+    <tr bgcolor="#FFFFFF" class="trA" onmouseover="this.className='trB'" onmouseout="this.className='trA'"> 
+      <td>{$rs.id}</td>
+	 <!-- 自定义字段 -->
+	{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"}
+      <td>{$vs.value}</td>
+	{/volist}
+    
+	<!-- 更多菜单 -->
+	{volist name=":fun('field@get_rbtn',$tab_ext['right_button'],$rs)" id="vs"}
+      <td>{$vs.value}</td>
+	{/volist}
+
+      <td><a href="{:auto_url('delete',['ids'=>$rs['id']])}" onclick="return confirm('你确实要删除吗?不可恢复,请慎重!')" title="删除"><i class="fa fa-fw fa-remove"></i></a></td>
+	  <td><a href="{:auto_url('edit',['id'=>$rs['id']])}" title="修改"><i class="fa fa-fw fa-edit"></i></td>
+    </tr>
+{/volist}
+  
+  </table>
+
+    <div class='submits'><input type="submit" name="Submit" value="更改排序"></div>
+
+  </div>
+</div>
+</form>

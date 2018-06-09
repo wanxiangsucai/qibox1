@@ -2,7 +2,11 @@
 function_exists('urls') || die('ERR');
 
 $info[$name] || $info[$name] = '113.268332,23.130274';
-return <<<EOT
+
+$jscode = '';
+if(fun('field@load_js',$field['type'])){
+	$jscode = <<<EOT
+
 <style type="text/css">
 .bmap{
     width:100%;
@@ -16,15 +20,10 @@ return <<<EOT
     display:none;
 }
 </style>
-<div class="js-bmap">
-		<input class="bmap-address" style="width:100%;" id="bmap-address-{$name}" name="{$name}_address" type="text" value="" placeholder="请输入要搜索的地址,或者手工在下面精准定位">
-        <div class="searchResultPanel"></div>
-        <input class="bmap-point" type="hidden" id="{$name}" name="{$name}" value="{$info[$name]}">
-        <div class="bmap" id="bmap-canvas-{$name}"></div>			
-</div>
 
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=MGdbmO6pP5Eg1hiPhpYB0IVd"></script>
 <script type="text/javascript">
+jQuery(document).ready(function() {
   $('.js-bmap').each(function () {
         var that         = $(this);
         var map_canvas    = that.find('.bmap').attr('id');
@@ -136,7 +135,25 @@ return <<<EOT
             ac.setInputValue(address.val())
         }
     });
+});
  </script>
+
+
+EOT;
+
+}
+
+
+return <<<EOT
+
+$jscode
+
+<div class="js-bmap">
+		<input class="bmap-address" style="width:100%;" id="bmap-address-{$name}" name="{$name}_address" type="text" value="" placeholder="请输入要搜索的地址,或者手工在下面精准定位">
+        <div class="searchResultPanel"></div>
+        <input class="bmap-point" type="hidden" id="{$name}" name="{$name}" value="{$info[$name]}">
+        <div class="bmap" id="bmap-canvas-{$name}"></div>			
+</div>
 
 
 EOT;
