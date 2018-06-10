@@ -115,8 +115,28 @@ function down_file_list(){
 		}
 	}).fail(function (res) {
 		layer.closeAll();
-		//layer.alert('通信失败,可能你的后台权限不足');
-		layer.confirm('通信失败,你是否要新开窗口查看一下详情？', {
+		//layer.alert('通信失败,可能你的后台权限不足'); )
+		var parsedJson = $.parseJSON(res.responseText.substr(res.responseText.indexOf('{'))); //用户程序中有UTF8 +BOM文件导致的
+
+		if( typeof(parsedJson) == 'object' && parsedJson.code==0){
+			var str = '';
+			parsedJson.data.forEach(function(rs){
+				str +='<tr>'+
+						  '<td class="b red"> <input type="checkbox" name="filedb[]" value="'+rs.file+','+rs.id+'"checked></td>'+   
+						  '<td class="Left">'+rs.showfile+'</td>'+   
+						  '<td><div align="center">'+rs.ctime+'</div></td>'+
+						  '<td>'+rs.time+'</td>'+
+						  '<td><a href="{:urls("view_file")}?filename='+rs.file+'&id='+rs.id+'" target="_blank">查看</a></td>'+
+					  '</tr>';
+			});
+			//$(".contents").html(str);
+			document.getElementById('contents').outerHTML=str;
+			$(".up_btn").show();
+			layer.alert('需要升级的文件列表如下,你可以有选择性的升级<br>特别提醒:你的系统中有错误的UTF8 +BOM 代码文件,一般情况是新装的风格导致的,请仔细排查!');
+			return ;
+		}
+
+		layer.confirm('通信失败,你是否要新开窗口查看一下详情？'+JSON.stringify(res), {
             btn : [ '查看详情', '取消' ]
         }, function(index) {
             window.open("{:urls('check_files')}?upgrade_edition="+upgrade_edition);
