@@ -86,6 +86,9 @@ class Base
             
             $show = $info[$name];
             
+            if($field['type']=='text' && $field['unit']){   //单位
+                $show .='<span class="unit"> '.$field['unit'].'</span>';
+            }
         }
         
         return $show;

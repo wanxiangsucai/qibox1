@@ -1058,7 +1058,12 @@ class Template
             }
             if ($this->config['view_base']) {
                 if($module=='index'||$module=='member'||$module=='admin'){    //齐博增加
-                    $path   = $this->config['view_base'] . '../../'.$module.'_style/default/'.$module.'/';  //只调取默认default风格的文件
+					if( ENTRANCE != $module){
+						$path   = $this->config['view_base'] . '../../'.$module.'_style/default/'.$module.'/';  //若跨前后台,只调取默认default风格的文件
+					}else{
+						$path   = $this->config['view_base'] . $module . '/';
+						//$default_path = $this->config['default_view_base'] ? $this->config['default_view_base'] . $module . '/' : '';
+					}
                 }else{
                     $module = isset($module) ? $module : Request::instance()->module();
                     $path   = $this->config['view_base'] . ($module ? $module . DS : '');
@@ -1094,7 +1099,7 @@ class Template
 			$tpl = $path . $template . '.' . ltrim($this->config['view_suffix'], '.');	
 			$tpl = get_real_path($tpl);
             $template = realpath($tpl);
-            //print_r($this->config);die($template);
+
             if($this->config['view_base']){
                 if(empty($template) && $this->config['default_view_base']){	//寻找默认default模板
                     $tpl = str_replace($this->config['view_base'], $this->config['default_view_base'], $tpl);

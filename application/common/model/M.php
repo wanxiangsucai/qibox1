@@ -149,6 +149,7 @@ abstract class M extends Model
                         'listshow'        => '1',
                         'ifsearch'        => '1',
                         'ifmust'        => '1',
+                        'show'        => '1',
                         'list'        => '100',
                 ],
                 [
@@ -160,7 +161,8 @@ abstract class M extends Model
                         'listshow'        => '0',
                         'ifsearch'        => '0',
                         'ifmust'        => '0',
-                        'list'        => '99',
+                        'show'        => '1',
+                        'list'        => '90',
                 ],
                 [
                         'name'        => 'content',
@@ -171,6 +173,7 @@ abstract class M extends Model
                         'listshow'        => '0',
                         'ifsearch'        => '0',
                         'ifmust'        => '0',
+                        'show'        => '1',
                         'list'        => '-1',
                 ],
         ];

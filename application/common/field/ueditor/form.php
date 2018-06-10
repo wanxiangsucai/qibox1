@@ -28,9 +28,12 @@ EOT;
 
 }
 
+$field['input_width'] && $field['input_width']="width:{$field['input_width']};";
+$field['input_width'] || $field['input_width']='max-width:80%;';
+$field['input_height'] && $field['input_height']="width:{$field['input_height']};";
 return <<<EOT
 
-<div style="max-width:80%;">
+<div style="{$field['input_width']}{$field['input_height']}" class="layui-textarea c_{$name}  {$field['css']}">
 <script id="{$name}" class="js-ueditor" name="{$name}" type="text/plain">{$info[$name]}</script>
 $jscode
 </div>

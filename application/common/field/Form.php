@@ -66,9 +66,9 @@ class Form extends Base
             
         }elseif ($field['type'] == 'textarea') {    // 多行文本框
             
-            $field_inputwidth = 'width:90%;';
-            $field_inputheight = 'height:150px;';
-            $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' placeholder='请输入{$field[title]}' class='layui-textarea c_{$name}' style='{$field_inputwidth}{$field_inputheight}'>{$info[$name]}</textarea>";
+            $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
+            $field['input_height'] && $field['input_height']="width:{$field['input_height']};";
+            $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' placeholder='请输入{$field['title']}' class='layui-textarea c_{$name}  {$field['css']}' style='{$field['input_width']}{$field['input_height']}'>{$info[$name]}</textarea>";
             
         }elseif ($field['type'] == 'select') {      // 下拉框
             
@@ -99,9 +99,9 @@ class Form extends Base
             $show = "$_show "; 
             
         }elseif(in_array($field['type'], ['time','date','datetime'])){
-            
+            $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
             $static = config('view_replace_str.__STATIC__');
-            $show = " <input placeholder='点击选择{$field[title]}' $ifmust  type='text' name='{$name}' id='atc_{$name}' style='{$field_inputwidth}' class='layui-input c_{$name}' value='{$info[$name]}' />";
+            $show = " <input placeholder='点击选择{$field[title]}'  style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
             $show .="
                             <script src='$static/layui/layui.js'></script>
                             <script>
@@ -115,12 +115,11 @@ class Form extends Base
                             </script>";
         }else{      // 全部归为单行文本框
             
+            $jsck = '';
+            
             // 检验表单
-            if ($field['js_check']) {
-                $field['js_checkmsg'] || $field['js_checkmsg'] = '输入的内容不符合规则!';
-                $jsck = 'onBlur="if(this.value!=\'\'&&' . $field['js_check'] .
-                '.test(this.value)==false){alert(\'' .
-                $field['js_checkmsg'] . '\');this.focus();}"';
+            if ($field['match']) {
+                $jsck = ' onBlur="if(this.value!=\'\'&&' . $field['match'] . '.test(this.value)==false){layer.alert(\'' . '你输入的内容不符合要求' . '\');this.focus();}"';
             }
             
             $readonly = $field['type'] == 'static' ? ' readonly ' : '';
@@ -134,8 +133,8 @@ class Form extends Base
             }
             $step = $field['type']=='money' ? " step='0.01' " : '';
             
-            //$field_inputwidth = 'width:90%;';
-            $show = " <input $readonly placeholder='请输入{$field[title]}' $step $ifmust $jsck type='$type' name='{$name}' id='atc_{$name}' style='{$field_inputwidth}' class='layui-input c_{$name}' value='{$info[$name]}' />";
+            $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
+            $show = " <input $readonly placeholder='请输入{$field[title]}' $step $ifmust $jsck type='$type' name='{$name}' id='atc_{$name}' style='{$field['input_width']}' class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
 
         }
 

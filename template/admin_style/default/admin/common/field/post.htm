@@ -45,16 +45,24 @@
     </tr>
     
 
-	<tr id="field_inputleng_tr"> 
+	<tr class="t_input"> 
       <td class='tdL'>表单输入框宽度:</td>
       <td class='tdR'> 
         <input type="text" name="input_width" value="{$info.input_width}" size="10">
         可以填像素如:200px 也可以填百分比:90%</td>
-    </tr><tr id="field_inputheight_tr"> 
+    </tr>
+	<tr id="field_inputheight_tr"> 
       <td class='tdL'>表单输入框高度:</td>
       <td class='tdR'> 
         <input type="text" name="input_height" value="{$info.input_height}" size="10">
         可以填像素如:200px 也可以填百分比:90%</td>
+    </tr>
+
+	<tr class="t_input"> 
+      <td class='tdL'>输入框CSS类名:</td>
+      <td class='tdR'> 
+        <input type="text" name="css" value="{$info.css}" >
+        (你可以不填宽高,而给他一个类名在CSS中自由定义) </td>
     </tr>
 	<!--
 	<tr id="field_db_tr"> 
@@ -83,7 +91,7 @@
       <td class='tdL'>表单字段单位名称：<br>
         (一般为空) </td>
       <td class='tdR'> 
-        <input type="text" name="form_units" size="5" value="{$info.form_units}">
+        <input type="text" name="unit" size="5" value="{$info.unit}">
       </td>
     </tr>
 
@@ -164,6 +172,27 @@
         启用</td>
     </tr>
  
+	
+	<tr class="t_input"> 
+      <td class='tdL'>输入框限制输入的范围:</td>
+      <td class='tdR'> 
+        <input type="text" name="match" value="{$info.match}" id="jsReg"> <select name="select" onchange="document.getElementById('jsReg').value=this.options[this.selectedIndex].value">
+<option value="">请选择常用正则</option>
+<option value="/^[0-9.-]+$/">数字</option>
+<option value="/^[0-9-]+$/">整数</option>
+<option value="/^[a-z]+$/i">字母</option>
+<option value="/^[0-9a-z]+$/i">数字+字母</option>
+<option value="/^[\w\-\.]+@[\w\-\.]+(\.\w+)+$/">E-mail</option>
+<option value="/^[0-9]{5,20}$/">QQ</option>
+<option value="/^http:\/\//">超级链接</option>
+<option value="/^(13|15|18)[0-9]{9}$/">仅手机号码</option>
+<option value="/^[0-9-]{6,13}$/">电话号码(包含手机号码)</option>
+<option value="/^[0-9]{6}$/">邮政编码</option>
+<option value="/^[\u4e00-\u9fa5]+$/">纯汉字</option>
+
+</select>
+          </td>
+    </tr>
 
 	<tr> 
       <td class='tdL'>排序值:</td>
@@ -182,7 +211,7 @@
 </table>
   <div class='submits'>
          <input type="submit" name="Submit" value="提交">
-        {notempty name="$info.id"}<input type="hidden" name="id" value="{$info.id}">{/notempty}
+        {notempty name="$info.id"}<input type="hidden" name="id" value="{$info.id}"> {else /}<input type="hidden" name="mid" value="{:input('mid')}"> {/notempty}
   </div>
   </div>
 </div>
@@ -229,21 +258,9 @@ function form_choose(t){
 		$('#SortSearch2id').hide();
 		$("#form_units_tr").hide();
 	}
-	if(t=='text'||t==''||t=='textarea'||t=='ieedit'){
-		$('#field_inputleng_tr').show();		
-	}else{
-		$('#field_inputleng_tr').hide();		
-	}
-	if(t=='textarea'){
-		$('#field_inputheight_tr').show();
-	}else{
-		$('#field_inputheight_tr').hide();
-	}
-	if(t=='ieedit'||t=='ieeditsimp'){
-		$('#field_inputheight_tr').show();
-		$('#field_inputleng_tr').show();
-		
-	}
+	
+	
+ 
 
 	if(t=='classdb'){
 		//$('#field_db_tr').show();
@@ -262,9 +279,6 @@ function form_choose(t){
 		$('#search_tr').show();
 	}
 
-
-
-
 	if(t=='upmorepic'||t=='upmorefile'||t=='ieedit'||t=='textarea'||t=='ieeditsimp'){
 		if(document.getElementById('field_typeid').value!='mediumtext'){
 			//document.getElementById('field_typeid').focus();		
@@ -275,6 +289,24 @@ function form_choose(t){
 	}else if(document.getElementById('field_typeid').value=='mediumtext'){
 		//$('#field_leng_tr').show();
 		//document.getElementById('field_typeid').options[0].selected=true;
+	}
+
+	if(t=='textarea'||t=='ueditor'){
+		$('#field_inputheight_tr').show();
+	}else{
+		$('#field_inputheight_tr').hide();
+	}
+
+	if(t=='text'||t=='number'||t=='textarea'||t=='ueditor'||t=='money'||t=='time'||t=='date'||t=='datetime'||t=='static'||t=='password'||t=='icon'){
+		$(".t_input").show();
+	}else{
+		$(".t_input").hide();
+	}
+
+	if(t=='text'){
+		$(".t_textinput").show();
+	}else{
+		$(".t_textinput").hide();
 	}
 }
 form_choose('{$info.type}');
