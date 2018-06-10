@@ -1,5 +1,5 @@
 <?php
-namespace app/common/upgrade;
+namespace app\common\upgrade;
 
 class U3{
 	public function up(){
