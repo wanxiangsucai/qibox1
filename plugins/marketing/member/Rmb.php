@@ -62,7 +62,7 @@ class Rmb extends MemberBase
 	    if(IS_POST){
 	        $data = $this->request->post();	        
 	        if($this->user['rmb']<1){
-	            showerr("你可用余额小于1元,无法提取!");
+	            $this->error("你可用余额小于1元,无法提取!");
 	        }elseif(empty($this->user['rmb_pwd'])){
 	            $this->success('你还没有设置支付密码,请先设置支付密码!','pwd');
 	        }

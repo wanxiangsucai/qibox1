@@ -59,13 +59,13 @@ class Base
             
         }elseif ($field['type'] == 'select' || $field['type'] == 'radio') {      // 下拉框 或 单选按钮
             
-            $detail = parse_attr($field['options']);
+            $detail = str_array($field['options']);
             $show = $detail[$f_value];
             
         }elseif ($field['type'] == 'checkbox') {    //复选框
             
             $array = [];
-            $detail = parse_attr($field['options']);
+            $detail = str_array($field['options']);
             foreach(explode(',',$f_value) AS $v){
                 if($v===''){
                     continue ;

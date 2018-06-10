@@ -107,7 +107,7 @@
             </td>
             <td class="tL"><div class="onelist">{$rs.title|get_word="60"}</div></td>
             <td class="b">{$rs.money} 元</td>
-            <td>{$rs.posttime|set_date}</td>
+            <td>{$rs.posttime|format_time}</td>
             <!--td> <a href="{:purl('delete',['id'=>$rs['id']])}" class="del">删除</a></td-->
           </tr>
 {/volist}

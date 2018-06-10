@@ -128,7 +128,7 @@ abstract class C extends IndexBase
 //         }
 
         $info['field_array'] = $this->get_field_fullurl($info);     //这行必须放在 format_field 的前面,这里要用到原始数据
-        $info = format_field($info,'','show');  
+        $info = fun('field@format',$info,'','show');  
         
         //下面代码主要是避免 format_field 函数里边强行把picurl输出<img 这样的内容,导致无法对图片做个性显示
         if($info['field_array']['pics']['value']){  //CMS图库特别处理
@@ -177,7 +177,7 @@ abstract class C extends IndexBase
         $map = [];
         unset($data['fid'],$data['mid'],$data['page']);
         if(count($data)>0){
-            //$farray = get_filter_fields($mid);     //仅限于筛选字段
+            //$farray = fun('field@list_filter',$mid);     //仅限于筛选字段
             $farray = get_field($mid);
             foreach($data AS $key=>$value){
                 if($farray[$key]){   //判断字段是否存在,其实不判断也问题不大的.不过这里可以根据字段类型,扩展为别的字段查询,使用like语句

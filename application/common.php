@@ -18,6 +18,69 @@ use think\Db;
 use think\Request;
 error_reporting(E_ERROR | E_PARSE );
 
+if(!function_exists('fun')){
+    /**
+     * 扩展函数,第一项是函数文件名@方法名,之后可以设置任意多项参数,它会对应到你自己定义的函数,比如这里第二项,会对应到你的函数第一项
+     * 注意,唯一不足的是:用不了引用参数
+     * @param string $fun 文件名@方法名
+     * @return void|mixed
+     */
+    function fun($fun='sort@get'){
+        static $fun_array = [];
+        list($class_name,$action) = explode('@',$fun);
+        $class = "app\\common\\fun\\".ucfirst($class_name);
+        $obj = $fun_array[$class_name];
+        if(empty($obj)){
+            if(!class_exists($class)){
+                return ;
+            }
+            $obj = $fun_array[$class_name] = new $class;
+        }
+        if(!method_exists($obj, $action)){
+            return ;
+        }
+        
+        $params = func_get_args();
+        unset($params[0]);
+        $params = array_values($params);
+        
+        static $default_params_array = [];
+        $_params = $default_params_array[$fun];
+        if (!isset($_params)) {
+            $_params = [];
+            $_obj = new \ReflectionMethod($obj, $action);
+            $_array = $_obj->getParameters();
+            foreach($_array AS $key=>$value){
+                if($value->isOptional()){
+                    $_params[$key] = $value->getDefaultValue();
+                }else{
+                    $_params[$key] = null;
+                }
+            }
+            $default_params_array[$fun] = $_params;
+        }
+        
+        foreach($_params AS $key=>$value){
+            if(isset($params[$key])){
+                $_params[$key] = $params[$key];
+            }
+        }
+        
+        return call_user_func_array([$obj, $action], $_params);     //这个函数没办法处理传递引用参数 func_get_args 也是变量的复制,没办法传递
+        //         try {
+        //             $reuslt = $_obj->invokeArgs($obj, $_params);
+        //         } catch(\Exception $e) {
+        //             $_params[0] = &$quote;
+        //             arsort($_params);
+        //             $reuslt = $_obj->invokeArgs($obj, $_params);
+        //         }
+        
+        //         return $reuslt;
+        //return call_user_func_array([$obj, $action], $_params);     //这个函数没办法处理传递引用参数
+    }
+}
+
+
 if (!function_exists('get_real_path')) {
     /**
      * 解决有的虚拟服务器不支持../这样的相对路径的问题
@@ -70,146 +133,6 @@ if (!function_exists('clear_js')) {
     }
 }
 
-
-if (!function_exists('format_date')) {
-    /**
-     * 使用bootstrap-datepicker插件的时间格式来格式化时间戳
-     * @param null $time 时间戳
-     * @param string $format bootstrap-datepicker插件的时间格式 https://bootstrap-datepicker.readthedocs.io/en/stable/options.html#format
-     * @return false|string
-     */
-    function format_date($time = null, $format='yyyy-mm-dd') {
-        $format_map = [
-            'yyyy' => 'Y',
-            'yy'   => 'y',
-            'MM'   => 'F',
-            'M'    => 'M',
-            'mm'   => 'm',
-            'm'    => 'n',
-            'DD'   => 'l',
-            'D'    => 'D',
-            'dd'   => 'd',
-            'd'    => 'j',
-        ];
-
-        // 提取格式
-        preg_match_all('/([a-zA-Z]+)/', $format, $matches);
-        $replace = [];
-        foreach ($matches[1] as $match) {
-            $replace[] = isset($format_map[$match]) ? $format_map[$match] : '';
-        }
-
-        // 替换成date函数支持的格式
-        $format = str_replace($matches[1], $replace, $format);
-        $time = $time === null ? time() : intval($time);
-        return date($format, $time);
-    }
-}
-
-if (!function_exists('format_moment')) {
-    /**
-     * 使用momentjs的时间格式来格式化时间戳
-     * @param null $time 时间戳
-     * @param string $format momentjs的时间格式
-     * @return false|string
-     */
-    function format_moment($time = null, $format='YYYY-MM-DD HH:mm') {
-        $format_map = [
-            // 年、月、日
-            'YYYY' => 'Y',
-            'YY'   => 'y',
-//            'Y'    => '',
-            'Q'    => 'I',
-            'MMMM' => 'F',
-            'MMM'  => 'M',
-            'MM'   => 'm',
-            'M'    => 'n',
-            'DDDD' => '',
-            'DDD'  => '',
-            'DD'   => 'd',
-            'D'    => 'j',
-            'Do'   => 'jS',
-            'X'    => 'U',
-            'x'    => 'u',
-
-            // 星期
-//            'gggg' => '',
-//            'gg' => '',
-//            'ww' => '',
-//            'w' => '',
-            'e'    => 'w',
-            'dddd' => 'l',
-            'ddd'  => 'D',
-            'GGGG' => 'o',
-//            'GG' => '',
-            'WW' => 'W',
-            'W'  => 'W',
-            'E'  => 'N',
-
-            // 时、分、秒
-            'HH'  => 'H',
-            'H'   => 'G',
-            'hh'  => 'h',
-            'h'   => 'g',
-            'A'   => 'A',
-            'a'   => 'a',
-            'mm'  => 'i',
-            'm'   => 'i',
-            'ss'  => 's',
-            's'   => 's',
-//            'SSS' => '[B]',
-//            'SS'  => '[B]',
-//            'S'   => '[B]',
-            'ZZ'  => 'O',
-            'Z'   => 'P',
-        ];
-
-        // 提取格式
-        preg_match_all('/([a-zA-Z]+)/', $format, $matches);
-        $replace = [];
-        foreach ($matches[1] as $match) {
-            $replace[] = isset($format_map[$match]) ? $format_map[$match] : '';
-        }
-
-        // 替换成date函数支持的格式
-        $format = str_replace($matches[1], $replace, $format);
-        $time = $time === null ? time() : intval($time);
-        return date($format, $time);
-    }
-}
-
-if (!function_exists('get_file_name')) {
-    /**
-     * 根据附件id获取文件名
-     * @param string $id 附件id
-     * @return string
-     */
-    function get_file_name($id = '')
-    {
-        $name = model('admin/attachment')->getFileName($id);
-        if (!$name) {
-            return '没有找到文件';
-        }
-        return $name;
-    }
-}
-
-if (!function_exists('parse_name')) {
-    /**
-     * 字符串命名风格转换
-     * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
-     * @param string $name 字符串
-     * @param integer $type 转换类型
-     * @return string
-     */
-    function parse_name($name, $type = 0) {
-        if ($type) {
-            return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function($match){return strtoupper($match[1]);}, $name));
-        } else {
-            return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
-        }
-    }
-}
 
 if (!function_exists('hook_listen')) {
     /**
@@ -362,6 +285,8 @@ if (!function_exists('get_plugin_model')) {
         return new $class;
     }
 }
+
+
 if (!function_exists('plugin_action')) {
     /**
      * 执行插件动作
@@ -785,16 +710,30 @@ if (!function_exists('parse_sql')) {
     }
 }
 
-if (!function_exists('parse_attr')) {
+
+if (!function_exists('str_array')) {
     /**
-     * 把字符串转为数组 跟下面那个函数有重复
-     * @param string $value 配置值
-     * @return array|string
+     * 把字符串转为数组  换行符或者是, 隔开的字符串
+     * @param string $value
+     * @return string|array|unknown[]
      */
-    function parse_attr($value = '') {
-        $array = preg_split('/[ ,;\r\n]+/', trim($value, " ,;\r\n"));
-        if (strpos($value, ':')||strpos($value, '|')) {
-            $value  = array();
+    function str_array($value = '') {
+        $value =  trim($value, " ,;\r\n|");
+        if( strpos($value,"\n") ){
+            $value = str_replace("\r","",$value);
+            $exp = "\n";
+        }elseif( strpos($value,"|") ){
+            $exp = "|";
+        }elseif( strpos($value,",") ){
+            $exp = ",";
+        }elseif( strpos($value,";") ){
+            $exp = ";";
+        }elseif( strpos($value," ") ){
+            $exp = " ";
+        }
+        $array = explode($exp,$value);
+        if (strpos($value,"\n") && (strpos($value, '|')||strpos($value, ':'))) {
+            $value  = [];
             foreach ($array as $val) {
                 list($k, $v) = explode( strpos($val,'|')?'|':':' , $val);
                 $value[$k]   = $v;
@@ -806,181 +745,7 @@ if (!function_exists('parse_attr')) {
     }
 }
 
-if (!function_exists('str_array')) {
-    /**
-     * 把换行符或者是,隔开的字符串转为数组 跟上面那个函数有重复
-     * @param string $value
-     * @return string|array|unknown[]
-     */
-    function str_array($value = '') {
-        $array = preg_split(strpos($value,"\n")?'/[\r\n]+/':'/[,]+/', trim($value, ",\r\n"));
-        if (strpos($value, '|')) {
-            $value  = array();
-            foreach ($array as $val) {
-                list($k, $v) = explode('|', $val);
-                $value[$k]   = $v;
-            }
-        } else {
-            $value = $array;
-        }
-        return $value;
-    }
-}
 
-
-if (!function_exists('get_file_path')) {
-    /**
-     * 获取附件路径
-     * @param int $id 附件id
-     * @return string
-     */
-    function get_file_path($id=0){
-        if(strstr($id,'uploads/')){
-            if(!is_numeric($id)){
-                return PUBLIC_URL.$id;
-            }
-            $path=model('admin/attachment')->getFilePath($id);
-            if(!$path){
-                return '/public/static/admin/img/none.png';
-            }
-            return $path;
-        }else{
-            return $id;
-        }
-    }
-}
-
-if (!function_exists('get_thumb')) {
-    /**
-     * 获取图片缩略图路径
-     * @param int $id 附件id
-     * @return string
-     */
-    function get_thumb($id=0){
-        if(strstr($id,'uploads/')){
-            if(!is_numeric($id)){
-                return PUBLIC_URL.$id;
-            }
-            $path=model('admin/attachment')->getThumbPath($id);
-            if(!$path){
-                return '/public/static/admin/img/none.png';
-            }
-            return $path;
-        }else{
-            return $id;
-        }
-    }
-    
-}
-if (!function_exists('get_level_data')) {
-    /**
-     * 获取联动数据
-     * @param string $table 表名
-     * @param  integer $pid 父级ID
-     * @param  string $pid_field 父级ID的字段名
-     * @return false|PDOStatement|string|\think\Collection
-     */
-    function get_level_data($table = '', $pid = 0, $pid_field = 'pid')
-    {
-        if ($table == '') {
-            return '';
-        }
-        
-        $data_list = Db::name($table)->where($pid_field, $pid)->select();
-        
-        if ($data_list) {
-            return $data_list;
-        } else {
-            return '';
-        }
-    }
-}
-
-if (!function_exists('get_level_pid')) {
-    /**
-     * 获取联动等级和父级id
-     * @param string $table 表名
-     * @param int $id 主键值
-     * @param string $id_field 主键名
-     * @param string $pid_field pid字段名
-     * @return mixed
-     */
-    function get_level_pid($table = '', $id = 1, $id_field = 'id', $pid_field = 'pid')
-    {
-        return Db::name($table)->where($id_field, $id)->value($pid_field);
-    }
-}
-
-if (!function_exists('get_level_key_data')) {
-    /**
-     * 反向获取联动数据
-     * @param string $table 表名
-     * @param string $id 主键值
-     * @param string $id_field 主键名
-     * @param string $name_field name字段名
-     * @param string $pid_field pid字段名
-     * @param int $level 级别
-     * @return array
-     */
-    function get_level_key_data($table = '', $id = '', $id_field = 'id', $name_field = 'name', $pid_field = 'pid', $level = 1)
-    {
-        $result = [];
-        $level_pid = get_level_pid($table, $id, $id_field, $pid_field);
-        $level_key[$level] = $level_pid;
-        $level_data[$level] = get_level_data($table, $level_pid, $pid_field);
-        
-        if ($level_pid != 0) {
-            $data = get_level_key_data($table, $level_pid, $id_field, $name_field, $pid_field, $level + 1);
-            $level_key = $level_key + $data['key'];
-            $level_data = $level_data + $data['data'];
-        }
-        $result['key'] = $level_key;
-        $result['data'] = $level_data;
-        
-        return $result;
-    }
-}
-if (!function_exists('format_linkage')) {
-    /**
-     * 格式化联动数据
-     * @param array $data 数据
-     * @author 蔡伟明 <314013107@qq.com>
-     * @return array
-     */
-    function format_linkage($data = [])
-    {
-        $list = [];
-        foreach ($data as $key => $value) {
-            $list[] = [
-                    'key'   => $key,
-                    'value' => $value
-            ];
-        }
-        return $list;
-    }
-}
-if (!function_exists('load_assets')) {
-    /**
-     * 加载静态资源
-     * @param string $assets 资源名称
-     * @param string $type 资源类型
-     * @return string
-     */
-    function load_assets($assets = '', $type = 'css')
-    {
-        $assets_list = config('assets.'. $assets);
-
-        $result = '';
-        foreach ($assets_list as $item) {
-            if ($type == 'css') {
-                $result .= '<link rel="stylesheet" href="'.$item.'">';
-            } else {
-                $result .= '<script src="'.$item.'"></script>';
-            }
-        }
-        return $result;
-    }
-}
 
 
 if(!function_exists('get_post')){
@@ -1174,31 +939,7 @@ if(!function_exists('is_table')){
     }
 }
 
-if(!function_exists('refreshto')){
-	function refreshto($url,$msg,$time=1){
-		header("location:$url");
-		exit;
-	}
-}
 
-if(!function_exists('jump')){
-	function jump($msg,$url,$time=1){
-		header("location:$url");
-		exit;
-	}
-}
-
-if(!function_exists('showmsg')){
-	function showmsg($msg){
-		die($msg);
-	}
-}
-
-if(!function_exists('showerr')){
-	function showerr($msg){
-		die($msg);
-	}
-}
 
 if(!function_exists('copy_dir')){    
     /**
@@ -1466,11 +1207,7 @@ if(!function_exists('get_ip')){
     }
 }
 
-if(!function_exists('set_date')){
-    function set_date($time,$format='Y-m-d H:i:s'){
-        return $time ? date($format,$time) : '';
-    }
-}
+
 
 if(!function_exists('mymd5')){
     /**
@@ -1937,7 +1674,7 @@ if (!function_exists('getTemplate')) {
         if (empty($template)) {
 	        if( config('template.view_base') ){
                 if( config('template.default_view_base') ){ //没有使用默认风格
-                    $view_base = config('template.view_base');define('ffd', 2);
+                    $view_base = config('template.view_base');
                     $index_style = config('template.index_style');
                     $member_style = config('template.member_style');
                     $admin_style = config('template.admin_style');
@@ -2298,105 +2035,9 @@ if (!function_exists('getTemplate')) {
          ]);
      }
  }
- 
 
-if (!function_exists('run_label')) {
-    /**
-     * 通用标签用的
-     * @param unknown $tag_name
-     * @param unknown $cfg
-     */
-        function run_label($tag_name,$cfg){
-            controller('index/labelShow')->get_label($tag_name,$cfg);
-        }
-}
 
-if (!function_exists('run_form_label')) {
-    /**
-     * 表单标签
-     * @param unknown $tag_name
-     * @param unknown $cfg
-     */
-    function run_form_label($tag_name,$cfg){
-        controller('index/labelShow')->get_form_label($tag_name,$cfg);
-    }
-}
 
- if (!function_exists('label_ajax_url')) {
-     /**
-      * 通用标签的分页AJAX地址
-      * @param string $tag_name
-      * @param unknown $dirname
-      */
-     function label_ajax_url($tag_name='',$dirname){
-         controller('index/labelShow')->get_ajax_url($tag_name ,$dirname );
-     }
- }
- 
- if (!function_exists('run_listpage_label')) {
-     /**
-      * 列表页标签
-      * @param unknown $tag_name
-      * @param unknown $cfg
-      * @return unknown
-      */
-     function run_listpage_label($tag_name,$cfg){
-         return controller('index/labelShow')->listpage_label($tag_name,$cfg);  //返回分页代码
-     }
- }
- 
- if (!function_exists('run_showpage_label')) {
-     /**
-      * 列表页显示分页
-      * @param unknown $tag_name
-      * @param unknown $info
-      * @param unknown $cfg
-      * @return unknown
-      */
-     function run_showpage_label($tag_name,$info,$cfg){
-         return controller('index/labelShow')->showpage_label($tag_name,$info,$cfg);    //返回分页代码
-     }
- }
- 
- if (!function_exists('label_listpage_ajax_url')) {
-     /**
-      * 列表页的分页AJAX地址
-      * @param string $tag_name
-      */
-     function label_listpage_ajax_url($tag_name=''){
-         controller('index/labelShow')->get_listpage_ajax_url($tag_name);
-     }
- }
- 
- if (!function_exists('run_comment_label')) {
-     /**
-      * 评论标签
-      * @param unknown $tag_name
-      * @param unknown $info
-      * @param unknown $cfg
-      */
-     function run_comment_label($tag_name,$info,$cfg){
-         controller('index/labelShow')->comment_label($tag_name,$info,$cfg);
-     }
- }
- 
- if (!function_exists('reply_label')) {
-     /**
-      * 论坛回复标签
-      * @param unknown $tag_name
-      * @param unknown $info
-      * @param unknown $cfg
-      */
-     function reply_label($tag_name,$info,$cfg){
-         controller('index/labelShow')->reply_label($tag_name,$info,$cfg);
-     }
- }
- 
-if (!function_exists('extend_form_item')) {
-    //编辑器用的
-     function extend_form_item($form, $_layout,$form_items){
-     }
- }
  
  if (!function_exists('get_dir_file')) {
      /**
@@ -2481,91 +2122,8 @@ if (!function_exists('extend_form_item')) {
      }
  }
  
- if (!function_exists('comment_api')) {
-     /**
-      * 各频道调用评论的接口
-      * @param string $type 参数有三个，分别是 posturl 获取评论提交的地址，pageurl 获取评论的分页，list或留空即代表获取评论内容
-      * @param number $aid 频道的内容ID
-      * @param unknown $sysid 频道模块的ID，一般可以自动获取
-      */
-     function comment_api($type='',$aid=0,$sysid=0,$cfg=[]){
-         static $data = null;
-         $order = $cfg['order'];
-         $by = $cfg['by'];
-         $status = $cfg['status'];
-         $page = $cfg['page'];
-         $rows = $cfg['rows'];
-         if(empty($sysid)){
-             $array = modules_config(config('system_dirname'));
-             $sysid = $array?$array['id']:0;
-         }
-         $parameter = ['name'=>$cfg['name'],'pagename'=>$cfg['pagename'],'sysid'=>$sysid,'aid'=>$aid,'rows'=>$rows,'order'=>$order,'by'=>$by,'status'=>$status];
-         if($type=='posturl'){
-             return purl('comment/api/add',$parameter);
-         }elseif($type=='pageurl'){
-             return purl('comment/api/ajax_get',$parameter);
-         }elseif($type=='apiurl'){
-             return purl('comment/api/act',$parameter);
-         }else{
-             $data = controller("plugins\\comment\\index\\Api")->get_list($sysid,$aid,$rows,$status,$order,$by,$page);
-             //$data = $data ? getArray($data)['data'] : [];
-             return $data;
-         }
-     }
- }
  
- if (!function_exists('reply_api')) {
-     /**
-      * 论坛回复
-      * @param string $type 参数有三个，分别是 posturl 获取回复提交的地址，pageurl 获取回复的分页，list或留空即代表获取回复内容
-      * @param number $aid 频道的内容ID
-      */
-     function reply_api($type='',$aid=0,$cfg=[]){
-         static $data = null;
-         $order = $cfg['order'];
-         $by = $cfg['by'];
-         $status = $cfg['status'];
-         $page = $cfg['page'];
-         $rows = $cfg['rows'];
-         $parameter = ['name'=>$cfg['name'],'pagename'=>$cfg['pagename'],'aid'=>$aid,'rows'=>$rows,'order'=>$order,'by'=>$by,'status'=>$status];
-         if($type=='posturl'){
-             return auto_url('reply/add',$parameter);
-         }elseif($type=='pageurl'){
-             return auto_url('reply/ajax_get',$parameter);
-             // if(is_object($data)){
-             //return $data->render();   //分页代码
-             //}
-         }else{
-             $data = controller('Reply','index')->get_list($aid,$rows,$status,$order,$by,$page);
-             $listdb = $data ? getArray($data)['data'] : [];
-             return $listdb;
-         }
-     }
- }
- 
- if (!function_exists('get_web_menu')) {
-     /**
-      * 获取网站头部菜单数据
-      * @param string $type 可以取值pc或wap
-      * @return unknown[]|unknown
-      */
-     function get_web_menu($type=''){
-         if($type == 'wap'){
-             $_type = [0,2];
-         }elseif($type == 'wapfoot'){
-             $_type = [3];
-         }else{
-             $type = 'pc';
-             $_type = [0,1];
-         }
-         $array = cache('web_menu_'.$type);
-         if (empty($array)) {
-             $array = model('admin/webmenu')->getTreeList(['ifshow'=>1,'type'=>['in',$_type]]);
-             cache('web_menu_'.$type,$array);
-         }
-         return get_sons($array);
-     }
- }
+
  
  if (!function_exists('get_sons')) {
      /**
@@ -2590,41 +2148,7 @@ if (!function_exists('extend_form_item')) {
          return $listdb;
      }
  }
- 
- if (!function_exists('getNavigation')) {
-     /**
-      * PC面包屑导航
-      * @param string $link_name
-      * @param string $link_url
-      * @param number $fid
-      */
-     function getNavigation($link_name='',$link_url='',$fid=0){
-         if($link_name&&$link_url){
-             if(strpos($link_url,'/')!==0&&strpos($link_url,'http')!==0){
-                 list($_path,$_parameter) = explode('|',$link_url);
-                 $link_url = iurl($_path,$_parameter);
-             }
-         }
-         $template = getTemplate('index@nav');
-         if(is_file($template)){
-             include($template);             
-         }
-//          $path = dirname(config('index_style_layout'));
-//          if(IN_WAP===true){
-//              if(is_file($file = $path.'/wap_nav.htm')){
-//                  include($file);
-//              }else{
-//                  @include($path.'/nav.htm');
-//              }          
-//          }else{
-//              if(is_file($file = $path.'/pc_nav.htm')){
-//                  include($file);
-//              }else{
-//                  @include($path.'/nav.htm');
-//              }
-//          }
-     }
- }
+
  
  if (!function_exists('get_url')) {
      /**
@@ -2908,26 +2432,6 @@ if (!function_exists('get_qrcode')) {
     }
 }
 
-if (!function_exists('wx_share')) {
-    /**
-     * 微信JS接口
-     * @param string $key
-     * @return void|string|number|NULL
-     */
-//     function wx_share($key=''){
-//         if(!config('webdb.weixin_appid')){
-//             return ;
-//         }
-//         require_once ROOT_PATH."plugins/weixin/api/weixin.jsdk.php";
-//         static $signPackage = null;
-//         if($signPackage == null){
-//             $jssdk = new JSSDK(config('webdb.weixin_appid'), config('webdb.weixin_appsecret'));
-//             $signPackage = $jssdk->GetSignPackage();
-//         }
-//         return $signPackage[$key];
-//     }
-}
-
 if (!function_exists('weixin_share')) {
     /**
      * 微信JS接口
@@ -3029,57 +2533,7 @@ if (!function_exists('get_md5_num')) {
     }
 }
 
-if (!function_exists('get_app_upgrade_edition')) {
-    /**
-     * 同步升级版本信息的判断
-     * @return string
-     */
-    function get_app_upgrade_edition(){
-        $data = [];
-        $array = modules_config();
-        foreach ($array AS $rs){
-            list($time,$version) = explode("\t",$rs['version']);
-            $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-m';
-        }
-        $array = plugins_config();
-        foreach ($array AS $rs){
-            list($time,$version) = explode("\t",$rs['version']);
-            $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-p';
-        }
-        $_hook = [];
-        $hook_plugins = cache('hook_plugins');
-        foreach ($hook_plugins AS $rs){
-            if($_hook[$rs['hook_class']] )continue;
-            list($time,$version) = explode("\t",$rs['version']);
-            $data[] = str_replace('\\', '__', $rs['hook_class']) . '-' . $version . '-' . $rs['version_id'] . '-h';
-            $_hook[$rs['hook_class']] = true;
-        }
-        $style_array = \app\common\util\Style::get_style('index');
-        foreach ($style_array AS $key=>$name){
-            $version = $version_id = '';
-            $data[] = $key . '-' . $version . '-' . $version_id . '-index_style';
-        }
-        $style_array = \app\common\util\Style::get_style('member');
-        foreach ($style_array AS $key=>$name){
-            $version = $version_id = '';
-            $data[] = $key . '-' . $version . '-' . $version_id . '-member_style';
-        }
-        $style_array = \app\common\util\Style::get_style('admin');
-        foreach ($style_array AS $key=>$name){
-            $version = $version_id = '';
-            $data[] = $key . '-' . $version . '-' . $version_id . '-admin_style';
-        }
-        $array = \app\common\model\Market::get_list();
-        foreach ($array AS $rs){
-            if(in_array($rs['type'],['admin_style','index_style','member_style'])&&!is_dir(TEMPLATE_PATH.$rs['type'].'/'.$rs['keywords'])){
-                \app\common\model\Market::destroy($rs['id']);   //用户把目录删除的话,就把数据库的信息也清空掉
-            }
-            list($time,$version) = explode("\t",$rs['version']);
-            $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-'.$rs['type'];
-        }
-        return implode(',', $data);
-    }
-}
+
 
 if (!function_exists('check_bom')) {
     /**
@@ -3106,53 +2560,9 @@ if (!function_exists('check_bom')) {
     }
 }
 
-if(!function_exists('get_filter_fields')){
-    /**
-     * 获取列表页的筛选字段
-     * @param number $mid 模型ID
-     */
-    function get_filter_fields($mid=0){
-        $array = app\common\util\Field_filter::get_field($mid);
-        foreach ($array AS $name=>$rs){
-            $url = app\common\util\Field_filter::make_url($name,$mid);  //其它字段的网址
-            $_ar = [];
-            foreach($rs['options'] AS $k=>$v){
-                $_ar[] = [
-                        'key'=>$k,
-                        'title'=>$v,
-                        'url'=>  $url . $name . '=' . $k,
-                ];
-            }
-            $rs['opt'] = $_ar;
-            $rs['opt_url'] = $url;
-            $array[$name] = $rs;
-        }
-        return $array;
-    }    
-}
 
-if(!function_exists('format_field')){
-    /**
-     * 自定义字段前台转义后显示
-     * @param array $info 信息原始内容
-     * @param string $field 是否只转义某个字段
-     * @param string $pagetype 参数主要是show 或 list 哪个页面使用,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
-     * @param string $sysname 频道目录名,默认为空,即当前频道
-     * @return string|\app\common\field\string[]|\app\common\field\unknown[]|\app\common\Field\mixed[]
-     */
-    function format_field($info=[],$field='',$pagetype='list',$sysname=''){
-        $field_array = get_field($info['mid'],$sysname);
-        $value = '';
-        if($field){
-            $value = \app\common\field\Index::get_field($field_array[$field],$info,$pagetype);
-        }else{
-            foreach($field_array AS $name=>$rs){
-                $info[$name] = \app\common\field\Index::get_field($rs,$info,$pagetype);
-            }
-        }        
-        return $field ? $value : $info;
-    }
-}
+
+
 
 if(!function_exists('get_area')){
     /**
@@ -3187,24 +2597,7 @@ if(!function_exists('get_area')){
     
 }
 
-if(!function_exists('make_area_url')){
-    /**
-     * 生成筛选项的网址参数
-     * @param string $type 过滤哪项参数,多个用逗号隔开
-     * @return string
-     */
-    function make_filter_url($type='zone_id'){
-        $url = '';
-        $type_array = explode(',',$type);
-        $array = input();
-        foreach ($array AS $key=>$value){
-            if(!in_array($key, $type_array)){
-                $url .= $key.'='.urlencode($value) . '&' ;
-            }
-        }
-        return $url;
-    }
-}
+
 
 if(!function_exists('get_state')){
     /**
@@ -3223,66 +2616,63 @@ if(!function_exists('get_state')){
 }
 
 
-if(!function_exists('fun')){
-    /**
-     * 扩展函数,第一项是函数文件名@方法名,之后可以设置任意多项参数,它会对应到你自己定义的函数,比如这里第二项,会对应到你的函数第一项
-     * 注意,唯一不足的是:用不了引用参数
-     * @param string $fun 文件名@方法名
-     * @return void|mixed
-     */
-    function fun($fun='sort@get'){
-        static $fun_array = [];
-        list($class_name,$action) = explode('@',$fun);
-        $class = "app\\common\\fun\\".ucfirst($class_name);
-        $obj = $fun_array[$class_name];
-        if(empty($obj)){
-            if(!class_exists($class)){
-                return ;
-            }
-            $obj = $fun_array[$class_name] = new $class;
-        }
-        if(!method_exists($obj, $action)){
-            return ;
-        }
-        
-        $params = func_get_args();
-        unset($params[0]);
-        $params = array_values($params);
-        
-        static $default_params_array = [];
-        $_params = $default_params_array[$fun];
-        if (!isset($_params)) {
-            $_params = [];
-            $_obj = new \ReflectionMethod($obj, $action);
-            $_array = $_obj->getParameters();
-            foreach($_array AS $key=>$value){
-                if($value->isOptional()){
-                    $_params[$key] = $value->getDefaultValue();
-                }else{
-                    $_params[$key] = null;
-                }
-            }
-            $default_params_array[$fun] = $_params;
-        }
-        
-        foreach($_params AS $key=>$value){
-            if(isset($params[$key])){
-                $_params[$key] = $params[$key];
-            }
-        }
-        
-        return call_user_func_array([$obj, $action], $_params);     //这个函数没办法处理传递引用参数 func_get_args 也是变量的复制,没办法传递
-//         try {
-//             $reuslt = $_obj->invokeArgs($obj, $_params);
-//         } catch(\Exception $e) {
-//             $_params[0] = &$quote;
-//             arsort($_params);
-//             $reuslt = $_obj->invokeArgs($obj, $_params);
-//         }
-        
-//         return $reuslt;
-        //return call_user_func_array([$obj, $action], $_params);     //这个函数没办法处理传递引用参数
-    }
+
+
+if (!function_exists('run_label')) {
+    //下面这些标签用到的函数将弃用. 改用 fun 函数
+    function comment_api($type='',$aid=0,$sysid=0,$cfg=[]){return fun('label@comment_api',$type,$aid,$sysid,$cfg);}
+    function reply_api($type='',$aid=0,$cfg=[]){return fun('label@reply_api',$type,$aid,$cfg);}
+    function run_label($tag_name,$cfg){fun('label@run_label',$tag_name,$cfg);}
+    function label_ajax_url($tag_name='',$dirname){fun('label@label_ajax_url',$tag_name,$dirname);}
+    function run_form_label($tag_name,$cfg){fun('label@run_form_label',$tag_name,$cfg);}
+    function run_listpage_label($tag_name,$cfg){return fun('label@run_listpage_label',$tag_name,$cfg);}
+    function run_showpage_label($tag_name,$info,$cfg){return fun('label@run_showpage_label',$tag_name,$info,$cfg);}
+    function label_listpage_ajax_url($tag_name=''){fun('label@label_listpage_ajax_url',$tag_name);}
+    function run_comment_label($tag_name,$info,$cfg){fun('label@run_comment_label',$tag_name,$info,$cfg);}
+    function reply_label($tag_name,$info,$cfg){fun('label@reply_label',$tag_name,$info,$cfg);}
+}
+
+//下面这些用到的函数将弃用. 改用 fun 函数
+if (!function_exists('get_app_upgrade_edition')) {
+    function get_app_upgrade_edition(){return fun('upgrade@local_edition');}
+}
+if(!function_exists('make_area_url')){
+    function make_filter_url($type='zone_id'){return fun('field@make_filter_url',$type);}
+}
+if(!function_exists('format_field')){    
+    function format_field($info=[],$field='',$pagetype='list',$sysname=''){return fun('field@format',$info,$field,$pagetype,$sysname);}
+}
+if(!function_exists('get_filter_fields')){
+    function get_filter_fields($mid=0){return fun('field@list_filter',$mid);}
+}
+if(!function_exists('set_date')){
+    function set_date($time,$format='Y-m-d H:i:s'){return $time ? date($format,$time) : '';}
+}
+if(!function_exists('refreshto')){
+    function refreshto($url,$msg,$time=1){header("location:$url");exit;}
+}
+if(!function_exists('jump')){
+    function jump($msg,$url,$time=1){header("location:$url");exit;}
+}
+if(!function_exists('showmsg')){
+    function showmsg($msg){die($msg);}
+}
+if(!function_exists('showerr')){
+    function showerr($msg){die($msg);}
+}
+if (!function_exists('get_file_path')) {
+    function get_file_path($id=0){return fun('zbuilder@get_file_path',$id);}
+}
+if (!function_exists('get_thumb')) {
+    function get_thumb($id=0){return fun('zbuilder@get_thumb',$id);}
+}
+
+
+if (!function_exists('get_web_menu')) {
+    function get_web_menu($type=''){return fun('page@get_web_menu',$type);}
+}
+if (!function_exists('getNavigation')) {
+    function getNavigation($link_name='',$link_url='',$fid=0){return fun('page@getNavigation',$link_name,$link_url,$fid);}
 }
 
 

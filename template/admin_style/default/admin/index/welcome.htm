@@ -101,7 +101,7 @@ $array = @include(config('client_upgrade_edition')?:RUNTIME_PATH.'/client_upgrad
 //检查版本更新
 function check_upgrade(){
 	var now_edition = "{$array.md5}";
-	$.post("https://x1.php168.com/appstore/upgrade/get_edition.html",{app_edition:"{:get_app_upgrade_edition()}",sys_edition:now_edition}).success(function(res){
+	$.post("https://x1.php168.com/appstore/upgrade/get_edition.html",{app_edition:"{:fun('upgrade@local_edition')}",sys_edition:now_edition}).success(function(res){
 		if(res.code==0){
 			if(res.data.md5!=now_edition||typeof(res.data.upgrade_msg) != "undefined"){
 				//upgrade_edition = res.data.md5;

@@ -247,7 +247,7 @@ class Upgrade extends AdminBase
 	 * @return string|mixed
 	 */
 	protected function getfile(){
-	    $str = http_curl('https://x1.php168.com/appstore/upgrade/get_list_file.html?domain='.$this->request->domain(),['app_edition'=>get_app_upgrade_edition()]);
+	    $str = http_curl('https://x1.php168.com/appstore/upgrade/get_list_file.html?domain='.$this->request->domain(),['app_edition'=>fun('upgrade@local_edition')]);
 	    return $str ? json_decode($str,true) : '';
 	}
 

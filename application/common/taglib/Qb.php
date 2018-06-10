@@ -28,7 +28,7 @@ class Qb extends TagLib{
         $name = $tag['name'];
         $title = $tag['title'];
         $url = $tag['url'];
-        $parse = '<?php '."getNavigation('$title','$url',\$fid);".' ?>';
+        $parse = '<?php '."fun('page@getNavigation','$title','$url',\$fid);".' ?>';
         return $parse;
     }
     
@@ -40,7 +40,7 @@ class Qb extends TagLib{
     public function tagUrl($tag)
     {
         $name = $tag['name'];
-        $parse = '<?php label_ajax_url("' . $name .'",__FILE__); ?>';
+        $parse = '<?php fun("label@label_ajax_url","' . $name .'",__FILE__); ?>';
         return $parse;
     }
     
@@ -52,7 +52,7 @@ class Qb extends TagLib{
     public function tagList_url($tag)
     {
         $name = $tag['name'];
-        $parse = '<?php '."label_listpage_ajax_url('$name');".' ?>';
+        $parse = '<?php '."fun('label@label_listpage_ajax_url','$name');".' ?>';
         return $parse;
     }
     
@@ -106,7 +106,7 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' QB--><?php endif; ?>';
-        $parse .= '<?php '."\$$name = run_label('$name',[$union'val'=>'$val','list'=>'$list','type'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by','status'=>'$status','where'=>'$where','whereor'=>'$whereor','sql'=>'$sql','js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
+        $parse .= '<?php '."\$$name = fun('label@run_label','$name',[$union'val'=>'$val','list'=>'$list','type'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by','status'=>'$status','where'=>'$where','whereor'=>'$whereor','sql'=>'$sql','js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
         return $parse;
     }
     
@@ -127,7 +127,7 @@ class Qb extends TagLib{
         $parse .= '{/if}';
         $parse .= '{/volist}';
         $parse .= ' QB--><?php endif; ?>';
-        $parse .= '<?php '."run_form_label('$name',[$_farray'mid'=>\$$mid,'info'=>\$$info,'field'=>'$field','mod'=>'$mod','dirname'=>__FILE__,]);".' ?>';
+        $parse .= '<?php '."fun('label@run_form_label','$name',[$_farray'mid'=>\$$mid,'info'=>\$$info,'field'=>'$field','mod'=>'$mod','dirname'=>__FILE__,]);".' ?>';
         return $parse;
     }
     
@@ -189,7 +189,7 @@ class Qb extends TagLib{
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--COMMENT'."<!--$name\t$type\t$tpl-->";
         $parse .= $content;
         $parse .= ' COMMENT--><?php endif; ?>';
-        $parse .= '<?php '."run_comment_label('$name',\$$val_info,['sysid'=>\$$sysid,'aid'=>\$$aid,'status'=>'$status','dirname'=>__FILE__,'tpl'=>'$tpl','cache_time'=>'$cache_time','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by']);".' ?>';
+        $parse .= '<?php '."fun('label@run_comment_label','$name',\$$val_info,['sysid'=>\$$sysid,'aid'=>\$$aid,'status'=>'$status','dirname'=>__FILE__,'tpl'=>'$tpl','cache_time'=>'$cache_time','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by']);".' ?>';
         return $parse;
     }
     
@@ -254,7 +254,7 @@ class Qb extends TagLib{
             $parse .= $content;
         }        
         $parse .= ' SHOWPAGE--><?php endif; ?>';
-        $parse .= '<?php '."run_showpage_label('$name',\$info,['page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','field'=>'$field','val'=>'$val','cache_time'=>'$cache_time']);".' ?>';
+        $parse .= '<?php '."fun('label@run_showpage_label','$name',\$info,['page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','field'=>'$field','val'=>'$val','cache_time'=>'$cache_time']);".' ?>';
         return $parse;
     }
     
@@ -291,7 +291,7 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' LISTPAGE--><?php endif; ?>';
-        $parse .= '<?php $__array__='."run_listpage_label('$name',['mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'field'=>'$field','val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
+        $parse .= '<?php $__array__='."fun('label@run_listpage_label','$name',['mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'field'=>'$field','val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
         $parse .='$pages=$__array__[\'pages\'];$'.$name.'=$__array__[\'cfg\']; ?>';
         return $parse;
     }

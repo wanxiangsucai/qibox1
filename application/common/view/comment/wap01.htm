@@ -1,5 +1,5 @@
 ﻿
-	<link rel="stylesheet" href="<?php echo config('view_replace_str.__STATIC__'); ?>/css/wapcomment.css"> 
+	<link rel="stylesheet" href="__STATIC__/css/wapcomment.css"> 
 	<div class="WapCommentBox">
 		<div class="head">
 			<div class="tag">全部评论</div>
@@ -26,7 +26,7 @@
 	</div>
 	
 	<script type="text/javascript">
-		var posturl="<?php echo comment_api("posturl",$aid,$sysid,$cfg_array); ?>";
+		var posturl="<?php echo fun("label@comment_api","posturl",$aid,$sysid,$cfg_array); ?>";
 		var repalyid=0;
 		var commentpage=1;
 		function post_comment(pid){			
@@ -74,7 +74,7 @@
 
 		function dingcomment(id){
 			var agree=parseInt($('.agree'+id).html());
-			$.get('<?php echo comment_api("posturl",$aid,$sysid,$cfg_array); ?>?agree=1&id='+id+'&'+Math.random(),function(res){
+			$.get('<?php echo fun("label@comment_api","posturl",$aid,$sysid,$cfg_array); ?>?agree=1&id='+id+'&'+Math.random(),function(res){
 				if(res.code==0){
 					agree++;
 					$('.agree'+id).html(agree);
@@ -87,7 +87,7 @@
 
 		function ShowMoreComment(){
 			commentpage++;
-			$.get('<?php echo comment_api("pageurl",$aid,$sysid,$cfg_array); ?>?page='+commentpage+'&'+Math.random(),function(res){
+			$.get('<?php echo fun("label@comment_api","pageurl",$aid,$sysid,$cfg_array); ?>?page='+commentpage+'&'+Math.random(),function(res){
 				if(res.code==0){
 					if(res.data==''){
 						layer.msg('显示完了！');

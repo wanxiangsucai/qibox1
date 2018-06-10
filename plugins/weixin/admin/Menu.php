@@ -9,7 +9,7 @@ class Menu extends AdminBase
 	public function config()
     {
         if(!function_exists('curl_init')){
-            showerr('你的空间不支持“curl_init”函数，请联系空间商配置服务器使之支持该函数');
+            $this->error('你的空间不支持“curl_init”函数，请联系空间商配置服务器使之支持该函数');
         }
 		
         $model = new WeixinMenuModel();

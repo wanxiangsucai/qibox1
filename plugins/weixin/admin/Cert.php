@@ -54,7 +54,7 @@ class Cert extends AdminBase
 		$name = $_FILES[$file][name];
 		
 		if( !in_array($name, $cert_file) ){
-			showmsg("你只能上传这三种文件名的证书“apiclient_cert.pem,apiclient_key.pem,rootca.pem”");
+			$this->error("你只能上传这三种文件名的证书“apiclient_cert.pem,apiclient_key.pem,rootca.pem”");
 		}
 		
 		$upfile = $_FILES[$file][tmp_name];
@@ -65,7 +65,7 @@ class Cert extends AdminBase
 		}elseif(!@copy($upfile,$newfile)){
 
 		}else{
-			showmsg('空间有问题，文件上传失败！');
+			$this->error('空间有问题，文件上传失败！');
 		}
 		return true;
 		

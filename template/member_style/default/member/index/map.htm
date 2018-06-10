@@ -35,7 +35,7 @@ body .Notes{margin:0 2px 15px 0;}
                     <div class="yzmob"><a href="{:urls('yz/mob')}">立即验证手机</a></div>
                 </div>
                 <div class="list1">
-                	Email地址:{$user.email}  注册时间:{$user.regdate|set_date}
+                	Email地址:{$user.email}  注册时间:{$user.regdate|format_time}
                 </div>
                 <div class="list2">
                 	上次访问时间:{$user.lastvist|date="Y-m-d H:i",###}  上次访问IP:{$user.lastip}

@@ -474,7 +474,7 @@ abstract class C extends Model
 //                 continue ;
 //             }
 //             if($rs['type']=='radio'||$rs['type']=='select'||$rs['type']=='checkbox'){
-//                 $_farray = parse_attr($rs['options']);
+//                 $_farray = str_array($rs['options']);
 //                 if($rs['type']=='radio'||$rs['type']=='select'){
 //                     $info[$_field] = $_farray[$info[$_field]];
 //                 }else{
@@ -505,7 +505,7 @@ abstract class C extends Model
 //         }
         $sort_array = sort_config($dirname);    //获取栏目数据
         
-        $info = format_field($info,'','list',$dirname);     //对原始数据进行转义前台显示
+        $info = fun('field@format',$info,'','list',$dirname);     //对原始数据进行转义前台显示
         
         
         if(empty($info['picurl']) && $info['pics']){    //CMS图库模型特别处理

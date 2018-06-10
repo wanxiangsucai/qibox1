@@ -239,7 +239,7 @@ class Attachment extends IndexBase
         
         // 附件类型限制
         $ext_limit = $dir == 'images' ? 'gif,jpg,jpeg,png' : str_replace('.', '', config('webdb.upfileType'));
-        $ext_limit = $ext_limit != '' ? parse_attr($ext_limit) : '';        
+        $ext_limit = $ext_limit != '' ? str_array($ext_limit) : '';        
 
         // 判断附件格式是否符合
         $file_name = $file->getInfo('name');

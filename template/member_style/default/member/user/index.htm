@@ -18,7 +18,7 @@
 		<ol><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></ol>
 		<li>
 			<div>{$info.username} ({$info.groupid|getGroupByid})</div>
-			<p>注册日期 {$info.regdate|set_date}</p>
+			<p>注册日期 {$info.regdate|format_time}</p>
 		</li>
 	</ul>
 </div>

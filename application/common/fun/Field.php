@@ -3,6 +3,67 @@ namespace app\common\fun;
 class Field{
     
     /**
+     * 获取列表页的筛选字段
+     * @param number $mid 模型ID
+     */
+    function list_filter($mid=0){
+        $array = \app\common\util\Field_filter::get_field($mid);
+        foreach ($array AS $name=>$rs){
+            $url = \app\common\util\Field_filter::make_url($name,$mid);  //其它字段的网址
+            $_ar = [];
+            foreach($rs['options'] AS $k=>$v){
+                $_ar[] = [
+                        'key'=>$k,
+                        'title'=>$v,
+                        'url'=>  $url . $name . '=' . $k,
+                ];
+            }
+            $rs['opt'] = $_ar;
+            $rs['opt_url'] = $url;
+            $array[$name] = $rs;
+        }
+        return $array;
+    }
+    
+    /**
+     * 自定义字段前台转义后显示
+     * @param array $info 信息原始内容
+     * @param string $field 是否只转义某个字段
+     * @param string $pagetype 参数主要是show 或 list 哪个页面使用,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
+     * @param string $sysname 频道目录名,默认为空,即当前频道
+     * @return string|\app\common\field\string[]|\app\common\field\unknown[]|\app\common\Field\mixed[]
+     */
+    public function format($info=[],$field='',$pagetype='list',$sysname=''){
+        $field_array = get_field($info['mid'],$sysname);
+        $value = '';
+        if($field){
+            $value = \app\common\field\Index::get_field($field_array[$field],$info,$pagetype);
+        }else{
+            foreach($field_array AS $name=>$rs){
+                $info[$name] = \app\common\field\Index::get_field($rs,$info,$pagetype);
+            }
+        }
+        return $field ? $value : $info;
+    }
+    
+    /**
+     * 生成筛选项的网址参数
+     * @param string $type 过滤哪项参数,多个用逗号隔开
+     * @return string
+     */
+    public function make_filter_url($type='zone_id'){
+        $url = '';
+        $type_array = explode(',',$type);
+        $array = input();
+        foreach ($array AS $key=>$value){
+            if(!in_array($key, $type_array)){
+                $url .= $key.'='.urlencode($value) . '&' ;
+            }
+        }
+        return $url;
+    }
+    
+    /**
      * 判断是否加载过某个JS 避免重复加载,一般用在生成表单页
      * @param string $type
      * @return boolean

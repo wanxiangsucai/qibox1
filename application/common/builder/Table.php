@@ -151,7 +151,7 @@ class Table extends ZBuilder
     public function _initialize()
     {
         $this->_module     = $this->request->module();
-        $this->_controller = parse_name($this->request->controller());
+        $this->_controller = fun('zbuilder@parse_name',$this->request->controller());
         $this->_action     = $this->request->action();
         $this->_table_name = strtolower($this->_module.'_'.$this->_controller);
         
@@ -1576,7 +1576,7 @@ class Table extends ZBuilder
                             if ($row[$column['name']] == '') {
                                 $row[$column['name'].'__'.$column['type']] .= $column['default'].'</a>';
                             } else {
-                                $row[$column['name'].'__'.$column['type']] .= format_moment($timestamp, $format).'</a>';
+                                $row[$column['name'].'__'.$column['type']] .= fun('Zbuilder@format_moment',$timestamp, $format).'</a>';
                             }
 
                             // 加载moment.js

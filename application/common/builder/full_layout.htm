@@ -19,7 +19,7 @@
     <!-- Page JS Plugins CSS -->
     {notempty name="_css_files"}
             {volist name="_css_files" id="css"}
-            {:load_assets($css)}
+            {:fun('zbuilder@load_assets',$css)}
             {/volist}
     {/notempty}
 
@@ -136,7 +136,7 @@
 <script src="__STATIC__/libs/layer/layer.js"></script>
 {notempty name="_js_files"}
         {volist name="_js_files" id="js"}
-        {:load_assets($js, 'js')}
+        {:fun('zbuilder@load_assets',$js, 'js')}
         {/volist}
 {/notempty}
 

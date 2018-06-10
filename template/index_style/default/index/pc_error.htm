@@ -50,7 +50,7 @@
 				<div class="text">
 					<div>级别: <span>{$userdb.groupid|getGroupByid}</span></div>
 					<div>积分: <em>{$userdb.money}</em> 个</div>
-					<div>注册日期: {$userdb.regdate|set_date}</div>
+					<div>注册日期: {$userdb.regdate|format_time}</div>
 				</div>
 			</div>
 			{else /}

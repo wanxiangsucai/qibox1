@@ -77,7 +77,7 @@ class Ajax extends AdminBase
             $result = [
                 'code' => 1,
                 'msg'  => '请求成功',
-                'list' => format_linkage($data_list)
+                'list' => fun('format_linkage',$data_list)
             ];
             return json($result);
         } else {

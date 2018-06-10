@@ -72,7 +72,7 @@ class Form extends Base
             
         }elseif ($field['type'] == 'select') {      // 下拉框
             
-            $detail = is_array($field['options']) ? $field['options'] : parse_attr($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' selected ':'';
                 $_show .= "<option value='$key' $cked>$value</option>";
@@ -81,7 +81,7 @@ class Form extends Base
         
         }elseif ($field['type'] == 'radio') {    // 单选按钮
             
-            $detail = is_array($field['options']) ? $field['options'] : parse_attr($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' checked ':'';
                 $_show .= "<input $ifmust type='radio' name='{$name}' value='$key' {$cked} title='$value'><span class='m_title'> $value </span>";
@@ -91,7 +91,7 @@ class Form extends Base
         }elseif ($field['type'] == 'checkbox') {    // 多选按钮
             
             $_detail = explode(',',$info[$name]);
-            $detail = is_array($field['options']) ? $field['options'] : parse_attr($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
                 $cked = in_array($key, $_detail)?' checked ':'';
                 $_show .= " <input $ifmust type='checkbox' name='{$name}[]' value='$key' {$cked}  title='$value'><span class='m_title'> $value </span>";

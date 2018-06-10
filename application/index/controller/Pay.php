@@ -50,7 +50,7 @@ class Pay extends IndexBase
             $this->error('支付类型有误！');
         }
         if(!method_exists($class, $action)){
-            showerr('参数有误!');
+            $this->error('参数有误!');
         }
         $obj = new $class;
         return call_user_func_array([$obj, $action], []);
@@ -82,7 +82,7 @@ class Pay extends IndexBase
         
         $money = number_format($money,2);
         if($money<0.01){
-            showerr("充值金额不能小于0.01元");
+            $this->error("充值金额不能小于0.01元");
         }
         
         $array['money'] = $money;

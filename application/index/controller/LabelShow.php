@@ -250,7 +250,7 @@ class LabelShow extends IndexBase
         
         $list_data = cache('qb_tag_data_'.$tag_name.$aid);    //首页缓存文件        
         if($cfg['page']>1 || empty($list_data)){     //第2页以上不用缓存
-            $list_data = getArray( comment_api('list',$aid,$sysid,$cfg_array) );
+            $list_data = getArray( fun('label@comment_api','list',$aid,$sysid,$cfg_array) );
             //cache('qb_tag_data_'.$tag_name.$aid,$list_data,$tag_array['cache_time']);
         }
         $tag_data = $list_data['data'];     //评论内容
@@ -323,7 +323,7 @@ class LabelShow extends IndexBase
         
         $tag_data = cache('qb_tag_data_'.$tag_name.$aid);    //首页缓存文件
         if($cfg['page']>1 || empty($tag_data)){     //第2页以上不用缓存
-            $tag_data = reply_api('list',$aid,$cfg_array);
+            $tag_data = fun('label@reply_api','list',$aid,$cfg_array);
             //$tag_data = controller("plugins\\comment\\index\\Api")->get_list($sysid,$aid,$rows,$_type,$order,$by,$page);
             //cache('qb_tag_data_'.$tag_name.$aid,$tag_array,$tag_array['cache_time']);
         }
@@ -726,11 +726,11 @@ class LabelShow extends IndexBase
                 $_label_tag_tpl= str_replace(array('<!--COMMENT','COMMENT-->'),'',$array[0][$key]);
                 $_label_tag_tpl= preg_replace("/<!--(.*?)-->/is",'',$_label_tag_tpl);  //把标签名的注释符去掉
                 $_label_tag_tpl= str_replace(array('{posturl}','{pageurl}','{apiurl}'),array(
-                        //comment_api('posturl',$aid,$sysid,$cfg),
-                        //comment_api('pageurl',$aid,$sysid,$cfg),
-                        '<?php echo comment_api("posturl",$aid,$sysid,$cfg_array); ?>',
-                        '<?php echo comment_api("pageurl",$aid,$sysid,$cfg_array); ?>',
-                        '<?php echo comment_api("apiurl",$aid,$sysid,$cfg_array); ?>',
+                        //fun('label@comment_api','posturl',$aid,$sysid,$cfg),
+                        //fun('label@comment_api','pageurl',$aid,$sysid,$cfg),
+                        '<?php echo fun("label@comment_api","posturl",$aid,$sysid,$cfg_array); ?>',
+                        '<?php echo fun("label@comment_api","pageurl",$aid,$sysid,$cfg_array); ?>',
+                        '<?php echo fun("label@comment_api","apiurl",$aid,$sysid,$cfg_array); ?>',
                          ),
                         $_label_tag_tpl);
             }
@@ -764,10 +764,10 @@ class LabelShow extends IndexBase
                 $_label_tag_tpl= str_replace(array('<!--REPLY','REPLY-->'),'',$array[0][$key]);
                 $_label_tag_tpl= preg_replace("/<!--(.*?)-->/is",'',$_label_tag_tpl);  //把标签名的注释符去掉
                 $_label_tag_tpl= str_replace(array('{posturl}','{pageurl}'),array(
-                        //comment_api('posturl',$aid,$sysid,$cfg),
-                        //comment_api('pageurl',$aid,$sysid,$cfg),
-                        '<?php echo reply_api("posturl",$aid,$sysid,$cfg_array); ?>',
-                        '<?php echo reply_api("pageurl",$aid,$sysid,$cfg_array); ?>',
+                        //fun('label@comment_api','posturl',$aid,$sysid,$cfg),
+                        //fun('label@comment_api','pageurl',$aid,$sysid,$cfg),
+                        '<?php echo fun("label@reply_api","posturl",$aid,$sysid,$cfg_array); ?>',
+                        '<?php echo fun("label@reply_api","pageurl",$aid,$sysid,$cfg_array); ?>',
                 ),
                         $_label_tag_tpl);
             }

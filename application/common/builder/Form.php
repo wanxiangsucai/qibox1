@@ -2113,9 +2113,9 @@ class Form extends ZBuilder
 
                                     if (is_numeric($group[$key]['value'])) {
                                         if ($value['type'] == 'datetime' || $value['type'] == 'time') {
-                                            $group[$key]['value'] = format_moment($group[$key]['value'], $value['format']);
+                                            $group[$key]['value'] = fun('Zbuilder@format_moment',$group[$key]['value'], $value['format']);
                                         } else {
-                                            $group[$key]['value'] = format_date($group[$key]['value'], $value['format']);
+                                            $group[$key]['value'] = fun('zbuilder@format_date',$group[$key]['value'], $value['format']);
                                         }
                                     }
                                     break;
@@ -2158,9 +2158,9 @@ class Form extends ZBuilder
 
                             if (is_numeric($item['value'])) {
                                 if ($item['type'] == 'datetime' || $item['type'] == 'time') {
-                                    $item['value'] = format_moment($item['value'], $item['format']);
+                                    $item['value'] = fun('zbuilder@format_moment',$item['value'], $item['format']);
                                 } else {
-                                    $item['value'] = format_date($item['value'], $item['format']);
+                                    $item['value'] = fun('zbuilder@format_date',$item['value'], $item['format']);
                                 }
                             }
                             break;

@@ -46,7 +46,7 @@ class Field_filter{
             if(!in_array($rs['type'], ['select','radio','checkbox'])){
                 continue ;      //只有下拉框,单选框 复选框才能有列表筛选
             }
-            $rs['options'] = parse_attr($rs['options']);    //转义成数组
+            $rs['options'] = str_array($rs['options']);    //转义成数组
             $data[$rs['name']] = $rs;
         }
         return $data;

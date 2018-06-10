@@ -47,7 +47,7 @@
 <div class="Listcont">
 	{$rs.title|get_word="60"}
 	<ul>
-		<ol>{$rs.posttime|set_date}</ol>
+		<ol>{$rs.posttime|format_time}</ol>
 		<li>{gt name="rs.money" value="0"}<span>{$rs.money}</span>{else/}<em>{$rs.money}</em>{/gt}</li>
 	</ul>
 </div>
