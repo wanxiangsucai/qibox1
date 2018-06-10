@@ -120,7 +120,12 @@ jQuery(document).ready(function() {
 		var viewpics = function(url,pic_array){
 			var html = '';
 			pic_array.forEach(function(f){
-				html += '<div><span><img src="/public/'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
+				var sear=new RegExp('http');
+    			if(sear.test(f)){
+        　　		html += '<div><span><img src="'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
+    　　		}else{
+    				html += '<div><span><img src="/public/'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
+    			}
 			});
 			that.find(".ListImgs").html(html);
 			addclick();

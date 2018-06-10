@@ -60,13 +60,18 @@ class Table extends Base
             $field['url'] = str_replace('__id__', $info['id'], $field['url']);
             $show = "<a href='{$field['url']}' target='{$field['target']}'>$field_value</a>";
         }elseif($field['type'] == 'select'){
-            $show = $field['array'][$field_value];
+            $show = "<select class='select_edit' data-name='$name' data-value='{$field_value}' data-id='{$info['id']}'>";
+            foreach($field['array'] AS $key=>$v){
+                $select = $field_value==$key ? 'selected' : '' ;
+                $show .="<option value='$key' $select>$v";
+            }
+            $show .= "</select>";
         }elseif($field['type'] == 'select2'){
             $show = $field['array'][$field_value];
         }elseif($field['type'] == 'datetime'){
             $show = date('Y-m-d H:i',$field_value);
         }elseif($field['type'] == 'text.edit'){
-            $show = "<input type='text' name='orderdb[{$info['id']}]' size='5' value='{$field_value}'>";
+            $show = "<input type='text' class='quick_edit' data-value='{$field_value}' data-name='$name' data-id='{$info['id']}' name='{$name}[{$info['id']}]' size='5' value='{$field_value}'>";
         }elseif($field['type'] == 'callback'){
             $field['opt'] = str_replace('__','',$field['opt']);
             if($field['opt']=='data'){

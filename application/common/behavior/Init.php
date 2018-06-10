@@ -48,10 +48,10 @@ class Init
         // 获取前台访问网址，是否放在根目录
         $base_file = request()->baseFile();
         $web_path  = substr($base_file, 0, strripos($base_file, '/') + 1);
-        define('PUBLIC_URL', $web_path. 'public/');
-        define('PUBLIC_PATH', ROOT_PATH . 'public' . DS);
-        define('PLUGINS_PATH', ROOT_PATH . 'plugins' . DS);
-		define('CACHE_DIR', APP_PATH . '../runtime/');
+        define('PUBLIC_URL', $web_path. 'public/');                                  //静态文件访问网址,是网址,浏览器访问的路径,不是硬盘路径
+        define('PUBLIC_PATH', ROOT_PATH . 'public' . DS);                       //静态文件硬盘路径,是磁盘路径,不是浏览器的访问路径
+        define('PLUGINS_PATH', ROOT_PATH . 'plugins' . DS);                   //插件文件的硬盘路径
+        define('CACHE_DIR', ROOT_PATH . 'runtime' . DS);                         //缓存目录的硬盘路径
 		
         // 模板输出字符串内容替换
         $view_replace_str = array(

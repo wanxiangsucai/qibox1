@@ -187,11 +187,13 @@ trait AddEditList {
 	    
 	    $template = $this->get_template('',$this->mid);
 	    if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
+	        $pages = is_object($data_list) ? $data_list->render() : '';
 	        $array = getArray($data_list);
 	        $this->assign('listdb',isset($array['data'])?$array['data']:$array);
 	        $this->assign('mid',$this->mid);
 	        $this->assign('tab_ext',$this->tab_ext);	
 	        $this->assign('f_array',$this->list_items);
+	        $this->assign('pages',$pages);
 	        return $this->fetch($template);
 	    }
 	    
@@ -280,7 +282,7 @@ trait AddEditList {
 	 */
 	protected static function get_template($type='',$mid=''){
 	    if($type==''){
-	       if(defined('IN_PLUGIN')){
+	        if(defined('IN_PLUGIN')){
 	           $type = input('param.plugin_action');
 	       }else{
 	           $type = request()->action();
@@ -319,7 +321,7 @@ trait AddEditList {
 	    $file = $path . $filename . '.' . ltrim(config('template.view_suffix'), '.');
 	    if(is_file($file)&&filesize($file)){
 	        return $file;
-	    }elseif($mid){ //寻找母模板
+	    }elseif($mid!==''){ //寻找母模板
 	        $file = $path . $type . '.' . ltrim(config('template.view_suffix'), '.');
 	        if(is_file($file)&&filesize($file)){
 	            return $file;

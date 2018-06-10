@@ -31,7 +31,7 @@ class Attachment extends IndexBase
      */
     protected function upBase64Pic($dir='',$from='',$module=''){
         $data = $this->request->post();
-        $base64_image_content = $data['imgBase64'];
+		$base64_image_content = $data['imgBase64'];
         $Orientation = $data['Orientation'];
         if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)){
             $type = $result[2];
@@ -43,18 +43,28 @@ class Attachment extends IndexBase
             if(!file_exists($new_file)) {
                 mkdir($new_file, 0777, true);
             }
-            
             $name = time().rand(1,10000). '.' .$type;
             $new_file = config('upload_path') . '/' . $dir . '/' . date('Ymd') . '/' ;
             $path = str_replace(PUBLIC_PATH,'',$new_file);
-            
             $new_file = $new_file.$name;
             if (file_put_contents($new_file, base64_decode(str_replace($result[1],'', $base64_image_content)))){
+				/*随风修改了这里*/
                 $file_info = [
                         'path'=>$path . $name,
                         'url'=>PUBLIC_URL . $path . $name,
+						'name'=>$name,
+						'tmp_name'=>PUBLIC_PATH . $path . $name,
+						'size'=>'0',
+						'type'=>'image/jpeg',
                 ];
-                $this->rotate_jpg($new_file , $Orientation);
+                $this->rotate_jpg($new_file , $Orientation);    //图片摆正角度
+				 if (config('webdb.upload_driver')  != 'local') {
+                    $hook_result = \think\Hook::listen('upload_driver',$file_info, ['from' => $from, 'module' => $module, 'type' => 'base64'], true);
+                    if (false !== $hook_result) {
+        				@unlink($new_file);
+                        return $hook_result;
+                    }
+                }				
                 return $this->succeFile($from , $path.$name , $file_info);
             }else{
                 return $this->errFile($from,'文件写入失败！');

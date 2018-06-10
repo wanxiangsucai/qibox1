@@ -85,6 +85,7 @@ var severUrl = "$serverurl";
 jQuery(document).ready(function() {
 	$(".uploadImge_{$name}").each(function(){
 		var pics = [];
+		 
 		var that = $(this);
 
 		that.find(".upbtn").click(function(e){
@@ -96,6 +97,7 @@ jQuery(document).ready(function() {
 				//这里删除的图片没有真正从服务器删除
 				$(this).parent().remove();
 				pics = [];
+				 
 				var obj = that.find(".ListImgs img");
 				obj.each(function(e){
 					var img = $(this).attr("src");
@@ -121,7 +123,12 @@ jQuery(document).ready(function() {
 		var viewpics = function(url,pic_array){
 			var html = '';
 			pic_array.forEach(function(f){
+			var sear=new RegExp('http');
+			if(sear.test(f)){
+    　　		html += '<div><span><img src="'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
+　　		}else{
 				html += '<div><span><img src="/public/'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
+			}
 			});
 			that.find(".ListImgs").html(html);
 			addclick();

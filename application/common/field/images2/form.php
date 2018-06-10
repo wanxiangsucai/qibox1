@@ -139,7 +139,13 @@ jQuery(document).ready(function() {
 		var viewpics = function(pic_array,pic_url){
 			var html = '';
 			pic_array.forEach(function(rs,i){
+				var sear=new RegExp('http');
+			if(sear.test(rs.picurl)){
+    　　		html += '<div><span><img src="'+rs.picurl+'" data-i="'+i+'"></span><em class="del"><i class="fa fa-remove"></i></em><input placeholder="介绍" style="width:80px;margin:5px 0 5px 0;border:1px solid #eee;" data-i="title'+i+'" value="'+rs.title+'"><br><input value="'+rs.url+'" data-i="url'+i+'" placeholder="网址" style="width:80px;border:1px solid #eee;" ></div>';
+　　		}else{
 				html += '<div><span><img src="/public/'+rs.picurl+'" data-i="'+i+'"></span><em class="del"><i class="fa fa-remove"></i></em><input placeholder="介绍" style="width:80px;margin:5px 0 5px 0;border:1px solid #eee;" data-i="title'+i+'" value="'+rs.title+'"><br><input value="'+rs.url+'" data-i="url'+i+'" placeholder="网址" style="width:80px;border:1px solid #eee;" ></div>';
+			}
+			 
 			});
 			that.find(".ListImgs").html(html);
 			delpic();

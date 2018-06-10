@@ -1,16 +1,30 @@
 <form name="form1" method="post" action="">
 <div class="MainContainers">
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {else /} 内容管理 {/if}</span></div>
+
   <div class="Conter">
+	
+	<!-- 功能按钮 -->
+	{notempty name="$tab_ext.top_button"}
+	<div style="margin-bottom:10px;">
+	{volist name="$tab_ext.top_button" id="rs"}
+	 {if ($rs.type=='delete')}
+	 	<a href="{:auto_url('delete')}" onclick="return delete_all($(this));" class="layui-btn layui-btn-primary"><li class="{$rs.icon|default='fa fa-fw fa-remove'}"></li> {$rs.title|default='批量删除'}</a>
+	 {else /}
+		<a href="{$rs.href}" class="layui-btn layui-btn-primary" data-ids="{$rs['target-form']}"><li class="{$rs.icon|default='si si-link'}"></li> {$rs.title}</a>
+	 {/if}	
+	{/volist}
+	</div>
+	{/notempty}
 
     <table class="ListTable">
-	<th width="5%">ID</th>
-	<!-- 自定义字段 -->
+	<th width="5%"><input type="checkbox" name="" onclick="choosebox($(this))"> ID</th>
+	<!-- 自定义字段头部标题 -->
 	{volist name=":fun('field@fields_to_table',$f_array,[])" id="vs"}
       <th>{$vs.title}</th>
 	{/volist}
 	
-	<!-- 更多菜单 -->
+	<!-- 更多菜单头部标题 -->
 	{volist name=":fun('field@get_rbtn',$tab_ext['right_button'],[])" id="vs"}
       <th>{$vs.title}</th>
 	{/volist}
@@ -22,13 +36,13 @@
 
 {volist name="listdb" id="rs"}
     <tr bgcolor="#FFFFFF" class="trA" onmouseover="this.className='trB'" onmouseout="this.className='trA'"> 
-      <td>{$rs.id}</td>
-	 <!-- 自定义字段 -->
+      <td><input type="checkbox" name="ids[]" value="{$rs.id}"> {$rs.id}</td>
+	 <!-- 自定义字段数据列表 -->
 	{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"}
-      <td>{$vs.value}</td>
+      <td class="{eq name='i' value='1'}Left{/eq}">{$vs.value}</td>
 	{/volist}
     
-	<!-- 更多菜单 -->
+	<!-- 更多菜单数据列 -->
 	{volist name=":fun('field@get_rbtn',$tab_ext['right_button'],$rs)" id="vs"}
       <td>{$vs.value}</td>
 	{/volist}
@@ -40,8 +54,124 @@
   
   </table>
 
-    <div class='submits'><input type="submit" name="Submit" value="更改排序"></div>
-
+    <!-- <div class='submits'><input type="submit" name="Submit" value="更改排序"></div> -->
+	<div class="Showpage">{$pages}</div>
   </div>
 </div>
 </form>
+
+<script type="text/javascript">
+var quickedit_url = "{:auto_url('quickedit')}"; //快速编辑的地址
+
+//全选
+function choosebox(that){
+	$("input[name='ids[]']").each(function(){
+		$(this).prop("checked",that.is(':checked')?true:false);
+	});
+}
+
+//批量删除
+function delete_all(that){
+	var ids = [];
+	$("input[name='ids[]']").each(function(){
+		if( $(this).is(':checked')==true){
+			ids.push($(this).val());
+		}
+	});
+	if(ids.length==0){
+		layer.alert('你必须选择一项!');
+		return false;
+	}
+	layer.confirm('你要删除吗,不可恢复?',function(){
+		var url = that.attr('href');
+		$.post(url,{'ids':ids},function(res){
+			if(res.code==1){
+				layer.closeAll();
+				layer.msg('删除成功');
+				setTimeout(function(){
+					window.location.reload();
+				},500);
+			}else{
+				layer.alert('删除失败,详情如下:'+res.msg);
+			}
+		}).fail(function (res) {
+			layer.alert('系统故障,删除失败!!');
+		});
+
+	});
+	return false;
+}
+
+//快速编辑
+function quick_edit(that){
+	if(that.val()==that.data('value')){
+		//layer.msg('你并没有修改');
+		return ;
+	}
+	layer.load(1);
+	$.post(quickedit_url,{
+		'pk':that.data('id'),
+		'name':that.data('name'),
+		'value':that.val(),
+	},function(res){
+		if(res.code==1){
+			layer.closeAll();
+			layer.msg('修改成功');
+			setTimeout(function(){
+				//window.location.reload();
+			},500);
+		}else{
+			layer.alert('修改失败:'+res.msg);
+		}
+	}).fail(function (res) {
+		layer.alert('系统故障,删除失败!!');
+	});
+}
+
+
+function choose_ids(name){
+	var ids = [];
+	$("input[name='ids[]']").each(function(){
+		if( $(this).is(':checked')==true){
+			ids.push($(this).val());
+		}
+	});
+	if(ids.length==0){
+		layer.alert('你必须要选择一项!');
+		return false;
+	}
+	str = '';
+	ids.forEach(function(v){
+		str += name + '[]=' + v + '&';
+	});
+	return str;
+}
+
+
+jQuery(document).ready(function() {
+	$(".quick_edit").blur(function(){
+		quick_edit($(this))
+	});
+	$('select.select_edit').change(function(){
+		quick_edit($(this));
+	});
+	
+	//其它批量操作
+	$("a[data-ids]").click(function(){
+		var ids = $(this).data('ids');
+		if(ids!=''){
+			var str = choose_ids( ids );
+			if(str!==false){
+				window.location.href = $(this).attr('href') + '?' + str;
+			}
+			return false;
+		}
+		
+	});
+
+});
+
+
+
+
+</script>
