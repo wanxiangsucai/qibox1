@@ -135,7 +135,7 @@ function down_file_list(){
 			layer.alert('需要升级的文件列表如下,你可以有选择性的升级<br>特别提醒:你的系统中有错误的UTF8 +BOM 代码文件,一般情况是新装的风格导致的,请仔细排查!');
 			return ;
 		}else if( typeof(parsedJson) == 'object' && parsedJson.code==1){
-			layer.alert(res.msg+"<br><br>特别提醒:你的系统中有错误的UTF8 +BOM 代码文件,一般情况是新装的风格导致的,请仔细排查!",{time:5500});
+			layer.alert(parsedJson.msg+"<br><br>特别提醒:你的系统中有错误的UTF8 +BOM 代码文件,一般情况是新装的风格导致的,请仔细排查!",{time:5500});
 			return ;
 		}
 
