@@ -1098,20 +1098,32 @@ class Template
 			$_template = $template;
 			$tpl = $path . $template . '.' . ltrim($this->config['view_suffix'], '.');	
 			$tpl = get_real_path($tpl);
-            $template = realpath($tpl);
-
+            $template = realpath($tpl);            
             if($this->config['view_base']){
                 if(empty($template) && $this->config['default_view_base']){	//寻找默认default模板
                     $tpl = str_replace($this->config['view_base'], $this->config['default_view_base'], $tpl);
                     $template = realpath($tpl);
+                }
+                if($template){  //自适应手机或PC端处理
+                    $basename = basename($template);
+                    if(IN_WAP===true){
+                        $autofile = str_replace($basename, 'wap_'.$basename, $template);
+                        if( is_file($autofile) ){
+                            $template = $autofile;
+                        }       
+                    }else{
+                        $autofile = str_replace($basename, 'pc_'.$basename, $template);
+                        if( is_file($autofile) ){
+                            $template = $autofile;
+                        }
+                    }
                 }
             }else{
                 if(empty($template) && $this->config['style']!='default'){	//寻找默认default模板
                     $tpl = $default_path . $_template . '.' . ltrim($this->config['view_suffix'], '.');
                     $template = realpath($tpl);
                 }
-            }
-			
+            }			
         }
 
         if (is_file($template)) {

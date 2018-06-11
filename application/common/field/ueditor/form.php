@@ -3,10 +3,10 @@ function_exists('urls') || die('ERR');
 
 
 
-$jscode = '';
+$jscode_pc = $jscode_wap = '';
 if(fun('field@load_js',$field['type'])){
 	$serverurl = urls("index/attachment/upload","dir=images&from=ueditor&module=".request()->dispatch()['module'][0]);
-	$jscode = <<<EOT
+	$jscode_pc = <<<EOT
 <script type="text/javascript"> 
 jQuery(document).ready(function() {
 	$('.js-ueditor').each(function(){
@@ -26,17 +26,51 @@ jQuery(document).ready(function() {
 
 EOT;
 
+$jscode_wap = <<<EOT
+
+				<link rel="stylesheet" href="__STATIC__/libs/summernote/bootstrap.min.css" />
+				<script type="text/javascript" src="__STATIC__/libs/summernote/bootstrap.min.js"></script>
+				<link rel="stylesheet" href="__STATIC__/libs/summernote/summernote.css">
+				<script type="text/javascript" src="__STATIC__/libs/summernote/summernote.js"></script>
+				<script type="text/javascript">
+					$(document).ready(function(){
+					  $('.summernote').each(function(){							
+						$(this).summernote({
+							height: 200,
+							toolbar: false
+						  });
+					  });
+					});
+				</script>
+EOT;
+
 }
 
 $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
 $field['input_width'] || $field['input_width']='max-width:80%;';
 $field['input_height'] && $field['input_height']="width:{$field['input_height']};";
-return <<<EOT
+
+if(IN_WAP===true){
+
+	return <<<EOT
+
+<textarea id="{$name}" name="{$name}" class="summernote" placeholder="请输入内容">{$info[$name]}</textarea>
+$jscode_wap
+
+EOT;
+;
+
+}else{
+
+	return <<<EOT
 
 <div style="{$field['input_width']}{$field['input_height']}" class="layui-textarea c_{$name}  {$field['css']}">
 <script id="{$name}" class="js-ueditor" name="{$name}" type="text/plain">{$info[$name]}</script>
-$jscode
+$jscode_pc
 </div>
 
 EOT;
 ;
+
+}
+

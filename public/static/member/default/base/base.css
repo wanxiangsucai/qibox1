@@ -33,7 +33,7 @@ img {vertical-align:middle;}
 }
 .MainCont{
 	clear:both;
-	margin:0 10px 10px 0;
+	margin:10px 5px 10px 8px;
 	border:#e1dfdc solid 1px;
 }
 .MainCont .head{
@@ -65,7 +65,7 @@ img {vertical-align:middle;}
 }
 .MainCont .cont{	
 	border-top:0;
-	padding:0;
+	padding:5px;
 }
 table.ListTable{
 	font-size:14px;

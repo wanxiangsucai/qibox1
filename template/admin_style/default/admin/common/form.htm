@@ -1,7 +1,10 @@
 <div class="MainContainers">
 <form name="form2" method="post" action="" class="layui-form">
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</span> </div>
-  <div class="Conter">
+  <div class="Conter">	
+	<!-- 功能接口钩子 -->
+	{:hook_listen('template_form_head',$form_items,$form_items,true)}
+
 {empty name="$tab_ext.group"}
 
 	<!--这种是最常用的,表单没做分组显示的-->
@@ -20,7 +23,7 @@
 
 {else /}
 	
-	<!-- 这种用得很少,针对太多表单,而对他们做分组显示,下面就没做过滤哪些字段不显示的处理了,要自己重新修改做判断处理 -->
+	<!-- 这是另一种用得很少,针对太多表单,而对他们做分组显示,下面就没做过滤哪些字段不显示的处理了,要自己重新修改做判断处理 -->
     <div class="layui-tab">
 	  <ul class="layui-tab-title">
 	  	 <!-- 分组标题名称 -->
@@ -50,7 +53,9 @@
 	</div>
 
 {/empty}
-
+	
+	<!-- 功能接口钩子 -->
+	{:hook_listen('template_form_foot',$form_items,$form_items,true)} 
     <div class='submits'>
 		{notempty name=":input('id')"}<input type="hidden" name="id" value="{:input('id')}">{/notempty}
 		<input type="button" onclick="window.history.back()" style="color:#555;margin-right:30px;" onmouseout="$(this).css({'background':'#eee'})" onmouseover="$(this).css({'background':'orange'})" value="取消返回">

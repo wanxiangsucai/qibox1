@@ -1,0 +1,80 @@
+<style type="text/css">
+.layui-form .WapFormContainer dl{
+	background:#fff;
+	margin:8px 0 8px 0;
+}
+.layui-form .WapFormContainer dl dt{
+	padding:3px 10px 0px 10px;
+}
+.layui-form .WapFormContainer dl dd{
+	padding:2px 10px 10px 10px;
+}
+.layui-form .WapFormContainer dl dd input{
+	border:1px solid #eee;
+}
+.layui-form .WapFormContainer .layui-tab{
+	background:#fff;
+} 
+</style>
+
+<form name="form_work" method="post" action="" class="layui-form">
+
+<div class="WapFormContainer">	
+	<div class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</div>
+	<!-- 功能接口钩子 -->
+	{:hook_listen('template_form_head',$form_items,$form_items,true)}
+
+{empty name="$tab_ext.group"}
+
+	<!--这种是最常用的,表单没做分组显示的-->
+	<!-- 参数 field="pic,tit" 代表过滤哪些字段不显示出来 里边支持TP标签 -->
+    {qb:form field="" f_array="$f_array"}
+	<dl>
+		<dt>{$rs.title}</dt>
+		<dd>
+		{$rs.value}
+		{notempty name="$rs.about"}<div>{$rs.about}</div>{/notempty}
+		</dd>
+	</dl>
+	{/qb:form}
+
+{else /}
+
+	<!-- 这是另一种用得很少,针对太多表单,而对他们做分组显示,下面就没做过滤哪些字段不显示的处理了,要自己重新修改做判断处理 -->
+    <div class="layui-tab">
+	  <ul class="layui-tab-title">
+	  	 <!-- 分组标题名称 -->
+		 {volist name="$tab_ext.group" id="rs"}
+			<li class="{eq name='i' value='1'}layui-this{/eq}">{$key}</li>
+		 {/volist}
+	  </ul>
+	  <div class="layui-tab-content">
+	   <!-- 分组表单输入选项 -->
+	   {volist name="$tab_ext.group" id="array"}
+				<div class="layui-tab-item {eq name='i' value='1'}layui-show{/eq}">
+					<!-- 每一组的所有表单 -->
+					{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}
+						<dl>
+							<dt>{$rs.title}</dt>
+							<dd>
+							{$rs.value}
+							{notempty name="$rs.about"}<div>{$rs.about}</div>{/notempty}
+							</dd>
+						</dl>
+					{/volist}	
+				</div>
+	   {/volist}
+	  </div>
+	</div>
+
+{/empty}
+
+	<!-- 功能接口钩子 -->
+	{:hook_listen('template_form_foot',$form_items,$form_items,true)} 
+	
+	{notempty name=":input('id')"}<input type="hidden" name="id" value="{:input('id')}">{/notempty}
+	<div class='butter'><button type="submit">修改</button></div>
+	
+</div>
+
+</form>
