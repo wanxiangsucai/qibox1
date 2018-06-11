@@ -28,6 +28,10 @@
 			</div>
 			<div class="cnt">
 				{$info.content}
+
+				{volist name="$info.picurls" id="rs"}
+				<br><center><img src="{$rs.picurl}"></center><br>
+				{/volist}
 			</div>
 		</div>
 		

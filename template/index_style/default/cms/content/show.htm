@@ -16,6 +16,10 @@
 		</div>
 		<div class="ShowContent">
 			{$info.content}
+
+			{volist name="$info.picurls" id="rs"}
+			<br><img src="{$rs.picurl}"><br>
+			{/volist}
 		</div>
 	</div>
 <!--显示自定义字段内容 field="picurl,title,content,keywords" 就是过滤掉不在里边重复显示的字段-->
