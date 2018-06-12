@@ -5,22 +5,22 @@
 {include file="msg/menu" /}
  
 <div class="MainCont mtop10">
-	<div class="head"><div class="tag">短消息管理</div></div>
+	<div class="head"><div class="tag">已发出的信息</div></div>
     <div class="cont">
     	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="ListTable">
           <tr>
             <th width="8%">id</th>
             <th>标题</th>
-            <th width="12%">发件人</th>
-            <th width="20%">时间</th>
+            <th width="12%">收件人</th>
+            <th width="20%">发送时间</th>
             <th width="10%">状态</th>
             <th width="10%">删除</th>
           </tr>
 {volist name="listdb" id="rs"}
           <tr>
             <td>{$rs.id}</td>
-            <td class="tL"><a href="{:urls('show',['id'=>$rs['id']])}">{$rs.title}</a></td>
-            <td><a href="{:get_url('user',['uid'=>$rs['uid']])}" target="_blank">{$rs.from_username}</a></td>
+            <td class="tL"><a href="{:urls('showsend',['id'=>$rs['id']])}">{$rs.title}</a></td>
+            <td><a href="{:get_url('user',['uid'=>$rs['touid']])}" target="_blank">{$rs.to_username}</a></td>
             <td>{$rs.create_time}</td>
             <td>
 	{eq name="$rs.ifread" value="0"}
@@ -30,7 +30,7 @@
 	{/eq}
 			</td>
             <td>
-            	<a href="{:urls('delete',['id'=>$rs['id']])}" class="qb-del"></a> 
+            	{eq name="$rs.ifread" value="0"}<a href="{:urls('delete',['id'=>$rs['id']])}" class="qb-del"></a> {/eq}
             </td>
           </tr>
 {/volist}

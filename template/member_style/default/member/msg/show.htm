@@ -3,66 +3,80 @@
 {block name="title"}短消息{/block}
 {block name="content"}
 {include file="msg/menu" /}
-<style>
-.ShowMsg ul{
-	background: #FFF;
-	padding: 5px;
-	margin-bottom: 10px;
+
+<link rel="stylesheet" href="__STATIC__/layui/css/template.css" media="all">
+<style type="text/css">
+.layadmin-message-fluid{
+	padding:0;
 }
-.ShowMsg ul:after{
-	content: '';
-	display: block;
-	clear: both;
+.layui-col-md12{
+	background:#000;
+	padding:10px;
+	border-bottom:1px solid #eee;
 }
-.ShowMsg ul ol{
-	float: left;
-	padding: 0 5px;
-}
-.ShowMsg ul li{
-	float: left;
-	color: #666;
-}
-.ShowMsg div{
-	text-align: center;
-}
-.ShowMsg div a{
-	display: inline-block;
-	line-height: 30px;
-	padding: 0 10px;
-	background: #F60;
-	color: #FFF;
-	border-radius: 5px;
-	margin: 0 5px;
+.media-body{
+	padding-bottom:15px;
+	border-bottom:1px solid #eee;
 }
 </style>
-<div class="ShowMsg">
-	<ul>
-		<ol>来自:</ol>
-		<li>{$info.uid?get_user_name($info.uid):'系统消息'}</li>
-	</ul>
-	<ul>
-		<ol>标题:</ol>
-		<li>{$info.title}</li>
-	</ul>
-	<ul>
-		<ol>时间:</ol>
-		<li>{$info.create_time}</li>
-	</ul>
-	<ul>
-		<ol>内容:</ol>
-		<li>{$info.content}</li>
-	</ul>
-	<div>
-		<a href="{:urls('add',['username'=>get_user_name($info['uid'])])}">回复</a>
-    <a href="javascript:;check_action('{:urls('delete',['id'=>$info['id']])}','删除');">删除</a>
-    <a href="{:urls('index')}">返回</a>
-	</div>
+<div class="layui-fluid layadmin-message-fluid">
+  <div class="layui-row">
+    <div class="layui-col-md12" style="padding-bottom:0px;">
+      <div class="layui-form" style="padding:10px">
+        <div class="layui-form-item layui-form-text">
+          <div class="layui-input-block">
+            <textarea name="desc"  placeholder="请输入内容" class="layui-textarea msgcontent"></textarea>
+          </div>
+        </div>
+
+         <div class="layui-form-item" style="overflow: hidden;">
+          <div class="layui-input-block layui-input-right">
+            <button class="layui-btn" onclick="postmsg()">发表</button>
+          </div>          
+        </div>
+      </div>
+    </div>
+    <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content">
+{qb:tag name="xx" class="app\member\controller\msg@showmore" union="id" rows="5"}
+		<div class="media-body" style="margin-bottom:20px;margin-top:10px;">
+          <a href="{:get_url('user',['uid'=>$rs['uid']])}" class="media-left" style="float: left;">
+             <img src="{$rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" height="46px" width="46px">
+          </a>
+          <div class="pad-btm">
+            <p class="fontColor"><a href="{:get_url('user',['uid'=>$rs['uid']])}">{$rs.from_username}</a></p>
+            <p class="min-font">
+              {$rs.create_time}
+            </p>         
+         </div>
+          <p class="message-text">{$rs.content}</p>
+       </div>
+{/qb:tag}
+    </div>
+  </div>
 </div>
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-function check_action(url,job){
-	layer.confirm('你是否要'+job+'？',{btn: [job,'暂不'+job] }, function(){ window.location.href=url;});
+
+
+<script type="text/javascript">
+function postmsg(){
+	var url = "{:urls('wxapp.msg/add')}";
+	var content = $(".msgcontent").val();
+	if(content==''){
+		layer.alert('消息内容不能为空');
+		return ;
+	}
+	$.post(url,{'uid':"{$info.uid}",'content':content,},function(res){		
+		if(res.code==0){
+			layer.msg('发送成功');
+			setTimeout(function(){
+				window.location.href = "{:urls('index')}";
+			},500);
+		    //$(".msglist").html( make_html(res.data) );
+		}else{
+			layer.alert('发送失败:'+res.msg);
+		}
+	});
 }
-//-->
-</SCRIPT>
+
+</script>
+
 {/block}

@@ -10,7 +10,12 @@
         <table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
           <tr>
             <td class="tdL">接收者:</td>
-            <td class="tdR"><input type="text" value="{$username}" name="touser"></td>
+            <td class="tdR"><input type="text" value="{$username}" name="touser" id="touser"> <select name="select" onchange="document.getElementById('touser').value=this.options[this.selectedIndex].value">
+<option value="">快速选择常用联系人</option>
+{volist name="linkman" id="touid"}
+{if $touid!=$userdb.uid}<option value="{$touid|get_user_name}">{$touid|get_user_name}</option>{/if}
+{/volist}
+</select></td>
           </tr>
           <tr>
             <td class="tdL">标题:</td>

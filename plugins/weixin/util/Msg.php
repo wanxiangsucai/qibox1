@@ -64,7 +64,7 @@ class Msg
                 $sender = "系统消息";
                 
                 $content = stripslashes($content);
-                preg_match("/(http|https):([^ ]+)\"/is",$content,$array);
+                preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
                 $url = $array[2] ? "$array[1]:$array[2]" : request()->url(true);
                 $content = preg_replace('/<([^<]*)>/is',"",$content);
                 $content = addslashes($content);

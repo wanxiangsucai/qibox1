@@ -14,7 +14,7 @@ use think\Route;
 
 Route::group(['name'=>'cms','ext'=>'html'], [
         'show-<id>$'	=>['cms/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>$'=>['cms/content/index',['method'=>'get'],['fid' => '\d+']],
+        'list-<fid>'=>['cms/content/index',['method'=>'get'],['fid' => '\d+']],
         'mid-<mid>$'=>['cms/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'cms/content/show',
         'list'	=> 'cms/content/index',
@@ -23,7 +23,7 @@ Route::group(['name'=>'cms','ext'=>'html'], [
 
 Route::group(['name'=>'shop','ext'=>'html'], [
         'show-<id>$'	=>['shop/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>$'=>['shop/content/index',['method'=>'get'],['fid' => '\d+']],
+        'list-<fid>'=>['shop/content/index',['method'=>'get'],['fid' => '\d+']],
         'mid-<mid>$'=>['shop/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'shop/content/show',
         'list'	=> 'shop/content/index',
@@ -32,7 +32,7 @@ Route::group(['name'=>'shop','ext'=>'html'], [
 
 Route::group(['name'=>'bbs','ext'=>'html'], [
         'show-<id>$'	=>['bbs/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>$'=>['bbs/content/index',['method'=>'get'],['fid' => '\d+']],
+        'list-<fid>'=>['bbs/content/index',['method'=>'get'],['fid' => '\d+']],
         'mid-<mid>$'=>['bbs/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'bbs/content/show',
         'list'	=> 'bbs/content/index',
@@ -41,7 +41,7 @@ Route::group(['name'=>'bbs','ext'=>'html'], [
 
 Route::group(['name'=>'qun','ext'=>'html'], [
         'show-<id>$'	=>['qun/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>$'=>['qun/content/index',['method'=>'get'],['fid' => '\d+']],
+        'list-<fid>'=>['qun/content/index',['method'=>'get'],['fid' => '\d+']],
         'mid-<mid>$'=>['qun/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'qun/content/show',
         'list'	=> 'qun/content/index',
@@ -50,7 +50,7 @@ Route::group(['name'=>'qun','ext'=>'html'], [
 
 Route::group(['name'=>'hy','ext'=>'html'], [
         'show-<id>$'	=>['hy/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>$'=>['hy/content/index',['method'=>'get'],['fid' => '\d+']],
+        'list-<fid>'=>['hy/content/index',['method'=>'get'],['fid' => '\d+']],
         'mid-<mid>$'=>['hy/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'hy/content/show',
         'list'	=> 'hy/content/index',
@@ -59,7 +59,7 @@ Route::group(['name'=>'hy','ext'=>'html'], [
 
 Route::group(['name'=>'fenlei','ext'=>'html'], [
         'show-<id>$'	=>['fenlei/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>$'=>['fenlei/content/index',['method'=>'get'],['fid' => '\d+']],
+        'list-<fid>'=>['fenlei/content/index',['method'=>'get'],['fid' => '\d+']],
         'mid-<mid>$'=>['fenlei/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'fenlei/content/show',
         'list'	=> 'fenlei/content/index',
