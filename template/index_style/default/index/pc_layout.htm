@@ -34,16 +34,11 @@ function pc_open_msg(){
 	layer.open({
 	  type: 2,
 	  title: '短消息',
-	  closeBtn: 1, //不显示关闭按钮
-	  shade: [0.3,'#333'], //透明度背景
+	  shade: [0.3,'#333'], 
 	  area: ['900px', '600px'],
-	  //offset: 'rb', //右下角弹出
-	  //time: 5000, //2秒后自动关闭
-        //shift: 4,
 	  anim: 1,
-	  content: 'http://qb.net/member.php/member/msg/index.html', //iframe的url，no代表不显示滚动条
-	  end: function(){ //关闭事件
-            //waite_view();		
+	  content: '{:urls("member/msg/index")}',
+	  end: function(){ //关闭事件	
 	  }
 	});
 }
