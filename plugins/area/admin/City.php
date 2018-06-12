@@ -26,7 +26,7 @@ class City extends AdminBase
 	    if($pid){
 	        $map['pid'] = $pid;
 	    }else{
-	        $map['level'] = $this->cfg_level ;
+	        $map['level'] = $this->cfg_level==1 ? ['in',[0,1]] : $this->cfg_level;
 	    }
 	    
 	    $listdb = AreaModel::where($map)->order( $this->getOrder('list desc') )->paginate(50,false,['query'=>request()->param()]);
