@@ -381,7 +381,11 @@ if (!function_exists('urls')) {
         if($module=='index' && ENTRANCE!='index'){
             $_url = str_replace(array('admin.php','member.php'), 'index.php', $_url);
         }elseif($module=='member' && ENTRANCE!='member'){
-            $_url = str_replace(array('admin.php','index.php'), 'member.php', $_url);
+            if(preg_match('/^\/member\//i', $_url)){
+                $_url = '/member.php'.$_url;
+            }else{
+                $_url = str_replace(array('admin.php','index.php'), 'member.php', $_url);
+            }            
         }
         return $_url ;
     }
@@ -445,7 +449,11 @@ if (!function_exists('purl')) {
         if($module=='index' && ENTRANCE!='index'){
             $url = str_replace(array('admin.php','member.php'), 'index.php', $url);
         }elseif($module=='member' && ENTRANCE!='member'){
-            $url = str_replace(array('admin.php','index.php'), 'member.php', $url);
+            if(preg_match('/^\/member\//i', $url)){
+                $url = '/member.php'.$url;
+            }else{
+                $url = str_replace(array('admin.php','index.php'), 'member.php', $url);
+            }            
         }
         return $url;
     }
