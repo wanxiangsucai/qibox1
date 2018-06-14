@@ -2623,6 +2623,20 @@ if(!function_exists('get_state')){
     }
 }
 
+if (!function_exists('logs')) {
+    /**
+     * 开发调试日志
+     * @param unknown $code
+     * @param string $type
+     * @param string $filename
+     */
+    function logs($code,$type=true,$filename='log.txt'){
+        is_array($code) && $code = var_export($code,true);
+        $code .= $type==true ? "\r\n" : '';
+        write_file(ROOT_PATH.$filename,$code ,$type==true?'a':'rb+');
+    }
+}
+
 
 
 

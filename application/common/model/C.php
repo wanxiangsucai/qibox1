@@ -312,6 +312,19 @@ abstract class C extends Model
     }
     
     /**
+     * 根据UID获取所有模型的内容索引,主要用在SNS推送
+     * @param number $uid
+     * @param number $rows
+     * @param number $min
+     * @return array
+     */
+    public static function getIndexByUid($uid=0,$rows=50,$min=0){
+        self::InitKey();
+        $array = Db::name(self::$base_table)->where('uid',$uid)->order('id','asc')->limit($min,$rows)->column(true);
+        return $array;
+    }
+    
+    /**
      * 通过ID获取某条内容数据
      * @param number $id 内容ID
      * @param string $format 是否转义,比如修改内容就不要转义

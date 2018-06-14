@@ -70,7 +70,9 @@ class Api extends IndexBase
             $data['sysid'] = $sysid;
             $data['pid'] = intval($pid);
             $data['uid'] = intval($this->user['uid']);
-            if (contentModel::create($data)) {
+            $result = contentModel::create($data);
+            if ($result) {
+                hook_listen('comment_add_end',$data,$result->id);   //钩子接口
                 if($pid){
                     self::$get_children = $pid;
                     contentModel::where('id',$pid)->setInc('reply',1);

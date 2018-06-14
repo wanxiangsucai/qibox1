@@ -112,7 +112,7 @@ abstract class Post extends IndexBase
      * @param array $data
      * @return unknown
      */
-    protected function savaNewData($mid=0,$data=[]){
+    protected function savaNewData($mid=0,&$data=[]){
         return $this->model->addData($mid,$data);
     }
     

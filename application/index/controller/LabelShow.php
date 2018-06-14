@@ -938,6 +938,12 @@ class LabelShow extends IndexBase
         
         self::tag_cfg_parameter($tag_name,$cfg);  //把$cfg存放起来,给get_ajax_url使用
         
+        //对应fetch方法,传入一些常用的参数
+        $admin = $this->admin;
+        $userdb = $this->user;
+        $timestamp = $this->timestamp;
+        $webdb = $this->webdb;
+        
         //指定了过滤字段,代表想要取某些字段的数值,一般用在列表页,不适合聚合信息页多个频道混调
         $fields = ($filtrate_field && $cfg['mid']) ? $this->list_show_field( get_field($cfg['mid']) , $filtrate_field ) : [];
         
