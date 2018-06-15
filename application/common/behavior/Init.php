@@ -146,7 +146,7 @@ class Init
                 config('template.view_path', APP_PATH. $module. '/view/'.$index_style.'/');
                 $index_style=='default' || config('template.default_view_path', APP_PATH. $module. '/view/default/');
             }else{
-                if(!modules_config($module)){
+                if(!modules_config($module)&&$module!='api'){
                     showerr('当前频道已关闭!');
                 }
                 // 定义模块的前台文件目录

@@ -79,7 +79,7 @@ class Msg extends MemberBase
         if($num>0){
             return $this->ok_js(['num'=>$num]);
         }else{
-            $this->err_js('没有新消息');
+            return $this->err_js('没有新消息');
         }
     }
     

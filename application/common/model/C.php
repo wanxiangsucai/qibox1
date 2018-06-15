@@ -27,6 +27,35 @@ abstract class C extends Model
     
     
     /**
+     * 获取数据表关键字,也即程序目录名
+     * @return unknown
+     */
+    public static function getKey(){
+        empty(self::$model_key) && self::InitKey();
+        return self::$model_key;
+    }
+    
+    /**
+     * 获取索引表
+     * @return string
+     */
+    public static function getTable(){
+        empty(self::$model_key) && self::InitKey();
+        return self::$base_table;
+    }
+    
+    /**
+     * 获取其它数据表
+     * @param string $name 比如可以是 sort 或 field 等等
+     * @return string
+     */
+    public static function getTableBy($name=''){
+        empty(self::$model_key) && self::InitKey();
+        return self::$model_key.'_'.$name;
+    }
+    
+    
+    /**
      * 通过模型MID得到对应的数据主表名 注意:不是索引表,索引表是 self::base_table
      * @param number $mid 内容ID
      * @return string
