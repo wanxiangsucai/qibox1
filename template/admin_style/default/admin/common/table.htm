@@ -6,7 +6,7 @@
 	
 	<!-- 功能按钮 -->
 	{notempty name="$tab_ext.top_button"}
-	<div style="margin-bottom:10px;">
+	<div style="margin-bottom:10px;float:left;">
 	{volist name="$tab_ext.top_button" id="rs"}
 	 {if ($rs.type=='delete')}
 	 	<a href="{:auto_url('delete')}" onclick="return delete_all($(this));" class="layui-btn layui-btn-primary"><li class="{$rs.icon|default='fa fa-fw fa-remove'}"></li> {$rs.title|default='批量删除'}</a>
@@ -16,7 +16,34 @@
 	{/volist}
 	</div>
 	{/notempty}
-
+	
+	<!-- 搜索 -->
+	<div style="margin-bottom:10px;float:right;">
+		<select name="search_field">
+		<option value="" selected>选择字段</option> 
+		<option value="id">ID</option> 
+		{volist name="$tab_ext.search" id="name"}
+			<option value="{$key}">{$name}</option> 
+		{/volist}
+		</select>
+		<input type="text" placeholder='请输入关键字' name="search_word" style="line-height:23px;width:150px;"> <input onclick="search_content()" type="button" name="" value="搜索" class="layui-btn layui-btn-sm">
+	</div>
+<script type="text/javascript">
+function search_content(){
+	var field = $("select[name='search_field']").val();
+	var keyword = $("input[name='search_word']").val();
+	if(field==''){
+		layer.alert('请选择搜索字段类型');
+		return ;
+	}else if(keyword==''){
+		layer.alert('关键字不能为空');
+		return ;
+	}
+	var url = location.href.indexOf('?')>0 ? location.href.substr(0,location.href.indexOf('?')) : location.href;
+	url +='?search_field=' + field + '&keyword=' +keyword;
+	window.location.href = url;
+}
+</script>
     <table class="ListTable">
 	<th width="5%"><input type="checkbox" name="" onclick="choosebox($(this))"> ID</th>
 	<!-- 自定义字段头部标题 -->

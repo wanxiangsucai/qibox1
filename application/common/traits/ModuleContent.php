@@ -498,6 +498,9 @@ trait ModuleContent
 	    if($mid && !get_field($mid)){
 	        return '模型不存在!';
 	    }
+	    if($this->user['groupid']==2){
+	        return '你所在黑名单用户组没权限发布';
+	    }
 
 	    if(!$this->admin && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
 	        return '你所在用户组没权限!';

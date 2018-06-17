@@ -167,12 +167,11 @@ abstract class C extends AdminBase
         $this->tab_ext['page_title'] = '内容管理';
         //$this -> tab_ext['search'] = ['title'=>'标题','uid'=>'用户uid'];
 
-        
         if(empty($this->list_items)){
             //列表显示哪些字段
             $this->list_items =  [
                     ['title', '标题', 'link',iurl('content/show',['id'=>'__id__']),'_blank'],
-                    ['fid', '所属栏目', 'select2',$this->s_model->getTitleList()],
+                    ['fid', '所属栏目', 'select',$this->s_model->getTitleList(),config('system_dirname')],
                     ['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
                     ['uid', '发布者', 'callback',function($value){
                         $array = get_user($value);
@@ -188,8 +187,7 @@ abstract class C extends AdminBase
                 unset($this->list_items[1]);
             }
         }
-        
-		$data = $this->model->getAll();
+        $data = $this->model->getAll( $this->getMap() );
         return $this->getAdminTable($data);
     }
     
@@ -271,7 +269,7 @@ abstract class C extends AdminBase
         
         if(empty($this->list_items)){
             $array =  [
-                    ['fid', '所属栏目', 'select2',$this->s_model->getTitleList()],
+                    ['fid', '所属栏目', 'select',$this->s_model->getTitleList(),config('system_dirname')],
                     //['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
                     ['uid', '发布者', 'callback',function($value){
                         $array = get_user($value);

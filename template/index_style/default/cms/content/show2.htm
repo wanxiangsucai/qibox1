@@ -7,13 +7,18 @@
 
 {block name="body_content"}
 <link rel="stylesheet" href="__STATIC__/index/default/showpic.css">
+
+<!-- mui图片特效 对应DIV里的mui-content-padded类 图片要加参数 data-preview-src="" data-preview-group="1" -->
+<link rel="stylesheet" href="__STATIC__/mui/css/mui.min.css">
+<link rel="stylesheet" href="__STATIC__/mui/css/mui.preview.css">
+
 <div class="ShowPhotoCont">
 {qb:showpage name="photo_show_pic0"}
-	<div class="PhotoBox">
-		<div class="BigPic"><span><a href="{$rs.picurl}"><img src="{$listdb.0.picurl}" data-preview-src="" data-preview-group="1" /></a></span></div>
+	<div class="PhotoBox mui-content-padded">
+		<div class="BigPic"><span><a href="#"><img src="{$listdb.0.picurl}" data-preview-src="" data-preview-group="1" /></a></span></div>
 		<ul class="MorePic">
 {volist name="listdb" id="rs"}
-			<li><span><a href="{$rs.picurl}"><img src="{$rs.picurl}" data-preview-src="" data-preview-group="1"/></a></span></li>
+			<li><span><a href="#"><img src="{$rs.picurl}" data-preview-src="" data-preview-group="1"/></a></span></li>
 {/volist}
 		</ul>
 	</div>
@@ -28,6 +33,16 @@
 	<!--引用评论碎片-->
 	{qb:comment name="commentwap02" rows='5' tpl="comment/wap01"}{/qb:comment}
 </div>
+
+<!-- mui图片特效 -->
+<script src="__STATIC__/mui/js/mui.min.js"></script>
+<script src="__STATIC__/mui/js/mui.zoom.js"></script>
+<script src="__STATIC__/mui/js/mui.previewimage.js"></script>
+<script>mui.previewImage();</script>
+
+<!-- 微动态自动收录用户感兴趣的主题,时间60代表用户停留60秒将自动收藏 -->
+{:fun('sns@fav',$info,60,'系统帮你订阅了本主题,下次本主题有回复,将会通知你')}
+
 <script>
 $('.PhotoBox img').hover(
 	function(){

@@ -115,7 +115,8 @@ function check_upgrade(){
 		}
 	});
 }
-check_upgrade();
+{if $userdb['groupid']==3} check_upgrade(); {/if}
+
 </script>
 
 {/block}

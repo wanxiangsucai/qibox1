@@ -52,6 +52,14 @@
 		{/qb:comment}
 	</div>
 </div>
+
+<script type="text/javascript">
+layer.photos({
+  photos: '.ShowContent .cnt',
+  anim: 0, //0-6的选择 动画类型
+}); 
+</script>
+
 <script type="text/javascript">
 function add_fav(id){
 	var url="{:purl('fav/api/add')}?type={:config('system_dirname')}&id="+id;
@@ -64,4 +72,8 @@ function add_fav(id){
 	})
 }
 </script>
+
+<!-- 微动态自动收录用户感兴趣的主题,时间60代表用户停留60秒将自动收藏 -->
+{:fun('sns@fav',$info,60,'系统帮你订阅了本主题,下次本主题有回复,将会通知你')}
+
 {/block}

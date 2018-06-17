@@ -31,7 +31,7 @@ class Attachment extends IndexBase
      */
     protected function upBase64Pic($dir='',$from='',$module=''){
         $data = $this->request->post();
-		$base64_image_content = $data['imgBase64'];
+        $base64_image_content = $data['imgBase64'];logs($base64_image_content);
         $Orientation = $data['Orientation'];
         if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)){
             $type = $result[2];
@@ -43,11 +43,21 @@ class Attachment extends IndexBase
             if(!file_exists($new_file)) {
                 mkdir($new_file, 0777, true);
             }
-            $name = time().rand(1,10000). '.' .$type;
+            
+            if (!in_array($type, ['jpg','jpeg','png','gif','bmp'])) {
+                return $this->errFile($from,'文件类型有误！');
+            }
+            
+            $name = $this->user['uid'].'_'.date('YmdHis').rands(5). '.' .$type;
             $new_file = config('upload_path') . '/' . $dir . '/' . date('Ymd') . '/' ;
             $path = str_replace(PUBLIC_PATH,'',$new_file);
             $new_file = $new_file.$name;
             if (file_put_contents($new_file, base64_decode(str_replace($result[1],'', $base64_image_content)))){
+                $_array = @getimagesize($new_file);
+                if($_array[0]<1 || $_array[1]<1 || !preg_match('/image/i', $_array['mime'])){
+                    unlink($new_file);
+                    return $this->errFile($from,'非图片类型的文件！');
+                }
 				/*随风修改了这里*/
                 $file_info = [
                         'path'=>$path . $name,
@@ -58,6 +68,11 @@ class Attachment extends IndexBase
 						'type'=>'image/jpeg',
                 ];
                 $this->rotate_jpg($new_file , $Orientation);    //图片摆正角度
+                
+                if ( config('webdb.is_waterimg') && config('webdb.waterimg') ) {    //加水印
+                    $this->create_water( $new_file );
+                }
+                
 				 if (config('webdb.upload_driver')  != 'local') {
                     $hook_result = \think\Hook::listen('upload_driver',$file_info, ['from' => $from, 'module' => $module, 'type' => 'base64'], true);
                     if (false !== $hook_result) {
@@ -282,6 +297,7 @@ class Attachment extends IndexBase
             return $this->errFile($from,$error_msg);
         }
         
+        
         Hook_listen('upload_attachment_begin', $file, ['from' => $from, 'module' => $module]);  //上传前处理
                 
        //用于第三方文件上传扩展
@@ -298,7 +314,7 @@ class Attachment extends IndexBase
 
 
         // 移动到根目录/uploads/ 目录下
-        $info = $file->move(config('upload_path') . DS . $dir);
+        $info = $file->move(config('upload_path') . DS . $dir, $this->user['uid'].'_'.date('YmdHis').rands(5). '.' .$file_ext );
 
         if($info){
             $path = 'uploads/' . $dir . '/' . str_replace('\\', '/', $info->getSaveName());
@@ -311,16 +327,16 @@ class Attachment extends IndexBase
             Hook_listen('upload_attachment_end', $info, ['from' => $from, 'module' => $module]);  //上传后处理
             
             // 图片加水印
-            if ( $dir == 'images' && config('if_gdimg') == 1 && config('waterimg') ) {
+            if ( in_array($file_ext,['jpeg','jpg','png','bmp']) && config('webdb.is_waterimg') && config('webdb.waterimg') ) {
                 $this->create_water($info->getRealPath());
             }
-
+            
             // 缩略图路径
             $thumb_path_name = '';
             // 生成缩略图
-            if ($dir == 'images' && config('upload_image_thumb') != '') {
-                $thumb_path_name = $this->create_thumb($info, $info->getPathInfo()->getfileName(), $info->getFilename());
-            }
+//             if ( in_array($file_ext,['jpeg','jpg','png','bmp'])  ) {
+//                 $thumb_path_name = $this->create_thumb($info, $info->getPathInfo()->getfileName(), $info->getFilename());
+//             }
 
             // 获取附件信息
             $file_info = [
@@ -415,15 +431,15 @@ class Attachment extends IndexBase
             $image->crop($cut_info[0], $cut_info[1], $cut_info[2], $cut_info[3], $cut_info[4], $cut_info[5])->save($new_file_path);
 
             // 水印功能
-            if (config('upload_thumb_water') == 1 && config('upload_thumb_water_pic') > 0) {
-                $this->create_water($new_file_path);
-            }
+//             if (config('webdb.is_waterimg') ) {
+//                 $this->create_water($new_file_path);
+//             }
 
             // 是否创建缩略图
             $thumb_path_name = '';
-            if (config('upload_image_thumb') != '') {
-                $thumb_path_name = $this->create_thumb($new_file_path, $dir_name, $file_name);
-            }
+//             if (config('upload_image_thumb') != '') {
+//                 $thumb_path_name = $this->create_thumb($new_file_path, $dir_name, $file_name);
+//             }
 
             // 保存图片
             $file = new File($new_file_path);
@@ -467,11 +483,11 @@ class Attachment extends IndexBase
     protected function create_thumb($file = '', $dir = '', $save_name = '')
     {
         // 获取要生成的缩略图最大宽度和高度
-        list($thumb_max_width, $thumb_max_height) = explode(',', config('upload_image_thumb'));
+        list($thumb_max_width, $thumb_max_height) = explode(',', config('webdb.upload_image_thumb'));
         // 读取图片
         $image = Image::open($file);
         // 生成缩略图
-        $image->thumb($thumb_max_width, $thumb_max_height, config('upload_image_thumb_type'));
+        $image->thumb($thumb_max_width, $thumb_max_height, config('webdb.upload_image_thumb_type'));
         // 保存缩略图
         $thumb_path = config('upload_path') . DS . 'images/' . $dir . '/thumb/';
         if (!is_dir($thumb_path)) {
@@ -489,13 +505,20 @@ class Attachment extends IndexBase
      */
     protected function create_water($file = '')
     {
-        $path = model('admin/attachment')->getFilePath(config('upload_thumb_water_pic'), 1);
-        $thumb_water_pic = realpath(ROOT_PATH . 'public/' . $path);
-
+        $array = @getimagesize($file);
+        if ($array[0]<400 || $array[1]<400) {   //宽与高,只要有一个小于400,就不要加水印了
+            return ;
+        }
+        
+        $thumb_water_pic = PUBLIC_PATH.config('webdb.waterimg');
+        if (!is_file($thumb_water_pic)) {
+            return ;
+        }
+        
         // 读取图片
         $image = Image::open($file);
         // 添加水印
-        $image->water($thumb_water_pic, config('upload_thumb_water_position'), config('upload_thumb_water_alpha'));
+        $image->water($thumb_water_pic, config('webdb.waterpos')?:rand(1,9), config('webdb.waterAlpha'));
         // 保存水印图片，覆盖原图
         $image->save($file);
     }

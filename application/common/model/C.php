@@ -306,9 +306,9 @@ abstract class C extends Model
      * 获取所有模型的内容
      * @return \think\Paginator|array|\think\db\false|PDOStatement|string|\think\Model
      */
-    public static function getAll(){
+    public static function getAll($map=[]){
         self::InitKey();
-        $array = Db::name(self::$base_table)->order('id','desc')->paginate();
+        $array = Db::name(self::$base_table)->where($map)->order('id','desc')->paginate();
         foreach ($array AS $key=>$ar){
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();

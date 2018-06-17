@@ -31,6 +31,9 @@ class Table extends Base
             $array['fun'] = $field[3];
             $array['opt'] = $field[4];
         }
+        if($field[2]=='select'){   //频道模型那里的栏目不能选择本模型之外的栏目
+            $array['sys'] = $field[4];
+        }
         return $array;
     }
     
@@ -60,6 +63,22 @@ class Table extends Base
             $field['url'] = str_replace('__id__', $info['id'], $field['url']);
             $show = "<a href='{$field['url']}' target='{$field['target']}'>$field_value</a>";
         }elseif($field['type'] == 'select'){
+            $mid = 0;
+            if($field['sys'] && sort_config($field['sys'])){    //频道模型那里的栏目不能选择本模型之外的栏目
+                $sort_arrray =sort_config($field['sys']);
+                foreach($sort_arrray AS $rs){
+                    if($rs['id']==$field_value){
+                        $mid = $rs['mid'];
+                    }
+                }
+                if($mid){
+                    foreach ($field['array'] AS $key=>$v){
+                        if($sort_arrray[$key]['mid']!=$mid){
+                            unset($field['array'][$key]);
+                        }
+                    }
+                }                
+            }
             $show = "<select class='select_edit' data-name='$name' data-value='{$field_value}' data-id='{$info['id']}'>";
             foreach($field['array'] AS $key=>$v){
                 $select = $field_value==$key ? 'selected' : '' ;

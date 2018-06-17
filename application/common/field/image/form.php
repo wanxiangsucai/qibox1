@@ -166,7 +166,7 @@ jQuery(document).ready(function() {
                 var image = new Image();
                 image.src = blobURL;
                 image.onload = function() {
-                    var resized = resizeUpImages(image);					
+                    var resized = resizeUpImages(image , (file.name.substr(file.name.lastIndexOf(".")+1)).toLowerCase() );					
 					if(resized){
 						// alert( alltags );
 						$.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':alltags}).done(function (res) {
@@ -188,7 +188,7 @@ jQuery(document).ready(function() {
             reader.readAsArrayBuffer(file);
         };
 
-        var resizeUpImages = function (img) {
+        var resizeUpImages = function (img,type) {
             //压缩的大小
             var max_width = 1920; 
             var max_height = 1080; 
@@ -213,8 +213,11 @@ jQuery(document).ready(function() {
 
             var ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0, width, height);
+			if(type=='jpg'||type==''||type==undefined){
+				type='jpeg';
+			}
             //压缩率
-            return canvas.toDataURL("image/jpeg",0.72); 
+            return canvas.toDataURL("image/"+type,0.72); 
         };
 
 	});

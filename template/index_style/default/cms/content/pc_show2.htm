@@ -75,4 +75,8 @@ var imgdatas=[
 	<!--引用评论碎片模板common\view\comment\pc01.htm每页显示3条评论-->
 	{qb:comment name="commentpc01" rows='5' tpl="comment/pc01"}{/qb:comment}
 </div>
+
+<!-- 微动态自动收录用户感兴趣的主题,时间60代表用户停留60秒将自动收藏 -->
+{:fun('sns@fav',$info,60,'系统帮你订阅了本主题,下次本主题有回复,将会通知你')}
+
 {/block}
