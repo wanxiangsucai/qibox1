@@ -6,6 +6,10 @@ class Ueditor{
 
     public function show($content='',$pagetype=''){
         
+        if ($pagetype!='show') {
+            return $content;
+        }
+        
         if(strstr($content,'<embed type=')){
             $content = preg_replace_callback('/<embed type="application\/x-shockwave-flash" class="edui-faked-video"([^>]+)src="([^"]+)"([^>]+)>/is',array($this,get_embed_url),$content);
         }
