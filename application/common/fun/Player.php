@@ -15,6 +15,10 @@ class Player{
     public function play($url='',$width=600,$height=400,$autoplay=false){
         $width || $width=600;
         $height || $height=400;
+        if(IN_WAP===true && $width>=400){
+            $width = '100%';
+            $height = '250';
+        }
         if(is_numeric($width)){
             $width .= 'px';
         }
