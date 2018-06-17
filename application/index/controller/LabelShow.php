@@ -158,7 +158,7 @@ class LabelShow extends IndexBase
         $cfg = unserialize($tag_array['cfg']);
         if($cfg['sql']){
             $cfg['sql'] = str_replace('{pre}', config('database.prefix'), $cfg['sql']);
-            $array = \think\Db::query($cfg['sql']);
+            $array = query($cfg['sql']);
             return $array;
         }
     }
@@ -544,6 +544,8 @@ class LabelShow extends IndexBase
                 'rows'=>$cfg['rows'],
                 'order'=>$cfg['order'],
                 'by'=>$cfg['by'],
+                'where'=>$cfg['where'],
+                'status'=>$cfg['status'],
                 'pagename'=>$pagename,
                 'cache_time'=>$cache_time,
         ];

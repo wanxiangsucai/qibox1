@@ -53,6 +53,10 @@ class Base
             
             $show = self::format_url($field,$info);
             
+        }elseif ($field['type'] == 'ueditor') {
+            
+            $show = fun('ueditor@show',$f_value,$pagetype);
+            
         }elseif ($field['type'] == 'textarea') {    // 多行文本框
             
             $show = str_replace([' ',"\r\n"], ['&nbsp;','<br>'], $f_value);

@@ -7,6 +7,47 @@ namespace app\common\fun;
 class Label{
     
     /**
+     * 格式化标签查询语句 
+     * @param string $code
+     * @return unknown
+     */
+    function where($code=''){
+        if($code==''){
+            return ;
+        }
+        if(strstr($code,'"')){
+            $array = json_decode($code,true);
+        }else{
+            $detail = explode('@',$code);
+            foreach($detail AS $str){
+                if(!strstr($str,'|')&&strstr($str,'=')){
+                    list($field,$value) = explode('=',$str);
+                    if(strstr($value,',')){
+                        $value = explode(',',$value);
+                        $array[trim($field)] = ['in',$value];
+                    }else{
+                        $array[trim($field)] = trim($value);
+                    }
+                    continue;
+                }
+                list($field,$mod,$value) = explode('|',$str);
+                $field = trim($field);
+                $mod = trim($mod);
+                $value = trim($value);
+                if($mod=='='){
+                    $array[$field] = $value;
+                }else{
+                    if(strstr($value,',')){
+                        $value = explode(',',$value);
+                    }
+                    $array[$field] = [$mod,$value];
+                }
+            }
+        }
+        return $array;
+    }
+    
+    /**
      * 通用标签用的
      * @param unknown $tag_name
      * @param unknown $cfg

@@ -456,14 +456,14 @@ class User extends Model
 	    $min = ($page-1)*$cfg['rows'];
 	    
 	    if($cfg['where']){  //用户自定义的查询语句
-	        $_array = label_format_where($cfg['where']);
+	        $_array = fun('label@where',$cfg['where']);
 	        if($_array){
 	            $map = array_merge($map,$_array);
 	        }
 	    }
 	    $whereor = [];
 	    if($cfg['whereor']){  //用户自定义的查询语句
-	        $_array = label_format_where($cfg['whereor']);
+	        $_array = fun('label@where',$cfg['whereor']);
 	        if($_array){
 	            $whereor = $_array;
 	        }

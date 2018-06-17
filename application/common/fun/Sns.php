@@ -1,5 +1,7 @@
 <?php
 namespace app\common\fun;
+use think\Db;
+use app\weibo\model\Feed;
 
 class Sns{
     
@@ -27,10 +29,16 @@ class Sns{
             }
         }
         $reply = [];
-        $topic = $obj->getInfoByid($rs['aid'],true);
+        $topic = $obj->getInfoByid($rs['aid'],true);        
+        if($topic){
+            $topic['sys_name'] = $array['name'];
+        }else{
+            return [];
+        }
         if($rs['type']=='comment'){
             $reply = query('comment_content',[
                     'where'=>['id'=>$rs['rid']],
+                    'type'=>'one',
             ]);
         }elseif($rs['type']=='reply'){
             $reply = query($array['keywords'].'_reply',[
@@ -44,22 +52,169 @@ class Sns{
     }
     
     /**
-     * 将动态加入到所有粉丝那里
-     * @param number $aid 微博主UID
+     * 自动订阅主题
+     * @param unknown $info
+     * @param number $time
+     * @param string $msg
+     * @return string
+     */
+    public function fav($info,$time=30,$msg='系统帮你订阅了本主题,下次本主题有回复,将会通知你'){
+        $time = $time*1000;
+        $url = urls('weibo/api/fav_interest_topic',['sys'=>config('system_dirname'),'id'=>$info['id'],'uid'=>$info['uid']]);
+        return "<script type='text/javascript'>
+                setTimeout(function(){
+                	var url='$url';
+                	\$.get(url,function(res){
+                		if(res.code==0){
+                			layer.msg('$msg',{time:2500});
+                		}
+                	});
+                },$time);
+                </script>";
+    }
+    
+    /**
+     * 给被访问者插入动态信息 针对发布内容之外的事件
+     * @param unknown $touid 被访问者的UID
+     * @param string $msg 事件描述
+     * @param string $type 事件分类,可以省略用默认的
+     */
+    public function add_msg($touid,$msg='',$type='msg'){
+        if($touid==login_user('uid')){      //除发布内容之外,博主的其它事件,就没必要插入到自己的动态列表了,比如他访问了自己的博客
+            return ;
+        }
+        $about = login_user('uid') . "\t$msg";
+        $data=[
+                'uid'=>$touid,
+                'create_time'=>time(),
+                'type'=>$type,
+                'about'=>$about,
+        ];
+        Feed::create($data);
+        $this->add_newmsgnum($touid);    //给被访问者的消息+1
+    }
+    
+    /**
+     * 获取信息内容相关的用户
+     * 主题与回复的所有用户 , 也包括关注主题的用户 但不包括自己
+     * @param string $module
+     * @param number $aid
+     * @param string $type
+     * @return mixed|PDOStatement|string|boolean|number
+     */
+    public function get_content_user($module='',$aid=0,$type='reply'){
+        $m = modules_config($module);
+        $listdb = [];
+        if($type=='reply'){
+            $listdb = Db::name($m['keywords'].'_reply')->where('aid',$aid)->group('uid')->column('uid');
+        }elseif($type=='comment'){            
+            $sysid = $m['id'];
+            $listdb = Db::name('comment_content')->where('sysid',$sysid)->where('aid',$aid)->group('uid')->column('uid');
+        }
+        if($type!='add'){
+            $listdb[] = Db::name($m['keywords'].'_content')->where('id',$aid)->value('uid');
+        }
+        
+        $data = [];
+        foreach($listdb AS $uid){
+            $data['id'.$uid] = $uid;    //使用array_merge过滤重复,键必须是字符串才行,所以加个id,数字的话,不能过滤,只会增加
+        }
+        
+        $_listdb = $this->get_fav_user($module,$aid);
+        if($_listdb){
+            $data = array_merge($data,$_listdb);
+        }
+        $uid = login_user('uid');
+        unset($data['id'.$uid]);
+        return $data;
+    }
+    
+    /**
+     * 获取对某个频道主题感兴趣的所有用户
+     * @param string $module
+     * @param number $aid
+     * @return array
+     */
+    public function get_fav_user($module='',$aid=0){
+        $m = modules_config($module);
+        $sysid = $m['id'];
+        $listdb = Db::name('weibo_fav')->where('sysid',$sysid)->where('aid',$aid)->column('uid');
+        $data = [];
+        foreach($listdb AS $uid){
+            $data['id'.$uid] = $uid;     //使用array_merge过滤重复,键必须是字符串才行,所以加个id,数字的话,不能过滤,只会增加
+        }
+        return $data;
+    }
+    
+    /**
+     * 把新消息清0
+     * @param number $uid
+     */
+    public function clear_msg($uid=0){
+        if($uid!=login_user('uid')){
+            return ;
+        }
+        Db::name('weibo_content1')->where('id',$uid)->update(['msgnum'=>0]);
+    }
+    
+    /**
+     * 检查用户是否有微博
+     * @param number $uid
+     */
+    public function weibo($uid=0){
+        $info = Db::name('weibo_content1')->where('id',$uid)->find();
+        return getArray($info);
+    }
+    
+    /**
+     * 动态新消息+1
+     * @param number $uid
+     */
+    public function add_newmsgnum($uid=0){
+        if($uid==login_user('uid')){    //自己就没有必要给自己增加新消息数目了
+            return ;
+        }
+        Db::name('weibo_content1')->where('id',$uid)->setInc('msgnum',1);
+    }
+    
+    /**
+     * 将新产生的动态加入到当前用户的所有粉丝那里
+     * 如果是主题回复的话,也发送到关注主题的用户那里
+     * @param number $login_uid 当前用户的UID
      * @param array $data 博主动态索引
      * @return boolean
      */
-    public function push_toFans($aid=0,$data=[]){
+    public function push_toFans($login_uid=0,$data=[]){
+        
+        //$this->add_newmsgnum($login_uid);
+        
+        //获取当前用户的所有粉丝
         $listdb = query('weibo_member',[
-                'where'=>['aid'=>$aid],
+                'where'=>['aid'=>$login_uid],
                 'column'=>'uid',
         ]);
+        
+        if($data['sysid'] && $data['aid']){ //通过这里判断是发布信息内容 , 把信息里的回复用户及关注用户一起合并到粉丝用户那里增加动态
+            $_topic = $this->get_content_user($data['sysid'],$data['aid'],$data['type']);
+            if($_topic){
+                $_listdb = [];
+                foreach($listdb AS $_uid){
+                    $_listdb['id'.$_uid] = $_uid;    //使用array_merge过滤重复,键必须是字符串才行,所以加个id,数字的话,不能过滤,只会增加
+                }
+                $listdb = array_merge($_listdb,$_topic);
+            }
+        }
+        
         $array = [];
         foreach ($listdb AS $_uid){
+            if($login_uid==$_uid){    //避免给自己再增加动态,因为钩子那里已经给自己加过动态了
+                continue;
+            }
+            $this->add_newmsgnum($_uid);    //给他们都加一条新消息数量
             $array[] = array_merge($data,['uid'=>$_uid]);
         }
         
-        $obj = new \app\weibo\model\Feed;
+        $obj = new Feed();
         $obj->push_all($array);
         return true;
     }
@@ -97,7 +252,7 @@ class Sns{
         if (empty($data)) {
             return ;
         }
-        $obj = new \app\weibo\model\Feed;
+        $obj = new Feed();
         $obj->push_all($data);
         return true;
     }
@@ -131,7 +286,7 @@ class Sns{
         if (empty($data)) {
             return ;
         }
-        $obj = new \app\weibo\model\Feed;
+        $obj = new Feed();
         $obj->push_all($data);
         return true;
     }
@@ -167,7 +322,7 @@ class Sns{
         if (empty($data)) {
             return ;
         }
-        $obj = new \app\weibo\model\Feed;
+        $obj = new Feed();
         $obj->push_all($data);
         return true;
     }

@@ -156,6 +156,9 @@ if (!function_exists('format_time')) {
      * @return false|string
      */
     function format_time($time = '', $format='Y-m-d H:i') {
+        if(!preg_match('/^([\d]+)$/', $time)){
+            $time = strtotime($time);
+        }
         if($format===true){
             $_time = time() - $time;
             if($_time<60){
@@ -344,25 +347,7 @@ if (!function_exists('plugin_action')) {
     }
 }
 
-if (!function_exists('full_url')) {
-    /**
-     * 补全缺少模块与控制器的URL
-     * @param string $url
-     * @return string
-     */
-    function full_url($url=''){
-        static $_m = null;
-        $_m===null && $_m = Request::instance()->dispatch();
-        $m = $_m['module'];
-        $detail = explode('/',$url);
-        if(count($detail)==1){
-            $url = $m[0] . '/' . $m[1] . '/' . $url;
-        }elseif(count($detail)==2){
-            $url = $m[0] . '/' . $url;
-        }
-        return $url;
-    }
-}
+
 
 if (!function_exists('urls')) {
     /**
@@ -573,6 +558,26 @@ if (!function_exists('murl')) {
 
         if(!preg_match('/^member.php/', $url)){
             //$url = '/index.php'.$url;
+        }
+        return $url;
+    }
+}
+
+if (!function_exists('full_url')) {
+    /**
+     * 补全缺少模块与控制器的URL
+     * @param string $url
+     * @return string
+     */
+    function full_url($url=''){
+        static $_m = null;
+        $_m===null && $_m = Request::instance()->dispatch();
+        $m = $_m['module'];
+        $detail = explode('/',$url);
+        if(count($detail)==1){
+            $url = $m[0] . '/' . $m[1] . '/' . $url;
+        }elseif(count($detail)==2){
+            $url = $m[0] . '/' . $url;
         }
         return $url;
     }
@@ -2366,48 +2371,6 @@ if (!function_exists('login_user')) {
     }
 }
 
-if (!function_exists('label_format_where')) {
-    /**
-     * 格式化标签查询语句
-     * @param string $code
-     * @return unknown
-     */
-    function label_format_where($code=''){
-        if($code==''){
-            return ;
-        }
-        if(strstr($code,'"')){
-            $array = json_decode($code,true);
-        }else{
-            $detail = explode('@',$code);
-            foreach($detail AS $str){
-                if(!strstr($str,'|')&&strstr($str,'=')){
-                    list($field,$value) = explode('=',$str);
-                    if(strstr($value,',')){
-                        $value = explode(',',$value);
-                        $array[trim($field)] = ['in',$value];
-                    }else{
-                        $array[trim($field)] = trim($value);
-                    }                    
-                    continue;
-                }
-                list($field,$mod,$value) = explode('|',$str);
-                $field = trim($field);
-                $mod = trim($mod);
-                $value = trim($value);
-                if($mod=='='){
-                    $array[$field] = $value;
-                }else{
-                    if(strstr($value,',')){
-                        $value = explode(',',$value);
-                    }
-                    $array[$field] = [$mod,$value];
-                }
-            }
-        }
-        return $array;
-    }
-}
 
 if (!function_exists('url_clean_domain')) {
     /**
@@ -2697,4 +2660,6 @@ if (!function_exists('getNavigation')) {
     function getNavigation($link_name='',$link_url='',$fid=0){return fun('page@getNavigation',$link_name,$link_url,$fid);}
 }
 
-
+if (!function_exists('label_format_where')) {
+    function label_format_where($code=''){return fun('label@where',$code);}
+}

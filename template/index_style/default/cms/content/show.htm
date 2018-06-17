@@ -16,15 +16,22 @@
 		</div>
 		<div class="ShowContent">
 			{$info.content}
-
+			
+			<!-- 组图 -->
 			{volist name="$info.picurls" id="rs"}
 			<br><img src="{$rs.picurl}"><br>
 			{/volist}
+
+			{notempty name="$info.mv_url"}
+			<!-- 视频模型 -->
+			<br><center>{:fun('Player@play',$info.mv_url,'100%','250px')}</center>
+			{/notempty}
+
 		</div>
 	</div>
 <!--显示自定义字段内容 field="picurl,title,content,keywords" 就是过滤掉不在里边重复显示的字段-->
   	<div class="OtherInfos">
-{qb:showpage field="picurl,title,content,keywords"}
+{qb:showpage field="picurl,title,content,keywords,mv_url"}
 		<div class="SideBox">
 			<div class="tag"><span>{$rs.title}</span></div>
 			<div class="cont">{$rs.value}

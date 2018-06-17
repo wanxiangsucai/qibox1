@@ -9,7 +9,7 @@ class Qb extends TagLib{
             'tag'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,fid,js,union,field', 'close' => 1],  //field 过滤循环不显示的字段,多个用,号隔开
             'url'      => ['attr' => 'name', 'close' => 0],
             'nav'      => ['attr' => 'name,title,url', 'close' => 0],
-            'listpage'      => ['attr' => 'name,time,rows,val,list,order,by,tpl,where,field', 'close' => 1],  //field 过滤不显示的字段,多个用,号隔开
+            'listpage'      => ['attr' => 'name,time,rows,val,list,order,by,tpl,status,where,field', 'close' => 1],  //field 过滤不显示的字段,多个用,号隔开
             'list_url'      => ['attr' => 'name', 'close' => 0],
             'showpage'      => ['attr' => 'name,time,type,tpl,val,field', 'close' => 1],    //field 过滤循环不显示的字段,多个用,号隔开
             'comment'      => ['attr' => 'name,time,rows,list,order,by,status,tpl,aid,sysid,where', 'close' => 1],  //这个是评论插件
@@ -280,6 +280,7 @@ class Qb extends TagLib{
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $order = empty($order)?'id':$order;
         $by = empty($by)?'desc':$by;
+        $status = $tag['status'];   //审核或推荐
         $where = $tag['where'];   //条件查询
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--LISTPAGE '."<!--$name\t$type\t$tpl-->";
@@ -291,7 +292,7 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' LISTPAGE--><?php endif; ?>';
-        $parse .= '<?php $__array__='."fun('label@run_listpage_label','$name',['mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'field'=>'$field','val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
+        $parse .= '<?php $__array__='."fun('label@run_listpage_label','$name',['mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'field'=>'$field','val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','status'=>'$status','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
         $parse .='$pages=$__array__[\'pages\'];$'.$name.'=$__array__[\'cfg\']; ?>';
         return $parse;
     }
