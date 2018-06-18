@@ -31,7 +31,7 @@ class Attachment extends IndexBase
      */
     protected function upBase64Pic($dir='',$from='',$module=''){
         $data = $this->request->post();
-        $base64_image_content = $data['imgBase64'];logs($base64_image_content);
+        $base64_image_content = $data['imgBase64'];
         $Orientation = $data['Orientation'];
         if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)){
             $type = $result[2];
