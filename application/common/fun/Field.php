@@ -3,10 +3,19 @@ namespace app\common\fun;
 class Field{
     
     /**
+     * 设置触发表单
+     * @param array $array
+     * @return void|string
+     */
+    public function setTrigger($array=[]){
+        return \app\common\field\Form::setTrigger($array);
+    }
+    
+    /**
      * 获取列表页的筛选字段
      * @param number $mid 模型ID
      */
-    function list_filter($mid=0){
+    public function list_filter($mid=0){
         $array = \app\common\util\Field_filter::get_field($mid);
         foreach ($array AS $name=>$rs){
             $url = \app\common\util\Field_filter::make_url($name,$mid);  //其它字段的网址

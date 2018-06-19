@@ -1,5 +1,10 @@
+<style type="text/css">
+.layui-input-inline .layui-input{
+	width:500px;
+}
+</style>
 <div class="MainContainers">
-<form name="form2" method="post" action="" class="layui-form">
+<form name="form2" method="post" action="" class="{notempty name='$tab_ext.trigger'} form-trigger {else /}  layui-form  {/notempty}">
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</span> </div>
   <div class="Conter">	
 	<!-- 功能接口钩子 -->
@@ -7,11 +12,11 @@
 
 {empty name="$tab_ext.group"}
 
-	<!--这种是最常用的,表单没做分组显示的-->
+	<!-- 这种是最常用的,表单没做分组显示的,如果你复制一个新模板的话,只要这一段就可以了 -->
 	<table class="FormTable">
 		<!-- 参数 field="pic,tit" 代表过滤哪些字段不显示出来 里边支持TP标签 -->
 		{qb:form field="" f_array="$f_array"}
-		<tr> 
+		<tr id="form_group_{$rs.name}"> 
 		  <td class='tdL'>{$rs.title}: </td>
 		  <td class="tdR {if in_array($rs['type'],['text','password','number','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
 			{$rs.value}
@@ -23,7 +28,7 @@
 
 {else /}
 	
-	<!-- 这是另一种用得很少,针对太多表单,而对他们做分组显示,下面就没做过滤哪些字段不显示的处理了,要自己重新修改做判断处理 -->
+	<!-- 这是另一种用得很少,如果你复制一个新模板的话,这一段可以全删除,针对太多表单,而对他们做分组显示,下面就没做过滤哪些字段不显示的处理了,要自己重新修改做判断处理 -->
     <div class="layui-tab">
 	  <ul class="layui-tab-title">
 	  	 <!-- 分组标题名称 -->
@@ -66,3 +71,74 @@
 
 </form>
 </div>
+
+{notempty name="$tab_ext.trigger"}
+<script type="text/javascript">
+var trigger_config = {
+	{:fun('field@setTrigger',$tab_ext.trigger)}
+}
+jQuery(document).ready(function() {
+    if (trigger_config.triggers != '') {
+        // 先隐藏依赖项
+        var field_hide_array   = trigger_config.field_hide.split(',') || [];
+        var field_values_array = trigger_config.field_values.split(',') || [];
+        for (var index in field_hide_array) {
+            $('#form_group_'+field_hide_array[index]).hide();
+        }
+
+        var trigger_form = $('.form-trigger');
+
+        $.each(trigger_config.triggers, function (trigger, content) {
+            trigger_form.delegate('[name='+ trigger +']', 'change', function (event, init) {
+                var trigger_item = $(this);
+                var trigger_value   = trigger_item.val();
+
+                $(content).each(function () {
+                    var that = $(this);
+                    var sel_values  = that[0].split(',') || [];
+                    var targets_array = that[1].split(',') || [];
+
+                    // 如果触发的元素是单选，且没有选中则设置值为空
+                    if (trigger_item.attr('type') == 'radio' && trigger_item.is(':checked') == false) {
+                        trigger_value = '';
+                    }
+
+                    if ($.inArray(trigger_value, sel_values) >= 0) {
+                        // 符合指定的值，显示对应的表单项
+                        for (var index in targets_array) {
+                            // 如果不是该对象自身直接创建的属性（也就是该属//性是原型中的属性），则跳过显示
+                            if (!targets_array.hasOwnProperty(index)) {
+                                continue;
+                            }
+                            $('#form_group_'+targets_array[index]).show();
+                        }
+                    } else {
+                        for (var item in targets_array) {
+                            if (!targets_array.hasOwnProperty(item)) {
+                                continue;
+                            }
+							$('#form_group_'+targets_array[item]).hide();
+                        }
+                    }
+                });
+            });
+
+            // 有默认值时触发
+            var trigger_value = '';
+            if (trigger_form.find('[name='+ trigger +']').attr('type') == 'radio') {
+                trigger_value = trigger_form.find('[name='+ trigger +']:checked').val() || '';
+                if (trigger_value != '' && $.inArray(trigger_value, field_values_array) >= 0) {
+                    var $radio_id = $('.form-trigger [name='+ trigger +']:checked').attr('id');
+                    $('.form-trigger #'+$radio_id).trigger("change", ['1']);
+                }
+            } else {
+                trigger_value = trigger_form.find('[name='+ trigger +']').val() || '';
+                if (trigger_value != '' && $.inArray(trigger_value, field_values_array) >= 0) {
+                    $('.form-trigger [name='+ trigger +']').trigger("change");
+                }
+            }
+        });
+    }
+});
+</script>
+{/notempty}

@@ -77,7 +77,7 @@ class Form extends Base
                 $cked = $info[$name]==$key?' selected ':'';
                 $_show .= "<option value='$key' $cked>$value</option>";
             }            
-            $show = "<select $ifmust name='{$name}' id='atc_{$name}'><option value=''>请选择</option>$_show</select>";
+            $show = "<select $ifmust name='{$name}' id='atc_{$name}'>$_show</select>";
         
         }elseif ($field['type'] == 'radio') {    // 单选按钮
             
@@ -146,5 +146,52 @@ class Form extends Base
                 'ifhide'=>$field['type'] == 'hidden' ? true : false,
         ];        
     }
+    
+    /**
+     * 触发选项
+     * @param array $trigger
+     * @return void|string
+     */
+    public static function setTrigger($trigger=[]){
+        if (empty($trigger)) {
+            return ;
+        }        
+        foreach ($trigger as $rs) {
+            $field_hide   .= $rs[2].',';
+            $field_values .= $rs[1].',';
+            $field_triggers[$rs[0]][] = "['{$rs[1]}', '{$rs[2]}']";
+        }
+        $show = '';
+        foreach($field_triggers as $field=>$ar){
+            $show .="'$field' : [".implode(',',$ar)."],";
+        }
+        $show ="'triggers' : { $show },";
+        $show .= "\r\n'field_hide': '$field_hide',\r\n'field_values': '$field_values',";
+        return $show;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 }

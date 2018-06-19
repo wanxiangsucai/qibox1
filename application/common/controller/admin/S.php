@@ -33,8 +33,7 @@ abstract class S extends AdminBase
                 ['list', '排序值', 'text.edit'],
         ];
         
-        $this->form_items = [
-                
+        $this->form_items = [                
                 ['text', 'name', '栏目名称'],
                 ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle()],
                 ['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList(),1],
@@ -88,8 +87,8 @@ abstract class S extends AdminBase
         if($this->request->isPost()){
             $data = $this -> request -> post();            
             if (!empty($this -> validate)) {    // 验证
-                $result = $this -> validate($data, $this -> validate);
-                if (true !== $result) $this -> error($result);
+                //$result = $this -> validate($data, $this -> validate);
+                //if (true !== $result) $this -> error($result);
             } 
             
             $data['allowpost'] = implode(',', $data['allowpost']);  //允许发布内容的用户组
@@ -111,7 +110,7 @@ abstract class S extends AdminBase
                 '基础设置'=>[
                         ['text', 'name', '栏目名称'],
                         ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle($id)],
-                        ['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
+                        //['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
                         ['icon', 'logo', '图标',],
                         ['checkbox', 'allowpost', '允许发布内容的用户组','全留空,则不作限制',getGroupByid()],
                 ],
