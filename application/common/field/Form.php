@@ -80,8 +80,13 @@ class Form extends Base
         }elseif ($field['type'] == 'select') {      // 下拉框
             
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
+            $i = 0;
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' selected ':'';
+                $i++;
+                if($i==1&&!empty($key)){
+                    $_show .= "<option value=''>请选择...</option>";
+                }
                 $_show .= "<option value='$key' $cked>$value</option>";
             }            
             $show = "<select $ifmust name='{$name}' id='atc_{$name}'>$_show</select>";
