@@ -92,7 +92,13 @@ class Table extends Base
         }elseif($field['type'] == 'datetime'){
             $show = date('Y-m-d H:i',$field_value);
         }elseif($field['type'] == 'text.edit'){
-            $show = "<input type='text' class='quick_edit' data-value='{$field_value}' data-name='$name' data-id='{$info['id']}' name='{$name}[{$info['id']}]' size='5' value='{$field_value}'>";
+            $size = 8;
+            $_class = '_num';
+            if(!is_numeric($field_value)){
+                $size = '15';
+                $_class = '_string';
+            }
+            $show = "<input type='text' class='quick_edit {$_class}' data-value='{$field_value}' data-name='$name' data-id='{$info['id']}' name='{$name}[{$info['id']}]' size='$size' value='{$field_value}'>";
         }elseif($field['type'] == 'callback'){
             $field['opt'] = str_replace('__','',$field['opt']);
             if($field['opt']=='data'){
