@@ -63,7 +63,8 @@
 	{:hook_listen('template_form_foot',$form_items,$form_items,true)} 
     <div class='submits'>
 		{notempty name=":input('id')"}<input type="hidden" name="id" value="{:input('id')}">{/notempty}
-		<input type="button" onclick="window.history.back()" style="color:#555;margin-right:30px;" onmouseout="$(this).css({'background':'#eee'})" onmouseover="$(this).css({'background':'orange'})" value="取消返回">
+		{if $tab_ext.hidebtn!='back'}<input type="button" onclick="window.history.back()" style="color:#555;margin-right:30px;" onmouseout="$(this).css({'background':'#eee'})" onmouseover="$(this).css({'background':'orange'})" value="取消返回">{/if}
+		{$tab_ext.addbtn}
         <input type="submit" name="Submit" value="确认提交">    
     </div>
 

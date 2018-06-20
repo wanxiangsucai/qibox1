@@ -6,6 +6,11 @@ $jscode = '';
 if(fun('field@load_js',$field['type'])){
 
 	$serverurl = urls('index/attachment/upload','dir=images&from=base64&module='.request()->dispatch()['module'][0]);
+	$cuturl = iurl('index/image/cutimg');
+	$width = IN_WAP===true?'95%':'900px';
+	$height = IN_WAP===true?'100%':'800px';
+	$display = IN_WAP===true?'':'display:none;';
+
 	$jscode = <<<EOT
 
 <style type="text/css">
@@ -73,11 +78,22 @@ if(fun('field@load_js',$field['type'])){
 	top:0px;
 	cursor: pointer;
 }
+.ListImgs div em.cut{
+	left: 0px;
+}
+.ListImgs div em.drag{
+	left: 0px;
+	top:55px;
+	cursor: move;
+}
 .ListImgs div em:hover{
 	background:rgba(255,60,0,0.6);
 }
+.ListImgs div em{
+	{$display}
+}
 </style>
-
+<script src="__STATIC__/libs/jquery-ui/jquery-ui.min.js"></script>  
 <script type="text/javascript" src="__STATIC__/js/exif.js"></script>
 <script type="text/javascript">
 var severUrl = "$serverurl";
@@ -91,14 +107,58 @@ jQuery(document).ready(function() {
 		that.find(".upbtn").click(function(e){
 			that.find('input[type="file"]').click();
 		});
+	
+	//拖拽排序
+	var drag_move = function(){
+		that.find('.ListImgs').sortable({
+                //connectWith: ".ListImgs div",
+                handle: '.drag',
+                stop: function () { 
+					check_value();
+                }
+            }).disableSelection();
+	}
+	
+	//鼠标经过时显示操作菜单
+	var showmenu = function(){
+		that.find('.ListImgs div').each(function(){
+			var obj = $(this);
+			obj.hover(  
+                    function(){  
+                        obj.find('em').show();  
+                    },
+                    function(){  
+                        obj.find('em').hide();  
+                    }   
+            ) ;
+		});
+	}
 
-		var addclick = function(){
-			that.find(".ListImgs em").click(function(e){
-				//这里删除的图片没有真正从服务器删除
-				$(this).parent().remove();
-				pics = [];
-				 
-				var obj = that.find(".ListImgs img");
+	//截图事件
+	var add_cutimg = function(e){
+		that.find('.cut').each(function () {
+			var cthis = $(this);
+			cthis.on('click',function(){
+				var pic = cthis.parent().find("img").attr('src');
+				var opt = cthis.data('options');
+				layer.open({
+					type: 2,
+					title: '截图',
+					area: ["{$width}", "{$height}"],
+					scrollbar: false,
+					content: '{$cuturl}?picurl='+pic+'&opt='+opt,
+					end: function () {
+						check_value();	//重新核对数据
+					}
+				});
+			});
+		});
+	}
+
+		//核对数据
+		var check_value = function(){
+				pics = [];	//重新设置值
+				var obj = that.find(".ListImgs img");				
 				obj.each(function(e){
 					var img = $(this).attr("src");
 					img = img.replace('/public/','');
@@ -107,10 +167,17 @@ jQuery(document).ready(function() {
 				});
 				if(obj.length==0){
 					that.find(".input_value").val('');
-				}			
+				}
+		};
+
+		var delpic = function(){
+			that.find(".ListImgs em.del").click(function(e){
+				//这里删除的图片没有真正从服务器删除
+				$(this).parent().remove();
+				check_value();			
 			});
 		};
-		addclick();
+		delpic();
 
 		that.find('input[type="file"]').change(function(){
             uploadBtnChange($(this).get(0),that.find(".input_value"),pics,viewpics);
@@ -123,15 +190,18 @@ jQuery(document).ready(function() {
 		var viewpics = function(url,pic_array){
 			var html = '';
 			pic_array.forEach(function(f){
-			var sear=new RegExp('http');
-			if(sear.test(f)){
-    　　		html += '<div><span><img src="'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
-　　		}else{
-				html += '<div><span><img src="/public/'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
-			}
+				var sear=new RegExp('http');
+				if(sear.test(f)){
+		　　			html += '<div><span><img src="'+f+'"></span><em class="del"><i class="fa fa-remove"></i></em><em class="cut" data-options=""><i class="fa fa-cut"></i></em><em class="drag"><i class="fa fa-arrows"></i></em></div>';
+		　　		}else{
+					html += '<div><span><img src="/public/'+f+'"></span><em class="del"><i class="fa fa-remove"></i></em><em class="cut" data-options=""><i class="fa fa-cut"></i></em><em class="drag"><i class="fa fa-arrows"></i></em></div>';
+				}
 			});
 			that.find(".ListImgs").html(html);
-			addclick();
+			delpic();
+			drag_move();
+			add_cutimg();
+			showmenu();
 		};
 		viewpics('',pics);
 

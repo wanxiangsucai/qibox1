@@ -85,6 +85,8 @@ class Table extends Base
                 $show .="<option value='$key' $select>$v";
             }
             $show .= "</select>";
+        }elseif($field['type'] == 'icon'){
+            $show = $field_value?"<i class='{$field_value}'></i>":'';
         }elseif($field['type'] == 'select2'){
             $show = $field['array'][$field_value];
         }elseif($field['type'] == 'datetime'){
@@ -118,6 +120,8 @@ class Table extends Base
     public static function get_rbtn($btns=[],$info=[]){
         $data = [];
         foreach($btns AS $rs){
+            $rs['icon'] || $rs['icon']='glyphicon glyphicon-menu-hamburger';
+            $rs['href'] || $rs['href']=$rs['url'];
             $rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
             $data[] = [
                     'title'=>$rs['title'],

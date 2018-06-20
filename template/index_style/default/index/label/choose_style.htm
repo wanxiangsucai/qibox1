@@ -125,6 +125,7 @@ $cktypes[$types]=" class='ck'";
 <script type="text/javascript">
 $(".chooseTpl li").click(function(){
 	var code = $(this).find('textarea').val();
+	$(window.parent.document).find("#atc_view_tpl").val(code)
 	$(window.parent.document).find("#view_tpl").val(code)
   	var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
   	parent.layer.close(index);

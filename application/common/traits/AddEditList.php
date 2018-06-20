@@ -179,6 +179,21 @@ trait AddEditList {
 	}
 	
 	/**
+	 * 处理url href 混乱的问题
+	 * @param array $array
+	 * @return unknown
+	 */
+	protected function builder_url($array=[]){
+	    if ($array) {
+	        foreach($array AS $key=>$rs){
+	            $rs['url'] = $rs['href'] = $rs['url'] ?: $rs['href'];
+	            $array[$key] = $rs;
+	        }
+	        return $array;
+	    }
+	}
+	
+	/**
 	 * 自动生成列表页模板,并把数据显示出来
 	 * @param array $data_list
 	 * @return mixed|string
@@ -186,7 +201,13 @@ trait AddEditList {
 	protected function getAdminTable($data_list = []) {
 	    
 	    $template = $this->get_template('',$this->mid);
+	    if (empty($template)) {
+	        $template = getTemplate('admin@common/wn_table');
+	    }
 	    if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
+	        $this->tab_ext['top_button'] = $this->builder_url($this->tab_ext['top_button']);
+	        $this->tab_ext['top_button'] || $this->tab_ext['top_button'] = [['type'=>'add'],['type'=>'delete']];   //如果没设置顶部菜单 就给两个默认的
+	        $this->tab_ext['right_button'] = $this->builder_url($this->tab_ext['right_button']);
 	        $pages = is_object($data_list) ? $data_list->render() : '';
 	        $array = getArray($data_list);
 	        $this->assign('listdb',isset($array['data'])?$array['data']:$array);
@@ -342,6 +363,9 @@ trait AddEditList {
 		$data_list = $this -> getListData($map, $order);
 		
 		$template = $this->get_template('',$this->mid);
+		if (empty($template)) {
+		    $template = getTemplate('admin@common/wn_table');
+		}
 		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 		    $this->assign('listdb',$data_list);
 		    $this->assign('mid',$this->mid);
@@ -431,6 +455,9 @@ trait AddEditList {
 		}
 		
 		$template = $this->get_template('',$this->mid);
+		if (empty($template)) {
+		    $template = getTemplate('admin@common/wn_form');
+		}
 		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 		    //$this->assign('listdb',$data_list);
 		    $this->assign('mid',$this->mid);
@@ -542,6 +569,9 @@ trait AddEditList {
 		}
 		
 		$template = $this->get_template('',$this->mid);
+		if (empty($template)) {
+		    $template = getTemplate('admin@common/wn_form');
+		}
 		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 		    $this->assign('info',$info);
 		    $this->assign('f_array',$this -> form_items);

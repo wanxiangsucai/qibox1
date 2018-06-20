@@ -1,39 +1,26 @@
 <?php
 namespace app\common\util;
-use app\common\builder\Table as BuilderTable;
 use app\common\traits\AddEditList;
+use app\common\controller\IndexBase;
 
-class Tabel{
+class Tabel extends IndexBase{
     
     use AddEditList;
-    public static $Btable;
     protected static $instance;
-    protected static $listdb=[];   //列表数据
-    protected static $f_array=[];   //字段信息
+    protected $listdb = [];   //列表数据
     
     /**
      * 创建显示列表的table表格
      * @param array $data_list 从数据库取出的列表数据
      * @param array $tab_list 表格参数
      * 比如 [   ['title','标题','text']  , ['mid','模型名称','select2','',[1=>'文章',2=>'图片'] ] ]
-	 * 第三项常用类型 比如 text select select2 text.edit
-	 * 第四项是默认值，第五项是参数，常用为数组
      */
     public static function make($data_list=[],$tab_list=[],$right_button='',$top_button_delete=true){
-        self::$listdb = $data_list;     //纯属给个性模板使用的
-        self::$f_array = $tab_list;     //纯属给个性模板使用的
-        self::$Btable = BuilderTable::make()->addColumns($tab_list)->setRowList($data_list);
-
-	    if(!empty($right_button)){
-	        //self::$Btable->addRightButtons($right_button);
-	    }
-	    if(!empty($delete_all)){
-	        //self::$Btable->addRightButtons($right_button);
-	    }
-	    
 	    if (is_null(self::$instance)) {
 	        self::$instance = new static();
 	    }
+	    self::$instance->list_items = $tab_list;
+	    self::$instance->listdb = $data_list;
 	    return self::$instance;
 	}
 	
@@ -48,7 +35,7 @@ class Tabel{
      * @return $this
      */
 	public static function addList($name = '', $title = '', $type = '', $default = '', $param = '', $class = ''){
-	    self::$Btable->addColumn($name, $title, $type, $default, $param, $class);
+	    self::$instance->list_items[] = [$name, $title, $type, $default, $param, $class];
 	    return self::$instance;
 	}
 	
@@ -61,7 +48,7 @@ class Tabel{
 	 * @return $this
 	 */
 	public static function addLists($array=[]){
-	    self::$Btable->addColumns($array);
+	    self::$instance->list_items = is_array(self::$Btable->list_items) ? array_merge(self::$Btable->list_items , $array) : $array ;
 	    return self::$instance;
 	}
 	
@@ -72,7 +59,7 @@ class Tabel{
 	 * @return $this
 	 */
 	public static function addNav($tab_list = [], $curr_id = ''){
-	    self::$Btable->setTabNav($tab_list, $curr_id );
+	    self::$instance->tab_ext['nav'] = [$tab_list,$curr_id];
 	    return self::$instance;
 	}
 	
@@ -83,7 +70,7 @@ class Tabel{
 	 * @return $this
 	 */
 	public static function addPageTips($msg = '', $type = 'info'){
-	    self::$Btable->setPageTips($msg , $type );
+	    self::$instance->tab_ext['help_msg'] = $msg;
 	    return self::$instance;
 	}
 	
@@ -93,8 +80,57 @@ class Tabel{
 	 * @return $this
 	 */
 	public static function addPageTitle($title = ''){
-	    self::$Btable->setPageTitle($title);
+	    self::$instance->tab_ext['page_title'] = $title;
 	    return self::$instance;
+	}
+	
+	
+	
+	private static function get_right_bottom($type='',$attr=''){
+	    $title = [
+	            'delete'=>'删除',
+	            'edit'=>'修改',
+	    ];
+	    $icon = [
+	            'delete'=>'fa fa-times',
+	            'edit'=>'fa fa-pencil',
+	    ];
+	    $class = [
+	            'delete'=>'btn btn-xs btn-default',
+	            'edit'=>'btn btn-xs btn-default',
+	    ];
+	    $href = [
+	            'delete'=>auto_url('delete',['id' => '__id__']),
+	            'edit'=>auto_url('edit',['id' => '__id__']),
+	    ];
+	    $array = $$attr;
+	    return $array[$type];
+	}
+	
+	
+	private static function get_top_bottom($type='',$attr=''){
+	    $title = [
+	            'add'=>'新增',
+	            'delete'=>'删除',
+	            'back'=>'返回',
+	    ];
+	    $icon = [
+	            'add'=>'fa fa-plus-circle',
+	            'delete'=>'fa fa-times-circle-o',
+	            'back'=>'fa fa-reply',
+	    ];
+	    $class = [
+	            'add'=>'btn btn-primary',
+	            'delete'=>'btn btn-danger ajax-post confirm',
+	            'back'=>'btn btn-info',
+	    ];
+	    $href = [
+	            'add'=>auto_url('add'),
+	            'delete'=>auto_url('delete'),
+	            'back'=>'javascript:history.back(-1);',
+	    ];
+	    $array = $$attr;
+	    return $array[$type];
 	}
 	
 	/**
@@ -105,7 +141,13 @@ class Tabel{
 	 * @return $this
 	 */
 	public static function addTopButton($type = '', $attribute = [], $blank = false){
-	    self::$Btable->addTopButton($type, $attribute, $blank);
+	    self::$instance->tab_ext['top_button'][] = [
+	            'title' => $attribute['title'] ?: self::get_top_bottom($type,'title'),
+	            'icon'  => $attribute['icon'] ?: self::get_top_bottom($type,'icon'),
+	            'class' => $attribute['class'] ?: self::get_top_bottom($type,'class'),
+	            'href'  => $attribute['href'] ?: self::get_top_bottom($type,'href'),
+	            'type'  => $type,
+	    ];
 	    return self::$instance;
 	}
 	
@@ -125,7 +167,12 @@ class Tabel{
 	                $attribute
 	                );
 	    }
-	    self::$Btable->addRightButton($type, $attribute, $blank);
+	    self::$instance->tab_ext['right_button'][] = [
+	            'title' => $attribute['title'] ?: self::get_right_bottom($type,'title'),
+	            'icon'  => $attribute['icon'] ?: self::get_right_bottom($type,'icon'),
+	            'class' =>$attribute['class'] ?: self::get_right_bottom($type,'class'),
+	            'href'  => $attribute['href'] ?: self::get_right_bottom($type,'href'),
+	    ];
 	    return self::$instance;
 	}
 	
@@ -136,7 +183,7 @@ class Tabel{
 	 * @return $this
 	 */
 	public static function addRightButtons($button_array = []){
-	    self::$Btable->addRightButtons($button_array);
+	    self::$instance->tab_ext['right_button'] = is_array(self::$Btable->tab_ext['right_button']) ? array_merge(self::$Btable->tab_ext['right_button'],$button_array) : $button_array;
 	    return self::$instance;
 	}
 	
@@ -146,7 +193,6 @@ class Tabel{
 	 * @return $this
 	 */
 	public static function addOrder($column=[]){
-	    self::$Btable->addOrder($column);
 	    return self::$instance;
 	}
 	
@@ -159,7 +205,7 @@ class Tabel{
      * @return $this
      */
 	public static function addSearch($fields = [], $placeholder = '', $url = '', $search_button = null){
-	    self::$Btable->setSearch($fields, $placeholder, $url, $search_button);
+	    self::$instance -> tab_ext['search'][] = [$fields=>$placeholder];
 	    return self::$instance;
 	}
 	
@@ -172,7 +218,7 @@ class Tabel{
      * @return $this
      */
 	public static function addFilter($columns = [], $options = [], $default = [], $type = 'radio'){
-	    self::$Btable->addFilter($columns, $options, $default, $type);
+	    self::$instance -> tab_ext['filter_search'][] = $columns;
 	    return self::$instance;
 	}
 	
@@ -185,7 +231,7 @@ class Tabel{
      * @return $this
      */
 	public static function addFilterList($field = '', $list = [], $default = '', $type = 'radio'){
-	    self::$Btable->addFilterList($field, $list, $default, $type);
+	    self::$instance->addFilterList($field, $list, $default, $type);
 	    return self::$instance;
 	}
 	
@@ -197,11 +243,8 @@ class Tabel{
 	 * @param array  $config   模板参数
 	 * @return mixed
 	 */
-	public static function fetch($template = '', $vars = [], $replace = [], $config = []){	    
-	    if(empty($template)&&$template = static::get_template('')){    //如果模板存在的话,就用实际的后台个性模板
-	        $vars = array_merge($vars,['listdb'=>self::$listdb,'f_array'=>self::$f_array]);
-	    }
-	    return self::$Btable->fetch($template, $vars, $replace, $config);
+	public static function fetchs(){
+	    return self::$instance->getAdminTable(self::$instance->listdb);
 	}
 	
 }

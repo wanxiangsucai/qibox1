@@ -76,7 +76,7 @@ class Content extends IndexBase
 // 	    ->addOrder('id,list')
 // 	    ->addPageTitle('管理评论');
 
-//         return $table::fetch();
+//         return $table::fetchs();
 // 	}
 	
 	/**
@@ -119,7 +119,7 @@ class Content extends IndexBase
 	    ->addHidden('sysid',$sysid)
 	    ->addPageTitle('发布评论');
 	    
-	    return $form::fetch();
+	    return $form::fetchs();
 	}
 
 	public function edit($id=0){
@@ -144,7 +144,7 @@ class Content extends IndexBase
 	    ->addHidden('sysid')
 	    ->addHidden('id');
 
-	    return $form->fetch();
+	    return $form::fetchs();
 	}
 	
 	public function delete($ids){

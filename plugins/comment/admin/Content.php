@@ -42,7 +42,7 @@ class Content extends AdminBase
 	    ->addOrder('id,list')
 	    ->addPageTitle('管理评论');
 
-        return $table::fetch();
+        return $table::fetchs();
 	}
 	
 	public function add($pid=0){
@@ -80,7 +80,7 @@ class Content extends AdminBase
 	        $form->addSelect('pid','所属'.$this->cfg_fname,'',$array,$pid);
 	    }
 	    
-	    return $form::fetch();
+	    return $form::fetchs();
 	}
 
 	public function edit($id=0){
@@ -106,7 +106,7 @@ class Content extends AdminBase
 	    if($this->cfg_level>1){
 	        $form->addSelect('pid','所属'.$this->cfg_fname,'',$array);
 	    }
-	    return $form->fetch();
+	    return $form::fetchs();
 	}
 	
 	public function delete($ids){

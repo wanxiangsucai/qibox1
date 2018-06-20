@@ -1,14 +1,12 @@
 <?php
 namespace app\common\util;
-use app\common\builder\Form as BuilderForm;
 use app\common\traits\AddEditList;
+use app\common\controller\IndexBase;
 
-class Form{
+class Form extends IndexBase{
     use AddEditList;
-    public static $Btable;
     protected static $instance;
-    protected static $info=[];   //内容信息
-    protected static $f_array=[];   //字段信息
+    protected $info=[];   //内容信息
     
     /**
      * 创建表单
@@ -18,13 +16,12 @@ class Form{
      * 第四项是默认值，第五项是参数，常用为数组
      * @param array $info 从数据库取出的内容数据，如果是新发布，可以为空
      */
-    public static function make($tab_list=[],$info=[]){
-        self::$info = getArray($info);     //纯属给个性模板使用的
-        self::$f_array = $tab_list;
-        self::$Btable = BuilderForm::make() -> addFormItems($tab_list) -> setFormdata($info);
+    public static function make($tab_list=[],$info=[]){        
         if (is_null(self::$instance)) {
             self::$instance = new static();
         }
+        self::$instance->info = $info;
+        self::$instance->form_items = $tab_list;
         return self::$instance;
     }
     
@@ -40,7 +37,7 @@ class Form{
      * @return mixed
      */
     public static function addTextarea($name = '', $title = '', $tips = '', $default = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addTextarea($name , $title , $tips , $default , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['textarea' , $name , $title , $tips , $default , $extra_attr , $extra_class ];
         return self::$instance;
     }
     
@@ -54,7 +51,7 @@ class Form{
      * @return mixed
      */
     public static function addUeditor($name = '', $title = '', $tips = '', $default = '', $extra_class = ''){
-        self::$Btable->addUeditor($name , $title , $tips , $default , $extra_class );
+        self::$instance->form_items[] = ['ueditor' , $name , $title , $tips , $default , $extra_class];
         return self::$instance;
     }
     
@@ -70,7 +67,7 @@ class Form{
      * @return mixed
      */
     public static function addText($name = '', $title = '', $tips = '', $default = '', $group = [], $extra_attr = '', $extra_class = '',$extra_html=''){
-        self::$Btable->addText($name , $title , $tips , $default , $group , $extra_attr , $extra_class ,$extra_html);
+        self::$instance->form_items[] = ['text' , $name , $title , $tips , $default , $group , $extra_attr , $extra_class ,$extra_html];
         return self::$instance;
     }
     
@@ -84,7 +81,7 @@ class Form{
      * @return mixed
      */
     public static function addTags($name = '', $title = '', $tips = '', $default = '', $extra_class = ''){
-        self::$Btable->addTags($name , $title , $tips , $default , $extra_class);
+        self::$instance->form_items[] = ['tags' , $name , $title , $tips , $default , $extra_class];
         return self::$instance;
     }
     
@@ -103,7 +100,7 @@ class Form{
      * @return mixed
      */
     public static function addSwitch($name = '', $title = '', $tips = '', $default = '', $attr = [], $extra_attr = '', $extra_class = ''){
-        self::$Btable->addSwitch($name , $title , $tips , $default , $attr , $extra_attr , $extra_class);
+        self::$instance->form_items[] = ['switch' , $name , $title , $tips , $default , $attr , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -117,7 +114,7 @@ class Form{
      * @return mixed
      */
     public static function addStatic($name = '', $title = '', $tips = '', $default = '',  $extra_class = ''){
-        self::$Btable->addStatic($name = '', $title = '', $tips = '', $default = '', $hidden = true, $extra_class = '');
+        self::$instance->form_items[] = ['static' , $name , $title , $tips , $default , $hidden , $extra_class];
         return self::$instance;
     }
     
@@ -135,7 +132,7 @@ class Form{
      * @return mixed
      */
     public static function addSelect($name = '', $title = '', $tips = '', $options = [], $default = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addSelect($name , $title , $tips , $options,  $default , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['select' , $name , $title , $tips , $options,  $default , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -151,7 +148,7 @@ class Form{
      * @return mixed
      */
     public static function addRange($name = '', $title = '', $tips = '', $default = '', $options = [], $extra_attr = '', $extra_class = ''){
-        self::$Btable->addRange($name , $title , $tips , $default , $options , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['range' , $name , $title , $tips , $default , $options , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -170,7 +167,7 @@ class Form{
      * @return mixed
      */
     public static function addRadio($name = '', $title = '', $tips = '', $options = [], $default = '', $attr = [], $extra_attr = '', $extra_class = ''){
-        self::$Btable->addRadio($name , $title , $tips , $options , $default , $attr , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['radio' , $name , $title , $tips , $options , $default , $attr , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -185,7 +182,7 @@ class Form{
      * @return mixed
      */
     public static function addPassword($name = '', $title = '', $tips = '', $default = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addPassword($name , $title , $tips , $default , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['password' , $name , $title , $tips , $default , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -203,7 +200,7 @@ class Form{
      * @return mixed
      */
     public static function addNumber($name = '', $title = '', $tips = '', $default = '', $min = '', $max = '', $step = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addMoney($name , $title , $tips , $default , $min , $max , $step , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['number',$name , $title , $tips , $default , $min , $max , $step , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -220,7 +217,7 @@ class Form{
      * @return mixed
      */
     public static function addMoney($name = '', $title = '', $tips = '', $default = '', $min = '', $max = '',  $extra_attr = '', $extra_class = ''){
-        self::$Btable->addMoney($name , $title , $tips , $default , $min , $max , $step=0.01 , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['money' , $name , $title , $tips , $default , $min , $max , $step=0.01 , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -247,7 +244,7 @@ class Form{
      * @return mixed
      */
     public static function addCutImage($name = '', $title = '', $tips = '', $default = '', $options = [], $extra_class = ''){
-        self::$Btable->addJcrop($name , $title , $tips , $default , $options , $extra_class );
+        self::$instance->form_items[] = ['cutImage' , $name , $title , $tips , $default , $options , $extra_class];
         return self::$instance;
     }
     
@@ -263,7 +260,7 @@ class Form{
      * @return mixed
      */
     public static function addImages($name = '', $title = '', $tips = '', $default = '', $size = '', $ext = '', $extra_class = ''){
-        self::$Btable->addImages($name , $title , $tips , $default , $size , $ext , $extra_class );
+        self::$instance->form_items[] = ['images' , $name , $title , $tips , $default , $size , $ext , $extra_class];
         return self::$instance;
     }
     
@@ -279,7 +276,7 @@ class Form{
      * @return mixed
      */
     public static function addImage($name = '', $title = '', $tips = '', $default = '', $size = '', $ext = '', $extra_class = ''){
-        self::$Btable->addImage($name , $title , $tips , $default , $size , $ext , $extra_class );
+        self::$instance->form_items[] = ['image' , $name , $title , $tips , $default , $size , $ext , $extra_class];
         return self::$instance;
     }
     
@@ -294,7 +291,7 @@ class Form{
      * @return mixed
      */
     public static function addIcon($name = '', $title = '', $tips = '', $default = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addIcon($name , $title , $tips , $default , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['icon' ,$name , $title , $tips , $default , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -305,7 +302,7 @@ class Form{
      * @return mixed
      */
     public static function addHidden($name = '', $default = ''){
-        self::$Btable->addHidden($name , $default );
+        self::$instance->form_items[] = ['hidden' , $name , $default];
         return self::$instance;
     }
     
@@ -321,7 +318,7 @@ class Form{
      * @return mixed
      */
     public static function addFiles($name = '', $title = '', $tips = '', $default = '', $size = '', $ext = '', $extra_class = ''){
-        self::$Btable->addFiles($name , $title , $tips , $default , $size , $ext , $extra_class );
+        self::$instance->form_items[] = ['files' , $name , $title , $tips , $default , $size , $ext , $extra_class];
         return self::$instance;
     }
     
@@ -337,7 +334,7 @@ class Form{
      * @return mixed
      */
     public static function addFile($name = '', $title = '', $tips = '', $default = '', $size = '', $ext = '', $extra_class = ''){
-        self::$Btable->addFile($name , $title , $tips , $default , $size , $ext , $extra_class );
+        self::$instance->form_items[] = ['file' , $name , $title , $tips , $default , $size , $ext , $extra_class];
         return self::$instance;
     }
     
@@ -353,7 +350,7 @@ class Form{
      * @return mixed
      */
     public static function addTime($name = '', $title = '', $tips = '', $default = '', $format = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addTime($name , $title , $tips , $default , $format , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['time' , $name , $title , $tips , $default , $format , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -369,7 +366,7 @@ class Form{
      * @return mixed
      */
     public static function addDatetime($name = '', $title = '', $tips = '', $default = '', $format = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addDatetime($name , $title , $tips , $default , $format , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['datetime' , $name , $title , $tips , $default , $format , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -385,7 +382,7 @@ class Form{
      * @return mixed
      */
     public static function addDates($name = '', $title = '', $tips = '', $default = '', $format = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addDaterange($name , $title , $tips , $default , $format , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['dates' , $name , $title , $tips , $default , $format , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -401,7 +398,7 @@ class Form{
      * @return mixed
      */
     public static function addDate($name = '', $title = '', $tips = '', $default = '', $format = '', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addDate($name , $title , $tips , $default , $format , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['date' , $name , $title , $tips , $default , $format , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -417,7 +414,7 @@ class Form{
      * @return mixed
      */
     public static function addColor($name = '', $title = '', $tips = '', $default = '', $mode = 'rgba', $extra_attr = '', $extra_class = ''){
-        self::$Btable->addColorpicker($name , $title , $tips , $default , $mode , $extra_attr , $extra_class );
+        self::$instance->form_items[] = ['color' , $name , $title , $tips , $default , $mode , $extra_attr , $extra_class];
         return self::$instance;
     }
     
@@ -434,7 +431,7 @@ class Form{
      */
     public static function addMapBaidu($name = '', $title = '',  $tips = '', $default = '', $address = '', $level = '', $extra_class = ''){
         $ak = config('baidu_map_ak');
-        self::$Btable->addBmap($name, $title, $ak, $tips, $default , $address, $level, $extra_class);
+        self::$instance->form_items[] = ['bmap',$name, $title, $ak, $tips, $default , $address, $level, $extra_class];
         return self::$instance;
     }
     
@@ -455,7 +452,7 @@ class Form{
      * @return mixed
      */
     public static function addCheckboxtree($name = '', $title = '', $tips = '', $options = [], $default = '', $attr = [], $extra_attr = '', $extra_class = ''){
-        self::$Btable->addCheckboxtree($name, $title, $tips, $options, $default, $attr, $extra_attr, $extra_class);
+        self::$instance->form_items[] = ['checkboxtree',$name, $title, $tips, $options, $default, $attr, $extra_attr, $extra_class];
         return self::$instance;
     }
     
@@ -475,7 +472,7 @@ class Form{
      * @return mixed
      */
     public static function addCheckbox($name = '', $title = '', $tips = '', $options = [], $default = '', $attr = [], $extra_attr = '', $extra_class = ''){
-        self::$Btable->addCheckbox($name, $title, $tips, $options, $default, $attr, $extra_attr, $extra_class);
+        self::$instance->form_items[] = ['checkbox', $name, $title, $tips, $options, $default, $attr, $extra_attr, $extra_class];
         return self::$instance;
     }
     
@@ -485,7 +482,7 @@ class Form{
      * @return $this
      */
     public static function addButonHide($btn = []){
-        self::$Btable->hideBtn($btn);
+        self::$instance -> tab_ext['hidebtn'] = $btn;
         return self::$instance;
     }
     
@@ -496,7 +493,7 @@ class Form{
      * @return $this
      */
     public static function addButtonTitle($btn = '', $title = ''){
-        self::$Btable->setBtnTitle($btn);
+        //self::$instance -> tab_ext['hidebtn'] = $btn;
         return self::$instance;
     }
     
@@ -506,7 +503,7 @@ class Form{
      * @return $this
      */
     public static function addButton($btn = ''){
-        self::$Btable->addBtn($btn);
+        self::$instance -> tab_ext['addbtn'] = $btn;
         return self::$instance;
     }
     
@@ -516,7 +513,7 @@ class Form{
      * @return $this
      */
     public static function addUrl($post_url = ''){
-        self::$Btable->setUrl($post_url);
+        //self::$instance -> tab_ext['addbtn'] = $btn;
         return self::$instance;
     }
     
@@ -529,7 +526,7 @@ class Form{
      * @return $this
      */
     public static function addJs($form_name = '', $form_values = '', $show_form_name = '', $clear = true){
-        self::$Btable->setTrigger($form_name, $form_values, $show_form_name, $clear);
+        self::$instance -> tab_ext['trigger'][] = [$form_name, $form_values, $show_form_name, $clear];
         return self::$instance;
     }
     
@@ -540,7 +537,7 @@ class Form{
      * @return $this
      */
     public static function addNav($tab_list = [], $curr_id = ''){
-        self::$Btable->setTabNav($tab_list, $curr_id );
+        self::$instance -> tab_ext['nav'] = [$tab_list,$curr_id];
         return self::$instance;
     }
     
@@ -553,7 +550,7 @@ class Form{
      * @return $this
      */
     public static function addPageTips($msg = '', $type = 'info'){
-        self::$Btable->setPageTips($msg , $type );
+        self::$instance -> tab_ext['warn_msg'] = $msg;
         return self::$instance;
     }
     
@@ -563,7 +560,7 @@ class Form{
      * @return $this
      */
     public static function addPageTitle($title = ''){
-        self::$Btable->setPageTitle($title);
+        self::$instance -> tab_ext['page_title'] = $title;
         return self::$instance;
     }
     
@@ -575,10 +572,11 @@ class Form{
      * @param array  $config   模板参数
      * @return mixed
      */
-    public static function fetch($template = '', $vars = [], $replace = [], $config = []){
-        if(empty($template)&&$template = static::get_template('')){   //如果模板存在的话,就用实际的后台个性模板         
-            $vars = array_merge($vars,['info'=>self::$info,'f_array'=>self::$f_array]);
+    public static function fetchs($template = '', $vars = [], $replace = [], $config = []){
+        if (self::$instance ->info) {
+            return self::$instance ->editContent(self::$instance ->info);
+        }else{
+            return self::$instance ->addContent();
         }
-        return self::$Btable->fetch($template, $vars, $replace, $config);
     }
 }

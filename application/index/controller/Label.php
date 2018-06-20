@@ -329,7 +329,7 @@ class Label extends IndexBase
             unset($form_items[$num-2] , $form_items[$num-1]);
         }
         $this -> tab_ext['page_title'] = '组图上传';
-        $this->tab_ext['hidebtn']='back';
+        $this->tab_ext['hidebtn']='back';        
         return $this -> get_form_table($info, $form_items);
     }
     

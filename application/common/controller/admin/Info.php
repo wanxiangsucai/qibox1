@@ -43,7 +43,9 @@ abstract class Info extends AdminBase
         
         $this->tab_ext = [
                 'page_title'=>'辅栏目内容管理',
-                'top_button'=>false,
+                'top_button'=>[
+                        ['type'=>'delete']
+                ],
         ];
     }
     

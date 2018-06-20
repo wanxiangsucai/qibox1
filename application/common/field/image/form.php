@@ -3,8 +3,11 @@ function_exists('urls') || die('ERR');
 
 
 $jscode = '';
-if(fun('field@load_js',$field['type'])){
+if(fun('field@load_js',$field['type'])){	
 	$serverurl = urls('index/attachment/upload','dir=images&from=base64&module='.request()->dispatch()['module'][0]);
+	$cuturl = iurl('index/image/cutimg');
+	$width = IN_WAP===true?'95%':'900px';
+	$height = IN_WAP===true?'100%':'800px';
 	$jscode = <<<EOT
 
 <style type="text/css">
@@ -72,6 +75,9 @@ if(fun('field@load_js',$field['type'])){
 	top:0px;
 	cursor: pointer;
 }
+.ListImgs div em.cut{
+	left: 0px;
+}
 .ListImgs div em:hover{
 	background:rgba(255,60,0,0.6);
 }
@@ -90,12 +96,30 @@ jQuery(document).ready(function() {
 			that.find('input[type="file"]').click();
 		});
 
-		var addclick = function(){
-			that.find(".ListImgs em").click(function(e){
-				//这里删除的图片没有真正从服务器删除
-				$(this).parent().remove();
-				pics = [];
-				var obj = that.find(".ListImgs img");
+	//截图事件
+	var add_cutimg = function(e){
+		that.find('.cut').each(function () {
+			var cthis = $(this);
+			cthis.on('click',function(){
+				var pic = cthis.parent().find("img").attr('src');
+				var opt = cthis.data('options');
+				layer.open({
+					type: 2,
+					title: '截图',
+					area: ["{$width}", "{$height}"],
+					scrollbar: false,
+					content: '{$cuturl}?picurl='+pic+'&opt='+opt,
+					end: function () {
+						check_value();	//重新核对数据
+					}
+				});
+			});
+		});
+	}
+		//核对数据
+		var check_value = function(){
+				pics = [];	//重新设置值
+				var obj = that.find(".ListImgs img");				
 				obj.each(function(e){
 					var img = $(this).attr("src");
 					img = img.replace('/public/','');
@@ -104,10 +128,18 @@ jQuery(document).ready(function() {
 				});
 				if(obj.length==0){
 					that.find(".input_value").val('');
-				}			
+				}
+		};
+		
+		//删除图片
+		var delpic = function(){
+			that.find(".ListImgs em.del").click(function(e){
+				//这里删除的图片没有真正从服务器删除
+				$(this).parent().remove();
+				check_value();					
 			});
 		};
-		addclick();
+		delpic();
 
 		that.find('input[type="file"]').change(function(){
             uploadBtnChange($(this).get(0),that.find(".input_value"),pics,viewpics);
@@ -122,13 +154,14 @@ jQuery(document).ready(function() {
 			pic_array.forEach(function(f){
 				var sear=new RegExp('http');
     			if(sear.test(f)){
-        　　		html += '<div><span><img src="'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
-    　　		}else{
-    				html += '<div><span><img src="/public/'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
+        　　			html += '<div><span><img src="'+f+'"></span><em class="del"><i class="fa fa-remove"></i></em><em class="cut" data-options=""><i class="fa fa-cut"></i></em></div>';
+    　　			}else{
+    				html += '<div><span><img src="/public/'+f+'"></span><em class="del"><i class="fa fa-remove"></i></em><em data-options="" class="cut"><i class="fa fa-cut"></i></em></div>';
     			}
 			});
 			that.find(".ListImgs").html(html);
-			addclick();
+			delpic();
+			add_cutimg();
 		};
 		viewpics('',pics);
 
@@ -168,8 +201,9 @@ jQuery(document).ready(function() {
                 image.onload = function() {
                     var resized = resizeUpImages(image , (file.name.substr(file.name.lastIndexOf(".")+1)).toLowerCase() );					
 					if(resized){
-						// alert( alltags );
+						layer.load(1);
 						$.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':alltags}).done(function (res) {
+							layer.closeAll();
 							 if(res.code==1){
 								 //pics.push(res.path);	//组图
 								 pics[0] = res.path;	//单图
@@ -179,7 +213,8 @@ jQuery(document).ready(function() {
 								 }
 							 }
 						}).fail(function () {
-							alert('操作失败，请跟技术联系');
+							layer.closeAll();
+							layer.alert('操作失败，请跟技术联系');
 						});	
 						
 					}

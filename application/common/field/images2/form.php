@@ -6,6 +6,11 @@ $jscode = '';
 if(fun('field@load_js',$field['type'])){
 
 	$serverurl = urls('index/attachment/upload','dir=images&from=base64&module='.request()->dispatch()['module'][0]);
+	$cuturl = iurl('index/image/cutimg');
+	$width = IN_WAP===true?'95%':'900px';
+	$height = IN_WAP===true?'100%':'800px';
+	$display = IN_WAP===true?'':'display:none;';
+
 	$jscode = <<<EOT
 
 <style type="text/css">
@@ -73,11 +78,22 @@ if(fun('field@load_js',$field['type'])){
 	top:0px;
 	cursor: pointer;
 }
+.ListImgs div em.cut{
+	left: 0px;
+}
+.ListImgs div em.drag{
+	left: 0px;
+	top:55px;
+	cursor: move;
+}
 .ListImgs div em:hover{
 	background:rgba(255,60,0,0.6);
 }
+.ListImgs div em{
+	{$display}
+}
 </style>
-
+<script src="__STATIC__/libs/jquery-ui/jquery-ui.min.js"></script>  
 <script type="text/javascript" src="__STATIC__/js/exif.js"></script>
 <script type="text/javascript">
 var severUrl = "$serverurl";
@@ -91,6 +107,53 @@ jQuery(document).ready(function() {
 			that.find('input[type="file"]').click();
 		});
 		
+	//截图事件
+	var add_cutimg = function(e){
+		that.find('.cut').each(function () {
+			var cthis = $(this);
+			cthis.on('click',function(){
+				var pic = cthis.parent().find("img").attr('src');
+				var opt = cthis.data('options');
+				layer.open({
+					type: 2,
+					title: '截图',
+					area: ["{$width}", "{$height}"],
+					scrollbar: false,
+					content: '{$cuturl}?picurl='+pic+'&opt='+opt,
+					end: function () {
+						check_value();	//重新核对数据
+					}
+				});
+			});
+		});
+	}
+
+	//鼠标经过时显示操作菜单
+	var showmenu = function(){
+		that.find('.ListImgs div').each(function(){
+			var obj = $(this);
+			obj.hover(  
+                    function(){  
+                        obj.find('em').show();  
+                    },
+                    function(){  
+                        obj.find('em').hide();  
+                    }   
+            ) ;
+		});
+	}
+	
+	//拖拽排序
+	var drag_move = function(){
+		that.find('.ListImgs').sortable({
+                //connectWith: ".ListImgs div",
+                handle: '.drag',
+                stop: function () { 
+					check_value();
+                }
+            }).disableSelection();
+	}
+
 		//删除图片事件
 		var delpic = function(){
 			that.find(".ListImgs em.del").click(function(e){
@@ -140,16 +203,18 @@ jQuery(document).ready(function() {
 			var html = '';
 			pic_array.forEach(function(rs,i){
 				var sear=new RegExp('http');
-			if(sear.test(rs.picurl)){
-    　　		html += '<div><span><img src="'+rs.picurl+'" data-i="'+i+'"></span><em class="del"><i class="fa fa-remove"></i></em><input placeholder="介绍" style="width:80px;margin:5px 0 5px 0;border:1px solid #eee;" data-i="title'+i+'" value="'+rs.title+'"><br><input value="'+rs.url+'" data-i="url'+i+'" placeholder="网址" style="width:80px;border:1px solid #eee;" ></div>';
-　　		}else{
-				html += '<div><span><img src="/public/'+rs.picurl+'" data-i="'+i+'"></span><em class="del"><i class="fa fa-remove"></i></em><input placeholder="介绍" style="width:80px;margin:5px 0 5px 0;border:1px solid #eee;" data-i="title'+i+'" value="'+rs.title+'"><br><input value="'+rs.url+'" data-i="url'+i+'" placeholder="网址" style="width:80px;border:1px solid #eee;" ></div>';
-			}
-			 
+				if(sear.test(rs.picurl)){
+		　　			html += '<div><span><img src="'+rs.picurl+'" data-i="'+i+'"></span><em class="del"><i class="fa fa-remove"></i></em><em class="cut" data-options=""><i class="fa fa-cut"></i></em><em class="drag"><i class="fa fa-arrows"></i></em><input placeholder="介绍" style="width:80px;margin:5px 0 5px 0;border:1px solid #eee;" data-i="title'+i+'" value="'+rs.title+'"><br><input value="'+rs.url+'" data-i="url'+i+'" placeholder="网址" style="width:80px;border:1px solid #eee;" ></div>';
+	　　			}else{
+					html += '<div><span><img src="/public/'+rs.picurl+'" data-i="'+i+'"></span><em class="del"><i class="fa fa-remove"></i></em><em class="cut" data-options=""><i class="fa fa-cut"></i></em><em class="drag"><i class="fa fa-arrows"></i></em><input placeholder="介绍" style="width:80px;margin:5px 0 5px 0;border:1px solid #eee;" data-i="title'+i+'" value="'+rs.title+'"><br><input value="'+rs.url+'" data-i="url'+i+'" placeholder="网址" style="width:80px;border:1px solid #eee;" ></div>';
+				}			 
 			});
 			that.find(".ListImgs").html(html);
 			delpic();
 			mouseout();
+			add_cutimg();
+			drag_move();
+			showmenu();
 			check_value(); //新上传要用到
 		};
 		viewpics(pics);
@@ -190,8 +255,9 @@ jQuery(document).ready(function() {
                 image.onload = function() {
                     var resized = resizeUpImages(image , (file.name.substr(file.name.lastIndexOf(".")+1)).toLowerCase() );					
 					if(resized){
-						// alert( alltags );
+						layer.load(1);
 						$.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':alltags}).done(function (res) {
+							layer.closeAll();
 							 if(res.code==1){
 								 pics.push({"picurl":res.path,"title":"","url":""});	//组图
 								 //pics[0] = res.path;	//单图
@@ -201,7 +267,8 @@ jQuery(document).ready(function() {
 								 }
 							 }
 						}).fail(function () {
-							alert('操作失败，请跟技术联系');
+							layer.closeAll();
+							layer.alert('操作失败，请跟技术联系');
 						});	
 						
 					}

@@ -282,7 +282,7 @@ table.ListTable tr:hover td{
 	color:#FFF;
 }
 
-/*新增按钮样式*/
+/*新增按钮样式
 .btn,.submit{
 	clear:both;
 	min-width: 70px;
@@ -303,7 +303,7 @@ table.ListTable tr:hover td{
 	font-family:Arial;
 	font-weight:bold;
 	padding: .5em 1em -0.45em;
-	/*text-shadow: 0 1px 1px rgba(0,0,0,.3);*/
+	 
 	-webkit-border-radius: .5em;
 	-moz-border-radius: .5em;
 	border-radius: .5em;
@@ -314,6 +314,14 @@ table.ListTable tr:hover td{
 .btn:hover,.submit:hover{
 	text-decoration: none;
 	background-color:#F60;
+}*/
+.btn,.submit{
+	padding:7px 10px 7px 10px;
+	border:1px solid #ccc;
+	background:#eee;
+}
+.btn:hover,.submit:hover{
+	background-color:#ddd;
 }
 /*a标签按钮*/
 .Abtn{

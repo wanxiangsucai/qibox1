@@ -62,7 +62,7 @@ class AdminMenu extends AdminBase
 	    ->addNav($this->group_nav,$gid)
 	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])]);
 
-        return $table::fetch();
+        return $table::fetchs();
 	}
 	
 	public function add($pid=0,$gid=0){
@@ -94,7 +94,7 @@ class AdminMenu extends AdminBase
 	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'],0)
 	    ->addIcon('icon','小图标')
 	    ->addPageTitle('添加菜单');
-	    return $form::fetch();
+	    return $form::fetchs();
 	}
 
 	public function edit($id=0){
@@ -124,7 +124,7 @@ class AdminMenu extends AdminBase
 	    ->addIcon('icon','小图标')
 	    ->addHidden('id',$id);
 
-	    return $form->fetch();
+	    return $form::fetchs();
 	}
 	
 	public function delete($ids){

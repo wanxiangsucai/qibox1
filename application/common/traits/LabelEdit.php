@@ -21,6 +21,13 @@ trait LabelEdit {
     protected $tag_ifdata;
     protected $tag_view_tpl;
     
+    //自动生成表格
+    protected function get_form_table($info,$tab_items) {
+        $this->form_items = $tab_items;
+        $this->form_items[] = ['number','cache_time','标签缓存时间','单位是秒'];
+        return $this->editContent($info);
+    }
+    
     /**
      * 取得所有对应的参数
      * @return mixed[]
@@ -142,54 +149,6 @@ trait LabelEdit {
         }
     }
     
-    //自动生成表格
-	protected function get_form_table($info,$tab_items) {
-	    $tab_items[] = ['number','cache_time','标签缓存时间','单位是秒'];
-		$form_table = Form :: make('admin') -> addFormItems($tab_items) -> setFormdata($info); 
-		
-		// 分组显示
-		if (!empty($this -> tab_ext) && !empty($this -> tab_ext['nav'])) {
-			$form_table -> setTabNav($this -> tab_ext['nav'][0], $this -> tab_ext['nav'][1]);
-		} 
-		
-		// 引入JS文件
-		if (!empty($this -> tab_ext) && !empty($this -> tab_ext['js_file'])) {
-			$form_table -> js($this -> tab_ext['js_file']);
-		}
-		
-		// 额外的JS代码
-		if (!empty($this -> tab_ext) && !empty($this -> tab_ext['js_code'])) {
-		    $form_table -> setExtraJs($this -> tab_ext['js_code']);
-		} 
-		
-		// 设置页面标题
-		if (!empty($this -> tab_ext) && !empty($this -> tab_ext['page_title'])) {
-		    $form_table -> setPageTitle($this -> tab_ext['page_title']);
-		}
-
-		// 增加按钮
-		if (!empty($this -> tab_ext) && !empty($this -> tab_ext['addbtn'])) {
-		    $form_table -> addBtn($this -> tab_ext['addbtn']);
-		}
-		
-		// 隐藏按钮
-		if (!empty($this -> tab_ext) && !empty($this -> tab_ext['hidebtn'])) {
-		    $form_table -> hideBtn($this -> tab_ext['hidebtn']);
-		} 
-		
-		// 页面提醒注意事项信息
-		empty($this -> tab_ext['warn_msg']) || $form_table -> setPageTips($this -> tab_ext['warn_msg'], 'warning');
-
-		if (!empty($this -> tab_ext) && !empty($this -> tab_ext['trigger'])) {
-			foreach($this -> tab_ext['trigger'] AS $rs) {
-				$rs[0] && $rs[2] && $form_table -> setTrigger($rs[0], $rs[1], $rs[2], isset($rs[3])?false:true);
-			} 
-		} 
-
-		return $form_table -> fetch();
-	}
-	
-	
 	protected function setTag_name($value=null){
 	    $this->getVal(__METHOD__,$value);
 	    return $this;

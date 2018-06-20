@@ -46,6 +46,7 @@ abstract class Category extends AdminBase
                 'page_title'=>'辅栏目管理',
                 'top_button'=>[
                         [
+                                'type' => 'add',
                                 'title' => '创建辅栏目',
                                 'icon'  => 'fa fa-fw fa-th-list',
                                 'class' => 'btn btn-primary',

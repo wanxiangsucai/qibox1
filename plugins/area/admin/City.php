@@ -59,7 +59,7 @@ class City extends AdminBase
 	        
 	        $table->addRightButton('custom',['title'=>'管理下级','href'=>purl($this->cfg_sfile.'/index',['pid'=>'__id__'])]);
 	    }
-        return $table::fetch();
+        return $table::fetchs();
 	}
 	
 	public function add($pid=0){
@@ -97,7 +97,7 @@ class City extends AdminBase
 	        $form->addSelect('pid','所属'.$this->cfg_fname,'',$array,$pid);
 	    }
 	    
-	    return $form::fetch();
+	    return $form::fetchs();
 	}
 
 	public function edit($id=0){
@@ -123,7 +123,7 @@ class City extends AdminBase
 	    if($this->cfg_level>1){
 	        $form->addSelect('pid','所属'.$this->cfg_fname,'',$array);
 	    }
-	    return $form->fetch();
+	    return $form::fetchs();
 	}
 	
 	public function delete($ids){

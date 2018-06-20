@@ -21,7 +21,15 @@ use think\File;
  * @package app\admin\controller
  */
 class Attachment extends IndexBase
-{    
+{
+    /**
+     * 文件名规则
+     * @return string
+     */
+    protected function makeName(){
+        return $this->user['uid'].'_'.date('YmdHis').rands(5);
+    }
+    
     /**
      * H5上传图片进行压缩处理
      * @param string $dir
@@ -48,7 +56,7 @@ class Attachment extends IndexBase
                 return $this->errFile($from,'文件类型有误！');
             }
             
-            $name = $this->user['uid'].'_'.date('YmdHis').rands(5). '.' .$type;
+            $name = $this->makeName(). '.' .$type;
             $new_file = config('upload_path') . '/' . $dir . '/' . date('Ymd') . '/' ;
             $path = str_replace(PUBLIC_PATH,'',$new_file);
             $new_file = $new_file.$name;
@@ -314,7 +322,7 @@ class Attachment extends IndexBase
 
 
         // 移动到根目录/uploads/ 目录下
-        $info = $file->move(config('upload_path') . DS . $dir, $this->user['uid'].'_'.date('YmdHis').rands(5). '.' .$file_ext );
+        $info = $file->move(config('upload_path') . DS . $dir, $this->makeName(). '.' .$file_ext );
 
         if($info){
             $path = 'uploads/' . $dir . '/' . str_replace('\\', '/', $info->getSaveName());
@@ -396,23 +404,23 @@ class Attachment extends IndexBase
         $module    = $this->request->param('module', '');
 
         // 上传图片
-        if ($file_path == '') {
-            $file = $this->request->file('file');
-            if (!is_dir(config('upload_temp_path'))) {
-                mkdir(config('upload_temp_path'), 0766, true);
-            }
-            $info = $file->move(config('upload_temp_path'), $file->hash('md5'));
-            if ($info) {
-                return json(['code' => 1, 'src' => PUBLIC_URL. 'uploads/temp/'. $info->getFilename()]);
-            } else {
-                $this->error('上传失败');
-            }
-        }
+//         if ($file_path == '') {
+//             $file = $this->request->file('file');
+//             if (!is_dir(config('upload_temp_path'))) {
+//                 mkdir(config('upload_temp_path'), 0766, true);
+//             }
+//             $info = $file->move(config('upload_temp_path'), $file->hash('md5'));
+//             if ($info) {
+//                 return json(['code' => 1, 'src' => PUBLIC_URL. 'uploads/temp/'. $info->getFilename()]);
+//             } else {
+//                 $this->error('上传失败');
+//             }
+//         }
 
         //$file_path = config('upload_temp_path') . str_replace(PUBLIC_URL. 'uploads/temp/', '', $file_path);
         $file_path = config('upload_path') . str_replace(PUBLIC_URL. 'uploads', '', $file_path);
 
-        if (is_file($file_path)) {
+        if (@getimagesize($file_path)) {
             // 获取裁剪信息
             $cut_info  = explode(',', $cut_info);
 
@@ -424,7 +432,7 @@ class Attachment extends IndexBase
             if (!is_dir($file_dir)) {
                 mkdir($file_dir, 0766, true);
             }
-            $file_name     = md5(microtime(true)) . '.' . $image->type();
+            $file_name     = $this->makeName() . '.' . $image->type();
             $new_file_path = $file_dir . $file_name;
 
             // 裁剪图片
@@ -467,7 +475,7 @@ class Attachment extends IndexBase
                     'thumb' => $thumb_path_name == '' ? '' : PUBLIC_URL . $thumb_path_name,
                 ]);
             } else {
-                $this->error('上传失败');
+                $this->error('保存失败');
             }
         }
         $this->error('文件不存在-'.$file_path);

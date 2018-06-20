@@ -69,7 +69,7 @@ class Group extends AdminBase
 	    //->addPageTips('省份管理')
 	    ->addPageTitle('用户组管理');
 
-        return $table::fetch();
+        return $table::fetchs();
 	}
 	
 	public function add(){
@@ -96,7 +96,7 @@ class Group extends AdminBase
 	    ->addNumber('level','升级所需积分')
 	    ->addJs('type','0','level')
 	    ->addPageTitle('添加菜单');
-	    return $form::fetch();
+	    return $form::fetchs();
 	}
 
 	public function edit($id=0){
@@ -123,7 +123,7 @@ class Group extends AdminBase
 	    ->addJs('type','0','level')
 	    ->addHidden('id',$id);
 
-	    return $form->fetch();
+	    return $form::fetchs();
 	}
 	
 	public function delete($ids){

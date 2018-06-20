@@ -16,16 +16,20 @@ class Alonepage extends AdminBase
 					['text', 'title', '标题'],
 					['text', 'descrip', '分享描述'],
 					['jcrop', 'picurl', '分享图片'],
-	        ['text', 'tpl_main', '模板[:只能是绝对路径]',''],
-	        //['image', 'picurl', '分享图片'],	
+	                ['text', 'tpl_main', '模板[:只能是绝对路径]',''],
+	                //['image', 'picurl', '分享图片'],	
 					['radio', 'ifclose', '是否启用', '', [1 => '文字链接', 0 => '禁用'], 1],
 					['ueditor', 'content', '内容'],
 					
 				];
 	protected $list_items;
 	protected $tab_ext = [
-				'page_title'=>'单篇文章独立页管理',
-				];
+			'page_title'=>'单篇文章独立页管理',
+	        'top_button'=>[
+	                ['type'=>'add'],
+	                ['type'=>'delete'],
+	        ]
+	];
 	
 	protected function _initialize()
     {

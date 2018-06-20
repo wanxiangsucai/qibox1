@@ -4,18 +4,20 @@
 
   <div class="Conter">
 	
-	<!-- 功能按钮 -->
-	{notempty name="$tab_ext.top_button"}
+	<!-- 功能按钮 -->	
 	<div style="margin-bottom:10px;float:left;">
-	{volist name="$tab_ext.top_button" id="rs"}
-	 {if ($rs.type=='delete')}
-	 	<a href="{:auto_url('delete')}" onclick="return delete_all($(this));" class="layui-btn layui-btn-primary"><li class="{$rs.icon|default='fa fa-fw fa-remove'}"></li> {$rs.title|default='批量删除'}</a>
-	 {else /}
-		<a href="{$rs.href}" class="layui-btn layui-btn-primary" data-ids="{$rs['target-form']}"><li class="{$rs.icon|default='si si-link'}"></li> {$rs.title}</a>
-	 {/if}	
-	{/volist}
+		{volist name="$tab_ext.top_button" id="rs"}
+		 {if $rs.type=='add'}
+			<a href="{$rs.href|default=auto_url('add')}" class="layui-btn layui-btn-primary"><li class="{$rs.icon|default='fa fa-plus'}"></li> {$rs.title|default='新增'}</a>
+		 {elseif($rs.type=='delete') /}
+			<a href="{:auto_url('delete')}" onclick="return delete_all($(this));" class="layui-btn layui-btn-primary"><li class="{$rs.icon|default='fa fa-fw fa-remove'}"></li> {$rs.title|default='批量删除'}</a>
+		 
+		 {else /}
+			<a href="{$rs.href}" class="layui-btn layui-btn-primary" data-ids="{$rs['target-form']}"><li class="{$rs.icon|default='si si-link'}"></li> {$rs.title}</a>
+		 {/if}	
+		{/volist}
 	</div>
-	{/notempty}
+	
 	
 	<!-- 搜索 -->
 	<div style="margin-bottom:10px;float:right;">
@@ -62,6 +64,7 @@ function search_content(){
 
 
 {volist name="listdb" id="rs"}
+{php}$tab_ext['id'] && $rs['id']=$rs[$tab_ext['id']];{/php}
     <tr bgcolor="#FFFFFF" class="trA" onmouseover="this.className='trB'" onmouseout="this.className='trA'"> 
       <td><input type="checkbox" name="ids[]" value="{$rs.id}"> {$rs.id}</td>
 	 <!-- 自定义字段数据列表 -->
@@ -74,8 +77,8 @@ function search_content(){
       <td>{$vs.value}</td>
 	{/volist}
 
-      <td><a href="{:auto_url('delete',['ids'=>$rs['id']])}" onclick="return confirm('你确实要删除吗?不可恢复,请慎重!')" title="删除"><i class="fa fa-fw fa-remove"></i></a></td>
-	  <td><a href="{:auto_url('edit',['id'=>$rs['id']])}" title="修改"><i class="fa fa-fw fa-edit"></i></td>
+      <td><a href="{:auto_url('delete','ids='.$rs.id)}" onclick="return confirm('你确实要删除吗?不可恢复,请慎重!')" title="删除"><i class="fa fa-fw fa-remove"></i></a></td>
+	  <td><a href="{:auto_url('edit','id='.$rs.id)}" title="修改"><i class="fa fa-fw fa-edit"></i></td>
     </tr>
 {/volist}
   

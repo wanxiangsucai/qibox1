@@ -30,7 +30,7 @@ class Member extends AdminBase
 		$this->Gmodel = new GroupModel();
 		
 		$this->list_items = [
-				['uid', '用户ID', 'text'],
+				//['uid', '用户UID', 'text'],
                 ['username', '用户名', ''],
 		        ['groupid', '用户组', 'select',$this->Gmodel->getTitleList()],
 				['regdate', '注册日期', 'datetime'],
@@ -41,8 +41,12 @@ class Member extends AdminBase
 			];
 		$this -> tab_ext['search'] = ['username'=>'用户名','uid'=>'用户ID','regip'=>'注册IP'];
 		$this -> tab_ext['order'] = 'money,rmb,uid';
+		$this -> tab_ext['id'] = 'uid';
 		$this -> tab_ext['filter_search'] = [
 		        'groupid'=>getGroupByid(),
+		];
+		$this -> tab_ext['top_button'] = [
+		        ['type'=>'add','title'=>'创建新用户'],
 		];
 	}
 	
