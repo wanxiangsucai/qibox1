@@ -59,7 +59,9 @@ abstract class S extends AdminBase
                                 'title' => '发布内容',
                                 'icon'  => 'glyphicon glyphicon-plus',
                                 'href'  => auto_url('content/add', ['fid' => '__id__'])
-                        ],
+                        ],                        
+                        ['type'=>'delete'],
+                        ['type'=>'edit'],
                 ],
         ];
     }

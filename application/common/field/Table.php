@@ -131,9 +131,10 @@ class Table extends Base
             $rs['icon'] || $rs['icon']='glyphicon glyphicon-menu-hamburger';
             $rs['href'] || $rs['href']=$rs['url'];
             $rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
+            $alert = $rs['type']=='delete' ? ' class="_dels" onclick="return confirm(\'你确实要删除吗?不可恢复!\')"' : ' ';
             $data[] = [
                     'title'=>$rs['title'],
-                    'value'=>"<a href='{$rs['href']}' title='{$rs['title']}'><li class='{$rs['icon']}'></li></a>",
+                    'value'=>"<a href='{$rs['href']}' title='{$rs['title']}' $alert><li class='{$rs['icon']}'></li></a>",
             ];
         }
         return $data;
