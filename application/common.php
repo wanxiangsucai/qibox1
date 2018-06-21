@@ -1593,6 +1593,7 @@ if (!function_exists('set_cookie')) {
 if (!function_exists('makeTemplate')) {
     /**
      * 模板路径处理函数
+     * member@xxx index@xxx admin@xxx 如果是跨前后台的话,将强制使用默认的default目录的文件 
      * @param unknown $template
      * @param string $check 是否检查文件是否存在
      * @return string
@@ -1619,7 +1620,12 @@ if (!function_exists('makeTemplate')) {
             }
             if (config('template.view_base')) {
                 if( in_array($module,['index','member','admin']) ){    //member@xxx index@xxx admin@xxx 特殊处理
-                    $path   = config('template.view_base') .'../../'.$module.'_style/'.config('template.'.$module.'_style').'/'.$module.'/';
+                    if( ENTRANCE != $module){   //重要提醒*************若跨前后台,只调取默认default风格的文件
+                        $path   = config('template.view_base') .'../../'.$module.'_style/default/'.$module.'/';
+                    }else{
+                        //$path   = config('template.view_base') .'../../'.$module.'_style/'.config('template.'.$module.'_style').'/'.$module.'/';
+                        $path   = config('template.view_base') . $module . '/';
+                    }                    
                 }elseif($_controller=='plugin'&&$_method=='execute'){
                     $_module=input('param.plugin_action');
                     $__module = isset($module) ? $module : input('param.plugin_name');
@@ -1677,6 +1683,7 @@ if (!function_exists('makeTemplate')) {
 if (!function_exists('getTemplate')) {
     /**
      * 取得模板的路径,同时也可以自动识别PC或WAP模板
+     * member@xxx index@xxx admin@xxx 如果是跨前后台的话,将强制使用默认的default目录的文件 
      * @param unknown $template 可以为空
      * @return void|string
      */

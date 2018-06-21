@@ -218,9 +218,9 @@ trait AddEditList {
 	 */
 	protected function getAdminTable($data_list = []) {
 	    
-	    $template = $this->get_template('',$this->mid);
+	    //$template = $this->get_template('',$this->mid);
 	    if (empty($template)) {
-	        $template = getTemplate('admin@common/wn_table');
+	        $template = $this->get_template('admin@common/wn_table');  //如果是前台的话,可以考虑换成 member@common/wn_table 不过最好还是单独设置模板更个性化
 	    }
 	    if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 	        $this->tab_ext['right_button'] = $this->builder_rbtn_url($this->tab_ext['right_button']);
@@ -333,12 +333,15 @@ trait AddEditList {
 	    if (empty($template)) { //新风格找不到的话,就寻找默认default模板
 	        if( config('template.default_view_base') ){ //没有使用默认风格
 	            $view_base = config('template.view_base');
-	            $style = config('template.index_style');
+	            $index_style = config('template.index_style');
+	            $admin_style = config('template.admin_style');
 	            config('template.view_base',config('template.default_view_base'));
 	            config('template.index_style','default');   // check_file 此方法要用到
+	            config('template.admin_style','default');
 	            $template = static::search_tpl($type,$mid);
 	            config('template.view_base',$view_base);
-	            config('template.index_style',$style);
+	            config('template.index_style',$index_style);
+	            config('template.admin_style',$admin_style);
 	        }
 	    }
 	    return $template;
@@ -352,12 +355,17 @@ trait AddEditList {
 	 */
 	protected static function search_tpl($type='',$mid=''){
 	    $filename = $type.$mid;
-	    static $path_array = [];
-	    $path = $path_array[config('template.view_base')];
-	    if(empty($path)){  //避免反复找路径
-	        $path_array[config('template.view_base')] = $path = dirname( makeTemplate('index',false) ).'/'; //取得路径
-	    }
-	    $file = $path . $filename . '.' . ltrim(config('template.view_suffix'), '.');
+	    if(preg_match('/^([-\w]+)$/i', $type)){    // 比如 $type='index@xxx' 就不适合了 2018-6-21 12:00改过
+	        static $path_array = [];
+	        $path = $path_array[config('template.view_base')];
+	        if(empty($path)){  //避免反复找路径
+	            $path_array[config('template.view_base')] = $path = dirname( makeTemplate('index',false) ).'/'; //取得路径
+	        }
+	        $file = $path . $filename . '.' . ltrim(config('template.view_suffix'), '.');
+	    }else{
+	        $file = makeTemplate($filename);  // 比如 $type='index@xxx'  这种情况
+	    }	    
+
 	    if(is_file($file)&&filesize($file)){
 	        return $file;
 	    }elseif($mid!==''){ //寻找母模板
@@ -382,7 +390,7 @@ trait AddEditList {
 		
 		$template = $this->get_template('',$this->mid);
 		if (empty($template)) {
-		    $template = getTemplate('admin@common/wn_table');
+		    $template = $this->get_template('admin@common/wn_table');
 		}
 		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 		    $this->assign('listdb',$data_list);
@@ -474,7 +482,7 @@ trait AddEditList {
 		
 		$template = $this->get_template('',$this->mid);
 		if (empty($template)) {
-		    $template = getTemplate('admin@common/wn_form');
+		    $template = $this->get_template('admin@common/wn_form');
 		}
 		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 		    //$this->assign('listdb',$data_list);
@@ -588,7 +596,7 @@ trait AddEditList {
 		
 		$template = $this->get_template('',$this->mid);
 		if (empty($template)) {
-		    $template = getTemplate('admin@common/wn_form');
+		    $template = $this->get_template('admin@common/wn_form');
 		}
 		if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 		    $this->assign('info',$info);
