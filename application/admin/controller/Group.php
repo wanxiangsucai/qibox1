@@ -58,14 +58,14 @@ class Group extends AdminBase
         	                return $key>0?$show:'';
         	            },'__data__'],
         	            ['level', '升级积分', 'text.edit'],
-	                   ['right_button', '操作', 'btn'],
+	                   //['right_button', '操作', 'btn'],
 	            ];
 	    
 	    $table = Tabel::make($listdb,$tab)
 	    ->addTopButton('add',['title'=>'添加用户组'])
 	    //->addTopButton('delete')
-	    ->addRightButton('edit')
-	    ->addRightButton('delete')	    
+// 	    ->addRightButton('edit')
+// 	    ->addRightButton('delete')	    
 	    //->addPageTips('省份管理')
 	    ->addPageTitle('用户组管理');
 

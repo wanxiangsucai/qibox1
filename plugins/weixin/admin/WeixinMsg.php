@@ -16,8 +16,9 @@ class WeixinMsg extends AdminBase
 	protected $form_items = [];
 	protected $list_items;
 	protected $tab_ext = [
-				'page_title'=>'公众号用户留言信息',
-	        'top_button'=>[ ['type'=>'delete']],
+		    'page_title'=>'公众号用户留言信息',
+	        'top_button'=>[ ['type'=>'delete']], //只显示删除按钮
+	        'right_button'=>[ ['type'=>'delete']],
 	];
 	
 	protected function _initialize()

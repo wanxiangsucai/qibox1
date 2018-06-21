@@ -85,6 +85,8 @@ class Table extends Base
                 $show .="<option value='$key' $select>$v";
             }
             $show .= "</select>";
+        }elseif($field['type'] == 'switch'||$field['type'] == 'yesno'){
+            $show = $field_value ? "<i class='fa fa-check-circle' style='color:green;font-size:16px;'></i>": "<i class='glyphicon glyphicon-ban-circle'></i>" ;
         }elseif($field['type'] == 'icon'){
             $show = $field_value?"<i class='{$field_value}'></i>":'';
         }elseif($field['type'] == 'select2'){

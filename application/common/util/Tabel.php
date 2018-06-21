@@ -84,55 +84,6 @@ class Tabel extends IndexBase{
 	    return self::$instance;
 	}
 	
-	
-	
-	private static function get_right_bottom($type='',$attr=''){
-	    $title = [
-	            'delete'=>'删除',
-	            'edit'=>'修改',
-	    ];
-	    $icon = [
-	            'delete'=>'fa fa-times',
-	            'edit'=>'fa fa-pencil',
-	    ];
-	    $class = [
-	            'delete'=>'btn btn-xs btn-default',
-	            'edit'=>'btn btn-xs btn-default',
-	    ];
-	    $href = [
-	            'delete'=>auto_url('delete',['id' => '__id__']),
-	            'edit'=>auto_url('edit',['id' => '__id__']),
-	    ];
-	    $array = $$attr;
-	    return $array[$type];
-	}
-	
-	
-	private static function get_top_bottom($type='',$attr=''){
-	    $title = [
-	            'add'=>'新增',
-	            'delete'=>'删除',
-	            'back'=>'返回',
-	    ];
-	    $icon = [
-	            'add'=>'fa fa-plus-circle',
-	            'delete'=>'fa fa-times-circle-o',
-	            'back'=>'fa fa-reply',
-	    ];
-	    $class = [
-	            'add'=>'btn btn-primary',
-	            'delete'=>'btn btn-danger ajax-post confirm',
-	            'back'=>'btn btn-info',
-	    ];
-	    $href = [
-	            'add'=>auto_url('add'),
-	            'delete'=>auto_url('delete'),
-	            'back'=>'javascript:history.back(-1);',
-	    ];
-	    $array = $$attr;
-	    return $array[$type];
-	}
-	
 	/**
 	 * 添加一个顶部按钮
 	 * @param string $type 按钮类型：add/enable/disable/back/delete/custom

@@ -45,17 +45,17 @@ class AdminMenu extends AdminBase
 	            ['ifshow','是否显示','switch'],
 	            ['target','新窗口打开','yesno'],
 	            //['right_button', '操作', 'btn'],
-	            ['right_button', '操作', 'callback',function($value,$rs){
-	                if($rs['pid']>0)$value=str_replace('_tag="add"', 'style="display:none;"', $value);
-	                return $value;
-	            },'__data__'],
+// 	            ['right_button', '操作', 'callback',function($value,$rs){
+// 	                if($rs['pid']>0)$value=str_replace('_tag="add"', 'style="display:none;"', $value);
+// 	                return $value;
+// 	            },'__data__'],
 	    ];
 	    
 	    $table = Tabel::make($listdb,$tab)
 	    ->addTopButton('add',['title'=>'添加菜单','url'=>url('add',['gid'=>$gid])])
 	    ->addTopButton('delete')
-	    ->addRightButton('edit')
-	    ->addRightButton('delete')	    
+// 	    ->addRightButton('edit')
+// 	    ->addRightButton('delete')	    
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
 	    ->addPageTitle('网站菜单管理')

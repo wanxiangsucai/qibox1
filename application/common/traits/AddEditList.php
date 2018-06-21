@@ -179,14 +179,32 @@ trait AddEditList {
 	}
 	
 	/**
-	 * 处理url href 混乱的问题
+	 * 补全菜单参数,并且处理url href 混乱的问题
 	 * @param array $array
 	 * @return unknown
 	 */
-	protected function builder_url($array=[]){
+	protected function builder_topbtn_url($array=[]){
 	    if ($array) {
 	        foreach($array AS $key=>$rs){
 	            $rs['url'] = $rs['href'] = $rs['url'] ?: $rs['href'];
+	            $rs['title'] = $rs['title'] ?: self::get_top_bottom($rs['type'],'title');
+	            $rs['icon'] = $rs['icon'] ?: self::get_top_bottom($rs['type'],'icon');
+	            $rs['class'] = $rs['class'] ?: self::get_top_bottom($rs['type'],'class');
+	            $rs['href'] = $rs['href'] ?: self::get_top_bottom($rs['type'],'href');
+	            $array[$key] = $rs;
+	        }
+	        return $array;
+	    }
+	}
+	
+	protected function builder_rbtn_url($array=[]){
+	    if ($array) {
+	        foreach($array AS $key=>$rs){
+	            $rs['url'] = $rs['href'] = $rs['url'] ?: $rs['href'];
+	            $rs['title'] = $rs['title'] ?: self::get_right_bottom($rs['type'],'title');
+	            $rs['icon'] = $rs['icon'] ?: self::get_right_bottom($rs['type'],'icon');
+	            $rs['class'] = $rs['class'] ?: self::get_right_bottom($rs['type'],'class');
+	            $rs['href'] = $rs['href'] ?: self::get_right_bottom($rs['type'],'href');
 	            $array[$key] = $rs;
 	        }
 	        return $array;
@@ -205,9 +223,9 @@ trait AddEditList {
 	        $template = getTemplate('admin@common/wn_table');
 	    }
 	    if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
-	        $this->tab_ext['top_button'] = $this->builder_url($this->tab_ext['top_button']);
+	        $this->tab_ext['right_button'] = $this->builder_rbtn_url($this->tab_ext['right_button']);
 	        $this->tab_ext['top_button'] || $this->tab_ext['top_button'] = [['type'=>'add'],['type'=>'delete']];   //如果没设置顶部菜单 就给两个默认的
-	        $this->tab_ext['right_button'] = $this->builder_url($this->tab_ext['right_button']);
+	        $this->tab_ext['top_button'] = $this->builder_topbtn_url($this->tab_ext['top_button']);	        
 	        $pages = is_object($data_list) ? $data_list->render() : '';
 	        $array = getArray($data_list);
 	        $this->assign('listdb',isset($array['data'])?$array['data']:$array);
@@ -703,4 +721,51 @@ trait AddEditList {
 		$info = $this -> getInfoData($id);
 		return $this -> editContent($info);
 	} 
+	
+	protected static function get_right_bottom($type='',$attr=''){
+	    $title = [
+	            'delete'=>'删除',
+	            'edit'=>'修改',
+	    ];
+	    $icon = [
+	            'delete'=>'fa fa-times',
+	            'edit'=>'fa fa-pencil',
+	    ];
+	    $class = [
+	            'delete'=>'btn btn-xs btn-default',
+	            'edit'=>'btn btn-xs btn-default',
+	    ];
+	    $href = [
+	            'delete'=>auto_url('delete',['ids' => '__id__']),
+	            'edit'=>auto_url('edit',['id' => '__id__']),
+	    ];
+	    $array = $$attr;
+	    return $array[$type];
+	}
+	
+	
+	protected static function get_top_bottom($type='',$attr=''){
+	    $title = [
+	            'add'=>'新增',
+	            'delete'=>'删除',
+	            'back'=>'返回',
+	    ];
+	    $icon = [
+	            'add'=>'fa fa-plus-circle',
+	            'delete'=>'fa fa-times-circle-o',
+	            'back'=>'fa fa-reply',
+	    ];
+	    $class = [
+	            'add'=>'btn btn-primary',
+	            'delete'=>'btn btn-danger ajax-post confirm',
+	            'back'=>'btn btn-info',
+	    ];
+	    $href = [
+	            'add'=>auto_url('add'),
+	            'delete'=>auto_url('delete'),
+	            'back'=>'javascript:history.back(-1);',
+	    ];
+	    $array = $$attr;
+	    return $array[$type];
+	}
 } 
