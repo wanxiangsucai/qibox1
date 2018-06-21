@@ -1,3 +1,4 @@
+{notempty name="$rs.value"}
 {if $rs.type=='files'}
 	<div class="d_field_files">
 	{volist name="$rs.value" id="vs"}
@@ -27,3 +28,4 @@
 {elseif $rs.type=='file'}
 	<div class="field_{$rs.name} field_field"><a href="{$rs.value}">点击下载</a></div>
 {/if}
+{/notempty}
