@@ -72,7 +72,7 @@ jQuery(document).ready(function() {
     }
 
     // 文件上传
-    $('.js-upload-file').each(function () {
+    $('.js-upload-files').each(function () {
         var f_input_file       = $(this).find('input');
         var f_input_file_name  = f_input_file.attr('name');
         // 是否多文件上传
@@ -226,17 +226,19 @@ EOT;
 
 }
 
-$show = $info[$name] ? "<li class='list-group-item file-item'><i class='fa fa-times-circle remove-file'></i><a href='".tempdir($info[$name])."' target='_blank'>{$info[$name]}</a></li>" : '';
+$show = '';
+foreach(explode(',',$info[$name]) AS $fileurl){
+	$show .= "<li class='list-group-item file-item'><i class='fa fa-remove remove-file' data-id='{$fileurl}'></i> <a href='".tempdir($fileurl)."' target='_blank'>{$fileurl}</a></li>";
+}
 
 return <<<EOT
 
-<div class="col-sm-12 js-upload-file">
+<div class="col-sm-12 js-upload-files">
         <ul class="list-group uploader-list" id="file_list_{$name}">
-            $show
+		$show
          </ul>
-        <input type="hidden" name="{$name}" data-multiple="false" data-size="0" data-ext='' id="{$name}" value="{$info[$name]}">
-        <div id="picker_{$name}">上传文件</div>
-                
+        <input type="hidden" name="{$name}" data-multiple="true" data-size="0" data-ext='' id="{$name}" value="{$info[$name]}">
+        <div id="picker_{$name}">上传多文件</div>                
 </div>
  
 $jscode 

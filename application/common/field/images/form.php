@@ -97,7 +97,17 @@ if(fun('field@load_js',$field['type'])){
 <script type="text/javascript" src="__STATIC__/js/exif.js"></script>
 <script type="text/javascript">
 var severUrl = "$serverurl";
+</script>
 
+EOT;
+
+}
+
+
+return <<<EOT
+
+$jscode
+<script type="text/javascript">
 jQuery(document).ready(function() {
 	$(".uploadImge_{$name}").each(function(){
 		var pics = [];
@@ -295,17 +305,8 @@ jQuery(document).ready(function() {
 
 	});
 });
-
 </script>
 
-EOT;
-
-}
-
-
-return <<<EOT
-
-$jscode
 <div class="uploadImge_{$name}">
 		<ul class="uploadImg">
 			<div style="display:none;">

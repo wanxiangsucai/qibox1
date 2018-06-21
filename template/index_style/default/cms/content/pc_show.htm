@@ -40,17 +40,23 @@
 				{/notempty}
 			</div>
 		</div>
-		
 <!--显示自定义字段内容 field="picurl,title,content,keywords" 就是过滤掉不在里边重复显示的字段-->
+<style type="text/css">.OtherInfos .SideBox{clear:both;}.OtherInfos img{height:100px;float:left;margin:3px;}</style>
   	<div class="OtherInfos">
 {qb:showpage field="picurl,title,content,keywords,mv_url"}
 		<div class="SideBox">
+		{if in_array($rs['type'],['images','images2','image','file','files','files2'])}
+			<!-- 组图及多文件的显示方法\template\index_style\default\index\common\field.htm,其实不建议放在这里,影响布局,更多请查阅 https://www.kancloud.cn/php168/x1_of_qibo/665693  -->
 			<div class="tag"><span>{$rs.title}</span></div>
-			<div class="cont">{$rs.value}
-			</div>
+			{include file="index@common/field" /}
+		{else /}
+			<div class="tag"><span>{$rs.title}</span></div>
+			<div class="cont">{$rs.value}</div>
+		{/if}
 		</div>
 {/qb:showpage}
 	</div>
+
 
 		<!--引用评论碎片-->
 		{qb:comment name="commentpc01" rows='5'}
