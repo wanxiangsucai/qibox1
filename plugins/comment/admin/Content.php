@@ -23,7 +23,7 @@ class Content extends AdminBase
 	    $listdb = contentModel::where($map)->order( $this->getOrder('list desc,id desc') )->select();
 
 	    $tab = [
-	            ['id','ID','text'],
+// 	            ['id','ID','text'],
 	            ['content','评论内容','callback',function($value){
 	                return get_word(del_html($value), 70);
 	            }],

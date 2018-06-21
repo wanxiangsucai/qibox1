@@ -35,7 +35,7 @@ class City extends AdminBase
 	    }
 	    $array = AreaModel::where('id','in',$ids)->column('id,name');
 	    $tab = [
-	            ['id','ID','text'],
+// 	            ['id','ID','text'],
 	            ['name','名称','text.edit'],
 	            ['pid','所属'.$this->cfg_fname,'select',$array],
 	            ['list','排序值','text.edit'],

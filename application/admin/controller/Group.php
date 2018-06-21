@@ -48,7 +48,7 @@ class Group extends AdminBase
 	    $listdb = GroupModel::where([])->order('type desc,level asc,id asc')->column(true);
 
 	    $tab = [
-        	            ['id', '用户组ID', 'text'],
+//         	            ['id', '用户组ID', 'text'],
         	            ['title', '用户组名称', 'text.edit'],
         	            ['type', '用户组性质', 'select2',['会员组','系统组']],
         	            ['allowadmin', '后台权限','callback' ,function($key,$v){
