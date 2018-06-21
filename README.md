@@ -88,7 +88,7 @@
 
 
 
-[非常活跃的交流社区https://x1.php168.com/](https://x1.php168.com/)
+[非常活跃的交流社区https://x1.php168.com/](https://x1.php168.com/bbs/)
 
 
 
