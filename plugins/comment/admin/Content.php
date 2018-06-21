@@ -30,7 +30,7 @@ class Content extends AdminBase
 	            ['sysid','所属模块','text'],
 	            //['pid','所属'.$this->cfg_fname,'select',$array],
 	            ['list','排序值','text.edit'],
-	            ['right_button', '操作', 'btn'],
+// 	            ['right_button', '操作', 'btn'],
 	    ];
 	    
 	    $table = Tabel::make($listdb,$tab)

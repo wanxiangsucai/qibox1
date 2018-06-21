@@ -19,7 +19,8 @@ class Moneylog extends AdminBase
 	protected $tab_ext = [
 			'page_title'=>'用户积分使用消费记录与赚取记录',
 	        'top_button'=>[ ['type'=>'delete']],
-	        'hidden_edit'=>true,	
+	        'right_button'=>[ ['type'=>'delete']],
+// 	        'hidden_edit'=>true,	
 	];
 	
 	protected function _initialize()

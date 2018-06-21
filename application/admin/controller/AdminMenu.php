@@ -54,13 +54,13 @@ class AdminMenu extends AdminBase
 	    $table = Tabel::make($listdb,$tab)
 	    ->addTopButton('add',['title'=>'添加菜单','url'=>url('add',['gid'=>$gid])])
 	    ->addTopButton('delete')
-// 	    ->addRightButton('edit')
-// 	    ->addRightButton('delete')	    
+	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])])
+	    ->addRightButton('delete')
+	    ->addRightButton('edit')	    	    
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
 	    ->addPageTitle('网站菜单管理')
-	    ->addNav($this->group_nav,$gid)
-	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])]);
+	    ->addNav($this->group_nav,$gid) ;   
 
         return $table::fetchs();
 	}

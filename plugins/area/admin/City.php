@@ -39,7 +39,7 @@ class City extends AdminBase
 	            ['name','名称','text.edit'],
 	            ['pid','所属'.$this->cfg_fname,'select',$array],
 	            ['list','排序值','text.edit'],
-	            ['right_button', '操作', 'btn'],
+// 	            ['right_button', '操作', 'btn'],
 	    ];
 	    
 	    if($this->cfg_level==1){

@@ -18,7 +18,8 @@ class Login extends AdminBase
 	protected $tab_ext = [
 			'page_title'=>'后台登录日志管理',
 	        'top_button'=>[ ['type'=>'delete']],
-	        'hidden_edit'=>true,	
+	        'right_button'=>[ ['type'=>'delete']],
+// 	        'hidden_edit'=>true,	
 	];
 	
 	protected function getOrder(){

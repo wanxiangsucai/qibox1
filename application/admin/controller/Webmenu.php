@@ -44,9 +44,10 @@ class Webmenu extends AdminBase
 
 	    $table = Tabel::make($listdb,$tab)
 	    ->addTopButton('add',['title'=>'添加菜单','href'=>url('add',['type'=>$type])])
-	    ->addTopButton('delete')
-// 	    ->addRightButton('edit')
-// 	    ->addRightButton('delete')	    
+	    ->addTopButton('delete')	    
+	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__'])])
+	    ->addRightButton('delete')	    
+	    ->addRightButton('edit')
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
 	    ->addPageTitle('网站菜单管理')
@@ -56,8 +57,7 @@ class Webmenu extends AdminBase
 	            2=>['title' => 'wap头部菜单', 'url' =>url('index',['type'=>2])],
 	            3=>['title' => 'wap底部菜单', 'url' =>url('index',['type'=>3])],
 	            
-	    ],$type)
-	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__'])]);
+	    ],$type);
 
         return $table::fetchs();
 	}

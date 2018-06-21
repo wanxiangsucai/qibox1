@@ -175,10 +175,10 @@ jQuery(document).ready(function() {
         uploader.on('error', function (type) {
             switch (type) {
                 case 'Q_TYPE_DENIED':
-                    Dolphin.notify('文件类型不正确，只允许上传后缀名为：'+f_ext+'，请重新上传！', 'danger');
+                    layer.alert('文件类型不正确，只允许上传后缀名为：'+f_ext+'，请重新上传！');
                     break;
                 case 'F_EXCEED_SIZE':
-                    Dolphin.notify('文件不得超过'+ (f_size/1024) +'kb，请重新上传！', 'danger');
+                    layer.alert('文件不得超过'+ (f_size/1024) +'kb，请重新上传！');
                     break;
             }
         });

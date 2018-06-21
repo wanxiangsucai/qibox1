@@ -4,7 +4,7 @@
 }
 </style>
 <div class="MainContainers">
-<form name="form2" method="post" action="" class="{notempty name='$tab_ext.trigger'} form-trigger {else /}  layui-form  {/notempty}">
+<form name="form2" method="post" action="{:request()->url(true)}" onSubmit="return post_content(this);" class="{notempty name='$tab_ext.trigger'} form-trigger {else /}  layui-form  {/notempty}">
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</span> </div>
   <div class="Conter">	
 	<!-- 功能接口钩子 -->
@@ -72,6 +72,37 @@
 
 </form>
 </div>
+
+<script type="text/javascript">
+var havepost = true;
+function post_content(opt){
+	var form = $(opt);
+	var form_data = form.serialize();
+	var url = form.attr('action');
+
+	if(havepost==false){
+		layer.alert('请不要重复提交');
+	}
+	var index = layer.load(1);
+	havepost = false;
+    $.post(url, form_data).success(function (res) {
+		layer.close(index);
+        if(res.code==1){
+			layer.msg(res.msg);
+			setTimeout(function(){
+				window.location.href = res.url;
+			},200);
+		}else{
+			layer.open({title: '提交失败',content:res.msg});
+		}
+    }).fail(function () {
+		layer.open({title: '提示',content: '服务器发生错误'});
+    });
+
+	return false;
+	
+}
+</script>
 
 {notempty name="$tab_ext.trigger"}
 <script type="text/javascript">

@@ -18,7 +18,8 @@ class RmbGetout extends AdminBase
 	protected $tab_ext = [
 			'page_title'=>'会员提现管理',
 	        'top_button'=>[ ['type'=>'delete']],
-	        'hidden_edit'=>true,	
+	        'right_button'=>[ ['type'=>'delete']],
+// 	        'hidden_edit'=>true,	
 	];
 	
 	protected function _initialize()
