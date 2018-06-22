@@ -1257,3 +1257,9 @@ INSERT INTO `qb_weixinmenu` VALUES ('3','0','0','菜单三','','http://www.php16
 INSERT INTO `qb_weixinmenu` VALUES ('4','0','1','子菜单','','http://www.php168.com','0','0','0');
 INSERT INTO `qb_weixinword` VALUES ('2','价格','门户系统价格分别是6800元、9500元，分类系统价格分类别3500元、4500元等','10','0');
 INSERT INTO `qb_weixinword` VALUES ('3','产品 商品','我们的产品有地方门户系统，CMS系统，B2B电子商务系统，分类信息系统等','11','0');
+
+
+ALTER TABLE `qb_comment_content` ADD INDEX ( `uid` );
+ALTER TABLE `qb_alonepage` CHANGE  `ifclose`  `status` TINYINT( 1 ) NOT NULL DEFAULT  '1' COMMENT  '状态:1启用0关闭';
+ALTER TABLE `qb_alonepage` ADD INDEX (  `status` );
+ALTER TABLE `qb_alonepage` ADD INDEX (  `list` );
