@@ -82,6 +82,7 @@ class Rmb extends MemberBase
 	        $data['posttime'] = time();
 	        if ( RmbGetout::create($data) ) {
 	            add_rmb($this->user['uid'],-$data['money'],$data['money'],'申请提现冻结');
+	            send_admin_msg('有人申请提现了',$this->user['username'].' 申请提现 '.$data['money'].' 元,请尽快审核处理');
 	            $this->success('你的信息已提交，我们将于3个工作日内审核，并邮件通知您，请注意查收。如有疑问请联系客服',auto_url('marketing/rmb/index'));
 	        } else {
 	            $this->error('提现失败');
