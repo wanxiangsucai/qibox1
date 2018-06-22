@@ -122,6 +122,52 @@ abstract class Api extends IndexBase
         }
     }
     
+    /**
+     * 推荐
+     * @param number $id
+     */
+    public function star($id=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $info;
+        }
+        $table = $info['table'];
+    
+        $data = [
+            'id'=>$id,
+            'status'=>2,
+        ];
+        $result = Db::name($table)->update($data);
+        if($result){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('更新失败');
+        }
+    }
+    
+    /**
+     * 取消推荐
+     * @param number $id
+     */
+    public function unstar($id=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $info;
+        }
+        $table = $info['table'];
+    
+        $data = [
+            'id'=>$id,
+            'status'=>1,
+        ];
+        $result = Db::name($table)->update($data);
+        if($result){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('更新失败');
+        }
+    }
+    
 }
 
 
