@@ -23,7 +23,7 @@
             <td class="tdL">提现到哪个收款帐户:(<span class="red">*</span>)</td>
             <td class="tdR">
 {notempty name="$userdb.weixin_api"}
-				<div><input type="radio" name="banktype" value="weixin 微信钱包" checked="true">微信钱包</div>
+				<div><input type="radio" name="banktype" value="weixin 微信钱包" checked="true">微信钱包 (推荐,即绑定登录的微信)</div>
 {/notempty}
 
 {volist name="listdb" id="rs"}
@@ -54,7 +54,7 @@
         </table>
         </form>
         <ul class="aboutnote">
-        	<li>1.提现金额将会被冻结不可用.</li>
+        	<li>1.提现金额将会被冻结不可用.推荐选择微信钱包</li>
             <li>2.资料提交后,管理员需要1-2天时间审核处理,请耐心等待.</li>
                     
         </ul>

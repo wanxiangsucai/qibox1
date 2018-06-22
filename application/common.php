@@ -14,6 +14,7 @@
 use app\common\model\Plugin;
 use app\common\model\Module;
 use app\common\model\User AS UserModel;
+use app\common\model\Msg AS MsgModel;
 use think\Db;
 use think\Request;
 error_reporting(E_ERROR | E_PARSE );
@@ -1918,8 +1919,55 @@ if (!function_exists('getTemplate')) {
      }
  }
  
-
-
+ if (!function_exists('send_admin_msg')) {
+     /**
+      * 给管理员发系统提醒通知
+      * @param string $title 消息标题
+      * @param string $content 消息内容
+      */
+     function send_admin_msg($title='',$content=''){
+         $array = query('memberdata',[
+                 'where'=>['groupid'=>3],
+                 'column'=>'uid,weixin_api',
+         ]);
+         foreach ($array AS $uid=>$weixin_api){
+             send_msg($uid,$title,$content);
+             if ($weixin_api) {
+                 send_wx_msg($weixin_api,$content);
+             }
+         }
+     }
+ }
+ 
+ if (!function_exists('send_msg')) {
+     /**
+      * 给用户发送站内短信息
+      * @param number $touid 接收消息的用户UID
+      * @param string $title 消息标题,可为空
+      * @param string $content 消息内容
+      * @param string $sys 是否为系统消息,不显示发送人
+      * @return \app\common\model\Msg
+      */
+     function send_msg($touid=0,$title='',$content='',$sys=true){
+         $fromuid = $sys===true ? 0 : login_user('uid');
+         if ($title=='') {
+             if($sys===true){
+                 $title = '系统消息';
+             }else{
+                 $title = '来自 ' . login_user('username') . ' 的消息';
+             }
+         }
+         $data = [
+                 'touid'=>$touid,
+                 'title'=>$title,
+                 'content'=>$content,
+                 'create_time'=>time(),
+                 'uid'=>$fromuid,
+         ];
+         $result = MsgModel::create($data);
+         return $result;
+     }
+ }
  
  if (!function_exists('send_wx_msg')) {
      /**
@@ -2025,7 +2073,7 @@ if (!function_exists('getTemplate')) {
          //添加日志
          \plugins\marketing\model\RmbConsume::create([
                  'uid'=>$uid,
-                 'money'=>$money,
+                 'money'=>$money!=0 ? $money : $freeze_money,
                  'about'=>$about,
                  'posttime'=>time(),
                  'freeze'=>$freeze,

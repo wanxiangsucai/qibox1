@@ -7,6 +7,7 @@ use app\common\traits\AddEditList;
 
 use plugins\marketing\model\RmbInfull as RmbInfullModel;
 
+//人民币充值
 class RmbInfull extends AdminBase
 {
 	

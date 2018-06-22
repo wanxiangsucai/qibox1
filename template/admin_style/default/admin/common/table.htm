@@ -60,10 +60,10 @@ function search_content(){
 	{/volist}
 	
 	<!-- 没有特别指定按钮时,就显示默认的修改与删除 -->
-	{empty name="$tab_ext.right_button"}
+	{if !isset($tab_ext.right_button)}
       <th width="8%">删除</th>
       <th width="8%">修改</th> 
-	{/empty}
+	{/if}
 
     </tr>
 
@@ -83,10 +83,10 @@ function search_content(){
 	{/volist}
 	
 	<!-- 没有特别指定按钮时,就显示默认的修改与删除 -->
-	{empty name="$tab_ext.right_button"}
+	{if !isset($tab_ext.right_button)}
       <td><a href="{:auto_url('delete','ids='.$rs.id)}" class="_dels" onclick="return confirm('你确实要删除吗?不可恢复,请慎重!')" title="删除"><i class="fa fa-fw fa-remove"></i></a></td>
 	  <td><a href="{:auto_url('edit','id='.$rs.id)}" title="修改"><i class="fa fa-fw fa-edit"></i></td>
-	{/empty}
+	{/if}
 
     </tr>
 {/volist}

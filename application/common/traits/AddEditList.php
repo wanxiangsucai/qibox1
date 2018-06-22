@@ -172,9 +172,12 @@ trait AddEditList {
 	protected function getListData($map = [], $order = [],$rows=20) {
 		$map = array_merge($this -> getMap(), $map);
 		
-		$order = $this -> getOrder() ? $this -> getOrder() : $order ;
-
-		$data_list = $this -> model -> where($map) -> order($order) -> paginate($rows);
+		$order = $this -> getOrder() ? $this -> getOrder() : $order ;		
+		if (empty($order)) {
+		    $data_list = $this -> model -> where($map) -> orderRaw('1 desc') -> paginate($rows);
+		}else{
+		    $data_list = $this -> model -> where($map) -> order($order) -> paginate($rows);
+		}
 		return $data_list;
 	}
 	
@@ -192,9 +195,9 @@ trait AddEditList {
 	            $rs['class'] = $rs['class'] ?: self::get_top_bottom($rs['type'],'class');
 	            $rs['href'] = $rs['href'] ?: self::get_top_bottom($rs['type'],'href');
 	            $array[$key] = $rs;
-	        }
-	        return $array;
+	        }	        
 	    }
+	    return $array;
 	}
 	
 	protected function builder_rbtn_url($array=[]){
@@ -206,9 +209,9 @@ trait AddEditList {
 	            $rs['class'] = $rs['class'] ?: self::get_right_bottom($rs['type'],'class');
 	            $rs['href'] = $rs['href'] ?: self::get_right_bottom($rs['type'],'href');
 	            $array[$key] = $rs;
-	        }
-	        return $array;
+	        }	        
 	    }
+	    return $array;
 	}
 	
 	/**
@@ -224,7 +227,7 @@ trait AddEditList {
 	    }
 	    if(!empty($template)){    //如果模板存在的话,就用实际的后台模板
 	        $this->tab_ext['right_button'] = $this->builder_rbtn_url($this->tab_ext['right_button']);
-	        $this->tab_ext['top_button'] || $this->tab_ext['top_button'] = [['type'=>'add'],['type'=>'delete']];   //如果没设置顶部菜单 就给两个默认的
+	        isset($this->tab_ext['top_button']) || $this->tab_ext['top_button'] = [['type'=>'add'],['type'=>'delete']];   //如果没设置顶部菜单 就给两个默认的
 	        $this->tab_ext['top_button'] = $this->builder_topbtn_url($this->tab_ext['top_button']);	        
 	        $pages = is_object($data_list) ? $data_list->render() : '';
 	        $array = getArray($data_list);

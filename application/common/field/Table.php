@@ -58,9 +58,13 @@ class Table extends Base
         }
         
         if ( ($show = self::get_item($field['type'],$field,$info)) !='' ) {    //个性定义的表单模板,优先级最高
-            
+        
+        }elseif ($field['type'] == 'username') {
+            $_ar = get_user($field_value);
+            $show = "<a href='".get_url('user',$field_value)."' target='_blank'>{$_ar['username']}</a>";        
         }elseif ($field['type'] == 'link') {
-            $field['url'] = str_replace('__id__', $info['id'], $field['url']);
+            //$field['url'] = str_replace('__id__', $info['id'], $field['url']);
+            $field['url'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $field['url']);
             $show = "<a href='{$field['url']}' target='{$field['target']}'>$field_value</a>";
         }elseif($field['type'] == 'select'){
             $mid = 0;
@@ -130,7 +134,8 @@ class Table extends Base
         foreach($btns AS $rs){
             $rs['icon'] || $rs['icon']='glyphicon glyphicon-menu-hamburger';
             $rs['href'] || $rs['href']=$rs['url'];
-            $rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
+            //$rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
+            $rs['href'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $rs['href']);
             $alert = $rs['type']=='delete' ? ' class="_dels" onclick="return confirm(\'你确实要删除吗?不可恢复!\')"' : ' ';
             $data[] = [
                     'title'=>$rs['title'],

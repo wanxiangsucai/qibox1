@@ -7,6 +7,7 @@ use app\common\traits\AddEditList;
 
 use plugins\marketing\model\RmbConsume as RmbConsumeModel;
 
+//人民币日志
 class RmbConsume extends AdminBase
 {
 	
@@ -27,16 +28,13 @@ class RmbConsume extends AdminBase
 		parent::_initialize();
 		$this->model = new RmbConsumeModel();
 		$this->list_items = [
-				['uid', '用户名', 'callback', function($value){
-                    return get_user($value)->username;
-                }],
+                ['uid', '用户名','username'],
                 ['money', '数额', 'text'],
 				['money', '类型', 'callback', function($value){
                     return $value>0 ? '<span style="color:red">收入</span>' : '<span style="color:blue">支出</span>';
                 }],
 				['posttime', '时间', 'datetime'],
-                ['about', '事项', 'text'],
-                
+                ['about', '事项', 'text'],                
 			];
 	}
 	

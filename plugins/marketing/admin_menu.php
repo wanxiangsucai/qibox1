@@ -14,7 +14,7 @@ return array(
 								        array(
 								                'title'=>'会员提现申请',
 								                'link'=>'rmb_getout/index',
-												'power'=>['delete'],
+								                'power'=>['delete','pay'=>'给用户付款','log'=>'查看用户收入明细'],
 								        ),
 								        array(
 								                'title'=>'人民币充值管理',

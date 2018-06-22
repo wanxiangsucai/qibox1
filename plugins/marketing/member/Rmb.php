@@ -59,12 +59,13 @@ class Rmb extends MemberBase
 	
 	//提现
 	public function getmoney(){
+	    if (empty($this->user['rmb_pwd'])) {
+	        $this->success('你还没有设置支付密码,请先设置支付密码!','pwd');;
+	    }
 	    if(IS_POST){
 	        $data = $this->request->post();	        
 	        if($this->user['rmb']<1){
-	            $this->error("你可用余额小于1元,无法提取!");
-	        }elseif(empty($this->user['rmb_pwd'])){
-	            $this->success('你还没有设置支付密码,请先设置支付密码!','pwd');
+	            $this->error("你当前可用余额小于1元,无法提现!");
 	        }
 	        
 	        if(!$data['banktype']){
@@ -80,14 +81,20 @@ class Rmb extends MemberBase
 	        $data['username'] = $this->user['username'];
 	        $data['posttime'] = time();
 	        if ( RmbGetout::create($data) ) {
-	            $this->success('你的信息已提交，我们将于3个工作日内审核，并邮件通知您，请注意查收。如有疑问请联系客服');
+	            add_rmb($this->user['uid'],-$data['money'],$data['money'],'申请提现冻结');
+	            $this->success('你的信息已提交，我们将于3个工作日内审核，并邮件通知您，请注意查收。如有疑问请联系客服',auto_url('marketing/rmb/index'));
 	        } else {
-	            $this->error('更现失败');
+	            $this->error('提现失败');
 	        }
 	    }
 	    
 	    $cfg = unserialize($this->user['config']);
 	    $detail = explode("\r\n",$cfg['bank']);
+	    foreach($detail AS $key=>$value){
+	        if (empty($value)) {
+	            unset($detail[$key]);
+	        }
+	    }
 	    $this->assign('listdb',$detail);
 	    return $this->pfetch();
 	}
