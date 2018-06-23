@@ -221,7 +221,7 @@ trait AddEditList {
 	 */
 	protected function getAdminTable($data_list = []) {
 	    
-	    //$template = $this->get_template('',$this->mid);
+	    $template = $this->get_template('',$this->mid);
 	    if (empty($template)) {
 	        $template = $this->get_template('admin@common/wn_table');  //如果是前台的话,可以考虑换成 member@common/wn_table 不过最好还是单独设置模板更个性化
 	    }
