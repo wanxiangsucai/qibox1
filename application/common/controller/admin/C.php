@@ -124,36 +124,32 @@ abstract class C extends AdminBase
      */
     public function listall()
     {
-        if(empty($this->tab_ext)){
-            $this->tab_ext = [
-                    'nav'=>[ $this->nav() , 0],
-                    'page_title'=>'内容管理',
-                    'top_button'=>[
-                            [
-                                    'title' => '发布内容',
-                                    'icon'  => 'fa fa-plus',
-                                    'class' => 'btn btn-primary',
-                                    'href'  => auto_url('postnew')
-                            ],
-                            [
-                                    'type'       => 'delete',
-                            ],
-                            [
-                                    'title'       => '添加到辅栏目',
-                                    'icon'        => 'fa fa-indent',
-                                    'class'       => 'btn btn-primary ajax-post confirm',
-                                    'target-form' => 'ids',
-                                    'href'        => auto_url('info/add')
-                            ],
-                            [
-                                    'title' => '返回栏目列表',
-                                    'icon'  => 'fa fa-reply',
-                                    'class' => 'btn btn-primary',
-                                    'href'  => auto_url('sort/index')
-                            ],
-                    ],
-            ];
-        }
+        isset($this->tab_ext['nav'])              || $this->tab_ext['nav'] = [ $this->nav() , 0];
+        isset($this->tab_ext['page_title'])     || $this->tab_ext['page_title'] = '内容管理';
+        isset($this->tab_ext['top_button'])   || $this->tab_ext['top_button'] = [
+                [
+                        'title' => '发布内容',
+                        'icon'  => 'fa fa-plus',
+                        'class' => 'btn btn-primary',
+                        'href'  => auto_url('postnew')
+                ],
+                [
+                        'type'       => 'delete',
+                ],
+                [
+                        'title'       => '添加到辅栏目',
+                        'icon'        => 'fa fa-indent',
+                        'class'       => 'btn btn-primary ajax-post confirm',
+                        'target-form' => 'ids',
+                        'href'        => auto_url('info/add')
+                ],
+                [
+                        'title' => '返回栏目列表',
+                        'icon'  => 'fa fa-reply',
+                        'class' => 'btn btn-primary',
+                        'href'  => auto_url('sort/index')
+                ],
+        ];
         
         //比如万能表单是不需要栏目的，就不要显示栏目
         if(empty(config('post_need_sort'))){
@@ -163,10 +159,6 @@ abstract class C extends AdminBase
             unset($this->tab_ext['top_button'][2]);
         }
         
-        $this->tab_ext['nav'] = [ $this->nav() , 0];
-        $this->tab_ext['page_title'] = '内容管理';
-        //$this -> tab_ext['search'] = ['title'=>'标题','uid'=>'用户uid'];
-
         if(empty($this->list_items)){
             //列表显示哪些字段
             $this->list_items =  [
@@ -215,12 +207,12 @@ abstract class C extends AdminBase
             //$mid = ContentModel::getMidByFid($fid);
         }
         
-        $this->mid = $mid;        
+        $this->mid = $mid;
         $this->tab_ext['nav'] = [ $this->nav() , $mid];
-        $this->tab_ext['page_title'] = '内容管理';
+        isset($this->tab_ext['page_title']) || $this->tab_ext['page_title'] = '内容管理';
 
         
-        if(empty($this->tab_ext['top_button'])){
+        if(!isset($this->tab_ext['top_button'])){
             $this->tab_ext['top_button'] = [
                     [
                             'title' => '发布内容',
@@ -275,11 +267,12 @@ abstract class C extends AdminBase
                         $array = get_user($value);
                         return $array['username'];
                     }],
-                    ['create_time', '发布日期', 'datetime'],
+                    ['create_time', '创建日期', 'datetime'],
                     ['view', '浏览量', 'text.edit'],
                     ['list', '排序值', 'text.edit'],
                     ['status', '审核', 'select',['未审','已审','已推荐']],
             ];
+            
             //比如万能表单是不需要栏目的，就不要显示栏目
             if(empty(config('post_need_sort'))){
                 unset( $array[0] );

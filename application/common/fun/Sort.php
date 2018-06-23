@@ -18,7 +18,7 @@ class Sort{
      * @return void|number|number[]|array|unknown[]|unknown
      */
     public function fathers($id=0,$sys_type=''){
-        return get_sort($id,'father','',$sys_type);
+        return get_sort($id,'','father',$sys_type);
     }
     
     /**
@@ -44,11 +44,11 @@ class Sort{
      * @return void|number|number[]|array|unknown[]|unknown
      */
     public function brother($id=0,$sys_type=''){
-        return get_sort($id,'brother','',$sys_type);
+        return get_sort($id,'name','brother',$sys_type);
     }
     
     /**
-     * 获取所有子栏目
+     * 获取所有子栏目,包括所有下下级
      * @param number $id
      * @param string $sys_type
      * @return void|number|number[]|array|unknown[]|unknown
@@ -62,12 +62,12 @@ class Sort{
      * @param number $id
      * @param string $sys_type
      */
-    public function son($id=0,$sys_type=''){
+    public function son($id=0,$sys_type='',$moreCfg=null){
         $array = sort_config($sys_type);
         $s_array = [];
         foreach($array AS $key=>$rs){
             if($rs['pid']==$id){
-                $s_array[$key] = $array[$key]['name'];
+                $s_array[$key] = empty($moreCfg) ? $array[$key]['name'] : $array[$key];
             }
         }
         return $s_array;
@@ -88,12 +88,12 @@ class Sort{
      * @param number $id
      * @param string $sys_type
      */
-    public function top($sys_type=''){
+    public function top($sys_type='',$moreCfg=null){
         $array = sort_config($sys_type);
         $farray = [];
         foreach($array AS $key=>$rs){
             if($rs['pid']==0){
-                $farray[$key]=$rs['name'];
+                $farray[$key] = empty($moreCfg) ? $rs['name'] : $rs;
             }
         }
         return $farray;

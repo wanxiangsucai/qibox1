@@ -81,14 +81,14 @@ class Init
         if($this->webdb['www_url']){
             request()->domain($this->webdb['www_url']); //解决有的服务器无法识别https的问题,需要在后台定义域名网址
         }
-        //把相应的插件或频道模块的二维数组插入到一维数组去使用
-        if($dispatch['module'][1]=='plugin' && $dispatch['module'][1]=='execute'){
+        //把相应的插件或频道模块的二维数组插入到一维数组去使用        
+        if($dispatch['module'][1]=='plugin' && $dispatch['module'][2]=='execute'){
             $plugin_name = input('plugin_name');
             if( $plugin_name && is_array( $this->webdb['P__'.$plugin_name] ) ){
                 $this->webdb = array_merge(
                         $this->webdb,
                         $this->webdb['P__'.$plugin_name]
-                        );
+                 );
             }
         }elseif( $dispatch['module'][0] && $this->webdb['M__'.$dispatch['module'][0]] ){
             $this->webdb = array_merge(

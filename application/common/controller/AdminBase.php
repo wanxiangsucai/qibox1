@@ -81,7 +81,7 @@ class AdminBase extends Base
         }
         
         if($this->route[1]=='plugin' && $this->route[2]=='execute'){
-            if($this->route[0]=='admin'&&input('plugin_action')=='quickEdit'&&$power['plugin'][input('plugin_name')][input('plugin_controller').'/edit']){
+            if($this->route[0]=='admin'&&input('plugin_action')=='quickedit'&&$power['plugin'][input('plugin_name')][input('plugin_controller').'/edit']){
                 return true;
             }
             if($power['plugin'][input('plugin_name')][input('plugin_controller').'/'.input('plugin_action')]){

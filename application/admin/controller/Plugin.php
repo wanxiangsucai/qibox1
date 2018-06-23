@@ -82,7 +82,7 @@ class Plugin extends AdminBase
             $this->success('插件安装成功,请设置一下后台权限',url('group/admin_power',['id'=>$this->user['groupid']]));
         }
         
-        $this->tab_ext['id'] = false;
+        $this->tab_ext['right_button'] = [['type'=>'delete']];
         $this->list_items = [
             ['icon', '图标', 'icon'],
             ['name', '系统名称', 'text'],

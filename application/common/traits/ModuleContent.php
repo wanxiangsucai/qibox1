@@ -183,7 +183,7 @@ trait ModuleContent
 	    $array = [];
 		//$field_array || $field_array = $this->f_model->getFields(['mid'=>$this->mid]);
 		$field_array || $field_array = get_field($this->mid);
-
+		
 		foreach ($field_array AS $rs){
 		    if(!$rs['listshow']){
 		        continue;

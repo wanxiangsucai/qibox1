@@ -157,7 +157,7 @@ class Config extends AdminBase
 	                ]);
 	        if($result !== true ){
 	            $this->error($result);
-	        }elseif(!$group){
+	        }elseif(!$data['type']){
 	            $this->error('请先选择一个分类');
 	        }
 	        
