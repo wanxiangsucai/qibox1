@@ -27,7 +27,7 @@ abstract class M extends AdminBase
         
         $this->form_items = [
                 ['text', 'title', '模型名称'],
-                ['text', 'layout', '模板路径','一般请留空,则使用默认的,否则要填写完整的路径'],                
+                ['text', 'layout', '模板路径','一般请留空,否则必须放在/template/index_style/目录下,然后补全路径:比如:“qiboxxx/cms/content/list2.htm”'],                
         ];
         
         $this->list_items = [
@@ -62,6 +62,8 @@ abstract class M extends AdminBase
                                 'icon'  => 'fa fa-fw fa-table',
                                 'href'  => auto_url('field/index', ['mid' => '__id__'])
                         ],
+                        ['type'=>'delete',],
+                        ['type'=>'edit',],
                 ],
         ];
     }
