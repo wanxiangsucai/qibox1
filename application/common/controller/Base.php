@@ -120,7 +120,7 @@ class Base extends Controller
     }
     
     protected function ok_js($data=[],$msg='操作成功',$page_rows=0){
-        if(is_string($data)){
+        if(is_string($data)||is_numeric($data)){
             if(input('debug')){ //调试,查看原始数据
                 return $data;
             }

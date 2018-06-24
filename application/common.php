@@ -1150,12 +1150,13 @@ if(!function_exists('modules_config')){
      * @return NULL|unknown|string|array|NULL[]|string|array|unknown|NULL[]
      */
     function modules_config($id=null , $getcache=true){
-        $array = $getcache===true ? cache('modules_config') : '';
+        $array = $getcache===true ? cache('cache_modules_config') : '';
         if(empty($array)){
             $result = Module::getList(['ifopen'=>1]);
             foreach($result AS $rs){
                 $array[$rs['id']] = $rs;
             }
+            cache('cache_modules_config',$array);
         }
         if(is_numeric($id)){ //根据模块ID返回数组
             return $array[$id];
@@ -1180,12 +1181,13 @@ if(!function_exists('plugins_config')){
      * @return NULL|unknown|string|array|NULL[]|string|array|unknown|NULL[]
      */
     function plugins_config($id=null , $getcache=true){
-        $array = $getcache===true ? cache('plugins_config') : '';
+        $array = $getcache===true ? cache('cache_plugins_config') : '';
         if(empty($array)){
             $result = Plugin::getList(['ifopen'=>1]);
             foreach($result AS $rs){
                 $array[$rs['id']] = $rs;
             }
+            cache('cache_plugins_config',$array);
         }        
         if(is_numeric($id)){ //根据插件ID返回数组
             return $array[$id];
@@ -1383,8 +1385,8 @@ if(!function_exists('query')){
 	        $array['count'] && $result = $obj->count($array['count']);
 	        $array['max'] && $result = $obj->max($array['max']);
 	        $array['min'] && $result = $obj->min($array['min']);
-	        $array['sum'] && $result = $obj->min($array['sum']);
-	        $array['avg'] && $result = $obj->min($array['avg']);     //获取平均值
+	        $array['sum'] && $result = $obj->sum($array['sum']);
+	        $array['avg'] && $result = $obj->avg($array['avg']);     //获取平均值
 	        if($array['type']=='one'){
 	            $result = getArray($obj->find());
 	        }elseif($result===false){

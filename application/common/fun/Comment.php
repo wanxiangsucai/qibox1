@@ -5,6 +5,7 @@ namespace app\common\fun;
  * 评论用到的相关函数
  */
 class Comment{
+    
     /**
      * 评论总数
      * 模板中使用方法 内容页中的使用方法 {:fun('comment@total',$id,'cms')}  列表页中的使用方法 {:fun('comment@total',$rs['id'],'cms')} 
@@ -29,6 +30,21 @@ class Comment{
         ];
         $num = query('comment_content',$map);
         return intval($num);
+   }
+   
+   /**
+    * 取得某条评论
+    * @param number $id
+    * @return mixed|number
+    */
+   public function info($id = 0){
+       $map = [
+               'where'=>['id'=>$id],
+               'type'=>'one',
+       ];
+       $rsdb = query('comment_content',$map);
+       $rsdb && $rsdb['content'] = del_html($rsdb['content']);
+       return $rsdb;
    }
    
    
