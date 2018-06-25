@@ -2084,6 +2084,8 @@ if (!function_exists('getTemplate')) {
                  'rmb_freeze'=>$freeze_money+$user['rmb_freeze'],
          ]);
          
+         //cache('user_'.$uid,null);
+         
          //添加日志
          \plugins\marketing\model\RmbConsume::create([
                  'uid'=>$uid,
@@ -2107,7 +2109,8 @@ if (!function_exists('getTemplate')) {
              UserModel::where('uid',$uid)->setInc('money',$money);
          }else{
              UserModel::where('uid',$uid)->setDec('money',abs($money));
-         }         
+         }
+         cache('user_'.$uid,null);
          //添加日志
          \plugins\marketing\model\Moneylog::create([
                  'uid'=>$uid,
