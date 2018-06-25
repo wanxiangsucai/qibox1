@@ -6,6 +6,22 @@ use app\weibo\model\Feed;
 class Sns{
     
     /**
+     * 主题动态类型
+     * @param string $type
+     */
+    public function type($type=''){
+        $array = [
+            'add'=>'发布',
+            'comment'=>'评论',
+            'reply'=>'回复',
+            'fav'=>'收藏',
+            'star'=>'推荐',
+            'agree'=>'点赞',
+        ];
+        return $array[$type]?:$type;
+    }
+    
+    /**
      * 把动态里边的每一条记录获取对应的数据
      * @param array $rs
      */
@@ -74,24 +90,40 @@ class Sns{
     }
     
     /**
-     * 给被访问者插入动态信息 针对发布内容之外的事件
-     * @param unknown $touid 被访问者的UID
-     * @param string $msg 事件描述
+     * 添加动态信息
+     * @param unknown $array_uid 可以是数组，也可以是被访问者的UID
+     * @param string $about 事件描述
      * @param string $type 事件分类,可以省略用默认的
      */
-    public function add_msg($touid,$msg='',$type='msg'){
-        if($touid==login_user('uid')){      //除发布内容之外,博主的其它事件,就没必要插入到自己的动态列表了,比如他访问了自己的博客
-            return ;
+    public function add_msg($array_uid,$about='',$type='msg',$sysid=0,$aid=0,$rid=0){
+        if (is_array($array_uid)) {
+            $touid = $array_uid['uid'];
+            $type = $array_uid['type'];
+            $about = $array_uid['about'];
+            $sysid = $array_uid['sysid'];
+            $aid = $array_uid['aid'];
+            $rid = $array_uid['rid'];
+        }else{
+            $touid = $array_uid;
         }
-        $about = login_user('uid') . "\t$msg";
+        $login_id = login_user('uid');
+        if($touid != $login_id && !preg_match('/^([\d]+)/', $about)){
+            $about = $login_id . "\t$about";
+        }        
         $data=[
-                'uid'=>$touid,
-                'create_time'=>time(),
-                'type'=>$type,
-                'about'=>$about,
+            'uid'   =>   $touid,
+            'create_time'=>time(),
+            'type'  =>   $type,
+            'about' =>   $about,
+            'sysid' =>   intval($sysid),
+            'aid'   => intval($aid),
+            'rid'   => intval($rid),
         ];
-        Feed::create($data);
-        $this->add_newmsgnum($touid);    //给被访问者的消息+1
+        $result = Feed::create($data);
+        if($result && $touid != $login_id){
+            $this->add_newmsgnum($touid);    //给被访问者的消息+1
+        }
+        return $result;
     }
     
     /**
@@ -162,8 +194,12 @@ class Sns{
      * @param number $uid
      */
     public function weibo($uid=0){
-        $info = Db::name('weibo_content1')->where('id',$uid)->find();
-        return getArray($info);
+        $uid || $uid=login_user('uid');
+        static $array=[];
+        if(empty($array[$uid])){
+            $array[$uid] = getArray(Db::name('weibo_content1')->where('id',$uid)->find()); 
+        }
+        return $array[$uid];
     }
     
     /**

@@ -84,7 +84,7 @@ class Msg extends MemberBase
         ];
         $data_list = Model::where($map)->order("id desc")->paginate(15);
         $data_list->each(function($rs,$key){
-            $rs['from_username'] = get_user_name($rs['uid']);
+            $rs['from_username'] = $rs['uid']?get_user_name($rs['uid']):'系统消息';
             return $rs;
         });
         $pages = $data_list->render();

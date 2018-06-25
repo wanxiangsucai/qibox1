@@ -1362,14 +1362,23 @@ if(!function_exists('write_file')){
 
 if(!function_exists('query')){
     /**
-     * 执行原生数据库代码
-     * @param unknown $sql
-     * @param array $ar
-     * @return mixed|number
+     * 数据库操作方法,可以执行原生数据库语句
+     * @param unknown $sql 可以是数据库语句,也可以是数据库表名,不带前缀
+     * @param array $array
+     * @param number $cache_time 缓存时间
+     * @return mixed|\think\cache\Driver|boolean|unknown|string|number
      */
-	function query($sql,$array=[]){	
+	function query($sql,$array=[],$cache_time=0){	
 	    if(preg_match('/^([\w]+)$/i', $sql)){
+	        if ($cache_time>0) {
+	            $key = md5($sql.http_build_query($array));
+	            $_array = cache($key);
+	            if ($_array) {
+	                return $_array;
+	            }
+	        }
 	        $result = false;
+	        $array['where'] || $array['where']=[];
 	        $obj = Db::name($sql)->where($array['where']);
 	        $array['alias'] && $obj->alias($array['alias']);
 	        $array['join'] && $obj->join($array['join']);
@@ -1391,6 +1400,9 @@ if(!function_exists('query')){
 	            $result = getArray($obj->find());
 	        }elseif($result===false){
 	            $result = getArray($obj->select());
+	        }
+	        if ($cache_time>0) {
+	            cache($key,$result);
 	        }
 	        return $result;
 	    }else{
@@ -2453,9 +2465,13 @@ if (!function_exists('get_qrcode')) {
     function get_qrcode($url=''){
         static $domain = '';
         if($domain === ''){
-            $domain = request()->domain() ;
+            $domain = request()->domain();
         }
-        $url = preg_match('/^(https:|http:)/', $url) ? $url : $domain.$url;
+        if ($url) {
+            $url = preg_match('/^(https:|http:)/', $url) ? $url : $domain.$url;
+        }else{
+            $url=request()->url(true);
+        }
         return iurl('index/qrcode/index') . '?url=' . urlencode($url);
     }
 }

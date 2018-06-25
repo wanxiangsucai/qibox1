@@ -22,12 +22,12 @@
 	<ul>
 		<ol><a href="/"><img src="{$webdb.logo|tempdir|default='__STATIC__/index/default/logo.png'}"></a></ol>
 		<li>
-		<!--form method="post" action="{:urls('index',$url_array)}">
+		<form method="post" action="{:urls('search/index/lists')}">
 		<dl>
 			<dt><input type="text" name="keyword" placeholder="请输关键字" required/></dt>
 			<dd><button type="submit"><i class="fa fa-search"></i></button></dd>
 		</dl>
-		</form-->
+		</form>
 			<div class="HeadMoreMenu">
 				<div class="tag"><i class="si si-list" onclick="$('.HeadMoreMenu .lists').fadeIn();$('.HeadMoreMenu .lists div').animate({'width':'50%'},300);"></i></div>
 				<div class="lists">
@@ -57,5 +57,6 @@
 {/block}
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body_foot',$userdb,$webdb,true)}
+<script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
 </body>
 </html>
