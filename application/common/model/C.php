@@ -681,13 +681,11 @@ abstract class C extends Model
                 }
             }
             //$data = Db::name(self::getTableByMid($mid))->where($map)->whereOr($whereor)->limit($min,$rows)->order($order,$by)->column(true);
-            $obj = Db::name(self::getTableByMid($mid)) -> where($map) -> whereOr($whereor);
             if(strstr($order,'rand()')){
-                $obj -> orderRaw('rand()');
+                $data = Db::name(self::getTableByMid($mid)) -> where($map) -> whereOr($whereor) -> orderRaw('rand()') -> paginate($rows,false,['page'=>$page]);
             }else{
-                $obj -> order($order,$by);
+                $data = Db::name(self::getTableByMid($mid)) -> where($map) -> whereOr($whereor) -> order($order,$by) -> paginate($rows,false,['page'=>$page]);
            }
-           $data =  $obj -> paginate($rows,false,['page'=>$page]);
         }else{
             //务必要先选择模型，跨表查询效率非常低            
 //             $list = Db::name(self::$base_table)->limit($min,$rows)->order('id',$by)->column('id,mid');
