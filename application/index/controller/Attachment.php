@@ -117,6 +117,10 @@ class Attachment extends IndexBase
             $Orientation = $exif['Orientation'];
         }
         
+        if(!in_array($Orientation, [8,3,6])){
+            return ;
+        }
+        
         $data = imagecreatefromstring( file_get_contents($source_file) );
         
         if(!empty($Orientation)){

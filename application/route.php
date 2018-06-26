@@ -12,6 +12,10 @@
 //\think\Route::rule('bbs/show/:id','\\app\\bbs\\index\\Content@show');
 use think\Route;
 
+if (is_file(APP_PATH.'routemy.php')) {      //用户自定义的路由规则
+    include APP_PATH.'routemy.php';
+}
+
 Route::group(['name'=>'cms','ext'=>'html'], [
         'show-<id>$'	=>['cms/content/show',['method'=>'get'],['id' => '\d+']],
         'list-<fid>'=>['cms/content/index',['method'=>'get'],['fid' => '\d+']],

@@ -256,7 +256,33 @@ jQuery(document).ready(function() {
 			});			
 
             var reader = new FileReader();
+
+			var nopress = false;	//不要压缩
+			if(file.size<500000 || (file.name.substr(file.name.lastIndexOf(".")+1)).toLowerCase()=='gif'){
+				reader.readAsDataURL(file);
+				nopress = true;
+			}
+
             reader.onload = function (event) {
+
+				if(nopress==true){	//不要压缩
+					$.post(severUrl, {'imgBase64':event.target.result,'Orientation':Orientation,'tags':alltags}).done(function (res) {
+							layer.closeAll();
+							 if(res.code==1){
+								 pics.push({"picurl":res.path,"title":"","url":""});	//组图
+								 //pics[0] = res.path;	//单图
+								 //textObj.val( pics.join(',') );
+								 if(typeof callback == 'function'){
+									callback(pics,res.url);
+								 }
+							 }
+					}).fail(function () {
+							layer.closeAll();
+							layer.alert('操作失败，请跟技术联系');
+					});
+					return ;
+				}
+
                 var blob = new Blob([event.target.result]); 
                 window.URL = window.URL || window.webkitURL;
                 var blobURL = window.URL.createObjectURL(blob); 
