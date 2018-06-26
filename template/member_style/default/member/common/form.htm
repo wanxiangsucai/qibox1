@@ -29,7 +29,7 @@
 	<!--这种是最常用的,表单没做分组显示的-->
 	<!-- 参数 field="pic,tit" 代表过滤哪些字段不显示出来 里边支持TP标签 -->
     {qb:form field="" f_array="$f_array"}
-	<dl>
+	<dl id="form_group_{$rs.name}">
 		<dt>{$rs.title}</dt>
 		<dd>
 		{$rs.value}
@@ -54,7 +54,7 @@
 				<div class="layui-tab-item {eq name='i' value='1'}layui-show{/eq}">
 					<!-- 每一组的所有表单 -->
 					{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}
-						<dl>
+						<dl id="form_group_{$rs.name}">
 							<dt>{$rs.title}</dt>
 							<dd>
 							{$rs.value}

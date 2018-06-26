@@ -11,7 +11,7 @@
 	   <table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
 	     <!-- 参数 field="pic,tit" 代表过滤哪些字段不显示出来 里边支持TP标签 -->
          {qb:form field="" f_array="$f_array"}
-		  <tr>
+		  <tr id="form_group_{$rs.name}">
             <td class="tdL">{$rs.title}: </td>
             <td class="tdR {if in_array($rs['type'],['text','password','number','select'])}layui-input-inline{else /}layui-input-block{/if}">
 			{$rs.value}
@@ -45,7 +45,7 @@
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
 				<!-- 每一组的所有表单 -->
 				{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}
-					<tr> 
+					<tr id="form_group_{$rs.name}"> 
 					  <td class='tdL'>{$rs.title}: </td>
 					  <td class="tdR {if in_array($rs['type'],['text','password','number','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
 						{$rs.value}
