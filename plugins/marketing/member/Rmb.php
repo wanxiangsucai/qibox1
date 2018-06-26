@@ -3,7 +3,7 @@ namespace plugins\marketing\member;
 
 use app\common\controller\MemberBase; 
 use plugins\marketing\model\RmbGetout;
-use plugins\marketing\model\RmbInfull;
+//use plugins\marketing\model\RmbInfull;
 use plugins\marketing\model\RmbConsume;
 
 class Rmb extends MemberBase
@@ -47,11 +47,11 @@ class Rmb extends MemberBase
 	        $numcode = rands(10);
 	        //直接跳转支付
 	        post_olpay([
-	                'money'=>$data['money'],
-	                'return_url'=>purl('index'),
-	                'banktype'=>'weixin',
-	                'numcode'=>$numcode,
-	                'callback_class'=>'',
+	                'money' => $data['money'],
+	                'return_url' => purl('index'),
+	                'banktype' => $data['paytype']=='alipay'?'alipay':'weixin',
+	                'numcode' => $numcode,
+	                'callback_class' => '',
 	        ] , true);	
 	    }
 	    return $this->pfetch();

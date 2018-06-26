@@ -96,7 +96,11 @@ class Table extends Base
         }elseif($field['type'] == 'select2'){
             $show = $field['array'][$field_value];
         }elseif($field['type'] == 'datetime'){
-            $show = date('Y-m-d H:i',$field_value);
+            $show = format_time($field_value,'Y-m-d H:i');
+        }elseif($field['type'] == 'date'){
+            $show = format_time($field_value,'Y-m-d');
+        }elseif($field['type'] == 'time'){
+            $show = format_time($field_value,'H:i');
         }elseif($field['type'] == 'text.edit'){
             $size = 8;
             $_class = '_num';

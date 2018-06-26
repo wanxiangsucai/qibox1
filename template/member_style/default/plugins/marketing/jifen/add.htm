@@ -105,11 +105,11 @@
 			<ol>金额(元)</ol> 
 			<li><input type="text" name="money" placeholder="输入金额"/></li>
 		</ul>
-	    <div class="yuMoney">你目前已有积分数是<span class="B red">{$userdb.money}</span>，请输入您要充值的金额</div>
+	    <div class="yuMoney">你目前已有积分数是 <span class="B red">{$userdb.money}</span> 个，请输入您要充值的金额</div>
 	    <div class="payBut"><button type="submit">充值</button><input type="hidden" name="paytype" value="weixin"></div>
 	</form>
     <div class="note">
-    	注意：每支付<span class="B red">1</span>元，将可获得<span class="B red">100</span>个积分，充值金额只能是整数<br>充值促销优惠,每支付10块钱赠送<span class="red">5</span>个积分,以此类推
+    	注意：<br>每支付 <span class="B red">1</span> 元，将可获得 <span class="B red">{$webdb.money_ratio|default=10}</span> 个积分，充值金额只能是整数 
     </div>
 </div>
 <script>

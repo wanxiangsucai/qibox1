@@ -31,8 +31,9 @@ class Jifen extends MemberBase
             $this->error('你还没有支付成功');
         }
         if ($this->user['rmb']>=$info['money']){
-            $this->user['rmb'] = $this->user['rmb'] - abs($info['money']);
-            add_jifen($this->user['uid'],$info['money']*100,'在线充值');
+            //$this->user['rmb'] = $this->user['rmb'] - abs($info['money']);
+            $this->webdb['money_ratio']>0 || $this->webdb['money_ratio']=10;
+            add_jifen($this->user['uid'],$info['money']*$this->webdb['money_ratio'],'在线充值积分');
             add_rmb($this->user['uid'], -abs($info['money']), 0,'充值积分消费');
         }
     }

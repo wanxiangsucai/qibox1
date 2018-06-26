@@ -52,14 +52,13 @@
     			<span class="yeepay"><i class="glyphicon glyphicon-text-background"></i>支付宝支付</span>
     		</h3>
 	    	<form name="form1" method="post" action="">    	
-	            你目前已有积分数是<span class="B red">{$userdb.money}</span>个,请输入你要充值金额
+	            你目前已有积分数是 <span class="B red">{$userdb.money}</span> 个,请输入你要充值金额
 	            <input type="text" name="money" value="1" size="6"/> 元（RMB） 
 	            <input type="submit" name="Submit" value="充值"/>
 	            <input type="hidden" name="paytype" value="wxpay"/>
 	        </form>
 	        <p>
-	        	<i class="fa fa-warning"></i>注意：每支付<span class="B red">1</span>元，将可获得<span class="B red">100</span>个积分，充值金额只能是整数<br>
-	        	充值促销优惠,每支付10块钱赠送<span class="red">5</span>个积分,以此类推
+	        	<i class="fa fa-warning"></i>注意：每支付 <span class="B red">1</span> 元，将可获得 <span class="B red">{$webdb.money_ratio|default=10}</span> 个积分，充值金额只能是整数<br> 
 	        </p>
 	        <div class="other">
 	        	<span>其它支付方式:</span>
