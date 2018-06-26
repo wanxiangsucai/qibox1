@@ -113,7 +113,15 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 </div>
 
 <script type="text/javascript">
-var page = 1;
+var page = 1,loading=1;
+$(window).scroll(function(){
+	// 当滚动到最底部以上100像素时， 加载新内容
+	if (loading==1 &&  (400 + $(window).scrollTop())>($(document).height() - $(window).height())){
+		loading = 0;
+		showlist();
+	}	
+});
+
 function showlist(){
 	layer.load(3,{shade: [0.1,'#333']});
 	$.get('https://x1.php168.com/appstore/wxapp.index/index/fid/{$fid}.html?rows=20&page='+page+'&'+Math.random(),function(res){
@@ -148,6 +156,7 @@ function showlist(){
 						'</li>';
 				});
 				$('.Markercontents').append(str);
+				loading = 1;
 				hide_demo();
 			}
 		}else{
