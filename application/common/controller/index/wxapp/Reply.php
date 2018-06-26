@@ -131,9 +131,10 @@ abstract class Reply extends IndexBase
         $info = $this->topic_model->getInfoByid($id);
         if(!$info){
             return '主题不存在!';
-        }
-        if(!$this->user){
+        }elseif(!$this->user){
             return '你还没登录';
+        }elseif($this->user['groupid']==2){
+            return '很抱歉,你已被列入黑名单,没权限发布,请先检讨自己的言行,再联系管理员解封!';
         }
         
         if (!empty($this -> validate)) {   //验证数据

@@ -133,7 +133,7 @@ function showlist(){
 								'<dt><img onerror="this.src=\'__STATIC__/images/nopic.png\'" src="'+rs.picurl+'"></dt>'+
 								'<dd>'+
 									'<h3>'+rs.title+'<span>'+(rs.downs>10?'热门':'')+'</span></h3>'+
-										(rs.price>0 ? '<div class="price red">&yen; '+rs.price+' 元</div>':'<div class="price blue">免费</div>')+
+										(rs.price>0 ? (rs.jifen>0?'<div><span class="price red">&yen; '+rs.price+' 元</span> <span class="price blue">(积分 '+rs.jifen+' 个)</span></div>':'<div class="price red">&yen; '+rs.price+' 元</div>'):'<div class="price blue">免费</div>')+
 									'<div class="other">作者：<a href="'+rs.author_url+'">'+rs.author+'</a></div>'+
 									'<div class="other" title="'+rs.about+'">介绍：'+rs.about+'</div>'+
 									'<div class="other">安装次数：'+rs.downs+' 次</div>'+

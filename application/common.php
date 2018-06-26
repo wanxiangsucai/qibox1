@@ -2646,7 +2646,7 @@ if(!function_exists('get_area')){
 
 
 
-if(!function_exists('get_state')){
+if(!function_exists('get_status')){
     /**
      * 自定义通用状态助手
      * @access public
@@ -2654,7 +2654,7 @@ if(!function_exists('get_state')){
      * @param array  $array 自定义数组
      * @return string
      */
-    function get_state($state,$array=['禁用','正常']) {
+    function get_status($state,$array=['禁用','正常']) {
         if(is_string($array)){
             $array = explode(',',$array);
         }

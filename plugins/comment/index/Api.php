@@ -51,13 +51,16 @@ class Api extends IndexBase
                 return $this->err_js('数据库执行失败!');
             }
         }elseif ($this->request->isPost()) {
+            if($this->user['groupid']==2){
+                return $this->err_js('很抱歉,你已被列入黑名单,没权限发布,请先检讨自己的言行,再联系管理员解封!');
+            }
             $data = $this->request->post();
             if (!empty($this -> validate)) {   //验证数据
                 $result = $this -> validate($data, $this -> validate);
                 if (true !== $result){
                     return $this->err_js($result);
                 }
-            }
+            }            
             if($data['content']==''){
                 return $this->err_js('内容不能为空');
             }elseif(!$this->admin){

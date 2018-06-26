@@ -3,7 +3,6 @@
 	width:500px;
 }
 </style>
-
 <div class="MainContainers">
 <form name="" method="post" action="{:request()->url(true)}" class="ajax_post {notempty name='$tab_ext.trigger'} form-trigger {else /}  layui-form  {/notempty}">
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</span> </div>
@@ -20,7 +19,7 @@
 		<tr id="form_group_{$rs.name}"> 
 		  <td class='tdL'>{$rs.title}: </td>
 		  <td class="tdR {if in_array($rs['type'],['text','password','number','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
-			{$rs.value}
+			<div>{$rs.value}</div>
 			{notempty name="$rs.about"}<div class="layui-form-mid layui-word-aux">{$rs.about}</div>{/notempty}
 		  </td>
 		</tr>
@@ -47,7 +46,7 @@
 					<tr id="form_group_{$rs.name}"> 
 					  <td class='tdL'>{$rs.title}: </td>
 					  <td class="tdR {if in_array($rs['type'],['text','password','number','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
-						{$rs.value}
+						<div>{$rs.value}</div>
 						{notempty name="$rs.about"}<div class="layui-form-mid layui-word-aux">{$rs.about}</div>{/notempty}
 					  </td>
 					</tr>

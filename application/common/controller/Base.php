@@ -205,9 +205,12 @@ class Base extends Controller
             if($template=='' && $this->route[2]==''){
                 $template='index';
             }
-            $template = getTemplate($template);  //自动识别PC或WAP模板
+            $template = getTemplate($_template=$template);  //自动识别PC或WAP模板
             if(ENTRANCE=='member'&&input('uid')==''){
                 $this->assign('uid',$this->user['uid']);    //默认把当前用户的UID放进模板,方便标签调用
+            }
+            if (empty($template)) {
+                die('严重警告!!<br><br>当前模板文件不存在:<br><br>'.getTemplate($_template,false));
             }
 	    }
         
