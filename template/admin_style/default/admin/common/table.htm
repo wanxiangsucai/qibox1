@@ -13,7 +13,7 @@
 			<a href="{:auto_url('delete')}" onclick="return delete_all($(this));" class="layui-btn layui-btn-primary"><li class="{$rs.icon|default='fa fa-fw fa-remove'}"></li> {$rs.title|default='批量删除'}</a>
 		 
 		 {else /}
-			<a href="{$rs.href}" class="layui-btn {$rs.class|default='layui-btn-primary'}" target="{$rs.target}" data-ids="{$rs['target-form']}"><li class="{$rs.icon|default='fa fa-external-link-square'}"></li> {$rs.title}</a>
+			<a href="{$rs.href}" class="layui-btn layui-btn-primary" target="{$rs.target}" data-ids="{$rs['target-form']}"><li class="{$rs.icon|default='fa fa-external-link-square'}"></li> {$rs.title}</a>
 		 {/if}	
 		{/volist}
 	</div>
