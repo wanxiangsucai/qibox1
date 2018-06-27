@@ -147,7 +147,7 @@ function showlist(){
 									'<div class="other">安装次数：'+rs.downs+' 次</div>'+
 									'<div class="other">更新时间：'+rs.time+'</div>'+
 									'<div class="butter">'+
-										'<a href="javascript::" onclick="setup_app('+rs.id+',\''+rs.app_keywords+'\','+rs.price+')" class="fa fa-cloud-download">在线安装</a>'+
+										'<a href="javascript:;" onclick="setup_app('+rs.id+',\''+rs.app_keywords+'\','+rs.price+')" class="fa fa-cloud-download">在线安装</a>'+
 										'<a href="https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html" target="_blank" class="fa fa-bolt">装前必读</a>'+
 					{eq name="$fid" value="4"}'<a class="demo_url" href="'+rs.author_url+'" target="_blank" class="fa fa-bolt">风格演示</a>'+{/eq}
 									'</div>'+
@@ -242,5 +242,6 @@ function layer_buy_iframe(url,id,keywords,price){
 						//window.location.reload();
 					}
 				});
+				document.body.scrollTop = document.documentElement.scrollTop = 0;	//必须要返回顶部,不然外部框架有可能会显示不了
 			}
 </script>
