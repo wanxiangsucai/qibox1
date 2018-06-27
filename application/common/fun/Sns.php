@@ -48,6 +48,9 @@ class Sns{
         $topic = $obj->getInfoByid($rs['aid'],true);        
         if($topic){
             $topic['sys_name'] = $array['name'];
+            if (empty($topic['picurls'])) {
+                $topic['picurls'] = Content::get_images($topic['full_content']);
+            }
         }else{
             return [];
         }

@@ -27,7 +27,7 @@ trait ModuleContent
 	 */
 	protected function chooseSort($mid = 0){
 	    $sort_list = $this->s_model->getTreeList(0, $mid);
-	    $template = getTemplate();
+	    $template = getTemplate('postnew');
 	    $tpl = $template ? $template : config('post_choose_sort');
 	    return $this->fetch($tpl,['sort_list'=>$sort_list]);
 	}
@@ -38,7 +38,7 @@ trait ModuleContent
 	 */
 	protected function chooseModule(){
 	    $model_list = $this->m_model->getList();
-	    $template = getTemplate();
+	    $template = getTemplate('postnew');
 	    $tpl = $template ? $template : config('post_choose_model');
 	    return $this->fetch($tpl,['model_list'=>$model_list]);
 	}

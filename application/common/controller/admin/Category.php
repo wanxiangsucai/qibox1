@@ -59,6 +59,8 @@ abstract class Category extends AdminBase
                                 'icon'  => 'fa fa-fw fa-file-text-o',
                                 'href'  => auto_url('info/index', ['cid' => '__id__'])
                         ],
+                        ['type'=>'delete'],
+                        ['type'=>'edit'],
                        /* [
                                 'title' => '添加内容',
                                 'icon'  => 'glyphicon glyphicon-plus',
