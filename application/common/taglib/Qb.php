@@ -79,11 +79,10 @@ class Qb extends TagLib{
         }
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $val = $tag['val'];
-        $status = $tag['status'];   //审核或推荐
         $order = $tag['order']; //按什么排序
         //$rows = $tag['rows'];   //取数据库的多少条记录
         $by = $tag['by'];   //升序还是降序
-        $status = $tag['status'];   //审核或推荐
+        $status = empty($tag['status']) ? '' : "'status'=>'$status',";   //审核或推荐
         $where = $tag['where'];   //条件查询
         $mid = $tag['mid'];   //指定模型
         $fid = $tag['fid'];   //指定栏目
@@ -93,7 +92,7 @@ class Qb extends TagLib{
         $class = $tag['class']; //调取数据执行的类
         $tpl = $tag['tpl']; //指定默认模板
         $js = $tag['js']; //通过AJAX方式获取数据,这样就不影响页面打开速度
-        $union = $this->union_live_parameter($tag['union']);    //动态关联的参数
+        $union = $this->union_live_parameter($tag['union'],$where);    //动态关联的参数
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--QB '."<!--$name\t$type\t$tpl-->";
         if(!empty($val)){   //只取得变量值的情况
@@ -106,7 +105,7 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' QB--><?php endif; ?>';
-        $parse .= '<?php '."\$$name = fun('label@run_label','$name',[$union'val'=>'$val','list'=>'$list','type'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by','status'=>'$status','where'=>'$where','whereor'=>'$whereor','sql'=>'$sql','js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
+        $parse .= '<?php '."\$$name = fun('label@run_label','$name',[$union'val'=>'$val','list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>'$sql','js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
         return $parse;
     }
     
@@ -136,9 +135,15 @@ class Qb extends TagLib{
      * @param unknown $str
      * @return void|string
      */
-    private function union_live_parameter($str=''){
-        if(empty($str)){
+    private function union_live_parameter($str='',$where=''){
+        if(empty($str) && empty($where)){
             return ;
+        }
+        if (empty($str) && $where!='') {
+            $str = fun('label@get_union',$where);
+            if (empty($str)) {
+                return ;
+            }
         }
         $_str = '';
         $_par = [];

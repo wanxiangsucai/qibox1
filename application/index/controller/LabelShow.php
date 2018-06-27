@@ -872,7 +872,7 @@ class LabelShow extends IndexBase
         $filtrate_field = $cfg['field'];                                 //循环字段指定不显示哪些
         $val = $cfg['val'];                                                 //取得数据后，赋值到这个变量名, 分页的话,没做处理会得不到
         $list = $cfg['list'];                                                //foreach输出 AS 后面的变量名
-        $type = $cfg['type']?$cfg['type']:'choose';            //选择哪种标签，图片或代码等等
+        $type = $cfg['systype']?$cfg['systype']:'choose';            //选择哪种标签，图片或代码等等
 //         $pagename = md5( basename($cfg['dirname']) );       //模板目录名
         //if(empty($cfg['mid']))unset($cfg['mid']);       //避免影响到union那里动态调用mid
         if($cfg['mid']==-1){    // mid=-1 时 , 标志取所有模型的数据, 一般不建议这么做,效率非常低

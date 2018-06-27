@@ -7,26 +7,72 @@ namespace app\common\fun;
 class Label{
     
     /**
-     * 格式化标签查询语句 
+     * 获得标签动态变量参数
+     * @param string $code 比如 fid=$fid&uid=$info[uid]&pid=$info.pid
+     * @return void|string
+     */
+    public function get_union($code=''){
+        if($code==''){
+            return ;
+        }
+        $detail = strstr($code,'@') ? explode('@',$code) : explode('&',$code);
+        foreach($detail AS $str){
+            if( !strstr($str,'|') ){
+                list($field,$value) = explode('|',preg_replace('/^([-\w]+)([<>=]+)([^<>=]+)/i','\\1|\\3',$str));
+            }else{
+                list($field,$mod,$value) = explode('|',$str);
+            }
+            $field = trim($field);
+            $value = trim($value);
+            if(substr($value,0,1)=='$'){
+                if(strstr($value,'.')){
+                    $value = str_replace('.','[',$value).']';
+                }
+                $array[] = $field.'='.substr($value,1);
+            }            
+        }
+        return implode(',',$array);
+    }
+    
+    /**
+     * 获取查询语句中的动态变量
+     * @param unknown $field
+     * @param unknown $value
+     * @param unknown $cfg
+     * @return string|unknown
+     */
+    private function get_label_value($field,$value,$cfg){
+        if( substr($value,0,1)=='$' ){
+            $value = isset($cfg[$field]) ? $cfg[$field] : '' ;
+        }
+        return $value;
+    }
+    
+    /**
+     * 查询数据库前, 格式化标签查询语句 
+     * 比如 where="fid=$fid&uid=$info[uid]&pid=$info.pid" 多条件查询
      * @param string $code
      * @return unknown
      */
-    function where($code=''){
+    public function where($code='',$cfg=[]){
         if($code==''){
             return ;
         }
         if(strstr($code,'"')){
             $array = json_decode($code,true);
         }else{
-            $detail = explode('@',$code);
+            $detail = strstr($code,'@') ? explode('@',$code) : explode('&',$code);
             foreach($detail AS $str){
-                if(!strstr($str,'|')&&strstr($str,'=')){
-                    list($field,$value) = explode('=',$str);
-                    if(strstr($value,',')){
+                if( !strstr($str,'|') ){
+                    list($field,$value) = explode('|',preg_replace('/^([-\w]+)([<>=]+)([^<>=]+)/i','\\1|\\3',$str));
+                    $mod = preg_replace('/^([-\w]+)([<>=]+)([^<>=]+)/i','\\2',$str);
+                    if( substr($value,0,1)=='$' ){
+                        $array[trim($field)] = [$mod,$this->get_label_value(trim($field),$value,$cfg)];
+                    }elseif(strstr($value,',')){
                         $value = explode(',',$value);
                         $array[trim($field)] = ['in',$value];
                     }else{
-                        $array[trim($field)] = trim($value);
+                        $array[trim($field)] =  [$mod,trim($value)];
                     }
                     continue;
                 }
@@ -37,7 +83,9 @@ class Label{
                 if($mod=='='){
                     $array[$field] = $value;
                 }else{
-                    if(strstr($value,',')){
+                    if( substr($value,0,1)=='$' ){
+                        $array[trim($field)] = $this->get_label_value(trim($field),$value,$cfg);
+                    }elseif(strstr($value,',')){
                         $value = explode(',',$value);
                     }
                     $array[$field] = [$mod,$value];
