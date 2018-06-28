@@ -87,7 +87,7 @@ class LabelShow extends IndexBase
         $_cfg = cache('tag_default_'.$name);
         if(empty($tag_array)){    //未入库前,随便给些演示数据            
             $live_cfg && $_cfg = array_merge($_cfg,$live_cfg) ;
-            $array = self::get_default_data($_cfg['type']?$_cfg['type']:'cms',$_cfg,$page,false);
+            $array = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
             $__LIST__ = is_array($array['data']) ? $array['data'] : $array; //不是数组的时候,就是单张图片,或纯HTML代码
         }
         
