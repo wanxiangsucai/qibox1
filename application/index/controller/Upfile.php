@@ -18,4 +18,9 @@ class Upfile extends IndexBase
         }
 		return $this->fetch();
     }
+    
+    public function images($img=''){
+        $this->assign('img',$img);
+        return $this->fetch();
+    }
 }
