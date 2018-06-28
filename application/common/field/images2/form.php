@@ -103,6 +103,7 @@ EOT;
 
 }
 
+$info[$name] = json_decode($info[$name],true)?$info[$name]:''; //做个判断,避免JS出错
 
 return <<<EOT
 
@@ -192,6 +193,7 @@ jQuery(document).ready(function() {
 					that.find(".input_value").val( JSON.stringify(pics) );
 				}		
 			});
+			that.find(".ListImgs img").length>0 || that.find(".input_value").val('');
 		};
 		
 		//介绍或网址输入结束后的事件
@@ -310,7 +312,7 @@ jQuery(document).ready(function() {
 					}
                 }
             };
-            reader.readAsArrayBuffer(file);
+            if(nopress==false)reader.readAsArrayBuffer(file);
         };
 
         var resizeUpImages = function (img,type) {

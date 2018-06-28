@@ -292,7 +292,7 @@ jQuery(document).ready(function() {
 					}
                 }
             };
-            reader.readAsArrayBuffer(file);
+            if(nopress==false)reader.readAsArrayBuffer(file);
         };
 
         var resizeUpImages = function (img,type) {

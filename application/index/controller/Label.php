@@ -278,8 +278,10 @@ class Label extends IndexBase
     public function images($name=0,$pagename=0){        
         if(IS_POST){
             $data = $this -> request -> post();
-            $extend = json_encode(array_values($data['images2']['pics']));
-            unset($data['images2'],$data['pics']);
+//             $extend = json_encode(array_values($data['images2']['pics']));
+//             unset($data['images2'],$data['pics']);
+            $extend = $data['pics'];
+            unset($data['pics']);
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetImages")
             ->setTag_extend_cfg($extend)
             ->setTag_type('images');
