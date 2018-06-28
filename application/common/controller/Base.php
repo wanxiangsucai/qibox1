@@ -74,6 +74,12 @@ class Base extends Controller
             }            
         }
         
+        if($this->user['groupid']!=3 && in_array(ENTRANCE, ['member','index'])){
+            if ($this->request->isPost()) {
+                $this->request->post(fun('filter@all',$this->request->post())); //安全过滤
+            }
+        }
+        
     }
 
 

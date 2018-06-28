@@ -539,7 +539,7 @@ trait ModuleContent
 	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
 	    }
 	    $data['title'] = filtrate($data['title']);                             //标题过滤
-	    $data['content'] = fun('filter@str',$data['content']);     //内容过滤
+	    //$data['content'] = fun('filter@str',$data['content']);     //内容过滤
 	    if (fun('ddos@add',$data)!==true) {    //防灌水
 	        return fun('ddos@add',$data);
 	    }
@@ -569,7 +569,7 @@ trait ModuleContent
     	    }
 	    }
 	    $data['title'] = filtrate($data['title']);                             //标题过滤
-	    $data['content'] = fun('Filter@str',$data['content']);     //内容过滤	    
+	    //$data['content'] = fun('Filter@str',$data['content']);     //内容过滤	    
 	    return true;
 	}
 
