@@ -69,6 +69,11 @@ class Api extends IndexBase
                 }
                 set_cookie('reply_content', md5($data['content']));
             }
+            
+            if (fun('ddos@reply',$data)!==true) {    //防灌水
+                return fun('ddos@reply',$data);
+            }
+            
             $data['aid'] = $aid;
             $data['sysid'] = $sysid;
             $data['pid'] = intval($pid);

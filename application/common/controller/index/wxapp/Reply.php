@@ -153,6 +153,10 @@ abstract class Reply extends IndexBase
             set_cookie('reply_content', md5($data['content']));
         }
         
+        if (fun('ddos@reply',$data)!==true) {    //防灌水
+            return fun('ddos@reply',$data);
+        }
+        
         is_array($data['picurl']) && $data['picurl'] = implode(',',$data['picurl']);
         $data['picurl'] && $data['picurl'] = url_clean_domain($data['picurl']);
         $data['mvurl'] && $data['mvurl'] = url_clean_domain($data['mvurl']);
