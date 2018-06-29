@@ -1363,9 +1363,10 @@ if(!function_exists('write_file')){
 if(!function_exists('query')){
     /**
      * 数据库操作方法,可以执行原生数据库语句
+     * 也可以直接使用TP的数据库方法,比如 query('memberdata')->where('uid',1)->value('username'); 
      * @param unknown $sql 可以是数据库语句,也可以是数据库表名,不带前缀
-     * @param array $array
-     * @param number $cache_time 缓存时间
+     * @param array $array 类似TP的查询方法.这里就可以使用缓存
+     * @param number $cache_time 缓存时间 必须第二项设置了才生效
      * @return mixed|\think\cache\Driver|boolean|unknown|string|number
      */
 	function query($sql,$array=[],$cache_time=0){	
@@ -1376,6 +1377,9 @@ if(!function_exists('query')){
 	            if ($_array) {
 	                return $_array;
 	            }
+	        }
+	        if (empty($array)) {
+	            return Db::name($sql);
 	        }
 	        $result = false;
 	        $array['where'] || $array['where']=[];
@@ -2330,7 +2334,7 @@ if (!function_exists('getTemplate')) {
          }
          if(empty($sys_type)){
              return [];
-         }         
+         }
          static $model_array = [];
          $array = $model_array[$sys_type];
          if(empty($array)){

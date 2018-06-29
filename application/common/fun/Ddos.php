@@ -9,8 +9,12 @@ class Ddos{
      * @param unknown $data
      * @return boolean
      */
-    public function add($data=[]){        
-        $uid = login_user('uid');
+    public function add($data=[]){
+        $array = login_user();
+        $uid = $array['uid'];
+        if($array['groupid']==3){
+            return true;
+        }
         if ( cache('ddos_'.$uid) ) {
             return '请不要那么频繁的发表内容!';
         }
@@ -19,7 +23,11 @@ class Ddos{
     }
     
     public function reply($data=[]){
-        $uid = login_user('uid');
+        $array = login_user();
+        $uid = $array['uid'];
+        if($array['groupid']==3){
+            return true;
+        }
         if ( cache('ddos_reply_'.$uid) ) {
             return '请不要那么频繁的发表内容!';
         }

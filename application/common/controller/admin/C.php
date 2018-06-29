@@ -29,6 +29,18 @@ abstract class C extends AdminBase
         $this->f_model     = get_model_class($dirname,'field');
     }
     
+    /**
+     * 新发表内容入口 有的模型可能不使用栏目 而是直接在模型下面发布东西
+     * @param number $mid
+     * @return unknown
+     */
+    public  function postnew($mid = 0){
+        if (config('post_need_sort')==true) {
+            return self::chooseSort($mid);
+        }else{
+            return self::chooseModule();
+        }
+    }
     
     /**
      * 发布页，可以根据栏目ID或者模型ID，但不能为空，不然不知道调用什么字段
@@ -41,7 +53,7 @@ abstract class C extends AdminBase
         $data = $this->request->post();
         isset($data['fid']) && $fid = $data['fid'];
         
-        if($fid && !$mid){ 
+        if($fid && !$mid){
             $mid = $this->model->getMidByFid($fid);
         }elseif( !$fid && !$mid ){  //栏目与模型都为空
             return self::postnew($mid);
@@ -64,7 +76,7 @@ abstract class C extends AdminBase
 //                 list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
 //             }
             
-            $this->saveAdd($mid,$fid,$data);            
+            $this->saveAdd($mid,$fid,$data);
         }
         
         //发表时可选择的栏目

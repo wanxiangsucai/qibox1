@@ -141,9 +141,10 @@ class Table extends Base
             //$rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
             $rs['href'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $rs['href']);
             $alert = $rs['type']=='delete' ? ' class="_dels" onclick="return confirm(\'你确实要删除吗?不可恢复!\')"' : ' ';
+            $target = $rs['target']?" target='{$rs['target']}' ":'';
             $data[] = [
                     'title'=>$rs['title'],
-                    'value'=>"<a href='{$rs['href']}' title='{$rs['title']}' $alert><li class='{$rs['icon']}'></li></a>",
+                    'value'=>"<a href='{$rs['href']}' title='{$rs['title']}' $alert $target><li class='{$rs['icon']}'></li></a>",
             ];
         }
         return $data;

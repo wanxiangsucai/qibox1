@@ -255,6 +255,9 @@ class Base extends Controller
    
     protected function getMap()
     {
+        if(ENTRANCE!='admin'){
+            return [];
+        }
         $search_field     = input('param.search_field/s', '');
         $keyword          = input('param.keyword/s', '');
         $filter           = input('param._filter/s', '');
@@ -269,35 +272,35 @@ class Base extends Controller
 
         // 搜索框搜索
         if ($search_field != '' && $keyword !== '') {
-            $map[$search_field] = ['like', "%$keyword%"];
+            $map[$search_field] = in_array($search_field, ['id','uid']) ? ['=', $keyword] : ['like', "%$keyword%"];
         }
 
         // 下拉筛选
-        if ($select_field != '') {
-            $select_field = array_filter(explode('|', $select_field), 'strlen');
-            $select_value = array_filter(explode('|', $select_value), 'strlen');
-            foreach ($select_field as $key => $item) {
-                if ($select_value[$key] != '_all') {
-                    $map[$item] = $select_value[$key];
-                }
-            }
-        }
+//         if ($select_field != '') {
+//             $select_field = array_filter(explode('|', $select_field), 'strlen');
+//             $select_value = array_filter(explode('|', $select_value), 'strlen');
+//             foreach ($select_field as $key => $item) {
+//                 if ($select_value[$key] != '_all') {
+//                     $map[$item] = $select_value[$key];
+//                 }
+//             }
+//         }
 
         // 时间段搜索
-        if ($filter_time != '' && $filter_time_from != '' && $filter_time_to != '') {
-            $map[$filter_time] = ['between time', [$filter_time_from.' 00:00:00', $filter_time_to.' 23:59:59']];
-        }
+//         if ($filter_time != '' && $filter_time_from != '' && $filter_time_to != '') {
+//             $map[$filter_time] = ['between time', [$filter_time_from.' 00:00:00', $filter_time_to.' 23:59:59']];
+//         }
 
         // 表头筛选
-        if ($filter != '') {
-            $filter         = array_filter(explode('|', $filter), 'strlen');
-            $filter_content = array_filter(explode('|', $filter_content), 'strlen');
-            foreach ($filter as $key => $item) {
-                if (isset($filter_content[$key])) {
-                    $map[$item] = ['in', $filter_content[$key]];
-                }
-            }
-        }
+//         if ($filter != '') {
+//             $filter         = array_filter(explode('|', $filter), 'strlen');
+//             $filter_content = array_filter(explode('|', $filter_content), 'strlen');
+//             foreach ($filter as $key => $item) {
+//                 if (isset($filter_content[$key])) {
+//                     $map[$item] = ['in', $filter_content[$key]];
+//                 }
+//             }
+//         }
         return  array_merge( $map , $this->map);
     }
 
@@ -308,6 +311,9 @@ class Base extends Controller
      */
     protected function getOrder($extra_order = '')
     {
+        if(ENTRANCE!='admin'){
+            return '';
+        }
         $order = input('param._order/s', '');
         $by    = input('param._by/s', '');        
         if ($order != '' && $by != '') {

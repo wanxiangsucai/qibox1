@@ -38,7 +38,7 @@ trait Market
         if(!is_writable($basepath)){
             return $this->err_js($basepath.'目录不可写,请先修改目录属性可写');
         }elseif ( is_dir($basepath.$keywords) ){
-            return $this->err_js($basepath.$keywords.'目录已经存在了,无法安装此模块');
+            return $this->err_js($basepath.$keywords.'目录已经存在了,请在本地模块或本地插件那里安装.或者先删除此目录再重新安装');
         }
         $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
         $result = $this->downModel($url,$keywords,$type);
@@ -172,6 +172,36 @@ trait Market
         }
     }
     
+    /**
+     * 安装当前模块要依赖于哪个模块或插件
+     * @param string $modules
+     * @param string $plugins
+     */
+    protected function bind_model($modules='',$plugins=''){
+        $array_m = [];
+        $array_p = [];
+        if ($modules) {
+            foreach (explode(',', $modules) AS $name){
+                if ($name && empty(modules_config($name))) {
+                    $array_m[] = $name;
+                }
+            }
+        }
+        if ($plugins) {
+            foreach (explode(',', $plugins) AS $name){
+                if ($name && empty(plugins_config($name))) {
+                    $array_p[] = $name;
+                }
+            }
+        }
+        if ($array_m || $array_p) {
+            $show = '';
+            $array_m && $show.= '请先安装'.implode(',', $array_m).'频道，';
+            $array_p && $show.= '请先安装'.implode(',', $array_p).'插件，';
+            return $show.'如果已安装的话,请把关闭状态改为启用。';
+        }
+        return true;
+    }
 
     /**
      * 执行安装模块插件
@@ -186,6 +216,8 @@ trait Market
         $info = @include $basepath."$keywords/install/info.php";
         if(empty($info)){
             return '安装配置文件不存在!';
+        }elseif($this->bind_model($info['bind_modules'],$info['bind_plugins'])!==true){    //检查依赖的模块
+            return $this->bind_model($info['bind_modules'],$info['bind_plugins']);
         }
         into_sql(read_file($basepath."$keywords/install/install.sql"));
         $info['version_id'] = intval($version_id);

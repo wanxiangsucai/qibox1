@@ -23,7 +23,7 @@
 	<div style="margin-bottom:10px;float:right;">
 		<select name="search_field">
 		<option value="" selected>选择字段</option> 
-		<option value="id">ID</option> 
+		{notempty name="$tab_ext.id"}<option value="{$tab_ext.id}">{$tab_ext.id}</option>{else /}<option value="id">ID</option>{/notempty}
 		{volist name="$tab_ext.search" id="name"}
 			<option value="{$key}">{$name}</option> 
 		{/volist}

@@ -136,7 +136,9 @@ abstract class C extends Model
         if(empty($table)){
             return false;
         }
-        $data['ispic'] = $data['picurl']?1:0;
+        if (isset($data['picurl'])) {
+            $data['ispic'] = $data['picurl'] ? 1 : 0;
+        }
         $data['update_time'] = time();        
         //try {
             hook_listen(config('system_dirname').'_model_edit_begin',$data,$mid);   //修改信息前的钩子,可以设置禁止修改或者是把修改内容做替换处理

@@ -55,7 +55,7 @@ trait ModuleContent
 
 	    //主要针对多选项的数组进行处理
 	    $data = $this->format_post_data($data);
-	    
+
 	    if(!empty($this->validate)){
 	        // 验证
 	        $result = $this->validate($data, $this->validate);
@@ -562,7 +562,9 @@ trait ModuleContent
     	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
     	    }
     	    unset($data['uid'],$data['status'],$data['view'],$data['mid'],$data['list']);
-    	    $data['ispic'] = empty($data['picurl']) ? 0 : 1 ;
+    	    if (isset($data['picurl'])) {
+    	        $data['ispic'] = empty($data['picurl']) ? 0 : 1 ;
+    	    }
     	    if(!empty($this->validate)){
     	        $result = $this->validate($data, $this->validate);
     	        if(true !== $result) return $result;
