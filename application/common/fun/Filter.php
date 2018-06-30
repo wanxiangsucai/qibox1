@@ -14,8 +14,14 @@ class Filter{
     public static function str($content=''){        
         if ($content=='') {
             return ;
-        }        
-        $content = preg_replace_callback('/('.self::$bad_word.')/is',array(self,replace),$content);
+        }
+        strstr($content,'<pre ') && $content = preg_replace_callback('/<pre ([^>]+)>(.*?)<\/pre>/is',array(self,'replace_pre'),$content);     //必须排第一位,这是代码段
+        
+        strstr($content,'<script ') && $content = preg_replace_callback('/<script ([^>]+)>(.*?)<\/script>/is',array(self,'replace'),$content);
+        strstr($content,'<iframe ') && $content = preg_replace_callback('/<iframe ([^>]+)>(.*?)<\/iframe>/is',array(self,'replace'),$content);
+        strstr($content,'<?php') && $content = preg_replace_callback('/<\?php ([^>]+)>(.*?)\?>/is',array(self,'replace'),$content);
+        
+        $content = preg_replace_callback('/('.self::$bad_word.')/is',array(self,'replace'),$content);     //过滤漏网之鱼
         return $content;
     }
     
@@ -33,7 +39,12 @@ class Filter{
     }
     
     private function replace($array=[]){
-        return str_replace(['<','>'], ['&lt;','&gt;'], $array[0]);
+        return str_replace(['<','>','"',"'"], ['&lt;','&gt;','&quot;','&#39;'], $array[0]);
     }
+
+    private function replace_pre($array=[]){
+        return str_replace($array[2],str_replace(['<','>','"',"'"], ['&lt;','&gt;','&quot;','&#39;'],$array[2]),$array[0]);
+    }
+    
     
 }
