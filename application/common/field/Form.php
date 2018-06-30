@@ -122,6 +122,15 @@ class Form extends Base
             $field['about'] && $field['about'] = '<br>'.$field['about'];
             
         }elseif(in_array($field['type'], ['time','date','datetime'])){
+            if (is_numeric($info[$name])) { //存放格式是int的时候 ,但是 time就没有存放int的意义
+                if ($info[$name]==0) {
+                    $info[$name] = '';
+                }elseif ($field['type']=='date'){
+                    $info[$name] = date('Y-m-d',$info[$name]);
+                }elseif ($field['type']=='datetime'){
+                    $info[$name] = date('Y-m-d H:i:s',$info[$name]);
+                }
+            }
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
             $static = config('view_replace_str.__STATIC__');
             $show = " <input placeholder='点击选择{$field[title]}'  style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";

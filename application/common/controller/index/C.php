@@ -255,7 +255,11 @@ abstract class C extends IndexBase
            $fids = get_sort($fid,'sons') ;
            $map['fid'] = $fids ? ['in',$fids] : $fid;
         }
-        $order = in_array($order, ['id','create_time','list','rand()','view']) ? $order : 'list';
+        if (!in_array($order, ['id','create_time','list','rand()','view'])) {
+            if(empty($order) || table_field($this->model->getTableByMid($mid),$order)==false){
+                $order = 'list';
+            }
+        }
         return $this->getListData($map, "$order $by",  $rows , [] ,true);
     }
     

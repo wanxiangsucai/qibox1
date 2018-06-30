@@ -293,8 +293,8 @@ trait Market
     
     /**
      * 复制模块
-     * @param array $info
-     * @param array $data
+     * @param array $info 旧模块信息
+     * @param array $data 新模块信息
      * @param string $type
      * @return string|boolean
      */
@@ -308,6 +308,10 @@ trait Market
         
         $array = [
                 'name'=>$data['name'],
+                'type'=>$info['type'],
+                'icon'=>$info['icon'],
+                'author'=>$info['author'],
+                'ifopen'=>1,
                 'keywords'=>$data['keywords'],
         ];
         $result = $this->model->create($array);

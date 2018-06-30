@@ -312,7 +312,7 @@ class Base extends Controller
     protected function getOrder($extra_order = '')
     {
         if(ENTRANCE!='admin'){
-            return '';
+            //return '';
         }
         $order = input('param._order/s', '');
         $by    = input('param._by/s', '');        
