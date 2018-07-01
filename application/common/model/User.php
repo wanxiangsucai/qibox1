@@ -25,8 +25,7 @@ class User extends Model
      */
     public static function getByName($name = '')
     {
-        $result = self::get(['username' => $name]);
-        return is_object($result) ? $result->toArray() : $result;
+        return static::format(self::get(['username' => $name]));
     }
 	
     /**
@@ -36,8 +35,20 @@ class User extends Model
      */
 	public static function getById($id = '')
     {
-        $result = self::get(['uid' => $id]);
-        return is_object($result) ? $result->toArray() : $result;
+        return static::format(self::get(['uid' => $id]));
+    }
+    
+    /**
+     * 对字段做进一步的处理,后面继承的,可以重写
+     * @param array $array
+     * @return array|NULL[]|unknown
+     */
+    protected static function format($array=[]){
+        $array = getArray($array);
+        if ($array) {
+            $array['sendmsg'] = json_decode($array['sendmsg'],true)?:[];
+        }
+        return $array;
     }
 	
 	
@@ -55,8 +66,7 @@ class User extends Model
 	    }elseif(preg_match('/^[\w]+$/', $type)){
 	        $map[$type] = $value;
 	    }
-	    $result = self::get($map);
-	    return is_object($result) ? $result->toArray() : $result;
+	    return static::format(self::get($map));
 	}
 	
 	/**
@@ -376,11 +386,11 @@ class User extends Model
 	    }	    
 	    $usr_info = cache('user_'.$token['uid']);
 	    if(empty($usr_info['password'])){
-	        $usr_info = self::get_info(intval($token['uid']));
+	        $usr_info = static::get_info(intval($token['uid']));
 	        cache('user_'.$usr_info['uid'],$usr_info,3600);
 	    }
 	    if( mymd5($usr_info['password'],'EN') != $token['password'] ){
-	        self::quit($usr_info['uid']);
+	        static::quit($usr_info['uid']);
 	        return false;
 		}
 		return $usr_info;

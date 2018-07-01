@@ -21,12 +21,13 @@ jQuery(document).ready(function() {
 					layer.msg(res.msg);
 					setTimeout(function(){
 						window.location.href = res.url;
-					},200);
+					},500);
 				}else{
 					layer.open({title: '提交失败',content:res.msg});
 				}
-			}).fail(function () {
-				layer.open({title: '提示',content: '服务器发生错误'});
+			}).fail(function (res) {
+				layer.close(index);
+				layer.open({title: '服务器发生错误',area:['90%','90%'],content: res.responseText});
 			});
 
 			return false;

@@ -16,10 +16,9 @@ class User extends MemberBase
     protected function _initialize()
     {
         parent::_initialize();
-        $this->model = new UserModel();
-
-        
+        $this->model = new UserModel(); 
     }
+    
     public function index($uid=0)
     {
         if($uid){
@@ -43,9 +42,9 @@ class User extends MemberBase
     {
         die('禁止访问!');
     }
+    
     public function edit()
     {
-        
         $info = $this->model->get_info($this->user['uid']);
         
         $this->form_items = [
@@ -102,8 +101,6 @@ class User extends MemberBase
                 $this->error('数据更新失败');
             }
         }
-        
-
         $info['password']='';
         return $this->editContent($info);
     }

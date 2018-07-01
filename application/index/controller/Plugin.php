@@ -3,59 +3,8 @@ namespace app\index\controller;
 
 use app\common\controller\IndexBase;
 
-use app\common\traits\AddEditList;
-
-use app\common\model\Plugin as PluginModel;
-
 class Plugin extends IndexBase
 {
-	use AddEditList;	
-	protected $validate = '';
-	protected $model;
-	protected $form_items = [];
-	protected $list_items;
-	protected $tab_ext = [
-				'help_msg'=>'插件管理',
-				];
-	
-	protected function _initialize()
-    {
-		parent::_initialize();
-		$this->model = new PluginModel();
-		$this->list_items = [				 
-				['name', '插件名称', 'text'],                
-				['keywords', '插件关键字', 'text'],
-				['ifopen', '启用或停用', 'yesno'],
-				['postitme', '添加日期', 'datetime'],
-				['list', '排序值', 'text'],
-				
-			];
-	}
-
-    public function add()
-    {
-    	$this->form_items = [
-					['text', 'keywords', '关键字'],
-					['text', 'name', '插件名称'],					
-				];
-        return $this->addContent();
-    }
-	public function edit($id = null)
-	{
-	    if (empty($id)) $this->error('缺少参数');
-	    
-	    $this->form_items = [
-	            ['text','name', '插件名称', ''],
-	            ['static','keywords', '插件关键字', ''],
-	            ['radio','ifopen', '启用或禁用', '',['关闭系统','启用系统']],
-	            ['textarea','about', '介绍', ''],
-	            ['text','list', '排序值', ''],
-	    ];
-	    
-	    $info = $this->getInfoData($id);
-	    
-	    return $this->editContent($info);
-	}
 	/**
 	 * 执行插件内部方法
 	 * @return mixed

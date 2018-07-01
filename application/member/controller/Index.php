@@ -1,10 +1,8 @@
 <?php
 namespace app\member\controller;
 
-use app\common\model\User AS UserModel;
 use app\common\controller\MemberBase;
 use app\common\util\Menu;
-use think\Controller;
 
 class Index extends MemberBase
 {
@@ -16,11 +14,6 @@ class Index extends MemberBase
 		return $this->fetch();
     }
     
-    public function edituser()
-    {
-        $this->assign('info',$this->user);
-        return $this->fetch();
-    }
  
     public function map()
     {

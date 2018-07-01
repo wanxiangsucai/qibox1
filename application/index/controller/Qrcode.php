@@ -10,4 +10,3 @@ class Qrcode extends IndexBase
     }    
 }
 
-?>

@@ -86,9 +86,9 @@ class Qb extends TagLib{
         $where = $tag['where'];   //条件查询
         $mid = $tag['mid'];   //指定模型
         $fid = $tag['fid'];   //指定栏目
-        $str_mid = $mid ? ",'mid'=>'$mid'" : ''; 
-        $str_fid = $fid ? ",'fid'=>'$fid'" : ''; 
-        $whereor = $tag['whereor'];   //条件查询        
+        $str_mid = $mid ? ",'mid'=>'$mid'" : '';
+        $str_fid = $fid ? ",'fid'=>'$fid'" : '';
+        $whereor = $tag['whereor'];   //条件查询
         $class = $tag['class']; //调取数据执行的类
         $tpl = $tag['tpl']; //指定默认模板
         $js = $tag['js']; //通过AJAX方式获取数据,这样就不影响页面打开速度
@@ -116,7 +116,7 @@ class Qb extends TagLib{
         $info = $tag['info'] ? ($tag['info'][0]=='$'?substr($tag['info'], 1):$tag['mid']) : 'info';     //内容信息变量名
         $mod = $tag['mod'];     //模块
         $field = $tag['field'];     //过滤的字段
-        $_farray = $tag['f_array'] ? "'f_array'=>\$".($tag['f_array'][0]=='$'?substr($tag['f_array'], 1):$tag['f_array']).',' : ''; 
+        $_farray = $tag['f_array'] ? "'f_array'=>\$".($tag['f_array'][0]=='$'?substr($tag['f_array'], 1):$tag['f_array']).',' : '';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--QB '."<!--$name\t$mod--> ";
         $parse .= '{volist name="__LIST__" id="rs"}';
         $parse .= '{if $rs["ifhide"]}';
@@ -163,7 +163,9 @@ class Qb extends TagLib{
      * @return string
      */
     private function getName($name=''){
-        return preg_match('/^([-\w]+)$/',$name) ? $name : md5($name);
+        $name = preg_match('/^([\w]+)$/',$name) ? $name : md5($name);
+        $name = preg_match('/^([_a-z])/i',$name) ? $name : 'qb'.substr($name,2);
+        return $name;
     }
     
     /**
@@ -188,7 +190,7 @@ class Qb extends TagLib{
         //$class = $tag['class']; //调取数据执行的类
         $tpl = $tag['tpl'];
         $type = $tag['type'];
-        $name = $this->getName($tag['name']);        
+        $name = $this->getName($tag['name']);
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--COMMENT'."<!--$name\t$type\t$tpl-->";
@@ -238,7 +240,7 @@ class Qb extends TagLib{
     public function tagShowpage($tag, $content)
     {
         if(empty($tag['name'])){
-           // return '******标签缺少命名*******'.$content;
+            // return '******标签缺少命名*******'.$content;
         }
         $type = $tag['type'];
         $tpl = $tag['tpl'];
@@ -257,7 +259,7 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }else{
             $parse .= $content;
-        }        
+        }
         $parse .= ' SHOWPAGE--><?php endif; ?>';
         $parse .= '<?php '."fun('label@run_showpage_label','$name',\$info,['page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','field'=>'$field','val'=>'$val','cache_time'=>'$cache_time']);".' ?>';
         return $parse;
@@ -290,7 +292,7 @@ class Qb extends TagLib{
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--LISTPAGE '."<!--$name\t$type\t$tpl-->";
         if(!empty($val)){   //只取得变量值的情况
-            $parse .= $content; 
+            $parse .= $content;
         }else{
             $parse .= '{volist name="__LIST__" id="' . $list . '"}';
             $parse .= $content.'  ';
@@ -301,5 +303,5 @@ class Qb extends TagLib{
         $parse .='$pages=$__array__[\'pages\'];$'.$name.'=$__array__[\'cfg\']; ?>';
         return $parse;
     }
-   
+    
 }

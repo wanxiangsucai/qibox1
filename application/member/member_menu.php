@@ -17,6 +17,10 @@ return array(
                                                 'title'=>'站内短消息',
                                                 'link'=>'msg/index',
                                         ),
+                                        array(
+                                                'title'=>'消息提醒设置',
+                                                'link'=>'remind/set',
+                                        ),
 //                                         array(
 //                                                 'title'=>'积分充值',
 //                                                 'link'=>'jifen/add',
