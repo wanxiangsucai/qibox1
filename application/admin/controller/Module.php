@@ -75,7 +75,6 @@ class Module extends AdminBase
 	public function add($keywords=''){
 	    if ($keywords!='') {
 	        $this->install($keywords,'m');
-	        cache('modules_config',null);
 	        $this->success('模块安装成功,请设置一下后台权限',url('group/admin_power',['id'=>$this->user['groupid']]));
 	    }
 	    

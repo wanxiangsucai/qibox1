@@ -51,8 +51,6 @@ trait Market
             return $this->err_js($result);
         }
         
-        cache($type=='m' ?'cache_modules_config':'cache_plugins_config',null);
-        
         return $this->ok_js(['url'=>url('group/admin_power',['id'=>$this->user['groupid']])],'模块安装成功,请设置一下后台权限');
     }
     
@@ -244,6 +242,9 @@ trait Market
             Db::name('config')->where('type',-$i)->update(['type'=>$groupid,'sys_id'=>$sys_id]);
         }
         $this->run_install($model_id,$type,$keywords,'install');
+        
+        cache($type=='m' ?'cache_modules_config':'cache_plugins_config',null);  //清空缓存
+        
         return true;
     }
     

@@ -62,7 +62,7 @@ class Member extends AdminBase
 	    if(empty($id)) $this->error('缺少参数');	    
     	if (IS_POST) {    	    
     	    $data = get_post('post');    	    
-    	    if(!defined('SUPER_ADMIN')&&$data['groupid']==3&&$this->user['groupid']!=3){
+    	    if(SUPER_ADMIN!==true&&$data['groupid']==3&&$this->user['groupid']!=3){
     	        $this->error('你无权修改超管资料!');
     	    }
     	    // 验证

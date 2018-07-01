@@ -78,7 +78,6 @@ class Plugin extends AdminBase
         return $this->addContent();*/
         if ($keywords!='') {
             $this->install($keywords,'p');
-            cache('plugins_config',null);
             $this->success('插件安装成功,请设置一下后台权限',url('group/admin_power',['id'=>$this->user['groupid']]));
         }
         
