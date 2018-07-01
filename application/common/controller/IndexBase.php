@@ -14,6 +14,8 @@ class IndexBase extends Base
     {
         parent::_initialize();
         
+        hook_listen('index_begin',$array=['user'=>$this->user]);     //钩子扩展
+        
         //自动模板的布局母模板
         $this->assign('auto_tpl_base_layout', APP_PATH.'member/view/default/layout.htm');
       

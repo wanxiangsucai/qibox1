@@ -60,6 +60,9 @@ class Attachment extends IndexBase
             $new_file = config('upload_path') . '/' . $dir . '/' . date('Ymd') . '/' ;
             $path = str_replace(PUBLIC_PATH,'',$new_file);
             $new_file = $new_file.$name;
+            
+            Hook_listen('upload_attachment_begin', $data, ['base64' => true, 'from' => $from,  'module' => $module]);  //钩子接口,上传前处理
+            
             if (file_put_contents($new_file, base64_decode(str_replace($result[1],'', $base64_image_content)))){
                 $_array = @getimagesize($new_file);
                 if($_array[0]<1 || $_array[1]<1 || !preg_match('/image/i', $_array['mime'])){
@@ -87,7 +90,10 @@ class Attachment extends IndexBase
         				@unlink($new_file);
                         return $hook_result;
                     }
-                }				
+                }
+                
+                Hook_listen('upload_attachment_end', $file_info, ['base64' => true,'from' => $from, 'module' => $module]);  //钩子接口,上传后处理
+                
                 return $this->succeFile($from , $path.$name , $file_info);
             }else{
                 return $this->errFile($from,'文件写入失败！');
@@ -310,7 +316,7 @@ class Attachment extends IndexBase
         }
         
         
-        Hook_listen('upload_attachment_begin', $file, ['from' => $from, 'module' => $module]);  //上传前处理
+        Hook_listen('upload_attachment_begin', $file, ['from' => $from, 'module' => $module]);  //钩子接口,上传前处理
                 
        //用于第三方文件上传扩展
 //         $hook_result = Hook_listen('upload_driver', $file, ['from' => $from, 'module' => $module], true);
@@ -336,7 +342,7 @@ class Attachment extends IndexBase
                 $this->compress_image(PUBLIC_PATH.$path);
             }
             
-            Hook_listen('upload_attachment_end', $info, ['from' => $from, 'module' => $module]);  //上传后处理
+            Hook_listen('upload_attachment_end', $info, ['from' => $from, 'module' => $module]);  //钩子接口,上传后处理
             
             // 图片加水印
             if ( in_array($file_ext,['jpeg','jpg','png','bmp']) && config('webdb.is_waterimg') && config('webdb.waterimg') ) {
@@ -692,33 +698,4 @@ class Attachment extends IndexBase
         return $files;
     }
     
-    /**
-     * 删除附件
-     * @param string $ids 附件id
-     * @return mixed
-     */
-    protected function deleteFile($ids = '')
-    {
-        $ids = $this->request->isPost() ? input('post.ids/a') : input('param.ids');
-        if (empty($ids)) $this->error('缺少主键');
-
-        $files_path = AttachmentModel::where('id', 'in', $ids)->column('path,thumb', 'id');
-
-        foreach ($files_path as $value) {
-            $real_path       = realpath(config('upload_path').'/../'.$value['path']);
-            $real_path_thumb = realpath(config('upload_path').'/../'.$value['thumb']);
-
-            if (is_file($real_path) && !unlink($real_path)) {
-                $this->error('删除失败');
-            }
-            if (is_file($real_path_thumb) && !unlink($real_path_thumb)) {
-                $this->error('删除缩略图失败');
-            }
-        }
-        if (AttachmentModel::where('id', 'in', $ids)->delete()) {
-            $this->success('删除成功');
-        } else {
-            $this->error('删除失败');
-        }
-    }
 }

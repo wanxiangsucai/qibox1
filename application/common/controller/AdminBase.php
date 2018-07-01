@@ -20,6 +20,7 @@ class AdminBase extends Base
     {
         parent::_initialize();
         if(SUPER_ADMIN!==true){
+            hook_listen('admin_begin',$array=['user'=>$this->user]);     //钩子扩展
             if(empty($this->user)){
                 if( ($this->route[0]=='admin' && $this->route[1]=='index' && $this->route[2]=='login') ){
                 }elseif( ($this->route[0]=='admin' && $this->route[1]=='mysql' && $this->route[2]=='into') ){
@@ -46,7 +47,6 @@ class AdminBase extends Base
                 \think\Hook::add('app_end', function(){Cache::clear();});
             }
         }
-
         
         // 自动表单公共模板,比如选择分类会用到
         $this->assign('auto_tpl_base_layout', APP_PATH.'member/view/default/layout.htm');

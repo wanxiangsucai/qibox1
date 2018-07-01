@@ -18,6 +18,8 @@ class MemberBase extends Base
     {
         parent::_initialize();
         
+        hook_listen('member_begin',$array=['user'=>$this->user]);     //钩子扩展
+        
         if(!defined('LOGIN_PAGE')&&empty($this->user)){
             $this->success('请先登录',iurl('index/login/index'));
         }

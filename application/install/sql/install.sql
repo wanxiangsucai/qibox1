@@ -1263,3 +1263,11 @@ ALTER TABLE `qb_comment_content` ADD INDEX ( `uid` );
 ALTER TABLE `qb_alonepage` CHANGE  `ifclose`  `status` TINYINT( 1 ) NOT NULL DEFAULT  '1' COMMENT  '状态:1启用0关闭';
 ALTER TABLE `qb_alonepage` ADD INDEX (  `status` );
 ALTER TABLE `qb_alonepage` ADD INDEX (  `list` );
+ALTER TABLE `qb_rmb_getout` CHANGE  `money`  `money` DECIMAL( 10, 2 ) NOT NULL DEFAULT  '0';
+
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'admin_begin', '后台程序开始的接口', 1, 0);
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'index_begin', '前台程序开始的接口', 1, 0);
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'member_begin', '会员中心程序开始的接口', 1, 0);
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'upload_driver', '上传驱动', 1, 0);
+UPDATE  `qb_hook` SET  `name` =  'upload_attachment_begin' WHERE `name` ='upfile_begin';
+UPDATE  `qb_hook` SET  `name` =  'upload_attachment_end' WHERE `name` ='upfile_end';
