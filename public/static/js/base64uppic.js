@@ -57,6 +57,8 @@ jQuery.getScript("/public/static/js/exif.js")
 								 if(typeof callback == 'function'){
 									callback(res.url,pics);
 								 }
+							 }else{
+								alert(res.info);
 							 }
 						}).fail(function () {
 							alert('操作失败，请跟技术联系');

@@ -135,15 +135,12 @@ class Form extends Base
             $static = config('view_replace_str.__STATIC__');
             $show = " <input placeholder='点击选择{$field[title]}'  style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
             $show .="
-                            <script src='$static/layui/layui.js'></script>
+                            <script src='$static/layui/laydate/laydate.js'></script>
                             <script>
-                            layui.use('laydate', function(){
-                              var laydate = layui.laydate;
                               laydate.render({
                                 elem: '#atc_{$name}',
                                 type: '{$field['type']}'
                               });
-                            });
                             </script>";
         }else{      // 全部归为单行文本框
             

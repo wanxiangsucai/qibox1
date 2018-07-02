@@ -20,7 +20,7 @@
 	<ul>		
 {notempty name="$userdb"}
 		<ol>{$userdb.username} 您好！欢迎来到{$webdb.webname}</ol>
-		<li><a href="{:get_url('member')}" target="_blank"><dd class="glyphicon glyphicon-user"></dd>会员中心</a> {if is_dir(APP_PATH.'weibo')}<a href="#" onclick="pc_open_weibo()"><dd class="fa fa-fw fa-weibo"></dd>微博动态</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:red;font-size:10px;display:none;" class="weibo_msg_num">0</span>{/if} <a href="#" onclick="pc_open_msg()"><dd class="fa fa-envelope-o"></dd>短消息</a> <a href="{:get_url('quit')}" target="_blank"><dd class="fa fa-sign-in"></dd>退出</a> </li>
+		<li><a href="{:get_url('member')}" target="_blank"><dd class="glyphicon glyphicon-user"></dd>会员中心</a> {if is_dir(APP_PATH.'weibo')}<a href="#" onclick="pc_open_weibo()"><dd class="fa fa-fw fa-weibo"></dd>微博动态</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:orange;font-size:10px;display:none;" class="weibo_msg_num">0</span>{/if} <a href="#" onclick="pc_open_msg()"><dd class="fa fa-envelope-o"></dd>短消息</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:red;font-size:10px;display:none;" class="msg-num">0</span> <a href="{:get_url('quit')}" target="_blank"><dd class="fa fa-sign-in"></dd>退出</a> </li>
 {else /}
 		<ol>您好！欢迎来到{$webdb.webname}</ol>
 		<li>

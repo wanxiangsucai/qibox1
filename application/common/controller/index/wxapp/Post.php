@@ -48,11 +48,17 @@ abstract class Post extends IndexBase
     public function delete($id=0){
         $info = $this->model->getInfoByid($id , false);
         $this->mid = $info['mid'];
-        if($info['uid']!=$this->user['uid']&&!$this->admin){
-            return $this->err_js('你没权限');
-        }
         
-        if($this->model->deleteData($id)){
+        hook_listen('cms_delete_begin',$id);
+//         if($info['uid']!=$this->user['uid']&&!$this->admin){
+//             return $this->err_js('你没权限');
+//         }
+        if (($result=$this->delete_check($id,$info))!==true) {  //权限判断
+            return $this->err_js($result);
+        }        
+        
+        if($this->deleteOne($id,$info['mid'])){
+        //if($this->model->deleteData($id)){
             return $this->ok_js([],'删除成功');
         }else{
             return $this->err_js('系统问题,删除失败!');

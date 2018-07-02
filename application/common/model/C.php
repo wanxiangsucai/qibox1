@@ -611,7 +611,10 @@ abstract class C extends Model
         self::InitKey();
         $cfg = unserialize($tag_array['cfg']);
 
-        $mid = $cfg['mid'];
+        $mid = $cfg['mid'];//self::$model_key
+        if ($mid>1&&empty(model_config($mid,self::$model_key))) {
+            $mid = 1;
+        }
         $rows = $cfg['rows'] ? $cfg['rows'] : 5;
         $page = intval($page);
         if ($page<1) {

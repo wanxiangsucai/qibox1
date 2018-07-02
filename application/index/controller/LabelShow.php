@@ -967,11 +967,11 @@ code{$tag_name} = code{$tag_name}.length>0 ? code{$tag_name}.prop("outerHTML") :
 \$(document).ready(function(){
 	\$.get("{$ajaxurl}",function(res){
         if(res.code==0){
-             \$(".{$cfg['js']}").html(code{$tag_name}+res.data);
+             \$(".{$cfg['js']}").html(code{$tag_name}+res.data);            
         }else{
             layer.msg(res.msg,{time:500});
         }
-       
+       if(typeof({$cfg['js']})=='function'){ {$cfg['js']}(res); }
 	});
     
 });

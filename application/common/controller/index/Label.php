@@ -52,11 +52,13 @@ abstract class Label extends IndexBase
             //$info['view_tpl'] = $this->get_cache_tpl();
         }
         
+        $rsdb = unserialize($info['cfg']);
+        
         $mid = input('mid');
-        if(empty($mid)&&!empty($info['cfg'])){
-            $mid = unserialize($info['cfg'])['mid'];
+        if(empty($mid)&&!empty($rsdb['mid'])){
+            $mid = $rsdb['mid'];
         }
-        $mid || $mid=$this->m_model->getId();
+        
         
         $url_array = $this->get_parameter();
         //模型分类菜单
@@ -67,6 +69,13 @@ abstract class Label extends IndexBase
                     'url'=>url('tag_set',array_merge($url_array,['mid'=>$key])),
             ];
         }
+        
+        if (empty($nav[$mid])) {    //考虑到更换频道后,有的模型并不存在
+            unset($mid,$rsdb['mid']);
+        }
+        
+        $mid || $mid=$this->m_model->getId();
+        
         $this->tab_ext['nav'] =[
                 $nav,
                 $mid,
@@ -110,7 +119,7 @@ abstract class Label extends IndexBase
                 ['fidtype', '1', 'fids'],
         ];
         
-        return $this->editContent(unserialize($info['cfg']));
+        return $this->editContent($rsdb);
     }
     
     /**
