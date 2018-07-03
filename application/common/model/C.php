@@ -102,7 +102,7 @@ abstract class C extends Model
         
         //先删除主表记录
         try {
-            hook_listen(config('system_dirname').'_model_delete_begin',$info,$id); //删除信息的钩子,在这里可以做判断是否允许删除,或者做附件删除处理
+            hook_listen('cms_model_delete_begin',$info,$id); //删除信息的钩子,在这里可以做判断是否允许删除,或者做附件删除处理
             Db::name(self::$base_table)->where('id',$id)->delete();
         } catch(\Exception $e) {
             return false;
@@ -115,7 +115,7 @@ abstract class C extends Model
             return false;
         }
         if ($result) {
-            hook_listen(config('system_dirname').'_model_delete_end',$info,$id); //删除信息后的钩子,可以做一些记录,或者做附件删除处理
+            hook_listen('cms_model_delete_end',$info,$id); //删除信息后的钩子,可以做一些记录,或者做附件删除处理
             return true;
         }
     }
@@ -141,14 +141,14 @@ abstract class C extends Model
         }
         $data['update_time'] = time();        
         //try {
-            hook_listen(config('system_dirname').'_model_edit_begin',$data,$mid);   //修改信息前的钩子,可以设置禁止修改或者是把修改内容做替换处理
+            hook_listen('cms_model_edit_begin',$data,$mid);   //修改信息前的钩子,可以设置禁止修改或者是把修改内容做替换处理
             $result = Db::name($table)->update($data);            
        // } catch(\Exception $e) {
         //    return false;
        // }
         
         if ($result) {
-            hook_listen(config('system_dirname').'_model_edit_end',$data,$mid);  //成功修改信息后的钩子
+            hook_listen('cms_model_edit_end',$data,$mid);  //成功修改信息后的钩子
             return true;
         }
     }
@@ -168,7 +168,7 @@ abstract class C extends Model
         $data['uid'] || $data['uid'] = intval(login_user('uid'));
         //先要往索引表插一条记录做索引用 , 模型表的ID以主表的ID为标准 
         try {
-            hook_listen(config('system_dirname').'_model_add_begin',$data,$mid);    //入库前的钩子,可以在这里设置禁止发布信息
+            hook_listen('cms_model_add_begin',$data,$mid);    //入库前的钩子,可以在这里设置禁止发布信息
             $data['id'] = Db::name( self::$base_table )->insertGetId($data);
         } catch(\Exception $e) {
             return '索引表插入失败';
@@ -190,7 +190,7 @@ abstract class C extends Model
         }
         
         if ($result) {
-            hook_listen(config('system_dirname').'_model_add_end',$data,$data['id']);  //成功发表信息后的钩子
+            hook_listen('cms_model_add_end',$data,$data['id']);  //成功发表信息后的钩子
             return $data['id'];
         } else {
             return false;
@@ -207,9 +207,9 @@ abstract class C extends Model
         $table = self::getTableById($id);
         if($table){
             $info = static::getInfoByid($id);
-            hook_listen(config('system_dirname').'_model_agree_begin',$info,$id);   //点赞前的钩子,可以做是否允许点赞处理
+            hook_listen('cms_model_agree_begin',$info,$id);   //点赞前的钩子,可以做是否允许点赞处理
             if( Db::name($table)->where('id','=',$id)->setInc('agree',1) ){
-                hook_listen(config('system_dirname').'_model_agree_end',$info,$id);   //成功点赞后的钩子,可以做信息通知处理
+                hook_listen('cms_model_agree_end',$info,$id);   //成功点赞后的钩子,可以做信息通知处理
                 return true;
             }
         }

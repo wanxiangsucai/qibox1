@@ -17,6 +17,8 @@ use app\common\model\User AS UserModel;
 use app\common\model\Msg AS MsgModel;
 use think\Db;
 use think\Request;
+use app\common\controller\Base;
+
 error_reporting(E_ERROR | E_PARSE );
 
 if(!function_exists('fun')){
@@ -2680,6 +2682,12 @@ if (!function_exists('logs')) {
     }
 }
 
+if(!function_exists('showerr')){
+    function showerr($msg){
+        $obj = new Base;
+        $obj->showerr($msg);
+    }
+}
 
 
 
@@ -2721,9 +2729,6 @@ if(!function_exists('jump')){
 }
 if(!function_exists('showmsg')){
     function showmsg($msg){die($msg);}
-}
-if(!function_exists('showerr')){
-    function showerr($msg){die($msg);}
 }
 if (!function_exists('get_file_path')) {
     function get_file_path($id=0){return fun('zbuilder@get_file_path',$id);}

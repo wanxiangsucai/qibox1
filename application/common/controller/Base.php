@@ -104,6 +104,18 @@ class Base extends Controller
         parent::success($msg, $url, $data, $wait, $header);
     }
     
+    /**
+     * 给showerr函数使用
+     * @param string $msg
+     * @param unknown $url
+     * @param string $data
+     * @param number $wait
+     * @param array $header
+     */
+    public function showerr($msg = '', $url = null, $data = '', $wait = 60, array $header = []){
+        $this->error($msg, $url, $data, $wait , $header);
+    }
+    
     protected function error($msg = '', $url = null, $data = '', $wait = 60, array $header = [])
     {
         if(strstr($msg,'没登录')||strstr($msg,'先登录')){

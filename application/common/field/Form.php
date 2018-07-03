@@ -134,8 +134,8 @@ class Form extends Base
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
             $static = config('view_replace_str.__STATIC__');
             $show = " <input placeholder='点击选择{$field[title]}'  style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
+            $show .= fun('field@load_js','laydate')?"<script src='$static/layui/laydate/laydate.js'></script>":'';
             $show .="
-                            <script src='$static/layui/laydate/laydate.js'></script>
                             <script>
                               laydate.render({
                                 elem: '#atc_{$name}',

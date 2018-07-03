@@ -12,6 +12,7 @@ jQuery(document).ready(function() {
 
 			if(havepost==false){
 				layer.alert('请不要重复提交');
+				return false;
 			}
 			var index = layer.load(1);
 			havepost = false;
@@ -23,9 +24,11 @@ jQuery(document).ready(function() {
 						window.location.href = res.url;
 					},500);
 				}else{
+					havepost = true;
 					layer.open({title: '提交失败',content:res.msg});
 				}
 			}).fail(function (res) {
+				havepost = true;
 				layer.close(index);
 				layer.open({title: '服务器发生错误',area:['90%','90%'],content: res.responseText});
 			});

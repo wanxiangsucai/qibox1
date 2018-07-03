@@ -1,7 +1,7 @@
 <form action="{:urls('index/login/index')}" method="post">
 	<div class="qb_ui_TopLoginBox">
 		<span>通行证</span>
-		<span><input type="text" name="username" minlength="3" placeholder="输入帐号" required/></span>
+		<span><input type="text" name="username" minlength="2" placeholder="输入帐号" required/></span>
 		<span><input type="password" name="password" minlength="5" placeholder="输入密码" required/></span>
 		<span><button type="submit">登录</button></span>
 		<span><a href="{:get_url('reg')}">注册</a> | <a href="{:get_url('login')}">登录</a></span>

@@ -27,6 +27,10 @@ abstract class C extends IndexBase
         $this->f_model     = get_model_class($dirname,'field');
     }
     
+    /**
+     * 访问权限检查
+     * @param array $info
+     */
     protected function view_check($info=[]){
         if($info['status']==0 && !$this->admin && $this->user['uid']!=$info['uid']){
             $this->error('内容还没通过审核,你不能查看!');
@@ -112,11 +116,11 @@ abstract class C extends IndexBase
         //获取内容数据
         $info = $this->getInfoData($id);
         
-        Hook_listen('cms_content_show',$info);
+        Hook_listen('cms_content_show',$info,$this->user);
         
-        $this->view_check($info);
+        $this->view_check($info);   //访问权限检查
         
-        $this->updateView($id);
+        $this->updateView($id);     //更新浏览量
         
         //以下 picurl pics图库模型 是CMS模型,常用的几个字段,提前转义了          
 //         if($info['picurl']){
