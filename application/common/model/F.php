@@ -35,32 +35,41 @@ abstract class F extends Model
         return self::where($map)->order('list desc,id asc')->column(true);
     }
     
+    /**
+     * 根据mid获取内容表,如果mid为0的话,可能是order订单表
+     * @param number $mid
+     * @return string
+     */
+    public function getTableByMid($mid=0){
+        return $mid>0 ? self::$base_table.$mid : self::$model_key.'_order' ;
+    }
     
     /**
      * 创建字段
      */
     public function newField($mid,$data = [])
     {
-        if (empty($mid) || empty($data)) {
-            $this->error = '缺少参数';
-            return false;
-        }
-        
-        $table = self::$base_table.$mid;
-        
+        if ( empty($data) ) {
+            return '参数不完整';
+        }        
+        $table = $this->getTableByMid($mid);        
         if (is_table($table)) {
             $sql = "
             ALTER TABLE `" . self::$table_pre  . $table . "`
             ADD COLUMN `{$data['name']}` {$data['field_type']} COMMENT '{$data['title']}';
             ";
+        }else {
+            return '数据表不存在.'.$table;
         }
+        if (table_field($table,$data['name'])) {
+            return '该字段已经存在,请更换一个';
+        }
+        
         try {
             Db::execute($sql);
         } catch(\Exception $e) {
-            $this->error = '字段添加失败';
-            return false;
+            return '字段添加失败'.$sql;
         }
-        
         return true;
     }
     
@@ -73,18 +82,22 @@ abstract class F extends Model
     {
         
         if (empty($array)) {
-            return false;
+            return '参数不完整';
         }
         
         // 获取原字段名
         $field_array = self::get($id);  //;where('id', $id)->value('name');
-        $table = self::$base_table.$field_array['mid'];
+        $table = $this->getTableByMid($field_array['mid']);
         
         if($array['field_type']==$field_array['field_type'] && $array['name']==$field_array['name'] ){
             return true;
         }
         if (is_table($table)) {
-
+            
+            if ($array['name']!=$field_array['name'] && table_field($table,$array['name'])) {
+                return '该字段已经存在,请更换一个';
+            }
+            
             $sql = "
             ALTER TABLE `" . self::$table_pre . $table."`
             CHANGE COLUMN `{$field_array['name']}` `{$array['name']}` {$array['field_type']} COMMENT '{$array['title']}';
@@ -92,11 +105,11 @@ abstract class F extends Model
             try {
                 Db::execute($sql);
             } catch(\Exception $e) {
-                return false;
+                return '更新失败.'.$sql;
             }
             return true;
         } else {
-            return false;
+            return '数据表不存在.'.$table;
         }
     }
     
@@ -115,7 +128,7 @@ abstract class F extends Model
             return false;
         }
         
-        $table = self::$base_table.$field['mid'];
+        $table = $this->getTableByMid($field['mid']);
         
         if (is_table($table)) {
             $sql ="

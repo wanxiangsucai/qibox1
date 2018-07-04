@@ -31,6 +31,10 @@ class Menu{
         foreach($ar['sons'] AS $key1=> $v){
             foreach($v['sons'] AS $key2=>$v2){
                 $ar['sons'][$key1]['sons'][$key2]['model'] = $model;
+                if (is_array($v2['link'])) {
+                    $v2['param'] = $v2['link'][1];
+                    $v2['link'] = $v2['link'][0];                    
+                }
                 $ar['sons'][$key1]['sons'][$key2]['url'] = $isplugin ? purl($model.'/'.$v2['link'],$v2['param']) : url($model.'/'.$v2['link'],$v2['param']);
             }
         }

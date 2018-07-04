@@ -67,6 +67,31 @@ class Car extends Model
         }
         return $listdb;
     }
+    
+    /**
+     * 统计需要支付的总金额
+     * @param number $uid
+     * @param unknown $choose_type
+     * @return array
+     */
+    public static function getMoney($uid=0){
+        empty(self::$model_key) && self::InitKey();
+        $map = [
+                'uid'=>$uid,
+                'ifchoose'=>1,
+        ];
+        $money = 0;
+        $list_data = self::where($map)->column(true);  //用户的购物车数据
+        foreach ($list_data AS $rs){
+            $shop = self::$content_model->getInfoByid($rs['shopid'],false);
+            if(empty($shop)){
+                self::destroy($rs['id']);   //商品若不存在,就把购物车记录删除
+                continue ;
+            }
+            $money += ShopFun::get_price($shop,$rs['type1']-1)*$rs['num'];
+        }
+        return $money;
+    }
 
 	
 }

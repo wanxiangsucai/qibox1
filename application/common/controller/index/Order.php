@@ -5,7 +5,7 @@ use app\common\controller\IndexBase;
 use app\common\util\Shop AS ShopFun;
 
 /**
- * 商城下订单
+ * 下订单
  * @author Administrator
  *
  */
@@ -55,7 +55,7 @@ abstract class Order extends IndexBase
                 $money = 0;
                 foreach ($shop_array AS $rs){   //某个商家的多个商品
                     $_shop[] = $rs['_car_']['shopid'] . '-' . $rs['_car_']['num']  . '-' . $rs['_car_']['type1'] . '-' .$rs['_car_']['type2'] . '-' .$rs['_car_']['type3'];
-                    $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1);
+                    $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
                 }
                 $data['shop'] = implode(',', $_shop);
                 $data['order_sn'] = rands(10);      //订单号
@@ -71,6 +71,8 @@ abstract class Order extends IndexBase
                     $order_ids[] = $result->id;
                 }
             }
+            
+            $this->end_add($order_ids);     //扩展使用
             
             if (!empty($order_ids)) {
                 $url = '/';
@@ -92,6 +94,13 @@ abstract class Order extends IndexBase
         }
         return $this ->fetch();
     } 
+    
+    /**
+     * 扩展使用
+     * @param array $order_ids
+     */
+    protected function end_add($order_ids=[]){        
+    }
     
     
 }

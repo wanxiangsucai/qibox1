@@ -100,7 +100,11 @@
   		<dl>
   			<dt>{$vs.title}</dt>
   			<dd>
-  			{volist name="$vs.sons" id="rs"}{php} $k=$_key.'-'.$rs['model'].'-'.$rs['link'];{/php}
+  			{volist name="$vs.sons" id="rs"}
+			{php}
+				is_array($rs['link']) && $rs['link'] = $rs['link'][0];
+				$k=$_key.'-'.$rs['model'].'-'.$rs['link'];
+			{/php}
   				<ul>
   					<ol>
   						<input type="checkbox" name="powerdb[{$k}]" value="1" {eq name="$info['admindb'][$k]" value="1"}checked{/eq}>

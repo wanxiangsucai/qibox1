@@ -15,6 +15,29 @@ class Index extends AdminBase
     public function index()
     {
         $base_menu = Menu::make('admin'); //Menu::get_menu();
+        //菜单权限判断
+        if(SUPER_ADMIN!==true){
+            $power = (array)getGroupByid($this->user['groupid'],false)['admindb'];  //取得用户的菜单权限
+            foreach ($base_menu AS $key1=>$rs1){
+                if($key1=='often'){
+                    continue;
+                }
+                foreach($rs1['sons'] AS $key2=>$rs2){
+                    foreach ($rs2['sons'] AS $key=>$rs){
+                        is_array($rs['link']) && $rs['link'] = $rs['link'][0];
+                        if(empty($power["$key1-{$rs['model']}-{$rs['link']}"])){    //权限不存在,就把菜单去除
+                            unset($base_menu[$key1]['sons'][$key2]['sons'][$key]);
+                        }
+                    }
+                    if(count($base_menu[$key1]['sons'][$key2]['sons'])==0){ //三级子菜单不存的话,就把二级父菜单也去除
+                        unset($base_menu[$key1]['sons'][$key2]);
+                    }
+                }
+                if(count($base_menu[$key1]['sons'])==0){ //频道菜单不存的话,就把头部顶级菜单也去除
+                    unset($base_menu[$key1]);
+                }
+            }
+        }
         $this->assign('userdb', $this->user );
 		$this->assign('base_menu', $base_menu );
 
@@ -98,6 +121,7 @@ class Index extends AdminBase
             $power = (array)getGroupByid($this->user['groupid'],false)['admindb'];  //取得用户的菜单权限
             foreach ($array[$type]['sons'] AS $key1=>$rs1){
                 foreach ($rs1['sons'] AS $key=>$rs){
+                    is_array($rs['link']) && $rs['link'] = $rs['link'][0];
                     if(empty($power["$type-{$rs['model']}-{$rs['link']}"])){    //权限不存在,就把菜单去除
                         unset($array[$type]['sons'][$key1]['sons'][$key]);
                     }

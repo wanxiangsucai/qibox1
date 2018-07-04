@@ -81,16 +81,15 @@ abstract class F extends AdminBase
                 if(true !== $result) $this->error($result);
             }
             
-            // 更新字段信息
-            if ($this->model->newField($data['mid'],$data)) {
-                if ( $this->saveAddContent() ) {
+            $result = $this->model->newField($data['mid'],$data);  //新增字段信息
+            if ($result===true) {
+                if ( $this->saveAddContent() ) {    //字段表进一步保存字段信息
                     $this->success('字段添加成功', auto_url('index',['mid'=>$data['mid']]));
                 }
-            }
-            $this->error('字段创建失败');
+            }else{
+                $this->error('操作失败:'.$result);
+            }            
         }
-        
-        
         return $this->addContent();
     }
     
@@ -143,14 +142,14 @@ abstract class F extends AdminBase
                 if(true !== $result) $this->error($result);
             }
             
-            // 更新字段信息
-            if ($this->model->updateField($id,$data)) {
+            $result = $this->model->updateField($id,$data); // 更新字段信息
+            if ($result===true) {
                 if ( $this->saveEditContent() ) {
                     $mid = $this->model->where('id',$id)->value('mid');
                     $this->success('字段修改成功', auto_url('index',['mid'=>$mid]) );
                 }
             }
-            $this->error('字段更新失败');
+            $this->error('字段更新失败:'.$result);
         }
         
         if(empty($id)) $this->error('缺少参数');

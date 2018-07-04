@@ -113,6 +113,7 @@ class Qb extends TagLib{
     public function tagForm($tag,$content){         //$content 的内容就是 <!--###break###--!>
         $name = $this->getName($tag['name']);
         $mid = $tag['mid'] ? ($tag['mid'][0]=='$'?substr($tag['mid'], 1):$tag['mid']) : 'mid';     //型模id变量名
+        $_mid = is_numeric($mid) ? $mid : "\$$mid";
         $info = $tag['info'] ? ($tag['info'][0]=='$'?substr($tag['info'], 1):$tag['mid']) : 'info';     //内容信息变量名
         $mod = $tag['mod'];     //模块
         $field = $tag['field'];     //过滤的字段
@@ -126,7 +127,7 @@ class Qb extends TagLib{
         $parse .= '{/if}';
         $parse .= '{/volist}';
         $parse .= ' QB--><?php endif; ?>';
-        $parse .= '<?php '."fun('label@run_form_label','$name',[$_farray'mid'=>\$$mid,'info'=>\$$info,'field'=>'$field','mod'=>'$mod','dirname'=>__FILE__,]);".' ?>';
+        $parse .= '<?php '."fun('label@run_form_label','$name',[$_farray'mid'=>$_mid,'info'=>\$$info,'field'=>'$field','mod'=>'$mod','dirname'=>__FILE__,]);".' ?>';
         return $parse;
     }
     
