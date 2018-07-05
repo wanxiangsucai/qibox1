@@ -48,22 +48,22 @@
     <div class="cont">
     	<div class="PayType">
     		<h3>
-    			<span class="wxpay"><i class="fa fa-weixin"></i>微信支付</span>
-    			<span class="yeepay"><i class="glyphicon glyphicon-text-background"></i>支付宝支付</span>
+    			<span class="wxpay"><i class="fa fa-weixin"></i>微信付款</span>
+    			<span class="alipay"><i class="glyphicon glyphicon-text-background"></i>支付宝付款</span>
     		</h3>
 	    	<form name="form1" method="post" action="">    	
 	            你目前已有积分数是 <span class="B red">{$userdb.money}</span> 个,请输入你要充值金额
 	            <input type="text" name="money" value="1" size="6"/> 元（RMB） 
-	            <input type="submit" name="Submit" value="充值"/>
-	            <input type="hidden" name="paytype" value="wxpay"/>
+	            <input type="submit" name="Submit" value="在线充值"/>
+	            <input type="hidden" name="paytype" value="alipay"/>
 	        </form>
 	        <p>
 	        	<i class="fa fa-warning"></i>注意：每支付 <span class="B red">1</span> 元，将可获得 <span class="B red">{$webdb.money_ratio|default=10}</span> 个积分，充值金额只能是整数<br> 
 	        </p>
 	        <div class="other">
-	        	<span>其它支付方式:</span>
-	        	<a href='javascript:;' onclick="paytype('wxpay')" class='wxpay'>微信支付</a>
-	        	<a href='javascript:;' onclick="paytype('yeepay')" class='yeepay'>支付宝</a> 	        	   
+	        	<span>其它支付方式:</span>	        	
+	        	<a href='javascript:;' onclick="paytype('alipay')" class='alipay'>支付宝</a> 
+				<a href='javascript:;' onclick="paytype('weixin')" class='weixin'>微信支付</a>
 	        </div>
         </div>
     </div>
@@ -76,6 +76,6 @@ function paytype(str){
 	$('.PayType .other a').removeClass('ck');
 	$('.PayType .other').find('.'+str).addClass('ck');
 }
-paytype('wxpay');
+paytype('alipay');
 </script>
 {/block}

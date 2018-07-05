@@ -290,6 +290,8 @@ class Attachment extends IndexBase
         
         if ($ext_limit == '') {
             $error_msg = '系统没设置允许上传附件的类型！';
+        }elseif (!function_exists('finfo_open')) {
+            $error_msg = '服务器没开启fileinfo组件！';
         }elseif ($file->getMime() == 'text/x-php' || $file->getMime() == 'text/html') {
             $error_msg = '禁止上传非法文件！';
         }elseif($file_ext==''){

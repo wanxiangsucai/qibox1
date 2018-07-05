@@ -492,8 +492,8 @@ if (!function_exists('iurl')) {
             $_url = url(full_url($url), $vars, $suffix, $domain);
         }
         $url = str_replace(array('admin.php','member.php'), 'index.php', $_url);
-        if(!preg_match('/^index.php/', $url)){
-            //$url = '/index.php'.$url;
+        if(config('webdb.hiden_index_php') && preg_match('/\/index\.php\//', $url)){
+            $url = str_replace('/index.php/', '/', $url);
         }
         return $url;
     }

@@ -18,6 +18,7 @@ class Pay extends IndexBase
         }else{
             $this->return_url = get_cookie('pay_return_url') ? get_cookie('pay_return_url') : '/';
         }
+        libxml_disable_entity_loader(true);
     }
     
 

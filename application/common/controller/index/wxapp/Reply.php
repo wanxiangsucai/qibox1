@@ -186,16 +186,32 @@ abstract class Reply extends IndexBase
         $topic = $this->topic_model->getInfoByid($data['aid']);
         $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
         if( $this->webdb['reply_send_wxmsg'] ){
-            $content = '主题: 《' . $topic['title'] . '》刚刚 《'.$this->user['username'].'》 对此进行了回复,<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
+            $content = '主题: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了回复,<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
             if($topic['uid']!=$this->user['uid']){
-                send_wx_msg($topic['uid'], '你发表的'.$content);
+                if($this->forbid_remind($topic['uid'])!==true){
+                    send_wx_msg($topic['uid'], '你发表的'.$content);
+                }                
             }
             
             if($pinfo && $topic['uid']!=$pinfo['uid']){
                 if($pinfo['uid']!=$this->user['uid']){
-                    send_wx_msg($pinfo['uid'], '你参与讨论的'.$content);
+                    if($this->forbid_remind($pinfo['uid'])!==true){
+                        send_wx_msg($pinfo['uid'], '你参与讨论的'.$content);
+                    }                    
                 }                
             }
+        }
+    }
+    
+    /**
+     * 用户是否关闭了提醒
+     * @param number $uid
+     * @return boolean
+     */
+    protected function forbid_remind($uid=0){
+        $user = get_user($uid);
+        if (isset($user['sendmsg']['bbs_reply_wxmsg'])&&empty($user['sendmsg']['bbs_reply_wxmsg'])) {
+            return true;
         }
     }
     
