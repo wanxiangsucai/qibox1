@@ -196,14 +196,16 @@ class Sns{
      * 检查用户是否有微博
      * @param number $uid
      */
-    public function weibo($uid=0){
+    public function weibo($uid=0,$name='weibo'){
         $uid || $uid=login_user('uid');
         static $array=[];
         if(empty($array[$uid])){
-            $array[$uid] = getArray(Db::name('weibo_content1')->where('id',$uid)->find()); 
+            $name || $name='weibo';
+            $array[$uid] = getArray(Db::name($name.'_content1')->where('uid',$uid)->find()); 
         }
         return $array[$uid];
     }
+    
     
     /**
      * 动态新消息+1

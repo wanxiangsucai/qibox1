@@ -168,6 +168,58 @@ abstract class Api extends IndexBase
         }
     }
     
+    
+    /**
+     * 锁定
+     * @param number $id
+     */
+    public function lock($id=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $info;
+        }
+        $table = $info['table'];
+        
+        if (!table_field($table,'lock')) {
+            query("ALTER TABLE  `qb_{$table}` ADD  `lock` TINYINT( 1 ) NOT NULL COMMENT  '是否锁定不给修改,删除,回复' AFTER  `status`");
+        }
+        
+        $data = [
+                'id'=>$id,
+                'lock'=>1,
+        ];
+        $result = Db::name($table)->update($data);
+        if($result){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('更新失败');
+        }
+    }
+    
+    
+    /**
+     * 取消锁定
+     * @param number $id
+     */
+    public function unlock($id=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $info;
+        }
+        $table = $info['table'];
+        
+        $data = [
+                'id'=>$id,
+                'lock'=>0,
+        ];
+        $result = Db::name($table)->update($data);
+        if($result){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('更新失败');
+        }
+    }
+    
 }
 
 

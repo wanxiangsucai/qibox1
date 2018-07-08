@@ -531,7 +531,7 @@ trait ModuleContent
 	    }
 	    
 	    $data = array_merge(input(),$data);
-	    $array = explode(',','view,replynum,usernum,agree,reward,list');
+	    $array = explode(',','view,replynum,usernum,agree,reward,list,id');
 	    foreach($array AS $key){
 	        unset($data[$key]);
 	    }

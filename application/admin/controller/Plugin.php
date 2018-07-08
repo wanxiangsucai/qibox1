@@ -77,8 +77,12 @@ class Plugin extends AdminBase
 				];
         return $this->addContent();*/
         if ($keywords!='') {
-            $this->install($keywords,'p');
-            $this->success('插件安装成功,请设置一下后台权限',url('group/admin_power',['id'=>$this->user['groupid']]));
+            $result = $this->install($keywords,'p');
+            if ($result!==true) {
+                $this->error($result);
+            }else{
+                $this->success('插件安装成功,请设置一下后台权限',url('group/admin_power',['id'=>$this->user['groupid']]));
+            }            
         }
         
         $this->tab_ext['right_button'] = [['type'=>'delete']];

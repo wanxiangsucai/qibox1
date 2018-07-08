@@ -74,8 +74,12 @@ class Module extends AdminBase
 	 */
 	public function add($keywords=''){
 	    if ($keywords!='') {
-	        $this->install($keywords,'m');
-	        $this->success('模块安装成功,请设置一下后台权限',url('group/admin_power',['id'=>$this->user['groupid']]));
+	        $result = $this->install($keywords,'m');
+	        if ($result!==true) {
+	            $this->error($result);
+	        }else{
+	            $this->success('模块安装成功,请设置一下后台权限',url('group/admin_power',['id'=>$this->user['groupid']]));
+	        }	        
 	    }
 	    
 	    $this->tab_ext['right_button'] = [['type'=>'delete']];

@@ -27,6 +27,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 		<li>3、数据库配置文件是/application/database.php,更换数据库帐号后,请修改此文件</li>
 		<li>4、网站在使用过程中,如果更新添加了数据,务必经常备份网站数据库</li>
 		<li>5、要修改网页内容显示,在相应的页面双击即可进行标签设置</li>
+		<li>6、<a href="http://help.php168.com/635138" target="_blank">需要查看更多帮助信息,请点击查看在线手册</a></li>
 	</ul>
 </div>
 <div class="OtherContent">
@@ -35,7 +36,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 		<li>
 			<dl>
 				<dt>服务端信息：{$systemMsg.SERVER_SOFTWARE}</dt>
-				<dd>邮件模式：{$systemMsg.sys_mail}</dd>
+				<dd>当前登陆IP：{$systemMsg.onlineip}</dd>
 			</dl>
 		</li>
 		<li>
@@ -52,7 +53,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 		</li>
 		<li>
 			<dl>
-				<dt>上传文件存放的临时目录：{$systemMsg.upload_tmp_dir}</dt>
+				<dt>当前域名：{$systemMsg.SERVER_NAME}</dt>
 				<dd>服务器所在时间：{$systemMsg.systemtime}</dd>
 			</dl>
 		</li>
@@ -62,26 +63,16 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 				<dd>当前文件路径：{$systemMsg.SCRIPT_FILENAME}</dd>
 			</dl>
 		</li>
-		<li>
-			<dl>
-				<dt>Zend Optimizer版本：{$systemMsg.zendVersion}</dt>
-				<dd>当前登陆IP：{$systemMsg.onlineip}</dd>
-			</dl>
-		</li>
-		<li>
-			<dl>
-				<dt>当前域名：{$systemMsg.SERVER_NAME}</dt>
-				<dd><br/></dd>
-			</dl>
-		</li>
-		<li>是否允许文件上传：{$systemMsg.file_uploads}（如果不允许可把php.ini里的file_uploads=Off改成file_uploads=On，重启服务器即可）</li>
+		 
+		 
+		<li>是否允许上传文件：{if function_exists('finfo_file')}支持{else /}<font color="red">不支持</font> <font color="blue">（请把php.ini里的;extension=php_fileinfo.dll前面的分号删除，重启服务器即可）</font> {/if}</li>
 		<li>最大上传限制：{$systemMsg.max_upload}（需更大可修改php.ini里的upload_max_filesize值，重启服务器即可）</li>
 		<li>最大执行时间：{$systemMsg.max_ex_time}（需更大可修改php.ini里的max_execution_time值，重启服务器即可）</li>
-		<li>空间限制内存：{$systemMsg.memory_user_tdmit}（需更大可修改php.ini里的memory_tdmit值，重启服务器即可）</li>
+		 
 		 
 		<li>是否支持采集：{$systemMsg.allow_url_fopen}（如果不支持可把php.ini里的allow_url_fopen=Off改成allow_url_fopen=On，重启服务器即可）</li>
 		<li>是否支持GD2库：{$systemMsg.gdpic}（如果不支持可把php.ini中;extension=php_gd2.dll前面的;去掉，重启服务器即可）</li>
-		<li>是否允许Cookie：{$systemMsg.ifcookie}（如果不允许可在Windows控制面板 ,"Internet选项" ,隐私设置中调整）</li>
+		 
 	</ul>
 </div>
 <div class="OtherContent">
@@ -107,7 +98,8 @@ function check_upgrade(){
 				//upgrade_edition = res.data.md5;
 				var msg = typeof(res.data.upgrade_msg) != "undefined" ? res.data.upgrade_msg : '你的系统需要升级<br>云端更新日期:'+res.data.time;
 				layer.confirm(msg, {
-					btn : [ '马上升级', '晚点再升级' ]
+					btn : [ '马上升级', '晚点再升级' ],
+					time: 2500,
 				}, function(index) {
 					window.location.href="{:url('upgrade/index')}";
 				});
