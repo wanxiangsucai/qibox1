@@ -170,10 +170,11 @@ class Sns{
      * @param number $aid
      * @return array
      */
-    public function get_fav_user($module='',$aid=0){
+    public function get_fav_user($module='',$aid=0,$name='weibo'){
         $m = modules_config($module);
         $sysid = $m['id'];
-        $listdb = Db::name('weibo_fav')->where('sysid',$sysid)->where('aid',$aid)->column('uid');
+        $name || $name='weibo';
+        $listdb = Db::name($name.'_fav')->where('sysid',$sysid)->where('aid',$aid)->column('uid');
         $data = [];
         foreach($listdb AS $uid){
             $data['id'.$uid] = $uid;     //使用array_merge过滤重复,键必须是字符串才行,所以加个id,数字的话,不能过滤,只会增加
@@ -185,11 +186,12 @@ class Sns{
      * 把新消息清0
      * @param number $uid
      */
-    public function clear_msg($uid=0){
+    public function clear_msg($uid=0,$name='weibo'){
         if($uid!=login_user('uid')){
             return ;
         }
-        Db::name('weibo_content1')->where('id',$uid)->update(['msgnum'=>0]);
+        $name || $name='weibo';
+        Db::name($name.'_content1')->where('id',$uid)->update(['msgnum'=>0]);
     }
     
     /**
@@ -211,11 +213,12 @@ class Sns{
      * 动态新消息+1
      * @param number $uid
      */
-    public function add_newmsgnum($uid=0){
+    public function add_newmsgnum($uid=0,$name='weibo'){
         if($uid==login_user('uid')){    //自己就没有必要给自己增加新消息数目了
             return ;
         }
-        Db::name('weibo_content1')->where('id',$uid)->setInc('msgnum',1);
+        $name || $name='weibo';
+        Db::name($name.'_content1')->where('id',$uid)->setInc('msgnum',1);
     }
     
     /**
@@ -225,12 +228,12 @@ class Sns{
      * @param array $data 博主动态索引
      * @return boolean
      */
-    public function push_toFans($login_uid=0,$data=[]){
+    public function push_toFans($login_uid=0,$data=[],$name='weibo'){
         
         //$this->add_newmsgnum($login_uid);
-        
+        $name || $name='weibo';
         //获取当前用户的所有粉丝
-        $listdb = query('weibo_member',[
+        $listdb = query($name.'_member',[
                 'where'=>['aid'=>$login_uid],
                 'column'=>'uid',
         ]);
