@@ -32,7 +32,8 @@ abstract class C extends IndexBase
      * @param array $info
      */
     protected function view_check($info=[]){
-        if($info['status']==0 && !$this->admin && $this->user['uid']!=$info['uid']){
+        //$info['hook_check'] 钩子可以对这个变量赋值,就可以绕过查看权限检查
+        if(empty($info['status']) && empty($info['hook_check']) && !$this->admin && $this->user['uid']!=$info['uid']){
             $this->error('内容还没通过审核,你不能查看!');
         }
     }
