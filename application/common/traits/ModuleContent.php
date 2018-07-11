@@ -264,7 +264,7 @@ trait ModuleContent
 	        if(class_exists($class_name)&&method_exists($class_name, $action)){
 	            $obj = new $class_name;
 	            $_params = $params ? json_decode($params,true) : [] ;	            
-	            $array = call_user_func_array([$obj, $action], $_params);
+	            $array = call_user_func_array([$obj, $action], isset($_params[0])?$_params:[$_params]);
 	        }
 	    }else{
 	        $array = str_array($str);

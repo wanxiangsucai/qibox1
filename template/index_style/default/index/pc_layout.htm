@@ -15,12 +15,14 @@
 <body>
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展  -->
 {:hook_listen('layout_body_head',$userdb,$webdb,true)}
-{block name="body_Headcont"}<link rel="stylesheet" href="__STATIC__/index/default/pcheader.css"> 
+
+{block name="body_Headcont"}
+<link rel="stylesheet" href="__STATIC__/index/default/pcheader.css"> 
 <div class="qb_pc_topBox">
 	<ul>		
 {notempty name="$userdb"}
 		<ol>{$userdb.username} 您好！欢迎来到{$webdb.webname}</ol>
-		<li><a href="{:get_url('member')}" target="_blank"><dd class="glyphicon glyphicon-user"></dd>会员中心</a> {if is_dir(APP_PATH.'weibo')}<a href="#" onclick="pc_open_weibo()"><dd class="fa fa-fw fa-weibo"></dd>微博动态</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:orange;font-size:10px;display:none;" class="weibo_msg_num">0</span>{/if} <a href="#" onclick="pc_open_msg()"><dd class="fa fa-envelope-o"></dd>短消息</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:red;font-size:10px;display:none;" class="msg-num">0</span> <a href="{:get_url('quit')}" target="_blank"><dd class="fa fa-sign-in"></dd>退出</a> </li>
+		<li><a href="{:get_url('member')}" target="_blank"><dd class="glyphicon glyphicon-user"></dd>会员中心</a> {if is_dir(APP_PATH.'weibo')}<a href="#" onclick="pc_open_weibo()"><dd class="fa fa-fw fa-weibo"></dd>微博动态</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:orange;font-size:10px;display:none;" class="weibo_msg_num">0</span> {/if}<a href="#" onclick="pc_open_msg()"><dd class="fa fa-envelope-o"></dd>短消息</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:red;font-size:10px;display:none;" class="msg-num">0</span> <a href="{:get_url('quit')}" target="_blank"><dd class="fa fa-sign-in"></dd>退出</a> </li>
 {else /}
 		<ol>您好！欢迎来到{$webdb.webname}</ol>
 		<li>
@@ -62,12 +64,12 @@ function pc_open_weibo(){
 {php}$menu_choose=config('system_dirname')?config('system_dirname'):'index';{/php}
 {volist name="pc|get_web_menu" id="rs"}
 			<dl {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}class="ck"{/if}>
-				<dt><a href="{$rs.url}">{$rs.name}</a></dt>
+				<dt><a href="{$rs.url}" {notempty name="$rs.target"}target="_blank"{/notempty}><i class="{$rs.style|default=''}"></i>{$rs.name}</a></dt>
 	{notempty name="rs.sons"}
 				<span></span>
 				<dd>
 			{volist name="rs.sons" id="vs"}
-					<div><a href="{$vs.url}">{$vs.name}</a></div>
+					<div><a href="{$vs.url}" {notempty name="$rs.target"}target="_blank"{/notempty}><i class="{$rs.style|default=''}"></i>{$vs.name}</a></div>
 			{/volist}
 				</dd>
 	{/notempty}

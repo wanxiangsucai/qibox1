@@ -2,12 +2,13 @@
 function_exists('urls') || die('ERR');
 
 
+$cuturl = iurl('index/image/cutimg');
+$width = IN_WAP===true?'95%':'900px';
+$height = IN_WAP===true?'100%':'800px';
+
 $jscode = '';
 if(fun('field@load_js',$field['type'])){	
 	$serverurl = urls('index/attachment/upload','dir=images&from=base64&module='.request()->dispatch()['module'][0]);
-	$cuturl = iurl('index/image/cutimg');
-	$width = IN_WAP===true?'95%':'900px';
-	$height = IN_WAP===true?'100%':'800px';
 	$jscode = <<<EOT
 
 <style type="text/css">

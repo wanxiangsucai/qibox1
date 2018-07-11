@@ -139,16 +139,16 @@ $array3=get_shop_type('type3',$info);
 				if((type1==0&&$(".shoptype1").length>0)||(type2==0&&$(".shoptype2").length>0)||(type3==0&&$(".shoptype3").length>0)){
 					layer.alert('没有选择商品类型');
 				}else{
-					var gotourl="{:urls('car/act')}?shopid={$id}&type1="+type1+"&type2="+type2+"&type3="+type3+"&num="+shopnum;
-					$.get(gotourl+"&"+Math.random(),function(d){
-						if(d=='ok'){			
+					var gotourl="{:urls('car/add')}?shopid={$id}&type1="+type1+"&type2="+type2+"&type3="+type3+"&num="+shopnum;
+					$.get(gotourl+"&"+Math.random(),function(res){
+						if(res.code==0){			
 							if(totype==1){
 								layer.msg('成功加入购物车');
 							}else{
 								window.location.href="{:urls('car/index')}";
 							}
 						}else{
-							layer.alert('操作错误！');
+							layer.alert('出错了:'+res.msg);
 						}
 					});					
 				}				

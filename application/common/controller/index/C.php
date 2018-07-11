@@ -48,7 +48,8 @@ abstract class C extends IndexBase
     public function index($fid=0,$mid=0)
     {
         if(!$mid && !$fid){
-            $this->error('参数不存在！');
+            //$this->error('参数不存在！');
+            $mid = 1;
         }elseif($fid){ //根据栏目选择发表内容
             $mid = $this->model->getMidByFid($fid);
             if(empty($mid)){
@@ -133,7 +134,7 @@ abstract class C extends IndexBase
 //         }
 
         $info['field_array'] = $this->get_field_fullurl($info);     //这行必须放在 format_field 的前面,这里要用到原始数据
-        $info = fun('field@format',$info,'','show');  
+        $info = fun('field@format',$info,'','show');
         
         //下面代码主要是避免 format_field 函数里边强行把picurl输出<img 这样的内容,导致无法对图片做个性显示
         if($info['field_array']['pics']['value']){  //CMS图库特别处理

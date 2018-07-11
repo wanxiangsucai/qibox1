@@ -83,13 +83,13 @@ $('.listCar .shops .info dl dt div span').click(function(){
 });
 function change_shops(objs,num){
 	var shopid=objs.find('.check input').val();
-	$.get("{:urls('car/act')}?shopid="+shopid+"&type=change_num&num="+num+"&"+Math.random(),function(d){
-		if(d=='ok'){
+	$.get("{:urls('car/change_num')}?shopid="+shopid+"&num="+num+"&"+Math.random(),function(res){
+		if(res.code==0){
 			objs.find('.info label div span i').html(num);
 			objs.find('.info dl dt div i').html(num);
 			changJoins();
 		}else{
-			layer.alert('修改数量错误！');
+			layer.alert(res.msg);
 		}
 	});	
 }
@@ -106,9 +106,9 @@ function changJoins(){
 		if($(this).is(':checked')){			
 			Join_num++;
 			total_price+=parseFloat(shopnum*shopprice);
-			$.get("{:urls('car/act')}?shopid="+shopid+"&type=choose&ck=1&"+Math.random());
+			$.get("{:urls('car/choose')}?shopid="+shopid+"&ck=1&"+Math.random());
 		}else{
-			$.get("{:urls('car/act')}?shopid="+shopid+"&type=choose&ck=0&"+Math.random());
+			$.get("{:urls('car/choose')}?shopid="+shopid+"&ck=0&"+Math.random());
 		}
 	});
 	total_price=total_price.toFixed(2);
@@ -151,15 +151,15 @@ $('.ListCompany .h .check input').click(function(){
 	changJoins();
 });
 function DelTheShop(num,objs){
-	$.get("{:urls('car/act')}?shopid="+num+"&type=del&"+Math.random(),function(d){
-		if(d=='ok'){			
+	$.get("{:urls('car/delete')}?shopid="+num,function(res){
+		if(res.code==0){			
 			$('.shops'+num).remove();
 			if(objs.html().length<20){
 				objs.parent().remove();
 			}
 			changJoins();
 		}else{
-			layer.alert('修改数量错误！');
+			layer.alert(res.msg);
 		}
 	});
 }

@@ -83,12 +83,15 @@ abstract class Reply extends Model
         $data['ip'] = get_ip();
         $data['aid'] = $id;
         $data['pid'] = intval($pid);
-        hook_listen(config('system_dirname').'_model_replyadd_begin',$data);    //入库前的钩子,可以在这里设置禁止发布信息
+        hook_listen('model_replyadd_begin',$data);    //入库前的钩子,可以在这里设置禁止发布信息
         $result = self::create($data);
         if($result){
-            hook_listen(config('system_dirname').'_model_replyadd_end',$data,$result->id);    //成功发表信息后的钩子
-            self::$content_model->addReply($id);
-            self::$content_model->editData(0,['id'=>$id,'replyuser'=>login_user('username'),'list'=>time()]);
+            hook_listen('model_replyadd_end',$data,$result->id);    //成功发表信息后的钩子
+            self::$content_model->addReply($id);            
+            $array = ['id'=>$id,'replyuser'=>login_user('username'),];
+            $info = self::$content_model->getInfoById($id);
+            $info['list']>time() || $array['list'] = time();
+            self::$content_model->editData($info['mid'],$array);
             if($pid){
                 self::where('id','=',$pid)->setInc('reply',1);      //引用评论
                 self::where('id','=',$pid)->update(['id'=>$pid,'list'=>time()]);

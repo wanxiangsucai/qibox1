@@ -46,6 +46,7 @@ abstract class Order extends IndexBase
             $data = $this -> request -> post();
             
             $order_ids = [];
+            $car_ids = [];  //购买车里的数据
             $listdb = $this->car_model->getList($this->user['uid'],1);
             
             $total_money = 0;   //需要支付的总金额
@@ -56,6 +57,7 @@ abstract class Order extends IndexBase
                 foreach ($shop_array AS $rs){   //某个商家的多个商品
                     $_shop[] = $rs['_car_']['shopid'] . '-' . $rs['_car_']['num']  . '-' . $rs['_car_']['type1'] . '-' .$rs['_car_']['type2'] . '-' .$rs['_car_']['type3'];
                     $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
+                    $car_ids[] = $rs['_car_']['id'];
                 }
                 $data['shop'] = implode(',', $_shop);
                 $data['order_sn'] = rands(10);      //订单号
@@ -72,7 +74,7 @@ abstract class Order extends IndexBase
                 }
             }
             
-            $this->end_add($order_ids);     //扩展使用
+            $this->end_add($order_ids,$car_ids);     //扩展使用
             
             if (!empty($order_ids)) {
                 $url = '/';
@@ -99,7 +101,8 @@ abstract class Order extends IndexBase
      * 扩展使用
      * @param array $order_ids
      */
-    protected function end_add($order_ids=[]){        
+    protected function end_add($order_ids=[],$car_ids=[]){
+        $this->car_model->destroy($car_ids);    //购买成功后,就把购买车的数据清掉
     }
     
     

@@ -1977,6 +1977,10 @@ if (!function_exists('getTemplate')) {
                  $title = '来自 ' . login_user('username') . ' 的消息';
              }
          }
+         if (!is_numeric($touid)) {
+             $array = get_user($touid,'username');
+             $touid = $array['uid'];
+         }
          $data = [
                  'touid'=>$touid,
                  'title'=>$title,

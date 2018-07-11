@@ -121,15 +121,37 @@ abstract class C extends Model
     }
     
     /**
+     * 更新单条内容,是editData的另一种简便用法,可以直接设置ID,第二项是要修改内容数组
+     * @param number $id 主题ID,也可以是数组
+     * @param array $data 修改的内容数组
+     * @return boolean
+     */
+    public static function updates($id=0,$data=[]){
+        self::InitKey();
+        if (is_array($id)&&empty($data)) {
+            $data = $id;
+            $id = $data['id'];
+        }else{
+            $data['id'] = $id;
+        }
+        if (empty($data['mid'])) {
+            $data['mid'] = self::getMidById($id);
+        }
+        return static::editData($data['mid'],$data);
+    }
+    
+    /**
      * 更新单条内容信息
      * @param number $mid 模型ID可以为空
      * @param array $data 要更新的数据,id是必须的
      * @return boolean
      */
     public static function editData($mid=0,$data=[]){
-        self::InitKey();
+        self::InitKey();        
         if (empty($mid)) {
-            $table = self::getTableById($data['id']);
+            $mid = self::getMidById($data['id']);
+            $table = self::getTableByMid($mid);
+            //$table = self::getTableById($data['id']);
         }else{
             $table = self::getTableByMid($mid);     //内容主表
         }
@@ -661,7 +683,6 @@ abstract class C extends Model
         }
         
         $cfg['status'] && $map['status'] = ['>=',$cfg['status']];       //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
-
         $cfg['ispic'] && $map['ispic'] = 1; //只取有图片的数据,如果没有指定模型的话,不能处理
 //         static $model_list = null;
 //         if($mid && $model_list === null){
@@ -697,7 +718,20 @@ abstract class C extends Model
 //             foreach($list AS $id=>$mid){
 //                 $data[$id] = Db::name(self::getTableByMid($mid))->where(['id'=>$id])->find();
 //             }
-            $data = Db::name(self::$base_table)->field('id,mid')->order('id',$by)->paginate($rows,false,['page'=>$page]);
+
+            if($cfg['where']){  //用户自定义的查询语句
+                $_array = fun('label@where',$cfg['where'],$cfg);
+                if($_array){
+                    $map = array_merge($map,$_array);
+                }
+            }
+            foreach($map AS $key=>$value){
+                if (!in_array($key, ['id','uid'])) {
+                    unset($map[$key]);
+                }
+            }
+            
+            $data = Db::name(self::$base_table)->where($map)->field('id,mid')->order('id',$by)->paginate($rows,false,['page'=>$page]);
             $data->each(function($rs,$key){
                 $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->find();
                 return $vs;

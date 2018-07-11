@@ -63,8 +63,12 @@ class Base
             
         }elseif ($field['type'] == 'select' || $field['type'] == 'radio') {      // 下拉框 或 单选按钮
             
-            $detail = str_array($field['options']);
-            $show = $detail[$f_value];
+            if(preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options'])){
+                $show = $f_value;   //对于动态生成的数组,原型输出,不执行类,不读数据库,避免效率降低
+            }else{
+                $detail = str_array($field['options']);
+                $show = $detail[$f_value];
+            }            
             
         }elseif ($field['type'] == 'checkbox') {    //复选框
             
