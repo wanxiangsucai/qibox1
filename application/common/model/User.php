@@ -485,7 +485,7 @@ class User extends Model
 	        $obj -> order($cfg['order'],$cfg['by']);
 	    }	    
 	    $array = $obj -> paginate($cfg['rows'],false,['page'=>$page]);
-	    $array->each(function($rs,$key){
+	    $array->each(function(&$rs,$key){
 	        $rs['title'] = $rs['username'];
 	        $rs['full_lastvist'] = $rs['lastvist'];
 	        $rs['lastvist'] = date('Y-m-d H:i',$rs['lastvist']);
@@ -494,6 +494,8 @@ class User extends Model
 	        $rs['icon'] = $rs['picurl'] = tempdir($rs['icon']);
 	        $rs['url'] = get_url('user',['uid'=>$rs['uid']]);
 	        $rs['group_name'] = getGroupByid($rs['groupid']);
+	        unset($rs['password'],$rs['password_rand'],$rs['lastip'],$rs['regip'],$rs['qq_api'],$rs['weixin_api'],$rs['wxapp_api'],$rs['email'],$rs['address'],$rs['mobphone'],$rs['idcard'],$rs['idcardpic'],$rs['truename'],$rs['config'],$rs['rmb_pwd']);
+	        //$rs['password'] = $rs['password_rand'] = $rs['lastip'] = $rs['regip'] = $rs['qq_api'] = $rs['weixin_api'] = $rs['wxapp_api'] = $rs['email'] = $rs['address'] = $rs['mobphone'] = $rs['idcard'] = $rs['idcardpic'] = $rs['truename'] = $rs['config'] = $rs['rmb_pwd'] = '';
 	        return $rs;
 	    });
 	    return $array;

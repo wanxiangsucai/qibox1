@@ -435,7 +435,7 @@ trait ModuleContent
 	    
 	    if ($this->model->deleteData($id,$mid)) {
 	        //以下两行是接口
-	        hook_listen('cms_delete_end',$id,$this->request->module());	            
+	        hook_listen('cms_delete_end',$info,$this->request->module());	            
 	        $this->end_delete($id,$info);
 	        
 	        return true;

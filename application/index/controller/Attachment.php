@@ -292,6 +292,8 @@ class Attachment extends IndexBase
             $error_msg = '系统没设置允许上传附件的类型！';
         }elseif (!function_exists('finfo_open')) {
             $error_msg = '服务器没开启fileinfo组件！';
+        }elseif (!function_exists('imagecreatefromjpeg')) {
+            $error_msg = '服务器没开启GD库！';
         }elseif ($file->getMime() == 'text/x-php' || $file->getMime() == 'text/html') {
             $error_msg = '禁止上传非法文件！';
         }elseif($file_ext==''){
@@ -331,7 +333,14 @@ class Attachment extends IndexBase
                 return $hook_result;
             }
         }
-
+    
+        if (!preg_match("/^[-\w]+$/is", $dir)) {
+            $dir = 'other';
+        }
+        $dir .= '/' . date('Ymd');
+        if (!is_dir(config('upload_path') . DS . $dir)) {
+            mkdir(config('upload_path') . DS . $dir);
+        }
 
         // 移动到根目录/uploads/ 目录下
         $info = $file->move(config('upload_path') . DS . $dir, $this->makeName(). '.' .$file_ext );

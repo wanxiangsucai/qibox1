@@ -27,9 +27,7 @@ class RmbInfull extends AdminBase
 		parent::_initialize();
 		$this->model = new RmbInfullModel();
 		$this->list_items = [
-				['uid', '用户名', 'callback', function($value){
-                    return get_user($value)->username;
-                }],
+				['uid', '用户名', 'username',],
                 ['money', '充值金额(元)', 'text'],
 				['ifpay', '支付与否', 'callback', function($value){
                     return $value>0 ? '<span style="color:red">付款成功</span>' : '<span style="color:blue">付款失败</span>';
@@ -37,7 +35,7 @@ class RmbInfull extends AdminBase
 				['posttime', '支付时间', 'datetime'],
 				['numcode', '支付单号', 'text'],
                 ['banktype', '支付方式', 'text'],
-				['bank1', '收款帐号', 'text'],
+				//['bank1', '收款帐号', 'text'],
                 
 			];
 	}

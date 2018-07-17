@@ -164,11 +164,13 @@ class Msg extends MemberBase
             }
             $data['touid'] = $info['uid'];
             $data['uid'] = $this->user['uid'];
-            $result = Model::create($data);
-            if($result){
-                $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result->id])).'">点击查收</a>';
+            $result = Model::add($data,$this->admin);
+            if(is_numeric($result)){
+                $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
                 send_wx_msg($info['weixin_api'], $content);
                 $this->success('发送成功','index');
+            }elseif($result['errmsg']){
+                return $this->error($result['errmsg']);
             }else{
                 $this->error('发送失败');
             }

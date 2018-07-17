@@ -18,6 +18,17 @@ class Msg extends Model
     protected $autoWriteTimestamp = true;
 
 
-
+    public static function add($data=[],$admin=null){
+        if (empty($admin)) {
+            if (cache('pm_msg_'.$data['uid'])) {
+                return ['errmsg'=>'请不要那么频繁的发送消息'];
+            }
+            cache('pm_msg_'.$data['uid'],$data['touid'],10);
+        }
+        $result = parent::create($data);
+        if ($result) {
+            return $result->id;
+        }        
+    }
 	
 }

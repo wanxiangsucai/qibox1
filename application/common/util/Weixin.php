@@ -65,7 +65,7 @@ class Weixin
             return true;
         }else{
             if($objXml->return_msg){
-                   $errMsg = $objXml->return_msg;
+                $errMsg = $objXml->return_msg . $objXml->err_code . $objXml->err_code_des;
             }else{
                 $errMsg = filtrate($contentXml);
             }

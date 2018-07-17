@@ -124,7 +124,7 @@ abstract class F extends AdminBase
                 ],
         ];
        
-		$data = self::getListData(['mid'=>$mid],['list'=>'desc']);
+		$data = self::getListData(['mid'=>$mid],['list'=>'desc'],50);
         return $this->getAdminTable($data);
     }
     
