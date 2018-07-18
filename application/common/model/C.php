@@ -330,9 +330,9 @@ abstract class C extends Model
      * 获取所有模型的内容
      * @return \think\Paginator|array|\think\db\false|PDOStatement|string|\think\Model
      */
-    public static function getAll($map=[]){
-        self::InitKey();
-        $array = Db::name(self::$base_table)->where($map)->order('id','desc')->paginate();
+    public static function getAll($map=[],$order="id,desc"){
+        self::InitKey();        
+        $array = Db::name(self::$base_table)->where($map)->order($order)->paginate();
         foreach ($array AS $key=>$ar){
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();
@@ -611,7 +611,7 @@ abstract class C extends Model
         $info['full_content'] = $info['content'];   //原始内容数据
         $info['content'] = preg_replace('/<([^<]*)>/is',"",$info['content']);	//把HTML代码过滤掉
         $cfg['cleng'] && $info['content'] = get_word($info['content'], $cfg['cleng']);
-        
+        $info['DIR'] = $dirname;
         $info['url'] = iurl($dirname.'/content/show',['id'=>$info['id']],true,false,$m_or_p[$dirname]);
         $info['sort_name'] = $sort_array[$info['fid']]['name'];
         $info['mid_name'] = model_config($info['mid'],$dirname)['title'];

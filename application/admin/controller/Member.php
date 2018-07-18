@@ -40,7 +40,7 @@ class Member extends AdminBase
 		        ['yz', '审核', 'switch'],
 			];
 		$this -> tab_ext['search'] = ['username'=>'用户名','uid'=>'用户ID','regip'=>'注册IP'];
-		$this -> tab_ext['order'] = 'money,rmb,uid';
+		$this -> tab_ext['order'] = 'money,rmb,uid,regdate';
 		$this -> tab_ext['id'] = 'uid';
 		$this -> tab_ext['filter_search'] = [
 		        'groupid'=>getGroupByid(),

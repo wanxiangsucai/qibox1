@@ -50,8 +50,9 @@ class Table extends Base
         $name = $field['name'];
         $field_value = $info[$name];
 
-        if(empty($info)){
+        if(empty($info)){   //表格头部标题使用
             return [
+                    'name'=>$name,
                     'title'=>$field['title'],
                     'value'=>'',
             ];
@@ -89,8 +90,11 @@ class Table extends Base
                 $show .="<option value='$key' $select>$v";
             }
             $show .= "</select>";
-        }elseif($field['type'] == 'switch'||$field['type'] == 'yesno'){
-            $show = $field_value ? "<i class='fa fa-check-circle' style='color:green;font-size:16px;'></i>": "<i class='glyphicon glyphicon-ban-circle'></i>" ;
+        }elseif($field['type'] == 'yesno'){
+            $show = $field_value ? "<i class='fa fa-check-circle' style='color:orange;font-size:16px;'></i>": "<i style='color:#888;' class='glyphicon glyphicon-ban-circle'></i>" ;
+        }elseif($field['type'] == 'switch'){
+            $show = "data-value='{$field_value}' data-name='$name' data-id='{$info['id']}'";
+            $show = $field_value ? "<i $show class='fa fa-check-circle _switch' title='更改状态' style='color:green;font-size:20px;cursor:pointer;'></i>": "<i $show title='更改状态' style='font-size:20px;cursor:pointer;' class='fa fa-ban _switch'></i>" ;
         }elseif($field['type'] == 'icon'){
             $show = $field_value?"<i class='{$field_value}'></i>":'';
         }elseif($field['type'] == 'select2'){

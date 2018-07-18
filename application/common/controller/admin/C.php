@@ -191,7 +191,7 @@ abstract class C extends AdminBase
                 unset($this->list_items[1]);
             }
         }
-        $data = $this->model->getAll( $this->getMap() );
+        $data = $this->model->getAll( $this->getMap() ,$this->getOrder('id desc'));
         return $this->getAdminTable($data);
     }
     

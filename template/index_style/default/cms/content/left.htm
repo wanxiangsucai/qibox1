@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="__STATIC__/index/default/left.css">
 <div class="LeftBoxInfo">
 	<ul class="sorts">
-		{volist name="$fid|get_sort='other'" id="name"}
+		{volist name=":getArray(fun('Sort@son',intval($fid))?:fun('Sort@brother',$fid))" id="name"}
 			<li {eq name="$key" value="$fid"}class='ck'{/eq}><a href="{:urls('content/index',"fid=$key")}">{$name}</a></li>
 		{/volist}
 	</ul>

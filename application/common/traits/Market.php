@@ -262,6 +262,8 @@ trait Market
         
         $this->run_install($id,$type,$info['keywords'],'uninstall');
         
+        into_sql($basepath.$info['keywords'].'/install/uninstall.sql',true,1);
+        
         //删除频道模型记录表
         $this->model->destroy($id);        
         

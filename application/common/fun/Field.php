@@ -73,6 +73,23 @@ class Field{
     }
     
     /**
+     * 生成后台筛选URL
+     */
+    public function make_admin_filter_url($order='',$by='',$search_field='',$keyword=''){
+        
+        $array = [
+                'search_field'=>$search_field,
+                'keyword'=>$keyword,
+                '_order'=>$order,
+                '_by'=>$by,
+        ];
+        if (input('route.')) {
+            $array = array_merge(input('route.'),$array);
+        }
+        return auto_url(request()->action(),$array);
+    }
+    
+    /**
      * 判断是否加载过某个JS 避免重复加载,一般用在生成表单页
      * @param string $type
      * @return boolean
@@ -120,6 +137,7 @@ class Field{
 	    foreach ($array AS $rs){
 	        $ar = \app\common\field\Table::get_tab_field($rs,$info);
 	        $data[] = [
+	                'name'=>$ar['name'],
 	                'title'=>$ar['title'],
 	                'value'=>$ar['value'],
 	        ];
