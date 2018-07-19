@@ -330,7 +330,7 @@ abstract class C extends Model
      * 获取所有模型的内容
      * @return \think\Paginator|array|\think\db\false|PDOStatement|string|\think\Model
      */
-    public static function getAll($map=[],$order="id,desc"){
+    public static function getAll($map=[],$order="id desc"){
         self::InitKey();        
         $array = Db::name(self::$base_table)->where($map)->order($order)->paginate();
         foreach ($array AS $key=>$ar){
