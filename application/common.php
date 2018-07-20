@@ -730,14 +730,18 @@ if (!function_exists('parse_sql')) {
 if (!function_exists('str_array')) {
     /**
      * 把字符串转为数组  换行符或者是, 隔开的字符串
-     * @param string $value
+     * 第二项,最好指定,不然的话,只有一项参数的话,容易判断失败
+     * @param string $value 字符串
+     * @param string $explode 指定用什么符号做切割分隔,留空则自动识别,如果只有一个参数的话,容易判断失败
      * @return string|array|unknown[]
      */
-    function str_array($value = '') {
+    function str_array($value = '',$explode='') {
         $value =  trim($value, " ,;\r\n|");
-        if( strpos($value,"\n") ){
+        if( strpos($value,"\n") || $explode=="\n" ){    //常用换行符做分割,比如后台参数
             $value = str_replace("\r","",$value);
             $exp = "\n";
+        }elseif($explode!==''){
+            $exp = $explode;
         }elseif( strpos($value,"|") ){
             $exp = "|";
         }elseif( strpos($value,",") ){
@@ -746,18 +750,20 @@ if (!function_exists('str_array')) {
             $exp = ";";
         }elseif( strpos($value," ") ){
             $exp = " ";
+        }else{
+            return [$value];
         }
         $array = explode($exp,$value);
-        if (strpos($value,"\n") && (strpos($value, '|')||strpos($value, ':'))) {
-            $value  = [];
+        if ( $exp == "\n" && (strpos($value, '|')||strpos($value, ':')) ) {
+            $ar  = [];
             foreach ($array as $val) {
                 list($k, $v) = explode( strpos($val,'|')?'|':':' , $val);
-                $value[$k]   = $v;
+                $ar[$k]   = $v;
             }
         } else {
-            $value = $array;
+            $ar = $array;
         }
-        return $value;
+        return $ar;
     }
 }
 
@@ -2168,7 +2174,8 @@ if (!function_exists('getTemplate')) {
       * @return mixed
       */
      function del_html($content=''){
-         $content=preg_replace('/<([^<]*)>/is',"",$content);	//把HTML代码过滤掉
+         $content=preg_replace('/<([^<]*)>/is',"",$content);	       //把HTML代码过滤掉
+         $content = preg_replace("/\[face(\d+)\]/is",'',$content);  //过滤掉QQ表情
          return $content;
      }
  }

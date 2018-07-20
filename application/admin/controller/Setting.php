@@ -117,7 +117,7 @@ class Setting extends AdminBase
                         $rs['options'] = call_user_func_array([$obj, $action], isset($_params[0])?$_params:[$_params]);
                     }
                 }else{
-                    $rs['options'] = str_array($rs['options']);
+                    $rs['options'] = str_array($rs['options'],"\n");    //后台设置的下拉,多选,单选,都是用换行符做分割的
                 }
             }
             $tab_list[]=[
