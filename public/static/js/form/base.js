@@ -101,3 +101,63 @@ jQuery(document).ready(function() {
     }
 
 });
+
+
+//地区选择
+$(document).ready(function (){
+	if($(".ListArea select").length>0){
+		choose_where(0,0,default_ckid[0],true);
+	}	
+	$(".ListArea select").each(function(i){
+		$(this).hide();	//把所有都隐藏起来.有数据加载成功才显示
+		$(this).change(function () {
+		   var val = $(this).val();	//$(this).children('option:selected').val();
+		   choose_where(i,val);  
+	   });
+	});
+});
+//下拉框选择事件
+function choose_where(num,pid,ckid,ifload){	//第几个选项,父ID,默认初始化选中ID,是否页面默认初始化
+	if(ifload!==true && num==0 && pid==0){	//省份即第一项,不是默认加载的时候,选择0时,就不要给下级加数据,而是把下级全部清空
+		delete_sons(num+1);	//所有子级的数据全清空
+		return ;
+	}
+	var iftop = num===0 ? 1 : 0;
+	$.get(get_area_url+"?iftop="+iftop+"&pid="+pid+"&ckid="+ckid,function(res){
+		if(res.code==0){	//有数据
+			if(ifload===true){	//页面初始化时加载的默认数据
+				set_area_value(num,res.data,ckid);		//当前选项赋值
+				choose_where(num+1,ckid,default_ckid[num+1],ifload);	//加载数据成功,才返回当前选中的ID给下级当作父ID继续取值
+			}else{	//用户重新自由选择
+				set_area_value(num+1,res.data);	//下级数据填充				
+				delete_sons(num+2);	//下下级以后的数据全清空
+			}
+		}else{	//无数据
+			delete_sons(num+1);	//下级数据不存在的话,就把他们全清空
+		}
+	});
+}
+
+//清空下级后面所有的数据
+function delete_sons(min){
+	leng = $(".ListArea select").length;
+	for(i=min;i<leng;i++){
+		set_area_value(i,[]);
+	}
+}
+
+//下级数据赋值
+function set_area_value(num,data,ckid){
+	that = $(".ListArea select").eq(num);
+	if(data.length==0){
+		that.hide();
+	}else{
+		that.show();
+	}
+	that.empty();	//首先清空select现在有的内容
+    that.append("<option selected='selected' value='0'>"+that.data("title")+"</option>");
+	data.forEach(function(item){
+		var ck = ckid==item.id ? ' selected ' : '';
+		that.append("<option  value='" + item.id + "' " + ck + ">" + item.name + "</option>");
+	})
+}

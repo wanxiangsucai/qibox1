@@ -9,6 +9,20 @@
 
 	   <!--这种是最常用的,表单没做分组显示的-->
 	   <table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
+	   {if $tab_ext.area}
+		<!-- 这一段是地区选择 -->
+		<tr id="form_group_area"> 
+		  <td class='tdL'>地区选择: </td>
+		  <td class="tdR layui-input-inline"> 
+			<div class="ListArea">
+				<select name='province_id' data-title="请选择省份" lay-ignore></select> 
+				<select name='city_id' data-title="请选择城市" lay-ignore></select> 
+				<select name='zone_id' data-title="请选择区域" lay-ignore></select> 
+				<select name='street_id' data-title="请选择街道" lay-ignore></select>
+			</div>
+		  </td>
+		</tr>
+		{/if}
 	     <!-- 参数 field="pic,tit" 代表过滤哪些字段不显示出来 里边支持TP标签 -->
          {qb:form field="" f_array="$f_array"}
 		  <tr id="form_group_{$rs.name}">
@@ -43,6 +57,20 @@
 	   {volist name="$tab_ext.group" id="array"}
 		<div class="layui-tab-item {eq name='i' value='1'}layui-show{/eq}">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
+				{if $tab_ext.area&&$i==1}
+				<!-- 这一段是地区选择 -->
+				<tr id="form_group_area"> 
+				  <td class='tdL'>地区选择: </td>
+				  <td class="tdR layui-input-inline"> 
+					<div class="ListArea">
+						<select name='province_id' data-title="请选择省份" lay-ignore></select> 
+						<select name='city_id' data-title="请选择城市" lay-ignore></select> 
+						<select name='zone_id' data-title="请选择区域" lay-ignore></select> 
+						<select name='street_id' data-title="请选择街道" lay-ignore></select>
+					</div>
+				  </td>
+				</tr>
+				{/if}
 				<!-- 每一组的所有表单 -->
 				{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}
 					<tr id="form_group_{$rs.name}"> 
@@ -88,3 +116,10 @@ var trigger_config = {
 
 <!-- 表单常用事件,比如无刷新提交 -->
 <script LANGUAGE="JavaScript" src="__STATIC__/js/form/base.js"></script>
+
+<SCRIPT LANGUAGE="JavaScript">
+//地区选择事件
+{php}$info=getArray($info);{/php}
+var default_ckid = ["{$info.province_id}","{$info.city_id}","{$info.zone_id}","{$info.street_id}"];
+var get_area_url = "{:purl('area/api/getlist',[],'index')}";
+</SCRIPT>

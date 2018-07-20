@@ -114,6 +114,8 @@ abstract class C extends MemberBase
         //联动字段
        $this->tab_ext['trigger'] = $this->getEasyFieldTrigger();
        
+       $this->tab_ext['area'] = config('use_area'); //是否启用地区
+       
         //分组显示处理
         $this->tab_ext['group'] = $this->get_group_form($this->form_items);
         if( $this->tab_ext['group'] ){
@@ -170,6 +172,8 @@ abstract class C extends MemberBase
         $this->tab_ext['trigger'] = $this->getEasyFieldTrigger();
         
         $this->tab_ext['page_title'] = $this->m_model->getNameById($this->mid);
+        
+        $this->tab_ext['area'] = config('use_area'); //是否启用地区
         
         //分组显示
         $this->tab_ext['group'] = $this->get_group_form($this->form_items);
