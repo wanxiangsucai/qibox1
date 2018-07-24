@@ -88,7 +88,7 @@ class Pay extends IndexBase
         
         $array['money'] = $money;
         $array['title'] = $title?$title:' 在线充值';
-        $array['numcode'] = $numcode ? filtrate($numcode) : strtolower(rands(10));
+        $array['numcode'] = mymd5(urldecode($numcode),'DE') ? : rands(10);
         
         $array = array_merge($array,$this->send_config());
 
@@ -99,11 +99,11 @@ class Pay extends IndexBase
                 'posttime'=>time(),
                 'uid'=>intval($this->user['uid']),
                 'banktype'=>$array['bankname'],
-                'callback_class'=>mymd5(urldecode(input()['callback_class']),'DE'),     //支付成功后，后台执行的类
+                'callback_class'=>mymd5(urldecode(input('callback_class')),'DE'),     //支付成功后，后台执行的类
         ];
         //file_put_contents(ROOT_PATH.'AA.txt', $this->weburl,FILE_APPEND);
 
-        if(PayModel::get(['numcode'=>$numcode])==false){
+        if(PayModel::get(['numcode'=>$array['numcode']])==false){
             PayModel::create($data);
         }
         

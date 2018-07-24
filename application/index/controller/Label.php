@@ -22,6 +22,9 @@ class Label extends IndexBase
                 'addbtn'=>'<a href="'.auto_url('delete',$this->get_parameter()).'"><button  type="button" class="btn btn-default">清空数据</button></a> ',
                 'hidebtn'=>'back',
         ];
+        if(!in_wap()){  //非WAP端,强制使用PC模板
+            define('USE_PC_TEMPLATE', true);
+        }
     }
     
     public function index()
@@ -83,7 +86,7 @@ class Label extends IndexBase
         $array = [];
         $dir = opendir(APP_PATH);
         while (($file = readdir($dir))!==false) {
-            if($file!='.'&&$file!='..'&&is_dir(APP_PATH.$file)){
+            if($file!='.'&&$file!='..'&&is_dir(APP_PATH.$file)&&modules_config($file)){
                 if(is_file(APP_PATH."$file/index/Label.php")){
                     $class = "\\app\\$file\\index\\Label";
                     if(class_exists($class)&&method_exists($class,'tag_set')){
@@ -103,7 +106,7 @@ class Label extends IndexBase
         $array = [];
         $dir = opendir(PLUGINS_PATH);
         while (($file = readdir($dir))!==false) {
-            if($file!='.'&&$file!='..'&&is_dir(PLUGINS_PATH.$file)){
+            if($file!='.'&&$file!='..'&&is_dir(PLUGINS_PATH.$file)&&plugins_config($file)){
                 if(is_file(PLUGINS_PATH."$file/index/Label.php")){
                     $class = "\\plugins\\$file\\index\\Label";
                     if(class_exists($class)&&method_exists($class,'tag_set')){

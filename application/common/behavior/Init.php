@@ -23,13 +23,18 @@ class Init
 
         if(input('get.in')!=''){
             set_cookie('browser_type',input('get.in'));
-        }        
+        }
         if(input('get.in')=='pc'||get_cookie('browser_type')=='pc'){
             //define('IN_WAP',false);
-        }elseif(input('get.in')=='wap'||get_cookie('browser_type')=='wap'||in_wap()){
+        }elseif(input('get.in')=='wap'||get_cookie('browser_type')=='wap'){            
+            if(ENTRANCE !== 'admin') {  //后台,强制不要用WAP
+                define('IN_WAP',true);
+            }
+        }elseif( in_wap() ){
             define('IN_WAP',true);
         }
         //define('IN_WAP',true);
+        
 
         if(IN_WAP===true){
             config('template.cache_prefix', 'wap_');
@@ -62,7 +67,7 @@ class Init
                 //当前域名
                 '__DOMAIN__' => request()->domain(),
         );
-		//存入配置文件方便调用
+        //存入配置文件方便调用
         config('view_replace_str', $view_replace_str);
         
         $module = '';

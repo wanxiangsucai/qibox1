@@ -201,24 +201,24 @@ CREATE TABLE IF NOT EXISTS `qb_shop_order` (
   `user_jf` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '使用积分',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '下单时间',
   `pay_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '支付时间',
-  `pay_status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '支付状态',
+  `pay_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '支付状态',
   `pay_name` varchar(120) NOT NULL DEFAULT '' COMMENT '付款方式',
   `linkman` varchar(60) NOT NULL DEFAULT '' COMMENT '收货人',
   `address` varchar(255) NOT NULL DEFAULT '' COMMENT '收货地址',
   `telphone` varchar(60) NOT NULL DEFAULT '' COMMENT '手机',
   `shipping_time` int(11) DEFAULT '0' COMMENT '发货时间',
   `receive_time` int(10) DEFAULT '0' COMMENT '收货时间',
-  `receive_status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '收货状态',
-  `shipping_status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '发货状态',
+  `receive_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '收货状态',
+  `shipping_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '发货状态',
   `shipping_name` varchar(120) NOT NULL DEFAULT '' COMMENT '物流名称',
-  `shipping_code` varchar(32) NOT NULL DEFAULT '' COMMENT '物流单号',
+  `shipping_code` varchar(100) NOT NULL DEFAULT '' COMMENT '物流单号',
   `user_note` varchar(255) NOT NULL DEFAULT '' COMMENT '用户备注',
   `admin_note` varchar(255) DEFAULT '' COMMENT '管理员备注',
   PRIMARY KEY (`id`),
   KEY `create_time` (`create_time`),
   KEY `uid` (`uid`),
   KEY `order_sn` (`order_sn`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='商品订单' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='商品订单' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 

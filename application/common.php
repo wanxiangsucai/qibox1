@@ -1772,7 +1772,7 @@ if (!function_exists('getTemplate')) {
         $name = $array['basename'];   //basename($template);
         $path = $array['dirname'].'/';  //dirname($template);
         
-        if(IN_WAP===true){
+        if(!defined('USE_PC_TEMPLATE') && IN_WAP===true){   //没有声明强制使用PC模板的时候,如果WAP端,就取WAP模板
             if(!preg_match('/^wap_/', $name)){
                 if(is_file($path.'wap_'.$name)){
                     return $path.'wap_'.$name;
@@ -2043,12 +2043,15 @@ if (!function_exists('getTemplate')) {
       */
      function post_olpay( $array=['money'=>'','return_url'=>'','banktype'=>'','numcode'=>'','title'=>'','callback_class'=>'']  , $jump = FALSE){
          foreach ($array AS $key=>$value){
+             $key=='numcode' && $value=mymd5($value);
+             if ($key=='callback_class'&&strstr($value,'@')) {
+                 $value = mymd5($value);
+             }
              $url .= $key.'='.urlencode($value).'&';
          }
-         $url='?'.$url;
-         $return_url = urlencode($array['return_url']);
-         unset($array['return_url']);
-         $url = iurl('index/pay/index').$url;   //参数不能放进路由,因为微信支付有授权目录的限制
+         //$return_url = urlencode($array['return_url']);
+         //unset($array['return_url']);
+         $url = iurl('index/pay/index') . '?' . $url;   //参数不能放进路由,因为微信支付有授权目录的限制
          if($jump==true){
              header("location:$url");
              exit;

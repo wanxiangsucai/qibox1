@@ -105,7 +105,7 @@
 		<dd>
 {volist name="info.shop_db" id="rs"}
           <ul>
-            <ol><a href="{:urls('content/show',['id'=>$rs['id']])}">{$rs.title}</a></ol>
+            <ol><a href="{:iurl('content/show',['id'=>$rs['id']])}">{$rs.title}</a></ol>
 			<li>
 				<span>X{$rs._num}</span>
 				<em>&yen;{$rs._price}</em>

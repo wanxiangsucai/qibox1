@@ -46,6 +46,10 @@ abstract class Order extends MemberBase
      * @param unknown $id
      */
     public function delete($id){
+        $info = $this->model->getInfo($id);
+        if ($info['uid']!=$this->user['uid']) {
+            $this->error('你没权限');
+        }
         if ($this->model->destroy($id)) {
             $this->success('删除成功');
         }else{
@@ -82,6 +86,9 @@ abstract class Order extends MemberBase
      */
     public function edit($id){
         $info = $this->model->getInfo($id);
+        if ($info['uid']!=$this->user['uid']) {
+            $this->error('你没权限');
+        }
         $this->assign('info',$info);
         return $this->fetch();
     }
@@ -93,6 +100,9 @@ abstract class Order extends MemberBase
      */
     public function show($id){
         $info = $this->model->getInfo($id);
+        if ($info['uid']!=$this->user['uid']) {
+            $this->error('你没权限');
+        }
         $this->assign('info',$info);
         return $this->fetch();
     }

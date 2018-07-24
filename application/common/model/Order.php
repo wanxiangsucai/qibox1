@@ -80,10 +80,29 @@ class Order extends Model
         $data_list->each(function($rs,$key){
             $rs['shop_db'] = [];
             if($rs['shop']!=''){
-                $rs['shop_db'] = self::getshop($rs['shop']);
+                $rs['shop_db'] = static::getshop($rs['shop']);
             }
             return $rs;
         });
+        return $data_list;
+    }
+    
+    /**
+     * 标签取数据
+     * @param array $tag_array
+     * @return unknown
+     */
+    public static function get_label($tag_array=[]){
+        $map = [];
+        $cfg = unserialize($tag_array['cfg']);
+        $rows = $cfg['rows']?:10;
+        if($cfg['where']){  //用户自定义的查询语句
+            $_array = fun('label@where',$cfg['where'],$cfg);
+            if($_array){
+                $map = array_merge($map,$_array);
+            }
+        }
+        $data_list = self::where($map)->order('id','desc')->paginate($rows);
         return $data_list;
     }
     
@@ -109,20 +128,34 @@ class Order extends Model
             if($user['rmb']<$info['pay_money']){    //钱不够扣,终止以下所有操作
                 return false;
             }
-            //执行扣款
-            add_rmb($info['uid'],-abs($info['pay_money']),0,'购物消费');
-            
+                        
             self::update([
                     'id'=>$id,
                     'pay_status'=>1,
                     'pay_time'=>time(),
             ]);
+            
+            static::success_pay($info);    //支付成功,执行相关操作,比如资金变动
+            
             $check++;
+            
         }
         
         if ($check) {
             return true;
         }        
+    }
+    
+    /**
+     * 支付成功,资金变动 , 也可以增加消息通知
+     * @param array $order_info 订单信息,不是商品信息
+     */
+    protected static function success_pay($order_info=[]){
+        //客户扣款
+        add_rmb($order_info['uid'],-abs($order_info['pay_money']),0,'购物消费');
+        
+        //商家入帐
+        add_rmb($order_info['shop_uid'],abs($order_info['pay_money']),0,'销售商品');
     }
 	
 }

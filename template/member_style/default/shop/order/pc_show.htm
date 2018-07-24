@@ -32,7 +32,7 @@
           </tr>
 {volist name="info.shop_db" id="rs"}
           <tr>
-            <td class="tL"><a href="{:urls('content/show',['id'=>$rs['id']])}">{$rs.title}</a></td>
+            <td class="tL"><a href="{:iurl('content/show',['id'=>$rs['id']])}" target="_blank">{$rs.title}</a></td>
             <td>X{$rs._num}</td>
             <td>&yen;{$rs._price}</td>
           </tr>

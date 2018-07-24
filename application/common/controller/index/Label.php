@@ -31,6 +31,9 @@ abstract class Label extends IndexBase
                                    <button onclick="parent.layer.close(parent.layer.getFrameIndex(window.name));parent.location.reload();" type="button" class="btn btn-danger">关闭当前窗口</button>',
                 'hidebtn'=>'back',
         ];
+        if(!in_wap()){  //非WAP端,强制使用PC模板
+            define('USE_PC_TEMPLATE', true);
+        }
     }
     
     
