@@ -701,7 +701,7 @@ abstract class C extends Model
             }
             $whereor = [];
             if($cfg['whereor']){  //用户自定义的查询语句
-                $_array = fun('label@where',$cfg['whereor']);
+                $_array = fun('label@where',$cfg['whereor'],$cfg);
                 if($_array){
                     $whereor = $_array;
                 }

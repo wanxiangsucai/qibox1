@@ -220,14 +220,14 @@ abstract class C extends IndexBase
         }
         
         if($cfg['where']){  //用户自定义的查询语句
-            $_array = fun('label@where',$cfg['where']);
+            $_array = fun('label@where',$cfg['where'],$cfg);
             if($_array){
                 $map = array_merge($map,$_array);
             }
         }
 //         $whereor = [];
 //         if($cfg['whereor']){  //用户自定义的查询语句
-//             $_array = fun('label@where',$cfg['whereor']);
+//             $_array = fun('label@where',$cfg['whereor'],$cfg);
 //             if($_array){
 //                 $whereor = $_array;
 //             }
@@ -296,6 +296,9 @@ abstract class C extends IndexBase
             $cfg = unserialize($tag_array['cfg']);
             extract($cfg);
         }else{
+            if(empty($this->webdb['open_app_get'])){
+                return $this->err_js('为安全考虑,系统默认没有开放随意调用数据功能,要启用,请在开发者中心添加参数open_app_get为1');
+            }
             //这里需要对外面传进来的各项参数做一个过滤判断 
         }
         
@@ -312,14 +315,14 @@ abstract class C extends IndexBase
         }
         
         if($where){  //用户自定义的查询语句
-            $_array = fun('label@where',$where);
+            $_array = fun('label@where',$where,$cfg);
             if($_array){
                 $map = array_merge($map,$_array);
             }
         }
         //         $whereor = [];
         //         if($cfg['whereor']){  //用户自定义的查询语句
-        //             $_array = fun('label@where',$cfg['whereor']);
+        //             $_array = fun('label@where',$cfg['whereor'],$cfg);
         //             if($_array){
         //                 $whereor = $_array;
         //             }
@@ -347,7 +350,7 @@ abstract class C extends IndexBase
      * @param string $type 数据查找条件
      * @param string $data_type 取什么类型的数据，比如可以设置为json
      */
-    public function ajax_get($name='',$page='' ,$pagename='',$mid=0, $fid=0 ,$rows=0,$order='',$by='',$type='yz'){
+    public function ajax_get($name='',$page='' ,$pagename='',$mid=0, $fid=0 ,$rows=0,$order='',$by='',$type='yz',$where=''){
         
         //GET优先级比route高,方便重新再定义参数
         $getData = input('get.');
@@ -389,14 +392,18 @@ abstract class C extends IndexBase
         }
         
         if($cfg['where']){  //用户自定义的查询语句
-            $_array = fun('label@where',$cfg['where']);
+            $_array = fun('label@where',$cfg['where'],$cfg);
             if($_array){
                 $map = array_merge($map,$_array);
             }
+        }elseif($where=mymd5($where,'DE')){ //where语句解密处理,避免用户恶意修改
+            $_array = fun('label@where',$where,array_merge(input('route.'),$getData));
+            $map = array_merge($map,$_array);
         }
+        
 //         $whereor = [];
 //         if($cfg['whereor']){  //用户自定义的查询语句
-//             $_array = fun('label@where',$cfg['whereor']);
+//             $_array = fun('label@where',$cfg['whereor'],$cfg);
 //             if($_array){
 //                 $whereor = $_array;
 //             }

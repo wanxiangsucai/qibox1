@@ -1244,8 +1244,8 @@ if(!function_exists('mymd5')){
 	function mymd5($string,$action="EN",$rand=''){ //字符串加密和解密 
 		//global $webdb;
 		if($action=="DE"){//处理+号在URL传递过程中会异常
-			$string = str_replace('QIBO|ADD','+',$string);
-			$string = str_replace('QIBO|EDD','=',$string);
+			$string = str_replace('QIBOADD','+',$string);
+			$string = str_replace('QIBOEDD','=',$string);
 		}
 		$secret_string = config('webdb.mymd5').$rand.'5*j,.^&;?.%#@!'; //绝密字符串,可以任意设定 
 		if(!is_string($string)){
@@ -1268,8 +1268,8 @@ if(!function_exists('mymd5')){
 		}
 		$code = ($action == "DE" ? (substr(md5($code),8,10)==$md5code?$code:NULL) : base64_encode($code)."$md5code");
 		if($action=="EN"){//处理+号在URL传递过程中会异常
-			$code = str_replace('+','QIBO|ADD',$code);
-			$code = str_replace('=','QIBO|EDD',$code);
+			$code = str_replace('+','QIBOADD',$code);
+			$code = str_replace('=','QIBOEDD',$code);
 		}
 		return $code; 
 	}

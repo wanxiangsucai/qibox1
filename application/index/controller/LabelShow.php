@@ -11,15 +11,18 @@ class LabelShow extends IndexBase
     
     /**
      * 站外调用标签数据,比如APP或小程序,又或者站外JS
-     * @param string $name
+     * @param string $name 关键字
      * @param string $page
      * @return \think\response\Json
      */
     public function app_get($name='' , $page='' ){
         $page<1 && $page=1;
-        $name || $array = LabelModel::app_get_data($name , $page);
+        $name && $array = LabelModel::app_get_data($name , $page);
         
         if(empty($array)){
+            if(empty($this->webdb['open_app_get'])){
+                return $this->err_js('为安全考虑,系统默认没有开放随意调用数据功能,要启用,请在开发者中心添加参数open_app_get为1');
+            }
             //return $this->err_js('标签不存在!');
             //数据库标签不存在的时候,调用指定数据,需要做进一步的安全过滤
             $_array = input();
@@ -562,8 +565,11 @@ class LabelShow extends IndexBase
         
         if(!empty($tag_array)){
             $_cfg = unserialize($tag_array['cfg']);
-            is_array($_cfg) && $cfg_array = array_merge($cfg_array,$_cfg);    //数据库的参数配置优先级更高
+            is_array($_cfg) && $cfg_array = array_merge($cfg_array,$_cfg);    //数据库的参数配置优先级更高            
         }
+        $cfg_array = array_merge($cfg_array, self::union_live_parameter($cfg));     //动态变量参数
+        
+        //列表页,给AJAX传输数据用
         self::$list_page_cfg = [$tag_name=> $cfg_array];    //列表页标签也可以存在多个的
         
         $tag_data = cache('qb_tag_data_'.$tag_name);    //首页列表数据缓存
@@ -639,6 +645,9 @@ class LabelShow extends IndexBase
      */
     public function get_listpage_ajax_url($tag_name=''){
         $cfg = self::$list_page_cfg[$tag_name];
+        if ($cfg['where']) {
+            $cfg['where'] = mymd5($cfg['where']);   //避免用户恶意修改
+        }
         echo  iurl(  config('system_dirname').'/content/ajax_get',  $cfg ).'?page=';
     }
 

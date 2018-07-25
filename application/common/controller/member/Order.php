@@ -63,14 +63,14 @@ abstract class Order extends MemberBase
      * @return mixed|string
      */
     public function index($type=null){
-        $map=[
+        $map = [
                 'uid'=>$this->user['uid'],                
         ];
         
         if($type=='ispay'){
-            $map=[ 'pay_status'=>1 ];
+            $map['pay_status'] = 1;
         }elseif($type=='nopay'){
-            $map=[ 'pay_status'=>0 ];
+            $map[ 'pay_status'] = 0;
         }
         $list_data = $this->model->getList($map,10);
         $this->assign('listdb',getArray($list_data)['data']);

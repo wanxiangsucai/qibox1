@@ -290,6 +290,7 @@ class Qb extends TagLib{
         $by = empty($by)?'desc':$by;
         $status = $tag['status'];   //审核或推荐
         $where = $tag['where'];   //条件查询
+        $union = $this->union_live_parameter($tag['union'],$where);    //动态关联的参数
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--LISTPAGE '."<!--$name\t$type\t$tpl-->";
         if(!empty($val)){   //只取得变量值的情况
@@ -300,7 +301,7 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' LISTPAGE--><?php endif; ?>';
-        $parse .= '<?php $__array__='."fun('label@run_listpage_label','$name',['mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'field'=>'$field','val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','status'=>'$status','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
+        $parse .= '<?php $__array__='."fun('label@run_listpage_label','$name',[$union'mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'field'=>'$field','val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','status'=>'$status','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
         $parse .='$pages=$__array__[\'pages\'];$'.$name.'=$__array__[\'cfg\']; ?>';
         return $parse;
     }
