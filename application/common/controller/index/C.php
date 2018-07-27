@@ -154,7 +154,8 @@ abstract class C extends IndexBase
          $GLOBALS['fid'] = $info['fid'];     //标签有时会用到
         
         //栏目配置信息
-        $s_info = $this->sortInfo($info['fid']);
+        //$s_info = $this->sortInfo($info['fid']);
+         $s_info = get_sort($info['fid'],'config');
         
         //如果某个模型有个性模板的话，就不调用母模板
         $template = $this->get_tpl('show',$this->mid,$s_info);
@@ -174,7 +175,7 @@ abstract class C extends IndexBase
     }
     
     /**
-     * 列表页用到的筛选字段的处理
+     * 列表页可能用到的筛选字段的处理,比如分类信息最常用的筛选字段
      * @param number $mid 模型ID
      * @return mixed[]
      */
@@ -210,7 +211,7 @@ abstract class C extends IndexBase
      */
     public function label_list_data($cfg = []){    
         $map = [];
-        //筛选字段的处理
+        //筛选字段的处理,比如分类信息常用的
         if(function_exists('get_filter_fields')){
             $map = $this->map_filter_field($cfg['mid']);
         }
@@ -261,11 +262,12 @@ abstract class C extends IndexBase
            $fids = get_sort($fid,'sons') ;
            $map['fid'] = $fids ? ['in',$fids] : $fid;
         }
-        if (!in_array($order, ['id','create_time','list','rand()','view'])) {
-            if(empty($order) || table_field($this->model->getTableByMid($mid),$order)==false){
-                $order = 'list';
-            }
-        }
+        $order = $order ? filtrate($order) : 'list';
+//         if (!in_array($order, ['id','create_time','list','rand()','view'])) {
+//             if(empty($order) || table_field($this->model->getTableByMid($mid),$order)==false){
+//                 $order = 'list';
+//             }
+//         }
         return $this->getListData($map, "$order $by",  $rows , [] ,true);
     }
     
@@ -358,8 +360,7 @@ abstract class C extends IndexBase
         $getData['fid'] && $fid = $getData['fid'];
         $getData['rows'] && $rows = $getData['rows'];
         $getData['order'] && $order = $getData['order'];
-        $getData['by'] && $by = $getData['by']; 
-        
+        $getData['by'] && $by = $getData['by'];
         //这里需要对外面传进来的各项参数做一个过滤判断 
         
         $data_type = input('data_type'); 

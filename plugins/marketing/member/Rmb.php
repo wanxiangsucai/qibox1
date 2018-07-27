@@ -49,7 +49,7 @@ class Rmb extends MemberBase
 	        post_olpay([
 	                'money' => $data['money'],
 	                'return_url' => purl('index'),
-	                'banktype' => $data['paytype']=='alipay'?'alipay':'weixin',
+	                'banktype' => in_weixin() ? 'weixin' : 'alipay',
 	                'numcode' => $numcode,
 	                'callback_class' => '',
 	        ] , true);	

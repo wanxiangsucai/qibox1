@@ -92,13 +92,15 @@ trait ModuleContent
 // 	        if(true !== $result) $this->error($result);
 // 	    }
 	    //$data['ispic'] = empty($data['picurl']) ? 0 : 1 ;
+	    
+	    $info = $this->getInfoData($data['id']);
 
 	    $result = $this->model->editData($this->mid,$data);
 	    
 	    if($result){
 	        //以下两行是接口
-	        hook_listen('cms_edit_end',$data,['result' =>$result, 'module' =>$this->request->module()]);	        
-	        $this->end_edit($data['id'],$data);
+	        hook_listen('cms_edit_end',$data,['result' =>$result, 'module' =>$this->request->module(),'info'=>$info]);	        
+	        $this->end_edit($data['id'],$data,$info);
 	        
 	        $this -> success('修改成功', auto_url('index',['mid'=>$mid]) );
 	    }else{

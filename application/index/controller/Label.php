@@ -39,7 +39,7 @@ class Label extends IndexBase
                 'fromurl'=>urlencode(input('fromurl')),
         ];
         $type = input('type');
-        if($type!=''&&$type!='choose'){
+        if($type&&$type!='choose'){
             if($type=='image'){
                 $url = url("index/label/image",$url_array);                
             }elseif($type=='images'){
@@ -68,6 +68,22 @@ class Label extends IndexBase
             }elseif(preg_match('/^reply_set_/', $type)){
                 $name = str_replace('reply_set_','',$type);
                 $url = url("$name/label/reply_set",$url_array);
+            }elseif(preg_match('/@/', $type)){
+                list($str,$action) = explode('@',$type);
+                list($m_p,$module,$dir,$file) = explode('--',$str);
+                $classname = "\\$m_p\\$module\\index\\Label";
+                if (class_exists($classname)) {
+                    $method = "{$file}_{$action}";
+                    if (!method_exists($classname, $method)) {
+                        $method = 'class_set';
+                    }
+                    $url_array['classname'] = $type;
+                    if ($m_p=='app') {
+                        $url = url("$module/label/$method",$url_array);
+                    }else{
+                        $url = purl("$module/label/$method",$url_array);
+                    }
+                }
             }
             if($url){
                 echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL=$url'>";

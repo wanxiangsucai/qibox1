@@ -573,8 +573,8 @@ abstract class C extends Model
         
         $info = fun('field@format',$info,'','list',$dirname);     //对原始数据进行转义前台显示
         
-        
-        if(empty($info['picurl']) && $info['pics']){    //CMS图库模型特别处理
+        if($info['pics']){    //CMS图库模型特别处理
+        //if(empty($info['picurl']) && $info['pics']){    //CMS图库模型特别处理
 //             $_picarray = [];
 //             $info['pics'] = json_decode($info['pics'],true);
 //             foreach ($info['pics'] AS $ps){
@@ -629,7 +629,7 @@ abstract class C extends Model
      * @param number $page 页码
      * @return void|\app\common\model\unknown[]|array[]|\think\db\false[]|PDOStatement[]|string[]|\think\Model[]|array
      */
-    public static function labelGetList($tag_array='' , $page=0){
+    public static function labelGetList($tag_array=[] , $page=0){
         self::InitKey();
         $cfg = unserialize($tag_array['cfg']);
 
@@ -659,7 +659,7 @@ abstract class C extends Model
             $map['fid'] = ['in',array_values(get_sort($cfg['fid'],'sons'))];    //把所有子栏目也读取出来
         }
         if($cfg['fidtype']==2){ //跟随栏目动态变化
-            $fids = $GLOBALS['fid'];
+            $fids = input('fid');
             $mid = $sort_array[$fids]['mid'];
             $map['fid'] = $fids;
         }elseif($cfg['fids']){
@@ -751,6 +751,58 @@ abstract class C extends Model
 //             $data[$key] = self::format_data($rs,$cfg,$dirname,$sort_array);
 //         }
 //         return $data;
+    }
+    
+    /**
+     * 辅栏目的标签
+     * @param array $tag_array
+     * @param number $page
+     * @return array|NULL[]|unknown|\app\common\model\unknown
+     */
+    public static function labelGetCategoryList($tag_array=[] , $page=0){
+        self::InitKey();
+        $cfg = unserialize($tag_array['cfg']);
+        
+        $rows = $cfg['rows']>0 ? $cfg['rows'] : 5;
+        $page = intval($page);
+        if ($page<1) {
+            $page=1;
+        }
+        //$min = ($page-1)*$rows;
+        $order = $cfg['order'] ?: 'id';
+        $by = $cfg['by'] ?: 'desc';
+        $map = [];
+        $dirname = self::$model_key;
+        $sort_array = sort_config($dirname);    //获取栏目数据
+        
+        if($cfg['fidtype']==1){ //跟随栏目动态变化
+            $map['cid'] = input('fid') ?: 0;
+        }elseif($cfg['fid']){
+            $map['cid'] = $cfg['fid'];
+        }
+        
+        if($cfg['where']){  //用户自定义的查询语句
+            $_array = fun('label@where',$cfg['where'],$cfg);
+            if($_array){
+                $map = array_merge($map,$_array);
+            }
+        }
+        
+        if(strstr($order,'rand()')){
+            $data = Db::name(self::$model_key.'_info') -> where($map) -> orderRaw('rand()') -> paginate($rows,false,['page'=>$page]);
+        }else{
+            $data = Db::name(self::$model_key.'_info') -> where($map) -> order("$order $by") -> paginate($rows,false,['page'=>$page]);
+        }        
+        $data->each(function(&$rs,$key){
+            $vs = static::getInfoByid($rs['aid']);
+            $rs = $vs;
+            return $vs;
+        });        
+        $array = getArray($data);
+        foreach($array['data'] AS $key=>$rs){
+            $array['data'][$key] = static::format_data($rs,$cfg,$dirname,$sort_array);
+        }
+        return $array;
     }
     
 

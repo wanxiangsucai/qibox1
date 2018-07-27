@@ -36,7 +36,8 @@ abstract class Info extends AdminBase
     protected function set_config(){
         $this->list_items = [
                 ['title', '标题', 'link', iurl('content/show',['id'=>'__aid__']),'_blank',''],
-                ['cid', '所属辅栏目',  'select2',$this->category_model->getTitleList()],
+                ['list', '排序值',  'text.edit'],
+                ['cid', '所属辅栏目',  'select',$this->category_model->getTitleList()],
                 ['fid', '所属主栏目',  'select2',$this->s_model->getTitleList()],
                 ['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
         ];

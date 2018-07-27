@@ -197,7 +197,7 @@ class LabelShow extends IndexBase
         }
     }
     
-    private  function pri_tag_div($tag_name='',$type='',$tag_array){
+    private  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name=''){
         if(LABEL_SET!==true){
             return ;
         }
@@ -205,6 +205,9 @@ class LabelShow extends IndexBase
         $div_w = $tag_array['cfg']['div_width']>10?$tag_array['cfg']['div_width']:100;
         $div_h = $tag_array['cfg']['div_height']>10?$tag_array['cfg']['div_height']:30;
         $div_bgcolor = '#A6A6FF';
+        if (($type=='choose'||$type=='classname') && $class_name!='') {
+            $type = str_replace('\\', '--', $class_name);
+        }
         
         echo "<div  class=\"p8label\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(/public/static/js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
         ";
@@ -648,7 +651,15 @@ class LabelShow extends IndexBase
         if ($cfg['where']) {
             $cfg['where'] = mymd5($cfg['where']);   //避免用户恶意修改
         }
-        echo  iurl(  config('system_dirname').'/content/ajax_get',  $cfg ).'?page=';
+        $_getA = [];
+        foreach($cfg AS $key=>$value){
+            if ($value && !preg_match("/^([-\w]+)$/i", $value)) {
+                $_getA[$key] = $value;
+                unset($cfg[$key]);
+            }
+        }
+        $_get = http_build_query($_getA);    //路由无法正确解释带有空格之类的内容,所以要改用GET
+        echo  iurl(  config('system_dirname').'/content/ajax_get',  $cfg )."?$_get&page=";
     }
 
     /**
@@ -927,7 +938,7 @@ class LabelShow extends IndexBase
         }
         
         echo self::pri_jsfile($pagename);                                   //输出JS文件
-        echo  self::pri_tag_div($tag_name,$type,$tag_array);    //输出标签的操作层
+        echo  self::pri_tag_div($tag_name,$type,$tag_array,$cfg['class']);    //输出标签的操作层
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
             if($cfg['sql']){    //SQL原生查询语句

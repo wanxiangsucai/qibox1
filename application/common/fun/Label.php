@@ -70,7 +70,10 @@ class Label{
                         $array[trim($field)] = [$mod,$this->get_label_value(trim($field),$value,$cfg)];
                     }elseif(strstr($value,',')){
                         $value = explode(',',$value);
-                        $array[trim($field)] = ['in',$value];
+                        $array[trim($field)] = [
+                                $mod=='<>'?'not in':'in',
+                                $value,                                
+                        ];
                     }else{
                         $array[trim($field)] =  [$mod,trim($value)];
                     }

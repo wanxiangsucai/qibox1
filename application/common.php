@@ -1024,6 +1024,30 @@ if(!function_exists('sort_get_father')){
     }
 }
 
+if(!function_exists('category_get_father')){
+    /**
+     * 模块中获取当前辅栏目的所有父ID
+     * @param number $id
+     * @param string $sys_type
+     * @return void|number
+     */
+    function category_get_father($id=0,$sys_type=''){
+        if($id<1){
+            return ;
+        }
+        $array = category_config($sys_type);
+        $pid = $array[$id]['pid'];
+        if($pid>0){
+            $farray[$pid] = $array[$pid]['name'];
+            $ar = category_get_father($pid,$sys_type);
+            if(!empty($ar)){
+                $farray = $ar+$farray;
+            }
+            return $farray;
+        }
+    }
+}
+
 if(!function_exists('get_sort')){
     
     /**
@@ -1138,6 +1162,7 @@ if(!function_exists('sort_config')){
         }
         
         if($pid!==null){    //取子栏目
+            $_array = [];
             foreach ($array AS $id=>$rs){
                 if($rs['pid']==$pid){
                     $_array[$id] = $rs['name'];
@@ -1147,6 +1172,132 @@ if(!function_exists('sort_config')){
         }else{
             return $array;
         }        
+    }
+}
+
+if(!function_exists('get_category')){
+    /**
+     * 获取具体某个频道下面的辅栏目相关信息
+     * @param number $id 为0时，取出所有栏目，大于0时，根据$type参数取值
+     * @param string $field 取某个字段对应的值,config或者是不存在的字段名,则取出所有配置参数
+     * @param string $type father时取出所有父级栏目,sons时取出所有下一级栏目,other时优先取子栏目,若无再取同级,若无再取父级兄弟栏目
+     * @param string $sys_type 指定频道模块
+     * @return void|number|number[]|array[]|unknown[]|number[]|unknown[]|array|unknown
+     */
+    function get_category($id=0,$field='name',$type='',$sys_type=''){
+        $array = category_config($sys_type);
+        $_type = $type==='' ? $field : $type;   //兼容处理
+        if($id>0){
+            if($_type=='father'){    //所有父栏目，也包括自身,一般用在面包屑导航
+                $farray = category_get_father($id,$sys_type);
+                $self_array = [$id=>$array[$id]['name']];
+                return empty($farray) ? $self_array : $farray+$self_array;
+            }elseif($_type=='sons'){  //所有下一级级栏目，也包括自身，一般用在查询数据库
+                $s_array = [
+                        $id => $field=='name' ? $array[$id]['name'] : $id,
+                ];
+                $_pid = 0;
+                foreach($array AS $key=>$rs){
+                    if(!$rs['pid'])continue;
+                    if($rs['pid']==$id||$rs['pid']==$_pid){
+                        $s_array[$key] = $field=='name' ? $array[$key]['name'] : $key;
+                        $_pid = $key;
+                    }
+                }
+                return $s_array;
+            }elseif($_type=='brother'){  //取同级栏目
+                $s_array = [];
+                $_pid = $array[$id]['pid'];
+                foreach($array AS $key=>$rs){
+                    if($rs['pid']==$_pid){
+                        $s_array[$key]=$rs['name'];
+                    }
+                }
+                return $s_array;
+            }elseif($_type=='other'){    //取父级兄弟栏目及本级兄弟栏目及子栏目，一般用在栏目页面方便展示布局
+                $m_array = [];
+                $pid = $array[$id]['pid'];
+                $fpid = $pid ? $array[$pid]['pid'] : null;
+                $_pid = null;
+                foreach($array AS $key=>$rs){
+                    if($fpid!==null&&$rs['pid']==$fpid){  //父级栏目
+                        $m_array[$key] = $rs['name'];
+                    }elseif($rs['pid']==$pid){   //同级栏目
+                        $m_array[$key] = $rs['name'];
+                    }elseif ($rs['pid']==$_pid){    //子栏目
+                        $m_array[$key] = $rs['name'];
+                    }
+                    if($key==$id){
+                        $_pid = $id;
+                    }
+                }
+                return $m_array;
+            }elseif($_type=='config'){
+                return $array[$id];
+            }elseif(isset($array[$id][$_type])){
+                return $array[$id][$_type];
+            }else{
+                return $array[$id];
+            }
+        }elseif($_type=='other' && $array){  //fid不存在的话,就只取一级栏目
+            $farray = [];
+            foreach($array AS $key=>$rs){
+                if($rs['pid']==0){
+                    $farray[$key]=$rs['name'];
+                }
+            }
+            return $farray;
+        }elseif ($_type=='all'){
+            $farray = [];
+            foreach($array AS $key=>$rs){
+                $farray[$key]=$rs['name'];
+            }
+            return $farray;
+        }
+        return $array;
+    }
+}
+
+if(!function_exists('category_config')){
+    /**
+     * 获取模块里边的辅栏目配置参数
+     * @param string $sys_type 可以指定其他频道的目录名
+     * @param unknown $pid 可以指定只调取哪些父栏目的下的子栏目数据
+     * @return array|unknown
+     */
+    function category_config($sys_type='',$pid=null){
+        if(empty($sys_type)){
+            $sys_type=config('system_dirname');
+        }
+        if(empty($sys_type)){
+            return [];
+        }
+        static $sort_array = [];
+        $array = $sort_array[$sys_type];
+        if(empty($array)){
+            $array = cache('category_config_'.$sys_type);
+            if (empty($array)) {
+                $obj = get_model_class($sys_type,'category');
+                if ($obj===false) {
+                    return [];
+                }
+                $array = $obj->getTreeList();
+                cache('category_config_'.$sys_type,$array);
+            }
+            $sort_array[$sys_type] = $array;
+        }
+        
+        if($pid!==null){    //取子栏目
+            $_array = [];
+            foreach ($array AS $id=>$rs){
+                if($rs['pid']==$pid){
+                    $_array[$id] = $rs['name'];
+                }
+            }
+            return $_array;
+        }else{
+            return $array;
+        }
     }
 }
 
@@ -2008,6 +2159,7 @@ if (!function_exists('getTemplate')) {
       * @return void|boolean|mixed 发送成功则返回true 发送失败会返回相应的错误代码
       */
      function send_wx_msg($openid,$content,$array=[]){
+         $content = str_replace('target="_blank"', '', $content);   //微信中有这个会暴露出源代码
          if(class_exists("\\plugins\\weixin\\util\\Msg")){
              static $obj=null;             
              $obj===null && $obj = new \plugins\weixin\util\Msg;
@@ -2344,7 +2496,7 @@ if (!function_exists('getTemplate')) {
       * @param string $sys_type 特别指定哪个目录的频道
       * @return array|unknown|mixed|\think\cache\Driver|boolean
       */
-     function model_config($mid=0,$sys_type=''){
+     function model_config($mid=null,$sys_type=''){
          if(empty($sys_type)){
              $sys_type=config('system_dirname');
          }
@@ -2362,7 +2514,13 @@ if (!function_exists('getTemplate')) {
              }
              $model_array[$sys_type] = $array;
          }
-         return empty($mid) ? $array : $array[$mid];
+         if (empty($mid)) {
+             return $array;
+         }elseif($mid=='default_id'){
+             return current(model_config())['id'];
+         }else{
+             return $array[$mid];
+         }         
      }
  }
 
@@ -2438,6 +2596,9 @@ if (!function_exists('get_model_class')) {
         if(class_exists($classname)==false){
             $_path =  $path=='app'?'plugins':'app';
             $classname = "$_path\\$dirname\\model\\".ucfirst($type);
+        }
+        if(class_exists($classname)==false){
+            return false;
         }
         $obj = new $classname;
         return $obj;

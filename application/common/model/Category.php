@@ -37,7 +37,7 @@ abstract class Category extends Model
         self::InitKey();
         static $list = NULL;
         if($list==NULL){
-            $list = self::where($where)->column('id,name');
+            $list = self::where($where)->order('list','desc')->column('id,name');
         }
         return $list;
     }
