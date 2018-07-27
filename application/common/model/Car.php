@@ -38,9 +38,10 @@ class Car extends Model
      * 获取用户的购物车数据 , 商家UID是一维数组下标,购物车及商品在二维数组那里
      * @param number $uid 购买者的UID
      * @param unknown $choose_type 是否只获取选中要购买的商品
+     * @param string $format 是否对商品数据进行显示转义
      * @return array
      */
-    public static function getList($uid=0,$choose_type=null){
+    public static function getList($uid=0,$choose_type=null,$format=true){
         empty(self::$model_key) && self::InitKey();
         $map = [
                 'uid'=>$uid,
@@ -52,7 +53,7 @@ class Car extends Model
         $list_data = self::where($map)->order('update_time','desc')->column(true);  //用户的购物车数据
         //$field = [];
         foreach ($list_data AS $rs){
-            $shop = self::$content_model->getInfoByid($rs['shopid'],true);    //取得商品的详细数据
+            $shop = self::$content_model->getInfoByid($rs['shopid'],$format);    //取得商品的详细数据
             if(empty($shop)){
                 self::destroy($rs['id']);   //商品若不存在,就把购物车记录删除
                 continue ;
