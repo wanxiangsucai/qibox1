@@ -58,6 +58,12 @@ abstract class KehuOrder extends MemberBase
                 $this->error('没有东西可以修改');
             }
             $this->model->update($array);
+            
+            if ($data['shipping_code'] && $data['shipping_code']!=$info['shipping_code']) {
+                $content = "你购买的商品,已经发货了,请注意查收,<a href=\"".urls('order/show','id='.$id)."\">点击详情查看单号或序列号</a>";
+                send_msg($info['uid'],'你购买的商品已发货了,注意查收',$content);
+                send_wx_msg($info['uid'],$content);
+            }
             $this->success('修改成功');
         }
         
