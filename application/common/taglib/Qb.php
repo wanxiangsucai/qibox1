@@ -105,6 +105,8 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' QB--><?php endif; ?>';
+        $where = addslashes($where);
+        $whereor = addslashes($whereor);
         $parse .= '<?php '."\$$name = fun('label@run_label','$name',[$union'val'=>'$val','list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
         return $parse;
     }
@@ -197,6 +199,8 @@ class Qb extends TagLib{
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--COMMENT'."<!--$name\t$type\t$tpl-->";
         $parse .= $content;
         $parse .= ' COMMENT--><?php endif; ?>';
+        $where = addslashes($where);
+        //$whereor = addslashes($whereor);
         $parse .= '<?php '."fun('label@run_comment_label','$name',\$$val_info,['sysid'=>\$$sysid,'aid'=>\$$aid,'status'=>'$status','dirname'=>__FILE__,'tpl'=>'$tpl','cache_time'=>'$cache_time','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by']);".' ?>';
         return $parse;
     }
@@ -228,6 +232,8 @@ class Qb extends TagLib{
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--REPLY'."<!--$name\t$type\t$tpl-->";
         $parse .= $content;
         $parse .= ' REPLY--><?php endif; ?>';
+        $where = addslashes($where);
+        //$whereor = addslashes($whereor);
         $parse .= '<?php '."reply_label('$name',\$$val_info,['aid'=>\$$aid,'status'=>'$status','dirname'=>__FILE__,'tpl'=>'$tpl','cache_time'=>'$cache_time','rows'=>'$rows','where'=>'$where','order'=>'$order','by'=>'$by']);".' ?>';
         return $parse;
     }
@@ -301,6 +307,8 @@ class Qb extends TagLib{
             $parse .= '{/volist}';
         }
         $parse .= ' LISTPAGE--><?php endif; ?>';
+        $where = addslashes($where);
+        //$whereor = addslashes($whereor);
         $parse .= '<?php $__array__='."fun('label@run_listpage_label','$name',[$union'mid'=>\$mid,'fid'=>\$fid,'page'=>\$page,'dirname'=>__FILE__,'field'=>'$field','val'=>'$val','tpl'=>'$tpl','rows'=>'$rows','where'=>'$where','status'=>'$status','order'=>'$order','by'=>'$by','cache_time'=>'$cache_time']);";
         $parse .='$pages=$__array__[\'pages\'];$'.$name.'=$__array__[\'cfg\']; ?>';
         return $parse;

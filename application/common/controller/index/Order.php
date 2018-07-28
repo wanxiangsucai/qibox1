@@ -44,6 +44,7 @@ abstract class Order extends IndexBase
     public function add() {
         if($this -> request -> isPost()){
             $data = $this -> request -> post();
+            $data = \app\common\field\Post::format_all_field($data,-1); //对一些特殊的自定义字段进行处理,比如多选项,以数组的形式提交的
             
             $order_ids = [];
             $car_ids = [];  //购买车里的数据

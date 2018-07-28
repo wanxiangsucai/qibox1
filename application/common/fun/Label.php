@@ -66,6 +66,9 @@ class Label{
                 if( !strstr($str,'|') ){
                     list($field,$value) = explode('|',preg_replace('/^([-\w]+)([<>=]+)([^<>=]+)/i','\\1|\\3',$str));
                     $mod = preg_replace('/^([-\w]+)([<>=]+)([^<>=]+)/i','\\2',$str);
+                    if($value=="''"){
+                        $value='';
+                    }
                     if( substr($value,0,1)=='$' ){
                         $array[trim($field)] = [$mod,$this->get_label_value(trim($field),$value,$cfg)];
                     }elseif(strstr($value,',')){
@@ -83,6 +86,9 @@ class Label{
                 $field = trim($field);
                 $mod = trim($mod);
                 $value = trim($value);
+                if($value=="''"){
+                    $value='';
+                }
                 if($mod=='='){
                     $array[$field] = $value;
                 }else{

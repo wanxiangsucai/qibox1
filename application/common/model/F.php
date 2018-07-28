@@ -37,15 +37,15 @@ abstract class F extends Model
      */
     public function getTableByMid($mid=0){
         if ($mid>0) {
-            $table_end = $mid;
+            $table = self::$base_table . $mid;
         }elseif($mid==-1){
-            $table_end = '_order' ;
+            $table = self::$model_key . '_order' ;
         }elseif($mid==-2){
-            $table_end = '_sort' ;
+            $table = self::$model_key . '_sort' ;
         }elseif($mid==-3){
-            $table_end = '_category' ;
+            $table = self::$model_key . '_category' ;
         }
-        return self::$model_key . $table_end;
+        return $table;
     }
     
     public static function getFields($map=[])

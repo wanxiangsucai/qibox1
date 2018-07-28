@@ -169,14 +169,22 @@ trait AddEditList {
 	 * @param unknown $rows 每页显示多少条
 	 * @return unknown
 	 */
-	protected function getListData($map = [], $order = [],$rows=20) {
+	protected function getListData($map = [], $order = [],$rows=20,$pages=[]) {
 		$map = array_merge($this -> getMap(), $map);
 		
 		$order = $this -> getOrder() ? $this -> getOrder() : $order ;		
 		if (empty($order)) {
-		    $data_list = $this -> model -> where($map) -> orderRaw('1 desc') -> paginate($rows);
+		    $data_list = $this -> model -> where($map) -> orderRaw('1 desc') -> paginate(
+		            empty($rows)?null:$rows,    //每页显示几条记录
+		            empty($pages[0])?false:$pages[0],
+		            empty($pages[1])?['query'=>input('get.')]:$pages[1]
+		            );
 		}else{
-		    $data_list = $this -> model -> where($map) -> order($order) -> paginate($rows);
+		    $data_list = $this -> model -> where($map) -> order($order) -> paginate(
+		            empty($rows)?null:$rows,    //每页显示几条记录
+		            empty($pages[0])?false:$pages[0],
+		            empty($pages[1])?['query'=>input('get.')]:$pages[1]
+		            );
 		}
 		return $data_list;
 	}

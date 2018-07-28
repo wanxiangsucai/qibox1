@@ -330,9 +330,13 @@ abstract class C extends Model
      * 获取所有模型的内容
      * @return \think\Paginator|array|\think\db\false|PDOStatement|string|\think\Model
      */
-    public static function getAll($map=[],$order="id desc"){
+    public static function getAll($map=[],$order="id desc",$rows=0,$pages){
         self::InitKey();        
-        $array = Db::name(self::$base_table)->where($map)->order($order)->paginate();
+        $array = Db::name(self::$base_table)->where($map)->order($order)->paginate(
+                empty($rows)?null:$rows,    //每页显示几条记录
+                empty($pages[0])?false:$pages[0],
+                empty($pages[1])?['query'=>input('get.')]:$pages[1]
+                );
         foreach ($array AS $key=>$ar){
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();
@@ -350,9 +354,13 @@ abstract class C extends Model
      * @param number $rows
      * @return \think\Paginator|\app\common\model\unknown|array|\think\db\false|PDOStatement|string|\think\Model
      */
-    public static function getListByUid($uid=0,$rows=20){
+    public static function getListByUid($uid=0,$rows=20,$pages=[]){
         self::InitKey();
-        $array = Db::name(self::$base_table)->where('uid',$uid)->order('id','desc')->paginate($rows);
+        $array = Db::name(self::$base_table)->where('uid',$uid)->order('id','desc')->paginate(
+                empty($rows)?null:$rows,    //每页显示几条记录
+                empty($pages[0])?false:$pages[0],
+                empty($pages[1])?['query'=>input('get.')]:$pages[1]
+                );
         foreach ($array AS $key=>$ar){
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();
@@ -463,7 +471,7 @@ abstract class C extends Model
         $data_list = Db::name(self::getTableByMid($mid))->where($map)->field("*,(POW( `map_x`-$x,2 )+POW(`map_y`-$y,2)) AS map_point")->order('map_point asc')->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
-                empty($pages[1])?[]:$pages[1]
+                empty($pages[1])?['query'=>input('get.')]:$pages[1]
                 );
         
         if($format){
@@ -496,7 +504,7 @@ abstract class C extends Model
         $data_list = Db::name(self::getTableByMid($mid))->where($map)->order($order)->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
-                empty($pages[1])?[]:$pages[1]
+                empty($pages[1])?['query'=>input('get.')]:$pages[1]
                 );
         
         if($format){
