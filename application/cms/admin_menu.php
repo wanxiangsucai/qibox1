@@ -45,6 +45,16 @@ return array(
 								                'title'=>'辅栏目内容管理',
 								                'link'=>'info/index',
 								        ),
+								        array(
+								                'title'=>'栏目字段管理',
+								                'link'=>['sort_field/index',['mid'=>-2]],
+								                //'power'=>['edit','delete'],
+								        ),
+// 								        array(
+// 								                'title'=>'辅栏目字段管理',
+// 								                'link'=>['sort_field/index',['mid'=>-3]],
+// 								                //'power'=>['edit','delete'],
+// 								        ),
 								),
 							),
 				),

@@ -62,7 +62,7 @@ abstract class Label extends IndexBase
         $mid = input('mid');
         
         //之前选定了辅栏目
-        if (empty($mid)&&strstr($info['class_cfg'],'@labelGetCategoryList')) {
+        if (config('use_category')&&empty($mid)&&strstr($info['class_cfg'],'@labelGetCategoryList')) {
             header("location:".url('category_set',$url_array));
             exit;
         }
@@ -80,7 +80,7 @@ abstract class Label extends IndexBase
             ];
         }
         
-        if(category_config()){  //辅栏目存在的时候
+        if(config('use_category')&&category_config()){  //辅栏目存在的时候
             $nav['category']=[
                     'title'=>'辅栏目',
                     'url'=>url('category_set',$url_array),
@@ -164,6 +164,13 @@ abstract class Label extends IndexBase
         $rsdb = unserialize($info['cfg']);
         
         $url_array = $this->get_parameter();
+        
+        if (empty(config('use_category'))) {
+            $this->success('辅栏目不存在',
+                    url('tag_set',array_merge($url_array))
+                    );
+        }
+        
         //模型分类菜单
         $nav = [];
         foreach ($this->m_model->getTitleList() AS $key=>$value){

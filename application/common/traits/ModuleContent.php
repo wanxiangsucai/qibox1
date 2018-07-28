@@ -1,7 +1,6 @@
 <?php
 namespace app\common\traits;
 
-use app\common\builder\Listpage;
 
 trait ModuleContent
 {
@@ -160,20 +159,7 @@ trait ModuleContent
 	 */
 	protected function getEasySearchItems()
 	{
-	    $array = [];
-	    $field_array = $this->f_model->getFields(['mid'=>$this->mid]);	    
-	    foreach ($field_array AS $rs){
-	        if(!$rs['ifsearch']){
-	            continue;
-	        }	        
-	        if(!in_array($rs['type'], ['radio','select','checkbox'])){
-	            continue;
-	        }	        
-	        $rs['options'] && $rs['options'] = str_array($rs['options']);
-	        $array[$rs['name']] = $rs['options'];
-
-	    }
-	    return $array;
+	    return \app\common\field\Table::get_search_field($this->mid);
 	}
 	
 	/**
@@ -182,44 +168,7 @@ trait ModuleContent
 	 */
 	protected function getEasyIndexItems($field_array=[])
 	{
-	    $array = [];
-		//$field_array || $field_array = $this->f_model->getFields(['mid'=>$this->mid]);
-		$field_array || $field_array = get_field($this->mid);
-		
-		foreach ($field_array AS $rs){
-		    if(!$rs['listshow']){
-		        continue;
-		    }
-			$rs['options'] && $rs['options'] = str_array($rs['options']);
-			if(in_array($rs['type'], ['radio','select','checkbox'])){
-				$type = 'select';
-			}elseif($rs['type']=='image'){
-			    $type = 'picture';
-			}elseif($rs['type']=='images'){
-			    $type = 'pictures';
-			}elseif(in_array($rs['type'], ['textarea','ueditor'])){
-				$type = 'textarea';
-			}elseif($rs['type']=='datetime'){
-				$type = 'datetime';
-			}elseif($rs['type']=='date'){
-				$type = 'date';
-			}elseif($rs['type']=='time'){
-				$type = 'time';
-			}else{
-				$type = 'text';
-			}
-			if($rs['name']=='title'){
-			    $array[] = ['title', $rs['title'], 'link',iurl('content/show',['id'=>'__id__']),'_blank'];
-			}else{
-			    $array[] = [
-					$rs['name'],
-					$rs['title'],
-					 $type,
-			         $rs['options'],
-			     ];
-			}
-		}
-		return $array;
+	    return \app\common\field\Table::get_list_field($this->mid,$field_array);
 	}
 	
 	/**
@@ -227,51 +176,7 @@ trait ModuleContent
 	 * @return string[][]|unknown[][]
 	 */
 	protected function getEasyFieldTrigger(){
-	    $array = [];
-	    $field_array = $this->f_model->getFields(['mid'=>$this->mid]);
-	    foreach ($field_array AS $rs){
-	        if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'){
-	            $detail = explode("\r\n",$rs['options']);
-	            foreach($detail AS $value){
-	                list($v,$b,$otherFields) = explode("|",$value);
-	                if($otherFields){
-	                    $_fs = explode(',',$otherFields);
-	                    foreach($_fs AS $otherField ){
-	                        $array[$rs['name']][$otherField][] = $v;
-	                    }	                    
-	                }
-	            }
-	        }
-	    }
-	    $tri = [];
-	    foreach($array as $name=>$ar){
-	        foreach($ar AS $otherField=>$rs){
-	            $tri[] = [$name,implode(',', $rs),$otherField];
-	        }	        
-	    }
-	    return $tri;
-	}
-	
-	/**
-	 * 把单选\多选\下拉框架的参数转义为可选项数组
-	 * @param string $str 可以是类 app\bbs\model\Sort@getTitleList
-	 * @return void|string|array|unknown[]
-	 */
-	protected function options_2array($str=''){
-	    if($str==''){
-	        return ;
-	    }
-	    if(preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$str)){
-	        list($class_name,$action,$params) = explode('@',$str);
-	        if(class_exists($class_name)&&method_exists($class_name, $action)){
-	            $obj = new $class_name;
-	            $_params = $params ? json_decode($params,true) : [] ;	            
-	            $array = call_user_func_array([$obj, $action], isset($_params[0])?$_params:[$_params]);
-	        }
-	    }else{
-	        $array = str_array($str);
-	    }
-	    return $array;
+	    return \app\common\field\Form::getTrigger($this->mid);
 	}
 	
 	/**
@@ -280,35 +185,7 @@ trait ModuleContent
 	 */
 	protected function getEasyFormItems()
 	{
-		$array=[];		
-		$field_array = $this->f_model->getFields(['mid'=>$this->mid]);
-		foreach ($field_array AS $rs){
-			//$rs['options'] && $rs['options'] = str_array($rs['options']);
-		    $rs['options'] = $this->options_2array($rs['options']);
-			if($rs['type']=='hidden'){   //隐藏域比较特别些
-			    $rs['title'] = $rs['value'];
-			}
-			if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'){
-			    $array[]=[
-			            $rs['type'],
-			            $rs['name'],
-			            $rs['title'],
-			            $rs['about'],
-			            $rs['options'],			            
-			            $rs['value'],
-			    ];
-			}else{
-			    $array[]=[
-			            $rs['type'],
-			            $rs['name'],
-			            $rs['title'],
-			            $rs['about'],
-			            $rs['value'],
-			            $rs['options']
-			    ];
-			}			
-		}
-		return $array;
+	    return \app\common\field\Form::get_all_field($this->mid);
 	}
 	
 	/**
@@ -454,14 +331,9 @@ trait ModuleContent
 	protected function makeListInfo($data_list,$tpl='',$vars=[])
 	{	    
 	    //前台列表页母模型，可以自由定义
-	    $template = $tpl ? $tpl : config('automodel_category_listpage');
+	   // $template = $tpl ? $tpl : config('automodel_category_listpage');
 	    
-	    $list_table = Listpage::make()
-	    ->setTemplate($template)
-	    ->setRowList($data_list)
-	    ->addVars($vars);
-	    
-	    return $list_table->fetch();
+	    //return $list_table->fetch();
 	}
 	
 	/**

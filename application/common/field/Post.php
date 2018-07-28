@@ -6,6 +6,29 @@ namespace app\common\field;
  */
 class Post
 {
+    /**
+     * 对POST数据进行筛选转义处理
+     * @param array $data POST数据
+     * @param number $mid
+     * @return \app\common\field\NULL|number
+     */
+    public static function format_all_field($data=[],$mid=0){
+        $field_array = get_field($mid);
+        foreach ($field_array as $rs) {
+            $value = self::format($rs,$data);
+            if($value!==null){     //这里要做个判断,MYSQL高版本,不能任意字段随意插入null
+                $data[$rs['name']] = $value;
+            }
+        }
+        return $data;
+    }
+    
+    /**
+     * 对提交的数据某个字段分别处理
+     * @param array $field
+     * @param array $data
+     * @return NULL|number
+     */
     public static function format($field=[],$data=[]){
         $name = $field['name'];
         $type = $field['type'];

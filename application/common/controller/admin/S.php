@@ -87,7 +87,8 @@ abstract class S extends AdminBase
     public function edit($id = null)
     {
         if($this->request->isPost()){
-            $data = $this -> request -> post();            
+            $data = $this -> request -> post();
+            $data = \app\common\field\Post::format_all_field($data,-2); //对一些特殊的字段进行处理,比如多选项,以数组的形式提交的
             if (!empty($this -> validate)) {    // 验证
                 //$result = $this -> validate($data, $this -> validate);
                 //if (true !== $result) $this -> error($result);
@@ -104,6 +105,9 @@ abstract class S extends AdminBase
                 $this -> error('修改失败');
             }
         }
+        
+        if(empty($id)) $this->error('栏目ID不存在');
+        
         $this->form_items = [];
         
         $msg = '请把模板放在此目录下: '.TEMPLATE_PATH.'index_style/ 然后输入相对路径,比如 default/abc.htm';
@@ -130,7 +134,13 @@ abstract class S extends AdminBase
                 ],
         ];
         
-        if(empty($id)) $this->error('缺少参数');
+        $form_field =  \app\common\field\Form::get_all_field(-2);
+        if ($form_field) {  //把用户自定义字段,追加到基础设置那里,不过也可以另起一个分组的
+            $this -> tab_ext['group']['基础设置'] = array_merge($this -> tab_ext['group']['基础设置'],$form_field);
+        }
+        
+        //联动字段,比如点击哪项就隐藏或者显示哪一项
+        $this->tab_ext['trigger'] = \app\common\field\Form::getTrigger($this->mid);
         
         $info = $this->getInfoData($id);
         

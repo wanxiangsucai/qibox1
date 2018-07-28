@@ -178,7 +178,7 @@ class Form extends Base
     }
     
     /**
-     * 触发选项
+     * 设置触发选项
      * @param array $trigger
      * @return void|string
      */
@@ -200,28 +200,98 @@ class Form extends Base
         return $show;
     }
     
+
+    
+    /**
+     * 获得某些字段要关联其它字段
+     * @return string[][]|unknown[][]
+     */
+    public static function getTrigger($mid=0){
+        $array = [];
+        $field_array = get_field($mid);
+        foreach ($field_array AS $rs){
+            if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'){
+                $detail = explode("\r\n",$rs['options']);
+                foreach($detail AS $value){
+                    list($v,$b,$otherFields) = explode("|",$value);
+                    if($otherFields){
+                        $_fs = explode(',',$otherFields);
+                        foreach($_fs AS $otherField ){
+                            $array[$rs['name']][$otherField][] = $v;
+                        }
+                    }
+                }
+            }
+        }
+        $tri = [];
+        foreach($array as $name=>$ar){
+            foreach($ar AS $otherField=>$rs){
+                $tri[] = [$name,implode(',', $rs),$otherField];
+            }
+        }
+        return $tri;
+    }
+    
+    /**
+     * 把单选\多选\下拉框架的参数转义为可选项数组
+     * @param string $str 可以是类 app\bbs\model\Sort@getTitleList
+     * @return void|string|array|unknown[]
+     */
+    protected static function options_2array($str=''){
+        if($str==''){
+            return ;
+        }
+        if(preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$str)){
+            list($class_name,$action,$params) = explode('@',$str);
+            if(class_exists($class_name)&&method_exists($class_name, $action)){
+                $obj = new $class_name;
+                $_params = $params ? json_decode($params,true) : [] ;
+                $array = call_user_func_array([$obj, $action], isset($_params[0])?$_params:[$_params]);
+            }
+        }else{
+            $array = str_array($str);
+        }
+        return $array;
+    }
+    
+    /**
+     * 发表与修改表页面的自定义字段信息
+     * @return unknown[][]|array[][]
+     */
+    public static function get_all_field($mid=0)
+    {
+        $array=[];
+        $field_array = get_field($mid);
+        foreach ($field_array AS $rs){
+            //$rs['options'] && $rs['options'] = str_array($rs['options']);
+            $rs['options'] = self::options_2array($rs['options']);
+            if($rs['type']=='hidden'){   //隐藏域比较特别些
+                $rs['title'] = $rs['value'];
+            }
+            if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'){
+                $array[]=[
+                        $rs['type'],
+                        $rs['name'],
+                        $rs['title'],
+                        $rs['about'],
+                        $rs['options'],
+                        $rs['value'],
+                ];
+            }else{
+                $array[]=[
+                        $rs['type'],
+                        $rs['name'],
+                        $rs['title'],
+                        $rs['about'],
+                        $rs['value'],
+                        $rs['options']
+                ];
+            }
+        }
+        return $array;
+    }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
 }

@@ -30,18 +30,27 @@ abstract class F extends Model
         $this->table = self::$table_pre.self::$model_key.'_field';
     }
     
-    public static function getFields($map=[])
-    {
-        return self::where($map)->order('list desc,id asc')->column(true);
-    }
-    
     /**
-     * 根据mid获取内容表,如果mid为0的话,可能是order订单表
+     * 根据mid获取内容表,如果mid为-1的话,是order订单表 -2是栏目表,-3是辅栏目表
      * @param number $mid
      * @return string
      */
     public function getTableByMid($mid=0){
-        return $mid>0 ? self::$base_table.$mid : self::$model_key.'_order' ;
+        if ($mid>0) {
+            $table_end = $mid;
+        }elseif($mid==-1){
+            $table_end = '_order' ;
+        }elseif($mid==-2){
+            $table_end = '_sort' ;
+        }elseif($mid==-3){
+            $table_end = '_category' ;
+        }
+        return self::$model_key . $table_end;
+    }
+    
+    public static function getFields($map=[])
+    {
+        return self::where($map)->order('list desc,id asc')->column(true);
     }
     
     /**

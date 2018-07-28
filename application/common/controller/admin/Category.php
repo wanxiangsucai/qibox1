@@ -74,14 +74,32 @@ abstract class Category extends AdminBase
     
     public function edit($id = null)
     {
-        $this->form_items = [
-                
+        if($this->request->isPost()){
+            $data = $this -> request -> post();
+            $data = \app\common\field\Post::format_all_field($data,-3); //对一些特殊的字段进行处理,比如多选项,以数组的形式提交的
+            
+            if ($this -> model -> update($data)) {
+                $this -> success('修改成功', 'index');
+            } else {
+                $this -> error('修改失败');
+            }
+        }
+        
+        if(empty($id)) $this->error('缺少id');
+        
+        $this->form_items = [                
                 ['text', 'name', '辅栏目名称'],
                 ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle($id)],
                // ['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
         ];
         
-        if(empty($id)) $this->error('缺少参数');
+        $form_field =  \app\common\field\Form::get_all_field(-3);
+        if ($form_field) {  //把用户自定义字段,追加到基础设置那里
+            $this->form_items = array_merge($this->form_items,$form_field);
+        }
+        
+        //联动字段,比如点击哪项就隐藏或者显示哪一项
+        $this->tab_ext['trigger'] = \app\common\field\Form::getTrigger($this->mid);
         
         $info = $this->getInfoData($id);
         

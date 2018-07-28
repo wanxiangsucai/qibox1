@@ -154,4 +154,72 @@ class Table extends Base
         return $data;
     }
     
+    
+    /**
+     * 后台列表数据的筛选字段
+     * @return array[]
+     */
+    public static function get_search_field($mid=0)
+    {
+        $array = [];
+        $field_array = get_field($mid);
+        foreach ($field_array AS $rs){
+            if(!$rs['ifsearch']){
+                continue;
+            }
+            if(!in_array($rs['type'], ['radio','select','checkbox'])){
+                continue;
+            }
+            $rs['options'] && $rs['options'] = str_array($rs['options']);
+            $array[$rs['name']] = $rs['options'];
+            
+        }
+        return $array;
+    }
+    
+    /**
+     * 获取列表页面要显示的自定义字段
+     * @return unknown[][]|string[][]|mixed[][]
+     */
+    public static function get_list_field($mid=0,$field_array=[])
+    {
+        $array = [];
+        $field_array || $field_array = get_field($mid);
+        
+        foreach ($field_array AS $rs){
+            if(!$rs['listshow']){
+                continue;
+            }
+            $rs['options'] && $rs['options'] = str_array($rs['options']);
+            if(in_array($rs['type'], ['radio','select','checkbox'])){
+                $type = 'select';
+            }elseif($rs['type']=='image'){
+                $type = 'picture';
+            }elseif($rs['type']=='images'){
+                $type = 'pictures';
+            }elseif(in_array($rs['type'], ['textarea','ueditor'])){
+                $type = 'textarea';
+            }elseif($rs['type']=='datetime'){
+                $type = 'datetime';
+            }elseif($rs['type']=='date'){
+                $type = 'date';
+            }elseif($rs['type']=='time'){
+                $type = 'time';
+            }else{
+                $type = 'text';
+            }
+            if($rs['name']=='title'){
+                $array[] = ['title', $rs['title'], 'link',iurl('content/show',['id'=>'__id__']),'_blank'];
+            }else{
+                $array[] = [
+                        $rs['name'],
+                        $rs['title'],
+                        $type,
+                        $rs['options'],
+                ];
+            }
+        }
+        return $array;
+    }
+    
 }

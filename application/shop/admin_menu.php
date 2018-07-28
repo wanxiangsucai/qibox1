@@ -42,6 +42,11 @@ return array(
 								                'link'=>'order/index',
 								                'power'=>['edit','delete'],
 								        ),
+								        array(
+								                'title'=>'栏目字段管理',
+								                'link'=>['sort_field/index',['mid'=>-2]],
+								                //'power'=>['edit','delete'],
+								        ),
 										//array(
     									//	'title'=>'辅栏目管理',
     									//	'link'=>'category/index',
