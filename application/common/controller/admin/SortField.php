@@ -40,7 +40,10 @@ class SortField extends F
                         ],
                 ],
                 $mid,
-        ]; 
+        ];
+        if (empty(config('use_category'))) {    //没启用辅栏目
+            unset($this->tab_ext['nav'][0]['-3']);
+        }
         $this->tab_ext['page_title'] = ($mid==-2?'栏目':'辅栏目') . '字段管理';
         
         $this->tab_ext['top_button']=[
