@@ -66,14 +66,14 @@ class Base
             if(preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options'])){
                 $show = $f_value;   //对于动态生成的数组,原型输出,不执行类,不读数据库,避免效率降低
             }else{
-                $detail = str_array($field['options']);
+                $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
                 $show = $detail[$f_value];
-            }            
+            }
             
         }elseif ($field['type'] == 'checkbox') {    //复选框
             
             $array = [];
-            $detail = str_array($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach(explode(',',$f_value) AS $v){
                 if($v===''){
                     continue ;
@@ -84,11 +84,11 @@ class Base
             
         }elseif($field['type']=='date'){
             
-            $show = date('Y-m-d',$info[$name]);
+            $show = format_time($info[$name],'Y-m-d');
             
         }elseif($field['type']=='datetime'){
             
-            $show = date('Y-m-d H:i',$info[$name]);
+            $show = format_time($info[$name],'Y-m-d H:i');
             
         }else{  //直接输出
             

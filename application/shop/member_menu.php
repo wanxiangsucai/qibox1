@@ -16,8 +16,12 @@ return array(
     										'link'=>'content/postnew',
     									),
 								        array(
-								                'title'=>'订购的商品',
+								                'title'=>'我订购的商品',
 								                'link'=>'order/index',
+								        ),
+								        array(
+								                'title'=>'客户的订单',
+								                'link'=>'kehu_order/index',
 								        ),
 								),
 							),

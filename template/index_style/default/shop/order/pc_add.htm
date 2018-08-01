@@ -90,19 +90,13 @@
 </style>
 <div class="PostOrder">
 	<div class="tag"><i class="fa fa-wpforms"></i>订单提交</div>
-	<form action="{:urls('add')}" method="post">
+	<form action="{:urls('add')}" method="post">		
+{qb:form name="xxx" field="title,picurl" mid="-1"}
 		<ul>
-			<ol>联系人</ol>
-			<li><input type="text" name="linkman" placeholder="请输入联系人" ></li>
+			<ol>{$rs.title}</ol>
+			<li>{$rs.value}</li>
 		</ul>
-		<ul>
-			<ol>联系电话</ol>
-			<li><input type="text" name="telphone" placeholder="请输入联系电话" ></li>
-		</ul>
-		<ul>
-			<ol>详细地址</ol>
-			<li><input type="text" name="address" placeholder="请输入详细地址" style="width:80%;"></li>
-		</ul>
+{/qb:form}
 		<dl>
 			<dt>支付类型</dt>
 			<dd>

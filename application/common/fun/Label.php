@@ -70,7 +70,12 @@ class Label{
                         $value='';
                     }
                     if( substr($value,0,1)=='$' ){
-                        $array[trim($field)] = [$mod,$this->get_label_value(trim($field),$value,$cfg)];
+                        $value = $this->get_label_value(trim($field),$value,$cfg);
+                        if( strstr($value,',') ){
+                            $array[trim($field)] = [$mod=='='?'in':'not in',explode(',',$value)];
+                        }else{
+                            $array[trim($field)] = [$mod,$value];
+                        }
                     }elseif(strstr($value,',')){
                         $value = explode(',',$value);
                         $array[trim($field)] = [

@@ -154,12 +154,35 @@ class Table extends Base
         return $data;
     }
     
+    /**
+     * 后台列表数据的  搜索 字段
+     * @param number $mid
+     * @return \app\common\field\unknown[]
+     */
+    public static function get_search_field($mid=0){
+        $array = [];
+        $field_array = get_field($mid);
+        foreach ($field_array AS $rs){
+            if(!$rs['ifsearch']){
+                continue;
+            }
+            if(in_array($rs['type'], ['radio','select','checkbox'])){
+                continue;
+            }
+            $rs['options'] && $rs['options'] = str_array($rs['options']);
+            $array[$rs['name']] = $rs['title'];
+            
+        }
+        return $array;
+    }
     
     /**
-     * 后台列表数据的筛选字段
-     * @return array[]
+     * 后台列表数据的  筛选 字段
+     * @param number $mid 模型ID
+     * @param string $if_filtrate 是否为筛选字段
+     * @return unknown[]
      */
-    public static function get_search_field($mid=0)
+    public static function get_filtrate_field($mid=0)
     {
         $array = [];
         $field_array = get_field($mid);

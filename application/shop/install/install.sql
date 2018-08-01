@@ -8,10 +8,6 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 
 
 
---
--- 表的结构 `qb_shop_car`
---
-
 DROP TABLE IF EXISTS `qb_shop_car`;
 CREATE TABLE IF NOT EXISTS `qb_shop_car` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增值',
@@ -27,7 +23,14 @@ CREATE TABLE IF NOT EXISTS `qb_shop_car` (
   PRIMARY KEY (`id`),
   KEY `shopid` (`shopid`,`uid`),
   KEY `uid` (`uid`,`update_time`,`ifchoose`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='购物车' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='购物车' AUTO_INCREMENT=4 ;
+
+--
+-- 转存表中的数据 `qb_shop_car`
+--
+
+INSERT INTO `qb_shop_car` (`id`, `shopid`, `type1`, `type2`, `type3`, `num`, `create_time`, `update_time`, `ifchoose`, `uid`) VALUES(1, 3, 2, 2, 0, 1, 1527243313, 1533041423, 1, 1);
+INSERT INTO `qb_shop_car` (`id`, `shopid`, `type1`, `type2`, `type3`, `num`, `create_time`, `update_time`, `ifchoose`, `uid`) VALUES(3, 3, 3, 2, 0, 1, 1527555593, 1527555593, 1, 3);
 
 -- --------------------------------------------------------
 
@@ -49,9 +52,8 @@ CREATE TABLE IF NOT EXISTS `qb_shop_content` (
 -- 转存表中的数据 `qb_shop_content`
 --
 
-INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES
-(3, 1, 1),
-(2, 1, 1);
+INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES(3, 1, 1);
+INSERT INTO `qb_shop_content` (`id`, `mid`, `uid`) VALUES(2, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -103,9 +105,8 @@ CREATE TABLE IF NOT EXISTS `qb_shop_content1` (
 -- 转存表中的数据 `qb_shop_content1`
 --
 
-INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES
-(3, 1, 1, '魅族蓝牙小音箱', 1, 1, 36, 1, 0, 1517981293, 1526352423, 0, 'uploads/images/20180302/CnQOjVikE4qAYN55AAMAoDa-ghQ407.jpg', '<p><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/CnQOjVij_geANlzXAAJ4JdyIZ7g421.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/Cix_s1ij_giAVoRwAALyOhoZT6k135.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/Cix_s1ij_giAcddhAAIAdrNbQ5I909.jpg"/></p>', '100.22', 0, 0, 0, 0, 0, '["16G|32","32G","64G|45"]', '["红色","白色"]', '[]', 30),
-(2, 1, 1, '魅族手机M9最新款隆重上市了', 1, 1, 243, 1, 0, 1516259334, 1526352365, 0, 'uploads/images/20180302/Cgbj0FnCGy2AQhMOAA5ZxbK1GIo722.jpg', '<p><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgOAf_cEAAHV1O1wNn4780.jpg"/><a href="https://detail.meizu.com/item/spx.html" target="_blank"><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/03/86/Cgbj0FqzftuAFRuEAAFDN8UQ57I852.jpg"/></a><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgOADH3rAAJvD1XrMDg850.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgOAV3G7AAVRP964D3A280.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgWAbRd5AAFG0cWJKug303.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgWAZNLyAAHNcu8f9V8672.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgWAMuu2AAVk0BJBeg4924.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgaAPMMqAAJ5D3ohZpM015.jpg"/></p>', '2020.02', 0, 0, 0, 0, 0, '["大份|10","中份|20","小份|40"]', '["XX","XL","XXXL"]', '["红","黄","蓝"]', 30);
+INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES(3, 1, 2, '魅族蓝牙小音箱', 1, 1, 50, 1, 0, 1517981293, 1529664717, 0, 'uploads/images/20180302/CnQOjVikE4qAYN55AAMAoDa-ghQ407.jpg', '<p><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/CnQOjVij_geANlzXAAJ4JdyIZ7g421.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/Cix_s1ij_giAVoRwAALyOhoZT6k135.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/01/1E/Cix_s1ij_giAcddhAAIAdrNbQ5I909.jpg"/></p>', '100.22', 0, 0, 0, 0, 0, '["16G|32","32G","64G|45"]', '["红色","白色"]', '[]', 30);
+INSERT INTO `qb_shop_content1` (`id`, `mid`, `fid`, `title`, `ispic`, `uid`, `view`, `status`, `replynum`, `create_time`, `update_time`, `list`, `picurl`, `content`, `price`, `province_id`, `city_id`, `zone_id`, `street_id`, `ext_sys`, `type1`, `type2`, `type3`, `ext_id`) VALUES(2, 1, 1, '魅族手机M9最新款隆重上市了', 1, 1, 245, 1, 0, 1516259334, 1529664714, 0, 'uploads/images/20180302/Cgbj0FnCGy2AQhMOAA5ZxbK1GIo722.jpg', '<p><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgOAf_cEAAHV1O1wNn4780.jpg"/><a href="https://detail.meizu.com/item/spx.html" target="_blank"><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/03/86/Cgbj0FqzftuAFRuEAAFDN8UQ57I852.jpg"/></a><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgOADH3rAAJvD1XrMDg850.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgOAV3G7AAVRP964D3A280.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgWAbRd5AAFG0cWJKug303.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/10/Cgbj0FrcdgWAZNLyAAHNcu8f9V8672.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgWAMuu2AAVk0BJBeg4924.jpg"/><img class="lazy" width="1240" alt="" src="https://openfile.meizu.com/group1/M00/04/1E/Cgbj0VrcdgaAPMMqAAJ5D3ohZpM015.jpg"/></p>', '2020.02', 0, 0, 0, 0, 0, '["大份|10","中份|20","小份|40"]', '["XX","XL","XXXL"]', '["红","黄","蓝"]', 30);
 
 -- --------------------------------------------------------
 
@@ -117,14 +118,14 @@ DROP TABLE IF EXISTS `qb_shop_field`;
 CREATE TABLE IF NOT EXISTS `qb_shop_field` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '字段名称',
   `name` varchar(32) NOT NULL,
-  `title` varchar(32) NOT NULL DEFAULT '' COMMENT '字段标题',
+  `title` varchar(60) NOT NULL DEFAULT '' COMMENT '字段标题',
   `type` varchar(32) NOT NULL DEFAULT '' COMMENT '字段类型',
   `field_type` varchar(128) NOT NULL DEFAULT '' COMMENT '字段定义',
   `value` text COMMENT '默认值',
   `options` text COMMENT '额外选项',
   `about` varchar(256) NOT NULL DEFAULT '' COMMENT '提示说明',
   `show` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '是否显示',
-  `mid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '所属模型id',
+  `mid` mediumint(5) NOT NULL DEFAULT '0' COMMENT '所属模型id',
   `ajax_url` varchar(256) NOT NULL DEFAULT '' COMMENT '联动下拉框ajax地址',
   `next_items` varchar(256) NOT NULL DEFAULT '' COMMENT '联动下拉框的下级下拉框名，多个以逗号隔开',
   `param` varchar(32) NOT NULL DEFAULT '' COMMENT '联动下拉框请求参数名',
@@ -139,21 +140,29 @@ CREATE TABLE IF NOT EXISTS `qb_shop_field` (
   `ifsearch` tinyint(1) NOT NULL COMMENT '是否作为搜索字段',
   `ifmust` tinyint(1) NOT NULL COMMENT '是否必填项',
   `nav` varchar(30) NOT NULL COMMENT '分组名称',
+  `input_width` varchar(7) NOT NULL COMMENT '输入表单宽度',
+  `input_height` varchar(7) NOT NULL COMMENT '输入表单高度',
+  `unit` varchar(20) NOT NULL COMMENT '单位名称',
+  `match` varchar(150) NOT NULL COMMENT '表单正则匹配',
+  `css` varchar(20) NOT NULL COMMENT '表单CSS类名',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=51 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=56 ;
 
 --
 -- 转存表中的数据 `qb_shop_field`
 --
 
-INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES
-(10, 'title', '商品名称', 'text', 'varchar(256) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 100, 1, 1, 1, ''),
-(11, 'picurl', '商品介绍图', 'images', 'text NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 98, 0, 0, 0, ''),
-(12, 'content', '商品介绍', 'ueditor', 'text NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, ''),
-(47, 'price', '商品价格', 'money', 'decimal(10, 2 ) UNSIGNED NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 99, 0, 0, 0, ''),
-(48, 'type1', '型号', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性'),
-(49, 'type2', '尺寸', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性'),
-(50, 'type3', '颜色', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(10, 'title', '商品名称', 'text', 'varchar(256) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 100, 1, 1, 1, '', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(11, 'picurl', '商品介绍图', 'images', 'text NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 98, 0, 0, 0, '', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(12, 'content', '商品介绍', 'ueditor', 'text NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(47, 'price', '商品价格', 'money', 'decimal(10, 2 ) UNSIGNED NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 99, 0, 0, 0, '', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(48, 'type1', '型号', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(49, 'type2', '尺寸', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(50, 'type3', '颜色', 'array', 'varchar(255) NOT NULL', '', '', '', 0, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '商品属性', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(52, 'linkman', '联系人', 'text', 'varchar(60) NOT NULL', '', '', '', 1, -1, '', '', '', '', '', 2, '', '', '', 10, 1, 1, 0, '', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(53, 'telphone', '联系电话', 'text', 'varchar(60) NOT NULL', '', '', '', 1, -1, '', '', '', '', '', 2, '', '', '', 9, 1, 1, 0, '', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(54, 'address', '联系地址', 'text', 'varchar(256) NOT NULL', '', '', '', 1, -1, '', '', '', '', '', 2, '', '', '', 8, 0, 0, 0, '', '', '', '', '', '');
+INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`) VALUES(55, 'user_note', '附注留言', 'textarea', 'text NOT NULL', '', '', '', 1, -1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -178,8 +187,7 @@ CREATE TABLE IF NOT EXISTS `qb_shop_module` (
 -- 转存表中的数据 `qb_shop_module`
 --
 
-INSERT INTO `qb_shop_module` (`id`, `keyword`, `title`, `layout`, `icon`, `list`, `create_time`, `status`) VALUES
-(1, '', '商品模型', '', '', 100, 1515221331, 0);
+INSERT INTO `qb_shop_module` (`id`, `keyword`, `title`, `layout`, `icon`, `list`, `create_time`, `status`) VALUES(1, '', '商品模型', '', '', 100, 1515221331, 0);
 
 -- --------------------------------------------------------
 
@@ -188,11 +196,15 @@ INSERT INTO `qb_shop_module` (`id`, `keyword`, `title`, `layout`, `icon`, `list`
 --
 
 DROP TABLE IF EXISTS `qb_shop_order`;
+
 CREATE TABLE IF NOT EXISTS `qb_shop_order` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '订单id',
+  `mid` tinyint(1) NOT NULL DEFAULT '-1',
   `order_sn` varchar(20) NOT NULL DEFAULT '' COMMENT '订单编号',
   `shop` varchar(255) NOT NULL COMMENT '购买的商品,存放格式如下:shopid-num-type1-type2-type3 商品ID,购买数量,商品属性1、2、3,多个商品用,号隔开',
   `shop_uid` mediumint(7) NOT NULL COMMENT '店主的UID',
+  `shopid` mediumint(7) NOT NULL COMMENT '商品ID,扩展使用',
+  `shopnum` mediumint(7) NOT NULL COMMENT '购买数量,扩展使用',
   `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '下单客户的uid',
   `totalmoney` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '订单总金额',
   `shipping_price` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '邮费',
@@ -201,17 +213,17 @@ CREATE TABLE IF NOT EXISTS `qb_shop_order` (
   `user_jf` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '使用积分',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '下单时间',
   `pay_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '支付时间',
-  `pay_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '支付状态',
+  `pay_status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '支付状态',
   `pay_name` varchar(120) NOT NULL DEFAULT '' COMMENT '付款方式',
   `linkman` varchar(60) NOT NULL DEFAULT '' COMMENT '收货人',
   `address` varchar(255) NOT NULL DEFAULT '' COMMENT '收货地址',
   `telphone` varchar(60) NOT NULL DEFAULT '' COMMENT '手机',
   `shipping_time` int(11) DEFAULT '0' COMMENT '发货时间',
   `receive_time` int(10) DEFAULT '0' COMMENT '收货时间',
-  `receive_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '收货状态',
-  `shipping_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '发货状态',
+  `receive_status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '收货状态',
+  `shipping_status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '发货状态',
   `shipping_name` varchar(120) NOT NULL DEFAULT '' COMMENT '物流名称',
-  `shipping_code` varchar(100) NOT NULL DEFAULT '' COMMENT '物流单号',
+  `shipping_code` varchar(32) NOT NULL DEFAULT '' COMMENT '物流单号',
   `user_note` varchar(255) NOT NULL DEFAULT '' COMMENT '用户备注',
   `admin_note` varchar(255) DEFAULT '' COMMENT '管理员备注',
   PRIMARY KEY (`id`),
@@ -219,6 +231,7 @@ CREATE TABLE IF NOT EXISTS `qb_shop_order` (
   KEY `uid` (`uid`),
   KEY `order_sn` (`order_sn`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='商品订单' AUTO_INCREMENT=1 ;
+
 
 -- --------------------------------------------------------
 
@@ -250,8 +263,5 @@ CREATE TABLE IF NOT EXISTS `qb_shop_sort` (
 -- 转存表中的数据 `qb_shop_sort`
 --
 
-INSERT INTO `qb_shop_sort` (`id`, `pid`, `mid`, `name`, `list`, `logo`, `template`, `allowpost`, `allowview`, `seo_title`, `seo_keywords`, `seo_description`) VALUES
-(1, 0, 1, '数码产品', 0, '', '', '', '', '', '', ''),
-(2, 0, 1, '家居用品', 0, '', '', '', '', '', '', '');
-
-
+INSERT INTO `qb_shop_sort` (`id`, `pid`, `mid`, `name`, `list`, `logo`, `template`, `allowpost`, `allowview`, `seo_title`, `seo_keywords`, `seo_description`) VALUES(1, 0, 1, '数码产品', 0, '', '', '', '', '', '', '');
+INSERT INTO `qb_shop_sort` (`id`, `pid`, `mid`, `name`, `list`, `logo`, `template`, `allowpost`, `allowview`, `seo_title`, `seo_keywords`, `seo_description`) VALUES(2, 0, 1, '家居用品', 0, '', '', '', '', '', '', '');

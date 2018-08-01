@@ -1440,7 +1440,7 @@ if(!function_exists('rands')){
 	        $hash = '';
 	        $chars = substr((double)microtime(),mt_rand(2,6)).'ABCDEFGHIJK'.substr(time(),-mt_rand(0,9)).'LMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
 	        $max = strlen($chars) - 1;
-	        mt_srand((double)microtime() * 1000000);
+	        //mt_srand((double)microtime() * 1000000);
 	        for($i = 0; $i < $length; $i++) {
 	            $hash .= $chars[mt_rand(0, $max)];
 	        }

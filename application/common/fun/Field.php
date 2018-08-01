@@ -40,10 +40,15 @@ class Field{
      * @param string $field 是否只转义某个字段
      * @param string $pagetype 参数主要是show 或 list 哪个页面使用,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
      * @param string $sysname 频道目录名,默认为空,即当前频道
+     * @param array $f_array 程序中定义的字段
      * @return string|\app\common\field\string[]|\app\common\field\unknown[]|\app\common\Field\mixed[]
      */
-    public function format($info=[],$field='',$pagetype='list',$sysname=''){
-        $field_array = get_field($info['mid'],$sysname);
+    public function format($info=[],$field='',$pagetype='list',$sysname='',$f_array=[]){
+        if(is_array($f_array)&&!empty($f_array)){
+            $field_array = \app\common\field\Format::form_fields($f_array);  //把程序中定义的表单字段 转成跟数据库取出的格式一样
+        }else{
+            $field_array = get_field($info['mid'],$sysname);
+        }
         $value = '';
         if($field){
             $value = \app\common\field\Index::get_field($field_array[$field],$info,$pagetype);

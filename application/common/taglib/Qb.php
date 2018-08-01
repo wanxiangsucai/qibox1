@@ -11,11 +11,11 @@ class Qb extends TagLib{
             'nav'      => ['attr' => 'name,title,url', 'close' => 0],
             'listpage'      => ['attr' => 'name,time,rows,val,list,order,by,tpl,status,where,field', 'close' => 1],  //field 过滤不显示的字段,多个用,号隔开
             'list_url'      => ['attr' => 'name', 'close' => 0],
-            'showpage'      => ['attr' => 'name,time,type,tpl,val,field', 'close' => 1],    //field 过滤循环不显示的字段,多个用,号隔开
+            'showpage'      => ['attr' => 'name,time,type,tpl,val,field,f_array', 'close' => 1],    //field 过滤循环不显示的字段,多个用,号隔开 ,f_array是程序中自由定义的字段 
             'comment'      => ['attr' => 'name,time,rows,list,order,by,status,tpl,aid,sysid,where', 'close' => 1],  //这个是评论插件
             'reply'      => ['attr' => 'name,time,rows,list,order,by,status,tpl,aid,where', 'close' => 1],    //这个是论坛的回复,功能跟评论插件没太大区别
             'form'  => ['attr' => 'name,info,mid,field,mod,f_array', 'close' => 1],     //field 过滤循环不显示的字段,多个用,号隔开,f_array是程序中自由定义的字段
-            'table' => ['attr' => 'name,listdb,mid,field,mod,f_array', 'close' => 1],   //后台列表
+            'table' => ['attr' => 'name,listdb,mid,field,mod,f_array', 'close' => 1],   //后台列表 mod频道目录名
     ];
     
     /**
@@ -258,9 +258,10 @@ class Qb extends TagLib{
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $order = empty($order)?'id':$order;
         $by = empty($by)?'desc':$by;
+        $_farray = $tag['f_array'] ? "'f_array'=>\$".($tag['f_array'][0]=='$'?substr($tag['f_array'], 1):$tag['f_array']).',' : '';
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--SHOWPAGE '."<!--$name\t$type\t$tpl-->";
-        if(!empty($field)&&empty($tag['val'])){
+        if(($tag['field']||$tag['f_array'])&&empty($tag['val'])){
             $parse .= '{volist name="'.$val.'" id="rs"}';
             $parse .= $content.'  ';
             $parse .= '{/volist}';
@@ -268,7 +269,7 @@ class Qb extends TagLib{
             $parse .= $content;
         }
         $parse .= ' SHOWPAGE--><?php endif; ?>';
-        $parse .= '<?php '."fun('label@run_showpage_label','$name',\$info,['page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','field'=>'$field','val'=>'$val','cache_time'=>'$cache_time']);".' ?>';
+        $parse .= '<?php '."fun('label@run_showpage_label','$name',\$info,[$_farray'page'=>\$page,'dirname'=>__FILE__,'tpl'=>'$tpl','field'=>'$field','val'=>'$val','cache_time'=>'$cache_time']);".' ?>';
         return $parse;
     }
     

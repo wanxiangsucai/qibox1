@@ -124,6 +124,10 @@
 		<li>{$info.order_sn}</li>
 	</ul>
 	<ul class="infos">
+		<ol>单号:</ol>
+		<li>{$info.shipping_name}{$info.shipping_code}</li>
+	</ul>
+	<ul class="infos">
 		<ol>订购者ID:</ol>
 		<li><a href="{:get_url('user',['uid'=>$info['uid']])}" target="_blank">{$info.uid|get_user_name}</a></li>
 	</ul>
@@ -132,28 +136,24 @@
 		<li>{$info.create_time}</li>
 	</ul>
 	<ul class="infos">
-		<ol>付款与否:</ol>
+		<ol>付余款与否:</ol>
 		<li>
 {eq name="$info.pay_status" value="1"}
 已付款
 {else /}
- <a href="{:urls('pay',['id'=>$info['id']])}" title="点击在线支付">未付款</a>
+ 未付款 
 {/eq}
 	</li>
-	</ul>
-	<ul class="infos">
-		<ol>物流单号:</ol>
-		<li>{$info.shipping_code}</li>
 	</ul>	
-<!--自定义字段开始-->
+ 
 {qb:showpage field="picurl,title"}
 	<ul class="infos">
 		<ol>{$rs.title}:</ol>
 		<li>{$rs.value}</li>
 	</ul>
 {/qb:showpage}
-<!--自定义字段结束-->
-	<div class="BackBut"><a href="{:urls('index')}">返回</a></div>
+ 
+	<div class="BackBut"><a href="javascript:history.go(-1);">返回</a></div>
 </div>
 
 {/block}

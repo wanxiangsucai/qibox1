@@ -64,14 +64,13 @@
 </style>
 <div class="PostOrder">
 	<form action="{:urls('add')}" method="post">
+		
+{qb:form name="xxx" field="title,picurl" mid="-1"}
 		<ul>
-			<ol><i class="si si-user"></i></ol>
-			<li><input type="text" name="linkman" placeholder="请输入联系人" ></li>
+			<ol><i class="{if $rs.name=='linkman'}si si-user{elseif $rs.name=='telphone' /}fa fa-volume-control-phone{elseif $rs.name=='address' /}glyphicon glyphicon-home{else /}fa fa-angle-right{/if}"></i></ol>
+			<li>{$rs.value}</li>
 		</ul>
-		<ul>
-			<ol><i class="fa fa-volume-control-phone"></i></ol>
-			<li><input type="text" name="telphone" placeholder="请输入联系电话" ></li>
-		</ul>
+{/qb:form}
 		<dl>
 			<dt>支付类型</dt>
 			<dd>

@@ -256,22 +256,23 @@ abstract class C extends AdminBase
             if(empty(config('post_need_sort'))){
                 unset($this->tab_ext['top_button'][3] );
             }
+            
+            //不使用辅栏目
             if(empty(config('use_category'))){
                 unset($this->tab_ext['top_button'][2]);
             }
             
         }
         
-        $this -> tab_ext['search'] = ['title'=>'标题','uid'=>'用户uid'];
-        $this -> tab_ext['order'] = 'view,list';        
-        $this->tab_ext['filter_search'] = [
+        //排序方式
+        $this -> tab_ext['order'] = 'view,list';
+        //搜索字段
+        $this -> tab_ext['search'] = array_merge(['title'=>'标题','uid'=>'用户uid'],$this->getEasySearchItems());
+        //筛选字段
+        $this->tab_ext['filter_search'] = array_merge( $this->getEasyfiltrateItems(),[
                 'fid'=>get_sort(0,'all'),
                 'status'=>['未审核','已审核','已推荐']
-        ];
-        $filte_field = $this->getEasySearchItems(); //搜索字段
-        if($filte_field){
-            $this->tab_ext['filter_search'] = array_map( $filte_field,$this->tab_ext['filter_search']);
-        }
+        ]);
         
         if(empty($this->list_items)){
             $array =  [

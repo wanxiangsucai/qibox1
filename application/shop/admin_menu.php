@@ -40,11 +40,16 @@ return array(
 								        array(
 								                'title'=>'订单管理',
 								                'link'=>'order/index',
-								                'power'=>['edit','delete'],
+								                'power'=>['edit','delete','show'],
 								        ),
 								        array(
 								                'title'=>'栏目字段管理',
 								                'link'=>['sort_field/index',['mid'=>-2]],
+								                //'power'=>['edit','delete'],
+								        ),
+								        array(
+								                'title'=>'用户订单字段管理',
+								                'link'=>['order_field/index',['mid'=>-1]],
 								                //'power'=>['edit','delete'],
 								        ),
 										//array(

@@ -661,7 +661,7 @@ abstract class C extends Model
 //         $dirname = $array[0][1];
         $dirname = self::$model_key;
         $sort_array = sort_config($dirname);    //获取栏目数据
-        if($cfg['fid']){
+        if(is_numeric($cfg['fid'])){
             $mid = $sort_array[$cfg['fid']]['mid'];
             //$map['fid'] = $cfg['fid'];
             $map['fid'] = ['in',array_values(get_sort($cfg['fid'],'sons'))];    //把所有子栏目也读取出来
@@ -686,8 +686,8 @@ abstract class C extends Model
                 $uid = login_user('uid');
             }
             $map['uid'] = intval($uid);
-        }elseif($cfg['uid']){
-            $map['uid'] = intval($cfg['uid']);
+        }elseif(is_numeric($cfg['uid'])){
+            $map['uid'] = $cfg['uid'];
         }
         
         $cfg['status'] && $map['status'] = ['>=',$cfg['status']];       //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
@@ -698,8 +698,8 @@ abstract class C extends Model
 //         }
 //         if($model_list){
         if($mid){
-            if($cfg['ext_id']){
-                $map['ext_id'] = intval($cfg['ext_id']);
+            if(is_numeric($cfg['ext_id'])){
+                $map['ext_id'] = $cfg['ext_id'];
             }
             if($cfg['where']){  //用户自定义的查询语句
                 $_array = fun('label@where',$cfg['where'],$cfg);

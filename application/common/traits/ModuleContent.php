@@ -154,12 +154,21 @@ trait ModuleContent
 	}
 	
 	/**
-	 * 列表数据的筛选字段
+	 * 后台列表数据的搜索字段
 	 * @return array[]
 	 */
 	protected function getEasySearchItems()
 	{
 	    return \app\common\field\Table::get_search_field($this->mid);
+	}
+	
+	/**
+	 * 后台列表数据的筛选字段
+	 * @return array[]
+	 */
+	protected function getEasyfiltrateItems()
+	{
+	    return \app\common\field\Table::get_filtrate_field($this->mid);
 	}
 	
 	/**

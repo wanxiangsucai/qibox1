@@ -365,6 +365,7 @@ class LabelShow extends IndexBase
      */
     public function showpage_label($tag_name='',$info=[],$cfg=[]){
 //         $pagename = md5( basename($cfg['dirname']) );
+        $f_array = $cfg['f_array'];     //程序中定义的字段
         $pagename = md5( $cfg['dirname'] );
         $cache_time = $cfg['cache_time'];
         $filtrate_field = $cfg['field'];         //循环中过滤不显示的字段
@@ -415,8 +416,8 @@ class LabelShow extends IndexBase
             $tpl = $label_tags_tpl[$tag_name];
         }
         
-        if($filtrate_field){    //设置了循环不显示哪些字段
-            $this->showpage_field($tpl , $info , $filtrate_field,$cfg['val']);
+        if($filtrate_field || $f_array){    //设置了循环不显示哪些字段  或者是指定了哪些字段
+            $this->showpage_field($tpl , $info , $filtrate_field,$cfg['val'],$f_array);
         }else{
             $listdb = $info['picurls'];     //这样就可以调用通用标签的幻灯片模板了
             eval('?>'.$tpl);
@@ -430,12 +431,19 @@ class LabelShow extends IndexBase
      * @param array $info 数据库取出的内容信息
      * @param string $field 过滤的字段
      * @param string $val 用户定义的循环变量名
+     * @param array $f_array 指定了用户自定义的字段
      * @return string|mixed
      */
-    private function showpage_field($tplcode,$_info=[],$field='',$val='info'){
+    private function showpage_field($tplcode,$_info=[],$field='',$val='info',$f_array=[]){
         $tplcode = $this->replace_field($tplcode);
         $filtrate_field = explode(',',$field);  //过滤的字段
-        $array = get_field($_info['mid']);
+        
+        if(is_array($f_array)&&!empty($f_array)){
+            $array = \app\common\field\Format::form_fields($f_array);  //把程序中定义的表单字段 转成跟数据库取出的格式一样
+        }else{
+            $array = get_field($_info['mid']);
+        }
+        
         $_val = [];
         foreach ($array AS $rs){
             if(in_array($rs['name'], $filtrate_field)){

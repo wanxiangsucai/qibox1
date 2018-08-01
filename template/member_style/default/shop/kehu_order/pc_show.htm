@@ -44,8 +44,8 @@
             <td class="tdR">{$info.order_sn}</td>
           </tr>
 		  <tr>
-            <td class="tdL">物流单号:</td>
-            <td class="tdR">{$info.shipping_code}</td>
+            <td class="tdL">单号:</td>
+            <td class="tdR">{$info.shipping_name}{$info.shipping_code}</td>
           </tr>
           <tr>
             <td class="tdL">订购者ID:</td>
@@ -56,29 +56,29 @@
             <td class="tdR">{$info.create_time}</td>
           </tr>
           <tr>
-            <td class="tdL">应付总额:</td>
+            <td class="tdL">应付金额:</td>
             <td class="tdR">&yen;{$info.totalmoney}</td>
           </tr>
            
           <tr>
             <td class="tdL">付款与否:</td>
-            <td class="tdR">{eq name="$info.pay_status" value="1"}
+            <td class="tdR">
+{eq name="$info.pay_status" value="1"}
 已付款
 {else /}
- <a href="{:urls('pay',['id'=>$info['id']])}" title="点击在线支付">未付款</a>
+未付款
 {/eq}</td>
           </tr>
-<!--自定义字段开始-->
 {qb:showpage field="picurl,title"}
           <tr>
             <td class="tdL">{$rs.title}:</td>
             <td class="tdR">{$rs.value}</td>
           </tr>
-{/qb:showpage}
-<!--自定义字段结束-->
+ {/qb:showpage}
+ 
 		  <tr>
             <td class="tdL"><br/></td>
-            <td class="tdR"><a href="{:urls('index')}">返回</a> </td>
+            <td class="tdR"><a href="javascript:history.go(-1);">返回</a> </td>
           </tr>
         </table>
     </div>
