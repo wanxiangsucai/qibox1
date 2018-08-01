@@ -1,5 +1,5 @@
-<?php 
-use app\common\util\Shop AS ShopFun;
+<?php
+
 if(!function_exists('get_shop_type')){
     /**
      * 取得商品属性 , $key 为 null 的话,商品内容页使用,全部列出给用户选择
@@ -10,6 +10,6 @@ if(!function_exists('get_shop_type')){
      * @return void|array|unknown[]|array[]
      */
     function get_shop_type($type='type1',$info=[],$key=null,$result_type='title'){
-        return ShopFun::type_get_title_price($type,$info,$key,$result_type);
+        return fun('shop@type_get_title_price',$type,$info,$key,$result_type);
     }    
 }

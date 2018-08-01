@@ -17,31 +17,7 @@ class Shop{
      * @return void|array|unknown[]|array[]
      */
     public static function type_get_title_price($type='type1',$info=[],$key=null,$result_type='title'){
-        if (empty($info[$type])) {
-            return ;
-        }
-        $array = json_decode($info[$type],true);  //数据库存放的格式是 ["红","黄","蓝"]
-        foreach ($array AS $_key=>$_value){
-            list($title,$price,$num) = explode('|',$_value);    //对于第一项可以定义价格与库存量 比如 ["大号|100","中号|80","小号|50"]
-            if($key!==null){    //展示某一项的名称或价格
-                if($key==$_key){
-                    if($result_type=='title'){
-                        return $title;
-                    }elseif($result_type=='price'){
-                        return $price;
-                    }
-                }
-            }else{  //商品详情页,把所有都列出来,供选择
-                $listdb[] = [
-                        'title'=>$title,
-                        'price'=>$price,
-                        'num'=>$num,
-                ];
-            }
-        }
-        if($key===null){
-            return $listdb;
-        }
+        return fun('shop@type_get_title_price',$type,$info,$key,$result_type);
     }
     
     /**
@@ -51,12 +27,7 @@ class Shop{
      * @param number $key 用户选中属性1的具体某项 如果从购物车取出的数据,数组下标要减1,因为购物车入库时加了1
      */
     public static function get_price($info=[],$key=0){
-        $value = static::type_get_title_price('type1',$info,$key,'price');
-        if($value>0){
-            return $value;
-        }else{
-            return $info['price'];
-        }
+        return fun('shop@get_price',$info,$key);
     }
     
     /**
@@ -64,27 +35,9 @@ class Shop{
      * @param array $info 商品信息, 是引用参数,可以改变里边的值,这里是加数组
      * @param array $choose 用户选中的参数,num是购买了多少项,type1 就是第一项选中的哪个, type2就是第二项选中的哪个 type3就是第三项选中的哪个
      */
-    public static function car_get_price_type(&$info=[],$choose=['num'=>1,'type1'=>0,'type2'=>0,'type3'=>0]){
-        static $field_array = [];
-        $_info = [];
-        $_info['_price'] = static::get_price($info,$choose['type1']-1);     //取得商品的实际价格,因为属性1可以定义价格, 另外数组下标要减1,因为购物车入库时加了1
-        $_info['_num'] = intval($choose['num']); //购买数量
-        //得到用户购买的是什么颜色型号 , 用户选中的类型key要减1,因为入库前加过1 数组下标从0开始的,
-        $choose['type1'] && $_info['_type1'] = static::type_get_title_price('type1',$info,$choose['type1']-1,'title');
-        $choose['type2'] && $_info['_type2'] = static::type_get_title_price('type2',$info,$choose['type2']-1,'title');
-        $choose['type3'] && $_info['_type3'] = static::type_get_title_price('type3',$info,$choose['type3']-1,'title');
-        
-        //得到尺寸 颜色 型号 的真实叫法 如果用户没选择,或者是商品都不存在这项信息,就没必要去取出来        
-        if(empty($field_array[$info['mid']])){                              //这里用数组是考虑有可能会存在不同的模型
-            $field_array[$info['mid']] = get_field($info['mid']);     //取得模型的所有字段的数据
-        }
-        $field = $field_array[$info['mid']];
-        $info['_type1'] && $_info['_type1_title'] = $field['type1']['title'];
-        $info['_type2'] && $_info['_type2_title'] = $field['type2']['title'];
-        $info['_type3'] && $_info['_type3_title'] = $field['type3']['title'];
-        
-        $info = array_merge($info,$_info);
-        return $_info;
+    public static function car_get_price_type(&$info=[],$choose=['num'=>1,'type1'=>0,'type2'=>0,'type3'=>0]){        
+        $info = fun('shop@car_get_price_type',$info,$choose);
+        return $info;
     }
     
 }

@@ -106,7 +106,7 @@ class Tabel extends IndexBase{
 	 * 添加一个右侧按钮
 	 * @param string $type 按钮类型：edit/enable/disable/delete/custom
 	 * @param array $attribute 按钮属性
-	 * 例如 ['title' => '添加','icon' => 'fa fa-plus', 'data-tips' => '删除后无法恢复。','class' => 'btn btn-'.config('zbuilder.right_button')['size'].' btn-'.config('zbuilder.right_button')['style'], 'href' => url('add', ['id' => '__id__']),]
+	 * 例如 ['title' => '添加','icon' => 'fa fa-plus', 'data-tips' => '删除后无法恢复。','class' => 'btn', 'href' => url('add', ['id' => '__id__']),]
 	 * 
 	 * @param bool $blank 是否使用弹出新窗口
 	 * @return $this
@@ -114,7 +114,7 @@ class Tabel extends IndexBase{
 	public static function addRightButton($type = '', $attribute = [], $blank = false){
 	    if($type=='add'){
 	        $attribute = array_merge(
-	                ['title' => '添加','icon' => 'fa fa-plus', 'data-tips' => '删除后无法恢复。','class' => 'btn btn-'.config('zbuilder.right_button')['size'].' btn-'.config('zbuilder.right_button')['style'], 'href' => url('add', ['id' => '__id__']),],
+	                ['title' => '添加','icon' => 'fa fa-plus', 'data-tips' => '删除后无法恢复。','class' => 'btn', 'href' => url('add', ['id' => '__id__']),],
 	                $attribute
 	                );
 	    }
