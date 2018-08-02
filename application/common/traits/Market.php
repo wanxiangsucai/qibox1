@@ -38,7 +38,11 @@ trait Market
         if(!is_writable($basepath)){
             return $this->err_js($basepath.'目录不可写,请先修改目录属性可写');
         }elseif ( is_dir($basepath.$keywords) ){
-            return $this->err_js($basepath.$keywords.'目录已经存在了,请在本地模块或本地插件那里安装.或者先删除此目录再重新安装');
+            if (($type=='m'&&modules_config($keywords))||($type!='m'&&plugins_config($keywords))) { //如果频道停用的话.原数据库会被清空
+                return $this->err_js($basepath.$keywords.'该频道已经存在了,不能重复安装');
+            }
+            copy_dir($basepath.$keywords, RUNTIME_PATH."bakfile/$keywords".date('Y-m-d_H-i'));
+            delete_dir($basepath.$keywords);
         }
         $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
         $result = $this->downModel($url,$keywords,$type);
