@@ -109,7 +109,7 @@ class LabelShow extends IndexBase
             //die('null');
             $content = '';
         }else{
-            //ob_end_clean();ob_start();
+            @ob_end_clean();ob_start();
             eval('?>'.$view_tpl);
             $content = ob_get_contents();
             ob_end_clean();

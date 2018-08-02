@@ -36,15 +36,15 @@ class Setting extends AdminBase
             return ;
         }
         $gdb = GroupModel::where('id',$group)->find();
-        if($gdb['sys_id']==0){
+        if($gdb['sys_id']==0){                  //分组属于系统,不属于任何频道或插件
             $array = $this->_config;
-        }else{
+        }else{                                          //分组属于频道或插件
             $array = $this->config;
         }
         
         foreach ($array AS $rs){
             $realut = ConfigModel::where(['c_key'=>$rs['c_key'],'sys_id'=>$gdb['sys_id'],])->find();
-            if(empty($realut)){
+            if(empty($realut)){     //数据表中不存在强制要加的字段,就强制补上
                 $rs['sys_id'] = $gdb['sys_id'];
                 $rs['type'] = $group;
                 $rs['ifsys'] = $gdb['sys_id']>0 ? 0 : $rs['ifsys'];

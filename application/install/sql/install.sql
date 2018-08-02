@@ -1642,3 +1642,6 @@ CREATE TABLE IF NOT EXISTS `qb_weixinyznum` (
   UNIQUE KEY `sid` (`sid`),
   KEY `username` (`username`,`num`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE  `qb_config_group` CHANGE  `ifshow`  `ifshow` TINYINT( 4 ) NOT NULL DEFAULT  '0' COMMENT  '是否在系统设置那里显示';

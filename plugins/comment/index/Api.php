@@ -7,7 +7,7 @@ use app\common\controller\IndexBase;
 class Api extends IndexBase
 {
     protected $validate = '';
-    private static $get_children = null; //取引用回复
+    private static $get_children = null;    //仅仅只取引用回复,发表评论时使用
     
     protected function _initialize()
     {
@@ -51,10 +51,16 @@ class Api extends IndexBase
                 return $this->err_js('数据库执行失败!');
             }
         }elseif ($this->request->isPost()) {
+            $data = $this->request->post();
+            
             if($this->user['groupid']==2){
                 return $this->err_js('很抱歉,你已被列入黑名单,没权限发布,请先检讨自己的言行,再联系管理员解封!');
+            }elseif(empty($this->user) && empty($this->webdb['allow_guest_post_comment'])){
+                return $this->err_js('很抱歉,系统禁止游客发表评论!<br>请复制保存好你的内容,登录后,再评论<br>'.$data['content']);
+            }elseif( $this->webdb['can_post_comment_group'] && !in_array($this->user['groupid'],$this->webdb['can_post_comment_group'])){
+                return $this->err_js('很抱歉,你所在用户组禁止评论!');
             }
-            $data = $this->request->post();
+            
             if (!empty($this -> validate)) {   //验证数据
                 $result = $this -> validate($data, $this -> validate);
                 if (true !== $result){
@@ -71,7 +77,18 @@ class Api extends IndexBase
             }
             
             if (fun('ddos@reply',$data)!==true) {    //防灌水
-                return fun('ddos@reply',$data);
+                return $this->err_js(fun('ddos@reply',$data));
+            }
+            
+            if ( $this->user  ) {
+                //如果不设置的话,就默认都通过审核
+                if ( empty($this->webdb['post_auto_pass_comment_group']) || in_array($this->user['groupid'],$this->webdb['post_auto_pass_comment_group']) ) {
+                    $data['status'] = 1;
+                }else{
+                    $data['status'] = 0;
+                }
+            }else{
+                $data['status'] = $this->webdb['guest_auto_pass_comment'];
             }
             
             $data['aid'] = $aid;
@@ -121,7 +138,7 @@ class Api extends IndexBase
         $tag_array = self::get_tag_config($name,$pagename);    //数据库参数配置文件
         trim($tag_array['view_tpl']) && $view_tpl = $tag_array['view_tpl'];
         
-        if(self::$get_children!=null){
+        if(self::$get_children!==null){
             $string = stristr($view_tpl,'<?php if(is_array($rs[\'children\'])'); //变量名必须是 $rs['children']
             $num =  stripos($string,'<?php endforeach; endif; else: echo "" ;endif; ?>');
             $view_tpl = substr($string,0,$num).'<?php endforeach; endif; else: echo "" ;endif; ?>';
@@ -169,7 +186,7 @@ class Api extends IndexBase
             //die('null');
             $content = '';
         }else{
-            if(self::$get_children!=null){
+            if(self::$get_children!==null){
                 $rs['children'] = $listdb;
             }
             //ob_end_clean();ob_start();
@@ -216,7 +233,7 @@ class Api extends IndexBase
      */
     public function get_list($sysid=0,$aid=0,$rows=0,$status=0,$order='',$by='',$page=0){
         
-        if(self::$get_children!=null){  //取引用回复
+        if(self::$get_children!==null){  //取引用回复
             $map = [
                     'pid'=>self::$get_children,
             ];
@@ -232,7 +249,12 @@ class Api extends IndexBase
             $map['status']=1;
         }
         if(!in_array($order, ['id','list','create_time','agree','reply'])){
-            $order = 'list desc,id desc';
+            if(self::$get_children!==null){
+                $order = 'id asc';  //引用回复要按时间早的在前面
+                $rows = 100; //引用回复全部读出来
+            }else{
+                $order = 'list desc,id desc';   //普通回复的话,时间晚的在前面
+            }
         }
         $rows = intval($rows);
         if($rows<1){

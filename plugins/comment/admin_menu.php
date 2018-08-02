@@ -12,6 +12,11 @@ return array(
 								                'link'=>'content/index',
 								                'power'=>['delete'],
 								            ),
+								        array(
+								                'title'=>'评论参数设置',
+								                'link'=>'setting/index',
+								                'power'=>[],
+								        ),
 								       
 								),
 							),

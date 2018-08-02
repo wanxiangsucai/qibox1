@@ -351,9 +351,10 @@ class User extends Model
 	 */
 	public static function quit($uid=0){
 		set_cookie('passport',null);
+		set_cookie('_passport',null);
 		cache('user_'.$uid,null);
-		set_cookie('token_secret','');
-		setcookie('adminID','',0,'/');	//同步后台退出
+		set_cookie('token_secret',null);
+		setcookie('adminID',null);	//同步后台退出
 		hook_listen('user_quit_end',$uid);
 	}
 	
@@ -369,9 +370,12 @@ class User extends Model
 	            return ['uid'=>$uid,'username'=>$username,'password'=>$password];
 	        }
 	    }
-	    
-	    list($uid,$username,$password) = explode("\t",get_cookie('passport'));
+	    $toke = get_cookie('passport')?:get_cookie('_passport');
+	    list($uid,$username,$password) = explode("\t",$toke);
 	    if($uid&&$username&&$password){
+	        if (empty(get_cookie('_passport'))) {
+	            set_cookie('_passport',$toke); //避免用户在操作过程,因登录过期,而自动退出
+	        }
 	        return ['uid'=>$uid,'username'=>$username,'password'=>$password];
 	    }
 	}
