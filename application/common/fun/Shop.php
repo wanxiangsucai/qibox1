@@ -10,6 +10,29 @@ use think\Db;
 class Shop{
     
     /**
+     * 统计用户购物车里需要支付的总金额
+     * @return number
+     */
+    public function car_money(){
+        $uid = login_user('uid');
+        if (empty($uid)) {
+            return 0;
+        }        
+        $obj =  get_model_class(config('system_dirname')?:'shop','car');
+
+        $listdb = $obj->getList($uid,1);
+        $money = 0;
+        foreach ($listdb AS $uid=>$shop_array){
+            foreach ($shop_array AS $rs){   //某个商家的多个商品
+                $_shop[] = $rs['_car_']['shopid'] . '-' . $rs['_car_']['num']  . '-' . $rs['_car_']['type1'] . '-' .$rs['_car_']['type2'] . '-' .$rs['_car_']['type3'];
+                $rs['_car_']['num'] || $rs['_car_']['num']=1;
+                $money += self::get_price($rs,$rs['_car_']['type1']-1) * $rs['_car_']['num'];
+            }
+        }
+        return $money;
+    }
+    
+    /**
      * 统计某个用户购买过某个商品的总数量
      * @param number $id 商品ID
      * @param number $uid 指定用户UID
@@ -87,7 +110,7 @@ class Shop{
      * @param number $key 用户选中属性1的具体某项 如果从购物车取出的数据,数组下标要减1,因为购物车入库时加了1
      */
     public static function get_price($info=[],$key=0){
-        $value = static::type_get_title_price('type1',$info,$key,'price');
+        $value = self::type_get_title_price('type1',$info,$key,'price');
         if($value>0){
             return $value;
         }else{
@@ -103,13 +126,13 @@ class Shop{
     public static function car_get_price_type($info=[],$choose=['num'=>1,'type1'=>0,'type2'=>0,'type3'=>0]){
         static $field_array = [];
         $_info = [];
-        $_info['_price'] = static::get_price($info,$choose['type1']-1);     //取得商品的实际价格,因为属性1可以定义价格, 另外数组下标要减1,因为购物车入库时加了1
+        $_info['_price'] = self::get_price($info,$choose['type1']-1);     //取得商品的实际价格,因为属性1可以定义价格, 另外数组下标要减1,因为购物车入库时加了1
         $_info['_num'] = intval($choose['num']); //购买数量
         
         //得到用户购买的是什么颜色型号 , 用户选中的类型key要减1,因为入库前加过1 数组下标从0开始的,
-        $choose['type1'] && $_info['_type1'] = static::type_get_title_price('type1',$info,$choose['type1']-1,'title');
-        $choose['type2'] && $_info['_type2'] = static::type_get_title_price('type2',$info,$choose['type2']-1,'title');
-        $choose['type3'] && $_info['_type3'] = static::type_get_title_price('type3',$info,$choose['type3']-1,'title');
+        $choose['type1'] && $_info['_type1'] = self::type_get_title_price('type1',$info,$choose['type1']-1,'title');
+        $choose['type2'] && $_info['_type2'] = self::type_get_title_price('type2',$info,$choose['type2']-1,'title');
+        $choose['type3'] && $_info['_type3'] = self::type_get_title_price('type3',$info,$choose['type3']-1,'title');
         
         //得到尺寸 颜色 型号 的真实叫法 如果用户没选择,或者是商品都不存在这项信息,就没必要去取出来        
         if(empty($field_array[$info['mid']])){                              //这里用数组是考虑有可能会存在不同的模型
