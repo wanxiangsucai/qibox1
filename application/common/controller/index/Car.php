@@ -48,6 +48,9 @@ abstract class Car extends IndexBase
         if ($result!==true) {
             return $this->err_js($result);
         }
+        if(config('car_one')===true){   //购物车只保留一件商品
+            $this -> model -> where(['shopid'=>['<>',$shopid],'uid'=>$this->user['uid']]) ->delete();
+        }
         $info = $this -> model -> where(['shopid'=>$shopid,'uid'=>$this->user['uid']]) -> find() ;
         if(!$info){    //购物车没有的话,就直接加进去
             $num<1 && $num=1;
@@ -158,6 +161,11 @@ abstract class Car extends IndexBase
 		if (!$this->user) {
             return 'fail';
         }
+        
+        if(config('car_one')===true){   //购物车只保留一件商品
+            $this -> model -> where(['shopid'=>['<>',$shopid],'uid'=>$this->user['uid']]) ->delete();
+        }
+        
         $info = $this -> model -> where(['shopid'=>$shopid,'uid'=>$this->user['uid']]) -> find() ;
         $num = intval(input('num'));
         $type1 = intval(input('type1'));
@@ -179,7 +187,7 @@ abstract class Car extends IndexBase
                     'type2'=>$type2,
                     'type3'=>$type3,
                     'num'=>$num,
-            ];
+            ];            
             if ($this -> model -> create($data)) {
                 return 'ok';
             } else {
