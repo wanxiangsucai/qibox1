@@ -133,12 +133,12 @@ class User extends Model
 	public static function register_user($array){
 	    
 	    if(self::get_info($array['username'],'username')){
-	        return '当前用户已经存在了';
+	        return '当前用户已经存在了'.$array['username'];
 	    }
 	    if(config('webdb.forbidRegName')!=''){
 	        $detail = str_array(config('webdb.forbidRegName'));
 	        if(in_array($array['username'], $detail)){
-	            return '请换一个用户名,当前用户名不允许使用';
+	            return '请换一个用户名,当前用户名不允许使用'.$array['username'];
 	        }
 	    }
 	    if(!$array['username']){

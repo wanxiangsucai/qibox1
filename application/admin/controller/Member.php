@@ -88,10 +88,14 @@ class Member extends AdminBase
 	            ['select', 'groupid', '用户组','',$listgroup],
 	            ['text', 'nickname', '昵称'],
 	            ['text', 'email', '邮箱'],
+	            ['text', 'weixin_api', '微信接口ID'],
+	            ['text', 'qq_api', 'QQ接口ID'],
+	            ['text', 'wxapp_api', '小程序接口ID'],
 	            ['radio', 'sex', '性别','',[0=>'保密',1=>'男',2=>'女']],
 	            ['jcrop', 'icon', '头像'],
 	            ['number', 'money', '积分'],
-	            ['number', 'rmb', '可用余额'],
+	            ['money', 'rmb', '可用余额'],
+	            ['money', 'rmb_freeze', '冻结余额'],
 	    ];
 	    $info['password']='';
 	    return $this->editContent($info);

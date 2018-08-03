@@ -51,7 +51,7 @@ class User extends UserModel
         
         //$username = get_word($username,40,0);	//帐号不能太长
         if(self::check_userexists($username)){	//检查用户名是否已存在
-            $pss = self::where()->order('uid','desc')->limit(1)->select();
+            $pss = self::where([])->order('uid','desc')->find();
             $username .='-'.($pss['uid']+1);
         }
         

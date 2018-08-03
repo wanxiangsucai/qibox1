@@ -4,7 +4,11 @@ namespace app\index\controller;
 use app\common\controller\IndexBase;
 use app\index\model\Pay AS PayModel;
 
-
+/**
+ * 在线支付,实质就是给用户的余额充值 , 所以money字段,没加密,用户恶意修改的话,就是少充点值, 不会给应用带来钻空子的问题
+ * 所有应用都是根据可用余额来判断是否足够,再进行扣余额操作的
+ * 详细说明 http://help.php168.com/711032
+ */
 class Pay extends IndexBase
 {
     protected $return_url;  //支付成功后，返回到哪个地址
@@ -26,12 +30,24 @@ class Pay extends IndexBase
     //第一个参数，支付类型，第二个对应的方法，第三个指定PC或WAP，对于后台通知，必须要指定
     public function index($banktype = '' , $action = '' , $back_post = '')
     {
-        if ($banktype == '') {
-            $this->error('请先选择支付类型!');
-        } else {
+        if ($banktype == '') {  //选择支付方式
+            
+            $this->assign('weburl',$this->weburl);
+            $this->assign('money',input('money'));
+            return $this->fetch();
+            //$this->error('请先选择支付类型!');
+            
+        } elseif($banktype == 'rmb') {  //选择余额支付
+            
+            return $this->rmb_pay();
+            
+        } else {    //支付宝或微信支付
+            
             $banktype = strtolower($banktype);
+            
         }
-        if ($action == '') {
+        
+        if ($action == '') {    //准备去支付, 支付成功的话,会有专门定义好的action
             $action = 'gotopay';
         }
         $class = '\\app\\index\\pay\\';
@@ -55,6 +71,21 @@ class Pay extends IndexBase
         }
         $obj = new $class;
         return call_user_func_array([$obj, $action], []);
+    }
+    
+    /**
+     * 余额支付
+     */
+    protected function rmb_pay(){
+        $callback_class = mymd5(urldecode(input('callback_class')),'DE');
+        if ($callback_class){
+            $this->run_callback($callback_class);
+        }
+        
+        if ($this->user['rmb']<input('money')) {
+            $this->error('你的余额不足!');
+        }
+        $this->redirect(input('return_url'));
     }
     
     
