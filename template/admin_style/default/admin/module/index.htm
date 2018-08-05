@@ -1,0 +1,58 @@
+{extend name="index:layout" /}
+
+{block name="menu"}
+	{include file="module/menu"}
+{/block}
+
+{block name="content"}
+<form name="form1" method="post" action="">
+
+<div class="MainContainers">
+  <div class="Header"><span class="tag">频道管理</span></div>
+  <div class="Conter">
+    <table class="ListTable">
+	<th width="5%">ID</th>
+      <th width="5%">图标</th>
+      <th>频道名称</th>
+      <th>频道关键字(目录名)</th>   
+	  <th width="8%">启用/停用</th>
+	  <th width="10%">开发者</th>
+	  <th width="10%">更新日期</th>
+      <th width="10%">排序值</th>
+      <th width="8%">卸载</th>
+	  <th width="8%">复制</th>
+      <th width="8%">设置</th>      
+    </tr>
+{volist name="listdb" id="rs"}
+    <tr bgcolor="#FFFFFF" class="trA" onmouseover="this.className='trB'" onmouseout="this.className='trA'"> 
+      <td>{$rs.id}</td>
+      <td>{notempty name="$rs.icon"}<li class="{$rs.icon}"></li>{/notempty}</td>
+      <td class='Left'>{$rs.name}</td>
+      <td class='Left'>{$rs.keywords}</td>
+	  <td>{eq name="$rs.ifopen" value="1"}<li style="font-size:20px;color:green;" class='fa fa-fw fa-check-circle-o'></li>{else /}<li class='fa fa-fw fa-ban'></li>{/eq} </td>
+	  <td><a href="{$rs.author_url}" target="_blank">{$rs.author}</a></td>
+      <td> 
+        {:substr($rs['version'],5,11)}
+      </td>
+      <td><input type="text" name="orderdb[{$rs.id}]" size="5" value="{$rs.list}"></td>
+      <td><a href="{:auto_url('delete',['ids'=>$rs['id']])}" onclick="return confirm('你确实要卸载删除{$rs.name}吗?不可恢复,请慎重!')" title="卸载频道"><i class="fa fa-fw fa-remove"></i></a></td>
+      <td>{eq name="$rs.type" value="1"}<a href="{:auto_url('copy',['id'=>$rs['id']])}" title="复制频道"><i class="fa fa-copy"></i>{/eq}</td>
+	  <td><a href="{:auto_url('edit',['id'=>$rs['id']])}" title="更改配置"><i class="fa fa-fw fa-edit"></i></td>
+    </tr>
+{/volist}
+  
+  </table>
+    <div class='submits'><input type="submit" name="Submit" value="更改排序"></div>
+  </div>
+</div>
+</form>
+<div class="MainContainers">
+  <div class="Header"><span class="tag">说明</span></div>
+  <div class="Conter">
+    <ul class="notes">
+      <li>卸载删除频道会把数据库及程序相关文件一起删除</li>
+    </ul>
+  </div>
+</div>
+<br />
+{/block}
