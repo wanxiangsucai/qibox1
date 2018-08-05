@@ -839,8 +839,8 @@ if (!function_exists('get_user')) {
      * @return array
      */
     function get_user($value='',$type='uid'){
-        $rarray = [];		
-        if($type=='uid' && is_numeric($value)){
+        $rarray = [];
+        if($value && $type=='uid' && is_numeric($value)){
             static $user_array = [];
             $rarray = $user_array[$value];
             if($rarray===null){
@@ -851,7 +851,7 @@ if (!function_exists('get_user')) {
                 }
                 $user_array[$value] = $rarray;
             }		    
-		}else{
+        }elseif($value!==''){
 		    $mod = model('common/user');
 		    $rarray = $mod->getByName($value);
 		}
@@ -2049,20 +2049,31 @@ if (!function_exists('getTemplate')) {
  
  if (!function_exists('wx_getAccessToken')) {
      /**
-      * 获取微信的权限参数
+      * 获取微信的权限通信密钥
+      * @param string $check 设置为true的话，提示相关错误
       * @return void|mixed|\think\cache\Driver|boolean
       */
-     function wx_getAccessToken(){
+     function wx_getAccessToken($check=false){
          if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
+             if($check==TRUE){
+                 if(config('webdb.weixin_type')<2){
+                     showerr('系统没有设置选择认证服务号还是认证订阅号');
+                 }elseif(config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
+                     showerr('系统没有设置公众号的AppID或者AppSecret');
+                 }
+             }
              return ;
          }
          $access_token = cache('weixin_access_token');
          if (empty($access_token)) {
              $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.config('webdb.weixin_appid').'&secret='.config('webdb.weixin_appsecret');
-             $res = json_decode(http_curl($url));
+             $string = http_curl($url);
+             $res = json_decode($string);
              $access_token = $res->access_token;
              if ($access_token) {
                  cache('weixin_access_token',$access_token,1800);
+             }else{
+                 showerr('获取access_token失败,详情如下：'.$string);
              }
          }
          return $access_token;

@@ -17,10 +17,13 @@ class Moneylog extends AdminBase
 	protected $form_items = [];
 	protected $list_items;
 	protected $tab_ext = [
-			'page_title'=>'用户积分使用消费记录与赚取记录',
-	        'top_button'=>[ ['type'=>'delete']],
-	        'right_button'=>[ ['type'=>'delete']],
-// 	        'hidden_edit'=>true,	
+	    'page_title'=>'用户积分使用消费记录与赚取记录',
+	    'top_button'=>[ ['type'=>'delete']],
+	    'right_button'=>[ ['type'=>'delete']],
+	    'search'=>[
+	        'uid'=>'用户UID',
+	        'money'=>'积分个数',
+	    ],
 	];
 	
 	protected function _initialize()

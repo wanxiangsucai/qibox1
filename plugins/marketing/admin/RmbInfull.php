@@ -17,10 +17,14 @@ class RmbInfull extends AdminBase
 	protected $form_items = [];
 	protected $list_items;
 	protected $tab_ext = [
-	        'page_title'=>'人民币充值管理',
-	        'top_button'=>[['type'=>'delete']],
-	        'right_button'=>[ ['type'=>'delete']],
-// 	        'hidden_edit'=>true,	
+	    'page_title'=>'人民币充值管理',
+	    'top_button'=>[['type'=>'delete']],
+	    'right_button'=>[ ['type'=>'delete']],
+	    'search'=>[
+	        'uid'=>'用户UID',
+	        'numcode'=>'订单号',
+	        'money'=>'充值金额',
+	    ],
 	];
 	protected function _initialize()
     {

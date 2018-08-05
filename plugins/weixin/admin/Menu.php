@@ -34,7 +34,7 @@ class Menu extends AdminBase
 	}
 	
 	private function create_menu($data){
-	    $access_token = wx_getAccessToken();
+	    $access_token = wx_getAccessToken(true);
 	    http_Curl("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=$access_token");	//先删除旧菜单
 	    
 	    $code = http_Curl("https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access_token",$data);
