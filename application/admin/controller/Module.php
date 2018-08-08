@@ -27,13 +27,13 @@ class Module extends AdminBase
 		                        'title'=>'安装本地新模块',
 		                        'url'=>url('add'),
 		                        'icon'  => 'fa fa-plus-circle',
-		                        'class' => 'btn btn-primary',
+		                        'class' => '',
 		                ],
 		                [
 		                        'title'=>'安装应用市场模块',
 		                        'url'=>url('market'),
 		                        'icon'  => 'fa fa-cloud-download',
-		                        'class' => 'btn btn-danger',
+		                        'class' => '',
 		                ],
 		        ],
 		];

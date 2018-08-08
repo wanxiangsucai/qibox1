@@ -144,7 +144,7 @@ abstract class C extends AdminBase
                 [
                         'title' => '发布内容',
                         'icon'  => 'fa fa-plus',
-                        'class' => 'btn btn-primary',
+                        'class' => '',
                         'href'  => auto_url('postnew')
                 ],
                 [
@@ -153,14 +153,14 @@ abstract class C extends AdminBase
                 [
                         'title'       => '添加到辅栏目',
                         'icon'        => 'fa fa-indent',
-                        'class'       => 'btn btn-primary ajax-post confirm',
+                        'class'       => 'confirm',
                         'target-form' => 'ids',
                         'href'        => auto_url('info/add')
                 ],
                 [
                         'title' => '返回栏目列表',
                         'icon'  => 'fa fa-reply',
-                        'class' => 'btn btn-primary',
+                        'class' => '',
                         'href'  => auto_url('sort/index')
                 ],
         ];
@@ -231,7 +231,7 @@ abstract class C extends AdminBase
                     [
                             'title' => '发布内容',
                             'icon'  => 'fa fa-plus',
-                            'class' => 'btn btn-primary',
+                            'class' => '',
                             'href'  => auto_url('add',$fid?['fid'=>$fid]:['mid'=>$mid])
                     ],
                     [
@@ -239,15 +239,15 @@ abstract class C extends AdminBase
                     ],
                     [
                             'title'       => '添加到辅栏目',
-                            'icon'        => 'fa fa-indent',
-                            'class'       => 'btn btn-primary ajax-post confirm',
+                            'icon'        => '',
+                            'class'       => 'ajax-post confirm',
                             'target-form' => 'ids',
                             'href'        => auto_url('info/add')
                     ],
                     [
                             'title' => '返回栏目列表',
                             'icon'  => 'fa fa-reply',
-                            'class' => 'btn btn-primary',
+                            'class' => '',
                             'href'  => auto_url('sort/index')
                     ],
             ];

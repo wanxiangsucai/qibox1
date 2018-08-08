@@ -32,13 +32,13 @@ class Hook extends AdminBase
 		                        'title'=>'添加接口',
 		                        'url'=>url('add'),
 		                        'icon'  => 'fa fa-plus-circle',
-		                        'class' => 'btn btn-primary',
+		                        'class' => '',
 		                ],
 		                [
 		                        'title'=>'钩子管理(实现接口的功能)',
 		                        'url'=>url('hook_plugin/index'),
 		                        'icon'  => 'fa fa-microchip',
-		                        'class' => 'btn btn-danger',
+		                        'class' => '',
 		                ],
 		        ],
 		];

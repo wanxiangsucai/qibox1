@@ -69,7 +69,12 @@ class LabelShow extends IndexBase
         $timestamp = $this->timestamp;
         $webdb = $this->webdb;
         
-        $parameter =get_post(); //这里不能用input 因为GET的优先级更高      
+        $parameter =get_post(); //这里不能用input 因为GET的优先级更高   
+        foreach ($parameter AS $key=>$value){
+            if($value===''){
+                unset($parameter[$key]);    //避免空值也执行where语句
+            }
+        }
 
         $live_cfg = self::union_live_parameter($parameter);
         

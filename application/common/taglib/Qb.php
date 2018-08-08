@@ -142,8 +142,14 @@ class Qb extends TagLib{
         if(empty($str) && empty($where)){
             return ;
         }
-        if (empty($str) && $where!='') {
-            $str = fun('label@get_union',$where);
+        //if (empty($str) && $where!='') {
+        if ($where!='') {
+            $_str = fun('label@get_union',$where);
+            if (empty($str)&&$_str) {
+                $str = $_str;
+            }elseif($_str){
+                $str .= ",$_str";
+            }
             if (empty($str)) {
                 return ;
             }
@@ -152,6 +158,9 @@ class Qb extends TagLib{
         $_par = [];
         $detail = explode(',',$str);
         foreach ($detail AS $value){
+            if ($value=='') {
+                continue;
+            }
             list($a,$b) = explode('=',$value);
             $_par[] = $a;
             $b || $b=$a;

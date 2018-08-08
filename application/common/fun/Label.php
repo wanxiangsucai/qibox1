@@ -18,7 +18,7 @@ class Label{
         $detail = strstr($code,'@') ? explode('@',$code) : explode('&',$code);
         foreach($detail AS $str){
             if( !strstr($str,'|') ){
-                list($field,$value) = explode('|',preg_replace('/^([-\w]+)([<>=]+)([^<>=]+)/i','\\1|\\3',$str));
+                list($field,$value) = explode('|',preg_replace('/^([-\w\.]+)([<>=\*]+)([^<>=\*]+)/i','\\1|\\3',$str));
             }else{
                 list($field,$mod,$value) = explode('|',$str);
             }
@@ -43,7 +43,7 @@ class Label{
      */
     private function get_label_value($field,$value,$cfg){
         if( substr($value,0,1)=='$' ){
-            $value = isset($cfg[$field]) ? $cfg[$field] : '' ;
+            $value = isset($cfg[$field]) ? $cfg[$field] : null ;
         }
         return $value;
     }
@@ -64,18 +64,25 @@ class Label{
             $detail = strstr($code,'@') ? explode('@',$code) : explode('&',$code);
             foreach($detail AS $str){
                 if( !strstr($str,'|') ){
-                    list($field,$value) = explode('|',preg_replace('/^([-\w]+)([<>=]+)([^<>=]+)/i','\\1|\\3',$str));
-                    $mod = preg_replace('/^([-\w]+)([<>=]+)([^<>=]+)/i','\\2',$str);
+                    list($field,$value) = explode('|',preg_replace('/^([-\w\.]+)([<>=\*]+)([^<>=\*]+)/i','\\1|\\3',$str));
+                    $mod = preg_replace('/^([-\w\.]+)([<>=\*]+)([^<>=\*]+)/i','\\2',$str);
                     if($value=="''"){
                         $value='';
                     }
                     if( substr($value,0,1)=='$' ){
                         $value = $this->get_label_value(trim($field),$value,$cfg);
-                        if( strstr($value,',') ){
+                        if ($value===null) {
+                            continue;
+                        }
+                        if($mod=='*'){
+                            $array[trim($field)] = ['LIKE',"%$value%"];
+                        }elseif( strstr($value,',') ){
                             $array[trim($field)] = [$mod=='='?'in':'not in',explode(',',$value)];
                         }else{
                             $array[trim($field)] = [$mod,$value];
                         }
+                    }elseif($mod=='*'){
+                        $array[trim($field)] = ['LIKE',"%$value%"];
                     }elseif(strstr($value,',')){
                         $value = explode(',',$value);
                         $array[trim($field)] = [

@@ -42,7 +42,7 @@ abstract class M extends AdminBase
                         [
                                 'title' => '创建模型',
                                 'icon'  => 'fa fa-fw fa-cubes',
-                                'class' => 'btn btn-primary',
+                                'class' => '',
                                 'href'  => auto_url('add')
                         ],
                 ],

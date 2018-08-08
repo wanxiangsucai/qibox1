@@ -129,19 +129,19 @@ class HookPlugin extends AdminBase
                                 'title'=>'手工添加钩子',
                                 'url'=>url('add'),
                                 'icon'  => 'fa fa-plus-circle',
-                                'class' => 'btn btn-primary',
+                                'class' => '',
                         ],
                         [
                                 'title'=>'钩子云市场',
                                 'url'=>url('market'),
                                 'icon'  => 'fa fa-cloud-download',
-                                'class' => 'btn btn-primary',
+                                'class' => '',
                         ],
                         [
                                 'title'=>'返回接口列表',
                                 'url'=>url('hook/index'),
                                 'icon'  => 'fa fa-microchip',
-                                'class' => 'btn btn-danger',
+                                'class' => '',
                         ],
                 ],
         ];

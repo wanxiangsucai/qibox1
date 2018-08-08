@@ -12,7 +12,7 @@ trait AddEditList {
             //修改排序
             return $this->edit_order();
         }
-        $listdb = self::getListData($map = [], $order = []);
+        $listdb = $this->getListData($map = [], $order = []);
         return $this -> getAdminTable($listdb);
     }
     
@@ -345,10 +345,10 @@ trait AddEditList {
 	    if ($array) {
 	        foreach($array AS $key=>$rs){
 	            $rs['url'] = $rs['href'] = $rs['url'] ?: $rs['href'];
-	            $rs['title'] = $rs['title'] ?: self::get_top_bottom($rs['type'],'title');
-	            $rs['icon'] = $rs['icon'] ?: self::get_top_bottom($rs['type'],'icon');
-	            $rs['class'] = $rs['class'] ?: self::get_top_bottom($rs['type'],'class');
-	            $rs['href'] = $rs['href'] ?: self::get_top_bottom($rs['type'],'href');
+	            $rs['title'] = $rs['title'] ?: static::get_top_bottom($rs['type'],'title');
+	            $rs['icon'] = $rs['icon'] ?: static::get_top_bottom($rs['type'],'icon');
+	            $rs['class'] = $rs['class'] ? str_replace('btn ', '', $rs['class']) : static::get_top_bottom($rs['type'],'class');
+	            $rs['href'] = $rs['href'] ?: static::get_top_bottom($rs['type'],'href');
 	            $array[$key] = $rs;
 	        }
 	    }
@@ -359,10 +359,10 @@ trait AddEditList {
 	    if ($array) {
 	        foreach($array AS $key=>$rs){
 	            $rs['url'] = $rs['href'] = $rs['url'] ?: $rs['href'];
-	            $rs['title'] = $rs['title'] ?: self::get_right_bottom($rs['type'],'title');
-	            $rs['icon'] = $rs['icon'] ?: self::get_right_bottom($rs['type'],'icon');
-	            $rs['class'] = $rs['class'] ?: self::get_right_bottom($rs['type'],'class');
-	            $rs['href'] = $rs['href'] ?: self::get_right_bottom($rs['type'],'href');
+	            $rs['title'] = $rs['title'] ?: static::get_right_bottom($rs['type'],'title');
+	            $rs['icon'] = $rs['icon'] ?: static::get_right_bottom($rs['type'],'icon');
+	            $rs['class'] = $rs['class'] ?: static::get_right_bottom($rs['type'],'class');
+	            $rs['href'] = $rs['href'] ?: static::get_right_bottom($rs['type'],'href');
 	            $array[$key] = $rs;
 	        }
 	    }
@@ -433,9 +433,9 @@ trait AddEditList {
 	            'back'=>'fa fa-reply',
 	    ];
 	    $class = [
-	            'add'=>'btn btn-primary',
-	            'delete'=>'btn btn-danger ajax-post confirm',
-	            'back'=>'btn btn-info',
+	            'add'=>'',
+	            'delete'=>'',
+	            'back'=>'',
 	    ];
 	    $href = [
 	            'add'=>auto_url('add'),
@@ -457,7 +457,7 @@ trait AddEditList {
 	 'title'=>'新增',
 	 'url'=>url('add'),
 	 'icon'  => 'fa fa-plus-circle',
-	 'class' => 'btn btn-primary',
+	 'class' => '',
 	 ],
 	 [
 	 'title'=>'批量删除',
@@ -487,7 +487,7 @@ trait AddEditList {
 	 'title'=>'新增',
 	 'url'=>url('add'),
 	 'icon'  => 'fa fa-plus-circle',
-	 'class' => 'btn btn-primary',
+	 'class' => '',
 	 ],
 	 [
 	 'title'=>'批量删除',

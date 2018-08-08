@@ -121,7 +121,7 @@ abstract class Label extends IndexBase
                         'icon' => 'fa fa-plus-circle',
                         'href'=>url('index/label/choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
                         //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn btn btn-primary pop',
+                        'class'=>'form-btn pop',
                     ],
                         'a'
                 ],
@@ -212,7 +212,7 @@ abstract class Label extends IndexBase
                         'icon' => 'fa fa-plus-circle',
                         'href'=>url('index/label/choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
                         //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn btn btn-primary pop',
+                        'class'=>'form-btn pop',
                 ],
                         'a'
                 ],
@@ -253,7 +253,7 @@ abstract class Label extends IndexBase
                         'icon' => 'fa fa-plus-circle',
                         'href'=>url('index/label/choose_style',['type'=>'images','name'=>input('name'),'tpl_cache'=>'tags_showpage_tpl_'.input('pagename')]),
                         //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn btn btn-primary pop',
+                        'class'=>'form-btn pop',
                         ],
                         'a'
                 ],
@@ -297,7 +297,7 @@ abstract class Label extends IndexBase
                         'icon' => 'fa fa-plus-circle',
                         'href'=>url('index/label/choose_style',['type'=>'title','name'=>input('name'),'tpl_cache'=>'tags_listpage_tpl_'.input('pagename')]),
                         //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn btn btn-primary pop',
+                        'class'=>'form-btn pop',
                         ],
                         'a'
                 ],
@@ -339,7 +339,7 @@ abstract class Label extends IndexBase
                         'icon' => 'fa fa-plus-circle',
                         'href'=>url('index/label/choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
                         //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn btn btn-primary pop',
+                        'class'=>'form-btn pop',
                     ],
                         'a'
                 ],

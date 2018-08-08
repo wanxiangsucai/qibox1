@@ -90,6 +90,16 @@ class Table extends Base
                 $show .="<option value='$key' $select>$v";
             }
             $show .= "</select>";
+        }elseif($field['type'] == 'checkbox'){  //多选项
+            $detail = explode(',',$field_value);
+            foreach($detail AS $key=>$value){
+                if ($value=='') {
+                    unset($detail[$key]);
+                    continue;
+                }
+                $detail[$key] = $field['array'][$value];
+            }
+            $show = implode('、', $detail);
         }elseif($field['type'] == 'yesno'){
             $show = $field_value ? "<i class='fa fa-check-circle' style='color:orange;font-size:16px;'></i>": "<i style='color:#888;' class='glyphicon glyphicon-ban-circle'></i>" ;
         }elseif($field['type'] == 'switch'){

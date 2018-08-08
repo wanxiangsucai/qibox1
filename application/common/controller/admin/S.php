@@ -45,7 +45,7 @@ abstract class S extends AdminBase
                         [
                                 'title' => '创建栏目',
                                 'icon'  => 'fa fa-fw fa-th-list',
-                                'class' => 'btn btn-primary',
+                                'class' => '',
                                 'href'  => auto_url('add')
                         ],
                 ],

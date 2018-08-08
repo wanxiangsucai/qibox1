@@ -404,29 +404,67 @@ abstract class C extends Model
     }
     
     /**
-     * 通过ID获取下一条内容数据
+     * 通过ID获取下一条内容数据 也可以获取上一条内容
      * @param unknown $id 内容ID
      * @param string $type 为sort值即同栏目的下一条数据,为model值即同一个模型的下一条数据,为空值即不限
      * @param array $info 把栏目ID或模型ID传进来的话 ,就可以减少查询数据库
+     * @param array $map 可以限制条件查询
      * @return mixed|PDOStatement|string|boolean|number
      */
-    public static function getNextByid($id,$type='sort',$info=[]){
+    public static function getNextByid($id,$type='sort',$info=[],$map=[],$next=true){
         self::InitKey();
+        if ($next==true) {
+            $mod = '<';
+            $order = 'id DESC';
+        }else{
+            $mod = '>';
+            $order = 'id ASC';
+        }
         if($type=='sort'){
             if(empty($info['fid'])){
                 $info = static::getInfoByid($id);
             }
             $mid = $info['mid'];
-            return Db::name(self::getTableByMid($mid))->where('id','<',$id)->where('fid','=',$info['fid'])->order('id DESC')->limit(1)->value('id');
+            return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->where('fid','=',$info['fid'])->order($order)->limit(1)->value('id');
         }elseif($type=='model'){
             if(empty($info['mid'])){
-                $info = self::getMidById($id);
+                $mid = self::getMidById($id);
+            }else{
+                $mid = $info['mid'];
+            }
+            return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->order($order)->limit(1)->value('id');    
+        }else{
+            return Db::name(self::$base_table)->where($map)->where('id',$mod,$id)->order($order)->limit(1)->value('id');
+        }        
+    }
+    
+    /**
+     * 下一个随机ID
+     * @param unknown $id
+     * @param string $type
+     * @param array $info
+     * @param array $map
+     * @return mixed|PDOStatement|string|boolean|number
+     */
+    public static function getNextRandByid($id,$type='sort',$info=[],$map=[]){
+        self::InitKey();
+        $mod = '<>';
+        if($type=='sort'){
+            if(empty($info['fid'])){
+                $info = static::getInfoByid($id);
             }
             $mid = $info['mid'];
-            return Db::name(self::getTableByMid($mid))->where('id','<',$id)->order('id DESC')->limit(1)->value('id');    
+            return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->where('fid','=',$info['fid'])->orderRaw('rand()')->limit(1)->value('id');
+        }elseif($type=='model'){
+            if(empty($info['mid'])){
+                $mid = self::getMidById($id);
+            }else{
+                $mid = $info['mid'];
+            }
+            return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->orderRaw('rand()')->limit(1)->value('id');
         }else{
-            return Db::name(self::$base_table)->where('aid','<',$id)->order('id DESC')->limit(1)->value('id');
-        }        
+            return Db::name(self::$base_table)->where($map)->where('id',$mod,$id)->orderRaw('rand()')->limit(1)->value('id');
+        }
     }
     
     /**
@@ -632,7 +670,8 @@ abstract class C extends Model
     }
     
     /**
-     * 主要是为标签调用数据
+     * 标签调用数据
+     * 特别提醒!! 标签设置了mid=-1 不按模型取数据的话,同时设置了where条件,有可能取出的数据比期望的要少,甚至为0条
      * @param string $tag_array 标签配置参数
      * @param number $page 页码
      * @return void|\app\common\model\unknown[]|array[]|\think\db\false[]|PDOStatement[]|string[]|\think\Model[]|array
@@ -641,8 +680,8 @@ abstract class C extends Model
         self::InitKey();
         $cfg = unserialize($tag_array['cfg']);
 
-        $mid = $cfg['mid'];//self::$model_key
-        if ($mid>1&&empty(model_config($mid,self::$model_key))) {
+        $mid = $cfg['mid'];     //self::$model_key
+        if ($mid>1&&empty(model_config($mid,self::$model_key))) {   //模型不存在,可能已被删除
             $mid = 1;
         }
         $rows = $cfg['rows'] ? $cfg['rows'] : 5;
@@ -661,11 +700,13 @@ abstract class C extends Model
 //         $dirname = $array[0][1];
         $dirname = self::$model_key;
         $sort_array = sort_config($dirname);    //获取栏目数据
+        
         if(is_numeric($cfg['fid'])){
             $mid = $sort_array[$cfg['fid']]['mid'];
             //$map['fid'] = $cfg['fid'];
             $map['fid'] = ['in',array_values(get_sort($cfg['fid'],'sons'))];    //把所有子栏目也读取出来
         }
+        
         if($cfg['fidtype']==2){ //跟随栏目动态变化
             $fids = input('fid');
             $mid = $sort_array[$fids]['mid'];
@@ -697,7 +738,7 @@ abstract class C extends Model
 //             $model_list = model_config($mid,self::$model_key);  //模型配置文件
 //         }
 //         if($model_list){
-        if($mid){
+        if($mid){   //指定模型取数据,效率更高,并且也能准确取出想要的指定数量
             if(is_numeric($cfg['ext_id'])){
                 $map['ext_id'] = $cfg['ext_id'];
             }
@@ -720,7 +761,8 @@ abstract class C extends Model
             }else{
                 $data = Db::name(self::getTableByMid($mid)) -> where($map) -> whereOr($whereor) -> order($order,$by) -> paginate($rows,false,['page'=>$page]);
            }
-        }else{
+           $array = getArray($data);
+        }else{  //全频道全模型取数据, 如果有不符合条件的话, 就会导致取出的数据量比指定的要少,甚至有可能取出0条数据,不能精准
             //务必要先选择模型，跨表查询效率非常低            
 //             $list = Db::name(self::$base_table)->limit($min,$rows)->order('id',$by)->column('id,mid');
 //             foreach($list AS $id=>$mid){
@@ -733,20 +775,28 @@ abstract class C extends Model
                     $map = array_merge($map,$_array);
                 }
             }
+            $_map = [];
             foreach($map AS $key=>$value){
-                if (!in_array($key, ['id','uid'])) {
-                    unset($map[$key]);
+                if (in_array($key, ['id','uid'])) {
+                    $_map[$key] = $value;
                 }
             }
             
-            $data = Db::name(self::$base_table)->where($map)->field('id,mid')->order('id',$by)->paginate($rows,false,['page'=>$page]);
-            $data->each(function($rs,$key){
-                $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->find();
-                return $vs;
-            });
+            $data = Db::name(self::$base_table)->where($_map)->field('id,mid')->order('id',$by)->paginate($rows,false,['page'=>$page]);
+//             $data->each(function($rs,$key){
+//                 $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->find();
+//                 return $vs;
+//             });
+            $array = getArray($data);//print_r($array) ;exit;
+            foreach($array['data'] AS $key=>$rs){
+                $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->where($map)->find();
+                if (empty($vs)) {
+                    unset($array['data'][$key]);
+                }else{
+                    $array['data'][$key] = $vs;
+                }                
+            }
         }
-        
-        $array = getArray($data);//print_r($array) ;exit;        
         foreach($array['data'] AS $key=>$rs){
             $array['data'][$key] = static::format_data($rs,$cfg,$dirname,$sort_array);
         }

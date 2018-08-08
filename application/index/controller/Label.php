@@ -174,7 +174,7 @@ class Label extends IndexBase
 //                         'icon' => 'fa fa-plus-circle',
 //                         'href'=>url('choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
 //                         //'data-url'=>url('choose_style',['type'=>'images']),
-//                         'class'=>'form-btn btn btn-primary pop',
+//                         'class'=>'form-btn pop',
 //                 ],
 //                         'a'
 //                 ],
@@ -220,7 +220,7 @@ class Label extends IndexBase
                         'icon' => 'fa fa-plus-circle',
                         'href'=>url('choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
                         //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn btn btn-primary pop',
+                        'class'=>'form-btn pop',
                 ],
                         'a'
                 ],
@@ -340,7 +340,7 @@ class Label extends IndexBase
                         'icon' => 'fa fa-plus-circle',
                         'href'=>url('choose_style',['type'=>'images','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
                         //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn btn btn-primary pop',
+                        'class'=>'form-btn pop',
                          ],
                         'a'
                 ],

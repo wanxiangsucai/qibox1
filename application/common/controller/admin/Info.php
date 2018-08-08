@@ -50,7 +50,7 @@ abstract class Info extends AdminBase
         ];
     }
     
-    protected function getListData($map=[])
+    protected function getListData($map = [], $order = '',$rows=20,$pages=[])
     {
         $cid_array = [];
         if(!empty($map['cid'])){    //把子栏目也取出来
@@ -58,13 +58,14 @@ abstract class Info extends AdminBase
         }
         
         $map = array_merge($this->getMap(),$map);
+        $order || $order='list DESC,id DESC';
         
         if(!empty($cid_array)){
             unset($map['cid']);
             $cid_array = array_merge($cid_array,[$map['cid']]);            
-            $data_list = $this->model->where($map)->where('cid','in',$cid_array)->group('aid')->order('list DESC,id DESC')->paginate();
+            $data_list = $this->model->where($map)->where('cid','in',$cid_array)->group('aid')->order($order)->paginate($rows);
         }else{
-            $data_list = $this->model->where($map)->order('list DESC,id DESC')->paginate();
+            $data_list = $this->model->where($map)->order($order)->paginate($rows);
         }
         
         foreach ($data_list AS $key=>$rs){
@@ -79,7 +80,7 @@ abstract class Info extends AdminBase
     
     public function index($cid=0)
     {
-        $data = self::getListData($cid?['cid'=>$cid]:[],$order=[]);
+        $data = $this->getListData($cid?['cid'=>$cid]:[]);
         return $this->getAdminTable($data);
     }
     
