@@ -8,12 +8,12 @@
 	<div style="margin-bottom:10px;float:left;">
 		{volist name="$tab_ext.top_button" id="rs"}
 		 {if $rs.type=='add'}
-			<a href="{$rs.href|default=auto_url('add')}" class="layui-btn layui-btn-primary"><li class="{$rs.icon|default='fa fa-plus'}"></li> {$rs.title|default='新增'}</a>
+			<a href="{$rs.href|default=auto_url('add')}" class="layui-btn layui-btn-primary {$rs.class}"><li class="{$rs.icon|default='fa fa-plus'}"></li> {$rs.title|default='新增'}</a>
 		 {elseif($rs.type=='delete') /}
-			<a href="{:auto_url('delete')}" onclick="return delete_all($(this));" class="layui-btn layui-btn-primary"><li class="{$rs.icon|default='fa fa-fw fa-remove'}"></li> {$rs.title|default='批量删除'}</a>
+			<a href="{:auto_url('delete')}" onclick="return delete_all($(this));" class="layui-btn layui-btn-primary {$rs.class}"><li class="{$rs.icon|default='fa fa-fw fa-remove'}"></li> {$rs.title|default='批量删除'}</a>
 		 
 		 {else /}
-			<a href="{$rs.href}" class="layui-btn layui-btn-primary" target="{$rs.target}" data-ids="{$rs['target-form']}"><li class="{$rs.icon|default='fa fa-external-link-square'}"></li> {$rs.title}</a>
+			<a href="{$rs.href}" class="layui-btn layui-btn-primary {$rs.class}" target="{$rs.target}" data-ids="{$rs['target-form']}"><li class="{$rs.icon|default='fa fa-external-link-square'}"></li> {$rs.title}</a>
 		 {/if}	
 		{/volist}
 	</div>
