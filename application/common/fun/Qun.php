@@ -1,5 +1,6 @@
 <?php
 namespace app\common\fun;
+use think\Db;
 
 class Qun{
     
@@ -12,6 +13,22 @@ class Qun{
             $array[$id] = $info;
         }
         return $info;
+    }
+    
+    /**
+     * 用户加入过的群
+     * @return array|\think\Collection|\think\db\false|PDOStatement|string
+     */
+    public static function myjoin(){
+        if (!is_dir(APP_PATH.'qun')) {
+            return [];
+        }
+        $uid = login_user('uid');
+		if(empty($uid)){
+			return [];
+		}
+        $listdb = Db::name('qun_member')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->select();
+        return $listdb;
     }
     
     public function getByuid($uid=0,$time=3600){
