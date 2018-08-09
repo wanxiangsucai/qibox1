@@ -79,7 +79,19 @@ class Exam{
         return Db::name('exam_info')->where('cid',$fid)->order('list desc,id desc')->limit(1)->value('aid');
     }
     
-    
+    /**
+     * 核对用户选择的答案是否正确
+     * -1全错 1全对 2对部分 0无法核对，因没有标准答案
+     * @param array $info 试题数据
+     * @param string $ans 用户的答案
+     */
+    public function check_answer($info=[],$ans=''){
+        if($info['answer']==$ans){
+            return 1;
+        }else{
+            return -1;
+        }
+    }
     
     
     
