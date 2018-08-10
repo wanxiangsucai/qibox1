@@ -140,6 +140,7 @@ if (!function_exists('clear_js')) {
 if (!function_exists('hook_listen')) {
     /**
      * 监听标签的行为
+     * 钩子若执行错误，错误日志会写在 runtime\hook_run_error.php 这个文件里边
      * @param  string $tag    标签名称
      * @param  mixed  $params 传入参数
      * @param  mixed  $extra  额外参数
@@ -147,7 +148,13 @@ if (!function_exists('hook_listen')) {
      * @return string|mixed|mixed[]
      */
     function hook_listen($tag = '', &$params = null, $extra = null, $once = false) {
-        return \think\Hook::listen($tag, $params, $extra, $once);
+        try {
+            $result = \think\Hook::listen($tag, $params, $extra, $once);
+        } catch(\Exception $e) {
+            //钩子若执行错误，错误日志会写在 runtime\hook_run_error.php 这个文件里边
+            file_put_contents(RUNTIME_PATH.'hook_run_error.php', '<?php die();'.var_export($e,true)."\r\n$tag\r\n" );
+        }
+        return $result;
     }
 }
 

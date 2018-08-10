@@ -30,14 +30,19 @@ class Order extends AdminBase
      */
     public function edit($id = null) {
         if (empty($id)) $this -> error('缺少参数');
-        //修改项
-        $this->form_items = array_merge(
-                \app\common\field\Form::get_all_field(-1),  //自定义字段
-                [
-                        ['text','shipping_code','物流单号'],
-                ]
-                );
-        $info = $this -> getInfoData($id);
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+            $data = \app\common\field\Post::format_all_field($data,-1); //对一些特殊的自定义字段进行处理,比如多选项,以数组的形式提交的;
+            $this->request->post($data);
+        }else{
+            $this->form_items = array_merge(
+                    \app\common\field\Form::get_all_field(-1),  //自定义字段
+                    [
+                            ['text','shipping_code','物流单号'],
+                    ]
+                    );
+            $info = $this -> getInfoData($id);
+        }        
         return $this -> editContent($info);
     }
     

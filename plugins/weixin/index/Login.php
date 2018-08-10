@@ -43,7 +43,7 @@ class Login extends IndexBase
                 if($string == ''){
                     $this->error('获取微信接口内容失败，请确认你的服务器已打开 extension=php_openssl.dll ');
                 }
-                $this->error('openid 值不存在！');
+                $this->error('openid 值不存在！错误详情如下：'.$string);
             }
             
             $rs = UserModel::get_info(['weixin_api'=>$openid]);

@@ -423,7 +423,7 @@ trait ModuleContent
 	    }
 	    $data['title'] = filtrate($data['title']);                             //标题过滤
 	    //$data['content'] = fun('filter@str',$data['content']);     //内容过滤
-	    if (fun('ddos@add',$data)!==true) {    //防灌水
+	    if ($this->request->isPost()&&fun('ddos@add',$data)!==true) {    //防灌水
 	        return fun('ddos@add',$data);
 	    }
 
