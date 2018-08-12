@@ -151,8 +151,12 @@ if (!function_exists('hook_listen')) {
         try {
             $result = \think\Hook::listen($tag, $params, $extra, $once);
         } catch(\Exception $e) {
-            //钩子若执行错误，错误日志会写在 runtime\hook_run_error.php 这个文件里边
-            file_put_contents(RUNTIME_PATH.'hook_run_error.php', '<?php die();'.var_export($e,true)."\r\n$tag\r\n" );
+            if($e->getCode()===0||$e->getCode()===1){   //成功或报错页，即$this->error('');与$this->success('');
+                throw $e;
+            }else{
+                //钩子若执行错误，错误日志会写在 runtime\hook_run_error.php 这个文件里边
+                file_put_contents(RUNTIME_PATH.'hook_run_error.php', '<?php die();'.var_export($e,true)."\r\n$tag\r\n" );
+            }            
         }
         return $result;
     }

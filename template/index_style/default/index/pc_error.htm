@@ -10,7 +10,7 @@
 <body>
 <div class="TopContainer">
 	<div class="TopBox">
-		<div class="logo"><a href="/"><img src="__STATIC__/index/default/logo.png"></a></div>
+		<div class="logo"><a href="/"><img src="{:tempdir(config('webdb.logo'))}" onerror="this.src='__STATIC__/index/default/logo.png'"></a></div>
 		<div class="MoreAct">
 			<a href="/" class="home">网站首页</a>			
 			{notempty name="userdb.uid"}
@@ -71,8 +71,8 @@
 	</div>
 </div>
 <div class="FootContainer">
-	Copyright@http://www.php168.com all rights reserved 京ICP备050453号
-Powered by qibosoft Code © 2003-2018
+	Copyright@www.php168.com all rights reserved {:config('webdb.miibeian_gov_cn')} 
+Powered by <a href="http://www.php168.com">qibosoft</a> Code © 2003-2018
 </div>
 <script>
 (function(){

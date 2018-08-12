@@ -158,7 +158,11 @@ class Init
                 $index_style=='default' || config('template.default_view_path', APP_PATH. $module. '/view/default/');
             }else{
                 if(!modules_config($module)&&$module!='api'){
-                    showerr('当前频道已关闭!');
+                    if (is_dir(APP_PATH.$module)) {
+                        showerr('当前频道已关闭!');
+                    }else{
+                        showerr('当前频道不存在！');
+                    }                    
                 }
                 // 定义模块的前台文件目录
                 config('url_controller_layer', 'index');
