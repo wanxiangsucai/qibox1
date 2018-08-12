@@ -36,22 +36,16 @@
 		  </div>
 {/volist}
     </li>
-    <li class="totalmoney" style="font-size:15px;">余款:&yen;{$rs.totalmoney}<br><br>订金:&yen;{$rs.fewmoney}</li>
+    <li class="totalmoney" style="font-size:15px;">总额:<br>&yen;{$rs.totalmoney}</li>
     <li class="state">
       <div>
 {eq name="$rs.pay_status" value="1"}
-  <span style="color:blue;">已付余款</span> <br> <br>
+  <span style="color:blue;">已付款</span> <br> <br>
 {else /}
-未付余款 <br><br>
+未付款 <br><br>
 {/eq}
 
-{eq name="$rs.few_ifpay" value="1"}
-  <a style="border:1px solid #ddd;padding:5px;color:blue;" href="{:urls('rob_ding',['id'=>$rs.id])}" onclick="return confirm('你要没收用户的订金吗?');" title="没收订金">已付订金</a> 
-{elseif $rs.few_ifpay==-1 /}
-  <a style="border:1px solid #ddd;padding:5px;color:red;" class="tui_ding" data-id="{$rs.id}" href="#" title="点击操作">请求退订</a> 
-{else /}
-  未付订金 
-{/eq}
+
 
 </div>
       <div></div>
