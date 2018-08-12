@@ -66,6 +66,7 @@ class Msg extends MemberBase
         })->order("id desc")->paginate($rows);
         
         $data_list->each(function(&$rs,$key){
+			$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
             $rs['from_username'] = get_user_name($rs['uid']);
             $rs['from_icon'] = get_user_icon($rs['uid']);
             return $rs;
@@ -196,7 +197,8 @@ class Msg extends MemberBase
         $info = $this->get_info($id);
         if(!is_array($info)){
             $this->error($info);
-        }      
+        }
+		$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
         $this->assign('info',$info);
         $this->assign('id',$id);
         return $this->fetch();
@@ -210,6 +212,7 @@ class Msg extends MemberBase
     public function showsend($id=0)
     {
         $info = $this->get_info($id);
+		$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
         if(!is_array($info)){
             $this->error($info);
         }
