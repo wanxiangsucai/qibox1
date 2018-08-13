@@ -66,7 +66,7 @@ class Msg extends MemberBase
         })->order("id desc")->paginate($rows);
         
         $data_list->each(function(&$rs,$key){
-			$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
+			//$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
             $rs['from_username'] = get_user_name($rs['uid']);
             $rs['from_icon'] = get_user_icon($rs['uid']);
             return $rs;
@@ -165,6 +165,7 @@ class Msg extends MemberBase
             }
             $data['touid'] = $info['uid'];
             $data['uid'] = $this->user['uid'];
+            $data['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($data['content']));
             $result = Model::add($data,$this->admin);
             if(is_numeric($result)){
                 $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
@@ -198,7 +199,7 @@ class Msg extends MemberBase
         if(!is_array($info)){
             $this->error($info);
         }
-		$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
+		//$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
         $this->assign('info',$info);
         $this->assign('id',$id);
         return $this->fetch();
@@ -212,7 +213,7 @@ class Msg extends MemberBase
     public function showsend($id=0)
     {
         $info = $this->get_info($id);
-		$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
+		//$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
         if(!is_array($info)){
             $this->error($info);
         }

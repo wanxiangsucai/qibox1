@@ -4,6 +4,7 @@ namespace app\common\controller\admin;
 use app\common\controller\AdminBase;
 use app\common\traits\ModuleContent;
 
+//内容管理
 abstract class C extends AdminBase
 {
     use ModuleContent;

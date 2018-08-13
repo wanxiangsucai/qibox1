@@ -1,6 +1,7 @@
 <?php
 namespace app\common\controller\admin;
 
+//商城订单自定义段
 class OrderField extends F
 {
     protected function _initialize()

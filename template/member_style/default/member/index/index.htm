@@ -129,45 +129,63 @@
 			<span>余额{$info.rmb}元</span> 
 		</li>
 		<li>
-			<div><i class="fa fa-calendar-check-o"></i></div>
-			<span>签到</span> 
+			<a href="{:purl('signin/index/index',[],'index')}"><div><i class="fa fa-calendar-check-o"></i></div>
+			<span>签到</span> </a>
 		</li>		
 	</ul>
 </div>
-{foreach name="menu" id="vo"}
-	{empty name="vo.sons.1"}
+
+<!--会员个性菜单-->
+{if $menu['often']['sons']}
+	{volist name="menu.often.sons" id="vo"}
 			<div class="mui-card">
 				<ul class="mui-table-view">
-					<li class="mui-table-view-cell">					
-						<i class="{$vo.icon|default='fa fa-sun-o'}" style="color:#009900;"></i>
-					<!--『{$vo.title}』「」-->{$vo.title}</li>
-					{foreach name="vo.sons.0.sons" id="rs"}
+					<li class="mui-table-view-cell"><i class="{$vo.icon|default='fa fa-sun-o'}" style="color:#009900;"></i> {$vo.title}</li>
+					{foreach name="vo.sons" id="rs"}
 					<li class="mui-table-view-cell">
 						<a href="{$rs.url}" class="mui-navigate-right">{$rs.title}</a>
 					</li>
 					{/foreach}
 				</ul>
 			</div>
-	{else}
+	{/volist}
+	{php}$menu=[];{/php}<!--把默认菜单清除掉-->
+{/if}
+
+
+<!-- 会员个性菜单不存在,就用默认所有菜单 -->
+{volist name="menu" id="vo"}
+	{if count($vo.sons)==1}
+			<div class="mui-card">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell"><i class="{$vo.icon|default='fa fa-sun-o'}" style="color:#009900;"></i> {$vo.title}</li>
+					{volist name="vo.sons.0.sons" id="rs"}
+					<li class="mui-table-view-cell">
+						<a href="{$rs.url}" class="mui-navigate-right">{$rs.title}</a>
+					</li>
+					{/volist}
+				</ul>
+			</div>
+	{else /}
 			<div class="mui-card">
 				<ul class="mui-table-view mui-table-view-chevron">
 					<li class="mui-table-view-cell"><i class="{$vo.icon|default='fa fa-th-large'}" style="color:#F90;"></i> {$vo.title}<!--『』--></li>
-					{foreach name="vo.sons" id="ar"}
+					{volist name="vo.sons" id="ar"}
 					<li class="mui-table-view-cell mui-collapse">							
 						<a class="mui-navigate-right" href="#">
 						&nbsp; &nbsp;&nbsp;<i class="{$ar.icon|default='si si-layers'}" style="color:#009900;"></i>
 						{$ar.title}</a>
 						<ul class="mui-table-view mui-table-view-chevron">
-							{foreach name="ar.sons" id="rs"}
+							{volist name="ar.sons" id="rs"}
 							<li class="mui-table-view-cell"><a class="mui-navigate-right" href="{$rs.url}">{$rs.title}</a></li>
-							{/foreach}
+							{/volist}
 						</ul>
 					</li>
-					{/foreach}
+					{/volist}
 				</ul>
 			</div>
-	{/empty}
-{/foreach}
+	{/if}
+{/volist}
 <div class="mui-content-padded">	
 	<button type="button" onclick="window.location.href='{:iurl('index/login/quit')}'" class="mui-btn mui-btn-warning mui-btn-block">退出登录</button>	 
 </div>

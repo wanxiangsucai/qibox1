@@ -5,22 +5,18 @@ use app\admin\model\AdminMenu AS MenuModel;
 use app\common\util\Tabel;
 use app\common\util\Form;
 use util\Tree;
-use app\common\model\Group;
+use app\common\util\Menu;
 
-class AdminMenu extends AdminBase
+class MemberMenu extends AdminBase
 {
     protected $validate;
-    protected $grouplist;
     protected $group_nav;
     
     protected function _initialize()
     {
         parent::_initialize();
         $this->model = new MenuModel();
-        $this->grouplist = Group::getTitleList(['allowadmin'=>1]);
-//         $array = $this->model->group('groupid')->column('groupid');
-//         $array = $array?array_merge($array,[3]):[3];
-        $group_list = Group::where('allowadmin',1)->order('id asc')->column('id,title');
+        $group_list = getGroupByid();
         foreach($group_list  AS $id=>$name){
             $this->group_nav[$id]=[
                     'title'=>$name,
@@ -31,10 +27,10 @@ class AdminMenu extends AdminBase
     
     public function index($gid=0)
     {
-        $gid || $gid=3;
+        $gid || $gid=8;
 	    $map = [
 	            'groupid'=>$gid,
-	            'type'=>0,
+	            'type'=>1,
 	    ];
 	    $listdb = Tree::config(['title' => 'name'])->toList(
 	            MenuModel::where($map)->order('list desc,id asc')->column(true)
@@ -43,7 +39,7 @@ class AdminMenu extends AdminBase
 	    $tab = [
 	            //['id','ID','text'],
 	            ['title_display','链接名称','text'],
-	            ['groupid','所属用户组','select2',$this->grouplist],
+	            ['groupid','所属用户组','select2',getGroupByid()],
 	            ['list','排序值','text.edit'],
 	            ['ifshow','是否显示','switch'],
 	            ['target','新窗口打开','yesno'],
@@ -55,17 +51,57 @@ class AdminMenu extends AdminBase
 	    ];
 	    
 	    $table = Tabel::make($listdb,$tab)
-	    ->addTopButton('add',['title'=>'添加菜单','url'=>url('add',['gid'=>$gid])])
+	    ->addTopButton('add',['title'=>'手工添加菜单','url'=>url('add',['gid'=>$gid])])
+	    ->addTopButton('custom',['title'=>'快速导入会员所有菜单','url'=>url('copy',['gid'=>$gid]),'icon'=>'fa fa-copy'])
 	    ->addTopButton('delete')
 	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])])
 	    ->addRightButton('delete')
 	    ->addRightButton('edit')
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
-	    ->addPageTitle('网站菜单管理')
+	    ->addPageTitle('会员个性菜单管理')
 	    ->addNav($this->group_nav,$gid) ;   
 
         return $table::fetchs();
+	}
+	
+	/**
+	 * 快速批量复制会员所有菜单
+	 * @param number $gid
+	 */
+	public function copy($gid=0){
+	    $num1 = $num2 = 0;
+	    foreach(Menu::make('member') AS $m_name=>$array1){	        
+	        foreach($array1['sons'] AS $key1=>$array2){
+	            $title1 = $array2['title'];
+	            $data1 = ['type'=>1,'groupid'=>$gid,'name'=>$title1];
+	            $info1 = MenuModel::get($data1);
+	            if (empty($info1)) {
+	                $num1++;
+	                $array2['icon'] && $data1['icon'] = $array2['icon'];
+	                $result = MenuModel::create($data1) ;
+	                $data2 = ['pid'=>$result->id];
+	            }else{
+	                $data2 = ['pid'=>$info1['id']];
+	            }
+	            $data2['groupid'] = $gid;
+	            $data2['type'] = 1;
+	            foreach($array2['sons'] AS $rs){	                	                
+	                $data2['url'] = str_replace(['admin.php/admin/','admin.php/'], ['member.php/member/','member.php/'], $rs['url']);
+	                if (empty(MenuModel::get($data2))) {
+	                    $num2++;
+	                    $data2['name'] = $rs['title'];
+	                    $rs['icon'] && $data2['icon'] = $rs['icon'];
+	                    MenuModel::create($data2) ;
+	                }
+	            }
+	        }
+	    }
+	    if ($num1 || $num2) {
+	        $this->success("本次共创建一级菜单 {$num1} 个,二级菜单 {$num2} 个");
+	    }else{
+	        $this->error('已经导入过了,重复导入无效');
+	    }
 	}
 	
 	public function add($pid=0,$gid=0){
@@ -90,13 +126,14 @@ class AdminMenu extends AdminBase
 	    $array = MenuModel::where(['groupid'=>$gid,'pid'=>0])->column('id,name');
 	    $form = Form::make()
 	    ->addPageTips('父菜单为PC或WAP的话,子菜单设置通用无效')
-	    ->addSelect('groupid','所属用户组','',$this->grouplist,$gid)
+	    ->addSelect('groupid','所属用户组','',getGroupByid(),$gid)
 	    ->addSelect('pid','父级菜单','',$array,$pid)
 	    ->addText('name','菜单名称')
 	    ->addText('url','菜单链接')
 	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'],0)
 	    ->addIcon('icon','小图标')
-	    ->addPageTitle('添加菜单');
+	    ->addHidden('type','1')
+	    ->addPageTitle('添加会员个性菜单');
 	    return $form::fetchs();
 	}
 

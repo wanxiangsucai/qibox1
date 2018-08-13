@@ -1860,6 +1860,27 @@ if (!function_exists('makeTemplate')) {
             }
             $template = ($path . $template . '.' . ltrim(config('template.view_suffix'), '.'));
         }
+        
+        //自适应模板判断开始
+        $array = pathinfo($template);
+        $name = $array['basename']; 
+        $path = $array['dirname'].'/';
+        //偿试先查找是否有对应的wap_或pc_模板
+        if(!defined('USE_PC_TEMPLATE') && IN_WAP===true){   //没有声明强制使用PC模板的时候,如果WAP端,就取WAP模板
+            if(!preg_match('/^wap_/', $name)){
+                if(is_file($path.'wap_'.$name)){
+                    return $path.'wap_'.$name;
+                }
+            }
+        }else{
+            if(!preg_match('/^pc_/', $name)){
+                if(is_file($path.'pc_'.$name)){
+                    return $path.'pc_'.$name;
+                }
+            }
+        }
+        //自适应模板判断结束        
+        
         $template = get_real_path($template);
         if ($check!==true || is_file($template)) {
             return $template;
@@ -1930,23 +1951,23 @@ if (!function_exists('getTemplate')) {
                 return ;
             }
         }
-        $array = pathinfo($template);
-        $name = $array['basename'];   //basename($template);
-        $path = $array['dirname'].'/';  //dirname($template);
+//         $array = pathinfo($template);
+//         $name = $array['basename'];   //basename($template);
+//         $path = $array['dirname'].'/';  //dirname($template);
         
-        if(!defined('USE_PC_TEMPLATE') && IN_WAP===true){   //没有声明强制使用PC模板的时候,如果WAP端,就取WAP模板
-            if(!preg_match('/^wap_/', $name)){
-                if(is_file($path.'wap_'.$name)){
-                    return $path.'wap_'.$name;
-                }
-            }            
-        }else{
-            if(!preg_match('/^pc_/', $name)){
-                if(is_file($path.'pc_'.$name)){
-                    return $path.'pc_'.$name;
-                }
-            }  
-        }
+//         if(!defined('USE_PC_TEMPLATE') && IN_WAP===true){   //没有声明强制使用PC模板的时候,如果WAP端,就取WAP模板
+//             if(!preg_match('/^wap_/', $name)){
+//                 if(is_file($path.'wap_'.$name)){
+//                     return $path.'wap_'.$name;
+//                 }
+//             }            
+//         }else{
+//             if(!preg_match('/^pc_/', $name)){
+//                 if(is_file($path.'pc_'.$name)){
+//                     return $path.'pc_'.$name;
+//                 }
+//             }  
+//         }
         return $template;
     }
  }

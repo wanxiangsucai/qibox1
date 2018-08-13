@@ -125,7 +125,7 @@ class Table extends Base
             $show = "<input type='text' class='quick_edit {$_class}' data-value='{$field_value}' data-name='$name' data-id='{$info['id']}' name='{$name}[{$info['id']}]' size='$size' value='{$field_value}'>";
         }elseif($field['type'] == 'callback'){
             $field['opt'] = str_replace('__','',$field['opt']);
-            if($field['opt']=='data'){
+            if($field['opt']=='data'||empty($field['opt'])){
                 $qs = $info;
             }else{
                 $qs = $info[$field['opt']];

@@ -8,7 +8,7 @@
     	<form name="form1" method="post" action="">
 {if $info.pay_status==0}
           <dl> 
-              <dt>应付余额:</dt>
+              <dt>应付金额:</dt>
               <dd><span class='input'><input type="text" name="pay_money" style='width:156px;' value="{$info.pay_money}"></span> <span>元</span> </dd>
           </dl>
 {else /}
@@ -19,9 +19,7 @@
 {/if}
         <div class='butter'>
                 <input type="submit" name="Submit" value="提交">
-                <a href="javascript:history.go(-1)">返回</a>
-                <input type="hidden" name="step" value="2">
-                <input type="hidden" name="id" value="121">          
+                <a href="{:urls('index')}">返回</a>         
         </div>
         </form>
 </div>

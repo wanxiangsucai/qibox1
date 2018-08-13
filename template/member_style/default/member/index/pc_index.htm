@@ -46,29 +46,38 @@ qb_time();
 			</dl>
 			<div class="ListMenuBox">
 				<div class="MenuContent">
-{foreach name="menu" id="vo"}
+
+{volist name="menu" id="vo"}
+
+{php}
+if(empty($vo['sons'])){continue;}	//没有子菜单的就不要显示了
+if($menu['often']['sons'] && $key!='often'){continue;}	//如果有个性菜单,就不显示其它菜单了
+{/php}
 <dl>
 	<dt><span><i class="{$vo.icon|default='fa fa-list-ul'}"></i>{$vo.title}</span></dt>
 	<dd>
-		{foreach name="vo.sons" id="ar"}
+		{volist name="vo.sons" id="ar"}
  		<ul>
  			<ol><i class="{$ar.icon|default='fa fa-map-o'}"></i>{$ar.title}</ol>
-			{foreach name="ar.sons" id="rs"}
+			{volist name="ar.sons" id="rs"}
  			<li onclick="linksthis($(this))"><A HREF="{$rs.url}" title="{$rs.title}" target="member_mainiframe">{$rs.title}</A></li>
- 			{/foreach}
+ 			{/volist}
  		</ul>
-		{/foreach}
+		{/volist}
 	</dd>
 </dl>
-
-{/foreach}
-
-
+{/volist}
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+//如果有个性菜单的话,就把头部选择区域隐藏掉
+if(($(".MainMenus .MenuContent dl").length)<2){
+	$(".MainMenus").hide();
+}
+</script>
 <div class="MainContainer">
 	<div class="LeftCont">
 		<div class="members">

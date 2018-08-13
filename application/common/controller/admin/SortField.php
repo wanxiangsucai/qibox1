@@ -1,6 +1,7 @@
 <?php
 namespace app\common\controller\admin;
 
+//栏目自定义字段管理
 class SortField extends F
 {
     protected function _initialize()

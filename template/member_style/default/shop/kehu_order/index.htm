@@ -30,19 +30,15 @@
 	</ul>
 	{/volist}
 	<ul class="otherinfo">
-		<ol>余款:<span>&yen;{$rs.totalmoney}</span>元</ol>
-		<ol style="margin-left:8px;">订金:<span>&yen;{$rs.fewmoney}</span>元</ol>
+		<ol>应付金额:<span>&yen;{$rs.pay_money}</span>元</ol>
+		 
 		<li>订单号:{$rs.order_sn}</li>
 	</ul>
 	<div class="actions">
-		{eq name="$rs.pay_status" value="1"}<span>已付余款</span>{else /}
-		<span>未付余款</span>
+		{eq name="$rs.pay_status" value="1"}<span>已付款</span>{else /}
+		<span>未付款</span>
 		{/eq}
-		{eq name="$rs.few_ifpay" value="1"}
-		<a href="{:urls('rob_ding',['id'=>$rs.id])}" onclick="return confirm('你要没收用户的订金吗?');" title="没收订金">已付订金</a>
-		{else /}
-		<span>未付订金</span>
-		{/eq}
+		
 		<a href="{:urls('show',['id'=>$rs['id']])}">查看</a> 
 		<a href="{:urls('edit',['id'=>$rs['id']])}">修改</a> 			
 		<!--<a href="{:urls('delete',['id'=>$rs['id']])}" class="del">删除</a>-->

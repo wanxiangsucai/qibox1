@@ -116,6 +116,7 @@ class Msg extends MemberBase
             }
             $data['touid'] = $info['uid'];
             $data['uid'] = $this->user['uid'];
+            $data['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($data['content']));
             $result = Model::add($data,$this->admin);
             if(is_numeric($result)){
                 $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';

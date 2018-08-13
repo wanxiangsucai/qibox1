@@ -1,15 +1,13 @@
 <?php
 namespace app\cms\index;
 
+use app\common\controller\index\Index AS _Index;
+
 //频道主页
-class Index extends Content
+class Index extends _Index
 {
 	public function index(){
-// 	    $list = Db::name('rmb_consume')->where([])->paginate();
-// 	    print_r($list->render());exit;
-	    $mid = $this->m_model-> getId();
-	    $this->assign('mid',$mid);
-	    return $this->fetch();
+	    return parent::index();
 	}
 
 }

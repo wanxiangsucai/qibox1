@@ -4,6 +4,7 @@ namespace app\common\controller\admin;
 use app\common\controller\AdminBase;
 use app\common\traits\AddEditList;
 
+//模型自定义字段管理
 abstract class F extends AdminBase
 {
     use AddEditList;

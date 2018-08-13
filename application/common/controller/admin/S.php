@@ -4,6 +4,7 @@ namespace app\common\controller\admin;
 use app\common\controller\AdminBase;
 use app\common\traits\AdminSort;
 
+//主栏目管理
 abstract class S extends AdminBase
 {
     use AdminSort;

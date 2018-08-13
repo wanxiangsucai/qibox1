@@ -29,19 +29,18 @@
 		  </div>
 {/volist}
     </li>
-    <li class="totalmoney">&yen;{$rs.totalmoney}</li>
+    <li class="totalmoney" style="font-size:15px;">应付金额<br>&yen;{$rs.pay_money}</li>
     <li class="state">
       <div>{eq name="$rs.pay_status" value="1"}
   已付款 
 {else /}
- <a href="{:urls('pay',['id'=>$rs['id']])}" title="点击在线支付">未付款</a>
+ <a style="border:1px solid #ccc;padding:3px;" href="{:urls('pay',['id'=>$rs['id']])}" title="点击在线支付">未付款</a>
 {/eq}</div>
       <div></div>
     </li>
     <li class="action">
       <a href="{:urls('show',['id'=>$rs['id']])}">查看</a>
-      <span style='display:;'>
-        <a href="{:urls('edit',['id'=>$rs['id']])}">修改</a></span>
+
        
     </li>
   </ul>

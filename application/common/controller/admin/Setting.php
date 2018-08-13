@@ -4,7 +4,7 @@ namespace app\common\controller\admin;
 use app\admin\controller\Setting AS _Setting;
 use plugins\config_set\model\Group AS GroupModel;
 
-//参数设置
+//各频道参数设置
 abstract class Setting extends _Setting
 {
     //获得模块或插件ID，插件的话，取负数

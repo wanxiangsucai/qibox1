@@ -93,11 +93,7 @@ class Index extends AdminBase
     
 	public function welcome()
 	{
-		/*
-		
-		修改了这里 解决类型错误: Too few arguments to function think\db\Query::where(), 0 passed and at least 1 expected
-		*/
-		$map=[];
+		$map = [];
 		$map['uid']  = ['>',0];
         $this->assign('user_num', User::where($map)->count('uid') );
         is_table('cms_content') && $this->assign('cms_num', Db::name('cms_content')->count('id') );

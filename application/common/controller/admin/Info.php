@@ -4,7 +4,7 @@ namespace app\common\controller\admin;
 use app\common\controller\AdminBase;
 use app\common\traits\AddEditList;
 
-//辅栏目内容
+//辅栏目内容管理
 abstract class Info extends AdminBase
 {
     use AddEditList;

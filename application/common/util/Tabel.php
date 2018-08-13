@@ -92,6 +92,7 @@ class Tabel extends IndexBase{
 	 * @return $this
 	 */
 	public static function addTopButton($type = '', $attribute = [], $blank = false){
+	    $attribute['href'] || $attribute['href'] = $attribute['url'];
 	    self::$instance->tab_ext['top_button'][] = [
 	            'title' => $attribute['title'] ?: self::get_top_bottom($type,'title'),
 	            'icon'  => $attribute['icon'] ?: self::get_top_bottom($type,'icon'),
@@ -118,6 +119,7 @@ class Tabel extends IndexBase{
 	                $attribute
 	                );
 	    }
+	    $attribute['href'] || $attribute['href'] = $attribute['url'];
 	    self::$instance->tab_ext['right_button'][] = [
 	            'title' => $attribute['title'] ?: self::get_right_bottom($type,'title'),
 	            'icon'  => $attribute['icon'] ?: self::get_right_bottom($type,'icon'),

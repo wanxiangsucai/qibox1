@@ -77,14 +77,16 @@ class Menu{
     }
     
     /**
-     * 后台常用菜单处理
+     * 个性菜单处理
      * @param array $base_menu
      * @return array|string[]|NULL[]
      */
-    protected static function build_often_menu($base_menu=[]){
+    protected static function build_often_menu($base_menu=[],$type=0){
         $map = [
-                'groupid'=>login_user('groupid')
+                'type'=>$type,
+                'groupid'=>login_user('groupid'),
         ];
+        $_array = [];
         $listdb = get_sons( AdminMenu::getTreeList($map) );
         foreach ($listdb AS  $key=>$rs) {
             $_array[$key]['title'] = $rs['name'];
@@ -95,6 +97,9 @@ class Menu{
                         'url'=>$vs['url'],
                 ];
             }             
+        }
+        if ($type!=0&&empty($_array)) {     //会员中心
+            return $base_menu;
         }
         if(is_array($base_menu['often']['sons'])){
             $base_menu['often']['sons'] = array_merge($base_menu['often']['sons'],$_array);
@@ -196,8 +201,10 @@ class Menu{
         
         //常用菜单
         if (self::$type=='admin') {
-            $base_menu = self::build_often_menu($base_menu);
-        }        
+            $base_menu = self::build_often_menu($base_menu);    //后台
+        }else{
+            $base_menu = self::build_often_menu($base_menu,1);  //会员中心
+        }
 
         //模块菜单处理
         $base_menu = self::build_module_menu($base_menu);

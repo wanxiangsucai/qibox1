@@ -25,6 +25,34 @@ class Setting extends AdminBase
         parent::_initialize();
         $this->model = new ConfigModel();
         $this->tab_ext = [ 'help_msg'=>'系统参数配置',];
+        $this->add_module_config();
+    }
+    
+    /**
+     * 模块里要强制补上的配置参数
+     */
+    protected function add_module_config(){
+        if ($this->config || defined('IN_PLUGIN')) {
+            return ;
+        }
+        $this->config = [
+                [
+                        'c_key'=>'module_pc_index_template',
+                        'title'=>'频道主页PC版风格模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'form_type'=>'text',
+                        'ifsys'=>0,
+                        'list'=>-1,
+                ],
+                [
+                        'c_key'=>'module_wap_index_template',
+                        'title'=>'频道主页WAP版风格模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'form_type'=>'text',
+                        'ifsys'=>0,
+                        'list'=>-1,
+                ],
+        ];
     }
     
     /**

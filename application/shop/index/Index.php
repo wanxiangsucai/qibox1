@@ -1,13 +1,13 @@
 <?php
 namespace app\shop\index;
 
+use app\common\controller\index\Index AS _Index;
+
 //频道主页
-class Index extends Content
+class Index extends _Index
 {
-	public function index(){
-	    $mid = $this->m_model-> getId();
-	    $this->assign('mid',$mid);
-	    return $this->fetch();
-	}
-	
+    public function index(){
+        return parent::index();
+    }
+    
 }

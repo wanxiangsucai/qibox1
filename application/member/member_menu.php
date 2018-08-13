@@ -1,6 +1,12 @@
 <?php
 
 return array(
+        'often'=>array(
+                'title'=>'常用菜单',
+                'icon'=>'fa fa-fw fa-star',
+                'sons'=>array(
+                ),
+        ),
         'base'=>array(
                 'title'=>'基础设置',
 				'icon'=>'fa fa-windows',

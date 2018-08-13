@@ -4,6 +4,7 @@ namespace app\common\controller\admin;
 use app\common\controller\AdminBase; 
 use app\common\traits\AddEditList;
 
+//商城订单管理
 class Order extends AdminBase
 {
     use AddEditList;
