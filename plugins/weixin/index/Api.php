@@ -19,7 +19,10 @@ class Api extends IndexBase
     protected $ThumbMediaId;
     protected $PicUrl; 
     
-    //对接微信公众号的唯一入口
+    /**
+     * 对接微信公众号的唯一入口
+     * @return string|\plugins\weixin\index\unknown
+     */
     public function index(){        
         if(input('echostr')){	//首次绑定接口地址时，微信要用到的测试接口是否正常
             echo input('echostr');
@@ -48,14 +51,18 @@ class Api extends IndexBase
         }
     }
     
-    //各个事件的入口，需要重写，实现各自的逻辑内容
+    /**
+     * 各个事件的入口，需要重写，实现各自的逻辑内容
+     */
     public function execute(){
         if($this->checkSignature()!=true){
            // die('非法访问！');
         }
     }
     
-    //常用的微信提交过来的变量
+    /**
+     * 常用的微信提交过来的变量
+     */
     protected function set_value(){
         $obj = self::$xml_obj;
         $this->wx_apiId = $obj->ToUserName;
@@ -78,7 +85,11 @@ class Api extends IndexBase
         }
     }
     
-    //实例化微信提供的各种接口执行操作入口
+    /**
+     * 实例化微信提供的各种接口执行操作入口
+     * @param unknown $type
+     * @return string|unknown
+     */
     public static function make($type)
     {
         $class = "plugins\\weixin\\index\\".'Api_'.strtolower($type);
@@ -95,7 +106,9 @@ class Api extends IndexBase
         //return self::$instance;
     }
     
-    //实例化微信某个接口下所有模块里边的应用，方便扩展
+    /**
+     * 实例化微信某个接口下所有模块里边的应用，方便扩展
+     */
     public function run_model()
     {
         $name = substr(basename(get_class($this)),4);
@@ -112,7 +125,10 @@ class Api extends IndexBase
         }
     }
     
-    //权限判断， 是不是微信真实POST过来的数据
+    /**
+     * 权限判断， 是不是微信真实POST过来的数据
+     * @return boolean
+     */
     protected function checkSignature()
     {
         $signature = $_GET['signature'];
@@ -132,8 +148,12 @@ class Api extends IndexBase
         }
     }
     
-    //给用户回复纯文本信息，非认证的订阅号也能用
-    protected function give_text($MSG){
+    /**
+     * 给用户回复纯文本信息，非认证的订阅号也能用
+     * @param string $MSG
+     * @return string
+     */
+    protected function give_text($MSG=''){
         $timestamp = time();
         return "<xml>
         <ToUserName><![CDATA[{$this->user_appId}]]></ToUserName>
@@ -144,8 +164,12 @@ class Api extends IndexBase
         </xml>";
     }
     
-    //给用户回复图文信息，非认证的订阅号也能用
-    protected function give_news($array){
+    /**
+     * 给用户回复图文信息，非认证的订阅号也能用
+     * @param array $array
+     * @return string
+     */
+    protected function give_news($array=[]){
         $timestamp = time();
         $num = count($array);
         foreach( $array AS $rs){

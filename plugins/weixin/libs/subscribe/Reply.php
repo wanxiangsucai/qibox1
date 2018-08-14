@@ -19,7 +19,8 @@ class Reply extends Api
                     'about'=>$this->webdb['weixin_welcome_desc'],
                     'url'=>$this->webdb['weixin_welcome_link'],
             );
-            echo give_news(array($array));
+            echo $this->give_news(array($array));
+            exit;
         }
     }
     
@@ -28,7 +29,7 @@ class Reply extends Api
         $MSG = $this->webdb['weixin_welcome'];
         if($MSG!=''){	//纯文本回复
             if($this->webdb['weixin_type']<2){	//非认证号，不能使用客服接口！
-                echo give_text($MSG);
+                echo $this->give_text($MSG);
                 exit;
             }else{
                 send_wx_msg($this->user_appId,$MSG);    //用客服接口的话，就可以跟图文信息不冲突

@@ -85,14 +85,36 @@ class Exam{
      * @param array $info 试题数据
      * @param string $ans 用户的答案
      */
-    public function check_answer($info=[],$ans=''){
-        if($info['answer']==$ans){
+    public function check_answer($info=[],$ans=''){        
+        if(trim($info['answer'],',')==trim($ans,',')){
             return 1;
         }else{
             return -1;
         }
     }
     
+    /**
+     * 某套试卷最高得分
+     */
+    public function PaperTop($id=0){
+        return getArray(Db::name('exam_putin')->where('paperid',$id)->order('fen desc')->limit(1)->find());
+    }
+    
+    /**
+     * 考生的答题记录
+     * @param string $type
+     * @return number|string
+     */
+    public function log_num($type=''){
+        $uid = intval(login_user('uid'));
+        if ($type=='all_title') {   //考生回答的所有题目
+            return Db::name('exam_answer')->where('uid',$uid)->count('id');
+        }elseif ($type=='all_paper') {  //考生提交的所有试卷
+            return Db::name('exam_putin')->where('uid',$uid)->count('id');
+        }elseif ($type=='err_title') {  //考生回答的所有错误题目
+            return Db::name('exam_answer')->where('uid',$uid)->where('is_true','-1')->count('id');
+        }
+    }
     
     
 }

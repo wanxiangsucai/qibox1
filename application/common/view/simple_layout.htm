@@ -1,30 +1,24 @@
 <!DOCTYPE html>
 <html>
-
 	<head>
 		<meta charset="utf-8">
-		<title>Mui</title>
+		<title>{block name="head_title"}{$webdb.seo_title}{/block}</title>
+		<meta name="keywords" content='{block name="head_keword"}{$webdb.seo_keyword}{/block}'>
+		<meta name="description" content='{block name="head_description"}{$webdb.seo_description}{/block}'>
 		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
-<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
+		<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+		<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 		<!--标准mui.css-->
-		<link rel="stylesheet" href="__STATIC__/mui/css/mui.min.css">
-	 
+		<link rel="stylesheet" href="__STATIC__/mui/css/mui.min.css">	 
 	</head>
-
 	<body>
 		<header class="mui-bar mui-bar-nav">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 			<h1 class="mui-title">{block name="title"}主标题{/block}</h1>
 		</header>
 		<div class="mui-content">
-
- 
-
-			
-
 {// 主体内容}
 {block name="content"}
 <div class="mui-card">
@@ -114,11 +108,6 @@
  
 {/block}
 
-
-			
- 
-		</div>
-	 
+		</div>	 
 	</body>
-
 </html>

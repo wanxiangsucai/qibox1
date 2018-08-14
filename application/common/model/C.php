@@ -413,6 +413,7 @@ abstract class C extends Model
      */
     public static function getNextByid($id,$type='sort',$info=[],$map=[],$next=true){
         self::InitKey();
+        $id = intval($id);
         if ($next==true) {
             $mod = '<';
             $order = 'id DESC';
@@ -420,13 +421,13 @@ abstract class C extends Model
             $mod = '>';
             $order = 'id ASC';
         }
-        if($type=='sort'){
+        if($type=='sort' && ($id||$info) ){
             if(empty($info['fid'])){
                 $info = static::getInfoByid($id);
             }
             $mid = $info['mid'];
             return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->where('fid','=',$info['fid'])->order($order)->limit(1)->value('id');
-        }elseif($type=='model'){
+        }elseif($type=='model' && ($id||$info) ){
             if(empty($info['mid'])){
                 $mid = self::getMidById($id);
             }else{
@@ -446,16 +447,17 @@ abstract class C extends Model
      * @param array $map
      * @return mixed|PDOStatement|string|boolean|number
      */
-    public static function getNextRandByid($id,$type='sort',$info=[],$map=[]){
+    public static function getNextRandByid($id=0,$type='sort',$info=[],$map=[]){
         self::InitKey();
+        $id = intval($id);
         $mod = '<>';
-        if($type=='sort'){
+        if($type=='sort' && ($id||$info)){  //在某个栏目里获取下一条内容
             if(empty($info['fid'])){
                 $info = static::getInfoByid($id);
             }
             $mid = $info['mid'];
             return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->where('fid','=',$info['fid'])->orderRaw('rand()')->limit(1)->value('id');
-        }elseif($type=='model'){
+        }elseif($type=='model' && ($id||$info)){
             if(empty($info['mid'])){
                 $mid = self::getMidById($id);
             }else{
