@@ -1861,6 +1861,8 @@ if (!function_exists('makeTemplate')) {
             $template = ($path . $template . '.' . ltrim(config('template.view_suffix'), '.'));
         }
         
+        $template = get_real_path($template);
+        
         //自适应模板判断开始
         $array = pathinfo($template);
         $name = $array['basename']; 
@@ -1879,9 +1881,8 @@ if (!function_exists('makeTemplate')) {
                 }
             }
         }
-        //自适应模板判断结束        
+        //自适应模板判断结束
         
-        $template = get_real_path($template);
         if ($check!==true || is_file($template)) {
             return $template;
         }else{

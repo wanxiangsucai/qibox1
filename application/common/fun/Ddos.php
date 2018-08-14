@@ -18,7 +18,7 @@ class Ddos{
         if ( cache('ddos_'.$uid) ) {
             return '请不要那么频繁的发表内容!';
         }
-        cache('ddos_'.$uid,true,15);
+        cache('ddos_'.$uid,true,10);	//非管理员,10秒内不能频繁发表内容
         return true;
     }
     
@@ -31,7 +31,7 @@ class Ddos{
         if ( cache('ddos_reply_'.$uid) ) {
             return '请不要那么频繁的发表内容!';
         }
-        cache('ddos_reply_'.$uid,true,5);
+        cache('ddos_reply_'.$uid,true,5);	//非管理员,5秒内不能频繁回复内容
         return true;
     }
 
