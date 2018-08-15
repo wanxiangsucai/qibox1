@@ -377,22 +377,25 @@ trait AddEditList {
 	 */
 	protected static function search_tpl($type='',$mid=''){
 	    $filename = $type.$mid;
-	    if(preg_match('/^([-\w]+)$/i', $type)){    // 比如 $type='index@xxx' 就不适合了 2018-6-21 12:00改过
-	        static $path_array = [];
-	        $path = $path_array[config('template.view_base')];
-	        if(empty($path)){  //避免反复找路径
-	            $path_array[config('template.view_base')] = $path = dirname( makeTemplate('index',false) ).'/'; //取得路径
-	        }
-	        $file = $path . $filename . '.' . ltrim(config('template.view_suffix'), '.');
-	    }else{
+// 	    if(preg_match('/^([-\w]+)$/i', $type)){    // 比如 $type='index@xxx' 就不适合了 2018-6-21 12:00改过
+// 	        static $path_array = [];
+// 	        $path = $path_array[config('template.view_base')];
+// 	        if(empty($path)){  //避免反复找路径
+// 	            $path_array[config('template.view_base')] = $path = dirname( makeTemplate('index',false) ).'/'; //取得路径
+// 	        }
+// 	        $file = $path . $filename . '.' . ltrim(config('template.view_suffix'), '.');
+// 	    }else{
 	        $file = makeTemplate($filename);  // 比如 $type='index@xxx'  这种情况
-	    }	    
-
-	    if(is_file($file)&&filesize($file)){
+// 	    }	    
+        
+	    if(is_file($file)){
+	    //if(is_file($file)&&filesize($file)){
 	        return $file;
 	    }elseif($mid!==''){ //寻找母模板
-	        $file = $path . $type . '.' . ltrim(config('template.view_suffix'), '.');
-	        if(is_file($file)&&filesize($file)){
+	        //$file = $path . $type . '.' . ltrim(config('template.view_suffix'), '.');
+	        $file = makeTemplate($type);
+	        if(is_file($file)){
+	        //if(is_file($file)&&filesize($file)){
 	            return $file;
 	        }
 	    }
