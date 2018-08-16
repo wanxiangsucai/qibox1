@@ -32,7 +32,7 @@ class Setting extends AdminBase
      * 模块里要强制补上的配置参数
      */
     protected function add_module_config(){
-        if ($this->config || defined('IN_PLUGIN')) {
+        if ($this->config || defined('IN_PLUGIN') || empty(config('system_dirname'))) {
             return ;
         }
         $this->config = [

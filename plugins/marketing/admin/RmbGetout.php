@@ -53,6 +53,9 @@ class RmbGetout extends AdminBase
 		                'href'=>auto_url('pay',['id'=>'__id__','type'=>'other']),
 		        ],
 		];
+		$this->tab_ext['search'] = [
+		        'uid'=>'用户UID',
+		];
 	}
 	
 	/**

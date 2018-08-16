@@ -61,7 +61,7 @@ class Module extends AdminBase
 	        return $this->edit_order();
 	    }
 	    if(!table_field('module','version_id')){    //升级数据库
-	        into_sql(APP_PATH.'common/upgrade/6.sql');
+	        into_sql(APP_PATH.'common/upgrade/6.sql',true,0);
 	    }
 	    return $this -> getAdminTable(self :: getListData($map = [], $order = []));
 	}

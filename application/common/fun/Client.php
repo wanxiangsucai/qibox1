@@ -17,9 +17,9 @@ class Client{
             $brand = '华为';
         } else if (stripos($user_agent, "Lenovo")!==false) {
             $brand = '联想';
-        } else if (strpos($user_agent, "MI-ONE")!==false || strpos($user_agent, "MI 1S")!==false || strpos($user_agent, "MI 2")!==false || strpos($user_agent, "MI 3")!==false || strpos($user_agent, "MI 4")!==false || strpos($user_agent, "MI-4")!==false) {
+        } else if (strpos($user_agent, "MI")!==false) {
             $brand = '小米';
-        } else if (strpos($user_agent, "HM NOTE")!==false || strpos($user_agent, "HM201")!==false) {
+        } else if (strpos($user_agent, "HM")!==false) {
             $brand = '红米';
         } else if (stripos($user_agent, "Coolpad")!==false || strpos($user_agent, "8190Q")!==false || strpos($user_agent, "5910")!==false) {
             $brand = '酷派';
@@ -35,7 +35,7 @@ class Client{
             $brand = '天语';
         } else if (stripos($user_agent, "Nubia")!==false || stripos($user_agent, "NX50")!==false || stripos($user_agent, "NX40")!==false) {
             $brand = '努比亚';
-        } else if (strpos($user_agent, "M045")!==false || strpos($user_agent, "M032")!==false || strpos($user_agent, "M355")!==false) {
+        } else if (strpos($user_agent, "MZ")!==false || strpos($user_agent, "M045")!==false || strpos($user_agent, "M032")!==false || strpos($user_agent, "M355")!==false) {
             $brand = '魅族';
         } else if (stripos($user_agent, "DOOV")!==false) {
             $brand = '朵唯';

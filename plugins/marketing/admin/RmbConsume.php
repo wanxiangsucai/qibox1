@@ -36,6 +36,10 @@ class RmbConsume extends AdminBase
 				['posttime', '时间', 'datetime'],
                 ['about', '事项', 'text'],                
 			];
+		
+		$this->tab_ext['search'] = [
+		        'uid'=>'用户UID',
+		];
 	}
 	
 

@@ -367,6 +367,7 @@ class User extends Model
 	    if($token && cache($token)){   //APP或小程序
 	        list($uid,$username,$password) = explode("\t",cache($token));
 	        if($uid&&$username&&$password){
+	            set_cookie('passport',cache($token)); //同步登录框架小程序
 	            return ['uid'=>$uid,'username'=>$username,'password'=>$password];
 	        }
 	    }
