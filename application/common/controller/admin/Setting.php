@@ -34,7 +34,19 @@ abstract class Setting extends _Setting
             $group = current($array);
         }
         if(!$group){
-            $this->error('分类ID不存在!');
+            $data = [
+                    'title'=>'基础设置',
+                    'list'=>0,
+                    'sys_id'=>$this->getSysId(),
+                    'ifshow'=>0,
+                    'ifsys'=>0,
+            ];
+            $result = GroupModel::create($data);
+            if (empty($result)){
+                $this->error('分类ID不存在!');
+            }else{
+                $group = $result->id;
+            }            
         }
         return parent::index($group);
     }

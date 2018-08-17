@@ -67,13 +67,13 @@ class Rmb extends MemberBase
 	        if($this->user['rmb']<1){
 	            $this->error("你当前可用余额小于1元,无法提现!");
 	        }
-	        
+	        $min_money = $this->webdb['min_getout_money'] ?: 50 ; //最低提现金额
 	        if(!$data['banktype']){
 	            $this->error("请选择一个收款帐号!");
 	        }elseif($data['money'] > $this->user['rmb']){
 	            $this->error("提现金额不能大于你的可用余额");
-	        }elseif($data['money']<1){
-	            $this->error("提现金额不能小于1元");
+	        }elseif($data['money']<$min_money){
+	            $this->error("提现金额不能小于 {$min_money} 元");
 	        }elseif($this->user['rmb_pwd']!=md5($data['pwd'])){
 	            $this->error("支付密码不对!");
 	        }

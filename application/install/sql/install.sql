@@ -1645,3 +1645,8 @@ CREATE TABLE IF NOT EXISTS `qb_weixinyznum` (
 
 
 ALTER TABLE  `qb_config_group` CHANGE  `ifshow`  `ifshow` TINYINT( 4 ) NOT NULL DEFAULT  '0' COMMENT  '是否在系统设置那里显示';
+
+ALTER TABLE  `qb_memberdata` ADD  `dou` MEDIUMINT NOT NULL COMMENT  '金豆(另一种形式的积分)' AFTER  `money`;
+ALTER TABLE  `qb_memberdata` ADD INDEX (  `money` );
+ALTER TABLE  `qb_memberdata` ADD INDEX (  `rmb` );
+ALTER TABLE  `qb_memberdata` ADD INDEX (  `dou` );

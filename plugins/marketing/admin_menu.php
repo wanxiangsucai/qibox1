@@ -7,10 +7,10 @@ return array(
 							array(
 								'title'=>'营销功能',
 								'sons'=>array(
-// 								        array(
-// 								                'title'=>'营销基础设置',
-// 								                'link'=>'operation/set',
-// 								        ),
+								        array(
+								                'title'=>'营销基础设置',
+								                'link'=>'setting/index',
+								        ),
 								        array(
 								                'title'=>'会员提现申请',
 								                'link'=>'rmb_getout/index',

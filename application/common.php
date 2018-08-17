@@ -2336,6 +2336,23 @@ if (!function_exists('getTemplate')) {
      }
  }
 
+ 
+ if (!function_exists('add_dou')) {
+     /**
+      * 用户金豆变化
+      * @param unknown $uid 用户UID
+      * @param unknown $dou 可以是负数,就是减积分
+      * @param string $about 附注说明
+      */
+     function add_dou($uid,$dou,$about=''){
+         if ($dou>0) {
+             UserModel::where('uid',$uid)->setInc('dou',$dou);
+         }else{
+             UserModel::where('uid',$uid)->setDec('dou',abs($dou));
+         }
+         cache('user_'.$uid,null);
+     }
+ }
 
 
  
