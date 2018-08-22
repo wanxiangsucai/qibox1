@@ -1,10 +1,4 @@
-<form name="form1" method="post" action="">
-<div class="MainContainers">
-  <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {else /} 内容管理 {/if}</span></div>
-
-  <div class="Conter">
-	
-	<!-- 顶部功能按钮 -->	
+	<!-- 顶部功能按钮 	
 	<div style="margin-bottom:10px;float:left;">
 		{volist name="$tab_ext.top_button" id="rs"}
 		 {if $rs.type=='add'}
@@ -17,9 +11,9 @@
 		 {/if}	
 		{/volist}
 	</div>
+	-->
 	
-	
-	<!-- 字段搜索功能 -->
+	<!-- 字段搜索功能 
 	<div style="margin-bottom:10px;float:right;">
 		<select name="search_field">
 		<option value="" selected>选择字段</option> 
@@ -30,26 +24,13 @@
 		</select>
 		<input type="text" placeholder='请输入关键字' name="search_word" style="line-height:23px;width:150px;"> <input onclick="search_content()" type="button" name="" value="搜索" class="layui-btn layui-btn-sm">
 	</div>
-<script type="text/javascript">
-function search_content(){
-	var field = $("select[name='search_field']").val();
-	var keyword = $("input[name='search_word']").val();
-	if(field==''){
-		layer.alert('请选择搜索字段类型');
-		return ;
-	}else if(keyword==''){
-		layer.alert('关键字不能为空');
-		return ;
-	}
-	var url = location.href.indexOf('?')>0 ? location.href.substr(0,location.href.indexOf('?')) : location.href;
-	url +='?search_field=' + field + '&keyword=' +keyword;
-	window.location.href = url;
-}
-</script>
+	-->
 
-    <table class="ListTable">
+
+
+    <table class="ListTable" style="clear:both;width:100%">
 	<tr>
-	<th width="5%">
+	<th width="7%">
 	   <input type="checkbox" name="" onclick="choosebox($(this))">			
 			{php}$_id=$tab_ext['id']?:'id';{/php}
 			{:strtoupper($_id)}
@@ -89,13 +70,13 @@ function search_content(){
 	
 	<!-- 没有特别指定按钮时,就显示默认的修改与删除 -->
 	{if !isset($tab_ext.right_button)}
-      <th width="8%">删除</th>
-      <th width="8%">修改</th> 
+      <th width="6%">删除</th>
+      <th width="6%">修改</th> 
 	{/if}
 
     </tr>
 
-
+	<!-- 列表内容部分开始 -->
 {volist name="listdb" id="rs"}
 {php}$tab_ext['id'] && $rs['id']=$rs[$tab_ext['id']];{/php}
     <tr bgcolor="#FFFFFF" class="trA" onmouseover="this.className='trB'" onmouseout="this.className='trA'"> 
@@ -118,17 +99,26 @@ function search_content(){
 
     </tr>
 {/volist}
-  
   </table>
-
-    <!-- <div class='submits'><input type="submit" name="Submit" value="更改排序"></div> -->
-	<div class="Showpage">{$pages}</div>
-  </div>
-</div>
-</form>
 
 <script type="text/javascript">
 var quickedit_url = "{:auto_url('quickedit')}"; //快速编辑的地址
+
+//搜索内容
+function search_content(){
+	var field = $("select[name='search_field']").val();
+	var keyword = $("input[name='search_word']").val();
+	if(field==''){
+		layer.alert('请选择搜索字段类型');
+		return ;
+	}else if(keyword==''){
+		layer.alert('关键字不能为空');
+		return ;
+	}
+	var url = location.href.indexOf('?')>0 ? location.href.substr(0,location.href.indexOf('?')) : location.href;
+	url +='?search_field=' + field + '&keyword=' +keyword;
+	window.location.href = url;
+}
 
 //全选
 function choosebox(that){

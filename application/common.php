@@ -1728,6 +1728,13 @@ if(!function_exists('tempdir')){
         if($path==''){
             return ;
         }
+        if (strstr($path,'"')) {
+            $array = json_decode($path,true);
+            $path = $array[0]['picurl']?:$path;
+        }elseif(strstr($path,',')){
+            $array = explode(',',$path);
+            $path = $array[0]?:$path;
+        }
         static $domain = null;
         if($domain === null){
             $domain = request()->domain() ;
@@ -2499,7 +2506,7 @@ if (!function_exists('getTemplate')) {
                  $url = request()->url(true);
                  break;
              case 'home':   //访问主页
-                 $url = '/';
+                 $url = request()->domain().'/';
               break;
              case 'member':  //会员中心
                  $url = '/member.php';

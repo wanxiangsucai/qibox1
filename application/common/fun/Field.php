@@ -118,7 +118,7 @@ class Field{
 	
 	/**
 	 * 把所有字段转出最终用户可以输入的表单格式 
-	 * @param array $array
+	 * @param array $array 所有字段配置数据
 	 * @param array $info
 	 * @return array[]
 	 */
@@ -133,7 +133,7 @@ class Field{
 	
 	/**
 	 * 把所有字段转义给列表显示
-	 * @param array $array
+	 * @param array $array 所有字段配置数据
 	 * @param array $info
 	 * @return array[]
 	 */
@@ -141,11 +141,12 @@ class Field{
 	    $data = [];
 	    foreach ($array AS $rs){
 	        $ar = \app\common\field\Table::get_tab_field($rs,$info);
-	        $data[] = [
-	                'name'=>$ar['name'],
-	                'title'=>$ar['title'],
-	                'value'=>$ar['value'],
-	        ];
+// 	        $data[] = [
+// 	                'name'=>$ar['name'],
+// 	                'title'=>$ar['title'],
+// 	                'value'=>$ar['value'],
+// 	        ];
+	        $data[] = $ar;
 	    }
 	    return $data;
 	}
@@ -156,8 +157,8 @@ class Field{
 	 * @param array $info
 	 * @return array
 	 */
-	public function get_rbtn($array=[],$info=[]){
-	    return \app\common\field\Table::get_rbtn($array,$info);
+	public function get_rbtn($array=[],$info=[],$show_title=false){
+	    return \app\common\field\Table::get_rbtn($array,$info,$show_title);
 	}
 	
 	

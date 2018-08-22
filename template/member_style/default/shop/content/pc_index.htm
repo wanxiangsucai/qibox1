@@ -1,126 +1,31 @@
 {extend name="$member_style_layout" /}
 
-{block name="title"}我购买的商品{/block}
+{block name="title"} {$tab_ext.page_title} {/block}
 {block name="content"}
-<style type="text/css">
 <!--
-.listshops{
-	border-bottom:#DDD dotted 1px;
-	padding:10px 10px 50px 150px;
-	min-height:60px;
-	position:relative;
-}
-.listshops .img{
-	width:120px;
-	height:90px;
-	border:#DDD solid 1px;
-	padding:1px;
-	overflow:hidden;
-	text-align:center;
-	line-height:85px;
-	position:absolute;
-	left:12px;
-	top:12px;
-}
-.listshops .img img{
-	max-width:120px;
-	max-height:90px;
-	vertical-align:middle;
-}
-.listshops .atcs{
-	width:500px;
-	height:32px;
-	position:absolute;
-	right:12px;
-	bottom:15px;
-	text-align:right;
-	line-height:30px;
-	word-spacing:10px;
-}
-.listshops .atcs a{
-	display:inline-block;
-	border:#F60 solid 1px;
-	border-radius:5px;
-	padding:0 15px;
-	background:#F90;
-	color:#FFF;
-}
-.listshops .atcs a.dels{
-	border:#F00 solid 1px;
-	background:#F30;
-}
-.listshops .atcs a.edits{
-	border:#124272 solid 1px;
-	background:#336699;
-}
-.listshops .title a{
-	display:block;
-	height:30px;
-	line-height:30px;
-	overflow:hidden;
-	font-size:16px;
-}
-.listshops .info{
-	height:25px;
-	line-height:25px;
-	overflow:hidden;
-	color:#888;
-	font-size:14px;
-}
-.listshops .info a{
-	color:#2BB8AA;
-}
-.listshops .info span{
-	color:#F60;
-}
-.listshops .price{
-	width:150px;
-	height:30px;
-	line-height:30px;
-	position:absolute;
-	left:150px;
-	bottom:20px;
-	font-size:14px;
-	color:#888;
-}
-.listshops .price span{
-	font-size:24px;
-	color:#F60;
-}
+<style type="text/css"> 
 .search{float:right; background:#fff; border-radius:3px; padding:5px; margin:10px 10px 0 0;}
 .search .keyWord{float:left; width:200px; height:30px; line-height:30px;}
 .search .keyWord input{width:100%; height:28px; padding-left:5px;}
 .search .button{float:left; width:60px; margin-left:20px;}
 .search .button input{width:100%; height:30px;}
--->
 </style>
+-->
 <div class="MainCont">
 	<div class="head">
-	  <div class="tag">我发布的商品信息 <a href="{:urls('postnew')}">发布商品</a></div>
-	  <div class="search">
-	    <form name="form1" method="post" action="?action=search">
+	  <div class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {else /} 内容管理 {/if} <!--<a href="{:urls('postnew')}">发布商品</a>--></div>
+	  <!--<div class="search">
+	    <form name="form1" method="post" action="?">
 		  <div class="keyWord"><input type="text" name="keyword" placeholder="请输入要搜索的标题"/></div>
 		  <div class="button"><input type="submit" name="submit1" value="搜索"/></div>
 		</form>
-	  </div>
+	  </div>-->
 	</div>
     <div class="cont">
-{volist name="listdb" id="rs"}
-		<div class="listshops">
-			<div class="img"><a href="{$rs.url}" target="_blank"><img src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></div>
-			<div class="title"><a href="{$rs.url}" target="_blank">{$rs.title}</a></div>
-			<div class="info">栏目:<a href="{$rs.sort_url}" target="_blank">{$rs.sort_name}</a> 发布时间:<span>{$rs.time}</span> 浏览:<span>{$rs.view}</span> </div>
-			<div class="price">价格:<span>{$rs.price}</span></div>
-			<div class="atcs">
-				<a href="{:urls('delete',['ids'=>$rs['id']])}" onclick="return confirm('你确认要删除吗?不可恢复');" class="dels">删除</a>
-				<a href="{:urls('edit',['id'=>$rs['id']])}" class="edits">修改</a>
-			</div>
-		</div>
-{/volist}
-
+		{include file="member@common/menu" /}
+		{include file="member@common/pc_table02" /}
         <div class="Showpage">{$pages}</div>
     </div>
 </div>
-
 
 {/block}

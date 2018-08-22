@@ -75,7 +75,7 @@ trait AddEditList {
     }
     
     /**
-     * 自动生成列表页模板,并把数据显示出来
+     * 自动生成后台列表页模板,并把数据显示出来
      * @param array $data_list
      * @return mixed|string
      */
@@ -92,6 +92,35 @@ trait AddEditList {
         
         $this->tab_ext['right_button'] = $this->builder_rbtn_url($this->tab_ext['right_button']);
         isset($this->tab_ext['top_button']) || $this->tab_ext['top_button'] = [['type'=>'add'],['type'=>'delete']];   //如果没设置顶部菜单 就给两个默认的
+        $this->tab_ext['top_button'] = $this->builder_topbtn_url($this->tab_ext['top_button']);
+        $pages = is_object($data_list) ? $data_list->render() : '';
+        $array = getArray($data_list);
+        $this->assign('listdb',isset($array['data'])?$array['data']:$array);
+        $this->assign('mid',$this->mid);
+        $this->assign('tab_ext',$this->tab_ext);
+        $this->assign('f_array',$this->list_items);
+        $this->assign('pages',$pages);
+        return $this->fetch($template);
+    }
+    
+    /**
+     * 自动生成会员中心列表页模板,并把数据显示出来
+     * @param array $data_list
+     * @return mixed|string
+     */
+    protected function getMemberTable($data_list = []) {
+        
+        if (empty($this->mid)&&empty($this -> list_items)) {
+            $this->error('缺少字段参数list_items');
+        }
+        
+        $template = $this->get_template('',$this->mid);
+        if (empty($template)) {
+            $template = $this->get_template('admin@common/wn_table');  //如果是前台的话,可以考虑换成 member@common/wn_table 不过最好还是单独设置模板更个性化
+        }
+        
+        $this->tab_ext['right_button'] = $this->builder_rbtn_url($this->tab_ext['right_button']);
+        isset($this->tab_ext['top_button']) || $this->tab_ext['top_button'] = [ ['type'=>'delete'], ];   //如果没设置顶部菜单 就给个删除按钮,不给新增加按钮
         $this->tab_ext['top_button'] = $this->builder_topbtn_url($this->tab_ext['top_button']);
         $pages = is_object($data_list) ? $data_list->render() : '';
         $array = getArray($data_list);

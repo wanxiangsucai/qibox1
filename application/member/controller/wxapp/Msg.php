@@ -175,4 +175,21 @@ class Msg extends MemberBase
             return $this->err_js('清空失败');
         }
     }
+    
+    /**
+     * 标志为已读
+     */
+    public function set_read($ids=[]){
+        if (empty($ids)) {
+            return $this->err_js('请必须选择一项');
+        }
+        foreach ($ids AS $id){
+            Model::update([
+                    'id'=>$id,
+                    'ifread'=>1,
+                    'uid'=>$this->user['uid'],
+            ]);
+        }
+        return $this->ok_js();
+    }
 }

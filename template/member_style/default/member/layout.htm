@@ -6,18 +6,20 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black"  />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>{block name="title"}会员中心{/block}</title>
+{block name="layui_css"}
 <link rel="stylesheet" href="__STATIC__/layui/css/layui.css" media="all">
 <link rel="stylesheet" href="__STATIC__/layui/css/admin.css" media="all">
-
+{/block}
+{block name="wap_css"}
 <link rel="stylesheet" type="text/css" href="__STATIC__/member/default/wap/global.css">
 <link rel="stylesheet" type="text/css" href="__STATIC__/member/default/wap/wap.css">
 <link rel="stylesheet" type="text/css" href="__STATIC__/css/wapmember.css">
-
-
+{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
 {block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>{/block}
 {block name="head_layer_js"}<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>{/block}
+{block name="js"}{/block}
 </head>
 <body>
 <header>
@@ -33,15 +35,21 @@
   <p>@{$webdb.webname} 版权所有</p>
   <p>{$webdb.miibeian_gov_cn}</p>
 </div>
-{include file="index@footmenu" /}
+
+{block name="foot_menu"} {include file="index@footmenu" /} {/block}
+
 
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
-<script src="__STATIC__/layui/layui.js"></script>  
+<script src="__STATIC__/layui/layui.js"></script>
+
+{block name="script"} 
 <script type="text/javascript">
 layui.use(['form','element'], function(){
   var form = layui.form;
   var element = layui.element;
 });
 </script>
+{/block}
+
 </body>
 </html>

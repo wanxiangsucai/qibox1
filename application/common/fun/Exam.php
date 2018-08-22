@@ -67,7 +67,7 @@ class Exam{
     public function average($fid=0){
 //         $total_fen = Db::name('exam_putin')->where('paperid',$fid)->sum('fen');
 //         return $total_fen/$this->test_num($fid);
-        return Db::name('exam_putin')->where('paperid',$fid)->avg('fen');
+        return round(Db::name('exam_putin')->where('paperid',$fid)->avg('fen'),1);
     }
     
     /**
@@ -115,6 +115,19 @@ class Exam{
             return Db::name('exam_answer')->where('uid',$uid)->where('is_true','-1')->count('id');
         }
     }
+    
+
+    /**
+     * 查询试卷信息
+     * @param number 试卷ID
+     * @return array
+     */
+	public function get_category_byid($id=0){
+		$this_info = getArray(Db::name('exam_category')->where('id',$id)->find());
+		return $this_info;
+	}
+ 
+    
     
     
 }

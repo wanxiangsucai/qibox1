@@ -7,9 +7,37 @@
 <div class="MainCont mtop10">
 	<div class="head"><div class="tag">短消息管理</div></div>
     <div class="cont">
+<script type="text/javascript">
+//全选
+function choosebox(that){
+	$("input[name='ids[]']").each(function(){
+		$(this).prop("checked",that.is(':checked')?true:false);
+	});
+}
+//标志为已读
+function set_readed(){
+	if($("input[name='ids[]']:checked").length<1){
+		layer.alert('请至少选择一项');
+		return false;
+	}
+	str = '';
+	$("input[name='ids[]']:checked").each(function(){
+		str += 'ids[]=' + $(this).val() + '&';
+	});
+	var url = "{:url('wxapp.msg/set_read')}?"+str;
+	$.get(url,function(res){
+		if(res.code==0){
+			window.location.reload();
+		}else{
+			layer.alert(res.msg);
+		}
+	});
+}
+</script>
+	<button class="layui-btn layui-btn-normal layui-btn-sm" onclick="set_readed()">标志为已读</button>
     	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="ListTable">
           <tr>
-            <th width="8%">id</th>
+            <th width="5%"><input type="checkbox" onclick="choosebox($(this))"></th>
             <th>标题</th>
             <th width="12%">发件人</th>
             <th width="20%">时间</th>
@@ -18,7 +46,7 @@
           </tr>
 {volist name="listdb" id="rs"}
           <tr>
-            <td>{$rs.id}</td>
+            <td><input type="checkbox" name="ids[]" value="{$rs.id}"></td>
             <td class="tL"><a href="{:urls('show',['id'=>$rs['id']])}">{$rs.title}</a></td>
             <td><a href="{:get_url('user',['uid'=>$rs['uid']])}" target="_blank">{$rs.from_username}</a></td>
             <td>{$rs.create_time}</td>

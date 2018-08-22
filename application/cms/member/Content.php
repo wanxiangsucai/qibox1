@@ -9,11 +9,11 @@ class Content extends C
     use TraitsContent;
 	public function index($fid=0,$mid=0)
 	{
-	    $listdb = $this->model->getListByUid($this->user['uid']);
-	    $pages = $listdb->render();
-	    $this->assign('listdb',$listdb);
-	    $this->assign('pages',$pages);
-	    return $this->fetch();
+	    if(count(model_config())>1&&!$mid&&!$fid){
+	        return parent::listall();
+	    }else{
+	        return parent::index($fid,$mid);
+	    }
 	}
 	
 	/**
@@ -24,6 +24,16 @@ class Content extends C
 	public function copynews($fid=0){
 	    $this->assign('fid',$fid);
 	    return $this->fetch();
+	}
+	
+	public function edit($id)
+	{
+	    return parent::edit($id);
+	}
+	
+	public function delete($ids)
+	{
+	    return parent::delete($ids);
 	}
 	
 }

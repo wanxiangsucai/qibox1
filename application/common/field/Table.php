@@ -46,12 +46,13 @@ class Table extends Base
     public static function get_tab_field($field=[],$info=[]){
         
         $field = self::num2letter($field);
-        
+
         $name = $field['name'];
         $field_value = $info[$name];
 
         if(empty($info)){   //表格头部标题使用
             return [
+                    'type'=>$field['type'],
                     'name'=>$name,
                     'title'=>$field['title'],
                     'value'=>'',
@@ -62,34 +63,38 @@ class Table extends Base
         
         }elseif ($field['type'] == 'username') {
             $_ar = get_user($field_value);
-            $show = "<a href='".get_url('user',$field_value)."' target='_blank'>{$_ar['username']}</a>";        
+            $show = $_ar?"<a href='".get_url('user',$field_value)."' target='_blank'>{$_ar['username']}</a>":'';        
         }elseif ($field['type'] == 'link') {
             //$field['url'] = str_replace('__id__', $info['id'], $field['url']);
             $field['url'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $field['url']);
             $show = "<a href='{$field['url']}' target='{$field['target']}'>$field_value</a>";
         }elseif($field['type'] == 'select'){
-            $mid = 0;
-            if($field['sys'] && sort_config($field['sys'])){    //频道模型那里的栏目不能选择本模型之外的栏目
-                $sort_arrray =sort_config($field['sys']);
-                foreach($sort_arrray AS $rs){
-                    if($rs['id']==$field_value){
-                        $mid = $rs['mid'];
-                    }
-                }
-                if($mid){
-                    foreach ($field['array'] AS $key=>$v){
-                        if($sort_arrray[$key]['mid']!=$mid){
-                            unset($field['array'][$key]);
+            if (ENTRANCE==='member') {
+                $show = $field['array'][$field_value];
+            }else{
+                $mid = 0;
+                if($field['sys'] && sort_config($field['sys'])){    //频道模型那里的栏目不能选择本模型之外的栏目
+                    $sort_arrray =sort_config($field['sys']);
+                    foreach($sort_arrray AS $rs){
+                        if($rs['id']==$field_value){
+                            $mid = $rs['mid'];
                         }
                     }
-                }                
-            }
-            $show = "<select class='select_edit' data-name='$name' data-value='{$field_value}' data-id='{$info['id']}'>";
-            foreach($field['array'] AS $key=>$v){
-                $select = $field_value==$key ? 'selected' : '' ;
-                $show .="<option value='$key' $select>$v";
-            }
-            $show .= "</select>";
+                    if($mid){
+                        foreach ($field['array'] AS $key=>$v){
+                            if($sort_arrray[$key]['mid']!=$mid){
+                                unset($field['array'][$key]);
+                            }
+                        }
+                    }
+                }
+                $show = "<select class='select_edit' data-name='$name' data-value='{$field_value}' data-id='{$info['id']}'>";
+                foreach($field['array'] AS $key=>$v){
+                    $select = $field_value==$key ? 'selected' : '' ;
+                    $show .="<option value='$key' $select>$v";
+                }
+                $show .= "</select>";
+            }            
         }elseif($field['type'] == 'checkbox'){  //多选项
             $detail = explode(',',$field_value);
             foreach($detail AS $key=>$value){
@@ -136,6 +141,8 @@ class Table extends Base
         }
 
         return [
+                'type'=>$field['type'],
+                'name'=>$name,
                 'title'=>$field['title'],
                 'value'=>$show,
         ];
@@ -147,7 +154,7 @@ class Table extends Base
      * @param array $info
      * @return string[][]|unknown[][]
      */
-    public static function get_rbtn($btns=[],$info=[]){
+    public static function get_rbtn($btns=[],$info=[],$show_title=false){
         $data = [];
         foreach($btns AS $rs){
             $rs['icon'] || $rs['icon']='glyphicon glyphicon-menu-hamburger';
@@ -158,7 +165,7 @@ class Table extends Base
             $target = $rs['target']?" target='{$rs['target']}' ":'';
             $data[] = [
                     'title'=>$rs['title'],
-                    'value'=>"<a href='{$rs['href']}' title='{$rs['title']}' $alert $target><li class='{$rs['icon']}'></li></a>",
+                    'value'=>"<a href='{$rs['href']}' title='{$rs['title']}' $alert $target><i class='{$rs['icon']}'></i> ".($show_title?$rs['title']:'')."</a>",
             ];
         }
         return $data;

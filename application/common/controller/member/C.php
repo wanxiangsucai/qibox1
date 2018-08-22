@@ -4,6 +4,11 @@ namespace app\common\controller\member;
 use app\common\controller\MemberBase;
 use app\common\traits\ModuleContent;
 
+/**
+ * 
+ * 会员中心用到的内容管理相关功能
+ *
+ */
 abstract class C extends MemberBase
 {
     use ModuleContent;
@@ -30,6 +35,48 @@ abstract class C extends MemberBase
     }
     
     /**
+     * 把所有模型的一起列出来
+     * @return mixed|string
+     */
+    public function listall(){
+        $this->tab_ext['top_button'] = $this->page_top_botton();
+        $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = M('name').' 我发布的内容';
+        $listdb = $this->model->getListByUid($this->user['uid']);
+        $pages = $listdb->render();
+        $this->assign('listdb',$listdb);
+        $this->assign('pages',$pages);
+        $this->assign('tab_ext',$this->tab_ext);
+        return $this->fetch();
+    }
+    
+    /**
+     * 生成模型分类菜单
+     * @return unknown|array
+     */
+    protected function page_top_botton(){
+        if ($this->tab_ext['top_button']) {
+            return $this->tab_ext['top_button'];
+        }
+        $tab_list = [];
+        $mlist = model_config();
+        if (count($mlist)>1) {
+            foreach ( $mlist AS $rs) {
+                $tab_list[$rs['id']] = [
+                        'title'=>$rs['title'],
+                        'url'=>auto_url('index', ['mid' => $rs['id']]),
+                ];
+            }
+        }
+        $tab_list[] = [
+                'type'=>'add',
+                'url'=>auto_url('add', ['mid' => $this->mid]),
+                'title'=>'发布',
+        ];
+        $this->tab_ext['top_button'] = $tab_list;
+        return $tab_list;
+    }
+    
+    /**
      * 按模型或栏目列出自己发布的信息
      * @param number $fid
      * @param number $mid
@@ -39,7 +86,8 @@ abstract class C extends MemberBase
     {
         if(!$mid && !$fid){
             //没有指定栏目或模型的话， 就显示默认模型的内容
-            $mid = $this->m_model->getId();
+            //$mid = $this->m_model->getId();
+            $mid = model_config('default_id');
         }elseif($fid){
             $mid = $this->model->getMidByFid($fid);
         }
@@ -48,22 +96,48 @@ abstract class C extends MemberBase
         $map = $fid ? ['fid'=>$fid] : ['mid'=>$mid];
         $map['uid'] = $this->user['uid'];
         
-        //获取列表数据
-        $data_list = $this->getListData($map,'',0,[],true);
+//      $data_list = $this->getListData($map,'',0,[],true);    //获取列表数据 true转义
+// 	    $vars = [
+// 	            'listdb'=>$data_list,
+// 	            'field_db'=> $this->getEasyIndexItems(),   //列表显示哪些自定义字段
+// 	            'pages'=> $data_list->render(),    //分页
+// 	            'mid'=>$mid,
+// 	            'fid'=>$fid,
+// 	            'model_list' => $this->m_model->getTitleList(),
+// 	    ];
+// 	    //如果某个模型有个性模板的话，就不调用母模板
+// 	    $template = getTemplate('index'.$mid)?:getTemplate('index');
+// 	    return $this->fetch($template,$vars);
+        
+        $f_array = $this->getEasyIndexItems();
+        if(empty($this->list_items)){
+            $this->list_items = array_merge($f_array,
+                    [
+                            ['create_time', '日期', 'date'],
+                            //['view', '浏览量', 'text'],
+                            ['status', '审核', 'select2',['未审','已审','已推荐']],
+                    ]);
+        }
+        
+        $this->tab_ext['right_button'] = [
+                ['type'=>'delete'],
+                ['type'=>'edit'],
+                [
+                        'url'=>iurl('show','id=__id__'),
+                        'icon'=>'glyphicon glyphicon-eye-open',
+                        'title'=>'浏览',
+                        'target'=>'_blank',
+                ],
+        ];
+        $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = M('name').' 我发布的内容';
+        $this->tab_ext['top_button'] = $this->page_top_botton();
 
-	    $vars = [
-	            'listdb'=>$data_list,
-	            'field_db'=> $this->getEasyIndexItems(),   //列表显示哪些自定义字段
-	            'pages'=> $data_list->render(),    //分页
-	            'mid'=>$mid,
-	            'fid'=>$fid,
-	            'model_list' => $this->m_model->getTitleList(),
-	    ];
-	    
-	    
-	    //如果某个模型有个性模板的话，就不调用母模板
-	    $template = getTemplate('index'.$mid)?:getTemplate('index');
-	    return $this->fetch($template,$vars);
+        $this->assign('field_db',$f_array);
+        $this->assign('model_list',$this->m_model->getTitleList());
+        $this->assign('fid',$fid);
+        $data_list = $this->getListData($map,'',0,[],false);    //获取列表数据 false不转义,只要原始数据
+        return $this->getMemberTable($data_list);
+
     }
     
     /**
