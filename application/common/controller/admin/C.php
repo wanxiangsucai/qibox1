@@ -57,9 +57,9 @@ abstract class C extends AdminBase
         if($fid && !$mid){
             $mid = $this->model->getMidByFid($fid);
         }elseif( !$fid && !$mid ){  //栏目与模型都为空
-            return self::postnew($mid);
+            return $this->postnew();
         }elseif( config('post_need_sort') && !$fid ){  //指定必须要选择栏目的频道
-            return self::postnew($mid);
+            return $this->postnew($mid);
         }
         $this->mid = $mid;
         

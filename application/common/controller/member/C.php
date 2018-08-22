@@ -152,7 +152,8 @@ abstract class C extends MemberBase
         isset($data['fid']) && $fid = $data['fid'];
         
         if(!$mid && !$fid){
-            $this->error('参数有误！');
+            return $this->postnew();
+            //$this->error('参数有误！');
         }elseif($fid && !$mid){ //根据栏目选择发表内容
             $mid = $this->model->getMidByFid($fid);
         }        
