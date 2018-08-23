@@ -51,8 +51,17 @@ class Member extends AdminBase
 	        'groupid'=>getGroupByid(),
 	    ];
 	    $this -> tab_ext['top_button'] = [
-	        ['type'=>'add','title'=>'创建新用户'],
+	        [
+	                'type'=>'add',
+	                'title'=>'创建新用户',
+	        ],
 	    ];
+	    if ($this->user['groupid']==3) {   //超管才有批量删除功能
+	        $this -> tab_ext['top_button'][]=[
+	                'type'=>'delete',
+	                'title'=>'批量删除用户',	 
+	        ];
+	    }
 	    
 	    return $this -> getAdminTable(self::getListData($map, $order ));
 	} 
