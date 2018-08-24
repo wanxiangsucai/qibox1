@@ -1,6 +1,8 @@
 <?php
 namespace app\common\field;
 
+use think\Db;
+
 /**
  * 自定义字段
  */
@@ -139,6 +141,42 @@ class Base
             $f_value = $value;
         }
         return $f_value;
+    }
+    
+    
+    /**
+     * 把单选\多选\下拉框架的参数转义为可选项数组
+     * @param string $str 可以是类 app\bbs\model\Sort@getTitleList
+     * @return void|string|array|unknown[]
+     */
+    protected static function options_2array($str=''){
+        if($str==''){
+            return ;
+        }
+        if(preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$str)){
+            list($class_name,$action,$params) = explode('@',$str);
+            if(class_exists($class_name)&&method_exists($class_name, $action)){
+                $obj = new $class_name;
+                if ($params!='') {
+                    $_params = json_decode($params,true)?:fun('label@where',$params);
+                }else{
+                    $_params = [];
+                }
+                //$_params = $params ? json_decode($params,true) : [] ;
+                $array = call_user_func_array([$obj, $action], isset($_params[0])?$_params:[$_params]);
+            }
+        }elseif(preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$str)){
+            list($table_name,$fields,$params) = explode('@',$str);
+            preg_match('/^qb_/i',$table_name) && $table_name = str_replace('qb_', '', $table_name);
+            if ($params!='') {
+                $map = json_decode($params,true)?:fun('label@where',$params);
+            }
+            is_array($map) || $map = [];
+            $array = Db::name($table_name)->where($map)->column($fields);
+        }else{
+            $array = str_array($str,"\n");
+        }
+        return $array;
     }
     
 }

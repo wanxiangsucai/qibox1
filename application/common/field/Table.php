@@ -230,7 +230,8 @@ class Table extends Base
             if(!$rs['listshow']){
                 continue;
             }
-            $rs['options'] && $rs['options'] = str_array($rs['options']);
+            //$rs['options'] && $rs['options'] = str_array($rs['options']);
+            $rs['options'] && $rs['options'] = static::options_2array($rs['options']);
             if(in_array($rs['type'], ['radio','select','checkbox'])){
                 $type = 'select';
             }elseif($rs['type']=='image'){
