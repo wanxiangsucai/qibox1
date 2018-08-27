@@ -70,7 +70,10 @@ abstract class Post extends IndexBase
      * @param number $id
      * @return \think\response\Json
      */
-    public function edit($id=0){        
+    public function edit($id=0){
+		if( empty($this->request->isPost()) ){
+			return $this->err_js('必须POST方式提交数据');
+		}
         $info = $this->model->getInfoByid($id , false);
         $this->mid = $info['mid'];
         $data = get_post();
@@ -127,6 +130,9 @@ abstract class Post extends IndexBase
      * @return \think\response\Json
      */
     public function add($mid=1){
+		if( empty($this->request->isPost()) ){
+			return $this->err_js('必须POST方式提交数据');
+		}
         $this->mid = $mid;
         $data = get_post();
         

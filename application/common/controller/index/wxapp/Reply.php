@@ -81,6 +81,9 @@ abstract class Reply extends IndexBase
      * @return \think\response\Json
      */
     public function add($id=0,$pid=0){
+        if( empty($this->request->isPost()) ){
+            return $this->err_js('必须POST方式提交数据');
+        }
 //         if(!$this->user){
 //             return $this->err_js('你还没登录');
 //         }

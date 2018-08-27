@@ -1,0 +1,2 @@
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '网站wap专用风格', 'wapstyle', 'default', 'select', 'app\\common\\util\\Style@listStyle', 1, '', '', 99, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '会员中心wap专用风格', 'member_wapstyle', 'default', 'select', 'app\\common\\util\\Style@get_style@["member"]', 1, '', '', 98, 0);

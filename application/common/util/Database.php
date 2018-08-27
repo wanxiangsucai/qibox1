@@ -131,7 +131,7 @@ class Database {
         //还没有随机生成目录之前
         if(!$rand_dir){
             /*特地处理有些服务器不能创建目录的情况,此时必须手工创建mysql目录*/
-            if( file_exists(RUNTIME_PATH."mysql_bak/mysql") )
+            if( file_exists(RUNTIME_PATH."mysql_bak/mysql_initial") )
             {
                 if( !is_writable(RUNTIME_PATH."mysql_bak/mysql") ){
                     showmsg(RUNTIME_PATH."mysql_bak/mysql目录不可写,请改属性为0777");

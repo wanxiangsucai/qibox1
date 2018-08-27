@@ -2288,8 +2288,8 @@ if (!function_exists('getTemplate')) {
       */
      function add_rmb($uid,$money,$freeze_money,$about=''){
 
-         $money = number_format($money,2);
-         $freeze_money = number_format($freeze_money,2);
+         //$money = number_format($money,2);
+         //$freeze_money = number_format($freeze_money,2);
          if( !$uid || ($money==0&&$freeze_money==0) ){
              return ;
          }
