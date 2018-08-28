@@ -56,23 +56,23 @@ body{
 	float:right;
 }
 /*header*/
-header{
+.qb_header{
 	display: table;
 	background: #FFF;
 	border-bottom: #DDD solid 1px;
 	width: 100%;
 }
-header div{
+.qb_header div{
 	display: table-cell;
 	text-align: center;
 	padding: 15px 5px;
 	font-size: 16px;
 	vertical-align: middle;
 }
-header div.home{
+.qb_header div.goback{
 	width: 60px;
 }
-header div.member{
+.qb_header div.member{
 	width: 40px;
 	font-size: 22px;
 }

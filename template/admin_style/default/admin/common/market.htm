@@ -203,7 +203,9 @@ function setup_app(id,keywords,price,have_open_layer){
 				layer.alert('网络故障',{time:5500});
 			}
 		}).fail(function (res) {
-			layer.alert('网络故障,请晚点再偿试安装!!');
+			//layer.alert('网络故障,请晚点再偿试安装!!');
+			layer.close(index);
+			layer.open({title: '安装失败,请晚点再偿试!',area:['90%','90%'],content: res.responseText});
 		});
 		return ;
 	}
@@ -224,7 +226,7 @@ function setup_app(id,keywords,price,have_open_layer){
 		}
 	}).fail(function (res) {
 		layer.close(index);
-		layer.alert('网络故障,请晚点再偿试!你若已付费,下次安装不会重复扣费');
+		layer.open({title: '安装失败,请晚点再偿试!你若已付费,下次安装不会重复扣费',area:['90%','90%'],content: res.responseText});
     });
 }
 

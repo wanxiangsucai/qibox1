@@ -84,7 +84,9 @@ function check_upgrade(){
 			layer.alert(res.msg,{time:5500});
 		}
 	}).fail(function (res) {
-		layer.alert('网络故障,请晚点再偿试升级!!');
+		//layer.alert('网络故障,请晚点再偿试升级!!');
+		//layer.closeAll();
+		layer.open({title: '网络故障,请晚点再偿试升级!!',area:['90%','90%'],content: res.responseText});
 	});
 }
 check_upgrade();
@@ -174,6 +176,8 @@ function end_up(){
 			}else{
 				layer.alert('升级信息写入失败');
 			}
+		}).fail(function (res) {
+			layer.open({title: '网络故障,请晚点再偿试升级!!',area:['90%','90%'],content: res.responseText});
 		});
 
 }
@@ -199,7 +203,8 @@ function upgrade_file(filename,obj){
 			obj.html(str);
 		}
 	}).fail(function (res) {
-		layer.alert('通信失败,可能你的后台权限不足');
+		//layer.alert('通信失败,可能你的后台权限不足');
+		layer.open({title: '网络故障,请晚点再偿试升级!!',area:['90%','90%'],content: res.responseText});
 	});
 }
 

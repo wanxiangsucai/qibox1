@@ -166,10 +166,11 @@ if (!function_exists('format_time')) {
     /**
      * 时间戳格式化
      * @param string $time 时间戳
-     * @param string $format 输出格式
+     * @param string $format 输出格式 设置为true的话,就按 刚刚 几分钟前的格式显示
+     * @param string $type 当$format设置为true的时候,设置超过一个月后的时间格式
      * @return false|string
      */
-    function format_time($time = '', $format='Y-m-d H:i') {
+    function format_time($time = '', $format='Y-m-d H:i',$type='Y-m-d H:i') {
         if(!preg_match('/^([\d]+)$/', $time)){
             $time = strtotime($time);
         }
@@ -188,7 +189,7 @@ if (!function_exists('format_time')) {
             }elseif($_time<3600*24*30*12){
                 $msg = intval($_time/(3600*24*30)).'个月前';
             }else{
-                $msg =  !$time ? '' : date('Y-m-d H:i',$time);
+                $msg =  empty($time) ? '' : date($type,$time);
             }
         }else{
             $msg = !$time ? '' : date($format, intval($time));
