@@ -19,6 +19,9 @@ class Style{
      */
     public static function get_style($type=''){
         $style_db = [];
+        if (!is_dir(TEMPLATE_PATH.$type.'_style')) {
+            return $style_db;
+        }
         $dir = opendir(TEMPLATE_PATH.$type.'_style');
         while (($file=readdir($dir))!==false) {
             $path = TEMPLATE_PATH.$type.'_style/'.$file.'/info.php';
