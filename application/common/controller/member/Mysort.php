@@ -69,6 +69,26 @@ abstract class Mysort extends MemberBase
         ];
         if (empty($id)) $this -> error('缺少参数');
         $info = $this -> getInfoData($id);
+        if ($info['uid']!=$this->user['uid']) {
+            $this -> error('你没权限');
+        }
         return $this -> editContent($info);
     }
+    
+    
+    public function delete($ids = null) {
+        $ids = is_array($ids)?$ids:[$ids];
+        foreach($ids AS $key){
+            $info = $this -> getInfoData($key);
+            if ($info['uid']!=$this->user['uid']) {
+                $this -> error('你没权限');
+            }
+        }        
+        if ($this -> deleteContent($ids)) {
+            $this -> success('删除成功');
+        } else {
+            $this -> error('删除失败');
+        }
+    }
+    
 }
