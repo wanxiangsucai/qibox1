@@ -25,8 +25,8 @@ class HookPlugin extends AdminBase
                 if( method_exists($info['hook_class'],'uninstall') ){
                     $class = new $info['hook_class'];
                     $class->uninstall($id);
-                }                
-                unlink(APP_PATH.'common/hook/'.basename($info['hook_class']).'.php');
+                }
+                unlink(APP_PATH.'common/hook/'.substr(strrchr($info['hook_class'],'\\'),1).'.php');
             }
         }
         cache('hook_plugins', NULL);

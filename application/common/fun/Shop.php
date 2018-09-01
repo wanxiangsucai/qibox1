@@ -148,4 +148,19 @@ class Shop{
         return $info;
     }
     
+    /**
+     * 我的分类
+     * @param number $uid
+     */
+    public static function mysort($uid=0){
+        if (empty($uid)) {
+            $uid = login_user('uid');
+        }
+        $map = [
+                'uid'=>$uid,
+        ];
+        
+        return Db::name('shop_mysort')->where($map)->column(true);
+    }
+    
 }

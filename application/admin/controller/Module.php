@@ -5,6 +5,7 @@ use app\common\controller\AdminBase;
 use app\common\traits\AddEditList;
 use app\common\model\Module as ModuleModel; 
 use app\common\traits\Market;
+use app\common\model\Hook_plugin AS HP_Model;
 
 class Module extends AdminBase
 {
@@ -55,7 +56,10 @@ class Module extends AdminBase
 			];		
 	}
 	
-	
+	/**
+	 * 列出所有频道
+	 * @return unknown|mixed|string
+	 */
 	public function index() {
 	    if ($this->request->isPost()) {
 	        return $this->edit_order();
@@ -63,7 +67,7 @@ class Module extends AdminBase
 	    if(!table_field('module','version_id')){    //升级数据库
 	        into_sql(APP_PATH.'common/upgrade/6.sql',true,0);
 	    }
-	    return $this -> getAdminTable(self :: getListData($map = [], $order = []));
+	    return $this -> getAdminTable(self :: getListData($map = [], $order = [],$rows=50));
 	}
 	
 	
@@ -143,6 +147,11 @@ class Module extends AdminBase
 	    }
 	}
 	
+	/**
+	 * 复制频道
+	 * @param number $id
+	 * @return mixed|string
+	 */
 	public function copy($id=0){
 	    if (empty($id)) $this->error('缺少参数');
 	    
@@ -172,7 +181,11 @@ class Module extends AdminBase
 	    return $this->addContent();
 	}
 	
-	
+	/**
+	 * 修改模块设置
+	 * @param unknown $id
+	 * @return mixed|string
+	 */
 	public function edit($id = null)
 	{
 	    if (empty($id)) $this->error('缺少参数');
@@ -181,6 +194,13 @@ class Module extends AdminBase
 	    
 	    if ($this -> request -> isPost()) {
 	        if ($this -> saveEditContent()) {
+	            
+	            //钩子要对应的跟着关闭或启用
+	            $data = $this -> request -> post();
+	            //HP_Model::where('plugin_key',$info['keywords'])->update(['ifopen'=>$data['ifopen']]);
+	            HP_Model::where('hook_class','like',"app\\\\".$info['keywords']."\\\%")->update(['ifopen'=>$data['ifopen']]);
+	            cache('hook_plugins', NULL);
+	            
 	            if($info['ifsys']!=input('ifsys')){
 	                $this -> success('你更改过菜单位置,需要重新设置权限', url('group/admin_power',['id'=>3]));
 	            }else{

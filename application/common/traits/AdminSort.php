@@ -24,12 +24,12 @@ trait AdminSort
 	        $detail = explode("\r\n",$data['name']);
 	        foreach ($detail AS $value){
 	            if (empty($value))continue;
-	            //考虑到还有其它选项
+	            //考虑到还有其它选项,比如uid
 	            $array[] =array_merge($data,
     	                    [
     	                            'name'=>$value,
     	                            'uid'=>$this->user['uid'],
-    	                            'pid'=>$data['pid'],
+    	                            'pid'=>intval($data['pid']),
     	                    ]
 	                    );
 	        }

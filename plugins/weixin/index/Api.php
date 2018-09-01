@@ -111,7 +111,7 @@ class Api extends IndexBase
      */
     public function run_model()
     {
-        $name = substr(basename(get_class($this)),4);
+        $name = substr(strrchr(get_class($this),'\\'),5);
         $path = opendir(ROOT_PATH.'plugins/weixin/libs/'.$name);
         while($file = readdir($path)){
             if(preg_match('/\.php$/', $file)){

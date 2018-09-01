@@ -168,7 +168,11 @@ class Base
         }elseif(preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$str)){
             list($table_name,$fields,$params) = explode('@',$str);
             preg_match('/^qb_/i',$table_name) && $table_name = str_replace('qb_', '', $table_name);
-            if ($params!='') {
+            if($params=='uid'){ //特殊属性uid指定用户
+                $map = [
+                        'uid'=>intval(login_user('uid'))
+                ];
+            }elseif ($params!='') {
                 $map = json_decode($params,true)?:fun('label@where',$params);
             }
             is_array($map) || $map = [];

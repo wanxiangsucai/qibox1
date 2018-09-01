@@ -105,17 +105,24 @@ if (!function_exists('get_real_path')) {
         $detail = array_values($detail);
         $max = count($detail)-1;
         for($i=$max;$i>=0;$i--){
+            if (!isset($detail[$i])) {
+                continue;
+            }
             if($detail[$i]=='..'){
                 unset($detail[$i]);
-                $j = $i-1;
-                if($detail[$j]=='..'){
-                    unset($detail[$j-1]);
-                    unset($detail[$j-2]);
-                    --$i;
-                    --$i;
+                if($detail[$i-1]=='..'){
+                    if($detail[$i-2]=='..'){
+                        if($detail[$i-3]=='..'){
+                            unset($detail[$i-6]);
+                            unset($detail[$i-7]);
+                        }
+                        unset($detail[$i-4]);
+                        unset($detail[$i-5]);
+                    }
+                    unset($detail[$i-2]);
+                    unset($detail[$i-3]);
                 }
-                unset($detail[$j]);
-                --$i;
+                unset($detail[$i-1]);
             }
         }
         return (substr($path,0,1)=='/'?'/':'').implode('/',$detail);

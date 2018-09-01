@@ -45,9 +45,14 @@ class Upgrade{
             $version = $version_id = '';
             $data[] = $key . '-' . $version . '-' . $version_id . '-admin_style';
         }
+        $style_array = \app\common\util\Style::get_style('qun');
+        foreach ($style_array AS $key=>$name){
+            $version = $version_id = '';
+            $data[] = $key . '-' . $version . '-' . $version_id . '-qun_style';
+        }
         $array = \app\common\model\Market::get_list();
         foreach ($array AS $rs){
-            if(in_array($rs['type'],['admin_style','index_style','member_style'])&&!is_dir(TEMPLATE_PATH.$rs['type'].'/'.$rs['keywords'])){
+            if(in_array($rs['type'],['admin_style','index_style','member_style','qun_style'])&&!is_dir(TEMPLATE_PATH.$rs['type'].'/'.$rs['keywords'])){
                 \app\common\model\Market::destroy($rs['id']);   //用户把目录删除的话,就把数据库的信息也清空掉
             }
             list($time,$version) = explode("\t",$rs['version']);

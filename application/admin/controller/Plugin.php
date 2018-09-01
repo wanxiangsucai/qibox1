@@ -5,6 +5,7 @@ use app\common\controller\AdminBase;
 use app\common\traits\AddEditList;
 use app\common\model\Plugin as PluginModel;
 use app\common\traits\Market;
+use app\common\model\Hook_plugin AS HP_Model;
 
 class Plugin extends AdminBase
 {
@@ -55,6 +56,14 @@ class Plugin extends AdminBase
 			];
 	}
 	
+	public function index() {
+	    if ($this->request->isPost()) {
+	        //修改排序
+	        return $this->edit_order();
+	    }
+	    $listdb = $this->getListData($map = [], $order = [],$rows=50);
+	    return $this -> getAdminTable($listdb);
+	}
 	
 	/**
 	 * 卸载插件
@@ -113,6 +122,23 @@ class Plugin extends AdminBase
 	{
 	    if (empty($id)) $this->error('缺少参数');
 	    
+	    $info = $this->getInfoData($id);
+	    
+	    if ($this -> request -> isPost()) {
+	        if ($this -> saveEditContent()) {
+	            
+	            //钩子要对应的跟着关闭或启用
+	            $data = $this -> request -> post();
+	            HP_Model::where('plugin_key',$info['keywords'])->update(['ifopen'=>$data['ifopen']]);
+	            HP_Model::where('hook_class','like',"plugins\\\\".$info['keywords']."\\\%")->update(['ifopen'=>$data['ifopen']]);
+	            cache('hook_plugins', NULL);
+	            
+	            $this -> success('修改成功', 'index');
+	        } else {
+	            $this -> error('修改失败');
+	        }
+	    }
+	    
 	    $this->form_items = [	           
 	            ['text','name', '插件名称', ''],
 	            ['static','keywords', '插件关键字', ''],
@@ -121,8 +147,6 @@ class Plugin extends AdminBase
 	            ['number','list', '排序值', ''],
 	            ['icon','icon', '图标', ''],
 	    ];
-	    
-	    $info = $this->getInfoData($id);
 	    
 	    return $this->editContent($info);
 	}

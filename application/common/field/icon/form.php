@@ -1,6 +1,7 @@
 <?php
 function_exists('urls') || die('ERR');
 
+$showicon = $info[$name]?:'fa fa-fw fa-file-text';
 return <<<EOT
 
 <style type="text/css">
@@ -45,7 +46,7 @@ return <<<EOT
 </style>
 
 	<div class="input-group js-icon-picker">
-            <span class="input-group-addon icon"><i class="fa fa-fw fa-file-text"></i></span>
+            <span class="input-group-addon icon"><i class="{$showicon}"></i></span>
             <input class="icon_input" style="width:300px;" type="text" id="{$name}" name="{$name}" value="{$info[$name]}" placeholder="请选择图标" >
             <span class="input-group-addon delete-icon"><i class="fa fa-times"></i></span>
     </div>

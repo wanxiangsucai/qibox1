@@ -23,6 +23,10 @@ return array(
 								                'title'=>'客户的订单',
 								                'link'=>'kehu_order/index',
 								        ),
+								        array(
+								                'title'=>'分类管理',
+								                'link'=>'mysort/index',
+								        ),
 								),
 							),
 				),

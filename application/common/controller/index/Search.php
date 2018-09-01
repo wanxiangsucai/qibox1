@@ -26,6 +26,7 @@ class Search extends IndexBase
 	    $listdb = null;                //设置为null是方便模板那里做判断，是否查询过数据库
 	    if (input('keyword')){
 	        $data = input();
+	        $data['type'] || $data['type']='title';
 	        $type = $data['type'];
 	        $keyword = $data['keyword'];
 	        if($type && $keyword && !in_array($type,['uid']) && empty($f_array[$type])){

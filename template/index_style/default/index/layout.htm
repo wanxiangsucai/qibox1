@@ -17,7 +17,35 @@
 <body>
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body_head',$userdb,$webdb,true)}
-{block name="body_Headcont"}<link rel="stylesheet" href="__STATIC__/index/default/header.css">
+
+<style type="text/css">
+.qb_wap_header{
+	padding:8px;
+	background:#62B3E7;
+	color:#fff;
+}
+.qb_wap_header a{
+	color:#fff;
+}
+.qb_wap_header div{
+	float:left;
+}
+.qb_wap_header{
+	text-align:center;
+}
+.qb_wap_header .R{
+	float:right;
+}
+</style>
+
+{block name="body_Headcont"}
+<div class="qb_wap_header">
+	<div class="L" onclick="window.history.back();"><i class="fa fa-reply"> 返回</i></div>
+	{if M('name')} {:M('name')} {else /} {$webdb.webname} {/if}
+	<div class="R" onclick="window.location.href='{:get_url('member')}'"><i class="fa fa-user-circle-o"> 会员</i></div>
+</div>
+<!--
+<link rel="stylesheet" href="__STATIC__/index/default/header.css">
 <div class="body_Hearcont">
 	<ul>
 		<ol><a href="/"><img src="{$webdb.logo|tempdir|default='__STATIC__/index/default/logo.png'}"></a></ol>
@@ -47,8 +75,11 @@
 			</div>
 		</li>
 	</ul>
-</div>{/block}
-{block name="nav"}{qb:nav title="" url="" /}{/block}
+</div>
+-->
+{/block}
+{block name="nav"}{// qb:nav title="" url="" /}{/block}
+
 {block name="body_content"}页面主体部分内容{/block}	
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body',$userdb,$webdb,true)}
