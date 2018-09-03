@@ -1,8 +1,8 @@
 <?php
 namespace app\common\traits;
-use app\common\builder\Form;
+//use app\common\builder\Form;
 use app\index\model\Label AS LabelModel;
-use app\common\traits\AddEditList;
+//use app\common\traits\AddEditList;
 
 trait LabelEdit {
     use AddEditList;
@@ -21,7 +21,12 @@ trait LabelEdit {
     protected $tag_ifdata;
     protected $tag_view_tpl;
     
-    //自动生成表格
+    /**
+     * 自动生成表格
+     * @param unknown $info
+     * @param unknown $tab_items
+     * @return mixed|string
+     */
     protected function get_form_table($info,$tab_items) {
         $this->form_items = $tab_items;
         $this->form_items[] = ['number','cache_time','标签缓存时间','单位是秒'];
@@ -40,6 +45,7 @@ trait LabelEdit {
                 'div_width'=>input('div_width'),
                 'div_height'=>input('div_height'),
                 'cache_time'=>input('cache_time'),
+                'hy_id'=>input('hy_id'),
                 'fromurl'=>input('fromurl'),
         ];
     }
@@ -120,7 +126,8 @@ trait LabelEdit {
                 'system_id'=>$this->tag_system_id,
                 'view_tpl'=>$this->tag_view_tpl,
                 'uid'=>intval($this->user['uid']),
-                'update_time'=>time(),
+                'ext_id'=>input('hy_id'),
+                //'update_time'=>time(),
         ];
         return array_merge($_array,$array);
     }

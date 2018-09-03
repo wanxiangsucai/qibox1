@@ -1,5 +1,6 @@
 <?php
 namespace app\common\taglib;
+
 use think\template\TagLib;
 class Qb extends TagLib{
     /**
@@ -7,7 +8,9 @@ class Qb extends TagLib{
      */
     protected $tags   =  [
             'tag'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,fid,js,union,field', 'close' => 1],  //field 过滤循环不显示的字段,多个用,号隔开
+            'hy'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,fid,js,union,field', 'close' => 1],  //圈子黄页店铺专用标签
             'url'      => ['attr' => 'name', 'close' => 0],
+            'hy_url'      => ['attr' => 'name', 'close' => 0],
             'nav'      => ['attr' => 'name,title,url', 'close' => 0],
             'listpage'      => ['attr' => 'name,time,rows,val,list,order,by,tpl,status,where,field', 'close' => 1],  //field 过滤不显示的字段,多个用,号隔开
             'list_url'      => ['attr' => 'name', 'close' => 0],
@@ -41,6 +44,18 @@ class Qb extends TagLib{
     {
         $name = $tag['name'];
         $parse = '<?php fun("label@label_ajax_url","' . $name .'",__FILE__); ?>';
+        return $parse;
+    }
+    
+    /**
+     * 圈子黄页标签AJAX获取更多页的地址
+     * @param unknown $tag 标签名
+     * @return string
+     */
+    public function tagHy_url($tag)
+    {
+        $name = $tag['name'];
+        $parse = '<?php fun("label@label_hy_ajax_url","' . $name .'",__FILE__); ?>';
         return $parse;
     }
     
@@ -97,7 +112,7 @@ class Qb extends TagLib{
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--QB '."<!--$name\t$type\t$tpl-->";
         if(!empty($val)){   //只取得变量值的情况
             $parse .= $content;
-        }elseif($type=='text'||$type=='text'||$type=='image'||$type=='textarea'||$type=='ueditor'){
+        }elseif($type=='text'||$type=='image'||$type=='textarea'||$type=='ueditor'||$type=='link'){
             $parse .= $content;
         }else{
             $parse .= '{volist name="__LIST__" id="' . $list . '"}';
@@ -111,7 +126,70 @@ class Qb extends TagLib{
         return $parse;
     }
     
+    /**
+     * 圈子黄页店铺专用标签
+     * @param unknown $tag
+     * @param unknown $content
+     * @return string
+     */
+    public function tagHy($tag, $content){     //$content 的内容就是 <!--###break###--!>
+        if(empty($tag['name'])){
+            return '******标签缺少命名*******'.$content;
+        }
+        if(empty($tag['type'])){
+            return '******标签type参数不能为空*******'.$content;
+        }
+        $sql = $tag['sql'];   //SQL查询
+        $type = $sql?'sql':$tag['type'];
+        $name = $this->getName($tag['name']);
+        if(preg_match('/^([\d]+),([\d]+)$/', $tag['rows'])){
+            $rows = $tag['rows'];
+        }else{
+            $rows = intval($tag['rows']);
+        }
+        if( empty($rows) ){
+            $rows = 5;  //取数据库的多少条记录
+        }
+        $cache_time = empty($tag['time']) ?0: intval($tag['time']);
+        $val = $tag['val'];
+        $order = $tag['order']; //按什么排序
+        //$rows = $tag['rows'];   //取数据库的多少条记录
+        $by = $tag['by'];   //升序还是降序
+        $status = empty($tag['status']) ? '' : "'status'=>'$status',";   //审核或推荐
+        $where = $tag['where'];   //条件查询
+        $mid = $tag['mid'];   //指定模型
+        $fid = $tag['fid'];   //指定栏目
+        $str_mid = $mid ? ",'mid'=>'$mid'" : '';
+        $str_fid = $fid ? ",'fid'=>'$fid'" : '';
+        $whereor = $tag['whereor'];   //条件查询
+        $class = $tag['class']; //调取数据执行的类
+        $tpl = $tag['tpl']; //指定默认模板
+        $js = $tag['js']; //通过AJAX方式获取数据,这样就不影响页面打开速度
+        $union = $this->union_live_parameter($tag['union'],$where);    //动态关联的参数
+        $list = $tag['list']?$tag['list']:'rs';
+        $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--QB '."<!--$name\t$type\t$tpl-->";
+        if(!empty($val)){   //只取得变量值的情况
+            $parse .= $content;
+        }elseif($type=='text'||$type=='image'||$type=='textarea'||$type=='ueditor'||$type=='link'){
+            $parse .= $content;
+        }else{
+            $parse .= '{volist name="__LIST__" id="' . $list . '"}';
+            $parse .= $content.'  ';
+            $parse .= '{/volist}';
+        }
+        $parse .= ' QB--><?php endif; ?>';
+        $where = addslashes($where);
+        $whereor = addslashes($whereor);
+        $parse .= '<?php '."\$$name = fun('label@run_hy','$name',[$union'hy_id'=>\$info['id'],'val'=>'$val','list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
+        return $parse;
+    }
     
+    /**
+     * 自定义表单标签
+     * @param unknown $tag
+     * @param unknown $content
+     * @return string
+     */
     public function tagForm($tag,$content){         //$content 的内容就是 <!--###break###--!>
         $name = $this->getName($tag['name']);
         $mid = $tag['mid'] ? ($tag['mid'][0]=='$'?substr($tag['mid'], 1):$tag['mid']) : 'mid';     //型模id变量名

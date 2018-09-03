@@ -138,7 +138,7 @@ class Error extends Controller
         $config = include APP_PATH.'database.php';
         $db_connect = Db::connect($config);
         try{
-            $db_connect->execute('select version()');
+            $db_connect->execute('select version()');            
         }catch(\Exception $e){
             $this->error('数据库连接失败，请先点击测试数据库连接！');
         }
@@ -160,6 +160,7 @@ class Error extends Controller
             $sql = file_get_contents($sql_file);
             $sql_list = parse_sql($sql, ['qb_' => $config['prefix']] ,0);
             if ($sql_list) {
+                Db::execute("SET sql_mode=''");
                 $sql_list = array_filter($sql_list);
                 foreach ($sql_list as $v) {
                     try {

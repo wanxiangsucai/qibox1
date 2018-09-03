@@ -8,6 +8,7 @@ class LabelShow extends IndexBase
 {
     public static $pri_js=null;
     public static $list_page_cfg = [];   //列表页的标签参数，主要是给AJAX传输数据用
+
     
     /**
      * 站外调用标签数据,比如APP或小程序,又或者站外JS
@@ -124,7 +125,11 @@ class LabelShow extends IndexBase
     }
     
     
-    //多行文本
+    /**
+     * 标签显示 多行文本
+     * @param array $tag_array
+     * @return unknown
+     */
     public function labelGetTextarea($tag_array=[]){
         return $tag_array['extend_cfg'];
 //         return [
@@ -133,12 +138,19 @@ class LabelShow extends IndexBase
 //         ];
     }
     
-    //在线编辑器
+     /**
+      * 标签数据  在线编辑器
+      * @param unknown $tag_array
+      */
     public function labelGetUeditor($tag_array=[]){
         return $tag_array['extend_cfg'];
     }
     
-    //组图
+    /**
+     * 标签数据 显示组图
+     * @param array $tag_array
+     * @return mixed
+     */
     public function labelGetImages($tag_array=[]){
         $array = json_decode($tag_array['extend_cfg'],true);
         foreach($array AS $key=>$rs){
@@ -151,7 +163,11 @@ class LabelShow extends IndexBase
 
     }
     
-    //单张图片
+    /**
+     * 标签数据 显示单张图片
+     * @param array $tag_array
+     * @return string[]|void[][]|string[][]|unknown[][]
+     */
     public function labelGetImage($tag_array=[]){
         list($picurl,$url) = explode(',',$tag_array['extend_cfg']);
         $picurl = tempdir($picurl);
@@ -161,7 +177,20 @@ class LabelShow extends IndexBase
         ];
     }
     
-    //SQL高级查询
+    public function labelGetLink($tag_array=[]){
+        list($title,$url,$logo) = explode("\t",$tag_array['extend_cfg']);        
+        return [
+                'title'=>$title,
+                'url'=>$url,
+                'logo'=>$logo,
+        ];
+    }
+    
+    /**
+     * SQL原生语句查询 标签数据
+     * @param array $tag_array
+     * @return mixed|\think\cache\Driver|boolean|unknown|string|number
+     */
     public function labelGetSql($tag_array=[]){
         $cfg = unserialize($tag_array['cfg']);
         if($cfg['sql']){
@@ -171,8 +200,11 @@ class LabelShow extends IndexBase
         }
     }
     
-    
-    private  function pri_jsfile($pagename=''){
+    /**
+     * 设置标签要用到的JS代码
+     * @param string $pagename
+     */
+    protected  function pri_jsfile($pagename=''){
 
         if(self::$pri_js==null){
             self::$pri_js=true;
@@ -190,19 +222,32 @@ class LabelShow extends IndexBase
                 return ;
             }
             
+            if(in_wap()){
+                $label_iframe_width = '95%';
+                $label_iframe_height = '80%';
+            }else{
+                $label_iframe_width = '60%';
+                $label_iframe_height = '80%';
+            }
             
             $admin_url = iurl('index/label/index',"pagename=$pagename");
             echo   "
             <SCRIPT LANGUAGE='JavaScript' src='/public/static/js/label.js'></SCRIPT>
             <SCRIPT LANGUAGE='JavaScript'>
-            var admin_url='$admin_url';
-            var fromurl='/';
+            var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';
             $('body').dblclick(function(){var msg=confirm('你确认要退出标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=quit';}});
         </SCRIPT>";
         }
     }
     
-    private  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name=''){
+    /**
+     * 标签上面显示的遮蔽层
+     * @param string $tag_name
+     * @param string $type
+     * @param array $tag_array
+     * @param string $class_name
+     */
+    protected  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name=''){
         if(LABEL_SET!==true){
             return ;
         }
@@ -439,7 +484,7 @@ class LabelShow extends IndexBase
      * @param array $f_array 指定了用户自定义的字段
      * @return string|mixed
      */
-    private function showpage_field($tplcode,$_info=[],$field='',$val='info',$f_array=[]){
+    protected function showpage_field($tplcode,$_info=[],$field='',$val='info',$f_array=[]){
         $tplcode = $this->replace_field($tplcode);
         $filtrate_field = explode(',',$field);  //过滤的字段
         
@@ -503,7 +548,7 @@ class LabelShow extends IndexBase
      * @param array $f_array 程序中定义的字段数组
      * @return string|mixed
      */
-    private function get_form_field($info=[],$mid=0,$field='',$mod='',$f_array=[]){
+    protected function get_form_field($info=[],$mid=0,$field='',$mod='',$f_array=[]){
         $filtrate_field = explode(',',$field);  //过滤的字段
         if(is_array($f_array)&&!empty($f_array)){
             $array = \app\common\field\Format::form_fields($f_array);  //把程序中定义的表单字段 转成跟数据库取出的格式一样
@@ -529,7 +574,7 @@ class LabelShow extends IndexBase
      * @param string $filtrate 过滤循环显示的字段
      * @return unknown[]
      */
-    private function list_show_field($fields=[],$filtrate=''){
+    protected function list_show_field($fields=[],$filtrate=''){
         $detail = explode(',',$filtrate);
         $array = [];
         foreach($fields AS $key=>$rs){
@@ -651,7 +696,7 @@ class LabelShow extends IndexBase
      * @param array $array
      * @return mixed
      */
-    private function build_tag_ajax_url($array=[]){
+    protected function build_tag_ajax_url($array=[]){
         return iurl('index/label_show/ajax_get',$array);
     }
     
@@ -680,7 +725,7 @@ class LabelShow extends IndexBase
      * @param string $dirname 列表页绝对路径
      * @return mixed[]
      */
-    private function get_listpage_tpl($dirname=''){
+    protected function get_listpage_tpl($dirname=''){
         $label_tags_tpl = [];
         preg_match_all("/<!--LISTPAGE(.*?)LISTPAGE-->/is",file_get_contents($dirname),$array);  //取得每一块标签数据
         foreach($array[1] AS $key=>$tag_code){
@@ -711,7 +756,7 @@ class LabelShow extends IndexBase
      * @param string $dirname 列表页绝对路径
      * @return mixed[]
      */
-    private function get_showpage_tpl($dirname=''){
+    protected function get_showpage_tpl($dirname=''){
         $label_tags_tpl = [];
         preg_match_all("/<!--SHOWPAGE(.*?)SHOWPAGE-->/is",file_get_contents($dirname),$array);  //取得每一块标签数据
         foreach($array[1] AS $key=>$tag_code){
@@ -742,7 +787,7 @@ class LabelShow extends IndexBase
      * @param string $dirname 页面的绝对路径
      * @return mixed[]
      */
-    private function get_comment_tpl($dirname='',$aid,$sysid=0,$cfg=[]){
+    protected function get_comment_tpl($dirname='',$aid,$sysid=0,$cfg=[]){
         $label_tags_tpl = [];
         preg_match_all("/<!--COMMENT(.*?)COMMENT-->/is",file_get_contents($dirname),$array);  //取得每一块标签数据
         foreach($array[1] AS $key=>$tag_code){
@@ -780,7 +825,7 @@ class LabelShow extends IndexBase
      * @param string $dirname 页面的绝对路径
      * @return mixed[]
      */
-    private function get_reply_tpl($dirname='',$aid,$sysid=0,$cfg=[]){
+    protected function get_reply_tpl($dirname='',$aid,$sysid=0,$cfg=[]){
         $label_tags_tpl = [];
         preg_match_all("/<!--REPLY(.*?)REPLY-->/is",file_get_contents($dirname),$array);  //取得每一块标签数据
         foreach($array[1] AS $key=>$tag_code){
@@ -817,7 +862,7 @@ class LabelShow extends IndexBase
      * @param string $dirname 列表页绝对路径
      * @return mixed[]
      */
-    private function get_page_demo_tpl($dirname=''){
+    protected function get_page_demo_tpl($dirname=''){
         static $template_codes = [];
         $template_code = $template_codes[$dirname];     //模板源代码
         if($template_code==''){
@@ -842,7 +887,7 @@ class LabelShow extends IndexBase
             }
 
             //文本域或单张图片特殊处理
-            if($type=='text'||$type=='image'||$type=='txt'||$type=='textarea'||$type=='ueditor'){
+            if($type=='text'||$type=='image'||$type=='txt'||$type=='textarea'||$type=='ueditor'||$type=='link'){
                 if($_label_tag_demo==''){
                     $_label_tag_demo=$_label_tag_tpl;
                 }
@@ -869,7 +914,7 @@ class LabelShow extends IndexBase
      * @param unknown $cfg 模板里边设置好的,各项配置参数
      * @return string
      */
-    private static function tag_cfg_parameter($tag_name='',$cfg=null){
+    protected static function tag_cfg_parameter($tag_name='',$cfg=null){
         static $tags_cfg = null;
         if($cfg!==null){
             $tags_cfg[$tag_name] = $cfg;
@@ -883,7 +928,7 @@ class LabelShow extends IndexBase
      * @param unknown $str
      * @return void|string 
      */
-    private static function union_live_parameter($cfg=[]){
+    protected static function union_live_parameter($cfg=[]){
         $array = [];
         if($cfg['union']){
             $detail = explode(',',$cfg['union']);
@@ -891,6 +936,7 @@ class LabelShow extends IndexBase
                 $array[$v] = $cfg[$v];
             }
             $array['union'] = $cfg['union'];
+            isset($cfg['where']) && $array['where'] = $cfg['where'];    //标签里设置的条件也要关联进去做限制
         }
         return $array;
     }
@@ -1031,11 +1077,10 @@ EOT;
         }else{
             
             //纯文本就直接输出
-            if($type=='text'||$type=='txt'||$type=='textarea'||$type=='ueditor'){
+            if($type=='text'||$type=='textarea'||$type=='ueditor'){
                 eval('?>'.$tag_array['data']);
                 return ;
-            }elseif($type=='image'){    //单张图片,特别处理
-                
+            }elseif($type=='image'){    //单张图片,特别处理                
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
                 if(strstr($_tpl,'<?php')){	//单张图,有模板的情况
                     $picurl = $tag_array['data']['picurl'];
@@ -1045,7 +1090,15 @@ EOT;
                     echo $tag_array['format_data'];                    
                 }
                 return ;
+            }elseif($type=='link'){     //菜单链接
+                $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
+                $url = $tag_array['data']['url'];
+                $title = $tag_array['data']['title'];
+                $logo = $tag_array['data']['logo'];
+                eval('?>'.$_tpl);
+                return ;
             }
+            
             //针对图片处理
             $_cfg = unserialize($tag_array['cfg']);
             $_cfg['pic_width'] && $pic_width = $_cfg['pic_width'];
@@ -1085,7 +1138,7 @@ EOT;
      * @param unknown $onlyData 是否仅要内容数据,不要额外的
      * @return void|unknown
      */
-    private function get_default_data($type='',$cfg,$page_num=1,$onlyData=true){
+    protected function get_default_data($type='',$cfg,$page_num=1,$onlyData=true){
         static $class_array = [];   //同一个类就没必要重复实例化
         $action = '';
         if($cfg['class']){
@@ -1129,7 +1182,7 @@ EOT;
      * @param unknown $string
      * @return mixed
      */
-    private function replace_str($string){
+    protected function replace_str($string){
         foreach (config('view_replace_str') AS $key=>$value){
             $string = str_replace($key, $value, $string);
         }

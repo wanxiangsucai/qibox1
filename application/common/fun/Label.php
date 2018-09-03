@@ -126,6 +126,15 @@ class Label{
     }
     
     /**
+     * 圈子黄页店铺专用标签
+     * @param unknown $tag_name
+     * @param unknown $cfg
+     */
+    public function run_hy($tag_name,$cfg){
+        controller('index/labelhyShow')->get_label($tag_name,$cfg);
+    }
+    
+    /**
      * 表单标签
      * @param unknown $tag_name
      * @param unknown $cfg
@@ -141,6 +150,15 @@ class Label{
      */
     public function label_ajax_url($tag_name='',$dirname){
         controller('index/labelShow')->get_ajax_url($tag_name ,$dirname );
+    }
+    
+    /**
+     * 圈子黄页的分页AJAX地址
+     * @param string $tag_name
+     * @param unknown $dirname
+     */
+    public function label_hy_ajax_url($tag_name='',$dirname){
+        controller('index/labelhyShow')->get_ajax_url($tag_name ,$dirname );
     }
     
     /**

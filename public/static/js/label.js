@@ -179,7 +179,7 @@ function layer_label_iframe(url){
 	  shadeClose: true,
 	  shade: false,
 	  maxmin: true, //开启最大化最小化按钮
-	  area: ['60%', '80%'],
+	  area: [label_iframe_width, label_iframe_height],
 	  content: url,
 	  end: function(){
 		  	window.location.reload();

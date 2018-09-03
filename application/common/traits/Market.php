@@ -237,7 +237,8 @@ trait Market
                     'title'=>$title,
                     'sys_id'=> $sys_id,
                     'list'=>--$list,
-                    'ifsys'=>$type=='m'?0:$info['ifsys'],
+                    'ifsys'=> $type=='m' ? 0 : intval($info['ifsys']),
+                    'ifshow'=>intval($info['ifshow']),
             ];
             $i++;
             //创建参数配置分类

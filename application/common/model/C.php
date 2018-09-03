@@ -741,7 +741,7 @@ abstract class C extends Model
 //         }
 //         if($model_list){
         if($mid){   //指定模型取数据,效率更高,并且也能准确取出想要的指定数量
-            if(is_numeric($cfg['ext_id'])){
+            if(is_numeric($cfg['ext_id'])){     //关联数据
                 $map['ext_id'] = $cfg['ext_id'];
             }
             if($cfg['where']){  //用户自定义的查询语句

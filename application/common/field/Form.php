@@ -49,7 +49,12 @@ class Form extends Base
         $info[$name] = self::get_field_value($name,$info);
         
         if(!isset($info[$name]) && $field['value']!==''){
-            $info[$name] = $field['value'];         //新发表 或 修改的时候,如果变量不存在,就使用字段设置的默认值
+            if(preg_match('/^user\.([\w]+)$/',$field['value'])){    //默认调用用户的资料,比如 user.nickname 
+                 $u_name = preg_replace('/^user\.([\w]+)$/','\\1',$field['value']);
+                 $info[$name] = login_user($u_name);
+            }else{
+                $info[$name] = $field['value'];         //新发表 或 修改的时候,如果变量不存在,就使用字段设置的默认值
+            }            
         }
 
 //         if(empty($info)){   //新发表,就用初始值

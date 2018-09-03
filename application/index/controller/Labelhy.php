@@ -1,14 +1,11 @@
 <?php
 namespace app\index\controller;
 
-use app\common\controller\IndexBase;
-use app\common\traits\LabelEdit;
+use app\common\traits\LabelhyEdit;
 
-class Label extends IndexBase
+class Labelhy extends Label
 {
-    use LabelEdit;
-    protected $tab_ext;
-    protected $form_items;
+    use LabelhyEdit;
     
     protected function _initialize()
     {
@@ -27,10 +24,6 @@ class Label extends IndexBase
         }
     }
     
-    /**
-     * 标签选择调用什么类型的数据
-     * @return mixed|string
-     */
     public function index()
     {
         $url_array = [
@@ -40,38 +33,41 @@ class Label extends IndexBase
                 'div_width'=>input('div_width'),
                 'div_height'=>input('div_height'),
                 'cache_time'=>input('cache_time'),
+                'hy_id'=>input('hy_id'),
                 'fromurl'=>urlencode(input('fromurl')),
         ];
         $type = input('type');
         if($type&&$type!='choose'){
             if($type=='image'){
-                $url = url("index/label/image",$url_array);                
+                $url = url("index/labelhy/image",$url_array);                
             }elseif($type=='images'){
-                $url = url("index/label/images",$url_array);
+                $url = url("index/labelhy/images",$url_array);
             }elseif($type=='textarea'||$type=='text'||$type=='txt'){
-                $url = url("index/label/textarea",$url_array);
+                $url = url("index/labelhy/textarea",$url_array);
             }elseif($type=='ueditor'){
-                $url = url("index/label/ueditor",$url_array);
+                $url = url("index/labelhy/ueditor",$url_array);
             }elseif($type=='member'){
-                $url = url("index/label/member",$url_array);
-            }elseif($type=='sql'){
-                $url = url("index/label/sql",$url_array);
+                $url = url("index/labelhy/member",$url_array);
+            }elseif($type=='link'){
+                $url = url("index/labelhy/link",$url_array);
+//             }elseif($type=='sql'){
+//                 $url = url("index/labelhy/sql",$url_array);
             }elseif(modules_config($type)){
-                $url = url("$type/label/tag_set",$url_array);
+                $url = url("$type/labelhy/tag_set",$url_array);
             }elseif(plugins_config($type)){
-                $url = purl("$type/label/tag_set",$url_array);
+                $url = purl("$type/labelhy/tag_set",$url_array);
             }elseif(preg_match('/^listpage_set_/', $type)){
                 $name = str_replace('listpage_set_','',$type);
-                $url = url("$name/label/listpage_set",$url_array);
+                $url = url("$name/labelhy/listpage_set",$url_array);
             }elseif(preg_match('/^showpage_set_/', $type)){
                 $name = str_replace('showpage_set_','',$type);
-                $url = url("$name/label/showpage_set",$url_array);
+                $url = url("$name/labelhy/showpage_set",$url_array);
             }elseif(preg_match('/^comment_set_/', $type)){
                 $name = str_replace('comment_set_','',$type);
-                $url = purl("comment/label/set",$url_array);
+                $url = purl("comment/labelhy/set",$url_array);
             }elseif(preg_match('/^reply_set_/', $type)){
                 $name = str_replace('reply_set_','',$type);
-                $url = url("$name/label/reply_set",$url_array);
+                $url = url("$name/labelhy/reply_set",$url_array);
             }elseif(preg_match('/@/', $type)){
                 list($str,$action) = explode('@',$type);
                 list($m_p,$module,$dir,$file) = explode('--',$str);
@@ -83,9 +79,9 @@ class Label extends IndexBase
                     }
                     $url_array['classname'] = $type;
                     if ($m_p=='app') {
-                        $url = url("$module/label/$method",$url_array);
+                        $url = url("$module/labelhy/$method",$url_array);
                     }else{
-                        $url = purl("$module/label/$method",$url_array);
+                        $url = purl("$module/labelhy/$method",$url_array);
                     }
                 }
             }
@@ -94,120 +90,19 @@ class Label extends IndexBase
                 exit;
             }
         }
-        $module_db = $this->get_module($url_array);
-        $plugin_db = $this->get_plugins($url_array);
+        $module_db = $this->get_module($url_array,'labelhy');
+        $plugin_db = $this->get_plugins($url_array,'labelhy');
         $this->assign('module_db',$module_db);
         $this->assign('plugin_db',$plugin_db);
         $this->assign('url',url('index',$url_array));
 		return $this->fetch();
-    }
+    }    
     
-    /**
-     * 获取可以调用的频道
-     * @param unknown $url_array
-     * @return NULL[]|unknown[]|string[]|array[]|NULL[][]
-     */
-    protected function get_module($url_array,$type='label'){
-        $array = [];
-        $dir = opendir(APP_PATH);
-        while (($file = readdir($dir))!==false) {
-            if($file!='.'&&$file!='..'&&is_dir(APP_PATH.$file)&&modules_config($file)){
-                if(is_file(APP_PATH."$file/index/".ucfirst($type).".php")){
-                    $class = "\\app\\$file\\index\\Label";
-                    if(class_exists($class)&&method_exists($class,'tag_set')){
-                        $_ar = modules_config($file);
-                        if($_ar){
-                            $_ar['label_url'] = url("$file/$type/tag_set",$url_array);
-                            $array[$file] = $_ar;
-                        }
-                    }                                        
-                }
-            }
-        }
-        return $array;
-    }
-    
-    /**
-     * 获取可以调用的插件
-     * @param unknown $url_array
-     * @return NULL[]|unknown[]|string[]|array[]|NULL[][]
-     */
-    protected function get_plugins($url_array,$type='label'){
-        $array = [];
-        $dir = opendir(PLUGINS_PATH);
-        while (($file = readdir($dir))!==false) {
-            if($file!='.'&&$file!='..'&&is_dir(PLUGINS_PATH.$file)&&plugins_config($file)){
-                if(is_file(PLUGINS_PATH."$file/index/".ucfirst($type).".php")){
-                    $class = "\\plugins\\$file\\index\\Label";
-                    if(class_exists($class)&&method_exists($class,'tag_set')){
-                        $_ar = plugins_config($file);
-                        if($_ar){
-                            $_ar['label_url'] = purl("$file/$type/tag_set",$url_array);
-                            $array[$file] = $_ar;
-                        }
-                    }                    
-                }
-            }
-        }
-        return $array;
-    }
-    
-    /**
-     * 标签设置 SQL原生查询语句
-     * @param number $name
-     * @param number $pagename
-     * @return mixed|string
-     */
+    //SQL高级查询调用
     public function sql($name=0,$pagename=0){
-        if(IS_POST){
-            $data = $this -> request -> post();
-            $this->setTag_value("app\\index\\controller\\LabelShow@labelGetSql")
-            ->setTag_type('sql');
-            $_array = $this->get_post_data();
-            $this->save($_array);
-        }
-
-        $this -> tab_ext['page_title'] = '万能标签SQL原生查询数据调用';
-        
-        $info = $this->getTagInfo();
-        
-        
-        if(empty($info) || empty($info['view_tpl'])){
-            //$_array = cache('tags_page_demo_tpl_'.$pagename);
-            //$info['view_tpl'] = $_array[$name]['tpl'];
-        }
-        $this->tab_ext['hidebtn']='back';
-        
-        $cfg = unserialize($info['cfg']);
-        
-        if(empty($cfg['sql'])){
-            $_array = cache('tag_default_'.$name);
-            $_array && $cfg['sql'] = $_array['sql'];
-        }
-        
-        $form_items = [
-                ['textarea', 'sql', '原生SQL查询语句','数据表前缀可以使用通配符代替：{pre}',$cfg['sql']],
-                ['textarea', 'view_tpl', '模板代码','',$info['view_tpl']],
-//                 ['button', 'choose_style', [
-//                         'title' => '点击选择风格',
-//                         'icon' => 'fa fa-plus-circle',
-//                         'href'=>url('choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
-//                         //'data-url'=>url('choose_style',['type'=>'images']),
-//                         'class'=>'form-btn pop',
-//                 ],
-//                         'a'
-//                 ],
-        ];
-        $this->tab_ext['hidebtn']='back';
-        return $this -> get_form_table($info, $form_items);
     }
     
-    /**
-     * 标签调用会员数据
-     * @param number $name
-     * @param number $pagename
-     * @return mixed|string
-     */
+    //会员调用
     public function member($name=0,$pagename=0){
         if(IS_POST){
             $data = $this -> request -> post();
@@ -259,10 +154,7 @@ class Label extends IndexBase
         return $this -> get_form_table($info, $form_items);
     }
     
-    /**
-     * 标签添加单张图
-     * @return mixed|string
-     */
+    //单张图
     public function image(){
         if(IS_POST){
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetImage")
@@ -276,7 +168,7 @@ class Label extends IndexBase
         $cfg = unserialize($info['cfg']);
         list($picurl,$title) = explode(',',$info['extend_cfg']);
         $form_items = [
-                ['image', 'picurl', '图片','',$picurl], 
+                ['image', 'picurl', '图片','',$picurl],
                 ['text', 'url', '链接网址','',$title],
                 ['number', 'pic_width', '图片宽度','',$cfg['pic_width']?$cfg['pic_width']:input('div_width')],
                 ['number', 'pic_height', '图片高度','',$cfg['pic_height']?$cfg['pic_height']:input('div_height')],
@@ -284,68 +176,6 @@ class Label extends IndexBase
         $this -> tab_ext['page_title'] = '单张图片';
         $this->tab_ext['hidebtn']='back';
         return $this -> get_form_table($info, $form_items);
-    }
-    
-    
-    /**
-     * 标签设置菜单链接
-     * @return mixed|string
-     */
-    public function Link(){
-        if(IS_POST){
-            $this->setTag_value("app\\index\\controller\\LabelShow@labelGetLink")
-            ->setTag_extend_cfg(input('title')."\t".input('url')."\t".input('logo'))
-            ->setTag_type('link');
-            $_array = $this->get_post_data();
-            $this->save($_array);
-        }
-        
-        $info = $this->getTagInfo();
-        $cfg = unserialize($info['cfg']);
-        list($title,$url,$logo) = explode("\t",$info['extend_cfg']);
-        $info['title'] = $title;
-        $form_items = [
-                ['text', 'title', '标题','',''],
-                ['text', 'url', '链接网址','',$url],                
-                ['icon', 'logo', '图标','',$logo],
-        ];
-        $this -> tab_ext['page_title'] = '菜单链接';
-        $this->tab_ext['hidebtn']='back';
-        return $this -> get_form_table($info, $form_items);
-    }
-    
-    public function choose_style($type='title'){
-        if($type==''){
-            $this->error('类型有误！');
-        }
-        $tpl_cache = input('tpl_cache');
-        $tag_name = input('name');
-        if($tpl_cache && $tag_name){
-            $cache_array = cache($tpl_cache);
-            $cache_tpl_code = is_array($cache_array[$tag_name])?$cache_array[$tag_name]['tpl']:$cache_array[$tag_name];            
-        }
-        if (!empty(trim($cache_tpl_code))) {
-            $listdb[]=[
-                    'code'=>$cache_tpl_code,
-                    'name'=>'默认模板',
-                    'picurl'=>'/public/static/images/template/default.jpg'
-            ];
-        }
-        $path = APP_PATH.'common/view/'.$type.'/';
-        $array = get_dir_file($path,'htm');
-        foreach($array AS $_file){
-			$file = basename($_file);
-            $name = substr($file, 0,-4);
-            $listdb[]=[
-                    'code'=>'<!--你当前选择的模板文件是：common/view/'.$type.'/'.$file.'-->'."\r\n".read_file($path.$file),
-                    'name'=>$name,
-                    'picurl'=>'/public/static/images/template/'.$type.'/'.$name.'/demo.jpg',
-                    'title'=>$type.'/'.$file
-            ];
-        }
-
-        $this->assign('listdb',$listdb);
-        return $this->fetch();
     }
     
     //组图
@@ -434,12 +264,6 @@ class Label extends IndexBase
         return $this -> get_form_table($info, $form_items);
     }
     
-    protected function get_cache_tpl(){
-        $_array = cache('tags_page_demo_tpl_'.input('pagename'));
-        $_array && $code =trim($_array[input('name')]['tpl']); 
-        return $code;
-    }
-    
     //多行文本
     public function textarea(){
         if(IS_POST){
@@ -461,6 +285,5 @@ class Label extends IndexBase
         $this->tab_ext['hidebtn']='back';
         return $this -> get_form_table($info, $form_items);
     }
-    
     
 }

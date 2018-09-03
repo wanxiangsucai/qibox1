@@ -2,10 +2,21 @@
 namespace app\index\model;
 use think\Model;
 
+/**
+ * 系统标签模型, 不是用户自定义的标签模型
+ */
 class Label extends Model
 {
     protected $table = '__LABEL__';
+    protected $autoWriteTimestamp = true;   // 自动写入时间戳
+    protected $dateFormat = 'Y-m-d H:i:s';
+    protected $resultSetType = 'array';
     
+    /**
+     * 保存系统设置的标签参数
+     * @param unknown $data
+     * @return string|boolean
+     */
     public static function save_data($data){
 //         if(empty($data['pagename'])){
 //             return '缺少pagename参数';
@@ -21,12 +32,10 @@ class Label extends Model
         $info = self::get(['name'=>$data['name']]);
         unset($data['id']);
         if($info){
-            $data['update_time'] = time();
             if(self::update($data,['id'=>$info['id']])){
                 return true;
             }
         }else{
-            $data['create_time'] = time();
             if(self::create($data)){
                 return true;
             }
@@ -133,7 +142,7 @@ class Label extends Model
      * @param number $page_num 页码,第几页
      * @return void|unknown
      */
-    private static function run_tag_class($tag_config , $page_num=0){
+    protected static function run_tag_class($tag_config , $page_num=0){
         static $class_array = [];   //同一个类就没必要重复实例化
         if (empty($tag_config['class_cfg'])) {
             return ;
