@@ -63,6 +63,7 @@ class Upgrade extends AdminBase
 	    $this->upgrade_mark($data['admin_style'],'admin_style');
 	    $this->upgrade_mark($data['index_style'],'index_style');
 	    $this->upgrade_mark($data['member_style'],'member_style');
+	    $this->upgrade_mark($data['qun_style'],'qun_style');
 	    
 	    if( file_put_contents(config('client_upgrade_edition'), '<?php return ["md5"=>"'.$upgrade_edition.'","time"=>"'.date('Y-m-d H:i').'",];') ){
 	        return true;
