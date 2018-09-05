@@ -2068,12 +2068,19 @@ if (!function_exists('getTemplate')) {
  
  if (!function_exists('http_curl')) {
      /**
-      * 访问远程数据.微信接口,最常用
-      * @param unknown $url
-      * @param unknown $data 数组方式POST数据
+      * 访问远程数据.
+      * 微信接口,用得很频繁
+      * @param string $url 对方网址
+      * @param array $data 要提交的数据
+      * @param string $type 可以设置为 json 数据格式提交
       * @return mixed
       */
-     function http_curl($url,$data = null){
+     function http_curl($url='',$data = [],$type=''){
+         $headers = '';
+         if($type=='json'){
+             $headers = array("Content-Type:application/json;charset=UTF-8","Accept: application/json","Cache-Control: no-cache", "Pragma: no-cache");
+             $data=json_encode($data);
+         }
          $curl = curl_init();
          curl_setopt($curl, CURLOPT_URL, $url);
          curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -2083,9 +2090,10 @@ if (!function_exists('getTemplate')) {
          //curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
          if (!empty($data)){
              curl_setopt($curl, CURLOPT_POST, 1);
-             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);//http_build_query($data);
          }
          curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+         $headers && curl_setopt( $curl, CURLOPT_HTTPHEADER, $headers );
          $output = curl_exec($curl);
          if (curl_errno($curl)) {
              echo 'Errno'.curl_error($curl);
@@ -2101,25 +2109,40 @@ if (!function_exists('getTemplate')) {
       * @param string $check 设置为true的话，提示相关错误
       * @return void|mixed|\think\cache\Driver|boolean
       */
-     function wx_getAccessToken($check=false){
-         if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
-             if($check==TRUE){
-                 if(config('webdb.weixin_type')<2){
-                     showerr('系统没有设置选择认证服务号还是认证订阅号');
-                 }elseif(config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
-                     showerr('系统没有设置公众号的AppID或者AppSecret');
+     function wx_getAccessToken($check=false,$is_wxapp=false){
+         if($is_wxapp){    //针对微信小程序
+             if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
+                 if($check==TRUE){
+                     showerr('系统没有设置小程序的AppID或者AppSecret');
                  }
+                 return ;
              }
-             return ;
+             $appid = config('webdb.wxapp_appid');
+             $secret = config('webdb.wxapp_appsecret');
+             $token_string = '_wxapp';
+         }else{     //针对公众号
+             if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
+                 if($check==TRUE){
+                     if(config('webdb.weixin_type')<2){
+                         showerr('系统没有设置选择认证服务号还是认证订阅号');
+                     }elseif(config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
+                         showerr('系统没有设置公众号的AppID或者AppSecret');
+                     }
+                 }
+                 return ;
+             }
+             $appid = config('webdb.weixin_appid');
+             $secret = config('webdb.weixin_appsecret');
+             $token_string = '';
          }
-         $access_token = cache('weixin_access_token');
+         $access_token = cache('weixin_access_token'.$token_string);
          if (empty($access_token)) {
-             $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.config('webdb.weixin_appid').'&secret='.config('webdb.weixin_appsecret');
+             $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$appid.'&secret='.$secret;
              $string = http_curl($url);
              $res = json_decode($string);
              $access_token = $res->access_token;
              if ($access_token) {
-                 cache('weixin_access_token',$access_token,1800);
+                 cache('weixin_access_token'.$token_string,$access_token,1800);
              }else{
                  showerr('获取access_token失败,详情如下：'.$string);
              }

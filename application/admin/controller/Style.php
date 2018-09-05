@@ -21,12 +21,12 @@ class Style extends AdminBase
 	/**
 	 * 应用市场
 	 */
-	public function market($id=0,$page=0){
+	public function market($id=0,$page=0,$fid=8){
 	    //执行安装云端模块
 	    if($id){
 	        return $this->get_style($id,'style');
 	    }
-	    $this->assign('fid',4);	
+	    $this->assign('fid',$fid?:8);	
 	    return $this->fetch();
 	}
 	

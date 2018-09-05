@@ -10,18 +10,18 @@ class Labelhy extends Label
     protected function _initialize()
     {
         parent::_initialize();
-        if ($this->admin !== true) {
-            $this->error('你没权限!');
-        }
+//         if ($this->check_power() !== true) {
+//             $this->error('你没权限!');
+//         }
         
         //底部按钮
         $this->tab_ext = [
                 'addbtn'=>'<a href="'.auto_url('delete',$this->get_parameter()).'"><button  type="button" class="btn btn-default">清空数据</button></a> ',
                 'hidebtn'=>'back',
         ];
-        if(!in_wap()){  //非WAP端,强制使用PC模板
-            define('USE_PC_TEMPLATE', true);
-        }
+//         if(!in_wap()){  //非WAP端,强制使用PC模板
+//             define('USE_PC_TEMPLATE', true);
+//         }
     }
     
     public function index()
@@ -219,16 +219,16 @@ class Labelhy extends Label
                 ['images2', 'pics', '组图','',$info['extend_cfg']],
                 ['number', 'pic_width', '图片宽度','',$cfg['pic_width']?$cfg['pic_width']:input('div_width')],
                 ['number', 'pic_height', '图片高度','',$cfg['pic_height']?$cfg['pic_height']:input('div_height')],
-                ['textarea', 'view_tpl', '模板代码','',$info['view_tpl']],                
-                ['button', 'choose_style', [
-                        'title' => '点击选择风格',
-                        'icon' => 'fa fa-plus-circle',
-                        'href'=>url('choose_style',['type'=>'images','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
-                        //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn pop',
-                         ],
-                        'a'
-                ],
+//                 ['textarea', 'view_tpl', '模板代码','',$info['view_tpl']],                
+//                 ['button', 'choose_style', [
+//                         'title' => '点击选择风格',
+//                         'icon' => 'fa fa-plus-circle',
+//                         'href'=>url('choose_style',['type'=>'images','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
+//                         //'data-url'=>url('choose_style',['type'=>'images']),
+//                         'class'=>'form-btn pop',
+//                          ],
+//                         'a'
+//                 ],
         ];
         if($info['if_js']){ //APP站外调用,不使用模板,只要JSON数据
             $num = count($form_items);

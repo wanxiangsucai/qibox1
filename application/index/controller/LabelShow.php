@@ -1089,14 +1089,14 @@ EOT;
                 }else{	//单张图,没有模板就直接输出图片
                     echo $tag_array['format_data'];                    
                 }
-                return ;
+                return $tag_array['data'];
             }elseif($type=='link'){     //菜单链接
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
                 $url = $tag_array['data']['url'];
                 $title = $tag_array['data']['title'];
                 $logo = $tag_array['data']['logo'];
                 eval('?>'.$_tpl);
-                return ;
+                return $tag_array['data'];
             }
             
             //针对图片处理

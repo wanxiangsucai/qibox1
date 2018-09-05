@@ -17,7 +17,7 @@ abstract class Labelhy extends IndexBase
     protected function _initialize()
     {
         parent::_initialize();
-        if ($this->admin !== true) {
+        if ($this->check_power() !== true) {
             $this->error('你没权限!');
         }
         preg_match_all('/([_a-z]+)/',get_called_class(),$array);

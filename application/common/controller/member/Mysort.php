@@ -54,6 +54,16 @@ abstract class Mysort extends MemberBase
         ];
     }
     
+    
+    public function index() {
+        if ($this->request->isPost()) {
+            //修改排序
+            return $this->edit_order();
+        }
+        $listdb = $this->getListData($map = ['uid'=>$this->user['uid']], $order = []);
+        return $this -> getAdminTable($listdb);
+    }
+    
     public function add() {
         $this->form_items = [
                 ['textarea','name','分类名称','同时添加多个,则每个名称换一行'],

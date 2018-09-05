@@ -823,7 +823,7 @@ CREATE TABLE IF NOT EXISTS `qb_hook_plugin` (
 DROP TABLE IF EXISTS `qb_label`;
 CREATE TABLE IF NOT EXISTS `qb_label` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自动增值ID',
-  `name` varchar(32) NOT NULL DEFAULT '' COMMENT '标签区分符',
+  `name` varchar(100) NOT NULL DEFAULT '' COMMENT '标签区分符',
   `pagename` varchar(32) NOT NULL COMMENT '标签所在模板文件',
   `class_cfg` varchar(100) NOT NULL COMMENT '获取标签数据的类名与方法',
   `cfg` text NOT NULL COMMENT '基础参数配置，比如显示哪些栏目，如何排序等等',
@@ -1675,7 +1675,7 @@ CREATE TABLE IF NOT EXISTS `qb_shop_mysort` (
 DROP TABLE IF EXISTS `qb_labelhy`;
 CREATE TABLE IF NOT EXISTS `qb_labelhy` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自动增值ID',
-  `name` varchar(32) NOT NULL DEFAULT '' COMMENT '标签区分符',
+  `name` varchar(100) NOT NULL DEFAULT '' COMMENT '标签区分符',
   `pagename` varchar(32) NOT NULL COMMENT '标签所在模板文件',
   `class_cfg` varchar(100) NOT NULL COMMENT '获取标签数据的类名与方法',
   `cfg` text NOT NULL COMMENT '基础参数配置，比如显示哪些栏目，如何排序等等',

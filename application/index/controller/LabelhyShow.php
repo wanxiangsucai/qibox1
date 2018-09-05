@@ -5,6 +5,8 @@ use app\index\model\Labelhy AS LabelModel;
 
 class LabelhyShow extends LabelShow
 {
+    public static $pri_hy_js=null;
+    
     /**
      * 得到圈子黄页的ID,为的是给分页URL使用
      * @param number $id
@@ -235,10 +237,10 @@ EOT;
             
             //纯文本就直接输出
             if($type=='text'||$type=='txt'||$type=='textarea'||$type=='ueditor'){
-                eval('?>'.$tag_array['data']);
+                /*eval('?>'.$tag_array['data']);*/
+                echo $tag_array['data'];
                 return ;
-            }elseif($type=='image'){    //单张图片,特别处理
-                
+            }elseif($type=='image'){    //单张图片,特别处理                
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
                 if(strstr($_tpl,'<?php')){	//单张图,有模板的情况
                     $picurl = $tag_array['data']['picurl'];
@@ -247,14 +249,14 @@ EOT;
                 }else{	//单张图,没有模板就直接输出图片
                     echo $tag_array['format_data'];
                 }
-                return ;
+                return $tag_array['data'];
             }elseif($type=='link'){     //菜单链接
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
                 $url = $tag_array['data']['url'];
                 $title = $tag_array['data']['title'];
                 $logo = $tag_array['data']['logo'];
                 eval('?>'.$_tpl);
-                return ;
+                return $tag_array['data'];
             }
             //针对图片处理
             $_cfg = unserialize($tag_array['cfg']);
@@ -291,38 +293,55 @@ EOT;
     
     protected  function pri_jsfile($pagename='', $hy_id=0){
         
-        if(self::$pri_js==null){
-            self::$pri_js=true;
+        if(self::$pri_hy_js === null){
+            self::$pri_hy_js = true;
             
-            $this->weburl = str_replace(array('label_set=quit','label_set=set','&&'), '', $this->weburl);
+            if( input('get.labelhy_set')!='' ) {
+                set_cookie('labelhy_set',input('get.labelhy_set'));
+            }
+            
+            $this->weburl = str_replace(array('labelhy_set=quit','labelhy_set=set','&&'), '', $this->weburl);
             $weburl = strpos($this->weburl,'?') ? ($this->weburl.'&') : ($this->weburl.'?') ;
-            
-            if(LABEL_SET!==true){
-                if($this->user['groupid']==3){
-                    echo   "
-                    <SCRIPT LANGUAGE='JavaScript'>
-                    $('body').dblclick(function(){var msg=confirm('你确认要进入标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=set';}});
-                    </SCRIPT>";
+
+            if(input('get.labelhy_set')=='set' || get_cookie('labelhy_set')=='set'){
+                if(in_wap()){
+                    $label_iframe_width = '95%';
+                    $label_iframe_height = '80%';
+                }else{
+                    $label_iframe_width = '60%';
+                    $label_iframe_height = '80%';
                 }
-                return ;
+                
+                $admin_url = iurl('index/labelhy/index',"pagename=$pagename&hy_id=$hy_id");
+                echo   "
+                <SCRIPT LANGUAGE='JavaScript' src='/public/static/js/label.js'></SCRIPT>
+                <SCRIPT LANGUAGE='JavaScript'>
+                var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';
+                </SCRIPT>";
             }
-            
-            if(in_wap()){
-                $label_iframe_width = '95%';
-                $label_iframe_height = '80%';
-            }else{
-                $label_iframe_width = '60%';
-                $label_iframe_height = '80%';
-            }
-            
-            $admin_url = iurl('index/labelhy/index',"pagename=$pagename&hy_id=$hy_id");
-            echo   "
-            <SCRIPT LANGUAGE='JavaScript' src='/public/static/js/label.js'></SCRIPT>
-            <SCRIPT LANGUAGE='JavaScript'>
-            var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';
-            $('body').dblclick(function(){var msg=confirm('你确认要退出标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=quit';}});
-            </SCRIPT>";
         }
+    }
+    
+    /**
+     * 标签上面显示的遮蔽层
+     * @param string $tag_name
+     * @param string $type
+     * @param array $tag_array
+     * @param string $class_name
+     */
+    protected  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name=''){
+        if(input('get.labelhy_set')=='set' || get_cookie('labelhy_set')=='set'){
+            $tag_array['cfg'] = unserialize($tag_array['cfg']);
+            $div_w = $tag_array['cfg']['div_width']>10?$tag_array['cfg']['div_width']:100;
+            $div_h = $tag_array['cfg']['div_height']>10?$tag_array['cfg']['div_height']:30;
+            $div_bgcolor = 'orange';
+            if (($type=='choose'||$type=='classname') && $class_name!='') {
+                $type = str_replace('\\', '--', $class_name);
+            }
+            
+            echo "<div  class=\"p8label\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(/public/static/js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
+            ";
+        }        
     }
     
     

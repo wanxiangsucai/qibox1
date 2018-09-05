@@ -415,7 +415,7 @@ abstract class C extends AdminBase
         if(!$ids){
             $this->error('没有数据可导出!');
         }
-        
+        $this->mid = $mid;
         $array = $this->getEasyFormItems();
         foreach($array AS $rs){
             $fieldDB[$rs[1]] = $rs[2];

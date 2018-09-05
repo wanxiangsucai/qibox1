@@ -41,7 +41,7 @@ function SharHiddenMsg() {
   wx.config({
     debug: false,
     appId: '{:weixin_share("appId")}',
-    timestamp: {:weixin_share("timestamp")},
+    timestamp: {:weixin_share("timestamp")?:0},
     nonceStr: '{:weixin_share("nonceStr")}',
     signature: '{:weixin_share("signature")}',
     jsApiList: [

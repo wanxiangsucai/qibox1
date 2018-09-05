@@ -22,6 +22,16 @@ trait LabelEdit {
     protected $tag_view_tpl;
     
     /**
+     * 权限检查
+     * @return boolean
+     */
+    protected function check_power(){
+        if ($this->admin === true) {
+            return true;
+        }
+    }
+    
+    /**
      * 自动生成表格
      * @param unknown $info
      * @param unknown $tab_items

@@ -142,6 +142,10 @@ class Mysql extends AdminBase
 	        $listdb[$key] = $rs;
 	    }
 	    
+	    $array = Db::query("SHOW CREATE TABLE $table");
+
+	    $this->assign('create_table',$array[0]['Create Table']);
+	    
 	    $this->assign('listdb',$listdb);
 	    $this->assign('titledb',$titledb);
 	    $this->assign('showpage',$pages);
@@ -163,7 +167,7 @@ class Mysql extends AdminBase
             //if ($sql && Db::execute($sql) ) {
                 $this->success('数据库执行成功');
             } else {
-                $this->error('执行失败');
+                $this->error('执行完毕');
             }
 		}
 		return $this->fetch();		

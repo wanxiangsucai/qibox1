@@ -38,7 +38,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 }
 .MarketBox li dl dt img{
 	position:absolute;
-	width:100%;
+	
 	height:100%;
 	left:50%;
 	top: 50%;
@@ -105,7 +105,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 }
 </style>
 <div class="MainContainers">
-  <div class="Header"><span class="tag">{if ($fid==2)}功能插件{elseif ($fid==4)/}模板风格{elseif ($fid==3)/}钩子功能{else/}频道模块{/if}应用市场</span><span class="more">::</span></div>
+  <div class="Header"><span class="tag">{if ($fid==2)}功能插件{elseif in_array($fid,[4,7,8]) /}模板风格{elseif ($fid==3)/}钩子功能{else/}频道模块{/if}应用市场</span><span class="more">::</span></div>
 	<div class="Conter">
 		<ul class="MarketBox Markercontents"></ul>
 	</div>
@@ -138,7 +138,7 @@ function showlist(){
 				res.data.forEach((rs)=>{
 					str +='<li>'+
 							'<dl>'+
-								'<dt><img onerror="this.src=\'__STATIC__/images/nopic.png\'" src="'+rs.picurl+'"></dt>'+
+								'<dt><a href="javascript:;"><img onclick="window.open(this.src)" onerror="this.src=\'__STATIC__/images/nopic.png\'" src="'+rs.picurl+'"></a></dt>'+
 								'<dd>'+
 									'<h3>'+rs.title+'<span>'+(rs.downs>10?'热门':'')+'</span></h3>'+
 										(rs.price>0 ? (rs.jifen>0?'<div><span class="price red">&yen; '+rs.price+' 元</span> <span class="price blue">(积分 '+rs.jifen+' 个)</span></div>':'<div class="price red">&yen; '+rs.price+' 元</div>'):'<div class="price blue">免费</div>')+
@@ -150,7 +150,7 @@ function showlist(){
 									'<div class="butter">'+
 										'<a href="javascript:;" onclick="setup_app('+rs.id+',\''+rs.app_keywords+'\','+rs.price+')" class="fa fa-cloud-download">在线安装</a>'+
 										'<a href="https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html" target="_blank" class="fa fa-bolt">装前必读</a>'+
-					{eq name="$fid" value="4"}'<a class="demo_url" href="'+rs.author_url+'" target="_blank" class="fa fa-bolt">风格演示</a>'+{/eq}
+					{if (in_array($fid,[4,7,8]))}'<a class="demo_url" href="'+rs.author_url+'" target="_blank" class="fa fa-bolt">风格演示</a>'+{/if}
 									'</div>'+
 								'</dd>'+
 							'</dl>'+

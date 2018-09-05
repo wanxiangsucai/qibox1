@@ -64,6 +64,7 @@ class Label{
             $detail = strstr($code,'@') ? explode('@',$code) : explode('&',$code);
             foreach($detail AS $str){
                 if( !strstr($str,'|') ){
+                    $str = str_replace('!=','<>',$str);
                     list($field,$value) = explode('|',preg_replace('/^([-\w\.]+)([<>=\*]+)([^<>=\*]+)/i','\\1|\\3',$str));
                     $mod = preg_replace('/^([-\w\.]+)([<>=\*]+)([^<>=\*]+)/i','\\2',$str);
                     if($value=="''"){
@@ -122,7 +123,7 @@ class Label{
      * @param unknown $cfg
      */
     public function run_label($tag_name,$cfg){
-        controller('index/labelShow')->get_label($tag_name,$cfg);
+        return controller('index/labelShow')->get_label($tag_name,$cfg);
     }
     
     /**
@@ -131,7 +132,7 @@ class Label{
      * @param unknown $cfg
      */
     public function run_hy($tag_name,$cfg){
-        controller('index/labelhyShow')->get_label($tag_name,$cfg);
+        return controller('index/labelhyShow')->get_label($tag_name,$cfg);
     }
     
     /**

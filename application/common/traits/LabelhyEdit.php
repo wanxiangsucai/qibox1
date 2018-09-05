@@ -8,6 +8,17 @@ trait LabelhyEdit {
     use LabelEdit;
     
     /**
+     * 检查是否有设置当前圈子黄页的权限
+     * @return boolean
+     */
+    protected function check_power(){
+        $info = fun('qun@getByid',input('hy_id'));
+        if ($info['uid'] && $info['uid']==$this->user['uid']) {
+            return true;
+        }
+    }
+    
+    /**
      * 自动生成表格
      * @param unknown $info
      * @param unknown $tab_items
@@ -18,7 +29,12 @@ trait LabelhyEdit {
         //$this->form_items[] = ['number','cache_time','标签缓存时间','单位是秒'];
         return $this->editContent($info);
     }
-
+    
+    /**
+     * 删除某个标签
+     * @param string $name 标签名
+     * @param number $hy_id 圈子黄页ID
+     */
     public function delete($name='',$hy_id=0){
         if (LabelModel::destroy(['name'=>$name,'ext_id'=>$hy_id])) {
             $this -> success('删除成功');
