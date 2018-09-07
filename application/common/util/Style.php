@@ -26,6 +26,9 @@ class Style{
         while (($file=readdir($dir))!==false) {
             $path = TEMPLATE_PATH.$type.'_style/'.$file.'/info.php';
             if($file!='.'&&$file!='..'&&is_file($path)){
+                if(check_bom($path,true)){
+                    write_file($path, check_bom($path));
+                }
                 $ar = include $path;
                 $style_db[str_replace('.php', '', basename($file))] = $ar['name'];
             }
