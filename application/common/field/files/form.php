@@ -237,7 +237,7 @@ return <<<EOT
         <ul class="list-group uploader-list" id="file_list_{$name}">
 		$show
          </ul>
-        <input type="hidden" name="{$name}" data-multiple="true" data-size="0" data-ext='' id="{$name}" value="{$info[$name]}">
+        <input type="hidden" name="{$name}" data-multiple="true" data-size="0" data-ext='' id="atc_{$name}" value="{$info[$name]}">
         <div id="picker_{$name}">上传多文件</div>                
 </div>
  

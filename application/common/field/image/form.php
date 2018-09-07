@@ -299,7 +299,7 @@ jQuery(document).ready(function() {
 		<ul class="uploadImg">
 			<div style="display:none;">
 				<input type="file" accept="image/*"/> 
-				<input type="text" name="{$name}" value="{$info[$name]}" class="input_value" style="width:100%;" />				
+				<input type="text" name="{$name}" id="atc_{$name}" value="{$info[$name]}" class="input_value" style="width:100%;" />				
 			</div>			 
 			<li class="upbtn"><i class="si si-camera"></i></li>
 		</ul>

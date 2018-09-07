@@ -12,7 +12,7 @@ var Qibo = function () {
 			}
 			var width = typeof($(this).data('width'))=='undefined'?default_width:$(this).data('width');
 			var height = typeof($(this).data('height'))=='undefined'?default_height:$(this).data('height');
-			var title = typeof($(this).data('height'))=='undefined'?'快速操作':$(this).data('title');
+			var title = typeof($(this).data('title'))=='undefined'?'快速操作':$(this).data('title');
 			layer.open({
 			  type: 2,
 			  title: title,

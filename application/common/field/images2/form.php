@@ -354,7 +354,7 @@ jQuery(document).ready(function() {
 		<ul class="uploadImg">
 			<div style="display:none;">
 				<input type="file" accept="image/*" multiple/> 
-				<textarea name="{$name}" class="input_value" rows="5" cols="100">{$info[$name]}</textarea>			
+				<textarea name="{$name}" id="atc_{$name}" class="input_value" rows="5" cols="100">{$info[$name]}</textarea>			
 			</div>			 
 			<li class="upbtn"><i class="si si-camera"></i></li>
 		</ul>

@@ -9,6 +9,18 @@ class LabelShow extends IndexBase
     public static $pri_js=null;
     public static $list_page_cfg = [];   //列表页的标签参数，主要是给AJAX传输数据用
 
+    /**
+     * 同一个标签,动态更换系统 type 参数,为的是给分页URL使用
+     * @param string $type
+     * @return number
+     */
+    protected function get_sys_type($type=''){
+        static $sys_type;
+        if ($type) {
+            $sys_type = $type;
+        }
+        return $sys_type;
+    }
     
     /**
      * 站外调用标签数据,比如APP或小程序,又或者站外JS
@@ -96,6 +108,7 @@ class LabelShow extends IndexBase
         $_cfg = cache('tag_default_'.$name);
         if(empty($tag_array)){    //未入库前,随便给些演示数据            
             $live_cfg && $_cfg = array_merge($_cfg,$live_cfg) ;
+            $_cfg['sys_type'] && $_cfg['systype'] = $_cfg['sys_type'];      //重新定义了调取数据的类型, 也即动态变换
             $array = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
             $__LIST__ = is_array($array['data']) ? $array['data'] : $array; //不是数组的时候,就是单张图片,或纯HTML代码
         }
@@ -697,6 +710,7 @@ class LabelShow extends IndexBase
      * @return mixed
      */
     protected function build_tag_ajax_url($array=[]){
+        $array['sys_type'] = $this->get_sys_type();   //同一个标签,动态更换系统 type 参数
         return iurl('index/label_show/ajax_get',$array);
     }
     
@@ -949,8 +963,10 @@ class LabelShow extends IndexBase
      */
     public function get_label($tag_name='',$cfg=[]){
         $filtrate_field = $cfg['field'];                                 //循环字段指定不显示哪些
+        $this->get_sys_type($cfg['sys_type']);
         $val = $cfg['val'];                                                 //取得数据后，赋值到这个变量名, 分页的话,没做处理会得不到
         $list = $cfg['list'];                                                //foreach输出 AS 后面的变量名
+        $cfg['sys_type'] && $cfg['systype'] = $cfg['sys_type'];     //重新定义了调取数据的类型, 也即动态变换 type
         $type = $cfg['systype']?$cfg['systype']:'choose';            //选择哪种标签，图片或代码等等
 //         $pagename = md5( basename($cfg['dirname']) );       //模板目录名
         //if(empty($cfg['mid']))unset($cfg['mid']);       //避免影响到union那里动态调用mid

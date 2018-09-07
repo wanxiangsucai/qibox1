@@ -741,14 +741,13 @@ abstract class C extends Model
 //         }
 //         if($model_list){
         if($mid){   //指定模型取数据,效率更高,并且也能准确取出想要的指定数量
-            if(is_numeric($cfg['ext_id'])){     //关联数据
-                $map['ext_id'] = $cfg['ext_id'];
-            }
             if($cfg['where']){  //用户自定义的查询语句
                 $_array = fun('label@where',$cfg['where'],$cfg);
                 if($_array){
                     $map = array_merge($map,$_array);
                 }
+            }elseif(is_numeric($cfg['ext_id'])){     //关联数据  不能与上面的 where 同时存在. 因为商铺有时只根据uid取数据
+                $map['ext_id'] = $cfg['ext_id'];
             }
             $whereor = [];
             if($cfg['whereor']){  //用户自定义的查询语句

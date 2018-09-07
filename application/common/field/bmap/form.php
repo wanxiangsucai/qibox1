@@ -151,7 +151,7 @@ $jscode
 <div class="js-bmap">
 		<input class="bmap-address" style="width:100%;" id="bmap-address-{$name}" name="{$name}_address" type="text" value="" placeholder="请输入要搜索的地址,或者手工在下面精准定位">
         <div class="searchResultPanel"></div>
-        <input class="bmap-point" type="hidden" id="{$name}" name="{$name}" value="{$info[$name]}">
+        <input class="bmap-point" type="hidden" id="atc_{$name}" name="{$name}" value="{$info[$name]}">
         <div class="bmap" id="bmap-canvas-{$name}"></div>			
 </div>
 

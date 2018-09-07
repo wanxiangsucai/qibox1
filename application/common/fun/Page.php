@@ -1,7 +1,26 @@
 <?php
 namespace app\common\fun;
 
+
 class Page{
+    
+    /**
+     * wap底部菜单 有可能是 商铺的菜单.
+     * @return \app\common\fun\unknown[]|\app\common\fun\unknown
+     */
+    public function foot_menu(){
+        $hyid = get_cookie('HYID');
+        $menu = [];
+        if ($hyid) {
+            $menu = cache('hy_foot_menu_'.$hyid);
+            if( empty($menu) ){
+                $menu = model('qun/menu')->getTreeList(['aid'=>$hyid,'ifshow'=>1,'type'=>1]);
+                cache('hy_foot_menu_'.$hyid,$menu);
+            }
+        }
+        $menu || $menu = $this->get_web_menu('wapfoot');
+        return $menu;
+    }
     
     /**
      * 获取网站头部菜单数据

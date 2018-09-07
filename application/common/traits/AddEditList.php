@@ -193,6 +193,7 @@ trait AddEditList {
             $data['uid'] = $this -> user['uid'];
             $data['posttime'] = $data['create_time'] = time();
             if ($result = $this -> model -> create($data)) {
+                $this->end_act('add',$data);
                 return $result; //$result->id 方便其它地方通过这个得到新的ID
             } else {
                 return false;
@@ -253,6 +254,7 @@ trait AddEditList {
         }
         
         if ($this -> model -> update($data)) {
+            $this->end_act('edit',$data);
             return true;
         } else {
             return false;
@@ -307,12 +309,20 @@ trait AddEditList {
             return false;
         }
         if ($this -> model -> destroy($ids)) {
+            $this->end_act('delete',$ids);
             return true;
         } else {
             return false;
         }
     }
     
+    /**
+     * 执行完add edit delete 之后要操作的扩展
+     * @param string $type 他的值分类是add edit delete 
+     * @param array $data
+     */
+    protected function end_act($type='',$data=[]){        
+    }
     
     
     /**

@@ -102,8 +102,17 @@
 	{:hook_listen('template_form_foot',$form_items,$form_items,true)} 
 	
 	{notempty name=":input('id')"}<input type="hidden" name="id" value="{:input('id')}">{/notempty}
-	{$tab_ext.addbtn}
-	<div class='butter'><button type="submit">提交</button></div>
+
+{if $tab_ext.addbtn}
+		<style type="text/css">
+		.ext_btn{margin:5px;}
+		.ext_btn button{width:45%;color:#666;background:#ddd;padding:5px;margin-bottom:5px;border:0px;}
+		.ext_btn button.post_btn{background:orange;float:right;color:#fff;}
+		</style>
+		<div class="ext_btn">{$tab_ext.addbtn} <button class="post_btn" type="submit">提交</button> </div>
+{else /}
+		<div class='butter'><button type="submit">提交</button></div>
+{/if}
 	
 </div>
 

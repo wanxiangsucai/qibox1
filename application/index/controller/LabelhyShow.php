@@ -19,6 +19,9 @@ class LabelhyShow extends LabelShow
         }
         return $hy_id;
     }
+    
+    
+    
     /**
      * 通用标签AJAX获取分页数据
      * @param string $name 标签变量名
@@ -62,6 +65,7 @@ class LabelhyShow extends LabelShow
         
         if(empty($tag_array)){    //未入库前,随便给些演示数据
             $live_cfg && $_cfg = array_merge($_cfg,$live_cfg) ;
+            $_cfg['sys_type'] && $_cfg['systype'] = $_cfg['sys_type'];      //重新定义了调取数据的类型, 也即动态变换
             $array = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
             $__LIST__ = is_array($array['data']) ? $array['data'] : $array; //不是数组的时候,就是单张图片,或纯HTML代码
         }
@@ -98,6 +102,7 @@ class LabelhyShow extends LabelShow
      */
     protected function build_tag_ajax_url($array=[]){
         $array['hy_id'] = $this->get_hy_id();   //不同于系统标签,这里必须要传递一下圈子黄页的ID
+        $array['sys_type'] = $this->get_sys_type();   //同一个标签,动态更换系统 type 参数
         return iurl('index/labelhy_show/ajax_get',$array);
     }
     
@@ -107,9 +112,11 @@ class LabelhyShow extends LabelShow
             die('------店铺ID不存在------------');
         }
         $this->get_hy_id($hy_id);
+        $this->get_sys_type($cfg['sys_type']);
         $filtrate_field = $cfg['field'];                                 //循环字段指定不显示哪些
         $val = $cfg['val'];                                                 //取得数据后，赋值到这个变量名, 分页的话,没做处理会得不到
         $list = $cfg['list'];                                                //foreach输出 AS 后面的变量名
+        $cfg['sys_type'] && $cfg['systype'] = $cfg['sys_type'];     //重新定义了调取数据的类型, 也即动态变换 type
         $type = $cfg['systype']?$cfg['systype']:'choose';            //选择哪种标签，图片或代码等等
         //         $pagename = md5( basename($cfg['dirname']) );       //模板目录名
         //if(empty($cfg['mid']))unset($cfg['mid']);       //避免影响到union那里动态调用mid

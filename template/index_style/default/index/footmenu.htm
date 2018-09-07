@@ -9,7 +9,7 @@
 			<li><a href="{:iurl('shop/index/index')}" data="购物车{:iurl('shop/car/index')}"><i class="si si-basket"></i><span>商城</span></a></li>
 			<li><a href="{:get_url('member')}"><i class="si si-user"></i><span>会员中心</span></a></li>
 -->
-{volist name="'wapfoot'|get_web_menu" id="rs"}
+{volist name=":fun('page@foot_menu')" id="rs"}
 			<li style="position:relative;"><a href="{$rs.url}"><i class="{$rs.style|default='glyphicon glyphicon-star'}"></i><span>{$rs.name}</span></a>{if strstr($rs.url,'weibo/content/show/id/0')}<dd  style="color:#fff;background:orange;position:absolute;right:5px;top:5px;font-size:10px;line-height:12px;padding:2px;border-radius:4px;display:none;" class="weibo_msg_num">0</dd>{/if}
 			{if strstr($rs.url,'member.php/member/index.html')}<dd  style="color:#fff;background:red;position:absolute;right:5px;top:5px;font-size:10px;line-height:12px;padding:2px;border-radius:4px;display:none;" class="msg-num">0</dd>{/if}
 			</li>

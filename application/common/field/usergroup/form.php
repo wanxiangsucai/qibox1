@@ -53,7 +53,7 @@ return <<<EOT
 
 <div class="list_usergroup">
 $groups
-<textarea style="display:none;" id="{$name}" name="{$name}" >{$info[$name]}</textarea>
+<textarea style="display:none;" id="atc_{$name}" name="{$name}" >{$info[$name]}</textarea>
 </div>
 $jscode
 

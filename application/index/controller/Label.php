@@ -304,9 +304,11 @@ class Label extends IndexBase
         $cfg = unserialize($info['cfg']);
         list($title,$url,$logo) = explode("\t",$info['extend_cfg']);
         $info['title'] = $title;
+        $info['url'] = $url;
+        $info['logo'] = $logo;
         $form_items = [
-                ['text', 'title', '标题','',''],
-                ['text', 'url', '链接网址','',$url],                
+                ['text', 'url', '链接网址','',$url],
+                ['text', 'title', '标题','',''],                                
                 ['icon', 'logo', '图标','',$logo],
         ];
         $this -> tab_ext['page_title'] = '菜单链接';
