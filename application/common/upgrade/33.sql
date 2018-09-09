@@ -1,0 +1,2 @@
+INSERT INTO `qb_qun_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'notice', '广告通知', 'textarea', 'varchar(255) NOT NULL', '', '', '', 1, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '');
+ALTER TABLE  `qb_qun_content1` ADD  `notice` VARCHAR( 255 ) NOT NULL COMMENT  '广告通知';

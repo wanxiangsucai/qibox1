@@ -17,7 +17,8 @@ class Api extends IndexBase
     protected $MsgType;
     protected $MediaId;
     protected $ThumbMediaId;
-    protected $PicUrl; 
+    protected $PicUrl;
+    protected $user_token; 
     
     /**
      * 对接微信公众号的唯一入口
@@ -56,7 +57,8 @@ class Api extends IndexBase
      */
     public function execute(){
         if($this->checkSignature()!=true){
-           // die('非法访问！');
+            echo $this->give_text("key验证失败!!");
+            exit;
         }
     }
     
@@ -83,6 +85,11 @@ class Api extends IndexBase
             $this->user = UserModel::weixin_reg($this->user_appId);
             define('NewUser',true);     //声明是新用户注册，方便后续判断调用
         }
+        if ($this->user) {
+            $user = $this->user;
+            $this->user_token = md5($this->wx_apiId . $user['lastip'] . $user['lastvist']);
+            cache($this->user_token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
+        }
     }
     
     /**
@@ -98,7 +105,7 @@ class Api extends IndexBase
         }
         $obj = new $class();
         $obj -> set_value();
-        $obj -> check_user();
+        $obj -> check_user();     //注意 run_model() 里边需要重复执行 因为 他又重新实例化一次类的原因
         return $obj->execute();
         //if (is_null(self::$instance)) {
         //    self::$instance = new static();
@@ -119,6 +126,7 @@ class Api extends IndexBase
                 if (class_exists($class) && method_exists($class,'run')) {
                     $obj = new $class;
                     $obj -> set_value();
+                    $obj -> check_user();   //获取登录用户信息
                     $obj -> run();
                 }                
             }

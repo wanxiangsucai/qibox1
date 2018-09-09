@@ -10,7 +10,22 @@ class Api_keyword extends Api
     //唯一入口
     public function execute(){
         parent::execute();          //不能缺少的，实现权限判断
-        $this->run_model();     //执行多个插件或模块里边的应用，方便扩展，当然也可以在这里写执行语句
+        
+        
+        //这里是钩子扩展,优先级最高
+        $array = [
+                'keyword'=>$this->From_content,     //用户回复的关键字
+                'wx_id'=>$this->user_appId,              //用户的微信唯一ID标志
+                'user'=>$this->user,                          //用户的登录信息
+                'user_token'=>$this->user_token,      //用户登录标志,传递给URL使用
+        ];
+        $result = hook_listen('weixin_mp_keyword',$array,'',true);
+        if ($result!='') {      //如果钩子有返回数据,就直接在这里输出,要终止掉下面的所有应用
+            echo $this->give_text($result);
+            exit;
+        }
+        
+        $this->run_model();     // 执行\plugins\weixin\libs\keyword 目录下面的PHP文件
 
         //上面的应用匹配到关键字后，最好die终止掉，不然这里会继续执行系统库里的关键字匹配，并且输出用户不想看到的不对应的信息
         $this->keyword_auto_reply();

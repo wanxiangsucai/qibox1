@@ -40,7 +40,7 @@
 
 {block name="body_Headcont"}
 <div class="qb_wap_header">
-	<div class="L" onclick="window.history.back();"><i class="fa fa-reply"> 返回</i></div>
+	<div class="L" onclick="Qibo.goBack('/');"><i class="fa fa-reply"> 返回</i></div>
 	{if M('name')} {:M('name')} {else /} {$webdb.webname} {/if}
 	<div class="R" onclick="window.location.href='{:get_url('member')}'"><i class="fa fa-user-circle-o"> 会员</i></div>
 </div>

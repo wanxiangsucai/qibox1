@@ -33,10 +33,8 @@ class CopyMp
         preg_match('/var msg_title = "([^"]+)";/is',$content,$array);
         $postdb['title'] = $array[1];
         
-        preg_match("/var msg_cdn_url = \"([^\"]+)\";
-/is",$content,$array);
-        $postdb['picurl'] = $array[1];
-        //$postdb['picurl'] = addslashes($array[1]);
+        preg_match("/var msg_cdn_url = \"([^\"]+)\"/is",$content,$array);
+        $postdb['picurl'] = addslashes($array[1]);
         
         preg_match("/id=\"js_content\">(.*?)<script nonce=/is",$content,$array);
         $postdb['content'] = '<div>'.$array[1];

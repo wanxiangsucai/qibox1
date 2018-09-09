@@ -81,6 +81,23 @@ class HookPlugin extends AdminBase
         if(empty($info)){
             return '钩子程序代码不完整,缺少配置参数!';
         }
+        if ($info['plugin_key']) {
+            $detail = explode(',',$info['plugin_key']);
+            foreach($detail AS $value){
+                if ($value && empty(plugins_config($value))) {
+                    return '请先安装插件:'.$value.'!';
+                }
+            }
+        }
+        if ($info['module_key']) {
+            $detail = explode(',',$info['module_key']);
+            foreach($detail AS $value){
+                if ($value && empty(modules_config($value))) {
+                    return '请先安装频道:'.$value.'!';
+                }
+            }
+        }
+        
         $detail = explode(',',$info['hook_key']);
         foreach($detail AS $value){
             $info['hook_key'] = $value;
