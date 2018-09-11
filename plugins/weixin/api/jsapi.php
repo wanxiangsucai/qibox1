@@ -7,6 +7,7 @@ require_once dirname(__FILE__).'/'."lib/WxPay.Api.php";
 require_once dirname(__FILE__).'/'."WxPay.JsApiPay.php";
 require_once dirname(__FILE__).'/'.'log.php';
 
+
 //初始化日志
 $logHandler= new CLogFileHandler(ROOT_PATH.date('Y-m-d').'.log');
 $log = Log::Init($logHandler, 15);
@@ -59,6 +60,8 @@ $jsApiParameters = $tools->GetJsApiParameters($order);
 //获取共享收货地址js函数参数
 $editAddress = $tools->GetEditAddressParameters();
 
+$ok_url = "{$array['wx_return_url']}?numcode={$array['numcode']}";
+
 //③、在支持成功回调通知中处理成功之后的事宜，见 notify.php
 /**
  * 注意：
@@ -66,6 +69,7 @@ $editAddress = $tools->GetEditAddressParameters();
  * 2、jsapi支付时需要填入用户openid，WxPay.JsApiPay.php中有获取openid流程 （文档可以参考微信公众平台“网页授权接口”，
  * 参考http://mp.weixin.qq.com/wiki/17/c0f37d5704f0b64713d5d2c37b468d75.html）
  */
+
 ?>
 
 <html>
@@ -73,6 +77,7 @@ $editAddress = $tools->GetEditAddressParameters();
     <meta http-equiv="content-type" content="text/html;charset=gbk"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/> 
     <title>微信支付</title>
+ <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script> 
     <script type="text/javascript">
 	//调用微信JS api 支付
 	function jsApiCall()
@@ -83,10 +88,18 @@ $editAddress = $tools->GetEditAddressParameters();
 			function(res){
 				WeixinJSBridge.log(res.err_msg);
 				//alert(res.err_code+res.err_desc+res.err_msg);
-				if(res.err_msg=='get_brand_wcpay_request:ok')window.location.href="<?php echo "{$array['wx_return_url']}?ispay=ok&numcode={$array['numcode']}"; ?>";
-				if(res.err_msg=='get_brand_wcpay_request:cancel')window.location.href="<?php echo "{$array['wx_return_url']}?ispay=0&numcode={$array['numcode']}"; ?>";
+				if(res.err_msg=='get_brand_wcpay_request:ok')window.location.href="<?php echo $ok_url.'&ispay=ok'; ?>";
+				if(res.err_msg=='get_brand_wcpay_request:cancel')window.location.href="<?php echo $ok_url.'&ispay=0'; ?>";
 			}
 		);
+	}
+
+	function wxapp_pay(){
+		wx.miniProgram.getEnv(function(res) {
+			if(res.miniprogram==true){
+				wx.miniProgram.navigateTo({url: "/pages/pay/index?url=/pages/hy/web/index&weburl=<?php echo urlencode($ok_url); ?>&money=<?php echo $array['money']; ?>&numcode=<?php echo $array['numcode']; ?>&title=<?php echo $array['title']; ?>"});
+			}
+		});
 	}
 
 	function callpay()
@@ -101,6 +114,7 @@ $editAddress = $tools->GetEditAddressParameters();
 		}else{
 		    jsApiCall();
 		}
+		wxapp_pay();
 	}
 	//获取共享地址
 	function editAddress()
@@ -140,6 +154,7 @@ $editAddress = $tools->GetEditAddressParameters();
     <font color="#9ACD32"><b>该笔订单支付金额为<span style="color:#f00;font-size:50px"><?php echo $array['money']; ?></span>元钱</b></font><br/><br/>
 	<div align="center">
 		<button style="width:210px; height:50px; border-radius: 15px;background-color:#FE6714; border:0px #FE6714 solid; cursor: pointer;  color:white;  font-size:16px;" type="button" onclick="callpay()" >立即支付</button>
-	</div>
+	</div><?php //echo $ok_url; 
+	?>
 </body>
 </html>

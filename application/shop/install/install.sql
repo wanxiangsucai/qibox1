@@ -146,7 +146,8 @@ CREATE TABLE IF NOT EXISTS `qb_shop_field` (
   `match` varchar(150) NOT NULL COMMENT '表单正则匹配',
   `css` varchar(20) NOT NULL COMMENT '表单CSS类名',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=56 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=59 ;
+
 
 --
 -- 转存表中的数据 `qb_shop_field`

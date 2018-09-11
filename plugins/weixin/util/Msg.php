@@ -3,11 +3,35 @@ namespace plugins\weixin\util;
 
 class Msg
 {
+    protected $wxid;
+    
+    protected function getUrl($array=[]){
+        if (empty($array[1])) {
+            return ;
+        }
+        $token = '';
+        $user = get_user($this->wxid,'weixin_api');
+        if ($user) {
+            $token = md5( mymd5($this->wxid . $user['lastip']  . $user['lastvist']) );
+            cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
+        }
+        //once=1 出于安全考虑,限制只有一次有效
+        if(strstr($array[2],'?')){
+            $array[2].='&once=1&token='.$token;
+        }else{
+            $array[2].='?once=1&token='.$token;
+        }
+        return $array[1].':'.$array[2].$array[3];
+    }
+    
     public function send($openid,$content,$array=array()){
         
         if($openid=='' || config('webdb.weixin_type')<2){
             return ;
         }
+        
+        $this->wxid = $openid;
+        $content = preg_replace_callback("/(http|https):([^ ]+)(\"|')/is",array($this,'getUrl'),$content);  //加入用户登录信息,让用户直接登录
         
         if($array['type']=='image'){
             $data="{

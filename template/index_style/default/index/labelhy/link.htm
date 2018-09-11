@@ -89,6 +89,9 @@ $(document).ready(function(){
 					<div class="butters" onclick="editurl('{:get_url('member')}','fa fa-user-circle-o','会员中心')">会员中心</div>
 					<div class="butters" onclick="editurl('{:urls('qun/map/index',['id'=>input('hy_id')])}','fa fa-flag-checkered','一键导航')">一键导航</div>
 					<div class="butters" onclick="editurl('tel:{:fun('qun@getByid',input('hy_id'))['telphone']}','fa fa-phone','一键拨号')",>一键拨号</div>
+					<div class="butters" onclick="editurl('{:urls('qun/content/apply',['id'=>input('hy_id')])}','fa fa-star','关注')",>关注</div>
+					<div class="butters" onclick="editurl('{:urls('qun/content/my')}','fa fa-group','我的圈子')",>我的圈子</div>
+					<div class="butters" onclick="editurl('{:urls('qun/near/index')}','fa fa-flag-checkered','附近圈子')",>附近圈子</div>
             {volist name=":controller('qun/GetLink','index')->get_menu_link(input('hy_id'))" id="rs"}
                     {if $rs.sons}
                     <ul class="sortbox">

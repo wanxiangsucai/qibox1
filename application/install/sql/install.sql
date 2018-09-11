@@ -372,7 +372,7 @@ CREATE TABLE IF NOT EXISTS `qb_cms_content3` (
 
 DROP TABLE IF EXISTS `qb_cms_field`;
 CREATE TABLE IF NOT EXISTS `qb_cms_field` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '字段名称',
+  `id` int(7) unsigned NOT NULL AUTO_INCREMENT COMMENT '字段名称',
   `name` varchar(32) NOT NULL,
   `title` varchar(60) NOT NULL DEFAULT '' COMMENT '字段标题',
   `type` varchar(32) NOT NULL DEFAULT '' COMMENT '字段类型',
@@ -381,7 +381,7 @@ CREATE TABLE IF NOT EXISTS `qb_cms_field` (
   `options` text COMMENT '额外选项',
   `about` varchar(256) NOT NULL DEFAULT '' COMMENT '提示说明',
   `show` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '是否显示',
-  `mid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '所属模型id',
+  `mid` mediumint(5) NOT NULL DEFAULT '0' COMMENT '所属模型id',
   `ajax_url` varchar(256) NOT NULL DEFAULT '' COMMENT '联动下拉框ajax地址',
   `next_items` varchar(256) NOT NULL DEFAULT '' COMMENT '联动下拉框的下级下拉框名，多个以逗号隔开',
   `param` varchar(32) NOT NULL DEFAULT '' COMMENT '联动下拉框请求参数名',
@@ -396,8 +396,13 @@ CREATE TABLE IF NOT EXISTS `qb_cms_field` (
   `ifsearch` tinyint(1) NOT NULL COMMENT '是否作为搜索字段',
   `ifmust` tinyint(1) NOT NULL COMMENT '是否必填项',
   `nav` varchar(30) NOT NULL COMMENT '分组名称',
+  `input_width` varchar(7) NOT NULL COMMENT '输入表单宽度',
+  `input_height` varchar(7) NOT NULL COMMENT '输入表单高度',
+  `unit` varchar(20) NOT NULL COMMENT '单位名称',
+  `match` varchar(150) NOT NULL COMMENT '表单正则匹配',
+  `css` varchar(20) NOT NULL COMMENT '表单CSS类名',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=52 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=57 ;
 
 --
 -- 转存表中的数据 `qb_cms_field`
@@ -1396,7 +1401,8 @@ CREATE TABLE IF NOT EXISTS `qb_shop_field` (
   `match` varchar(150) NOT NULL COMMENT '表单正则匹配',
   `css` varchar(20) NOT NULL COMMENT '表单CSS类名',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=56 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=59 ;
+
 
 --
 -- 转存表中的数据 `qb_shop_field`
@@ -1666,10 +1672,26 @@ CREATE TABLE IF NOT EXISTS `qb_shop_mysort` (
   `ext_sys` smallint(4) NOT NULL COMMENT '扩展字段,关联的系统',
   `ext_id` mediumint(7) NOT NULL COMMENT '扩展字段,关联的系统ID',
   PRIMARY KEY (`id`),
-  KEY `mid` (`uid`),
+  KEY `uid` (`uid`),
   KEY `pid` (`pid`),
   KEY `list` (`list`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户自定义商品分类' AUTO_INCREMENT=1;
+
+DROP TABLE IF EXISTS `qb_cms_mysort`;
+CREATE TABLE IF NOT EXISTS `qb_cms_mysort` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` int(10) NOT NULL,
+  `uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户的UID',
+  `name` varchar(80) NOT NULL COMMENT '分类名称',
+  `list` int(10) NOT NULL,
+  `logo` varchar(50) NOT NULL COMMENT '封面图',
+  `ext_sys` smallint(4) NOT NULL COMMENT '扩展字段,关联的系统',
+  `ext_id` mediumint(7) NOT NULL COMMENT '扩展字段,关联的系统ID',
+  PRIMARY KEY (`id`),
+  KEY `pid` (`pid`),
+  KEY `list` (`list`),
+  KEY `uid` (`uid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户自定义分类' AUTO_INCREMENT=10 ;
 
 
 DROP TABLE IF EXISTS `qb_labelhy`;
@@ -1707,3 +1729,13 @@ INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value
 
 ALTER TABLE  `qb_shop_content1` ADD  `myfid` MEDIUMINT( 7 ) NOT NULL COMMENT  '我的分类';
 ALTER TABLE  `qb_shop_content1` ADD INDEX (  `myfid` );
+
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'myfid', '我的分类', 'select', 'int(7) NOT NULL DEFAULT ''0''', '', 'cms_mysort@id,name@uid', '<script>if($("#atc_myfid").children().length<1)$("#form_group_myfid").hide();</script>', 1, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'myfid', '我的分类', 'select', 'int(7) NOT NULL DEFAULT ''0''', '', 'cms_mysort@id,name@uid', '<script>if($("#atc_myfid").children().length<1)$("#form_group_myfid").hide();</script>', 1, 2, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '');
+
+ALTER TABLE  `qb_cms_content1` ADD  `myfid` MEDIUMINT( 7 ) NOT NULL COMMENT  '我的分类';
+ALTER TABLE  `qb_cms_content1` ADD INDEX (  `myfid` );
+
+ALTER TABLE  `qb_cms_content2` ADD  `myfid` MEDIUMINT( 7 ) NOT NULL COMMENT  '我的分类';
+ALTER TABLE  `qb_cms_content2` ADD INDEX (  `myfid` );

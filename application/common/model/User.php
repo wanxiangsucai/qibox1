@@ -364,10 +364,13 @@ class User extends Model
 	 */
 	public static  function get_token(){
 	    $token = input('token');
-	    if($token && cache($token)){   //APP或小程序
-	        list($uid,$username,$password) = explode("\t",cache($token));
+	    if($token && $token_string = cache($token)){   //APP或小程序
+	        list($uid,$username,$password) = explode("\t",$token_string);
+	        if(input('once')==1){
+	            cache($token,null);    //出于安全考虑,1次有效
+	        }
 	        if($uid&&$username&&$password){
-	            set_cookie('passport',cache($token)); //同步登录框架小程序
+	            set_cookie('passport',$token_string,3600*72);       //同步登录框架小程序
 	            return ['uid'=>$uid,'username'=>$username,'password'=>$password];
 	        }
 	    }

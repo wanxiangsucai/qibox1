@@ -19,6 +19,10 @@ return array(
 								                'title'=>'采集公众号文章',
 								                'link'=>'content/copynews',
 								        ),
+										array(
+								                'title'=>'分类管理',
+								                'link'=>'mysort/index',
+								        ),
 								),
 							),
 				),

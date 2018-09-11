@@ -38,8 +38,8 @@
 		</div>
 		<dl class="others">
 			<dt>
-				<div>&yen;<span>{$info.price}</span><em>起</em></div>
-				<p>&yen;3600</p>
+				<div>&yen;<span>{$info.price}</span><em>元</em></div>
+				{if $info.market_price}<p>&yen;{$info.market_price}</p>{/if}
 			</dt>
 			<dd>距离结束：<em>4134234</em> <span></span></dd>
 		</dl>
@@ -187,22 +187,22 @@ $array3=get_shop_type('type3',$info);
 	<div class="TzContBoxs">
 		<div class="head"><i class="fa fa-send"></i>特惠推荐</div>
 		<div class="ListShops">
-{qb:tag name="shop_showpage_more001" type="shop"}
+{qb:tag name="shop_showpage_more001" type="shop" rows="5"}
 			<div class="lists">
 				<ul>
 					<ol><a href="{$rs.url}"><img src="{$rs.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></ol>
 					<li>
 						<div class="title"><a href="{$rs.url}">{$rs.title}</a></div>
 						<div class="infos">
-							<div class="price">&yen;<span>2480</span><em>起</em></div>
-							<p>&yen;3600</p>
+							<div class="price">&yen;<span>{$rs.price}</span><em>元</em></div>
+							{if $info.market_price}<p>&yen;{$info.market_price}</p>{/if}
 						</div>
 					</li>
 				</ul>
 			</div>
 {/qb:tag}
 		</div>
-		<div class="ShowMoreInfo"><button type="butter" onclick="ShowMoreInfo()">查看更多</button></div>
+		<div class="ShowMoreInfo"><button type="butter" style="line-height:40px;" onclick="ShowMoreInfo()">查看更多</button></div>
 	</div>
 </div>
 <script type="text/javascript" src="__STATIC__/index/default/showtime.js"></script>
@@ -219,7 +219,7 @@ function ShowMoreInfo(){
 				$('.ShowMoreInfo button').html('显示完了');
 				$('.ShowMoreInfo button').css({'background':'#CCC'});
 			}else{
-				res.data="<span class='pages"+morepage+"'>"+res.data+"</span>";			
+				res.data="<dd class='pages"+morepage+"'>"+res.data+"</dd>";			
 				$('.ListShops').append(res.data);
 				$('.ListShops .pages'+morepage).hide();
 				$('.ListShops .pages'+morepage).show(500);

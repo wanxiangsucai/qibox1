@@ -40,7 +40,7 @@ class Weixin extends Pay{
         
         if(!$this->webdb['weixin_appid'] || !$this->webdb['weixin_appsecret'] || !$this->webdb['weixin_payid'] || !$this->webdb['weixin_paykey']){
             $this->error('系统没有设置好微信支付接口,所以不能使用微信支付');
-        }elseif($this->user['weixin_api']==''){
+        }elseif($this->user['weixin_api']==''&&$this->user['wxapp_api']==''){
             if(!$this->user){
                 if( in_weixin() ){
                     weixin_login($url='');
@@ -101,7 +101,7 @@ class Weixin extends Pay{
         
         if($pay_end_data['out_trade_no']){  //支付成功，才能得到这个订单号
             //$pay_end_data['attach']
-            $result = $this->have_pay($pay_end_data['out_trade_no']);
+            $result = $this->have_pay(str_replace('000','',$pay_end_data['out_trade_no']));   //000避免出现订单重复的现象,跟公众号那里有冲突
             if($result==-1){
                 return '订单不存在';
             }elseif($result==1){

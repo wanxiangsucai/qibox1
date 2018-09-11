@@ -87,7 +87,7 @@ class Api extends IndexBase
         }
         if ($this->user) {
             $user = $this->user;
-            $this->user_token = md5($this->wx_apiId . $user['lastip'] . $user['lastvist']);
+            $this->user_token = md5( mymd5($this->wx_apiId . $user['lastip'] . $user['lastvist']) );
             cache($this->user_token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
         }
     }

@@ -872,7 +872,7 @@ if (!function_exists('get_user')) {
             }		    
         }elseif($value!==''){
 		    $mod = model('common/user');
-		    $rarray = $mod->getByName($value);
+		    $rarray = $mod->get_info($value,$type);
 		}
 		return $rarray;
     }
