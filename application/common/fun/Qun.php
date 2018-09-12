@@ -11,10 +11,10 @@ class Qun{
      * @return number|string
      */
     public static function count($table='',$id=0){
-        if (preg_match('/^qb_/i', $table)) {
+        if (preg_match('/^qb_/', $table)) {
             $table = str_replace('qb_', '', $table);
         }
-        if ($table=='member') {
+        if (preg_match('/member$/', $table)) {
             $map = ['aid'=>$id];
         }else{
             $map = ['ext_id'=>$id];

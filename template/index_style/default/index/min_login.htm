@@ -1,4 +1,5 @@
 <form action="{:urls('index/login/index')}" method="post">
+	<input type="hidden" name="fromurl" value="{:get_url('location')}">
 	<div class="qb_ui_TopLoginBox">
 		<span>通行证</span>
 		<span><input type="text" name="username" minlength="2" placeholder="输入帐号" required/></span>

@@ -29,6 +29,7 @@ class User extends MemberBase
         }else{
             $info = $this->user;
         }
+        hook_listen( 'view_homepage' , $info  , $this->user);      //监听浏览主页
         $this->assign('info',$info);
         $this->assign('uid',$info['uid']);
         return $this->fetch();

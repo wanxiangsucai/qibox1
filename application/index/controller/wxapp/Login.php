@@ -49,7 +49,7 @@ class Login extends IndexBase
         if(empty($user)){
             $user = UserModel::api_reg($openid,$info);
             if(empty($user['uid'])){
-                return $this->err_js('注册失败');
+                return $this->err_js('注册失败:'.$user);
             }
         }
         

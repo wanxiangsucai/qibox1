@@ -85,7 +85,7 @@ class Login extends IndexBase
         if($type=='iframe'){
             $fromurl = url('index').'?type='.$type;
         }
-        $this->assign('fromurl',urlencode($fromurl));
+        $this->assign('fromurl',urlencode($fromurl?:$this->fromurl));
         $this->assign('type',$type);
         return $this->fetch($type=='iframe'?'iframe':'index');
     }

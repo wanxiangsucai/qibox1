@@ -1,0 +1,1 @@
+UPDATE `qb_qun_field` SET  `about` =  '<script>$("#form_group_style").hide();/*隐藏起来*/</script>' WHERE `name` = 'style';

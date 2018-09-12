@@ -43,7 +43,7 @@
 <!--显示自定义字段内容 field="picurl,title,content,keywords" 就是过滤掉不在里边重复显示的字段-->
 <style type="text/css">.OtherInfos .SideBox{clear:both;}.OtherInfos img{height:100px;float:left;margin:3px;}</style>
   	<div class="OtherInfos">
-{qb:showpage field="picurl,title,content,keywords,mv_url"}
+{qb:showpage field="picurl,title,content,keywords,mv_url,myfid"}
 		<div class="SideBox">
 		{if in_array($rs['type'],['images','images2','image','file','files','files2'])}
 			<!-- 组图及多文件的显示方法\template\index_style\default\index\common\field.htm,其实不建议放在这里,影响布局,更多请查阅 http://help.php168.com/665693/  -->

@@ -65,7 +65,7 @@ class Base
             
         }elseif ($field['type'] == 'select' || $field['type'] == 'radio') {      // 下拉框 或 单选按钮
             
-            if(preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options'])){
+            if( preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options']) || preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$field['options']) ){
                 $show = $f_value;   //对于动态生成的数组,原型输出,不执行类,不读数据库,避免效率降低
             }else{
                 $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
@@ -153,7 +153,7 @@ class Base
         if($str==''){
             return ;
         }
-        if(preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$str)){
+        if(preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$str)){  //类似这种格式 app\xx\xx@action
             list($class_name,$action,$params) = explode('@',$str);
             if(class_exists($class_name)&&method_exists($class_name, $action)){
                 $obj = new $class_name;
@@ -165,7 +165,7 @@ class Base
                 //$_params = $params ? json_decode($params,true) : [] ;
                 $array = call_user_func_array([$obj, $action], isset($_params[0])?$_params:[$_params]);
             }
-        }elseif(preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$str)){
+        }elseif(preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$str)){        //类似这种格式 cms_mysort@id,name@uid
             list($table_name,$fields,$params) = explode('@',$str);
             preg_match('/^qb_/i',$table_name) && $table_name = str_replace('qb_', '', $table_name);
             if($params=='uid'){ //特殊属性uid指定用户
