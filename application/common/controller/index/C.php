@@ -422,7 +422,7 @@ abstract class C extends IndexBase
             if(!empty($val)){
                 $$val = $__LIST__;
             }
-            
+            @ob_end_clean();ob_start();
             eval('?>'.$view_tpl);
             $content = ob_get_contents();
             ob_end_clean();

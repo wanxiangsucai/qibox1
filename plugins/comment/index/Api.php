@@ -39,11 +39,12 @@ class Api extends IndexBase
 //         echo self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$type);
 //         exit;
         
-        if($agree==1){  //点赞
+        if($agree==1){  //点赞            
             if(time()-get_cookie('comment_'.$id)<3600){
                 return $this->err_js('一小时内,只能点赞一次!');
             }
             set_cookie('comment_'.$id, time());
+            hook_listen( 'comment_agree' , $id , ['aid'=>$aid,'sysid'=>$sysid] );      //监听点赞回复
             if( contentModel::where('id',$id)->setInc('agree',1) ){
                 //echo self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
                 return $this->ok_js();
@@ -189,7 +190,7 @@ class Api extends IndexBase
             if(self::$get_children!==null){
                 $rs['children'] = $listdb;
             }
-            //ob_end_clean();ob_start();
+            @ob_end_clean();ob_start();
             eval('?>'.$view_tpl);
             $content = ob_get_contents();
             ob_end_clean();

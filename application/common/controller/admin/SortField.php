@@ -55,7 +55,7 @@ class SortField extends F
                 ],
         ];
        
-		$data = self::getListData(['mid'=>$mid],['list'=>'desc']);
+        $data = self::getListData(['mid'=>$mid],['list'=>'desc']);
         return $this->getAdminTable($data);
     }
 }

@@ -40,6 +40,8 @@ class LabelhyShow extends LabelShow
         foreach ($parameter AS $key=>$value){
             if($value===''){
                 unset($parameter[$key]);    //避免空值也执行where语句
+            }else{
+                $parameter[$key] = urldecode($value);
             }
         }
         
@@ -103,6 +105,9 @@ class LabelhyShow extends LabelShow
     protected function build_tag_ajax_url($array=[]){
         $array['hy_id'] = $this->get_hy_id();   //不同于系统标签,这里必须要传递一下圈子黄页的ID
         $array['sys_type'] = $this->get_sys_type();   //同一个标签,动态更换系统 type 参数
+        foreach($array AS $key=>$value){
+            $array[$key] = urlencode($value);
+        }
         return iurl('index/labelhy_show/ajax_get',$array);
     }
     

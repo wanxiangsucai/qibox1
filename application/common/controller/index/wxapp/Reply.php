@@ -62,12 +62,12 @@ abstract class Reply extends IndexBase
      * @param number $rid 回复评论ID
      * @return \think\response\Json
      */
-    public function agree($id=0){
-        hook_listen( 'reply_agree' , $id , $this->request->module() );      //监听点赞回复
+    public function agree($id=0){        
         if(time()-get_cookie('cReply_'.$id)<3600){
             return $this->err_js('一小时内,只能点赞一次!');
         }
         set_cookie('cReply_'.$id, time());
+        hook_listen( 'reply_agree' , $id , ['module'=>$this->request->module()] );      //监听点赞回复
         if($this->model->agree($id)){
             return $this->ok_js();
         }else{

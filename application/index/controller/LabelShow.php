@@ -86,6 +86,8 @@ class LabelShow extends IndexBase
         foreach ($parameter AS $key=>$value){
             if($value===''){
                 unset($parameter[$key]);    //避免空值也执行where语句
+            }else{
+                $parameter[$key] = urldecode($value);
             }
         }
 
@@ -711,6 +713,9 @@ class LabelShow extends IndexBase
      */
     protected function build_tag_ajax_url($array=[]){
         $array['sys_type'] = $this->get_sys_type();   //同一个标签,动态更换系统 type 参数
+        foreach($array AS $key=>$value){
+            $array[$key] = urlencode($value);
+        }
         return iurl('index/label_show/ajax_get',$array);
     }
     

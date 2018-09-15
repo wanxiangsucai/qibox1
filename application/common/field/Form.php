@@ -69,6 +69,7 @@ class Form extends Base
             
         }elseif ($field['type'] == 'hidden') {    // 隐藏域
             
+            $info[$name] = str_replace(['"',"'"], ['&quot;','&#39;'], $info[$name]);
             $show = "<input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
             
         }elseif ($field['type'] == 'button') {    // 按钮
@@ -80,6 +81,7 @@ class Form extends Base
             
         }elseif ($field['type'] == 'textarea') {    // 多行文本框
             
+            $info[$name] = str_replace(['<','>'], ['&lt;','&gt;'], $info[$name]);
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
             $field['input_height'] && $field['input_height']="width:{$field['input_height']};";
             $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' placeholder='请输入{$field['title']}' class='layui-textarea c_{$name}  {$field['css']}' style='{$field['input_width']}{$field['input_height']}'>{$info[$name]}</textarea>";
@@ -169,7 +171,7 @@ class Form extends Base
                 $type = 'text';
             }
             $step = $field['type']=='money' ? " step='0.01' " : '';
-            
+            $info[$name] = str_replace(['"',"'"], ['&quot;','&#39;'], $info[$name]);
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
             $show = " <input $readonly placeholder='请输入{$field[title]}' $step $ifmust $jsck type='$type' name='{$name}' id='atc_{$name}' style='{$field['input_width']}' class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
 
