@@ -79,6 +79,9 @@ class Sns{
      */
     public function fav($info,$time=30,$msg='系统帮你订阅了本主题,下次本主题有回复,将会通知你'){
         $time = $time*1000;
+        if (empty(modules_config('weibo'))) {
+            return ;
+        }
         $url = urls('weibo/api/fav_interest_topic',['sys'=>config('system_dirname'),'id'=>$info['id'],'uid'=>$info['uid']]);
         return "<script type='text/javascript'>
                 setTimeout(function(){

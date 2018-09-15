@@ -2559,8 +2559,8 @@ if (!function_exists('getTemplate')) {
       * @param string $type key或keyword取目录名关键字,name值取名称,id值取模型的ID
       * @return mixed|array|boolean|NULL|unknown
       */
-     function M($type=''){
-         $dirname = config('system_dirname');
+     function M($type='',$dirname=''){
+         $dirname || $dirname = config('system_dirname');
          if ($type=='key'||$type=='keyword') {
              return $dirname;
          }elseif($type=='name'){

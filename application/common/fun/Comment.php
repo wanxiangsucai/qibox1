@@ -15,12 +15,16 @@ class Comment{
      * @return void|number|number[]|array|unknown[]|unknown
      */
     public function total($aid=0,$sys=''){
+        if (is_array($aid)) {   //$aid为$rs的情况
+            $sys = $aid['DIR'];
+            $aid = $aid['id'];
+        }
         if ($sys==''){
             $sys = config('system_dirname');
         }
         $sysid = modules_config($sys)['id'];
         if(empty($sysid)){
-            return -1;
+            return 0;
         }
         $map = [
                 'where' =>['sysid'=>$sysid,

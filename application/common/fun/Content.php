@@ -7,6 +7,21 @@ namespace app\common\fun;
 class Content{
     
     /**
+     * 内容里边的 [code] 转义为前台展示
+     * @param string $content
+     */
+    public static function bbscode($content=''){
+        $content = preg_replace_callback("/\[face(\d+)\]/is",array(self,'get_face'),$content);
+        return $content;
+    }
+    
+    private static function get_face($array=[]){
+        if($array[1]){            
+            return '<img src="'.config('view_replace_str.__STATIC__').'/images/qqface/'.$array[1].'.gif'.'"/>';
+        }
+    }
+    
+    /**
      * 获取内容中的附件,比如常用的获取内容中的图片
      * @param string $content
      * @param string $type
