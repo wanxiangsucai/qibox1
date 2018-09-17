@@ -108,7 +108,8 @@ class Upgrade extends AdminBase
 	 * @param string $filename
 	 */
 	private function up_sql($filename=''){
-	    if(preg_match('/^\/application\/common\/upgrade\/([\w]+)\.sql/', $filename)){
+	    if(preg_match('/\/upgrade\/([\w]+)\.sql$/', $filename)){
+	    //if(preg_match('/^\/application\/common\/upgrade\/([\w]+)\.sql/', $filename)){
 	        into_sql(ROOT_PATH.$filename,true,0);
 	    }
 	}

@@ -42,7 +42,7 @@ class Init{
 		define('PUBLIC_PATH',ROOT_PATH.'public'.DS);                       //静态文件硬盘路径,是磁盘路径,不是浏览器的访问路径
 		define('PLUGINS_PATH',ROOT_PATH.'plugins'.DS);                   //插件文件的硬盘路径
 		define('CACHE_DIR',ROOT_PATH.'runtime'.DS);                         //缓存目录的硬盘路径
-		define('QUN',cache('cache_modules_config') ? modules_config('qun')['name'] : '圈子');       //圈子名称
+		define('QUN',cache('cache_modules_config') ? modules_config('qun')['name'] : '社群');       //圈子名称
 		// 模板输出字符串内容替换
 		$view_replace_str = [
 		        '__UPLOADS__'=>PUBLIC_URL.'uploads',

@@ -49,11 +49,11 @@ class Base
         if($info[$name]===''||$info[$name]===null){
             return '';
         }
-        if ( ($show = self::get_item($field['type'],$field,$info)) !='' ) {    //个性定义的表单模板,优先级最高
+        if ( ($show = static::get_item($field['type'],$field,$info)) !='' ) {    //个性定义的表单模板,优先级最高
             
         }elseif(in_array($field['type'],['images','files','image','file','jcrop','images2'])){
             
-            $show = self::format_url($field,$info);
+            $show = static::format_url($field,$info);
             
         }elseif ($field['type'] == 'ueditor') {
             
@@ -66,7 +66,9 @@ class Base
         }elseif ($field['type'] == 'select' || $field['type'] == 'radio') {      // 下拉框 或 单选按钮
             
             if( preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options']) || preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$field['options']) ){
-                $show = $f_value;   //对于动态生成的数组,原型输出,不执行类,不读数据库,避免效率降低
+                //$show = $f_value;   //对于动态生成的数组,原型输出,不执行类,不读数据库,避免效率降低
+                $array = static::options_2array($field['options']);
+                $show = $array?$array[$f_value]:'';
             }else{
                 $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
                 $show = $detail[$f_value];

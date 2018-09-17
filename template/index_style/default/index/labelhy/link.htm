@@ -95,8 +95,8 @@ $(document).ready(function(){
 
 					<div class="butters" onclick="editurl('{:urls('qun/content/apply',['id'=>input('hy_id')])}','fa fa-star','关注')",>关注</div>
 					<div class="butters" onclick="editurl('{:murl('tongji/msg/index')}','fa fa-volume-up','我的信息')",>我的信息</div>
-					<div class="butters" onclick="editurl('{:urls('qun/content/my')}','fa fa-group','我的圈子')",>我的圈子</div>
-					<div class="butters" onclick="editurl('{:urls('qun/near/index')}','fa fa-flag-checkered','附近圈子')",>附近圈子</div>
+					<div class="butters" onclick="editurl('{:urls('qun/content/my')}','fa fa-group','我的__QUN__')",>我的__QUN__</div>
+					<div class="butters" onclick="editurl('{:urls('qun/near/index')}','fa fa-flag-checkered','附近__QUN__')",>附近__QUN__</div>
             {volist name=":controller('qun/GetLink','index')->get_menu_link(input('hy_id'))" id="rs"}
                     {if $rs.sons}
                     <ul class="sortbox">

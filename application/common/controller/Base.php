@@ -78,6 +78,7 @@ class Base extends Controller
             if ($this->request->isPost()) {
                 $this->request->post(fun('filter@all',$this->request->post())); //安全过滤
             }
+            fun('filter@check_safe'); //禁止提交eval <?php
         }
         
     }

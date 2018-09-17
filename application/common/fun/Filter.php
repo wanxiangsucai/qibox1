@@ -46,5 +46,22 @@ class Filter{
         return str_replace($array[2],str_replace(['<','>','"',"'"], ['&lt;','&gt;','&quot;','&#39;'],$array[2]),$array[0]);
     }
     
+    /**
+     * 安全检查
+     */
+    public static function check_safe(){
+        $array = input();
+        foreach($array AS $key=>$value){
+            if (is_array($value) || is_numeric($value) || preg_match('/^([-\w]*)$/', $value)) {
+                continue;
+            }
+            if (preg_match("/([ \r\t\n]+)eval([ \r\t\n]*)\(/is", urldecode($value))) {
+                die('内容中有非法字符eval(');
+            }elseif (preg_match("/<\?php([ \r\t\n]+)/is", urldecode($value))) {
+                die('内容中有非法字符?php');
+            }
+        }
+    }
+    
     
 }
