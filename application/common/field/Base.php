@@ -38,11 +38,11 @@ class Base
     /**
      * 取得某个字段转义后的HTML代码
      * @param array $field 具体某个字段的配置参数
-     * @param array $info 信息内容
+     * @param array $info 信息内容 这里使用&是方便修改其值
      * @param string $pagetype 参数主要是show 或 list 哪个页面使用,主要是针对显示的时候,用在列表页或者是内容页 , 内容页会完全转义,列表页的话,可能只转义部分,或者干脆不转义
      * @return string[]|unknown[]|mixed[]
      */
-    public static function format_field($field=[],$info=[],$pagetype='list'){
+    public static function format_field($field=[],&$info=[],$pagetype='list'){
         
         $name = $field['name'];
         $f_value = $info[$name];
@@ -67,8 +67,13 @@ class Base
             
             if( preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options']) || preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$field['options']) ){
                 //$show = $f_value;   //对于动态生成的数组,原型输出,不执行类,不读数据库,避免效率降低
-                $array = static::options_2array($field['options']);
+                static $options_array = [];     //避免反复执行
+                $array = $options_array[md5($field['options'])];
+                if ($f_value && empty($array)) {
+                    $array = $options_array[md5($field['options'])] = static::options_2array($field['options']);
+                }
                 $show = $array?$array[$f_value]:'';
+				$info["_$name"] = $f_value;         //为了保留原始值
             }else{
                 $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
                 $show = $detail[$f_value];

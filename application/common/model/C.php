@@ -565,6 +565,8 @@ abstract class C extends Model
      */
     protected static function format_data($info=[] , $cfg=[] , $_dirname='' , $_sort_array=[]) {
         //self::InitKey(); //2018-5-19日修改,有的服务器会报错Cannot instantiate abstract class app\common\model\C
+        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        self::$model_key = $array[0][1];
         if($_dirname){
             $dirname = $_dirname;
         }else{
