@@ -37,7 +37,7 @@ class User extends UserModel
         }elseif(strlen($username)>40||strlen($username)<4){
             
             //$username='bb_'.rands(7);
-            $ts = self::where()->order('uid','desc')->limit(1)->select();
+            $ts = self::where([])->order('uid','desc')->limit(1)->select();
             $ts['uid']++;
             $username = get_word($username,16,0).'_'.$ts['uid'];
         }

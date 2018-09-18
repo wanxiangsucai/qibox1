@@ -1089,17 +1089,15 @@ if(!function_exists('get_sort')){
                 $s_array = [
                         $id => $field=='name' ? $array[$id]['name'] : $id,
                 ];
-                $_pid = $_pid2 = $_pid3 = 0;
+                $_pid = 0;
+                $fpid = [];     //把所有父分类都加入到容器
                 foreach($array AS $key=>$rs){
                     if(!$rs['pid'])continue;
-                    //$rs['pid']==$id 仅仅第一层直属下级, $rs['pid']==$_pid 下级的下级 $rs['pid']==$_pid2 下级的兄弟 , $rs['pid']==$_pid3 又重新找回父级的兄弟
-                    if($rs['pid']==$id||$rs['pid']==$_pid||$rs['pid']==$_pid2||$rs['pid']==$_pid3){
-                        $s_array[$key] = $field=='name' ? $array[$key]['name'] : $key;                       
-                        if ($rs['pid']!=$array[$id]['pid']) {
-                            $_pid2 = $rs['pid'];
-                            if($array[$_pid]['pid'] != $array[$key]['pid']){
-                                $_pid3 = $array[$_pid]['pid'];
-                            }
+                    //$rs['pid']==$id 仅仅第一层直属下级, $rs['pid']==$_pid 下级的下级
+                    if($rs['pid']==$id||$rs['pid']==$_pid||in_array($rs['pid'], $fpid)){
+                        $s_array[$key] = $field=='name' ? $array[$key]['name'] : $key;
+                        if(!in_array($rs['pid'], $fpid)){   //把所有父分类都加入容器
+                            $fpid[] = $rs['pid'];
                         }
                         $_pid = $key;
                     }
