@@ -10,6 +10,9 @@ abstract class C extends Model
     //索引表
     public static $base_table;
     
+    //同一个页面当中是否改变过频道,比如一下是bbs一下又cms
+    public static $change_model;
+    
     //前置方法
 //     protected $beforeActionList = [
 //             'Init_Key' =>  ['except'=>'initialize,scopeInitKey'],
@@ -21,8 +24,25 @@ abstract class C extends Model
     {
         parent::initialize();
         preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        if (!empty(self::$model_key) && self::$model_key!=$array[0][1]) {     //不为空,并且跟上次不一样,代表中途变更为其它模块频道
+            self::$change_model = self::$model_key;     //记录一下上一次的频道名
+        }
         self::$model_key = $array[0][1];
-        self::$base_table = $array[0][1].'_content';        
+        self::$base_table = $array[0][1].'_content';
+    }
+    
+    /**
+     * 检查是否实例话,或者是否中途有其它模块实例化过.导致$model_key 变更过
+     */
+    protected static function check_model(){
+        if(empty(self::$model_key) || (self::$change_model && self::$change_model != self::$model_key)){
+            self::InitKey();    //实例化模型类
+        }else{
+            preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+            if(self::$model_key != $array[0][1]){
+                self::InitKey();    //不一致的时候
+            }
+        }
     }
     
     
@@ -31,7 +51,7 @@ abstract class C extends Model
      * @return unknown
      */
     public static function getKey(){
-        empty(self::$model_key) && self::InitKey();
+        static::check_model();
         return self::$model_key;
     }
     
@@ -40,7 +60,7 @@ abstract class C extends Model
      * @return string
      */
     public static function getTable(){
-        empty(self::$model_key) && self::InitKey();
+        static::check_model();
         return self::$base_table;
     }
     
@@ -50,7 +70,7 @@ abstract class C extends Model
      * @return string
      */
     public static function getTableBy($name=''){
-        empty(self::$model_key) && self::InitKey();
+        static::check_model();
         return self::$model_key.'_'.$name;
     }
     
@@ -61,7 +81,7 @@ abstract class C extends Model
      * @return string
      */
     public static function getTableByMid($mid=0){
-        empty(self::$model_key) && self::InitKey();
+        static::check_model();
         return self::$base_table.$mid;
     }
     
@@ -293,7 +313,7 @@ abstract class C extends Model
      * @return mixed|PDOStatement|string|boolean|number
      */
     public static function getMidById($id){
-        self::InitKey();
+        static::check_model();
         static $mids = [];
         if(empty($mids[$id])){
             $mids[$id] = Db::name(self::$base_table)->where('id','=',$id)->value('mid');
@@ -307,7 +327,7 @@ abstract class C extends Model
      * @return mixed|PDOStatement|string|boolean|number
      */
     public static function getMidByFid($fid){
-        self::InitKey();
+        static::check_model();
         return Db::name(self::$model_key.'_sort')->where('id','=',$fid)->value('mid');
     }
     
@@ -317,7 +337,7 @@ abstract class C extends Model
      * @return void|mixed|PDOStatement|string|boolean|number
      */
     public static function getFidById($id){
-        self::InitKey();
+        static::check_model();
         $mid = self::getMidById($id);
         if (empty($mid)) {
             return ;
@@ -331,7 +351,7 @@ abstract class C extends Model
      * @return \think\Paginator|array|\think\db\false|PDOStatement|string|\think\Model
      */
     public static function getAll($map=[],$order="id desc",$rows=0,$pages=[]){
-        self::InitKey();        
+        static::check_model();
         $array = Db::name(self::$base_table)->where($map)->order($order)->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
@@ -355,7 +375,7 @@ abstract class C extends Model
      * @return \think\Paginator|\app\common\model\unknown|array|\think\db\false|PDOStatement|string|\think\Model
      */
     public static function getListByUid($uid=0,$rows=20,$pages=[]){
-        self::InitKey();
+        static::check_model();
         $array = Db::name(self::$base_table)->where('uid',$uid)->order('id','desc')->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
@@ -380,7 +400,7 @@ abstract class C extends Model
      * @return array
      */
     public static function getIndexByUid($uid=0,$rows=50,$min=0){
-        self::InitKey();
+        static::check_model();
         $array = Db::name(self::$base_table)->where('uid',$uid)->order('id','asc')->limit($min,$rows)->column(true);
         return $array;
     }
@@ -392,7 +412,7 @@ abstract class C extends Model
      * @return void|\app\common\model\unknown|array|\think\db\false|PDOStatement|string|\think\Model
      */
     public static function getInfoByid($id=0,$format=FALSE){
-        self::InitKey();
+        //static::check_model();
         $mid = self::getMidById($id);
         if (empty($mid)) {
             return ;
@@ -412,7 +432,7 @@ abstract class C extends Model
      * @return mixed|PDOStatement|string|boolean|number
      */
     public static function getNextByid($id,$type='sort',$info=[],$map=[],$next=true){
-        self::InitKey();
+        static::check_model();
         $id = intval($id);
         if ($next==true) {
             $mod = '<';
@@ -448,7 +468,7 @@ abstract class C extends Model
      * @return mixed|PDOStatement|string|boolean|number
      */
     public static function getNextRandByid($id=0,$type='sort',$info=[],$map=[]){
-        self::InitKey();
+        static::check_model();
         $id = intval($id);
         $mod = '<>';
         if($type=='sort' && ($id||$info)){  //在某个栏目里获取下一条内容
@@ -476,7 +496,7 @@ abstract class C extends Model
      * @return number|number|string
      */
     public static function getNumByMid($mid=0,$map=[]){
-        self::InitKey();
+        //static::check_model();
         if (empty($mid)) {
             return 0;
         }
@@ -489,7 +509,7 @@ abstract class C extends Model
      * @return string
      */
     public static function getTableById($id=0){
-        self::InitKey();
+        //static::check_model();
         return self::getTableByMid(self::getMidById($id));
     }
     
@@ -504,7 +524,7 @@ abstract class C extends Model
      * @return \think\Paginator
      */
     public static function getListByMap($mid=0,$map=[],$point='100,20',$rows=0,$pages=[],$format=true){
-        self::InitKey();
+        //static::check_model();
         list($x,$y) = explode(',',$point);
         $x = (float)$x;
         $y = (float)$y;
@@ -534,7 +554,7 @@ abstract class C extends Model
      */    
     public static function getListByMid($mid=0,$map=[],$order='',$rows=0,$pages=[],$format=true)
     {
-        self::InitKey();
+        //static::check_model();
         $order  = trim($order);
         if(empty($order)){
             $order = 'list desc ,id desc';
@@ -681,7 +701,7 @@ abstract class C extends Model
      * @return void|\app\common\model\unknown[]|array[]|\think\db\false[]|PDOStatement[]|string[]|\think\Model[]|array
      */
     public static function labelGetList($tag_array=[] , $page=0){
-        self::InitKey();
+        static::check_model();
         $cfg = unserialize($tag_array['cfg']);
 
         $mid = $cfg['mid'];     //self::$model_key
@@ -821,7 +841,7 @@ abstract class C extends Model
      * @return array|NULL[]|unknown|\app\common\model\unknown
      */
     public static function labelGetCategoryList($tag_array=[] , $page=0){
-        self::InitKey();
+        static::check_model();
         $cfg = unserialize($tag_array['cfg']);
         
         $rows = $cfg['rows']>0 ? $cfg['rows'] : 5;

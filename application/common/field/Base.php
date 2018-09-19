@@ -65,6 +65,7 @@ class Base
             
         }elseif ($field['type'] == 'select' || $field['type'] == 'radio') {      // 下拉框 或 单选按钮
             
+            $info["_$name"] = $f_value;         //为了保留原始值
             if( preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options']) || preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$field['options']) ){
                 //$show = $f_value;   //对于动态生成的数组,原型输出,不执行类,不读数据库,避免效率降低
                 static $options_array = [];     //避免反复执行
@@ -72,8 +73,7 @@ class Base
                 if ($f_value && empty($array)) {
                     $array = $options_array[md5($field['options'])] = static::options_2array($field['options']);
                 }
-                $show = $array?$array[$f_value]:'';
-				$info["_$name"] = $f_value;         //为了保留原始值
+                $show = $array?$array[$f_value]:'';				
             }else{
                 $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
                 $show = $detail[$f_value];
@@ -81,8 +81,20 @@ class Base
             
         }elseif ($field['type'] == 'checkbox') {    //复选框
             
-            $array = [];
-            $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
+            $info["_$name"] = $f_value;         //为了保留原始值
+            
+            $detail = [];
+            if( preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options']) || preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$field['options']) ){
+                static $options_array = [];     //避免反复执行
+                $detail = $options_array[md5($field['options'])];
+                if ( $f_value && empty($detail) ) {
+                    $detail = $options_array[md5($field['options'])] = static::options_2array($field['options']);
+                }                
+            }else{
+                $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
+            }
+            
+            $array = [];            
             foreach(explode(',',$f_value) AS $v){
                 if($v===''){
                     continue ;

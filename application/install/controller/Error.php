@@ -105,21 +105,23 @@ class Error extends Controller
             }catch(\Exception $e){
                 $this->error('数据库连接失败，请检查数据库配置！');
             }
+            
+            $data['database'] = $database;
+            // 生成配置文件
+            self::mkDatabase($data);
 
             // 不覆盖检测是否已存在数据库
             if (!$cover) {
                 $check = $db_connect->execute('SELECT * FROM information_schema.schemata WHERE schema_name="'.$database.'"');
                 if ($check) {
-                    $this->error('该数据库已存在，如需覆盖，请选择覆盖数据库！');
+                    $this->error('该数据库已存在，如需覆盖，请选择覆盖数据库！或者修改数据表前缀');
                 }
             }
             // 创建数据库
             if (!$db_connect->execute("CREATE DATABASE IF NOT EXISTS `{$database}` DEFAULT CHARACTER SET utf8")) {
                 return $this->error($db_connect->getError());
             }
-            $data['database'] = $database;
-            // 生成配置文件
-            self::mkDatabase($data);
+            
             return $this->success('数据库连接成功', '');
         } else {
             return $this->error('非法访问');
