@@ -375,7 +375,7 @@ trait ModuleContent
 	 * @return boolean
 	 */
 	protected function add_check($mid=0,$fid=0,&$data=[]){
-	    if(!$this->user){
+	    if(empty($this->webdb['allow_guest_post']) && !$this->user){
 	        return '请先登录!';
 	    }elseif($this->user['groupid']==2){
 	        return '很抱歉,你已被列入黑名单,没权限发布,请先检讨自己的言行,再联系管理员解封!';
@@ -390,7 +390,7 @@ trait ModuleContent
 	        $data['status'] = 1;
 	    }
 	    
-	    $s_config = get_sort($fid,'config');
+	    $s_config = $fid ? get_sort($fid,'config') : [];
 	    if($s_config['allowpost']){
 	        if( !$this->admin && !in_array($this->user['groupid'], explode(',',$s_config['allowpost'])) ){
 	            return '你所在用户组,无权在此栏目发布!';

@@ -630,7 +630,7 @@ abstract class C extends IndexBase
         }
         $this->assign('fid',$fid);
         $this->assign('mid',$mid);
-        $template = $this->get_tpl('post',$this->mid);
+        //$template = $this->get_tpl('post',$this->mid);
         return $this->fetch('post');
     }
     

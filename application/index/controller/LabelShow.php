@@ -1164,6 +1164,11 @@ EOT;
         $action = '';
         if($cfg['class']){
             list($class_name,$_action) = explode('@',$cfg['class']);
+            if( !preg_match('/\\\([A-Z])([\w]+)$/',$class_name) ){   //强制把类名第一个字母变大写
+                $class_name = preg_replace_callback('/\\\([\w]+)$/',function($array){
+                    return '\\'.ucfirst($array[1]);
+                },$class_name);
+            }
             if (class_exists($class_name) && method_exists($class_name,$_action) ){
                 $action = $_action;
             }
