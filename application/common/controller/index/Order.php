@@ -3,6 +3,7 @@ namespace app\common\controller\index;
 
 use app\common\controller\IndexBase; 
 use app\common\util\Shop AS ShopFun;
+use app\member\model\Address AS AddressModel;
 
 /**
  * 下订单
@@ -77,6 +78,8 @@ abstract class Order extends IndexBase
             
             $this->end_add($order_ids,$car_ids);     //扩展使用
             
+            $this->add_address($data);  //添加地址
+            
             if (!empty($order_ids)) {
                 $url = '/';
                 if ($data['ifolpay']==1) {
@@ -95,8 +98,33 @@ abstract class Order extends IndexBase
                 $this -> error('订单提交失败');
             }
         }
+        
+        $address = AddressModel::where('uid',$this->user['uid'])->order('often desc,id desc')->column(true);
+        $this->assign('address',$address);
         return $this ->fetch();
-    } 
+    }
+    
+    /**
+     * 添加地址
+     * @param array $data
+     */
+    protected function add_address($data=[]){
+        if (!isset($data['address_id']) || $data['address_id']) {
+            return ;
+        }
+        $often = 1;
+        if ( AddressModel::where('uid',$this->user['uid'])->where('often',1)->find() ) {
+            $often = 0;
+        }
+        $array = [
+                'uid'=>$this->user['uid'],
+                'user'=>$data['linkman'],
+                'telphone'=>$data['telphone'],
+                'address'=>$data['address'],
+                'often'=>$often,
+        ];
+        AddressModel::create($array);
+    }
     
     /**
      * 扩展使用

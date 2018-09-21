@@ -1,17 +1,13 @@
 <?php
-namespace app\common\controller\member;
+namespace app\shop\member;
 
 use app\common\controller\MemberBase;
-use app\common\traits\AdminSort;
+use app\common\traits\AddEditList;
+use app\member\model\Address AS AddressModel;
 
-/**
- * 
- * 会员中心用到的我的分类功能
- *
- */
-abstract class Mysort extends MemberBase
+class Address extends MemberBase
 {
-    use AdminSort;
+    use AddEditList;
     
     protected $validate = '';
     protected $model;
@@ -23,14 +19,14 @@ abstract class Mysort extends MemberBase
     protected function _initialize()
     {
         parent::_initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
-        $dirname = $array[0][1];
-        $this->model        = get_model_class($dirname,'mysort');
-        $this->list_items = [                
-                ['logo','图标','icon'],
-                ['name','分类名称','text'],
+        $this->model        = new AddressModel();
+        $this->list_items = [
+                ['user','联系人','text'],
+                ['telphone','联系电话','text'],
+                ['address','联系地址','text'],
+                ['often','默认地址','yesno'],
         ];
-        $this->tab_ext['page_title'] = '我的商品分类管理';
+        $this->tab_ext['page_title'] = '我的收货地址';
         $this->tab_ext['right_button'] = [
                 [
                         'type'=>'delete',
@@ -40,6 +36,12 @@ abstract class Mysort extends MemberBase
                         'type'=>'edit',
                         'title'=>'修改',
                 ],
+        ];
+        $this->form_items = [
+                ['text','user','联系人'],
+                ['number','telphone','联系电话'],
+                ['text','address','联系地址'],
+                ['radio','often','是否为默认地址','',['否','是']],
         ];
     }
     
@@ -51,7 +53,7 @@ abstract class Mysort extends MemberBase
         }
         
         $map = [
-                'uid'=>$this->user['uid'],                
+                'uid'=>$this->user['uid'],
         ];
         if ($ext_id) {
             if (empty($ext_sys)) {
@@ -66,7 +68,7 @@ abstract class Mysort extends MemberBase
         $this->tab_ext['top_button'] = [
                 [
                         'type'=>'add',
-                        'title'=>'新增分类',
+                        'title'=>'新增收货地址',
                         'href'=>url('add',[
                                 'ext_id'=>$ext_id,
                                 'ext_sys'=>$ext_sys,
@@ -79,11 +81,6 @@ abstract class Mysort extends MemberBase
     }
     
     public function add($ext_id=0,$ext_sys=0) {
-        $this->form_items = [
-                ['hidden','ext_id',$ext_id],
-                ['hidden','ext_sys',$ext_sys],
-                ['textarea','name','分类名称','同时添加多个,则每个名称换一行'],
-        ];
         $url = url('index',[
                 'ext_id'=>$ext_id,
                 'ext_sys'=>$ext_sys,
@@ -91,12 +88,7 @@ abstract class Mysort extends MemberBase
         return $this -> addContent($url);
     }
     
-    public function edit($id = null) {
-        $this->form_items = [
-                ['text','name','分类名称'],
-                ['icon','logo','图标'],
-                ['text','list','排序值'],
-        ];
+    public function edit($id = null) {        
         if (empty($id)) $this -> error('缺少参数');
         $info = $this -> getInfoData($id);
         if ($info['uid']!=$this->user['uid']) {
@@ -117,12 +109,11 @@ abstract class Mysort extends MemberBase
             if ($info['uid']!=$this->user['uid']) {
                 $this -> error('你没权限');
             }
-        }        
+        }
         if ($this -> deleteContent($ids)) {
             $this -> success('删除成功');
         } else {
             $this -> error('删除失败');
         }
     }
-    
 }

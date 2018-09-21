@@ -64,7 +64,30 @@
 </style>
 <div class="PostOrder">
 	<form action="{:urls('add')}" method="post">
-		
+		<ul>
+		<select name="address_id">
+					<option value="" selected>请选择地址</option>
+{volist name="$address" id="rs"}
+					<option {if $rs.often==1}selected{/if} value="{$rs.id}" data-user="{$rs.user}" data-telphone="{$rs.telphone}" data-address="{$rs.address}">{$rs.user} {$rs.telphone|get_word=4} {$rs.address|get_word=12}</option>
+{/volist}
+				 </select>
+<script type="text/javascript">
+$(function(){
+	$("select[name='address_id']").change(function(){
+		set_address($(this))
+	});
+	set_address($("select[name='address_id']"));
+});
+function set_address(that){
+	var address = that.find("option:selected").data('address');
+	var user = that.find("option:selected").data('user');
+	var telphone = that.find("option:selected").data('telphone');
+	$("input[name='linkman']").val(user);
+	$("input[name='telphone']").val(telphone);
+	$("input[name='address']").val(address);
+}
+</script>
+		</ul>
 {qb:form name="xxx" field="title,picurl" mid="-1"}
 		<ul>
 			<ol><i class="{if $rs.name=='linkman'}si si-user{elseif $rs.name=='telphone' /}fa fa-volume-control-phone{elseif $rs.name=='address' /}glyphicon glyphicon-home{else /}fa fa-angle-right{/if}"></i></ol>

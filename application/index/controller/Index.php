@@ -15,7 +15,7 @@ class Index extends IndexBase
         if( ($sysname = $this->webdb['set_module_index'])!='' ){
             //return $this->redirect($sysname.'/index/index');
             if(is_dir(APP_PATH.$sysname)){
-                $this->redirect(url($sysname.'/index/index'),301);
+                $this->redirect(url($sysname.'/index/index'),[],301);
             }            
         }
 		return $this->fetch('../index');

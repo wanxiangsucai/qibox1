@@ -24,6 +24,10 @@ return array(
 								                'link'=>'kehu_order/index',
 								        ),
 								        array(
+								                'title'=>'收货地址管理',
+								                'link'=>'address/index',
+								        ),
+								        array(
 								                'title'=>'分类管理',
 								                'link'=>'mysort/index',
 								        ),

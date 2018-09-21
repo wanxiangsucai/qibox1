@@ -26,6 +26,10 @@ abstract class F extends AdminBase
         if ($this->request->isPost() && !table_field($dirname.'_field','input_width')) {
             query("ALTER TABLE  `qb_{$dirname}_field` ADD  `input_width` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单宽度',ADD  `input_height` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单高度',ADD  `unit` VARCHAR( 20 ) NOT NULL COMMENT  '单位名称',ADD  `match` VARCHAR( 150 ) NOT NULL COMMENT  '表单正则匹配',ADD  `css` VARCHAR( 20 ) NOT NULL COMMENT  '表单CSS类名';");
         }
+        
+        if ($this->request->isPost() && !table_field($dirname.'_field','script')) {
+            query("ALTER TABLE  `qb_{$dirname}_field` ADD  `script` TEXT NOT NULL COMMENT  'JS脚本',ADD  `trigger` VARCHAR( 255 ) NOT NULL COMMENT  '选择某一项后,联动触发显示其它字段';");
+        }
     }
     
     protected function set_config(){

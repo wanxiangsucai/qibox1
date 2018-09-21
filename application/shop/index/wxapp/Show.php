@@ -28,14 +28,15 @@ class Show extends _Show
         $rs['type2'] = $this->format_type('type2',$rs);
         $rs['type3'] = $this->format_type('type3',$rs);
         $rs['content'] = str_replace('="/public/uploads', '="'.$this->request->domain().'/public/uploads', $rs['content']);
-        unset($rs['full_content']);
+        unset($rs['full_content'],$rs['sncode']);
         //$rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
-        $data = [
-                'code'=>0,
-                'msg'=>'调用成功',
-                'data'=>$rs,
-        ];
-        return json($data);
+//         $data = [
+//                 'code'=>0,
+//                 'msg'=>'调用成功',
+//                 'data'=>$rs,
+//         ];
+//         return json($data);
+        return $this->ok_js($rs);
     }
     
     /**
