@@ -561,12 +561,19 @@ abstract class C extends Model
         }elseif($order == 'list desc'){
             $order .= ',id desc';
         }
-        $data_list = Db::name(self::getTableByMid($mid))->where($map)->order($order)->paginate(
-                empty($rows)?null:$rows,    //每页显示几条记录
-                empty($pages[0])?false:$pages[0],
-                empty($pages[1])?['query'=>input('get.')]:$pages[1]
-                );
-        
+        if(strstr($order,'rand()')){    //随机排序不能用 order() 方法
+            $data_list = Db::name(self::getTableByMid($mid))->where($map)->orderRaw('rand()')->paginate(
+                    empty($rows)?null:$rows,    //每页显示几条记录
+                    empty($pages[0])?false:$pages[0],
+                    empty($pages[1])?['query'=>input('get.')]:$pages[1]
+                    );            
+        }else{
+            $data_list = Db::name(self::getTableByMid($mid))->where($map)->order($order)->paginate(
+                    empty($rows)?null:$rows,    //每页显示几条记录
+                    empty($pages[0])?false:$pages[0],
+                    empty($pages[1])?['query'=>input('get.')]:$pages[1]
+                    );
+        }
         if($format){
             $data_list->each(function($rs,$key){
                 return static::format_data($rs);
