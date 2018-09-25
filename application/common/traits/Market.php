@@ -183,23 +183,25 @@ trait Market
         $array_m = [];
         $array_p = [];
         if ($modules) {
-            foreach (explode(',', $modules) AS $name){
+            $array = is_array($modules)?$modules:array_flip(explode(',', $modules));
+            foreach ($array AS $name=>$title){
                 if ($name && empty(modules_config($name))) {
-                    $array_m[] = $name;
+                    $array_m[] = is_numeric($title) ? $name : $title;
                 }
             }
         }
         if ($plugins) {
-            foreach (explode(',', $plugins) AS $name){
+            $array = is_array($plugins)?$plugins:array_flip(explode(',', $plugins));
+            foreach ($array AS $name=>$title){
                 if ($name && empty(plugins_config($name))) {
-                    $array_p[] = $name;
+                    $array_p[] = is_numeric($title) ? $name : $title;
                 }
             }
         }
         if ($array_m || $array_p) {
             $show = '';
-            $array_m && $show.= '请先安装'.implode(',', $array_m).'频道，';
-            $array_p && $show.= '请先安装'.implode(',', $array_p).'插件，';
+            $array_m && $show.= '请先安装  “'.implode(',', $array_m).'” 频道，';
+            $array_p && $show.= '请先安装  “'.implode(',', $array_p).'” 插件，';
             return $show.'如果已安装的话,请把关闭状态改为启用。';
         }
         return true;

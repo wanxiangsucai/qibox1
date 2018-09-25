@@ -13,6 +13,9 @@ abstract class C extends Model
     //同一个页面当中是否改变过频道,比如一下是bbs一下又cms
     public static $change_model;
     
+    //这个属性是为了配合 format_data 方法使用的,防止 format_data里边重新实例化其它类 导致 $model_key 发生变化
+    public static $m_name;
+    
     //前置方法
 //     protected $beforeActionList = [
 //             'Init_Key' =>  ['except'=>'initialize,scopeInitKey'],
@@ -385,7 +388,7 @@ abstract class C extends Model
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();
             if ($info) {
-                $info = static::format_data($info,$cfg=[],$dirname='',$sort_array=[]);
+                $info = static::format_data($info,$cfg=[],self::$model_key,$sort_array=[]);
                 $array[$key] = $info;
             }
         }
@@ -535,6 +538,7 @@ abstract class C extends Model
                 );
         
         if($format){
+            static::$m_name = self::$model_key;  //防止 format_data里边重新实例化其它类 导致 $model_key 发生变化
             $data_list->each(function($rs,$key){
                 return static::format_data($rs);
             });
@@ -575,6 +579,7 @@ abstract class C extends Model
                     );
         }
         if($format){
+            static::$m_name = self::$model_key;  //防止 format_data里边重新实例化其它类 导致 $model_key 发生变化
             $data_list->each(function($rs,$key){
                 return static::format_data($rs);
             });
@@ -591,17 +596,12 @@ abstract class C extends Model
      * @return unknown
      */
     protected static function format_data($info=[] , $cfg=[] , $_dirname='' , $_sort_array=[]) {
-        //self::InitKey(); //2018-5-19日修改,有的服务器会报错Cannot instantiate abstract class app\common\model\C
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
-        self::$model_key = $array[0][1];
+        //self::InitKey(); //2018-5-19日修改,有的服务器会报错Cannot instantiate abstract class app\common\model\C 同时也无法正常使用 get_called_class 
         if($_dirname){
             $dirname = $_dirname;
         }else{
-            //                 preg_match_all('/([_a-z]+)/',get_called_class(),$array);
-            //                 $dirname = $array[0][1];
-            $dirname = self::$model_key;
-        }
-        
+            $dirname = static::$m_name ?: self::$model_key;   //$m_name防止 format_data里边重新实例化其它类 导致 $model_key 发生变化
+        }        
         static $m_or_p = [];
         if( empty($m_or_p[$dirname]) ){
             $m_or_p[$dirname] = modules_config($dirname) ? 'module' : 'plugin';
@@ -827,6 +827,7 @@ abstract class C extends Model
                 }                
             }
         }
+        static::$m_name = self::$model_key;  //防止 format_data里边重新实例化其它类 导致 $model_key 发生变化
         foreach($array['data'] AS $key=>$rs){
             $array['data'][$key] = static::format_data($rs,$cfg,$dirname,$sort_array);
         }
@@ -887,6 +888,7 @@ abstract class C extends Model
             return $vs;
         });        
         $array = getArray($data);
+        static::$m_name = self::$model_key;  //防止 format_data里边重新实例化其它类 导致 $model_key 发生变化
         foreach($array['data'] AS $key=>$rs){
             $array['data'][$key] = static::format_data($rs,$cfg,$dirname,$sort_array);
         }
