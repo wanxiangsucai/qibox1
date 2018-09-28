@@ -89,6 +89,7 @@ $(document).ready(function(){
 					<div class="butters" onclick="editurl('{:get_url('member')}','fa fa-user-circle-o','会员中心')">会员中心</div>
 					<div class="butters" onclick="editurl('{:urls('qun/map/index',['id'=>input('hy_id')])}','fa fa-flag-checkered','一键导航')">一键导航</div>
 					<div class="butters" onclick="editurl('tel:{:fun('qun@getByid',input('hy_id'))['telphone']}','fa fa-phone','一键拨号')",>一键拨号</div>
+					<div class="butters" onclick="editurl('{:urls('qun/member/index',['id'=>input('hy_id')])}','fa fa-fw fa-user','所有成员')">__QUN__成员</div>
 
 					<div class="butters" onclick="editurl('{:urls('qun/content/abouts',['id'=>input('hy_id')])}','fa fa-child','关于我们')">关于我们</div>
 					<div class="butters" onclick="editurl('{:urls('qun/content/contact',['id'=>input('hy_id')])}','fa fa-qrcode','联系我们')">联系我们</div>

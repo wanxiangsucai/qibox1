@@ -88,8 +88,8 @@ $ok_url = "{$array['wx_return_url']}?numcode={$array['numcode']}";
 			function(res){
 				WeixinJSBridge.log(res.err_msg);
 				//alert(res.err_code+res.err_desc+res.err_msg);
-				if(res.err_msg=='get_brand_wcpay_request:ok')window.location.href="<?php echo $ok_url.'&ispay=ok'; ?>";
-				if(res.err_msg=='get_brand_wcpay_request:cancel')window.location.href="<?php echo $ok_url.'&ispay=0'; ?>";
+				if(res.err_msg=='get_brand_wcpay_request:ok')window.location.href="<?php echo $ok_url.'&havelogin=1&ispay=ok'; ?>";
+				if(res.err_msg=='get_brand_wcpay_request:cancel')window.location.href="<?php echo $ok_url.'&havelogin=1&ispay=0'; ?>";
 			}
 		);
 	}
@@ -97,7 +97,7 @@ $ok_url = "{$array['wx_return_url']}?numcode={$array['numcode']}";
 	function wxapp_pay(){
 		wx.miniProgram.getEnv(function(res) {
 			if(res.miniprogram==true){
-				wx.miniProgram.navigateTo({url: "/pages/pay/index?url=/pages/hy/web/index&weburl=<?php echo urlencode($ok_url); ?>&money=<?php echo $array['money']; ?>&numcode=<?php echo $array['numcode']; ?>&title=<?php echo $array['title']; ?>"});
+				//wx.miniProgram.navigateTo({url: "/pages/pay/index?url=/pages/hy/web/index&weburl=<?php echo urlencode($ok_url); ?>&money=<?php echo $array['money']; ?>&numcode=<?php echo $array['numcode']; ?>&title=<?php echo $array['title']; ?>"});
 			}
 		});
 	}

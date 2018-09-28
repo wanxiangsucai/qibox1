@@ -364,7 +364,7 @@ class User extends Model
 	 */
 	public static  function get_token(){
 	    $token = input('token');
-	    if($token && $token_string = cache($token)){   //APP或小程序
+	    if( empty(input('havelogin')) && $token && $token_string = cache($token) ){   //APP或小程序 havelogin=1的时候,就不要覆盖登录了,比如充值的时候。
 	        list($uid,$username,$password) = explode("\t",$token_string);
 	        if(input('once')==1){
 	            cache($token,null);    //出于安全考虑,1次有效

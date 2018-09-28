@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `qb_shop_car` (
   PRIMARY KEY (`id`),
   KEY `shopid` (`shopid`,`uid`),
   KEY `uid` (`uid`,`update_time`,`ifchoose`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='购物车' AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=4 ;
 
 --
 -- 转存表中的数据 `qb_shop_car`

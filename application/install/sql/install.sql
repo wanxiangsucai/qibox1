@@ -1,16 +1,17 @@
 
+
 DROP TABLE IF EXISTS `qb_address`;
 CREATE TABLE IF NOT EXISTS `qb_address` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `uid` mediumint(7) NOT NULL COMMENT '用户UID',
-  `user` varchar(30) COLLATE utf8_bin NOT NULL COMMENT '联系人称呼',
+  `user` varchar(30) NOT NULL COMMENT '联系人称呼',
   `sex` tinyint(1) NOT NULL COMMENT '性 别,1是男,2是女',
-  `telphone` varchar(30) COLLATE utf8_bin NOT NULL COMMENT '联系电话',
-  `address` varchar(150) COLLATE utf8_bin NOT NULL COMMENT '收货地址',
-  `title` varchar(20) COLLATE utf8_bin NOT NULL COMMENT '备注:如家里还是公司',
+  `telphone` varchar(30) NOT NULL COMMENT '联系电话',
+  `address` varchar(150) NOT NULL COMMENT '收货地址',
+  `title` varchar(20) NOT NULL COMMENT '备注:如家里还是公司',
   `often` tinyint(1) NOT NULL COMMENT '是否为常用联系方式',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户收货地址' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户收货地址' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -689,7 +690,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 DROP TABLE IF EXISTS `qb_config_group`;
 CREATE TABLE IF NOT EXISTS `qb_config_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '分组名称',
+  `title` varchar(50) NOT NULL COMMENT '分组名称',
   `list` int(11) NOT NULL COMMENT '排序值',
   `sys_id` mediumint(9) NOT NULL COMMENT '0为系统，正数为模块频道，负数为插件',
   `ifshow` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否在系统设置那里显示',
@@ -698,7 +699,7 @@ CREATE TABLE IF NOT EXISTS `qb_config_group` (
   KEY `sys_type` (`sys_id`),
   KEY `ifsys` (`ifsys`),
   KEY `ifshow` (`ifshow`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='参数配置分组分类' AUTO_INCREMENT=32 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='参数配置分组分类' AUTO_INCREMENT=32 ;
 
 --
 -- 转存表中的数据 `qb_config_group`
@@ -864,46 +865,22 @@ CREATE TABLE IF NOT EXISTS `qb_label` (
 DROP TABLE IF EXISTS `qb_log_action`;
 CREATE TABLE IF NOT EXISTS `qb_log_action` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `uid` int(10) NOT NULL COMMENT 'ԃۧUID',
-  `create_time` int(10) NOT NULL COMMENT 'ʱݤ',
-  `ip` varchar(15) COLLATE utf8_bin NOT NULL COMMENT 'әطIP',
-  `model` varchar(20) COLLATE utf8_bin NOT NULL COMMENT 'ģࠩ',
-  `controller` varchar(20) COLLATE utf8_bin NOT NULL COMMENT '࠘׆Ƿ',
-  `action` varchar(20) COLLATE utf8_bin NOT NULL COMMENT '׽ר',
-  `plugin` varchar(60) COLLATE utf8_bin NOT NULL COMMENT 'ӥݾРژәط',
-  `content` text COLLATE utf8_bin NOT NULL COMMENT '͡ݻքŚɝ',
+  `uid` int(10) NOT NULL COMMENT '用户UID',
+  `create_time` int(10) NOT NULL COMMENT '操作时间',
+  `ip` varchar(15) NOT NULL COMMENT '用户所在IP',
+  `model` varchar(20) NOT NULL COMMENT '模块目录名',
+  `controller` varchar(20) NOT NULL COMMENT '控制器名称',
+  `action` varchar(20) NOT NULL COMMENT '执行了哪个方法',
+  `plugin` varchar(60) NOT NULL COMMENT '插件的名称及控制器及方法',
+  `content` text NOT NULL COMMENT '用户提交的内容',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`,`create_time`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='۳̨әطɕ־' AUTO_INCREMENT=44 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='后台操作日志' AUTO_INCREMENT=1;
 
 --
 -- 转存表中的数据 `qb_log_action`
 --
 
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(20, 1, 1526869213, '127.0.0.1', 'admin', 'hook', 'add', '', '{"name":"layout_body_head","about":"\\u524d\\u53f0\\u5e03\\u5c40\\u6a21\\u677f\\u5934\\u90e8","ifopen":"1"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(21, 1, 1526869262, '127.0.0.1', 'admin', 'hook', 'add', '', '{"name":"layout_body","about":"\\u524d\\u53f0\\u5e03\\u5c40\\u6a21\\u677f\\u7248\\u6743\\u4fe1\\u606f\\u4e4b\\u4e0a","ifopen":"1"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(22, 1, 1526869287, '127.0.0.1', 'admin', 'hook', 'add', '', '{"name":"layout_body_foot","about":"\\u524d\\u53f0\\u5e03\\u5c40\\u6a21\\u677f\\u5e95\\u90e8","ifopen":"1"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(23, 1, 1526869306, '127.0.0.1', 'admin', 'setting', 'index', '', '{"group":"1","webname":"\\u9f50\\u535aX1.0","seo_title":"\\u9f50\\u535a\\u8457\\u540d\\u7684\\u5f00\\u6e90\\u8f6f\\u4ef6\\u63d0\\u4f9b\\u5546","web_open":"1","style":"default","member_style":"default","admin_style":"default","forbid_show_bug":"1","remote_updir":"upload_files\\/web1","upfileType":".rar .txt .jpg .gif .bmp .png .zip .mp3 .wma .wmv .mpeg .mpg .rm .ram .htm .doc .swf .avi .flv .sql ..","close_why":"\\u7f51\\u7ad9\\u7ef4\\u62a4\\u5f53\\u4e2d,\\u6682\\u505c\\u8bbf\\u95ee.","miibeian_gov_cn":"\\u4eacICP\\u5907050453\\u53f7","MoneyName":"\\u91d1\\u5e01","mymd5":"d612f19c764a69f3305","MoneyDW":"\\u5143","group_expire_data":"365","copyright":"\\u8054\\u7cfb\\u7535\\u8bdd:020-28998648 @\\u5e7f\\u5dde\\u9f50\\u535a\\u7f51\\u7edc\\u79d1\\u6280\\u6709\\u9650\\u516c\\u53f8"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(24, 1, 1528351548, '127.0.0.1', 'cms', 'field', 'quickedit', '', '{"name":"list","value":"90","pk":"11","_t":"93872a1e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(25, 1, 1528351553, '127.0.0.1', 'cms', 'field', 'quickedit', '', '{"name":"list","value":"-1","pk":"12","_t":"93872a1e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(26, 1, 1528351581, '127.0.0.1', 'cms', 'field', 'add', '', '{"name":"keywords","title":"SEO\\u5173\\u952e\\u5b57","type":"text","field_type":"varchar(128) NOT NULL","mid":"1"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(27, 1, 1528351590, '127.0.0.1', 'cms', 'field', 'quickedit', '', '{"name":"list","value":"095","pk":"49","_t":"93872a1e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(28, 1, 1528351615, '127.0.0.1', 'cms', 'field', 'quickedit', '', '{"name":"list","value":"-1","pk":"21","_t":"93872a1e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(29, 1, 1528351637, '127.0.0.1', 'cms', 'field', 'add', '', '{"name":"keywords","title":"SEO\\u5173\\u952e\\u5b57","type":"text","field_type":"varchar(128) NOT NULL","list":"98","mid":"2"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(30, 1, 1528351664, '127.0.0.1', 'cms', 'field', 'add', '', '{"name":"keywords","title":"SEO\\u5173\\u952e\\u5b57","type":"text","field_type":"varchar(128) NOT NULL","mid":"3"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(31, 1, 1528351674, '127.0.0.1', 'cms', 'field', 'quickedit', '', '{"name":"list","value":"-1","pk":"24","_t":"93872a1e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(32, 1, 1528351681, '127.0.0.1', 'cms', 'field', 'quickedit', '', '{"name":"list","value":"90","pk":"23","_t":"93872a1e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(33, 1, 1528351684, '127.0.0.1', 'cms', 'field', 'quickedit', '', '{"name":"list","value":"80","pk":"26","_t":"93872a1e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(34, 1, 1528351691, '127.0.0.1', 'cms', 'field', 'quickedit', '', '{"name":"list","value":"098","pk":"51","_t":"93872a1e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(35, 1, 1528351720, '127.0.0.1', 'shop', 'field', 'add', '', '{"name":"keywords","title":"SEO\\u5173\\u952e\\u5b57","type":"text","field_type":"varchar(128) NOT NULL","mid":"1"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(36, 1, 1528351732, '127.0.0.1', 'shop', 'field', 'quickedit', '', '{"name":"list","value":"95","pk":"47","_t":"7782037e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(37, 1, 1528351736, '127.0.0.1', 'shop', 'field', 'quickedit', '', '{"name":"list","value":"90","pk":"11","_t":"7782037e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(38, 1, 1528351741, '127.0.0.1', 'shop', 'field', 'quickedit', '', '{"name":"list","value":"0-1","pk":"12","_t":"7782037e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(39, 1, 1528351746, '127.0.0.1', 'shop', 'field', 'quickedit', '', '{"name":"list","value":"98","pk":"51","_t":"7782037e","type":"text"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(40, 1, 1528351779, '127.0.0.1', 'admin', 'setting', 'index', '', '{"group":"1","webname":"\\u9f50\\u535aX1.0","seo_title":"\\u9f50\\u535a\\u8457\\u540d\\u7684\\u5f00\\u6e90\\u8f6f\\u4ef6\\u63d0\\u4f9b\\u5546","web_open":"1","style":"default","member_style":"default","admin_style":"default","forbid_show_bug":"1","remote_updir":"upload_files\\/web1","upfileType":".rar .txt .jpg .gif .bmp .png .zip .mp3 .wma .wmv .mpeg .mpg .rm .ram .htm .doc .swf .avi .flv .sql ..","close_why":"\\u7f51\\u7ad9\\u7ef4\\u62a4\\u5f53\\u4e2d,\\u6682\\u505c\\u8bbf\\u95ee.","miibeian_gov_cn":"\\u4eacICP\\u5907050453\\u53f7","MoneyName":"\\u91d1\\u5e01","mymd5":"ffa21d584a852f3e3","MoneyDW":"\\u5143","group_expire_data":"365","copyright":"\\u8054\\u7cfb\\u7535\\u8bdd:020-28998648 @\\u5e7f\\u5dde\\u9f50\\u535a\\u7f51\\u7edc\\u79d1\\u6280\\u6709\\u9650\\u516c\\u53f8"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(41, 1, 1528352651, '127.0.0.1', 'admin', 'plugin', 'execute', 'config_set/config/edit', '{"id":"467","title":"PC\\u7248\\u652f\\u4ed8\\u5b9d\\u63a5\\u53e3\\u7c7b\\u578b","c_key":"alipay_service","type":"11","form_type":"radio","options":"create_direct_pay_by_user|\\u5373\\u65f6\\u5230\\u8d26\\r\\n","c_descrip":"\\u53ea\\u80fd\\u9009\\u62e9\\u7b2c\\u4e00\\u9879","ifsys":"1"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(42, 1, 1528352651, '127.0.0.1', 'admin', 'plugin', 'execute', 'config_set/config/edit', '{"id":"467","title":"PC\\u7248\\u652f\\u4ed8\\u5b9d\\u63a5\\u53e3\\u7c7b\\u578b","c_key":"alipay_service","type":"11","form_type":"radio","options":"create_direct_pay_by_user|\\u5373\\u65f6\\u5230\\u8d26\\r\\n","c_descrip":"\\u53ea\\u80fd\\u9009\\u62e9\\u7b2c\\u4e00\\u9879","ifsys":"1"}');
-INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(43, 1, 1533107869, '127.0.0.1', 'admin', 'group', 'admin_power', '', '{"powerdb":{"base-admin-setting\\/index":"1","base-admin-setting\\/clearcache":"1","base-admin-plugin\\/index":"1","base-admin-plugin\\/add":"1","base-admin-plugin\\/market":"1","base-admin-plugin\\/edit":"1","base-admin-plugin\\/delete":"1","base-admin-plugin\\/copy":"1","base-admin-module\\/index":"1","base-admin-module\\/add":"1","base-admin-module\\/market":"1","base-admin-module\\/edit":"1","base-admin-module\\/delete":"1","base-admin-module\\/copy":"1","base-admin-hook\\/index":"1","base-admin-hook\\/add":"1","base-admin-hook\\/edit":"1","base-admin-hook\\/delete":"1","base-admin-hook_plugin\\/market":"1","base-admin-hook_plugin\\/index":"1","base-admin-hook_plugin\\/add":"1","base-admin-hook_plugin\\/edit":"1","base-admin-hook_plugin\\/delete":"1","base-admin-admin_menu\\/index":"1","base-admin-admin_menu\\/add":"1","base-admin-admin_menu\\/edit":"1","base-admin-admin_menu\\/delete":"1","base-admin-webmenu\\/index":"1","base-admin-webmenu\\/add":"1","base-admin-webmenu\\/edit":"1","base-admin-webmenu\\/delete":"1","base-admin-alonepage\\/index":"1","base-admin-alonepage\\/add":"1","base-admin-alonepage\\/edit":"1","base-admin-alonepage\\/delete":"1","base-admin-style\\/market":"1","base-admin-style\\/add":"1","base-admin-upgrade\\/index":"1","base-admin-upgrade\\/sysup":"1","base-admin-upgrade\\/check_files":"1","base-admin-upgrade\\/view_file":"1","base-admin-mysql\\/index":"1","base-admin-mysql\\/backup":"1","base-admin-mysql\\/showtable":"1","base-admin-mysql\\/into":"1","base-admin-mysql\\/tool":"1","member-admin-member\\/index":"1","member-admin-member\\/add":"1","member-admin-member\\/edit":"1","member-admin-member\\/delete":"1","member-admin-group\\/index":"1","member-admin-group\\/add":"1","member-admin-group\\/edit":"1","member-admin-group\\/delete":"1","member-admin-group\\/admin_power":"1","module-cms-setting\\/index":"1","module-cms-content\\/postnew":"1","module-cms-content\\/index":"1","module-cms-content\\/add":"1","module-cms-content\\/edit":"1","module-cms-content\\/delete":"1","module-cms-sort\\/index":"1","module-cms-sort\\/add":"1","module-cms-sort\\/edit":"1","module-cms-sort\\/delete":"1","module-cms-module\\/index":"1","module-cms-module\\/add":"1","module-cms-module\\/edit":"1","module-cms-module\\/delete":"1","module-cms-field\\/index":"1","module-cms-field\\/add":"1","module-cms-field\\/edit":"1","module-cms-field\\/delete":"1","module-cms-category\\/index":"1","module-cms-category\\/add":"1","module-cms-category\\/edit":"1","module-cms-category\\/delete":"1","module-cms-info\\/index":"1","module-cms-info\\/add":"1","module-cms-info\\/edit":"1","module-cms-info\\/delete":"1","module-cms-sort_field\\/index":"1","module-cms-sort_field\\/add":"1","module-cms-sort_field\\/edit":"1","module-cms-sort_field\\/delete":"1","module-shop-setting\\/index":"1","module-shop-content\\/postnew":"1","module-shop-content\\/index":"1","module-shop-content\\/add":"1","module-shop-content\\/edit":"1","module-shop-content\\/delete":"1","module-shop-sort\\/index":"1","module-shop-sort\\/add":"1","module-shop-sort\\/edit":"1","module-shop-sort\\/delete":"1","module-shop-module\\/index":"1","module-shop-module\\/add":"1","module-shop-module\\/edit":"1","module-shop-module\\/delete":"1","module-shop-field\\/index":"1","module-shop-field\\/add":"1","module-shop-field\\/edit":"1","module-shop-field\\/delete":"1","module-shop-order\\/index":"1","module-shop-order\\/edit":"1","module-shop-order\\/delete":"1","module-shop-sort_field\\/index":"1","module-shop-sort_field\\/add":"1","module-shop-sort_field\\/edit":"1","module-shop-sort_field\\/delete":"1","plugin-log-action\\/index":"1","plugin-log-action\\/delete":"1","plugin-log-login\\/index":"1","plugin-log-login\\/delete":"1","plugin-weixin-setting\\/index":"1","plugin-weixin-menu\\/config":"1","plugin-weixin-weixin_autoreply\\/index":"1","plugin-weixin-weixin_autoreply\\/add":"1","plugin-weixin-weixin_autoreply\\/edit":"1","plugin-weixin-weixin_autoreply\\/delete":"1","plugin-weixin-weixin_msg\\/index":"1","plugin-config_set-config\\/index":"1","plugin-config_set-config\\/add":"1","plugin-config_set-config\\/edit":"1","plugin-config_set-config\\/delete":"1","plugin-config_set-group\\/index":"1","plugin-config_set-group\\/add":"1","plugin-config_set-group\\/edit":"1","plugin-config_set-group\\/delete":"1","plugin-smsali-setting\\/index":"1","plugin-label-index\\/index":"1","plugin-label-index\\/edit":"1","plugin-label-index\\/delete":"1","plugin-label-index\\/set":"1","plugin-label-applabel\\/index":"1","plugin-label-applabel\\/add":"1","plugin-label-applabel\\/edit":"1","plugin-label-applabel\\/delete":"1","plugin-label-applabel\\/set":"1","plugin-login-setting\\/index":"1","plugin-comment-content\\/index":"1","plugin-comment-content\\/delete":"1","plugin-area-province\\/index":"1","plugin-area-province\\/add":"1","plugin-area-province\\/edit":"1","plugin-area-province\\/delete":"1","plugin-area-city\\/index":"1","plugin-area-city\\/add":"1","plugin-area-city\\/edit":"1","plugin-area-city\\/delete":"1","plugin-area-zone\\/index":"1","plugin-area-zone\\/add":"1","plugin-area-zone\\/edit":"1","plugin-area-zone\\/delete":"1","plugin-area-street\\/index":"1","plugin-area-street\\/add":"1","plugin-area-street\\/edit":"1","plugin-area-street\\/delete":"1","plugin-marketing-rmb_getout\\/index":"1","plugin-marketing-rmb_getout\\/delete":"1","plugin-marketing-rmb_getout\\/pay":"1","plugin-marketing-rmb_getout\\/log":"1","plugin-marketing-rmb_infull\\/index":"1","plugin-marketing-rmb_infull\\/delete":"1","plugin-marketing-rmb_consume\\/index":"1","plugin-marketing-rmb_consume\\/delete":"1","plugin-marketing-moneylog\\/index":"1","plugin-marketing-moneylog\\/delete":"1"},"Submit":"\\u63d0\\u4ea4","id":"3"}');
 
 -- --------------------------------------------------------
 
@@ -914,24 +891,15 @@ INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `control
 DROP TABLE IF EXISTS `qb_log_login`;
 CREATE TABLE IF NOT EXISTS `qb_log_login` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '`эìΪ1ˇ۳̨և¼ɕ־',
-  `ip` varchar(15) COLLATE utf8_bin NOT NULL COMMENT 'և¼IP',
-  `create_time` int(10) NOT NULL COMMENT 'և¼ʱݤ',
-  `username` varchar(30) COLLATE utf8_bin NOT NULL COMMENT 'և¼ԃۧĻ',
-  `password` varchar(32) COLLATE utf8_bin NOT NULL COMMENT 'և¼Ĝë',
+  `type` tinyint(1) NOT NULL DEFAULT '1',
+  `ip` varchar(15) NOT NULL COMMENT '登录IP',
+  `create_time` int(10) NOT NULL COMMENT '登录时间',
+  `username` varchar(30) NOT NULL COMMENT '登录用户名',
+  `password` varchar(32) NOT NULL COMMENT '登录密码,登录成功密码就加密',
   PRIMARY KEY (`id`),
   KEY `create_time` (`create_time`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='ԃۧև¼ɕ־' AUTO_INCREMENT=8 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户登录日志' AUTO_INCREMENT=1 ;
 
---
--- 转存表中的数据 `qb_log_login`
---
-
-INSERT INTO `qb_log_login` (`id`, `type`, `ip`, `create_time`, `username`, `password`) VALUES(3, 1, '127.0.0.1', 1526868885, 'admin', '21232f297a57a5a743894a0e4a801fc3');
-INSERT INTO `qb_log_login` (`id`, `type`, `ip`, `create_time`, `username`, `password`) VALUES(4, 1, '127.0.0.1', 1526869218, 'admin', '21232f297a57a5a743894a0e4a801fc3');
-INSERT INTO `qb_log_login` (`id`, `type`, `ip`, `create_time`, `username`, `password`) VALUES(5, 1, '127.0.0.1', 1528008805, 'admin', '21232f297a57a5a743894a0e4a801fc3');
-INSERT INTO `qb_log_login` (`id`, `type`, `ip`, `create_time`, `username`, `password`) VALUES(6, 1, '127.0.0.1', 1528351526, 'admin', '21232f297a57a5a743894a0e4a801fc3');
-INSERT INTO `qb_log_login` (`id`, `type`, `ip`, `create_time`, `username`, `password`) VALUES(7, 1, '127.0.0.1', 1533107831, 'admin', '21232f297a57a5a743894a0e4a801fc3');
 
 -- --------------------------------------------------------
 
@@ -1056,22 +1024,7 @@ INSERT INTO `qb_module` (`id`, `author`, `author_url`, `type`, `name`, `keywords
 
 -- --------------------------------------------------------
 
---
--- 表的结构 `qb_moneycard`
---
 
-DROP TABLE IF EXISTS `qb_moneycard`;
-CREATE TABLE IF NOT EXISTS `qb_moneycard` (
-  `id` mediumint(7) NOT NULL AUTO_INCREMENT,
-  `passwd` varchar(32) NOT NULL DEFAULT '',
-  `moneyrmb` int(7) NOT NULL DEFAULT '0',
-  `moneycard` int(7) NOT NULL DEFAULT '0',
-  `ifsell` tinyint(1) NOT NULL DEFAULT '0',
-  `uid` mediumint(7) NOT NULL DEFAULT '0',
-  `username` varchar(32) NOT NULL DEFAULT '',
-  `posttime` int(10) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='点卡' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1246,16 +1199,17 @@ CREATE TABLE IF NOT EXISTS `qb_rmb_infull` (
 -- 表的结构 `qb_scanlogin`
 --
 
+
 DROP TABLE IF EXISTS `qb_scanlogin`;
 CREATE TABLE IF NOT EXISTS `qb_scanlogin` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `uid` int(7) NOT NULL COMMENT '登录成功的用户ID',
-  `sid` varchar(32) COLLATE utf8_bin NOT NULL COMMENT '用户生成的随机字串',
-  `ip` varchar(15) COLLATE utf8_bin NOT NULL COMMENT '安全起见同一IP才能登录',
+  `sid` varchar(32) NOT NULL COMMENT '用户生成的随机字串',
+  `ip` varchar(15) NOT NULL COMMENT '安全起见同一IP才能登录',
   `posttime` int(10) NOT NULL COMMENT '时间有效期',
   PRIMARY KEY (`id`),
   KEY `sid` (`sid`)
-) ENGINE=MEMORY DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='微信扫码PC登录' AUTO_INCREMENT=1 ;
+) ENGINE=MEMORY DEFAULT CHARSET=utf8 COMMENT='微信扫码PC登录' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1278,7 +1232,7 @@ CREATE TABLE IF NOT EXISTS `qb_shop_car` (
   PRIMARY KEY (`id`),
   KEY `shopid` (`shopid`,`uid`),
   KEY `uid` (`uid`,`update_time`,`ifchoose`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='购物车' AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='购物车' AUTO_INCREMENT=4 ;
 
 --
 -- 转存表中的数据 `qb_shop_car`
@@ -1632,22 +1586,7 @@ CREATE TABLE IF NOT EXISTS `qb_weixinword` (
 INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(2, '价格', '门户系统价格分别是6800元、9500元，分类系统价格分类别3500元、4500元等', 10, 0);
 INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(3, '产品 商品', '我们的产品有地方门户系统，CMS系统，B2B电子商务系统，分类信息系统等', 11, 0);
 
--- --------------------------------------------------------
 
---
--- 表的结构 `qb_weixinyznum`
---
-
-DROP TABLE IF EXISTS `qb_weixinyznum`;
-CREATE TABLE IF NOT EXISTS `qb_weixinyznum` (
-  `sid` varchar(16) NOT NULL DEFAULT '',
-  `username` varchar(50) NOT NULL DEFAULT '',
-  `num` varchar(6) NOT NULL DEFAULT '',
-  `posttime` int(10) NOT NULL DEFAULT '0',
-  `wx_id` varchar(50) NOT NULL DEFAULT '',
-  UNIQUE KEY `sid` (`sid`),
-  KEY `username` (`username`,`num`)
-) ENGINE=MEMORY DEFAULT CHARSET=utf8;
 
 
 ALTER TABLE  `qb_config_group` CHANGE  `ifshow`  `ifshow` TINYINT( 4 ) NOT NULL DEFAULT  '0' COMMENT  '是否在系统设置那里显示';
@@ -1739,3 +1678,19 @@ ALTER TABLE  `qb_cms_content1` ADD INDEX (  `myfid` );
 
 ALTER TABLE  `qb_cms_content2` ADD  `myfid` MEDIUMINT( 7 ) NOT NULL COMMENT  '我的分类';
 ALTER TABLE  `qb_cms_content2` ADD INDEX (  `myfid` );
+
+ALTER TABLE  `qb_rmb_getout` COMMENT =  '会员余额申请提现记录';
+
+ALTER TABLE  `qb_rmb_consume` COMMENT =  '会员余额RMB赚取与消费记录';
+
+ALTER TABLE  `qb_area` COMMENT =  '省份城市街道地区';
+
+ALTER TABLE  `qb_group` COMMENT =  '系统会员用户组';
+
+ALTER TABLE  `qb_moneylog` COMMENT =  '会员积分赚取与消费记录';
+
+ALTER TABLE  `qb_weixinmenu` COMMENT =  '微信公众号菜单';
+
+ALTER TABLE  `qb_weixinmsg` COMMENT =  '公众号用户回复的消息';
+
+ALTER TABLE  `qb_weixinword` COMMENT =  '公众号回复关键字响应的内容';

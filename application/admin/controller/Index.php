@@ -81,7 +81,7 @@ class Index extends AdminBase
                 LoginLog::login($data['username'], $data['password']);
                 $this->error("密码不正确,点击重新输入");
             }else{
-                LoginLog::login($data['username'],md5($data['password']));
+                LoginLog::login($data['username'],md5($data['password'] . get_ip()));
                 $this->success('登录成功','index');
             }
         }
