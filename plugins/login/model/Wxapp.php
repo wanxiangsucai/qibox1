@@ -6,9 +6,10 @@ use app\common\model\User AS UserModel;
 class Wxapp extends UserModel
 {
     public static function api_reg($openid,$data=array()){
-
-        if($data['nickName']=='' || $openid==''){
-            return 'nickname 或 openid 值不存在！';
+        if($data['nickName']==''){
+            return 'nickName 昵称不存在！';
+        }elseif($openid==''){
+            return 'openid 值不存在！';
         }
         
         if( self::check_wxappIdExists( $openid ) ){
@@ -24,7 +25,7 @@ class Wxapp extends UserModel
         }elseif(strlen($username)>40||strlen($username)<4){
             
             //$username='bb_'.rands(7);
-            $ts = self::where([])->order('uid','desc')->limit(1)->select();
+            $ts = self::where([])->order('uid','desc')->limit(1)->find();
             $ts['uid']++;
             $username = get_word($username,16,0).'_'.$ts['uid'];
         }
@@ -38,7 +39,7 @@ class Wxapp extends UserModel
         
         //$username = get_word($username,40,0);	//帐号不能太长
         if(self::check_userexists($username)){	//检查用户名是否已存在
-            $pss = self::where([])->order('uid','desc')->limit(1)->select();
+            $pss = self::where([])->order('uid','desc')->limit(1)->find();
             $username .='-'.($pss['uid']+1);
         }
         

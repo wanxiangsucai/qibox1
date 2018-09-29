@@ -19,8 +19,10 @@ class User extends UserModel
             $check_attention = 1;
         }
         
-        if($data['nickname']=='' || $data['openid']==''){
-            return 'nickname 或 openid 值不存在！';
+        if($data['nickname']==''){
+            return 'nickname 昵称不存在！';
+        }elseif($openid==''){
+            return 'openid 值不存在！';
         }
         
         if( self::check_wxIdExists( $data['openid'] ) ){
@@ -37,7 +39,7 @@ class User extends UserModel
         }elseif(strlen($username)>40||strlen($username)<4){
             
             //$username='bb_'.rands(7);
-            $ts = self::where([])->order('uid','desc')->limit(1)->select();
+            $ts = self::where([])->order('uid','desc')->limit(1)->find();
             $ts['uid']++;
             $username = get_word($username,16,0).'_'.$ts['uid'];
         }
