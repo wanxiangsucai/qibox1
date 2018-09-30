@@ -1,0 +1,1 @@
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, 'WAP端是否指定某个频道做为默认主页', 'set_module_wapindex', '0', 'select', 'app\\common\\util\\Module@getTitleList@["不特别指定","keywords"]', 1, '', '', 0, 0);

@@ -12,9 +12,14 @@ class Index extends IndexBase
 //             set_cookie('wxapp', 1);
 //             $this->redirect(url('cms/index/index'),301);
 //         }
-        if( ($sysname = $this->webdb['set_module_index'])!='' ){
+        if( IN_WAP===true && ($sysname = $this->webdb['set_module_wapindex']) ){
             //return $this->redirect($sysname.'/index/index');
-            if(is_dir(APP_PATH.$sysname)){
+            if(modules_config($sysname)){
+                $this->redirect(url($sysname.'/index/index'),[],301);
+            }
+        }elseif( ($sysname = $this->webdb['set_module_index'])!='' ){
+            //return $this->redirect($sysname.'/index/index');
+            if(modules_config($sysname)){
                 $this->redirect(url($sysname.'/index/index'),[],301);
             }            
         }

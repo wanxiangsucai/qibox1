@@ -1694,3 +1694,6 @@ ALTER TABLE  `qb_weixinmenu` COMMENT =  '微信公众号菜单';
 ALTER TABLE  `qb_weixinmsg` COMMENT =  '公众号用户回复的消息';
 
 ALTER TABLE  `qb_weixinword` COMMENT =  '公众号回复关键字响应的内容';
+
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, 'WAP端是否指定某个频道做为默认主页', 'set_module_wapindex', '0', 'select', 'app\\common\\util\\Module@getTitleList@["不特别指定","keywords"]', 1, '', '', 0, 0);

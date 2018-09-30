@@ -294,8 +294,9 @@ abstract class C extends Model
      * @param unknown $id 内容ID
      * @param string $field 字段名
      * @param string $is_add 默认是增加,也可以设置 false 做减少
+     * @param number $step 变化的数量
      */
-    public static function addField($id,$field='',$is_add=true){
+    public static function addField($id,$field='',$is_add=true,$step=1){
         self::InitKey();
         $table = self::getTableById($id);
         if($field==''){//table_field($table,$field)
@@ -303,9 +304,9 @@ abstract class C extends Model
         }
         if($table){
             if($is_add==true){
-                Db::name($table)->where('id','=',$id)->setInc($field,1);
+                Db::name($table)->where('id','=',$id)->setInc($field,$step);
             }else{
-                Db::name($table)->where('id','=',$id)->setDec($field,1);
+                Db::name($table)->where('id','=',$id)->setDec($field,$step);
             }
         }
     }

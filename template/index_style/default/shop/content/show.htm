@@ -33,13 +33,13 @@
 <div class="ShowContBox">
 	<div class="BaseInfos">
 		<div class="title">
-			<a href="#">限时特惠</a>
+			<a href="#">库存:{$info.num}</a>
 			<span>{$info.title}</span>
 		</div>
 		<dl class="others">
 			<dt>
 				<div>&yen;<span>{$info.price}</span><em>元</em></div>
-				{if $info.market_price}<p>&yen;{$info.market_price}</p>{/if}
+				{if $info.market_price>0}<p>&yen;{$info.market_price}</p>{/if}
 			</dt>
 			<dd>距离结束：<em>4134234</em> <span></span></dd>
 		</dl>
@@ -195,7 +195,7 @@ $array3=get_shop_type('type3',$info);
 						<div class="title"><a href="{$rs.url}">{$rs.title}</a></div>
 						<div class="infos">
 							<div class="price">&yen;<span>{$rs.price}</span><em>元</em></div>
-							{if $info.market_price}<p>&yen;{$info.market_price}</p>{/if}
+							{if $rs.market_price>0}<p>&yen;{$rs.market_price}</p>{/if}
 						</div>
 					</li>
 				</ul>

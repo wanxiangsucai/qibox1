@@ -10,6 +10,43 @@ use think\Db;
 class Shop{
     
     /**
+     * 统计用户购物车里的商品数量, 可以统计所有件数, 也可以统计品种数量
+     * @param string $all 为1 或 true的时候,统计所有件数, 默认只统计品种数量
+     * @return number
+     */
+    public function car_num($all=false){
+        $uid = login_user('uid');
+        if (empty($uid)) {
+            return 0;
+        }
+        if ($all) {
+            $num = Db::name('shop_car')->where('uid',$uid)->sum('num');
+        }else{
+            $num = Db::name('shop_car')->where('uid',$uid)->count('num');
+        }
+        return intval($num);
+    }
+    
+    /**
+     * 列出用户购物车里的商品
+     * @return number|unknown[]
+     */
+    public function car_title(){
+        $uid = login_user('uid');
+        if (empty($uid)) {
+            return 0;
+        }
+        $array = [];
+        $listdb = Db::name('shop_car')->where('uid',$uid)->order('update_time desc')->column(true);
+        foreach ($listdb AS $rs){
+            $shop = \app\shop\model\Content::getInfoByid($rs['shopid'],true);
+            $shop['_car_'] = $rs;
+            $array[] = $shop;
+        }
+        return $array;
+    }
+    
+    /**
      * 统计用户购物车里需要支付的总金额
      * @return number
      */

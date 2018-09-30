@@ -30,7 +30,7 @@ abstract class Car extends IndexBase
         $this->topic_model = get_model_class($dirname,'content');
     }
     
-    protected function check_status($shopid=0){
+    protected function check_status($shopid=0,$num=1,$type1='',$type2='',$type3=''){
         if (!$shopid) {
             return '商品不存在';
         }
@@ -44,7 +44,7 @@ abstract class Car extends IndexBase
      * 加入购物车
      */
     public function add($shopid=0,$num=1,$type1='',$type2='',$type3=''){
-        $result = $this->check_status($shopid);
+        $result = $this->check_status($shopid,$num,$type1,$type2,$type3);
         if ($result!==true) {
             return $this->err_js($result);
         }

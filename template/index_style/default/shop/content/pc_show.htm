@@ -31,6 +31,8 @@
 				<ul>
 					<li>发布时间：<span>{:date("Y-m-d H:i:s",$info.create_time)}</span></li>
 					<li>商品价格：<span class="price">&yen;<em>{$info.price}</em></span></li>
+					{if $info.market_price>0}<li>市场原价：<span style="text-decoration:line-through;">&yen; {$info.market_price} 元</span></li>{/if}
+					<li>库存量：<span>{$info.num}</span></li>
 				</ul>
 				<div class="qb_ui_pc_select_shoptype">
 {php}
