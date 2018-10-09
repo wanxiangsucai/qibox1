@@ -123,7 +123,19 @@ $array3=get_shop_type('type3',$info);
 				}
 				$('.chnageBuyNum div input').val(shopnum);
 			});
+			function check_login(){
+				if("{$userdb.uid}"==""){
+					layer.confirm('你还没登录,不能购买,你要登录吗？', {
+						btn : [ '登录', '取消' ]
+					}, function(index) {
+						window.location.href = "{:get_url('login')}";
+					}); 
+					return false;
+				}
+				return true;
+			}
 			function BuyThisShop(totype){
+				if(check_login()!==true)return ;
 				if((type1==0&&$(".shoptype1").length>0)||(type2==0&&$(".shoptype2").length>0)||(type3==0&&$(".shoptype3").length>0)){
 					layer.alert('没有选择商品类型');
 				}else{

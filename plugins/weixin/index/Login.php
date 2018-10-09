@@ -72,13 +72,18 @@ class Login extends IndexBase
                 
             }else{      //注册与登录
                 
-                $rs && $ps = UserModel::get_info($rs['uid'],'uid');
+                //$rs && $ps = UserModel::get_info($rs['uid'],'uid');
                 
-                if(empty($rs['username']) || empty($ps)){
+                if(empty($rs)){
                     $this->success( '你还没有注册，现在自动注册一个帐号!' , purl('reg/index',['openid'=>$openid]) );
+                }elseif( empty($rs['username']) ){
+                    UserModel::edit_user([
+                            'uid'=>$rs['uid'],
+                            'username'=>'xx-'.$rs['uid'],
+                    ]);
                 }
                 
-                UserModel::login($ps['username'], '', 3600*24,true);
+                UserModel::login($rs['username'], '', 3600*24,true);
             }
             
 

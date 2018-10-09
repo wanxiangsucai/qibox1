@@ -91,7 +91,8 @@ abstract class C extends AdminBase
                                 [ 'select','fid','所属栏目','',$sort_array,$fid],
                                // [ 'linkages','street_id','所属地区','','area',4],
                         ],
-                        $this->getEasyFormItems()
+                        $this->form_items
+                        //$this->getEasyFormItems()
                     );
         }
         
@@ -180,10 +181,11 @@ abstract class C extends AdminBase
                     ['title', '标题', 'link',iurl('content/show',['id'=>'__id__']),'_blank'],
                     ['fid', '所属栏目', 'select',$this->s_model->getTitleList(),config('system_dirname')],
                     ['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
-                    ['uid', '发布者', 'callback',function($value){
-                        $array = get_user($value);
-                        return $array['username'];
-                    }],
+//                     ['uid', '发布者', 'callback',function($value){
+//                         $array = get_user($value);
+//                         return $array['username'];
+//                     }],
+                    ['uid', '发布者', 'username'],
                     ['create_time', '发布日期', 'datetime'],
                     ['view', '浏览量', 'text.edit'],
                     ['list', '排序值', 'text.edit'],
@@ -338,7 +340,8 @@ abstract class C extends AdminBase
                     [
                             [ 'select','fid','所属栏目','',$sort_array],
                     ],
-                    $this->getEasyFormItems()
+                    //$this->getEasyFormItems()
+                    $this->form_items
                     );
         }
         

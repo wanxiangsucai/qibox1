@@ -28,6 +28,15 @@ class Format
                         'name'=>$rs['1'],
                         'value'=>$rs['2'],
                 ];
+            }elseif($rs['0']=='callback'){  //回调函数
+                $array[$rs[1]] = [
+                        'type'=>$rs['0'],
+                        'name'=>$rs['1'],
+                        'title'=>$rs['2'],
+                        'about'=>$rs['3'],
+                        'fun'=>$rs['4'],
+                        'value'=>$rs['5'],
+                ];
             }else{
                 $array[$rs[1]] = [
                         'type'=>$rs['0'],

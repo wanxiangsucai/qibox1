@@ -36,8 +36,8 @@
 	<div class="actions">
 		{eq name="$rs.pay_status" value="1"}<span>已付款</span>{else /}<a href="{:urls('pay',['id'=>$rs['id']])}" title="点击在线支付">未付款</a>{/eq}
 		<a href="{:urls('show',['id'=>$rs['id']])}">查看</a> 
-		<a href="{:urls('edit',['id'=>$rs['id']])}">修改</a> 			
-		<!--<a href="{:urls('delete',['id'=>$rs['id']])}" class="del">删除</a>-->
+		<!--<a href="{:urls('edit',['id'=>$rs['id']])}">修改</a> 			
+		<a href="{:urls('delete',['id'=>$rs['id']])}" class="del">删除</a>-->
 	</div>
 </div>
 {/volist}

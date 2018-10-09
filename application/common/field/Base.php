@@ -103,6 +103,13 @@ class Base
             }
             $show = implode('、',$array);
             
+        }elseif($field['type']=='array'){
+            
+            $array = json_decode($info[$name],true);
+            foreach($array AS $value){
+                $show .= "<div class='array_field $name'>$value</div>";
+            }
+            
         }elseif($field['type']=='date'){
             
             $show = format_time($info[$name],'Y-m-d');
@@ -110,6 +117,10 @@ class Base
         }elseif($field['type']=='datetime'){
             
             $show = format_time($info[$name],'Y-m-d H:i');
+            
+        }elseif($field['type']=='callback'){    //回调函数
+            
+            $show = $field['fun']($info[$name],$info);
             
         }else{  //直接输出
             
