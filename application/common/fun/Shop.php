@@ -116,7 +116,7 @@ class Shop{
         if (empty($info[$type])) {
             return ;
         }
-        $array = json_decode($info[$type],true);  //数据库存放的格式是 ["红","黄","蓝"]
+        $array = json_decode($info['field_array'][$type]['value']?:$info[$type],true);  //数据库存放的格式是 ["红","黄","蓝"]
         foreach ($array AS $_key=>$_value){
             list($title,$price,$num) = explode('|',$_value);    //对于第一项可以定义价格与库存量 比如 ["大号|100","中号|80","小号|50"]
             if($key!==null){    //展示某一项的名称或价格

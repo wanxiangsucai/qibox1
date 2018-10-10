@@ -103,7 +103,7 @@ class Base
             }
             $show = implode('、',$array);
             
-        }elseif($field['type']=='array'){
+        }elseif($field['type']=='array' && !in_array($name, ['type1','type2','type3'])){    //商城的三个参数特殊点,这里就不处理了
             
             $array = json_decode($info[$name],true);
             foreach($array AS $value){
