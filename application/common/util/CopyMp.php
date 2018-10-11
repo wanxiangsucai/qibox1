@@ -104,7 +104,7 @@ class CopyMp
         
         //$s = preg_replace("/<iframe([^>]+)data-src=\"([^\"]+)\"([^>]+)><\/iframe>/is",$code,$s);
         
-        $s = preg_replace_callback("/<iframe([^>]+)data-src=\"([^\"]+)\"([^>]*)><\/iframe>/is",array($this,get_iframe_mv_id),$s);
+        $s = preg_replace_callback("/<iframe([^>]+)data-src=\"([^\"]+)\"([^>]*)><\/iframe>/is",array(self,get_iframe_mv_id),$s);
         //$s = preg_replace("/<iframe([^>]+)data-src=\"([^\"]+)\"([^>]*)><\/iframe>/eis","get_iframe_mv_id('\\2')",$s);
         
         return $s;
