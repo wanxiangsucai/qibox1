@@ -84,6 +84,9 @@ class Member extends AdminBase
     	        $result = $this->validate($data, $this->validate);
     	        if(true !== $result) $this->error($result);
     	    }
+    	    if ($data['rmb_pwd'] && strlen($data['rmb_pwd'])!=32) {
+    	        $data['rmb_pwd'] = md5($data['rmb_pwd']);
+    	    }
     	    if ( $this->model->edit_user($data) ) {
     	        $this->success('修改成功', 'index');
     	    } else {
@@ -108,6 +111,7 @@ class Member extends AdminBase
 	            ['number', 'money', '积分'],
 	            ['money', 'rmb', '可用余额'],
 	            ['money', 'rmb_freeze', '冻结余额'],
+	            ['text', 'rmb_pwd', '支付密码','这是加密后的效果,要修改的话,只须输入原始密码即可'],
 	           ['text', 'truename', '真实名'],
 	        ['text', 'mobphone', '手机号'],
 	        ['text', 'idcard', '证件号'],

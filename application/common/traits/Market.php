@@ -2,6 +2,7 @@
 namespace app\common\traits;
 use app\common\util\Unzip;
 use think\Db;
+use think\Cache;
 
 trait Market
 {
@@ -39,7 +40,17 @@ trait Market
             return $this->err_js($basepath.'目录不可写,请先修改目录属性可写');
         }elseif ( is_dir($basepath.$keywords) ){
             if (($type=='m'&&modules_config($keywords))||($type!='m'&&plugins_config($keywords))) { //如果频道停用的话.原数据库会被清空
-                return $this->err_js($basepath.$keywords.'该频道已经存在了,不能重复安装');
+                $_array = modules_config($keywords);
+                if ($type=='m' && $_array['version_id'] && $_array['version_id']!=$id) {
+                    $this->model->update([
+                            'id'=>$_array['id'],
+                            'version_id'=>$id,
+                    ]);
+                    Cache::clear();
+                    return $this->err_js( $_array['name'].' 频道数据库升级成功,你还需要进一步升级文件,请按键盘F5键,刷新网页重新升级程序文件.' );
+                }else{
+                    return $this->err_js($basepath.$keywords.'该频道已经存在了,不能重复安装');
+                }                
             }
             copy_dir($basepath.$keywords, RUNTIME_PATH."bakfile/$keywords".date('Y-m-d_H-i'));
             delete_dir($basepath.$keywords);

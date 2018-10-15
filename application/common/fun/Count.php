@@ -25,4 +25,25 @@ class Count{
         }
         return Db::name($table)->where($map)->count('*');
     }
+    
+    /**
+     * 统计用户消费的金额
+     * @param number $uid
+     * @param unknown $time
+     * @return number|mixed|\think\cache\Driver|boolean
+     */
+    public static function rmb($uid=0,$time=3600){
+        $uid = intval($uid);
+        $map = [
+                'uid'=>$uid,
+                'ifpay'=>1,
+        ];
+        $num = cache('user_rmb_total_'.$uid);
+        if ($num=='') {
+            $num = Db::name('rmb_infull')->where($map)->sum('money');
+            cache('user_rmb_total_'.$uid,$num,$time);
+        }        
+        return $num;
+    }
+    
 }

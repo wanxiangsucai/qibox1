@@ -148,7 +148,7 @@ function showlist(){
 									'<div class="other">安装次数：'+rs.downs+' 次</div>'+
 									'<div class="other">更新时间：'+rs.time+'</div>'+
 									'<div class="butter">'+
-										'<a href="javascript:;" onclick="setup_app('+rs.id+',\''+rs.app_keywords+'\','+rs.price+')" class="fa fa-cloud-download">在线安装</a>'+
+										'<a href="javascript:;" data-id="'+rs.id+'" onclick="setup_app('+rs.id+',\''+rs.app_keywords+'\','+rs.price+')" class="fa fa-cloud-download">在线安装</a>'+
 										'<a href="https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html" target="_blank" class="fa fa-bolt">装前必读</a>'+
 					{if (in_array($fid,[4,7,8]))}'<a class="demo_url" href="'+rs.author_url+'" target="_blank" class="fa fa-bolt">风格演示</a>'+{/if}
 									'</div>'+
@@ -157,6 +157,7 @@ function showlist(){
 						'</li>';
 				});
 				$('.Markercontents').append(str);
+				check_setup();
 				loading = 1;
 				hide_demo();
 			}
@@ -166,6 +167,23 @@ function showlist(){
 	});
 }
 showlist();
+
+function check_setup(){
+	var array = "{:fun('upgrade@local_edition')}".split(',');
+	var sr = new Array();
+	for(var i=0;i<array.length;i++){
+		var ar = array[i].split('-');
+		sr[ar[2]] = ar[2];
+	}	
+	$(".fa-cloud-download").each(function(){
+		var id = $(this).data("id");
+		if( typeof(sr[id])!="undefined" ){
+			$(this).html('已安装');
+			$(this).css({'color':'yellow',});
+			$(this).removeAttr('onclick');
+		}
+	});
+};
 
 function hide_demo(){
 	$('.Markercontents a.demo_url').each(function(){

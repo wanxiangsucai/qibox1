@@ -2962,9 +2962,9 @@ if (!function_exists('logs')) {
 }
 
 if(!function_exists('showerr')){
-    function showerr($msg){
+    function showerr($msg = '', $url = null, $data = '', $wait = 60, array $header = []){
         $obj = new Base;
-        $obj->showerr($msg);
+        $obj->showerr($msg , $url , $data , $wait , $header);
     }
 }
 

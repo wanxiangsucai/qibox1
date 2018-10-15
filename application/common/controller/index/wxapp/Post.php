@@ -136,6 +136,9 @@ abstract class Post extends IndexBase
         $this->mid = $mid;
         $data = get_post();
         
+        //接口
+        hook_listen('cms_add_begin',$data);
+        
         $result=$this->add_check($mid,$data['fid'],$data);
 
         if ($result!==true) {

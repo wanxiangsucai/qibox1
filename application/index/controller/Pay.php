@@ -157,11 +157,11 @@ class Pay extends IndexBase
         }
         
         if($havepay==true){   //如果仅是检查是否付款的，就不能执行以下操作，不然有漏洞
-            PayModel::update(['ifpay'=>1,'id'=>$rt['id']]);
-            
-            add_rmb($rt['uid'],$rt['money'],0,date('m月d日H:i ').'在线充值');
+            PayModel::update(['ifpay'=>1,'id'=>$rt['id']]);            
+            add_rmb($rt['uid'],$rt['money'],0,date('y年m月d日H:i ').'在线充值');
             //$this->success("恭喜你充值成功",$fromurl);
             $this->run_callback($rt['callback_class']);
+            hook_listen('pay_end',$rt);   //扩展接口
             return 'ok';
         }else{
             return 0;
@@ -173,6 +173,9 @@ class Pay extends IndexBase
      * @param unknown $code
      */
     protected function run_callback($code){
+        if (empty($code)) {
+            return ;
+        }
         //'app-shop-model-Order@pay@order_id|5' //弃用这种格式了
         $detail = explode('@',$code);
         $class = str_replace('-', '\\', $detail[0]);    //兼容以前用-隔开目录名的情况
