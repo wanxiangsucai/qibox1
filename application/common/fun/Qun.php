@@ -42,17 +42,35 @@ class Qun{
     
     /**
      * 某用户加入过的圈子
-     * @return array|\think\Collection|\think\db\false|PDOStatement|string
+     * @param number $uid
+     * @return array|array|mixed
      */
-    public static function myjoin(){
-        if (!is_dir(APP_PATH.'qun')) {
+    public static function myjoin($uid=0){
+        if (!modules_config('qun')) {
             return [];
         }
-        $uid = login_user('uid');
+        $uid || $uid = login_user('uid');
 		if(empty($uid)){
 			return [];
 		}
-        $listdb = Db::name('qun_member')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->select();
+		$listdb = Db::name('qun_member')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->order('A.id desc')->select();
+        return $listdb;
+    }
+    
+    /**
+     * 某用户最近访问过的圈子
+     * @param number $uid
+     * @return array|array|mixed
+     */
+    public static function myvisit($uid=0){
+        if (!modules_config('qun')) {
+            return [];
+        }
+        $uid || $uid = login_user('uid');
+        if(empty($uid)){
+            return [];
+        }
+        $listdb = Db::name('qun_visit')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->order('A.id desc')->select();
         return $listdb;
     }
     
@@ -63,6 +81,9 @@ class Qun{
      * @return array|array|mixed
      */
     public static function getByuid($uid=0,$time=3600){
+        if (!modules_config('qun')) {
+            return [];
+        }
         if (empty($uid)) {
             return [];
         }

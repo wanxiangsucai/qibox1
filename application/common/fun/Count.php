@@ -32,7 +32,7 @@ class Count{
      * @param unknown $time
      * @return number|mixed|\think\cache\Driver|boolean
      */
-    public static function rmb($uid=0,$time=3600){
+    public static function rmb($uid=0,$time=10800){
         $uid = intval($uid);
         $map = [
                 'uid'=>$uid,

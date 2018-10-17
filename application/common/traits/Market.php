@@ -41,7 +41,7 @@ trait Market
         }elseif ( is_dir($basepath.$keywords) ){
             if (($type=='m'&&modules_config($keywords))||($type!='m'&&plugins_config($keywords))) { //如果频道停用的话.原数据库会被清空
                 $_array = modules_config($keywords);
-                if ($type=='m' && $_array['version_id'] && $_array['version_id']!=$id) {
+                if ($type=='m' && $_array && $_array['version_id']!=$id) {
                     $this->model->update([
                             'id'=>$_array['id'],
                             'version_id'=>$id,
