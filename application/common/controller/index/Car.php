@@ -21,6 +21,12 @@ abstract class Car extends IndexBase
             ['radio', 'ifolpay', '支付类型', '', [1 => '在线付款', 0 => '货到付款'], 1],
     ];
     
+    
+    
+    public function edit(){
+        die('出错了!');
+    }
+    
     protected function _initialize()
     {
         parent::_initialize();

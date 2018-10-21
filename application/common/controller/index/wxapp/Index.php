@@ -12,6 +12,17 @@ abstract class Index extends IndexBase
     protected $model;                  //内容
     protected $mid;                      //模型ID
     
+    
+    public function add(){
+        die('出错了!');
+    }
+    public function edit(){
+        die('出错了!');
+    }
+    public function delete(){
+        die('出错了!');
+    }
+    
     protected function _initialize()
     {
         parent::_initialize();
@@ -46,6 +57,7 @@ abstract class Index extends IndexBase
         $array = getArray( $this->model->getListByMid($mid,$map,$order,$rows) );
         foreach($array['data'] AS $key => $rs){
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
+            unset($rs['sncode']);
             $array['data'][$key] = $rs;
         }
         

@@ -21,6 +21,9 @@ trait AddEditList {
      * @return mixed|string
      */
     public function add() {
+        if(ENTRANCE!=='admin'){
+            return $this->error('非后台调用,请重写此add方法!');
+        }
         return $this -> addContent();
     }
     
@@ -30,6 +33,9 @@ trait AddEditList {
      * @return mixed|string
      */
     public function edit($id = null) {
+        if(ENTRANCE!=='admin'){
+            return $this->error('非后台调用,请重写此edit方法!');
+        }
         if (empty($id)) $this -> error('缺少参数');
         $info = $this -> getInfoData($id);
         return $this -> editContent($info);
@@ -40,6 +46,9 @@ trait AddEditList {
      * @param unknown $ids
      */
     public function delete($ids = null) {
+        if(ENTRANCE!=='admin'){
+            return $this->error('非后台调用,请重写此delete方法!');
+        }
         if ($this -> deleteContent($ids)) {
             $this -> success('删除成功');
         } else {

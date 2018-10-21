@@ -69,6 +69,15 @@ abstract class M extends AdminBase
         ];
     }
     
+    public function index() {
+        if ($this->request->isPost()) {
+            //修改排序
+            return $this->edit_order();
+        }
+        $listdb = $this->getListData($map = [], $order = [], 50);
+        return $this -> getAdminTable($listdb);
+    }
+    
     public function add(){
         
         // 保存数据

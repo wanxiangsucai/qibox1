@@ -10,6 +10,17 @@ abstract class Show extends IndexBase
     use ModuleContent;
     protected $model;                  //内容主题
     protected $mid;                    //模型ID
+    
+    
+    public function add(){
+        die('出错了!');
+    }
+    public function edit(){
+        die('出错了!');
+    }
+    public function delete(){
+        die('出错了!');
+    }
 
     protected function _initialize()
     {
@@ -41,7 +52,7 @@ abstract class Show extends IndexBase
         $info['create_time'] = date('Y-m-d H:i',$info['create_time']);
         $info['content'] = $info['full_content'] ;
         $info['content'] = str_replace('="/public/uploads', '="'.$this->request->domain().'/public/uploads', $info['content']);
-        unset($info['full_content'] );
+        unset($info['full_content'],$info['sncode']);
         
         return $this->ok_js($info);
     }

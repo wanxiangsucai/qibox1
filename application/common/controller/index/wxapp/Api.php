@@ -12,6 +12,16 @@ abstract class Api extends IndexBase
     protected $model;                  //内容
     protected $mid;                      //模型ID
     
+    public function add(){
+        die('出错了!');
+    }
+    public function edit(){
+        die('出错了!');
+    }
+    public function delete(){
+        die('出错了!');
+    }
+    
     protected function _initialize()
     {
         parent::_initialize();

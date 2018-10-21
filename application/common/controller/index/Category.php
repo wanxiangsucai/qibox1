@@ -15,6 +15,16 @@ abstract class Category extends IndexBase
     protected $f_model;              //字段
     protected $s_model;              //栏目
 
+    public function add(){
+        die('出错了!');
+    }
+    public function edit(){
+        die('出错了!');
+    }
+    public function delete(){
+        die('出错了!');
+    }
+    
     protected function _initialize()
     {
         parent::_initialize();

@@ -34,11 +34,35 @@
 						</div>
 					</ol>
 					<li class="butter">
-						<a id="href" href="<?php echo($url);?>">页面自动跳转(<em id="wait"><?php echo($wait);?></em>)</a>
+						<a id="href" href="{$url}">页面自动跳转(<em id="wait">{$wait}</em>)</a>
 					</li>
 				</ul>
 			</div> 
 		</div>
+  <script type="text/javascript">
+  if('{$url}'=='javascript:history.back(-1);'){
+	  	if ((navigator.userAgent.indexOf('MSIE') >= 0) && (navigator.userAgent.indexOf('Opera') < 0)) { // IE 
+			if (history.length > 0) {
+				//window.history.go(-1);
+			} else {
+				//window.location.href = "{:get_url('home')}";
+				$("#href").attr('href',"{:get_url('home')}");
+			}
+		} else { //非IE浏览器 
+			if (navigator.userAgent.indexOf('Firefox') >= 0 || navigator.userAgent.indexOf('Opera') >= 0 || navigator.userAgent.indexOf('Safari') >= 0 || navigator.userAgent.indexOf('Chrome') >= 0 || navigator.userAgent.indexOf('WebKit') >= 0) {
+
+				if (window.history.length > 1) {
+					//window.history.go(-1);
+				} else {
+					//window.location.href = "{:get_url('home')}";
+					$("#href").attr('href',"{:get_url('home')}");
+				}
+			} else { //未知的浏览器 
+				window.history.go(-1);
+			}
+		}
+  }
+  </script>
 		<div class="RightBox">
 			{notempty name="userdb.uid"}
 			<div class="UserBox">

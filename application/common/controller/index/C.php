@@ -16,6 +16,10 @@ abstract class C extends IndexBase
     protected $f_model;              //字段
     protected $s_model;              //栏目
     
+    
+    public function delete(){
+        die('出错了!');
+    }
     protected function _initialize()
     {
         parent::_initialize();

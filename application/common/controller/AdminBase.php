@@ -55,11 +55,11 @@ class AdminBase extends Base
 		$this->assign('admin_style_layout', config('admin_style_layout'));
 		
 		//分页样式
-		config('paginate',[
-		        'type'      => 'bootstrap',
-		        'var_page'  => 'page',
-		        'list_rows' => 15,
-		]);
+// 		config('paginate',[
+// 		        'type'      => 'bootstrap',
+// 		        'var_page'  => 'page',
+// 		        'list_rows' => 15,
+// 		]);
     }
     
     /**
