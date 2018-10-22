@@ -16,7 +16,7 @@
 </head>
 <body>
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
-{:hook_listen('layout_body_head',$userdb,$webdb,true)}
+{:hook_listen('layout_body_head',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
 <style type="text/css">
 .qb_wap_header{
@@ -83,12 +83,12 @@
 
 {block name="body_content"}页面主体部分内容{/block}	
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
-{:hook_listen('layout_body',$userdb,$webdb,true)}
+{:hook_listen('layout_body',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 {block name="body_Footcont"}
 	{include file="index@footmenu" /}
 {/block}
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
-{:hook_listen('layout_body_foot',$userdb,$webdb,true)}
+{:hook_listen('layout_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
 </body>
 </html>

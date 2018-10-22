@@ -14,7 +14,7 @@
 </head>
 <body>
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展  -->
-{:hook_listen('layout_body_head',$userdb,$webdb,true)}
+{:hook_listen('layout_body_head',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
 {block name="body_Headcont"}
 <link rel="stylesheet" href="__STATIC__/index/default/pcheader.css"> 
@@ -114,7 +114,7 @@ $('.Logo_Menu dl').hover(
 {block name="nav"}{qb:nav title="" url="" /}{/block}
 {block name="body_content"}页面主体部分内容{/block}
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
-{:hook_listen('layout_body',$userdb,$webdb,true)}
+{:hook_listen('layout_body',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 {block name="body_Footcont"}
 <link rel="stylesheet" href="__STATIC__/index/default/pcfooter.css"> 
 <div class="body_Footcont">
@@ -135,7 +135,7 @@ $('.Logo_Menu dl').hover(
 </div>
 {/block}
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
-{:hook_listen('layout_body_foot',$userdb,$webdb,true)}
+{:hook_listen('layout_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
 </body>
 </html>
