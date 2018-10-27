@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>齐博</title>
+<title>上传文件</title>
 <meta name='keywords' content=''>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style type="text/css">
@@ -39,13 +39,13 @@ if('1'=='1'){
 </head>
 <body>
 {notempty name="info"}
-上传成功,<A HREF="{:urls('index',['fn'=>$fn,'dir'=>$dir,'label'=>$_GET[label],'ISone'=>$_GET[ISone],'oldfile'=>$newfile,'showDomain'=>$showDomain])}">你可以继续或重新上传</A>
+上传成功,<A HREF="{:urls('index',['fn'=>$fn,'dir'=>$dir,'par'=>$par,'ISone'=>$_GET[ISone],'oldfile'=>$newfile,'showDomain'=>$showDomain])}">你可以继续或重新上传</A>
 <script>
 		if(self==top){
-			window.opener.{$fn}('{$info.path}');
+			window.opener.{$fn}('{$info.path}','{$par}');
 			window.self.close();
 		}else{
-			window.parent.{$fn}('{$info.path}');
+			window.parent.{$fn}('{$info.path}','{$par}');
 		}
  </script>
 {else /}

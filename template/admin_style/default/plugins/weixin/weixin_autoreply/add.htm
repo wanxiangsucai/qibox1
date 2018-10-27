@@ -5,8 +5,8 @@
 {block name="content"}
 <SCRIPT LANGUAGE="JavaScript">
 <!--
-function upfile(url,name,size,ty){
-	document.getElementById(ty).value=url;
+function upfile(url,par,name,size){
+	document.getElementById(par).value=url;
 }
 function SelectType(i){
 	$('#selecttype0').hide();
@@ -15,7 +15,7 @@ function SelectType(i){
 }
 function addType(){
 	var list1=$('.ListType').children().length;
-	var ListType1='<div class="list"><div><span>标题</span> <input name="answers['+list1+'][title]" type="text" size="50"/></div><div><span>描述</span> <textarea name="answers['+list1+'][desc]" cols="50" rows="3"></textarea></div><div><span>图片</span> <input name="answers['+list1+'][pic]" type="text" id="out_url'+list1+'" placeholder="请上传图片" size="50"/><em><iframe frameborder=0  scrolling=no src="$webdb[www_url]/do/upfile.php?fn=upfile&dir=weixinautoreply&label=out_url'+list1+'"></iframe></em></div><div><span>链接</span> <input name="answers['+list1+'][link]" type="text" size="50"/> (必填项)</div></div>';
+	var ListType1='<div class="list"><div><span>标题</span> <input name="answers['+list1+'][title]" type="text" size="50"/></div><div><span>描述</span> <textarea name="answers['+list1+'][desc]" cols="50" rows="3"></textarea></div><div><span>图片</span> <input name="answers['+list1+'][pic]" type="text" id="out_url'+list1+'" placeholder="请上传图片" size="50"/><em><iframe frameborder=0  scrolling=no src="{:iurl("index/upfile/index")}?fn=upfile&par=out_url'+list1+'"></iframe></em></div><div><span>链接</span> <input name="answers['+list1+'][link]" type="text" size="50"/> (必填项)</div></div>';
 	$(".ListType").append(ListType1);
 	hide_desc();
 }
@@ -55,7 +55,7 @@ function hide_desc(){
 		</tr>
 		</tr>
 		<tr id='selecttype1' style="display:none;">
-			<td class="tdL">回复内容：<img src='$webdb[www_url]/images/default/menu_add.gif' onClick="addType()"/></td>
+			<td class="tdL">回复内容：<i title="添加多一项" class="fa fa-plus-circle" style="color:blue;font-size:18px;" onClick="addType()"></i></td>
 			<td class="tdR">
 				<div class="ListType">
 					<div class="list">
@@ -63,7 +63,7 @@ function hide_desc(){
 						<div><span>描述</span> <textarea name="answers[0][desc]"></textarea></div>
 						<div>
 							<span>图片</span> <input name="answers[0][pic]" type="text" id='out_url0' placeholder="请上传图片"/>
-							<em><iframe frameborder=0  scrolling=no src='$webdb[www_url]/do/upfile.php?fn=upfile&dir=weixinautoreply&label=out_url0'></iframe></em>
+							<em><iframe frameborder=0  scrolling=no src="{:iurl('index/upfile/index')}?fn=upfile&par=out_url0"></iframe></em>
 						</div>
 						<div><span>链接</span> <input name="answers[0][link]" type="text"/> (必填项)</div>
 					</div>

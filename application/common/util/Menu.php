@@ -142,6 +142,7 @@ class Menu{
                     }else{  //不使用顶部菜单的频道，追加到通用频道下面
                         $ar['sons'][0]['title'] = $model['name'];
                         $ar['sons'][0]['icon'] = $model['icon'];
+                        $ar['sons'][0]['dirname'] = $model['keywords'];
                         if( !empty($base_menu['module']['sons']) ){
                             $base_menu['module']['sons'] = array_merge($base_menu['module']['sons'],$ar['sons']);
                         }else{
@@ -172,6 +173,7 @@ class Menu{
                     self::menu_make_url($ar,$model['keywords'],true);
                     count($ar['sons'])==1 && $ar['sons'][0]['title'] = $model['name'];   //插件一般情况都只有一组菜单,就用后台定义的名称
                     $ar['sons'][0]['icon'] || $ar['sons'][0]['icon']= $model['icon']; //如果图标不存在,就补上
+                    $ar['sons'][0]['dirname'] = $model['keywords'];
                     
                     //如果是复制的插件 key不是plugin的话,要先修改一下 admin_menu.php 里边的key,不然多个插件的key雷同,会导致菜单重叠的BUG
                     if($base_menu[$key]){  //根据不同的参数,可以追加到任何顶部导航下面,一般情况$base_menu[plugin] 是存在的,所以基本都是在这里执行

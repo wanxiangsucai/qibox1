@@ -268,7 +268,7 @@ abstract class C extends AdminBase
         }
         
         //排序方式
-        $this -> tab_ext['order'] = 'view,list';
+        $this -> tab_ext['order'] = 'view,list,create_time';
         //搜索字段
         $this -> tab_ext['search'] = array_merge(['title'=>'标题','uid'=>'用户uid'],$this->getEasySearchItems());
         //筛选字段

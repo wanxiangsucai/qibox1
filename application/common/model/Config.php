@@ -2,6 +2,7 @@
 namespace app\common\model;
 
 use think\Model;
+use think\Db;
 //use plugins\config_set\model\Group AS configGroup;
 
 
@@ -28,13 +29,19 @@ class Config extends Model
      * @return string|array|\think\false
      */
     public function save_data($array=[],$group=0){
+        $sys_id = Db::name('config_group')->where('id',$group)->value('sys_id');     //避免有的出错,做修正处理
         $data = [];
         foreach($array AS $key=>$value){
+            $num = $this->where('c_key',$key)->where('sys_id',$sys_id)->count('id');
+            if ($num>1) {
+                $this->where('c_key',$key)->where('sys_id',$sys_id)->where('type','<>',$group)->delete();   //避免有重复的,做修正处理
+            }
             $id = $this->where('c_key',$key)->where('type',$group)->value('id');    //如果ID存在就执行更新，不存在就执行新增
             $data[] = [
                     'id'=>$id,
                      'c_key'=>$key,
                      'c_value'=>$value,
+                    'sys_id'=>$sys_id,  //避免有的出错,做修正处理
                   ];
         }
         return empty($data) ? flase : $this->saveAll($data);
