@@ -422,6 +422,16 @@ class Py{
                     $string.=$letter;
                 }
                 return $string;
+            }elseif($type==2){
+                for($ii=0;$ii<strlen($PinYinDB[$i][0]);$ii++){
+                    $letter=substr($PinYinDB[$i][0],$ii,1);
+                    if($ii==0){
+                        $letter=strtoupper($letter);
+                        $string.=$letter;
+                    }
+                    //$string.=$letter;
+                }
+                return $string;
             }else{
                 return $PinYinDB[$i][0];
             }

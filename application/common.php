@@ -2843,12 +2843,13 @@ if (!function_exists('makepath')) {
 if (!function_exists('get_pinyin')) {
     /**
      * 取得汉字的拼音
-     * @param string $word
+     * @param string $word 汉字
+     * @param string $type 为1的话,首字母大写,为2的话,只取第一个字母
      * @return string|number
      */
-    function get_pinyin($word=''){
+    function get_pinyin($word='',$type=''){
         $obj = new \pinyin\Py;
-        return $obj->change2pinyin($word);
+        return $obj->change2pinyin($word,$type);
     }
 }
 

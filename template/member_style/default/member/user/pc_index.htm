@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="__STATIC__/member/pcuser.css">
 <div class="TopContainer">
 	<div class="TopBox">
-		<div class="logo"><a href="/"><img src="__STATIC__/index/default/logo.png"></a></div>
+		<div class="logo"><a href="/"><img src="{:tempdir($webdb.logo)}" onerror="this.src='__STATIC__/index/default/logo.png'"></a></div>
 		<div class="MoreAct">
 			<a href="/" class="home">网站首页</a>			
 			{notempty name="userdb.uid"}
