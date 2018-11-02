@@ -6,6 +6,8 @@ class Wxapp{
     /**
      * 圈子微信二维码小程序入口
      * @param int $id
+     * $id 取值 最大32个可见字符，只支持数字，大小写英文以及部分特殊字符：!#$&'()*+,/:;=?@-._~，其它字符请自行编码为合法字符（因不支持%，中文无法使用 urlencode 处理，请使用其他编码方式）
+     * 加前缀处理的方法是 qun/Error.php/_initialize 务必用_下画线做分隔符,比如 bbs_123
      */
     public static function qun_code($id=0){
         $path = config('upload_path') . '/qun_code/';

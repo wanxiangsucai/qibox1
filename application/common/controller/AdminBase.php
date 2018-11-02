@@ -26,7 +26,7 @@ class AdminBase extends Base
                 }elseif( ($this->route[0]=='admin' && $this->route[1]=='mysql' && $this->route[2]=='into') ){
                     list(,$time) = explode("\t",mymd5(get_cookie('mysql_into'),'DE'));
                     if($time-time()<0){
-                        $this->error('验证失败');
+                        $this->error('后台权限验证失败');
                     }
                 }else{
                     if($this->route[0]=='admin' && $this->route[1]=='index' && $this->route[2]==''){
@@ -36,7 +36,7 @@ class AdminBase extends Base
                 }                
             }else{
                 if($this->check_power()!==true){
-                    $this->error('你没有权限!!');
+                    $this->error('你没有此后台权限!!');
                 }                
             }
         }
