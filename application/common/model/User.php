@@ -98,10 +98,10 @@ class User extends Model
 	public static function check_username($username) {
 		$guestexp = '\xA1\xA1|\xAC\xA3|^Guest|^\xD3\xCE\xBF\xCD|\xB9\x43\xAB\xC8';
 		$len = strlen($username);
-		if($len > 50 || $len < 3 || preg_match("/\s+|^c:\\con\\con|[%,\*\'\"\s\<\>\&]|$guestexp/is", $username)) {
-			return FALSE;
+		if($len > 50 || $len < 2 || preg_match("/\s+|^c:\\con\\con|[%,\*\'\"\s\<\>\&]|$guestexp/is", $username)) {
+			return '用户名不合法';
 		} else {
-			return TRUE;
+			return true;
 		}
 	}
 	
@@ -147,8 +147,8 @@ class User extends Model
 	        return '邮箱不能为空';
 	    }elseif(!$array['password']){
 	        return '密码不能为空';
-	    }elseif(strlen($array['username'])>50||strlen($array['username'])<3){
-	        return '用户名不能小于3个字节或大于50个字节';
+	    }elseif(strlen($array['username'])>50||strlen($array['username'])<2){
+	        return '用户名不能小于2个字节或大于50个字节';
 	    }elseif (strlen($array['password'])>30 || strlen($array['password'])<5){
 	        return '密码不能小于5个字符或大于30个字符';
 	    }elseif(!preg_match("/^[-a-zA-Z0-9_\.]+\@([0-9A-Za-z][0-9A-Za-z-]+\.)+[A-Za-z]{2,5}$/",$array['email'])){

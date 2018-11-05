@@ -113,6 +113,7 @@ class Pay extends IndexBase
         $title = input('title');
         
         $money = number_format($money,2);
+        $money = str_replace(',','',$money);
         if($money<0.01){
             $this->error("充值金额不能小于0.01元");
         }

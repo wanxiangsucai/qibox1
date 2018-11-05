@@ -50,6 +50,7 @@ class User extends MemberBase
         
         $this->form_items = [
                 ['hidden', 'uid'],
+                ['text', 'username', '帐号',$this->webdb['edit_username_money']?'需要消费多少 '.intval($this->webdb['edit_username_money']).' 积分':'请不要随意修改'],
                 ['text', 'password', '密码','留空则代表不修改密码'],
                 ['text', 'nickname', '昵称'],
                 ['text', 'email', '邮箱'],
@@ -88,13 +89,36 @@ class User extends MemberBase
                 }
             }            
 
-            $array = [
-                    'uid'=>$info['uid'],
-                    'nickname'=>$data['nickname'],
-                    'sex'=>$data['sex'],
-                    'email'=>$data['email'],
-                    'icon'=>$data['icon'],
-            ];
+//             $array = [
+//                     'uid'=>$info['uid'],
+//                     'nickname'=>$data['nickname'],
+//                     'sex'=>$data['sex'],
+//                     'email'=>$data['email'],
+//                     'icon'=>$data['icon'],
+//             ];
+            
+            if ($info['username']!=$data['username']) {
+                $data['username'] = str_replace(['|',' ','',"'",'"','/','*',',','~',';','<','>','$',"\\","\r","\t","\n","`","!","?","%","^"],'',$data['username']);
+                if ($info['money'] < $this->webdb['edit_username_money']) {
+                    $this->error('你的积分不足 '.intval($this->webdb['edit_username_money']).' 个,不能修改帐号!');
+                }elseif($data['username']==''){
+                    $this->error('帐号不能为空!');
+                }elseif(strlen($data['username'])>50||strlen($data['username'])<2){
+                    $this->error('帐号不能少于2个字符或大于50个字符!');
+                }elseif (UserModel::check_userexists($data['username'])){
+                    $this->error('当前帐号已经存了,请更换一个!');
+                }
+                if(config('webdb.forbidRegName')!=''){
+                    $detail = str_array(config('webdb.forbidRegName'));
+                    if(in_array($data['username'], $detail)){
+                        $this->error('请换一个用户名,当前用户名不允许使用'.$data['username']);
+                    }
+                }
+                if($this->webdb['edit_username_money']){
+                    add_jifen($info['uid'], -abs($this->webdb['edit_username_money']),'修改帐号消费');
+                }
+               // $array['username'] = $data['username'];
+            }
             
             if ( $this->model->edit_user($data) ) {
                 $this->success('修改成功');

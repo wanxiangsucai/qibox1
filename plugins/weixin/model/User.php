@@ -34,9 +34,9 @@ class User extends UserModel
         $address = filtrate("{$data['country']} {$data['province']} {$data['city']}");
         
         
-        if(self::check_username($username)==false){ //用户名不合法或者有非法字符
+        if(self::check_username($username)!==true){ //用户名不合法或者有非法字符
             $username='aa_'.rands(10);
-        }elseif(strlen($username)>40||strlen($username)<4){
+        }elseif(strlen($username)>50||strlen($username)<2){
             
             //$username='bb_'.rands(7);
             $ts = self::where([])->order('uid','desc')->limit(1)->find();

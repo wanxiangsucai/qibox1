@@ -1712,3 +1712,5 @@ INSERT INTO `qb_shop_field` (`id`, `name`, `title`, `type`, `field_type`, `value
 ALTER TABLE `qb_shop_content1` ADD  `num` MEDIUMINT( 6 ) NOT NULL DEFAULT  '500' COMMENT  '库存量';
 ALTER TABLE `qb_shop_content1` ADD  `market_price` DECIMAL( 10, 2 ) NOT NULL COMMENT  '市场原价';
 UPDATE `qb_shop_content1` SET  `num` =20;
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 8, '会员修改帐号所需积分', 'edit_username_money', '100', 'number', '', 1, '', '不想用户修改,就把积分设置无限大', 0, 0);
