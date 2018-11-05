@@ -5,7 +5,7 @@ return array(
 				'title'=>'插件',
 				'sons'=>array(
 							array(
-								'title'=>'营销功能',
+								'title'=>'财务与积分功能',
 								'sons'=>array(
 								        array(
 								                'title'=>'积分日志',

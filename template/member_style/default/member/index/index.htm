@@ -104,15 +104,17 @@
 </style>
 <div class="BaseInfos">
 	<ul>
-		<ol><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></ol>
+		<ol><a href="{:get_url('user',$info.uid)}"><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></a></ol>
 		<li>
-			<div>{$info.nickname} ({$info.groupid|getGroupByid})</div>
+			<div>{$info.nickname} (身份:{$info.groupid|getGroupByid} UID:{$info.uid})</div>
 			<p>注册日期 {$info.regdate|format_time}</p>
 		</li>
 	</ul>
 </div>
 <div class="OtherInfos">
 	<ul>
+
+<!--
 {notempty name="info.yz"}
 		<li>
 			<div><i class="si si-user-following yz"></i></div>
@@ -124,13 +126,19 @@
 			<span>未认证</span> 
 		</li>	
 {/notempty}
-		<li class="money">
+-->
+		<li onclick="window.location.href='{:purl('marketing/jifen/index')}'">
+			<div><i class="fa fa-fw fa-database"></i></div>
+			<span>积分{$info.money}个</span> 
+		</li>
+
+		<li class="money" onclick="window.location.href='{:purl('marketing/rmb/index')}'">
 			<div><i class="fa fa-rmb"></i></div>
 			<span>余额{$info.rmb}元</span> 
 		</li>
-		<li>
-			<a href="{:purl('signin/index/index',[],'index')}"><div><i class="fa fa-calendar-check-o"></i></div>
-			<span>签到</span> </a>
+		<li onclick="window.location.href='{:purl('signin/index/index',[],'index')}'">
+			 <div><i class="fa fa-calendar-check-o"></i></div>
+			<span>签到</span>  
 		</li>		
 	</ul>
 </div>

@@ -50,7 +50,7 @@ class User extends MemberBase
         
         $this->form_items = [
                 ['hidden', 'uid'],
-                ['text', 'username', '帐号',$this->webdb['edit_username_money']?'需要消费多少 '.intval($this->webdb['edit_username_money']).' 积分':'请不要随意修改'],
+                ['text', 'username', '帐号',$this->webdb['edit_username_money']?'需要消费积分 '.intval($this->webdb['edit_username_money']).' 个':'请不要随意修改'],
                 ['text', 'password', '密码','留空则代表不修改密码'],
                 ['text', 'nickname', '昵称'],
                 ['text', 'email', '邮箱'],
