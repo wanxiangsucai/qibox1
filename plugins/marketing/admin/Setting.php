@@ -32,7 +32,7 @@ class Setting extends _Setting
                     'title'=>'是否要求先关注公众号才能提现',
                     'c_value'=>'',
                     'form_type'=>'radio',
-                    'options'=>"0|不要求\r\n1|要求先关键公众号",
+                    'options'=>"0|不要求\r\n1|要求先关注公众号",
                     'ifsys'=>0,
                     'list'=>-1,
             ],
