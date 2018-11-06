@@ -45,7 +45,7 @@ class Scan extends IndexBase
             if(time() - $info['posttime']>300){
                 return 'overtime';
             }            
-            UserModel::login($info['uid'], '', 3600*24,true,'uid');
+            UserModel::login($info['uid'], '', 3600*24*30,true,'uid');
             ScanModel::where('sid',self::$sid)->delete();
             die('ok');
         }

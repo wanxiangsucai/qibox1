@@ -83,7 +83,7 @@ class Login extends IndexBase
                     ]);
                 }
                 
-                UserModel::login($rs['username'], '', 3600*24,true);
+                UserModel::login($rs['username'], '', 3600*24*30,true);
             }
             
 

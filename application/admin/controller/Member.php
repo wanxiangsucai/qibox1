@@ -131,7 +131,7 @@ class Member extends AdminBase
 	{
 	    if (IS_POST) {	        
 	        $data = get_post('post');
-	        if($data['groupid']==3&&$this->user['groupid']!=3){
+	        if(SUPER_ADMIN!==true&&$data['groupid']==3&&$this->user['groupid']!=3){
 	            $this->error('你无权创建超管!');
 	        }
 	        // 验证

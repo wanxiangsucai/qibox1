@@ -1716,3 +1716,7 @@ UPDATE `qb_shop_content1` SET  `num` =20;
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 8, '会员修改帐号所需积分', 'edit_username_money', '100', 'number', '', 1, '', '不想用户修改,就把积分设置无限大', 0, 0);
 
 UPDATE  `qb_plugin` SET  `name` =  '财务与积分功能',`icon` =  'fa fa-fw fa-database' WHERE `keywords` = 'marketing';
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '公众号二维码', 'mp_code_img', '', 'image', '', 1, '', '', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '小程序二维码', 'wxapp_code_img', '', 'image', '', 1, '', '', 0, 0);
+ALTER TABLE  `qb_rmb_getout` ADD  `real_money` DECIMAL( 10, 2 ) NOT NULL COMMENT  '实际申请提现金额';

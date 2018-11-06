@@ -1,0 +1,3 @@
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '公众号二维码', 'mp_code_img', '', 'image', '', 1, '', '', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '小程序二维码', 'wxapp_code_img', '', 'image', '', 1, '', '', 0, 0);
+ALTER TABLE  `qb_rmb_getout` ADD  `real_money` DECIMAL( 10, 2 ) NOT NULL COMMENT  '实际申请提现金额';

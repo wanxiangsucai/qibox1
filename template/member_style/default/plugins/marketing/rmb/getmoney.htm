@@ -45,11 +45,13 @@
             <input type="hidden" name="step" value="2">            
         </div>
         <dl>
-			<dt>备注</dt>
+			<dt>注意事项</dt>
 			<dd>
-				<div>1.提现最低金额不小于{$webdb.min_getout_money|default=50}元,才可提现。</div>
+				<div>1.提现最低金额不小于{$webdb.min_getout_money|default=50}元,才可提现。{if $webdb.getout_percent_money>0}提现会从申请的金额当中扣除 {$webdb.getout_percent_money}% 作为手续费.{/if}</div>
 			  	<div>2.提现金额将会被冻结不可用.推荐选择微信钱包</div>
 				<div>3.资料提交后,防止作弊,管理员需要1-3天时间审核处理,请耐心等待.</div>
+				{if $webdb.getout_need_join_mp}<div>4.提现需要先关注公众号，以方便接收提现动态提醒。</div>{/if}
+				{if ($webdb.getout_need_join_mp && $webdb.mp_code_img)}<div><img style="max-width:80%;" src="{$webdb.mp_code_img|tempdir}"></div>{/if}
 		  	</dd>          
         </dl>
 	</form>

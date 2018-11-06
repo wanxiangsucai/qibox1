@@ -66,7 +66,7 @@ class Qq extends IndexBase
                     }
                 }
                 
-                UserModel::login($userdb['username'], '', 3600*24,true);
+                UserModel::login($userdb['username'], '', 3600*24*30,true);
             }
 
             $fromurl = $fromurl ? $fromurl : get_cookie('From_url');
