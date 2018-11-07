@@ -33,7 +33,17 @@ function div_toimg(div, img) {
 		}
 	})
 }
-function app_page(id, func) {
+
+
+function app_page(id, func) { 
+	var demo = (location.href).substring(0,14);
+	$("#"+id).find("img").each(function(){
+		var imgurl = $(this).attr('src');
+		if((imgurl.indexOf('http://')==0||imgurl.indexOf('https://')==0) && imgurl.indexOf(demo)==-1){
+			$(this).attr('src',"/index.php/index/image/headers.html?url="+ imgurl);	//处理图片跨域问题
+		}
+	}); 
+
 	$("body").css("overflow-y", "hidden");
 	$("#"+id).wrap('<div class="app_page" style="position:relative; z-index:999;"></div>');
 	var window_h = window.innerHeight;
