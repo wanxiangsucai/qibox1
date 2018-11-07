@@ -89,8 +89,7 @@ class Rmb extends MemberBase
 	        }elseif($this->user['rmb_pwd']!=md5($data['pwd'])){
 	            $this->error("支付密码不对!");
 	        }
-	        $money = $data['money'];
-	        $data['real_money'] = $data['money'];
+	        $data['real_money'] = $data['money'];          //标志实际申请提现金额,即没扣手续费前的
 	        if($this->webdb['getout_percent_money']>0){    //扣除手续费	            
 	            $data['money'] = $data['money'] - $data['money'] * $this->webdb['getout_percent_money'];
 	        }
@@ -98,7 +97,7 @@ class Rmb extends MemberBase
 	        $data['username'] = $this->user['username'];
 	        $data['posttime'] = time();
 	        if ( RmbGetout::create($data) ) {
-	            add_rmb($this->user['uid'],-$data['money'],$money,'申请提现冻结');
+	            add_rmb($this->user['uid'],-$data['real_money'],$data['real_money'],'申请提现冻结');
 	            send_admin_msg('有人申请提现了',$this->user['username'].' 申请提现 '.$data['money'].' 元,请尽快审核处理');
 	            $this->success('你的信息已提交，我们将于3个工作日内审核，并邮件通知您，请注意查收。如有疑问请联系客服',auto_url('marketing/rmb/index'));
 	        } else {

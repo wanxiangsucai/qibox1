@@ -2844,12 +2844,13 @@ if (!function_exists('get_pinyin')) {
     /**
      * 取得汉字的拼音
      * @param string $word 汉字
-     * @param string $type 为1的话,首字母大写,为2的话,只取第一个字母
+     * @param string $type all:全拼音|first:首字母|one:仅第一字符首字母
      * @return string|number
      */
-    function get_pinyin($word='',$type=''){
-        $obj = new \pinyin\Py;
-        return $obj->change2pinyin($word,$type);
+    function get_pinyin($word='',$type='all'){
+        //$obj = new \pinyin\Py;
+        //return $obj->change2pinyin($word,$type);
+        return \pinyin\Pinyin::get($word,$type);
     }
 }
 
