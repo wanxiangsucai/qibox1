@@ -96,6 +96,7 @@ class RmbGetout extends AdminBase
 	        $this->error('用户资料不存在!');;
 	    }
 	    $money = $info['money'];
+	    $real_money = $info['real_money']?:$info['money']; //实际申请金额
 	    if($type=='weixin'){
 	        if (empty($user['weixin_api'])) {
 	            $this->error('该用户没有绑定过微信!');;
@@ -110,13 +111,13 @@ class RmbGetout extends AdminBase
 	        ];
 	        $res = Weixin::gave_moeny($array);
 	        if($res===true){
-	            add_rmb($user['uid'],0,-$money,'微信提现成功');
+	            add_rmb($user['uid'],0,-$real_money,'微信提现成功');
 	            send_wx_msg($user['weixin_api'], "你申请的提现 {$money} 元,已审核通过,并且已成功转帐,请注意查收");
 	        }else{
 	            $this->error('微信支付失败:'.$res);;
 	        }
 	    }else{
-	        add_rmb($user['uid'],0,-$money,'提现成功,扣除冻结金额');
+	        add_rmb($user['uid'],0,-$real_money,'提现成功,扣除冻结金额');
 	        send_msg($user['uid'],'提现转帐提醒',"你申请的提现 {$money} 元,已审核通过,线下已转帐,请注意查收");
 	    }
 	    $data = [
