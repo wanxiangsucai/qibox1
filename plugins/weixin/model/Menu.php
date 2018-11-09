@@ -162,7 +162,7 @@ class Menu extends Model
 	            $Marray[$i]['type'] = $type;
 	        }
 	    }
-	    $array['button']=$Marray;print_r($array) ;exit;
+	    $array['button']=$Marray;
 	    $data = json_encode($array);
 	    $data = urldecode($data);
 	    return $data;
