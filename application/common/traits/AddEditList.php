@@ -156,6 +156,7 @@ trait AddEditList {
         if (empty($template)) {
             $template = $this->get_template('admin@common/show');
         }
+        $this->assign('tab_ext',$this->tab_ext);
         $this->assign('f_array',$this->form_items);
         $this->assign('info',$info);
         $this->assign('mid',$this->mid);
