@@ -87,7 +87,24 @@ class Menu extends Model
 	    return true;
 	}
 	
-	public function build_menu_data($domain=''){
+	
+	protected function build_wxappid_path($word = 'wx286b93c14bbf93aa|pages/hy/web/index.html?url=',$url=''){
+	    if(strstr($word,'|')){
+	        list($wx_appid,$path)=explode('|',$word);
+	    }else{
+	        $wx_appid = config('webdb.wxapp_appid');
+	        $path = $word;
+	    }	    
+	    //$par = substr(strstr($path,'='),1);
+	    //$path = str_replace($par,str_replace([':','?','=','&'],['%3A','%3F','%3D','%26'],$par),$path);
+	    if ( strstr($path,'=') ) {
+	        $path .= str_replace([':','?','=','&'],['%3A','%3F','%3D','%26'],$url);
+	    }
+	    return [$wx_appid,$path];
+	}
+	
+	public function build_menu_data(){
+	    $domain = get_url('home');
 	    $Marray = $array = array();
 	    $i=-1;	    
 	    //$query =$db->query("SELECT * FROM `{$pre}weixinmenu` WHERE fid='0' AND hide=0 ORDER BY list DESC LIMIT 3");
@@ -102,7 +119,14 @@ class Menu extends Model
 	        $query2 = getArray($this->where('fid',$rs['id'])->order('list','asc')->select());
 	        foreach($query2 AS $rs2){
 	            $j++;
-	            if($rs2['linkurl']){
+	            if(strstr($rs2['keyword'],'pages/')){
+	                $type = 'miniprogram';
+	                preg_match('/^http/',$rs2['linkurl']) || $rs2['linkurl']=$domain.$rs2['linkurl'];
+	                $Marray[$i]['sub_button'][$j]['url'] = urlencode($rs2['linkurl']);
+	                list($wx_appid,$path) = $this->build_wxappid_path($rs2['keyword'],$rs2['linkurl']);
+	                $Marray[$i]['sub_button'][$j]['appid'] = $wx_appid;
+	                $Marray[$i]['sub_button'][$j]['pagepath'] = $path;
+	            }elseif($rs2['linkurl']){
 	                if($rs2['linkurl']=='map'){
 	                    $type = 'location_select';
 	                    $Marray[$i]['sub_button'][$j]['key'] = urlencode($rs2['keyword']);
@@ -120,7 +144,14 @@ class Menu extends Model
 	        }
 	        
 	        if(!is_array($Marray[$i]['sub_button'])){
-	            if($rs['linkurl']){
+	            if(strstr($rs['keyword'],'pages/')){
+	                $type = 'miniprogram';
+	                preg_match('/^http/',$rs['linkurl']) || $rs['linkurl']=$domain.$rs['linkurl'];
+	                $Marray[$i]['url'] = urlencode($rs['linkurl']);
+	                list($wx_appid,$path) = $this->build_wxappid_path($rs['keyword'],$rs['linkurl']);
+	                $Marray[$i]['appid'] = $wx_appid;
+	                $Marray[$i]['pagepath'] = $path;	                
+	            }elseif($rs['linkurl']){
 	                preg_match('/^http/',$rs['linkurl']) || $rs['linkurl']=$domain.$rs['linkurl'];
 	                $type = 'view';
 	                $Marray[$i]['url'] = urlencode($rs['linkurl']);
@@ -131,7 +162,7 @@ class Menu extends Model
 	            $Marray[$i]['type'] = $type;
 	        }
 	    }
-	    $array['button']=$Marray;
+	    $array['button']=$Marray;print_r($array) ;exit;
 	    $data = json_encode($array);
 	    $data = urldecode($data);
 	    return $data;

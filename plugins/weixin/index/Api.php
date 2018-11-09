@@ -35,7 +35,7 @@ class Api extends IndexBase
 
         //用户点击菜单事件
         if($responseObj->Event=='CLICK'){
-            $responseObj->Content = $responseObj->Event;
+            $responseObj->Content = $responseObj->EventKey;
         }
         self::$xml_obj = $responseObj;
         
