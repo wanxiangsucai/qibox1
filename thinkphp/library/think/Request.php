@@ -403,6 +403,7 @@ class Request
                     }
                 }
             }
+			$_SERVER['PATH_INFO']=str_replace('index.php','',$_SERVER['PATH_INFO']);	//齐博增加,解决部分服务器的兼容问题
             $this->pathinfo = empty($_SERVER['PATH_INFO']) ? '/' : ltrim($_SERVER['PATH_INFO'], '/');
         }
         return $this->pathinfo;

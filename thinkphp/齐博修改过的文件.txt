@@ -12,3 +12,7 @@ library\think\Model.php
 
 thinkphp\library\think\App.php
 152行 增加对pjax 的设置项 配置文件增加 'default_pjax_return'     => 'html',
+
+
+library\think\Request.php
+406 齐博增加,解决部分服务器的兼容问题
