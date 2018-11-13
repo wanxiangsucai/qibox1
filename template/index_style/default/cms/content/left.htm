@@ -6,9 +6,30 @@
 		{/volist}
 	</ul>
 	<div class="contact">
+{if (modules_config('qun')&&$qun=fun('qun@getByuid',$userdb.uid)[0])}
+		<div class="head">__QUN__信息</div>
+		<div class="cnt">
+			<ul class="qq">
+				<a href="{:urls('qun/content/show',['id'=>$qun.id])}" style="color:red;" target="_blank"><img src="" style="max-width:180px;" onerror="this.src='__STATIC__/images/nopic.png'">
+				<br>
+				{$qun.title}</a>
+			</ul>
+			<ul class="time">
+				<ol><i class="fa fa-bar-chart-o"></i> __QUN__信息</ol>
+				<li>圈主：<a href="{:get_url('user',$qun.uid)}" target="_blank">{$qun.uid|get_user_name}</a></li>
+				<li>粉丝：{$qun.usernum} 人</li>
+				<li>人气：{$qun.view} 关注度</li>
+			</ul>
+			<ul class="tel">
+				<ol><i class="glyphicon glyphicon-flag"></i> 联系方式</ol>
+				<li>电话：<a href="tel:{$qun.telphone}">{$qun.telphone}</a></li>
+				<li>地址：{$qun.address}</li>
+			</ul>
+		</div>
+{else /}
 		<div class="head">联系我们</div>
 		<div class="cnt">
-{qb:tag name="left_address001" type="text"}
+		{qb:tag name="left_address001" type="text"}
 			<ul class="qq">
 				<li><a title="程序购买咨询" href=" http://wpa.qq.com/msgrd?v=3&uin=2680867060&site=qq&menu=yes" target="_blank"><img SRC='http://wpa.qq.com/pa?p=1:2680867060:41' ></a></li>
 				<li><a title="程序购买咨询" href=" http://wpa.qq.com/msgrd?v=3&uin=81684210&site=qq&menu=yes" target="_blank"><img SRC='http://wpa.qq.com/pa?p=1:81684210:41'></a></li>
@@ -22,7 +43,9 @@
 				<ol><i class="glyphicon glyphicon-headphones"></i> 联系电话</ol>
 				<li>唐先生：<a href="tel:15603012345">15603012345</a></li>
 			</ul>
-{/qb:tag}
+		{/qb:tag}
 		</div>
+	
+{/if}
 	</div>
 </div>

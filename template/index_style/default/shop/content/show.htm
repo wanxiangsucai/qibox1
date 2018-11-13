@@ -177,6 +177,23 @@ $array3=get_shop_type('type3',$info);
 			});
 		</script>
 	</div>
+
+{if (modules_config('qun')&&$qun=fun('qun@getByuid',$userdb.uid)[0])}
+	<link rel="stylesheet" href="/public/static/group/show.css">
+	<div class="ListBox" style="margin-top:15px;">
+		<div class="list">
+			<ul>
+				<li class="img" style="position:relative;">{if $qun.status==2}<img src="__STATIC__/group/v.png" style="position:absolute;width:20px;height:20px;z-index:9;">{/if}<a href="{:urls('qun/content/show',['id'=>$qun.id])}"><img src="{$qun.picurl|tempdir}" onerror="this.src='__STATIC__/images/nopic.png'"></a></li>
+				<li class="info">
+					<div class="title"><a href="{:urls('qun/content/show',['id'=>$qun.id])}">{$qun.title}</a></div>
+					<div class="cnt">粉丝：<span>{$qun.usernum}</span> 贴子：<span>{$qun.replynum}</span></div>	
+					<div class="cnt">{:get_word(del_html($qun.content),50)}</div>
+				</li>				 
+			</ul>
+		</div>
+	</div>
+{/if}
+
 	<div class="ChangeShowCont">
 		<div class="mui-slider">
 			<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
