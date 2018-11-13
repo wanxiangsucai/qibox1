@@ -6,7 +6,7 @@
 		{/volist}
 	</ul>
 	<div class="contact">
-{if (modules_config('qun')&&$qun=fun('qun@getByuid',$userdb.uid)[0])}
+{if (modules_config('qun')&&$qun=fun('qun@getByuid',$info.uid)[0])}
 		<div class="head">__QUN__信息</div>
 		<div class="cnt">
 			<ul class="qq">
