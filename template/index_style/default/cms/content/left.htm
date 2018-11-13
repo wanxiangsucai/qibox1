@@ -10,7 +10,7 @@
 		<div class="head">__QUN__信息</div>
 		<div class="cnt">
 			<ul class="qq">
-				<a href="{:urls('qun/content/show',['id'=>$qun.id])}" style="color:red;" target="_blank"><img src="" style="max-width:180px;" onerror="this.src='__STATIC__/images/nopic.png'">
+				<a href="{:urls('qun/content/show',['id'=>$qun.id])}" style="color:red;" target="_blank"><img src="{$qun.picurl|tempdir}" style="max-width:180px;" onerror="this.src='__STATIC__/images/nopic.png'">
 				<br>
 				{$qun.title}</a>
 			</ul>
