@@ -178,7 +178,7 @@ $array3=get_shop_type('type3',$info);
 		</script>
 	</div>
 
-{if (modules_config('qun')&&$qun=fun('qun@getByuid',$userdb.uid)[0])}
+{if (modules_config('qun')&&$qun=fun('qun@getByuid',$info.uid)[0])}
 	<link rel="stylesheet" href="/public/static/group/show.css">
 	<div class="ListBox" style="margin-top:15px;">
 		<div class="list">
