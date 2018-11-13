@@ -1720,3 +1720,5 @@ UPDATE  `qb_plugin` SET  `name` =  '财务与积分功能',`icon` =  'fa fa-fw f
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '公众号二维码', 'mp_code_img', '', 'image', '', 1, '', '', 0, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '小程序二维码', 'wxapp_code_img', '', 'image', '', 1, '', '', 0, 0);
 ALTER TABLE  `qb_rmb_getout` ADD  `real_money` DECIMAL( 10, 2 ) NOT NULL COMMENT  '实际申请提现金额';
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '网站域名网址', 'www_url', '', 'text', '', 1, '', '一般请留空,如果你启用了https,服务器无法识别导致后台提交数据失败,就在这里输入详细的网址,比如https://xxxx.com', 0, 0);

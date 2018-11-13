@@ -5,7 +5,6 @@ use app\index\model\Pay AS PayModel;
 
 class Weixin extends Pay{
     
-    
     public function checkpay(){
         $numcode = input('numcode');
         $info = getArray(PayModel::get(['numcode'=>$numcode]));
@@ -37,10 +36,11 @@ class Weixin extends Pay{
     
     //跳到付款页面,准备付款
     public function gotopay(){
-        
-        if(!$this->webdb['weixin_appid'] || !$this->webdb['weixin_appsecret'] || !$this->webdb['weixin_payid'] || !$this->webdb['weixin_paykey']){
-            $this->error('系统没有设置好微信支付接口,所以不能使用微信支付');
-        }elseif($this->user['weixin_api']==''&&$this->user['wxapp_api']==''){
+        if(
+                ($this->webdb['weixin_appid'] && $this->webdb['weixin_appsecret'] && $this->webdb['weixin_payid'] && $this->webdb['weixin_paykey'])
+                ||
+                ($this->webdb['wxapp_appid'] && $this->webdb['wxapp_appsecret'] && $this->webdb['wxapp_payid'] && $this->webdb['wxapp_paykey'])
+        ){
             if(!$this->user){
                 if( in_weixin() ){
                     weixin_login($url='');
@@ -49,18 +49,29 @@ class Weixin extends Pay{
                 }
             }else{
                 //可以进一步改进,强制微信登录,绑定微信
-                $this->error('你的当前帐号还没有绑定微信，不能使用微信支付');
-            }            
+                //$this->error('你的当前帐号还没有绑定微信，不能使用微信支付');
+            }
+        }else{
+            $this->error('系统没有设置好微信支付接口,所以不能使用微信支付');
         }
-        
-        $array = $this->olpay_send();
         
         if(!in_weixin()){
+            $array = $this->olpay_send();
             //$this->error('当前页面只能用手机微信访问！');
             return $this->weixin_pay_inpc($array);
+        }else{
+            if (input('client_type')=='') {
+                return $this->fetch('choose_mp_wxapp');
+            }
+            $array = $this->olpay_send();
+            
+            if (input('client_type')=='wxapp') {
+                $this->assign('array',$array);
+                return $this->fetch('wxapp_pay');
+            }else{                
+                include(ROOT_PATH.'plugins/weixin/api/jsapi.php');
+            }
         }
-        
-        include(ROOT_PATH.'plugins/weixin/api/jsapi.php');
     }
     
     
@@ -97,6 +108,11 @@ class Weixin extends Pay{
     public function back_notice(){
         global $pay_end_data;
         $pay_end_data = '';
+        if (input('client_type')=='wxapp') {    //小程序支付的情况
+            config('webdb.weixin_appid', config('webdb.wxapp_appid') );    //小程序的appid要跟支付接口绑定
+            config('webdb.weixin_payid', config('webdb.wxapp_payid') );
+            config('webdb.weixin_paykey', config('webdb.wxapp_paykey') );
+        }
         include(ROOT_PATH.'plugins/weixin/api/notify.php');
         
         if($pay_end_data['out_trade_no']){  //支付成功，才能得到这个订单号
