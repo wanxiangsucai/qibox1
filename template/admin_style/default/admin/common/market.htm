@@ -103,17 +103,60 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 .MarketBox li dl dd .butter a:hover{
 	background: #F30;
 }
+
+.choose_btn{
+	float:left;
+	height:50px;
+	width:60%;
+}
+.choose_search{
+	float:right;
+	height:50px;
+	width:30%;
+	text-align:right;
+}
 </style>
 <div class="MainContainers">
   <div class="Header"><span class="tag">{if ($fid==2)}功能插件{elseif in_array($fid,[4,7,8]) /}模板风格{elseif ($fid==3)/}钩子功能{else/}频道模块{/if}应用市场</span><span class="more">::</span></div>
 	<div class="Conter">
+		<div class="choose_btn">
+			<button data-type="appupdate_time" class="layui-btn layui-btn-normal">最近更新</button>
+			<button data-type="id" class="layui-btn layui-btn-primary">最新上线</button>
+			<button data-type="downs" class="layui-btn layui-btn-primary">热门火爆</button>			
+			<button data-type="good" class="layui-btn layui-btn-primary">官方推荐</button>
+		</div>
+		<div class="choose_search layui-form">
+			 <dd class="layui-input-inline">
+				<input type="text" name="keyword" placeholder="请输入关键字" class="layui-input search_keyword">
+			</dd>
+			<button class="layui-btn" onclick="search_app()">搜索</button>
+		</div>
 		<ul class="MarketBox Markercontents"></ul>
 	</div>
 	<div class="ShowPage ShowMoreInfo" style="margin-bottom:20px:text-align:center;width:100%;"><span style="width:200px;margin:auto;display:block;padding:8px;background:#eee;" onclick="showlist()">显示更多</span></div>
 </div>
 
 <script type="text/javascript">
-var page = 1,loading=1;
+
+var page = 1,loading=1,order_by='id',keyword='';
+var appUrl = 'https://x1.php168.com/appstore/wxapp.index/index/fid/{$fid}.html?rows=20';
+
+
+$(".choose_btn button").click(function(){
+	$(".choose_btn button").each(function(){
+		$(this).addClass('layui-btn-primary');
+		$(this).removeClass('layui-btn-normal');
+	});
+	$(this).removeClass('layui-btn-primary');
+	$(this).addClass('layui-btn-normal');
+	order_by = $(this).data('type');
+	keyword = '';
+	page = 1;
+	$('.Markercontents').html('');
+	showlist();
+});
+
+
 $(window).scroll(function(){
 	// 当滚动到最底部以上100像素时， 加载新内容
 	if (loading==1 &&  (400 + $(window).scrollTop())>($(document).height() - $(window).height())){
@@ -122,9 +165,22 @@ $(window).scroll(function(){
 	}	
 });
 
+function search_app(){
+	keyword = $(".search_keyword").val();
+	if(keyword==''){		
+		layer.alert('关键字不能为空');
+		return ;
+	}
+	$('.Markercontents').html('');
+	page = 1;
+	order_by = 'id';
+	showlist();
+}
+
 function showlist(){
 	layer.load(3,{shade: [0.1,'#333']});
-	$.get('https://x1.php168.com/appstore/wxapp.index/index/fid/{$fid}.html?rows=20&page='+page+'&'+Math.random(),function(res){
+	var url = appUrl + '&order_by='+order_by+'&page='+page+'&keyword='+keyword;
+	$.get(url,function(res){
 		if(res.code==0){
 			layer.closeAll();
 			page++;
@@ -156,7 +212,7 @@ function showlist(){
 							'</dl>'+
 						'</li>';
 				});
-				$('.Markercontents').append(str);
+				$('.Markercontents').append(str);				
 				check_setup();
 				loading = 1;
 				hide_demo();
