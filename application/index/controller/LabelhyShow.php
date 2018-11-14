@@ -41,7 +41,11 @@ class LabelhyShow extends LabelShow
             if($value===''){
                 unset($parameter[$key]);    //避免空值也执行where语句
             }else{
-                $parameter[$key] = urldecode($value);
+                $value = urldecode(urldecode($value));
+                if( strstr($value,"'") ){
+                    continue;
+                }
+                $parameter[$key] = $value;
             }
         }
         
@@ -109,6 +113,7 @@ class LabelhyShow extends LabelShow
             $array[$key] = urlencode($value);
         }
         return iurl('index/labelhy_show/ajax_get',$array);
+//         return iurl('index/labelhy_show/ajax_get').'?'.http_build_query($array);
     }
     
     public function get_label($tag_name='',$cfg=[]){

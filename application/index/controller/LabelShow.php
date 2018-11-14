@@ -87,7 +87,11 @@ class LabelShow extends IndexBase
             if($value===''){
                 unset($parameter[$key]);    //避免空值也执行where语句
             }else{
-                $parameter[$key] = urldecode($value);
+                $value = urldecode(urldecode($value));
+                if( strstr($value,"'") ){
+                    continue;
+                }
+                $parameter[$key] = $value;
             }
         }
 
@@ -717,6 +721,7 @@ class LabelShow extends IndexBase
             $array[$key] = urlencode($value);
         }
         return iurl('index/label_show/ajax_get',$array);
+//         return iurl('index/label_show/ajax_get').'?'.http_build_query($array);
     }
     
     /**
