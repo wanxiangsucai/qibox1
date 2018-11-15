@@ -3,6 +3,44 @@ namespace app\common\fun;
 
 
 class Wxapp{
+    
+    public static function mp_code($id=0){
+        $path = config('upload_path') . '/mp_code/';
+        $img_path  = $path.$id.'.png';
+        if (is_file($img_path)) {
+            return tempdir("uploads/mp_code/{$id}.png");
+        }
+        if (!is_dir($path)) {
+            mkdir($path);
+        }
+        $access_token = wx_getAccessToken(true,false);
+        if (empty($access_token)) {
+            return 'access_token不存在!';
+        }
+        
+        $str = http_curl('https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$access_token,[
+                'action_name'=>'QR_LIMIT_STR_SCENE',
+                'action_info'=>[
+                       'scene'=>[
+                               'scene_str'=>$id,
+                       ] 
+                ],
+        ],'json');
+        $res = json_decode($str,true);
+        $tick = $res['ticket'];
+        if (empty($access_token)) {
+            return 'ticket不存在!';
+        }
+        $code = http_Curl("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=$tick");        
+        if (strlen($code)>500) {
+            write_file($img_path, $code);
+            return tempdir("uploads/mp_code/{$id}.png");
+        }else{
+            return $code;
+        }
+    }
+    
+    
     /**
      * 圈子微信二维码小程序入口
      * @param int $id

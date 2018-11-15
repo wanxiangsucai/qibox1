@@ -15,6 +15,7 @@ class Scan extends Api
         if(!preg_match("/^qrscene_/",$this->EventKey) ){
             return ;
         }
+        
         $value = str_replace('qrscene_','',$this->EventKey);
         //对应这个页面的推荐人二维码推广/member/my2code.php
         if(NewUser===true){
