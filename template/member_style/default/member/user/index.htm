@@ -47,30 +47,74 @@
 	<ul><ol>注册日期</ol><li>{:date("Y-m-d H:i:s",$info.regdate)}</li></ul>
 </div>
 
-<div class="SideInfos">
-	<h3><i class="fa fa-fw fa-book"></i>我发的文章</h3>
-{qb:tag name="wap_member_homepage_001" union="uid" type="cms" rows="5" mid="1" order="id" by="desc"}
-	<ul> <ol style="width:80%;">{$i}、<a href="{$rs.url}">{$rs.title|get_word=24}</a></ol><li>{:date("m-d",$rs.create_time)}</li></ul>
-{/qb:tag}
-</div>
 
-<div class="SideInfos wap_member_bbs">
-	<h3><i class="fa fa-fw fa-file-text-o"></i>我的论坛贴子</h3>
-{qb:tag name="wap_member_homepage_002" union="uid" type="bbs" rows="5" mid="1" order="id" by="desc"}
-	<ul> <ol style="width:80%;"><span>{$i}</span>、<a href="{$rs.url}">{$rs.title|get_word=24}</a></ol><li>{:date("m-d",$rs.create_time)}</li></ul>
-{/qb:tag}
+<style type="text/css">
+.bbs_title h3{
+	width:50%;
+	float:left;
+	color:#999;
+	border-bottom:#ddd 1px solid; 
+}
+.bbs_title h3 i{
+	color:#999;
+}
+.bbs_title h3.ck i{
+	color:#F90;	
+}
+.bbs_title h3.ck{
+	color:#f90;
+	border-bottom:#f90 1px solid; 
+}
+</style>
+{if modules_config('bbs')}
+<div class="SideInfos member_showbbs_title">
+	<div class="bbs_title">
+		<!--这里可以是多个TAB按钮-->
+		<h3 class="ck"><i class="fa fa-fw fa-file-text-o"></i>我发表的主题</h3>
+		<h3><i class="fa fa-fw fa-file-text-o"></i>我回复的贴子</h3>
+	</div>
+	<!--上面若有多个TAB按钮,那下面也要对应多个,必须要命名为了 class="show_content" 其中的 bbs_content_reply 为的是异步加载用的, 可以不使用 -->
+	<div class="show_content">
+	{qb:tag name="wap_member_homepage_002" union="uid" type="bbs" rows="8" mid="1" order="id" by="desc"}
+		<ul> <ol style="width:80%;"><span>{$i}</span>、<a href="{$rs.url}">{$rs.title|get_word=24}</a></ol><li>{:date("m-d",$rs.create_time)}</li></ul>
+	{/qb:tag}
+	</div>
+	<div class="show_content bbs_content_reply" style="display:none;">
+	<!--下面的标签添加js="bbs_content_reply"参数为的就是不影响页面打开速度。js名必须要与外层class名一样,但可以不与标签名一样-->
+	{qb:tag name="wap_member_homepage_reply_002" js="bbs_content_reply" class="app\bbs\model\Content@get_reply_label" rows="8" union="uid"}
+		<ul> <ol style="width:80%;"><span>{$i}</span>、<a href="{$rs.url}">{$rs.title|get_word=24}</a></ol><li>{:date("m-d",$rs.create_time)}</li></ul>
+	{/qb:tag}
+	</div>
 </div>
-
+{/if}
 <script type="text/javascript">
-var Mpage=1;
+var type_num = 0; //默认是第一项
+$(document).ready(function () {
+	$(".bbs_title h3").click(function(){
+		$(".bbs_title h3").removeClass('ck');
+		$(this).addClass('ck');
+		type_num = $(this).index();
+		$(".member_showbbs_title .show_content").hide();
+		$(".member_showbbs_title .show_content").eq(type_num).show();
+		scroll_get = true;	//避免其它加载完了,这里却无法加载
+	});
+});
+
+var Mpage = new Array();	//页码数组
+var urldb = new Array('{qb:url name="wap_member_homepage_002" /}','{qb:url name="wap_member_homepage_reply_002" /}'); //不同的URL
 function ShowMoreBBs(){
-	Mpage++;
-	$.get('{qb:url name="wap_member_homepage_002" /}'+Mpage,function(res){
+	if( typeof Mpage[type_num]=='undefined' ){
+		Mpage[type_num] = 1;
+	}
+	Mpage[type_num]++;
+	var url = urldb[type_num] + Mpage[type_num];
+	
+	$.get(url,function(res){
 		if(res.code==0){
 			if(res.data==''){
 				layer.msg("已经显示完了！",{time:500});
-			}else{				
-				$('.wap_member_bbs').append(res.data);
+			}else{
+				$(".member_showbbs_title .show_content").eq(type_num).append(res.data);
 				set_i_num();
 				scroll_get = true;
 			}
@@ -92,16 +136,25 @@ $(document).ready(function () {
 	});
 });
 
-//设置贴子序号
+//设置标题序号
 function set_i_num(){
 	var j = 0;
-	$('.wap_member_bbs ul span').each(function(){
+	$(".member_showbbs_title .show_content").eq(type_num).find('ul span').each(function(){
 		j++;
 		$(this).html(j);
 	});
 }
 
 </script>
+
+
+
+<div class="SideInfos">
+	<h3><i class="fa fa-fw fa-book"></i>我发的文章</h3>
+{qb:tag name="wap_member_homepage_001" union="uid" type="cms" rows="5" mid="1" order="id" by="desc"}
+	<ul> <ol style="width:80%;">{$i}、<a href="{$rs.url}">{$rs.title|get_word=24}</a></ol><li>{:date("m-d",$rs.create_time)}</li></ul>
+{/qb:tag}
+</div>
 
 
 {if ($userdb.uid==$info.uid||$userdb.groupid==3)}
@@ -114,5 +167,7 @@ function set_i_num(){
 	<div class="note">私密资料只有本人与管理员才可查看,其它人无法查看!</div>	
 </div>
 {/if}
+<div style="height:30px;"></div>
+{include file="index@footmenu" /}
 </body>
 </html>

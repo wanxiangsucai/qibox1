@@ -87,9 +87,16 @@ class LabelShow extends IndexBase
             if($value===''){
                 unset($parameter[$key]);    //避免空值也执行where语句
             }else{
-                $value = urldecode(urldecode($value));
+                //$value = urldecode(urldecode($value));
+                //$value = urldecode($value);
                 if( strstr($value,"'") ){
                     continue;
+                }
+                if (strstr($key,'?')) {
+                    $parameter[$key] = $value;
+                    $key = str_replace('?','',$key);
+                    $this->request->get([$key=>$value]);
+                    $$key=$value;
                 }
                 $parameter[$key] = $value;
             }
@@ -717,11 +724,11 @@ class LabelShow extends IndexBase
      */
     protected function build_tag_ajax_url($array=[]){
         $array['sys_type'] = $this->get_sys_type();   //同一个标签,动态更换系统 type 参数
-        foreach($array AS $key=>$value){
-            $array[$key] = urlencode($value);
-        }
-        return iurl('index/label_show/ajax_get',$array);
-//         return iurl('index/label_show/ajax_get').'?'.http_build_query($array);
+//         foreach($array AS $key=>$value){
+//             $array[$key] = urlencode($value);
+//         }
+//         return iurl('index/label_show/ajax_get',$array);
+        return iurl('index/label_show/ajax_get').'?'.http_build_query($array).'&';
     }
     
     /**

@@ -19,12 +19,13 @@ class Weixin_share
         
 
         // 注意 URL 一定要动态获取，不能 hardcode.
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ||  $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-        // $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-        $PHP_SELF_TEMP = $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
-        $_SERVER['QUERY_STRING'] && $PHP_SELF_TEMP .= "?" . $_SERVER['QUERY_STRING'];
-        $PHP_SELF = $_SERVER['REQUEST_URI'] ? $_SERVER['REQUEST_URI'] : $PHP_SELF_TEMP;
-        $url = $protocol . $_SERVER['HTTP_HOST'] . $PHP_SELF;
+//         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ||  $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+//         // $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+//         $PHP_SELF_TEMP = $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
+//         $_SERVER['QUERY_STRING'] && $PHP_SELF_TEMP .= "?" . $_SERVER['QUERY_STRING'];
+//         $PHP_SELF = $_SERVER['REQUEST_URI'] ? $_SERVER['REQUEST_URI'] : $PHP_SELF_TEMP;
+//         $url = $protocol . $_SERVER['HTTP_HOST'] . $PHP_SELF;
+        $url = get_url('location');
         
         
         $timestamp = time();

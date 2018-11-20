@@ -84,24 +84,68 @@ function send_msg(){
 	</div>
 </div>
 
-<div class="SideContainer">
-	<div class="head"><i class="fa fa-fw fa-file-text-o"></i>我的论坛贴子</div>
-	<div class="MoreCnt member_bbs">
-	{qb:tag name="wap_member_homepage_002" union="uid" type="bbs" rows="6" mid="1" order="id" by="desc"}
+<style type="text/css">
+.member_showbbs_title .head{
+	padding-left:0;
+	height:45px;
+}
+.member_showbbs_title .head span{
+	display:block;
+	float:left;
+	background:#eee;
+	height:45px;
+	font-size:18px;
+	padding:0 13px 0 13px;
+}
+.member_showbbs_title .head span.ck{
+	background:orange;
+	color:#fff;
+}
+
+</style>
+{if modules_config('bbs')}
+<div class="SideContainer member_showbbs_title">
+	<div class="head"><span class="ck">我发表的主题</span><span>我回复的主题</span></div>
+	<div class="MoreCnt show_content">
+	{qb:tag name="pc_member_homepage_002" union="uid" type="bbs" rows="10" mid="1" order="id" by="desc"}
+		<div class="list1"><span class="gi">{$i}</span>、<a href="{$rs.url}" target="_blank">{$rs.title|get_word=85}</a> <span style="float:right;margin-right:10px;">[{:date("y-m-d",$rs.create_time)}]</span></div>
+	{/qb:tag}
+	</div>
+	<div class="MoreCnt show_content bbs_content_reply" style="display:none;">
+	{qb:tag name="pc_member_homepage_reply_002" js="bbs_content_reply" class="app\bbs\model\Content@get_reply_label" rows="10" union="uid"}
 		<div class="list1"><span class="gi">{$i}</span>、<a href="{$rs.url}" target="_blank">{$rs.title|get_word=85}</a> <span style="float:right;margin-right:10px;">[{:date("y-m-d",$rs.create_time)}]</span></div>
 	{/qb:tag}
 	</div>
 </div>
+{/if}
 <script type="text/javascript">
-var Mpage=1;
+var type_num = 0; //默认是第一项
+$(document).ready(function () {
+	$(".member_showbbs_title .head span").click(function(){
+		$(".member_showbbs_title .head span").removeClass('ck');
+		$(this).addClass('ck');
+		type_num = $(this).index();
+		$(".member_showbbs_title .show_content").hide();
+		$(".member_showbbs_title .show_content").eq(type_num).show();
+		scroll_get = true;	//避免其它加载完了,这里却无法加载
+	});
+});
+
+var Mpage = new Array();	//页码数组
+var urldb = new Array('{qb:url name="pc_member_homepage_002" /}','{qb:url name="pc_member_homepage_reply_002" /}'); //不同的URL
 function ShowMoreBBs(){
-	Mpage++;
-	$.get('{qb:url name="wap_member_homepage_002" /}'+Mpage,function(res){
+	if( typeof Mpage[type_num]=='undefined' ){
+		Mpage[type_num] = 1;
+	}
+	Mpage[type_num]++;
+	var url = urldb[type_num] + Mpage[type_num];
+	
+	$.get(url,function(res){
 		if(res.code==0){
 			if(res.data==''){
 				layer.msg("已经显示完了！",{time:500});
-			}else{				
-				$('.member_bbs').append(res.data);
+			}else{
+				$(".member_showbbs_title .show_content").eq(type_num).append(res.data);
 				set_i_num();
 				scroll_get = true;
 			}
@@ -115,7 +159,7 @@ function ShowMoreBBs(){
 var scroll_get = true;	//做个标志,不要反反复复的加载
 $(document).ready(function () {
 	$(window).scroll(function () {
-		if (scroll_get==true &&  (200 + $(window).scrollTop())>($(document).height() - $(window).height())) {
+		if (scroll_get==true &&  (400 + $(window).scrollTop())>($(document).height() - $(window).height())) {
 			scroll_get = false;
 			layer.msg('内容加截中,请稍候',{time:1000});
 			ShowMoreBBs();
@@ -123,10 +167,10 @@ $(document).ready(function () {
 	});
 });
 
-//设置贴子序号
+//设置标题序号
 function set_i_num(){
 	var j = 0;
-	$('.member_bbs .gi').each(function(){
+	$(".member_showbbs_title .show_content").eq(type_num).find('.list1 .gi').each(function(){
 		j++;
 		$(this).html(j);
 	});

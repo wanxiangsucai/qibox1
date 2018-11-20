@@ -33,6 +33,9 @@ class Qun{
         $info = $array[$id];
         if (empty($info)) {
             $info = getArray( query('qun_content1')->where('id',$id)->find() );
+            if (empty($info)) {
+                return ;
+            }
             $info['url'] = iurl("qun/content/show",['id'=>$info['id']]);
             $info['picurl'] = tempdir($info['picurl']);
             $array[$id] = $info;

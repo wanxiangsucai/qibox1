@@ -75,6 +75,10 @@ class Reg extends IndexBase
             $userdb = UserModel::weixin_reg($openid,$data,$Marray);	//注册，数据入库
             
             if(!is_array($userdb)){
+                if (strstr($userdb,'已经注册过')) {    //这里最好重新查数据
+                    $url = iurl('index/login/index',$array).'?fromurl='.urlencode(get_url('home'));
+                    $this->success('当前帐号已注册过了,请重新登录',$url);
+                }
                 $this->error('注册失败,详情如下：'.$userdb);
             }
             
@@ -93,11 +97,11 @@ class Reg extends IndexBase
             
             $this->success('恭喜你，注册成功',$jumpto);
             
-        }else{            
+        }else{
             //跳转到微信服务器再返回来，将会得到一个有效的code值。
             $url = urlencode($this->weburl);
             header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect');
             exit;
-        }        
+        }
     }
 }
