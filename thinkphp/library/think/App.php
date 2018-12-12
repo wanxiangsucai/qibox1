@@ -557,6 +557,11 @@ class App
         // 获取控制器名
         $controller = strip_tags($result[1] ?: $config['default_controller']);
         $controller = $convert ? strtolower($controller) : $controller;
+        
+        //2018-12-12加的补丁
+        if (!preg_match('/^[A-Za-z](\w|\.)*$/', $controller)) {
+            throw new HttpException(404, 'controller not exists:' . $controller);
+        }
 
         // 获取操作名
         $actionName = strip_tags($result[2] ?: $config['default_action']);
