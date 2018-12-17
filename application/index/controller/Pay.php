@@ -134,9 +134,11 @@ class Pay extends IndexBase
                 'callback_class'=>mymd5(urldecode(input('callback_class')),'DE'),     //支付成功后，后台执行的类
         ];
         //file_put_contents(ROOT_PATH.'AA.txt', $this->weburl,FILE_APPEND);
-
-        if(PayModel::get(['numcode'=>$array['numcode']])==false){
+        $info = PayModel::get(['numcode'=>$array['numcode']]);
+        if($info==false){
             PayModel::create($data);
+        }elseif($info['money']!=$array['money']){
+            $this->error("金额有误!!!");
         }
         
         

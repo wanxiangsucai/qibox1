@@ -94,7 +94,7 @@ function weixin_mp(){
 	  shade: false,
 	  maxmin: true, //开启最大化最小化按钮
 	  area: ['500px', '500px'],
-	  content: "<center><img style='width:400px' src='{:tempdir(config('webdb.weixin_code_img'))}'><br>请扫描上方二维码关注公众号，然后在公众号那里回复：验证码</center>",
+	  content: "<center><img style='width:400px' src='{:tempdir(config('webdb.mp_code_img')?:config('webdb.weixin_code_img'))}'><br>请扫描上方二维码关注公众号，然后在公众号那里回复：验证码</center>",
 	  end: function(){
 		  	//get_code_num('weixin');
 		}

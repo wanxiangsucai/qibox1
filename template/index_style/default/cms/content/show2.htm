@@ -53,4 +53,12 @@ $('.PhotoBox img').hover(
 	}
 );
 </script>
+
+<script type="text/javascript">
+//解决MUI链接无法点击的问题
+mui('body').on('tap','a',function(){
+	window.top.location.href=this.href;
+});
+</script>
+
 {/block}

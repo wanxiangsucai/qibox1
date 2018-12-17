@@ -725,7 +725,7 @@ abstract class C extends Model
 //         $order = $cfg['order_name'] ? $cfg['order_name'] : 'id';
 //         $by = $cfg['order_by'] ? $cfg['order_by'] : 'desc';
         $order = $cfg['order'] ? $cfg['order'] : 'id';
-        $by = $cfg['by'] ? $cfg['by'] : 'desc';
+        $by = $cfg['by'] ? $cfg['by'] : 'des0c';
         $data = [];
         $map = [];
 //         preg_match_all('/([_a-z]+)/',get_called_class(),$array);

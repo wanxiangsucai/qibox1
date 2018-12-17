@@ -65,7 +65,7 @@ class Category{
      */
     public static function content($fid=0,$dir='',$rows=10,$order='A.list',$mid=1,$fomat=true){
         $dir || $dir = config('system_dirname');
-        $listdb = Db::name($dir.'_info')->alias('A')->join($dir.'_content'.$mid.' B','A.aid=B.id','RIGHT')->where('A.cid',$fid)->order($order,'desc')->select();
+        $listdb = Db::name($dir.'_info')->alias('A')->join($dir.'_content'.$mid.' B','A.aid=B.id','RIGHT')->where('A.cid',$fid)->order($order,'desc')->limit($rows)->select();
         if ($fomat) {
             foreach($listdb AS $key=>$rs){
                 $listdb[$key] = fun('field@format',$rs,'','list',$dir);

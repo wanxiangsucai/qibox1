@@ -100,4 +100,61 @@ class Qun{
         return $listdb;
     }
     
+    /**
+     * 获取某个圈子的广告位信息
+     * @param number $id
+     */
+    public static function adsetByid($id=0){
+        if (empty($id)) {
+            return ;
+        }
+        return Db::name('qun_adset')->where('aid',$id)->find();
+    }
+    
+    /**
+     * 获取某个圈子的广告位状态,什么时候可以轮流到可以显示广告
+     * @param number $id
+     * @return void|array|\think\db\false|PDOStatement|string|\think\Model
+     */
+    public static function adset_status($id=0){
+        if (empty($id)) {
+            return ;
+        }
+        $info = Db::name('qun_adset')->where('aid',$id)->find();
+        if (empty($info)) {
+            return ;
+        }
+        $time = time();
+        $end_time = Db::name('qun_aduser')->where('aid',$id)->order('id','desc')->value('end_time');
+        if($end_time<$time){
+            $end_time = $time;
+        }
+        $info['time'] = $end_time;
+        return $info;
+    }
+    
+    /**
+     * 获取广告位内容
+     * @param number $id
+     * @return void|array[]|\think\db\false[]|PDOStatement[]|string[]|\think\Model[]
+     */
+    public static function adByid($id=0){
+        if (empty($id)) {
+            return ;
+        }
+        $info = Db::name('qun_adset')->where('aid',$id)->find();
+        if (empty($info)) {
+            return ;
+        }
+        $time = time();
+        $data = Db::name('qun_aduser')->where('aid',$id)->where('begin_time','<',$time)->where('status',1)->where('end_time','>',$time)->find();
+//         if(empty($data)){
+//             return ;
+//         }
+        return [
+                'set'=>$info,
+                'ad'=>$data,
+        ];
+    }
+    
 }
