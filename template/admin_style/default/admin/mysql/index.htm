@@ -12,9 +12,9 @@
 
 <table class="ListTable">
    <tr> 
-        <th width='11%'>序号</th>
-        <th width='32%'> 表的名称</th>
-      <th width='17%'> 记录数(条)</th>
+      <th width='6%'>序号</th>
+      <th> 表的名称(注释)</th>
+      <th width='15%'> 记录数(条)</th>
       <th width='21%'> 占用空间</th>
       <th width='19%'> 请选择</th>
     </tr>
@@ -32,16 +32,16 @@ if($breakbak){
 foreach($listdb AS $key=>$rs){
 {/php}
   <tr> 
-      <td class='b red'> {$rs.j}</td>
-    
-      <td class='Left'> <a href="{:urls('showtable','table='.$rs['Name'])}" target="_blank">{$rs.Name}</a> 
-         </td>
+    <td class='b red'> {$rs.j}</td>
+    <td class='Left'>
+		<a href="{:urls('showtable','table='.$rs['Name'])}" target="_blank">{$rs.Name}</a> <font color="#999">{$rs.Annotation}</font>
+	</td>
     <td> 
-      <div align='center'>{$rs.Rows}</div>
+		<div align='center'>{$rs.Rows}</div>
     </td>
     <td> {$rs.Data_length} K</td>
     <td> 
-        <input type='checkbox' name='tabledb[]' value='{$rs.Name}'  checked>
+        <input type='checkbox' name='tabledb[]' value='{$rs.Name}' checked>
         <a href="{:urls('yh','table='.$rs['Name'])}">优化</a> 
         <a href="{:urls('xf','table='.$rs['Name'])}">修复</a>
     </td>
@@ -91,10 +91,6 @@ foreach($listdb AS $key=>$rs){
     </ul>
   </div>
 </div>
-
-
-
-
 
 <script language=JavaScript>
 function CheckAll(form){

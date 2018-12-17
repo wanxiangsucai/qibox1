@@ -36,6 +36,7 @@ class Database {
             $totalsize=$totalsize+$array['Data_length'];
             $array['Data_length']=number_format($array['Data_length']/1024,3);
             $array['j']=$j;
+			$array['Annotation']=$array['Comment'];
             $listdb[$array['Name']]=$array;
         }
         return [$totalsize,$listdb];
