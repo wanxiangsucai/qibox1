@@ -59,7 +59,7 @@ div, p, dl, dt, dd,td,span,li,a,h3,h4{font-family: Arial, Helvetica, sans-serif,
 {else /}
 		  <li class='ck'><em><input type='radio' name='paytype' value='alipay'/></em><span style="color:#059CD8;" class="fa fa-buysellads">支付宝</span></li>
 {/if}
-		  <li><em><input type='radio' name='paytype' value='rmb'/></em><span style="color:#B94303;" class="glyphicon glyphicon-yen">余额抵扣</span></li>
+		  <li><em><input type='radio' {if $money>$userdb.money} onclick="layer.alert('你余额不足,不能使用余额支付!')" {/if} name='paytype' value='rmb'/></em><span style="color:#B94303;" class="glyphicon glyphicon-yen">余额(可用:{$userdb.money}元)</span></li>
       </ul>
 	</div>
     <div class="m-wxPay"><a href="javascript:paytype();">下一步</a></div>

@@ -95,7 +95,7 @@ em,i{font-style:normal;}
   </div>
   <div class="pay-section">
     <p class="payAll wxAll">
-	  <span class="payAll-1"><em class="payAll-1a glyphicon glyphicon-yen">你当前可用余额 {$userdb.rmb} 元</em><em class="payAll-1b">提醒:余额若不足,请使用支付宝或微信支付</em></span>
+	  <span class="payAll-1"><em class="payAll-1a glyphicon glyphicon-yen">你当前可用余额 <b style="color:blue;">{$userdb.rmb}</b> 元</em><em class="payAll-1b">提醒:余额若不足,请使用支付宝或微信支付</em></span>
 	  <span class="payAll-2">本次需要支付：<em>{$money}</em> 元</span>
 	</p>
 	
@@ -105,7 +105,7 @@ em,i{font-style:normal;}
 	  <ul class="payList">
         <li class='active'><em></em><input type='radio' checked name='paytype' value='alipay'/><span style="color:#059CD8;" class='payImg wxImg fa fa-buysellads'> 支付宝</span></li>
 		 <!--<li><em></em><input type='radio' name='paytype' value='weixin'/><span class='payImg wxImg fa fa-wechat'> 微信支付</span></li>-->        
-		<li><em></em><input type='radio' name='paytype' value='rmb'/><span style="color:#B94303;" class='payImg wxImg glyphicon glyphicon-yen'>余额抵扣</span></li>
+		<li><em></em><input type='radio' name='paytype' value='rmb'/><span {if $money>$userdb.money} onclick="layer.alert('你余额不足,不能使用余额支付!')" {/if} style="color:#B94303;" class='payImg wxImg glyphicon glyphicon-yen'>余额支付</span></li>
 
     </ul>
 	</div>

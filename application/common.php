@@ -2797,7 +2797,11 @@ if (!function_exists('weixin_login')) {
      */
     function weixin_login($url=''){
         $url = $url=='' ? request()->url(true) : $url;
-        $url = purl('weixin/login/index') . '?fromurl=' . urlencode($url);
+        if( in_weixin() && config('webdb.weixin_type')==3 ){    //在微信端并且是认证服务号的情况下
+            $url = purl('weixin/login/index',[],'index') . '?fromurl=' . urlencode($url);
+        }else{            
+            $url = iurl('index/login/index').'?fromurl='.urlencode($url);
+        }
         header("location:$url");
         exit;
     }

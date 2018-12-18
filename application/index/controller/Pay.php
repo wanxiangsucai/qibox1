@@ -30,7 +30,7 @@ class Pay extends IndexBase
     //第一个参数，支付类型，第二个对应的方法，第三个指定PC或WAP，对于后台通知，必须要指定
     public function index($banktype = '' , $action = '' , $back_post = '')
     {
-        if ($banktype == '') {  //选择支付方式
+        if ($banktype == '') {  //没有指定支付方式的话,就让用户自由选择支付方式
             
             $this->assign('weburl',$this->weburl);
             $this->assign('money',input('money'));
@@ -74,17 +74,19 @@ class Pay extends IndexBase
     }
     
     /**
-     * 余额支付
+     * 余额支付,这里没做支付密码的验证
      */
     protected function rmb_pay(){
+        
+        if ($this->user['rmb']<input('money')) {
+            $this->error('你的余额不足!');
+        }
+        
         $callback_class = mymd5(urldecode(input('callback_class')),'DE');
         if ($callback_class){
             $this->run_callback($callback_class);
         }
         
-        if ($this->user['rmb']<input('money')) {
-            $this->error('你的余额不足!');
-        }
         $this->redirect(input('return_url'));
     }
     
