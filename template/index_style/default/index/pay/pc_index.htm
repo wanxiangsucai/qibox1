@@ -105,7 +105,7 @@ em,i{font-style:normal;}
 	  <ul class="payList">
         <li class='active'><em></em><input type='radio' checked name='paytype' value='alipay'/><span style="color:#059CD8;" class='payImg wxImg fa fa-buysellads'> 支付宝</span></li>
 		 <!--<li><em></em><input type='radio' name='paytype' value='weixin'/><span class='payImg wxImg fa fa-wechat'> 微信支付</span></li>-->        
-		<li><em></em><input type='radio' name='paytype' value='rmb'/><span {if $money>$userdb.money} onclick="layer.alert('你余额不足,不能使用余额支付!')" {/if} style="color:#B94303;" class='payImg wxImg glyphicon glyphicon-yen'>余额支付</span></li>
+		<li><em></em><input type='radio' name='paytype' value='rmb'/><span {if $money>$userdb.rmb} onclick="layer.alert('你余额不足,不能使用余额支付!')" {/if} style="color:#B94303;" class='payImg wxImg glyphicon glyphicon-yen'>余额支付</span></li>
 
     </ul>
 	</div>
