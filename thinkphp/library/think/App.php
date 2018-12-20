@@ -559,7 +559,7 @@ class App
         $controller = $convert ? strtolower($controller) : $controller;
         
         //2018-12-12加的补丁
-        if (!preg_match('/^[A-Za-z](\w|\.)*$/', $controller)) {
+        if (!preg_match('/^[A-Za-z](\w|\.|-)*$/', $controller)) {
             throw new HttpException(404, 'controller not exists:' . $controller);
         }
 
