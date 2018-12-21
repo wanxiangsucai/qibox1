@@ -31,7 +31,7 @@ class Init{
 		if(IN_WAP===true){
 			config('template.cache_prefix','wap_');
 		}else{
-			config('paginate',['type'=>'page\Pc_page','var_page'=>'page','list_rows'=>15]);
+			config('paginate',['type'=>'page\Pc_page','var_page'=>'page','list_rows'=>20]);	//分页参数设置
 		}
 		define('TEMPLATE_PATH',ROOT_PATH.'template/');
 		define('IS_POST',request()->isPost()?true:false);

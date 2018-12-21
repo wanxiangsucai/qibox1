@@ -26,9 +26,10 @@ class Login extends IndexBase
      * @param string $code 微信端提交过来的
      * @param string $encryptedData 微信端提交过来的
      * @param string $iv 微信端提交过来的
+     * @param string $iv 微信端提交过来的之前的WEB框架登录标志
      * @return string
      */
-    public function index($code='',$encryptedData='',$iv=''){
+    public function index($code='',$encryptedData='',$iv='',$uids=''){
         if($code=='the code is a mock one'||empty($code)){
             return $this->err_js('无法登录,code 获取失败');
         }
@@ -46,6 +47,18 @@ class Login extends IndexBase
         }
         
         $user = UserModel::check_wxappIdExists($openid);
+        if(empty($user) && $uids){  //有传递WEB框架用户已登录的标志过来
+            list($uid,$time) = explode(',',mymd5($uids,'DE'));
+            if (time()-$time<600) {
+                $user = UserModel::getById($uid);
+                if (empty($user['wxapp_api'])) {
+                    UserModel::edit_user([
+                            'uid'=>$uid,
+                            'wxapp_api'=>$openid,
+                    ]);
+                }
+            }
+        }
         if(empty($user)){
             $user = UserModel::api_reg($openid,$info);
             if(empty($user['uid'])){
@@ -55,7 +68,7 @@ class Login extends IndexBase
         
         UserModel::login($user['username'], '', '',true);   //这个并不能真正的登录.只是做一些登录的操作日志及其它接口处理
         
-        $user = UserModel::get_info($user['uid']);
+        $user = UserModel::get_info($user['uid']);  //这句可以删除,主要是考虑到以前password没有统一在一个数据表的情况
         cache($skey,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t$sessionKey",3600*72);
         $array = [
                 'token'=>$skey,

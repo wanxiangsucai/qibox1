@@ -113,6 +113,10 @@ abstract class C extends IndexBase
      */
     public function show($id=0)
     {
+        if ( empty($this->user) && in_weixin() && config('webdb.weixin_type')==3  ) {  //在微信端,就强制自动登录!
+            weixin_login();
+        }
+        
         $this->mid = $this->model->getMidById($id);
         
         if(empty($this->mid)){

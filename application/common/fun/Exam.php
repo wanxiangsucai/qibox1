@@ -7,6 +7,10 @@ use think\Db;
  */
 class Exam{
     
+    private static function get_pre(){
+        return config('system_dirname').'_';
+    }
+    
     /**
      * 取出年级,科目,章节的分类
      * @param string $sys 可以为grade kemu step
@@ -16,7 +20,7 @@ class Exam{
     public function get_sort($sys='',$type='title'){
         static $array = [];
         if (empty($array[$sys])) {
-            $array[$sys] = Db::name('exam_'.$sys)->order('list desc , id asc')->column('id,name');
+            $array[$sys] = Db::name(self::get_pre().$sys)->order('list desc , id asc')->column('id,name');
         }
         return $array[$sys];
     }
@@ -30,7 +34,7 @@ class Exam{
     public function title($sys='',$id=0){
         static $array = [];
         if (empty($array[$id])) {
-            $array[$sys] = Db::name('exam_'.$sys)->where('id',$id)->value('name');
+            $array[$sys] = Db::name(self::get_pre().$sys)->where('id',$id)->value('name');
         }
         return $array[$sys];
     }
@@ -42,7 +46,7 @@ class Exam{
     public function paper_num($fid=0){
         static $array = [];
         if (empty($array[$fid])) {
-            $array[$fid] = Db::name('exam_info')->where('cid',$fid)->count('id');
+            $array[$fid] = Db::name(self::get_pre().'info')->where('cid',$fid)->count('id');
         }
         return $array[$fid];
     }
@@ -54,7 +58,7 @@ class Exam{
     public function test_num($fid=0){
         static $array = [];
         if (empty($array[$fid])) {
-            $array[$fid] = Db::name('exam_putin')->where('paperid',$fid)->count('id');
+            $array[$fid] = Db::name(self::get_pre().'putin')->where('paperid',$fid)->count('id');
         }
         return $array[$fid];
     }
@@ -67,7 +71,7 @@ class Exam{
     public function average($fid=0){
 //         $total_fen = Db::name('exam_putin')->where('paperid',$fid)->sum('fen');
 //         return $total_fen/$this->test_num($fid);
-        return round(Db::name('exam_putin')->where('paperid',$fid)->avg('fen'),1);
+        return round(Db::name(self::get_pre().'putin')->where('paperid',$fid)->avg('fen'),1);
     }
     
     /**
@@ -76,7 +80,7 @@ class Exam{
      * @return mixed|PDOStatement|string|boolean|number
      */
     public function paper_first($fid=0){
-        return Db::name('exam_info')->where('cid',$fid)->order('list desc,id desc')->limit(1)->value('aid');
+        return Db::name(self::get_pre().'info')->where('cid',$fid)->order('list desc,id desc')->limit(1)->value('aid');
     }
     
     /**
@@ -97,7 +101,7 @@ class Exam{
      * 某套试卷最高得分
      */
     public function PaperTop($id=0){
-        return getArray(Db::name('exam_putin')->where('paperid',$id)->order('fen desc')->limit(1)->find());
+        return getArray(Db::name(self::get_pre().'putin')->where('paperid',$id)->order('fen desc')->limit(1)->find());
     }
     
     /**
@@ -108,11 +112,11 @@ class Exam{
     public function log_num($type=''){
         $uid = intval(login_user('uid'));
         if ($type=='all_title') {   //考生回答的所有题目
-            return Db::name('exam_answer')->where('uid',$uid)->count('id');
+            return Db::name(self::get_pre().'answer')->where('uid',$uid)->count('id');
         }elseif ($type=='all_paper') {  //考生提交的所有试卷
-            return Db::name('exam_putin')->where('uid',$uid)->count('id');
+            return Db::name(self::get_pre().'putin')->where('uid',$uid)->count('id');
         }elseif ($type=='err_title') {  //考生回答的所有错误题目
-            return Db::name('exam_answer')->where('uid',$uid)->where('is_true','-1')->count('id');
+            return Db::name(self::get_pre().'answer')->where('uid',$uid)->where('is_true','-1')->count('id');
         }
     }
     
@@ -123,7 +127,7 @@ class Exam{
      * @return array
      */
 	public function get_category_byid($id=0){
-		$this_info = getArray(Db::name('exam_category')->where('id',$id)->find());
+	    $this_info = getArray(Db::name(self::get_pre().'category')->where('id',$id)->find());
 		return $this_info;
 	}
  

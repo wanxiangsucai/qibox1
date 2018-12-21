@@ -9,7 +9,7 @@
 	{
 		wx.miniProgram.getEnv(function(res) {
 			if(res.miniprogram==true){
-				wx.miniProgram.navigateTo( { url: "/pages/pay/index?url=/pages/hy/web/index&weburl={:urlencode($array['wx_return_url'].'?numcode='.$array['numcode'].'&havelogin=1')}&money={$array.money}&numcode={$array.numcode}&title={$array.title}" } );
+				wx.miniProgram.navigateTo( { url: "/pages/pay/index?url=/pages/hy/web/index&uids={:mymd5($userdb['uid'].','.time())}&weburl={:urlencode($array['wx_return_url'].'?numcode='.$array['numcode'].'&havelogin=1')}&money={$array.money}&numcode={$array.numcode}&title={$array.title}" } );
 			}else{
 			}
 		});
