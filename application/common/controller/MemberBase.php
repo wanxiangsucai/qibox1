@@ -20,13 +20,8 @@ class MemberBase extends Base
         
         hook_listen('member_begin',$array=['user'=>$this->user]);     //钩子扩展
         
-        if(!defined('LOGIN_PAGE')&&empty($this->user)){
-            
-            if ( empty($this->user) && in_weixin() && config('webdb.weixin_type')==3  ) {  //在微信端,就强制自动登录!
-                weixin_login();
-            }
-            
-            $this->success('请先登录',iurl('index/login/index'));
+        if(empty($this->user)){            
+            $this->error('请先登录');
         }
         
         // 自动表单公共模板
