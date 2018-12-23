@@ -9,11 +9,11 @@
     <div class="cont">
     	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="ListTable">
           <tr>
-            <th width="40%">项目</th>
+            <th>项目</th>
             <th width="20%">积分数(个)</th>
             <th width="20%">日期</th>
             <th width="10%">详情</th>
-            <th width="10%">删除</th>
+            <!--<th width="10%">删除</th>-->
           </tr>
 {volist name="listdb" id="rs"}
           <tr>            
@@ -27,7 +27,7 @@
             </td>
             <td>{:date("Y-m-d H:i:s",$rs.posttime)}</td>           
             <td class="look"><a href="javascript:;" id="look">查看</a> <div class="show">{$rs.about}</div></td>
-            <td><a href="{:purl('delete',['id'=>$rs['id']])}">删除</a></td>
+            <!--<td><a href="{:purl('delete',['id'=>$rs['id']])}">删除</a></td>-->
           </tr>
 {/volist}
 

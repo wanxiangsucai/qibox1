@@ -6,7 +6,8 @@ $jscode = '';
 if(fun('field@load_js',$field['type'])){
 	$jscode = <<<EOT
 <script type="text/javascript">
-$('.list_usergroup').each(function () {
+$(function(){
+	$('.list_usergroup').each(function () {
 		var base = $(this);
 
 		//统计数据
@@ -37,6 +38,7 @@ $('.list_usergroup').each(function () {
         }
 		
 	});
+});
 </script>
 
 EOT;

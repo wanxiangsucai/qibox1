@@ -49,6 +49,7 @@ abstract class Reply extends IndexBase
             return $this->err_js('你没权限');
         }
         if($this->model->delete_Info($id)){
+            $this->delete_post_money($info);
             return $this->ok_js();
         }else{
             return $this->err_js('删除失败');
@@ -188,6 +189,9 @@ abstract class Reply extends IndexBase
      */
     protected function end_add($data=[],$id){
         $topic = $this->topic_model->getInfoByid($data['aid']);
+        
+        $this->add_reply_money($topic);     //评论奖励
+        
         $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
         if( $this->webdb['reply_send_wxmsg'] ){
             $content = '主题: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了回复,<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
@@ -205,6 +209,43 @@ abstract class Reply extends IndexBase
                 }                
             }
         }
+    }
+    
+    /**
+     * 评论奖励
+     * @param array $info
+     */
+    protected function add_reply_money($info=[]){
+        $group_array = json_decode($this->webdb['group_reply_money'],true);
+        $groupid = $this->user['groupid'];
+        if( empty($group_array[$groupid]) ){
+            return ;
+        }
+        if($group_array[$groupid]<0){
+            return ;
+            //$msg = M('name') . '发布扣除积分:'.$info['title'];
+        }else{
+            $msg = M('name') . '回复奖励积分:'.$info['title'];
+        }
+        add_jifen($this->user['uid'], $group_array[$groupid],$msg);
+    }
+    
+    /**
+     * 删除评论时,如果原来新回复有奖励的话,这里要对应的扣除. 如果新回复是扣除的话,这里不做补偿
+     */
+    protected function delete_post_money($replydb=[]){
+        $info = $this->topic_model->getInfoByid($replydb['aid']);
+        $group_array = json_decode($this->webdb['group_reply_money'],true);
+        $groupid = $this->user['groupid'];
+        if( empty($group_array[$groupid]) ){
+            return ;
+        }
+        if($group_array[$groupid]<0){
+            return ;
+        }else{
+            $msg = M('name') . '删除回复扣积分:'.$info['title'];
+        }
+        add_jifen($this->user['uid'], -$group_array[$groupid],$msg);
     }
     
     /**

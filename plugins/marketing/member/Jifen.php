@@ -64,6 +64,9 @@ class Jifen extends MemberBase
     
     public function delete($id)
     {
+        if( empty($this->admin) ){
+            $this->error('非管理员,不能删除积分日志');
+        }
         if (Model::destroy([$id])) {
             $this->success('删除成功','index');
         }else{

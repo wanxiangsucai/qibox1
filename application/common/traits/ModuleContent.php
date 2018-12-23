@@ -389,6 +389,12 @@ trait ModuleContent
 	    if ($result!==true) {  //检查对应用户组的发布数量限制	        
 	        return $result;
 	    }
+	    
+	    $result = $this->check_post_money();
+	    if ($result!==true) {  //检查对应用户组的发布数量限制
+	        return $result;
+	    }
+	    
 	    if(!$this->admin && config('webdb.post_auto_pass_group') && !in_array($this->user['groupid'], config('webdb.post_auto_pass_group'))){
 	        $data['status'] = 0;
 	    }else{
@@ -435,6 +441,21 @@ trait ModuleContent
 	    return true;
 	}
 	
+	/**
+	 * 检查发布主题的时候是奖励积分,还是需要扣除积分,扣除积发的话, 如果用户积分不足,就不能发布.
+	 * @return boolean|string
+	 */
+	protected function check_post_money(){
+	    $group_array = json_decode($this->webdb['group_post_money'],true);
+	    $groupid = $this->user['groupid'];
+	    if( empty($group_array[$groupid]) ){
+	        return true;
+	    }
+	    if($group_array[$groupid]<0 && $this->user['money']<abs($group_array[$groupid])){
+	        return '你的积分不足 '.abs($group_array[$groupid]) .'，请先充值！';
+	    }
+	    return true;
+	}
 	
 	/**
 	 * 检查对应用户组的发布数量限制	   
@@ -510,8 +531,43 @@ trait ModuleContent
 	 * @param number $data 内容数据
 	 */
 	protected function end_add($id=0,$data=[]){
+	    $this->add_post_money($data);
 	    set_cookie('cms_title', md5($data['title']));
 	    set_cookie('cms_content', md5($data['content']));
+	}
+	
+	/**
+	 * 发布主题的时候是奖励积分或者扣除积分
+	 */
+	protected function add_post_money($info=[]){
+	    $group_array = json_decode($this->webdb['group_post_money'],true);
+	    $groupid = $this->user['groupid'];
+	    if( empty($group_array[$groupid]) ){
+	        return ;
+	    }
+	    if($group_array[$groupid]<0){
+	        $msg = M('name') . '发布扣除积分:'.$info['title'];
+	    }else{
+	        $msg = M('name') . '发布奖励积分:'.$info['title'];
+	    }
+	    add_jifen($this->user['uid'], $group_array[$groupid],$msg);
+	}
+	
+	/**
+	 * 删除主题时,如果原来新发表有奖励的话,这里要对应的扣除. 如果新发表是扣除的话,这里不做补偿
+	 */
+	protected function delete_post_money($info=[]){
+	    $group_array = json_decode($this->webdb['group_post_money'],true);
+	    $groupid = $this->user['groupid'];
+	    if( empty($group_array[$groupid]) ){
+	        return ;
+	    }
+	    if($group_array[$groupid]<0){
+	        return ;
+	    }else{
+	        $msg = M('name') . '删除主题扣积分:'.$info['title'];
+	    }
+	    add_jifen($this->user['uid'], -$group_array[$groupid],$msg);
 	}
 	
 	/**
@@ -528,6 +584,7 @@ trait ModuleContent
 	 * @param array $info 内容数据
 	 */
 	protected function end_delete($id=0,$info=[]){
+	    $this->delete_post_money($info);
 	}
 	
 }

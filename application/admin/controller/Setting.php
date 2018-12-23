@@ -55,8 +55,16 @@ class Setting extends AdminBase
                 ],
                 [
                         'c_key'=>'group_create_num',
-                        'title'=>'对应用户组发布的数量限制',
-                        'c_descrip'=>'留空或为0则不限制',
+                        'title'=>'发布主题数量对应用户组的限制',
+                        'c_descrip'=>'针对总数限制，非按天限制。留空或为0则不限制',
+                        'form_type'=>'usergroup',
+                        'ifsys'=>0,
+                        'list'=>-1,
+                ],
+                [
+                        'c_key'=>'group_post_money',
+                        'title'=>'发布主题对应用户组的积分变化',
+                        'c_descrip'=>'填负数才是扣积分，否则就是奖励积分，0或留空则不做处理',
                         'form_type'=>'usergroup',
                         'ifsys'=>0,
                         'list'=>-1,
