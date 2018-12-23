@@ -34,7 +34,7 @@ foreach($listdb AS $key=>$rs){
   <tr> 
     <td class='b red'> {$rs.j}</td>
     <td class='Left'>
-		<a href="{:urls('showtable','table='.$rs['Name'])}" target="_blank">{$rs.Name}</a> <font color="#999">{$rs.Annotation}</font>
+		<a href="{:urls('showtable','table='.$rs['Name'])}" target="main">{$rs.Name}</a> <font color="#999">{$rs.Annotation}</font>
 	</td>
     <td> 
 		<div align='center'>{$rs.Rows}</div>
@@ -42,8 +42,8 @@ foreach($listdb AS $key=>$rs){
     <td> {$rs.Data_length} K</td>
     <td> 
         <input type='checkbox' name='tabledb[]' value='{$rs.Name}' checked>
-        <a href="{:urls('yh','table='.$rs['Name'])}">优化</a> 
-        <a href="{:urls('xf','table='.$rs['Name'])}">修复</a>
+        <!--<a href="{:urls('yh','table='.$rs['Name'])}">优化</a> 
+        <a href="{:urls('xf','table='.$rs['Name'])}">修复</a>-->
     </td>
   </tr>
 {php}

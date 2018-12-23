@@ -1,7 +1,10 @@
-<html>
-<head>
-<title></title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{extend name="index:layout" /}
+
+{block name="menu"}{/block}
+
+{block name="content"}
+
+ 
 <style>
 body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{margin:0;padding:0;}
 body,button,input,select,textarea{color:#333;font-size:14px;}
@@ -58,18 +61,21 @@ table{border-collapse:collapse;border-spacing:0;}
 	background: #64C2B0;
 	color: #FFF;
 }
+.MainContainers {
+    border: #CCC solid 0px!important;
+}
 /*****PC分页样式结束*****/
 </style>
-</head>
-<body>
+ 
+
+<div class="MainContainers">
+<div style="padding:10px;"><button onclick="history.go(-1)" class="layui-btn layui-btn-normal">返回</button> {$table}</div>
 <table class="ListTable">
  <tr>
 {volist name="titledb" id="value"}
  	<th><a href="{:url('showtable',['table'=>$table,'ordertype'=>$value,'orderby'=>($orderby=='desc'?'asc':'desc')])}" {eq name="ordertype" value="$value"}style="color:red;"{/eq}>{$value}</a></th>
 
 {/volist}
-
-
  </tr>
  
 {volist name="listdb" id="rs"}
@@ -101,8 +107,13 @@ table{border-collapse:collapse;border-spacing:0;}
 </form>
 </div>
 <div class="ShowPage">{$showpage}</div>
+<div style="text-align:center;"><button onclick="history.go(-1)" class="layui-btn layui-btn-normal">返回</button></div>
 <div><br>数据表结构<br>
 <textarea style="width:90%;height:250px;">{$create_table}</textarea>
 </div>
-</body>
-</html>
+
+</div>
+
+ 
+
+{/block}
