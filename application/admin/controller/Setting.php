@@ -53,6 +53,14 @@ class Setting extends AdminBase
                         'ifsys'=>0,
                         'list'=>-1,
                 ],
+                [
+                        'c_key'=>'group_create_num',
+                        'title'=>'对应用户组发布的数量限制',
+                        'c_descrip'=>'留空或为0则不限制',
+                        'form_type'=>'usergroup',
+                        'ifsys'=>0,
+                        'list'=>-1,
+                ],
         ];
     }
     

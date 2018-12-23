@@ -45,14 +45,18 @@
 	border:#DDD solid 1px;
 	margin:5px 5px 0 5px;
 	color:#666;
-}	
+}
+.read_menu{
+	padding-left:10px;
+}
 </style>
 <script>$('.fa-envelope').addClass('blue');</script>
+<div class="read_menu"><button class="layui-btn layui-btn-primary layui-btn-sm" onclick="choosebox($(this))">全选</button> <button class="layui-btn layui-btn-sm" onclick="set_readed()">标志为已读</button></div>
 <div class="ListContainer">	 
 {volist name="listdb" id="rs"}
     <div class='CommentList'>
 		<div class='title'>
-			<a href="{:urls('show',['id'=>$rs['id']])}">{$rs.title}</a>
+			<input type="checkbox" name="ids[]" value="{$rs.id}"> <a href="{:urls('show',['id'=>$rs['id']])}">{$rs.title}</a>
 		</div>
 		<div class='info'>
 			<div class='UserTime'><span class='userL'>
@@ -70,5 +74,35 @@
 	<div class="Showpage">{$pages}</div>
 </div>
 
+<script type="text/javascript">
+//全选
+var choose_all = false;
+function choosebox(that){
+	choose_all = choose_all?false:true;
+	that.html(choose_all? '取消' : '全选');
+	$("input[name='ids[]']").each(function(){
+		$(this).prop("checked",choose_all?true:false);
+	});
+}
+//标志为已读
+function set_readed(){
+	if($("input[name='ids[]']:checked").length<1){
+		layer.alert('请至少选择一项');
+		return false;
+	}
+	str = '';
+	$("input[name='ids[]']:checked").each(function(){
+		str += 'ids[]=' + $(this).val() + '&';
+	});
+	var url = "{:url('wxapp.msg/set_read')}?"+str;
+	$.get(url,function(res){
+		if(res.code==0){
+			window.location.reload();
+		}else{
+			layer.alert(res.msg);
+		}
+	});
+}
+</script>
 
 {/block}

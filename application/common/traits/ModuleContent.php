@@ -384,6 +384,11 @@ trait ModuleContent
 	    }elseif(!$this->admin && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
 	        return '你所在用户组没权限!';
 	    }
+	    
+	    $result = $this->check_info_num();
+	    if ($result!==true) {  //检查对应用户组的发布数量限制	        
+	        return $result;
+	    }
 	    if(!$this->admin && config('webdb.post_auto_pass_group') && !in_array($this->user['groupid'], config('webdb.post_auto_pass_group'))){
 	        $data['status'] = 0;
 	    }else{
@@ -427,6 +432,32 @@ trait ModuleContent
 	        return fun('ddos@add',$data);
 	    }
 
+	    return true;
+	}
+	
+	
+	/**
+	 * 检查对应用户组的发布数量限制	   
+	 * @param number $mid 为0的时候,针对所有模型
+	 * @return string|boolean
+	 */
+	protected function check_info_num($mid=0){
+// 	    if($this->admin){
+// 	        return true;
+// 	    }
+	    $group_array = json_decode($this->webdb['group_create_num'],true);
+	    $groupid = $this->user['groupid'];
+	    if($group_array[$groupid]<0){
+	        return '你所在用户组没权限发表，想要发表， 请升级用户组';
+	    }elseif (empty($group_array[$groupid])) {
+	        return true;
+	    }
+	    
+	    $num = $this->model->user_info_num($this->user['uid'],0);
+
+	    if($num>=$group_array[$groupid]){
+	        return '你所在用户组的发布数量不能超过 '. $group_array[$groupid] .' 条记录，想要发表更多， 请升级用户组';
+	    }
 	    return true;
 	}
 	
