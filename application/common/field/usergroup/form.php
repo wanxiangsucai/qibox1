@@ -30,12 +30,14 @@ $(function(){
 		);
 		
 		//初始化
-		obj = JSON.parse( base.find('textarea').val() );
-		for(var item in obj){
-			var jValue=obj[item];//key所对应的value
-			//alert(item+jValue);
-			base.find('[data-id="'+item+'"]').val(jValue);
-        }
+		var str = base.find('textarea').val();
+		if(str!=''){
+			obj = JSON.parse(str);
+			for (var item in obj) {
+				var jValue = obj[item]; //key所对应的value
+				base.find('[data-id="' + item + '"]').val(jValue);
+			}
+		}
 		
 	});
 });
