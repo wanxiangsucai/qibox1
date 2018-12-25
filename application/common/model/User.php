@@ -322,14 +322,14 @@ class User extends Model
 			if(!is_array($rs)){
 				return $rs;		//0为用户不存在,-1为密码不正确
 			}
-			
-			$data = [
+		}
+
+		$data = [
 			        'uid'=>$rs['uid'],
 			        'lastvist'=>time(),
 			        'lastip'=>get_ip(),
-			];
-			self::edit_user($data);
-		}
+		];
+		self::edit_user($data);
 
 		set_cookie("passport","{$rs['uid']}\t$username\t".mymd5($rs['password'],'EN'),$cookietime);
 

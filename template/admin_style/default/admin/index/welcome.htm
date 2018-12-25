@@ -98,8 +98,12 @@ function check_upgrade(){
 				//upgrade_edition = res.data.md5;
 				var msg = typeof(res.data.upgrade_msg) != "undefined" ? res.data.upgrade_msg : '你的系统需要升级<br>云端更新日期:'+res.data.time;
 				layer.confirm(msg, {
+					title: '系统升级提醒!',
 					btn : [ '马上升级', '晚点再升级' ],
-					time: 2500,
+					time: 6000,
+					offset: 'rb',
+					anim:2,
+					shade: 0 //不显示遮罩 
 				}, function(index) {
 					window.location.href="{:url('upgrade/index')}";
 				});

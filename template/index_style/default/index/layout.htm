@@ -90,5 +90,7 @@
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
+
+{include file="index@weixingz" /}<!--若没有关注微信公众号,就做个提醒-->
 </body>
 </html>
