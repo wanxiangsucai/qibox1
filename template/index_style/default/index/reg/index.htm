@@ -219,9 +219,9 @@ header ul ol{
 	<ul><ol><i class="fa fa-fw fa-user-o"></i></ol><li><input type="text" name="username" minlength="3" maxlength="20" placeholder="请输入帐号" onBlur="checkinput($(this),'username')" required/></li></ul>
 	<ul><ol><i class="si si-lock"></i></ol><li><input type="password" name="password" minlength="5" maxlength="30" placeholder="请输入密码" onBlur="checkinput($(this),'password')" required/></li></ul>
 	<ul><ol><i class="si si-lock"></i></ol><li><input type="password" name="password2" minlength="5" maxlength="30" placeholder="请重复输入密码" onBlur="checkpassword($(this))" required/></li></ul>
-	<ul><ol><i class="fa fa-envelope"></i></ol><li><input type="text" name="email" placeholder="可留空" onBlur="checkinput($(this),'email')" required/></li></ul>
+	<ul><ol><i class="fa fa-envelope"></i></ol><li><input type="text" name="email" placeholder="必填" onBlur="checkinput($(this),'email')" required/></li></ul>
 	<!--
-	<ul><ol><i class="fa fa-weixin"></i></ol><li><input type="text" name="weixin_id" placeholder="可留空"/></li></ul>
+	<ul><ol><i class="fa fa-weixin"></i></ol><li><input type="text" name="weixin_id" placeholder="必填"/></li></ul>
 	-->
 
 					{eq name="webdb.reg_email_num" value="1"}
