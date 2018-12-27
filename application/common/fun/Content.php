@@ -1,5 +1,6 @@
 <?php
 namespace app\common\fun;
+use think\Db;
 
 /**
  * 内容页用到的相关函数
@@ -118,8 +119,8 @@ class Content{
      * @param string $title 可以设置下一页也可以设置数字,截取标题数
      * @return string
      */
-    public function prev($info=[],$title='下一页'){        
-        return $this->prev_next($info,$title,'<');
+    public function prev($info=[],$title='上一页',$order='id'){        
+        return $this->prev_next($info,$title,'>',$order);
     }
     
     /**
@@ -128,8 +129,8 @@ class Content{
      * @param string $title 可以设置下一页也可以设置数字,截取标题数
      * @return string
      */
-    public function next($info=[],$title='上一页'){
-        return $this->prev_next($info,$title,'>');
+    public function next($info=[],$title='下一页',$order='id'){
+        return $this->prev_next($info,$title,'<',$order);
     }
    
     /**
@@ -139,17 +140,36 @@ class Content{
      * @param string $type 大于或小于当前页的ID
      * @return string
      */
-   private function prev_next($info=[],$title=10,$type='<'){
+   private function prev_next($info=[],$title=10,$type='<',$order='id'){
        $sys = config('system_dirname');
-       $map = [
-               'where' =>[
-                       'fid'=>$info['fid'],
-                       'id'=>[$type,$info['id']],
-               ],
-               'field'=>'id,title',
-               'type'=>'one',
-       ];
-       $rsdb = query($sys.'_content'.$info['mid'],$map);
+       
+       if ($order=='list'||$order=='create_time'||$order=='update_time') {
+           if (!is_numeric($info[$order])) {
+               $info[$order] = strtotime($info[$order]);
+           }
+           $listdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],$order=>["$type=",$info[$order]],])->order("$order desc,id desc")->column('id,title,uid');
+           $listdb = array_values($listdb);
+           $ckdb = $rsdb = [];
+           foreach($listdb as $key=>$rs){
+               if ($rs['id']==$info['id']) {
+                   if($type=='>'){
+                       $rsdb = $ckdb;
+                   }else{
+                       $rsdb = $listdb[++$key];                       
+                   }
+                   break;
+               }
+               $ckdb = $rs;
+           }
+       }else{
+           if ($type=='<') {
+               $by='desc';
+           }else{
+               $by='asc';
+           }
+           $rsdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],'id'=>[$type,$info['id']],])->order('id',$by)->field('id,title')->find();
+       }
+       
        if (empty($rsdb)) {
            return '没有了';
        }
