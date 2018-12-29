@@ -14,9 +14,10 @@ class Base extends Controller
     protected $webdb;
     protected $route;
     protected $onlineip;
-	protected $user;   //用户登录后的信息
-	protected $weburl; //当前网址
-	protected $fromurl; //来源网址
+	protected $user;              //用户登录后的信息
+	protected $weburl;          //当前网址
+	protected $fromurl;         //来源网址
+	protected $guest;            //游客身份标志
 	protected $map = [];
 	protected $admin = false;
 	
@@ -28,6 +29,7 @@ class Base extends Controller
         $this->timestamp = time();
         $this->weburl = $this->request->url(true);
         $this->fromurl = $_SERVER["HTTP_REFERER"];
+        $this->guest = md5($_SERVER['HTTP_USER_AGENT'].$this->onlineip);
 		$GLOBALS['FROMURL'] = $this->fromurl;
         $GLOBALS['WEBURL'] = $this->weburl;        
         
