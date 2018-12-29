@@ -2159,6 +2159,7 @@ if (!function_exists('getTemplate')) {
  if (!function_exists('wx_check_attention')) {
      /**
       * 检查是否有关注公众号
+      * 务必注意使用方法::  ===ture 三个等于号才能判断已关注, ===false 才能判断没有关注 else 就是出错信息. 
       * @param unknown $openid 可以是用户UID,也可以是用户的公众号ID
       * @return boolean
       */
@@ -2177,7 +2178,9 @@ if (!function_exists('getTemplate')) {
          $s=json_decode( http_curl("https://api.weixin.qq.com/cgi-bin/user/info?access_token=$ac&openid=$openid&lang=zh_CN"));
          if($s->subscribe==1){
              return true;
-         }else{
+         }elseif($s->errcode){
+             return 'errcode:' . $s->errcode . ', errmsg:' . $s->errmsg;
+         }else{ //$s->subscribe==0
              return false;
          }
      }

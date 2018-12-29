@@ -57,6 +57,10 @@
 {/qb:showpage}
 	</div>
 
+		<div>
+			<span>上一页：{:fun('content@prev',$info,100,'list')}</span>
+			<span style="float:right;">下一页：{:fun('content@next',$info,100,'list')}</span>
+		</div>
 
 		<!--引用评论碎片-->
 		{qb:comment name="commentpc01" rows='5'}

@@ -17,10 +17,13 @@ class Check extends IndexBase
         if (config('webdb.weixin_type')!=3) {
             return $this->err_js();
         }
-        if (wx_check_attention($uid)===true) {
-            return $this->ok_js();
-        }else{
-            return $this->err_js();
+        $result = wx_check_attention($uid);
+        if ($result===true) {
+            return $this->ok_js([],'已关注');
+        }elseif($result===false){
+            return $this->err_js('还没关注公众号');
+        }else{  //出错了
+            return $this->err_js('错误:'.$result,[],2);
         }
     }
 }

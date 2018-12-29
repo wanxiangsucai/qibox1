@@ -19,7 +19,7 @@
 	</div>
 	<div class="ListArticles">
 <!--name是标签名，跟通用标签不能重名，rows取几条数据,order按什么方式排序，list代表可控排序，id即时间,view代表浏览量-->
-{qb:listpage name="news_list_page_listdata002" rows="3" order="view"}
+{qb:listpage name="news_list_page_listdata002" rows="3" order="view desc,id asc"}
 		<div class="Lists">
 			<div class="title"><a href="{$rs.url}">{$rs.title|get_word=60}</a></div>
 			<ul>
