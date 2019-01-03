@@ -697,7 +697,7 @@ class Attachment extends IndexBase
                 if (is_dir($path2)) {
                     $this->getfiles($path2, $allowFiles, $files);
                 } else {
-                    if (preg_match("/\.(".$allowFiles.")$/i", $file)) {
+                    if (preg_match("/\.(".$allowFiles.")$/i", $file)&&preg_match("/^".$this->user['uid']."_/", $file)) {
                         $files[] = array(
                                 'url'=> str_replace("\\", "/", substr($path2, strlen($_SERVER['DOCUMENT_ROOT']))),
                                 'mtime'=> filemtime($path2)
