@@ -34,21 +34,55 @@ class Member extends AdminBase
 	    $map = [];
 	    $this->list_items = [
 	        //['uid', '用户UID', 'text'],
-	        ['username', '用户名', ''],
+	        ['uid', '用户名', 'username'],
 	        ['groupid', '用户组', 'select',getGroupByid()],
 	        ['regdate', '注册日期', 'datetime'],
+            ['lastvist', '登录日期', 'datetime'],
 	        ['regip', '注册IP', 'text'],
 	        ['money', '积分', 'text'],
 	        ['rmb', '余额', 'text'],
 	        ['yz', '审核', 'switch'],
+	        ['wx_attention', '关注公众号', 'callback',function($v,$rs){
+	            if ($rs['weixin_api']==''&&$rs['wx_attention']==1) {
+	                $rs['wx_attention'] = 0;
+	                edit_user(['uid'=>$rs['uid'],'wx_attention'=>0]);
+	            }
+	            $url = purl('weixin/check/ifgz',[],'index');
+	            if ($rs['weixin_api']&&$rs['wx_attention']) {
+	                $code = '<i class="fa fa-check-circle-o" id="uid-'.$rs['uid'].'" style="color:red;"></i>';
+	            }else{
+	                $code = '<i class="fa fa-ban" id="uid-'.$rs['uid'].'" style="color:#666;"></i>';
+	            }
+	            $code .=<<<EOT
+<script type="text/javascript">
+if("{$rs['weixin_api']}"!=""){
+	$.get("{$url}?type=set&uid={$rs['uid']}",function(res){
+		if(res.code==0){
+			$("#uid-{$rs['uid']}").removeClass("fa-ban");
+            $("#uid-{$rs['uid']}").removeClass("fa-check-circle-o");
+			$("#uid-{$rs['uid']}").addClass("fa-check-circle-o");
+			$("#uid-{$rs['uid']}").css({"color":"red"});
+		}else if(res.code==1){
+            $("#uid-{$rs['uid']}").css({"color":"#666"});
+        }else{
+            //同步失败
+        }
+	});
+}
+</script>
+EOT;
+	            return $code;
+	        }],
 	    ];
 	    $this -> tab_ext['search'] = ['username'=>'用户名','uid'=>'用户ID','regip'=>'注册IP'];    //支持搜索的字段
-	    $this -> tab_ext['order'] = 'money,rmb,uid,regdate';   //排序选择
+	    $this -> tab_ext['order'] = 'money,rmb,uid,regdate,lastvist';   //排序选择
 	    $this -> tab_ext['id'] = 'uid';    //用户数据表非常特殊，没有用id而是用uid ， 这里需要特别指定id为uid
 	    
 	    //筛选字段
 	    $this -> tab_ext['filter_search'] = [
-	        'groupid'=>getGroupByid(),
+	            'groupid'=>getGroupByid(),
+	            'wx_attention'=>['未关注','已关注'],
+	            'yz'=>['未审核','已审核'],
 	    ];
 	    $this -> tab_ext['top_button'] = [
 	        [

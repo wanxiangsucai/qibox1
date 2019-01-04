@@ -46,7 +46,7 @@ class Login extends IndexBase
             $this->error('你还没登录！','index/login/index');
         }
         UserModel::quit($this->user['uid']);
-        $this->success('成功退出','index/index/index');
+        $this->success('成功退出','index/login/index');
     }
     
 
@@ -62,7 +62,7 @@ class Login extends IndexBase
             if($type=='iframe'){
                 return $this->fetch('ok');
             }
-            $this->error('你已经登录了','index/index');
+            $this->error('你已经登录了','index/index','',1);
         }
         if(IS_POST){
             $data= get_post('post');
@@ -84,6 +84,9 @@ class Login extends IndexBase
         }
         if($type=='iframe'){
             $fromurl = url('index').'?type='.$type;
+        }
+        if(strstr($this->fromurl,'index/login/quit')){
+            $this->fromurl = url('index/index/index');
         }
         $this->assign('fromurl',urlencode($fromurl?:$this->fromurl));
         $this->assign('type',$type);

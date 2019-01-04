@@ -291,8 +291,12 @@ class Base extends Controller
         $map = [];
 
         // 搜索框搜索
-        if ($search_field != '' && $keyword !== '') {
-            $map[$search_field] = in_array($search_field, ['id','uid']) ? ['=', $keyword] : ['like', "%$keyword%"];
+        if ($search_field !== '' && $keyword !== '') {
+            if (in_array($search_field, ['id','uid']) || (is_numeric($keyword)&&$keyword<999999)) {
+                $map[$search_field] = ['=', $keyword];
+            }else{
+                $map[$search_field] = ['like', "%$keyword%"];
+            }
         }
 
         // 下拉筛选

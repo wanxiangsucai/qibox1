@@ -76,7 +76,7 @@ function search_content(){
 		{/if}
 		<!--筛选项-->
 		{if $tab_ext['filter_search'][$vs['name']]}
-			<i {if input('search_field')==$vs.name}style="color:red;"{/if} class="fa fa-filter" onclick="layer.tips('<a href=\'{:fun('Field@make_admin_filter_url',input('_order'),input('_by'))}\' style=\'color:#fff;\'>不限</a><br>{volist name="$tab_ext['filter_search'][$vs['name']]" id="name"}<a style=\'{if input('keyword')==$key}color:red;{else /}color:#fff;{/if}\' href=\'{:fun('Field@make_admin_filter_url',input('_order'),input('_by'),$vs.name,$key)}\'>{$name}</a><br>{/volist}', $(this), {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });"></i>
+			<i {if input('search_field')==$vs.name}style="color:red;"{/if} class="fa fa-filter" onclick="layer.tips('<a href=\'{:fun('Field@make_admin_filter_url',input('_order'),input('_by'))}\' style=\'color:#fff;\'>不限</a><br>{volist name="$tab_ext['filter_search'][$vs['name']]" id="name"}<a style=\'{if (input('keyword')!=''&&input('keyword')==$key)}color:red;{else /}color:#fff;{/if}\' href=\'{:fun('Field@make_admin_filter_url',input('_order'),input('_by'),$vs.name,$key)}\'>{$name}</a><br>{/volist}', $(this), {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });"></i>
 		{/if}
 	  {$vs.title} 
 	</th>

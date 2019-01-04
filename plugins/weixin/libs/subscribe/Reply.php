@@ -6,8 +6,16 @@ use plugins\weixin\index\Api;
 class Reply extends Api
 {
     public function run(){
-        $this->subscribe_news();
-        $this->subscribe_text();
+        $msg = $this->subscribe_news();
+        if ($msg!='') {
+            echo $msg;
+        }else{            
+            $msg = $this->subscribe_text();
+            if ($msg!='') {
+                echo $msg;
+            }
+        }
+        
     }
     
     //新关注回复图文信息
@@ -19,8 +27,7 @@ class Reply extends Api
                     'about'=>$this->webdb['weixin_welcome_desc'],
                     'url'=>$this->webdb['weixin_welcome_link'],
             );
-            echo $this->give_news(array($array));
-            exit;
+            return $this->give_news(array($array));
         }
     }
     
@@ -28,12 +35,11 @@ class Reply extends Api
     protected function subscribe_text(){
         $MSG = $this->webdb['weixin_welcome'];
         if($MSG!=''){	//纯文本回复
-            if($this->webdb['weixin_type']<2){	//非认证号，不能使用客服接口！
-                echo $this->give_text($MSG);
-                exit;
-            }else{
-                send_wx_msg($this->user_appId,$MSG);    //用客服接口的话，就可以跟图文信息不冲突
-            }
+ //           if($this->webdb['weixin_type']<2){	//非认证号，不能使用客服接口！
+                return $this->give_text($MSG);
+//             }else{
+//                 send_wx_msg($this->user_appId,$MSG);    //用客服接口的话，就可以跟图文信息不冲突
+//             }
         }
     }
 }

@@ -17,6 +17,15 @@ class HookPlugin extends AdminBase
     protected $list_items;
     protected $tab_ext;
     
+    public function index($hook_key='') {
+        $map = [];
+        if ($hook_key) {
+            $map = ['hook_key'=>$hook_key];
+        }
+        $listdb = $this->getListData($map, $order = []);
+        return $this -> getAdminTable($listdb);
+    }
+    
     public function delete($ids = null) {
         $ids = is_array($ids)?$ids:[$ids];
         foreach($ids AS $id){

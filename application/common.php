@@ -2320,12 +2320,12 @@ if (!function_exists('getTemplate')) {
  if (!function_exists('add_rmb')) {
      /**
       * 人民币日志,用户的余额增或减
-      * @param unknown $uid
-      * @param unknown $money 变动的金额,可以是负数
-      * @param unknown $freeze_money 这项是正数,冻结金额,这里冻结的话,上面的值要对应的为负数
+      * @param number $uid
+      * @param number $money 变动的金额,可以是负数
+      * @param number $freeze_money 这项是正数,冻结金额,这里冻结的话,上面的值要对应的为负数
       * @param string $about 附注说明
       */
-     function add_rmb($uid,$money,$freeze_money,$about=''){
+     function add_rmb($uid=0,$money=0,$freeze_money=0,$about=''){
 
          //$money = number_format($money,2);
          //$freeze_money = number_format($freeze_money,2);
@@ -2361,11 +2361,11 @@ if (!function_exists('getTemplate')) {
  if (!function_exists('add_jifen')) {
      /**
       * 积分日志
-      * @param unknown $uid 用户UID
-      * @param unknown $money 可以是负数,就是减积分
+      * @param number $uid 用户UID
+      * @param number $money 可以是负数,就是减积分
       * @param string $about 附注说明
       */
-     function add_jifen($uid,$money,$about=''){        
+     function add_jifen($uid=0,$money=0,$about=''){        
          if ($money>0) {
              UserModel::where('uid',$uid)->setInc('money',$money);
          }else{
