@@ -162,6 +162,48 @@ class Config extends Model
         foreach ($listdb AS $rs) {
             $key = $rs['c_key'];
             switch ($rs['form_type']) {
+                case 'image':
+                    $rs['c_value'] = tempdir($rs['c_value']);
+                    break;
+                case 'file':
+                    $rs['c_value'] = tempdir($rs['c_value']);
+                    break;
+                case 'files':
+                    $array = explode(',',$rs['c_value']);
+                    $picdb = [];
+                    foreach($array AS $file){
+                        if (empty($file)) {
+                            continue;
+                        }
+                        $picdb[] = tempdir($file);
+                    }
+                    $rs['c_value'] = $picdb;
+                    break;
+                case 'images':
+                    $array = explode(',',$rs['c_value']);
+                    $picdb = [];
+                    foreach($array AS $pic){
+                        if (empty($pic)) {
+                            continue;
+                        }
+                        $picdb[] = [
+                                'picurl'=>tempdir($pic)
+                        ];
+                    }
+                    $rs['c_value'] = $picdb;
+                    break;
+                case 'images2':
+                    $array = json_decode($rs['c_value'],true);
+                    $picdb = [];
+                    foreach($array AS $ps){
+                        if (empty($ps['picurl'])) {
+                            continue;
+                        }
+                        $ps['picurl'] = tempdir($ps['picurl']);
+                        $picdb[] = $ps;
+                    }
+                    $rs['c_value'] = $picdb;
+                    break;
                 case 'array':
                     $rs['c_value'] = str_array($rs['c_value']);
                     break;
