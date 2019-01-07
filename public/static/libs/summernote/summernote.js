@@ -2147,8 +2147,8 @@
       color: {
         recent: 'Recent Color',
         more: 'More Color',
-        background: 'Background Color',
-        foreground: 'Foreground Color',
+        background: '背景颜色',
+        foreground: '字体颜色',
         transparent: 'Transparent',
         setTransparent: 'Set transparent',
         reset: 'Reset',

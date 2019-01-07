@@ -143,14 +143,14 @@ class Qun{
             return ;
         }
         $info = Db::name('qun_adset')->where('aid',$id)->find();
-        if (empty($info)) {
+        if (empty($info)) { //不存在广告位
             return ;
         }
         $time = time();
         $data = Db::name('qun_aduser')->where('aid',$id)->where('begin_time','<',$time)->where('status',1)->where('end_time','>',$time)->find();
-//         if(empty($data)){
-//             return ;
-//         }
+        if($info['status']==0 && empty($data)){ //关闭了广告位购买并且没有可以显示的广告,否则的话,还是要把别人的广告显示完才行的.
+            return ;
+        }
         return [
                 'set'=>$info,
                 'ad'=>$data,

@@ -12,7 +12,7 @@
 	<div class="ListShop">
 		<dl>
 			{notempty name="$rs.picurl"}<!--图片单独显示-->
-				<dt><a href="{$rs.url}"><img src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></dt>
+				<dt><a href="{$rs.url}"><img src="{$rs.picurl|tempdir}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></dt>
 			{/notempty}
 
 			<dd>
