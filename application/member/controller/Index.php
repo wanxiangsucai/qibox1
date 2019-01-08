@@ -39,7 +39,8 @@ class Index extends MemberBase
         $this->assign('info',$this->user);
         $this->assign('user',$this->user);
         $this->assign('menu',$menu_array);
-		return $this->fetch();
+        $template = get_group_tpl('member',$this->user['groupid']);
+        return $this->fetch($template);
     }
     
  

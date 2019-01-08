@@ -4,6 +4,7 @@ namespace app\member\controller;
 use app\common\model\User AS UserModel;
 use app\common\controller\MemberBase;
 use app\common\traits\AddEditList;
+use app\common\fun\Cfgfield;
 
 class User extends MemberBase
 {
@@ -32,7 +33,9 @@ class User extends MemberBase
         hook_listen( 'view_homepage' , $info  , $this->user);      //监听浏览主页
         $this->assign('info',$info);
         $this->assign('uid',$info['uid']);
-        return $this->fetch();
+        $this->assign('f_array',Cfgfield::get_form_items($info['groupid']));        
+        $template = get_group_tpl('page',$info['groupid']);
+        return $this->fetch($template);
     }
 
     public function delete()
@@ -57,6 +60,11 @@ class User extends MemberBase
                 ['radio', 'sex', '性别','',[0=>'保密',1=>'男',2=>'女']],
                 ['jcrop', 'icon', '头像'],
         ];
+        //某用户组下面的所有参数选项
+        $array = Cfgfield::get_form_items($info['groupid']);
+        if ($array) {
+            $this->form_items = array_merge($this->form_items,$array);
+        }
         
         if (IS_POST) {
             

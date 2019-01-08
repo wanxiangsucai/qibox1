@@ -182,11 +182,14 @@ return array(
                                                 'link'=>'group/index',
                                                 'power'=>['add','edit','delete','admin_power'=>'后台权限设置'],
                                         ),
-
                                         array(
                                                 'title'=>'添加用户组',
                                                 'link'=>'group/add',
                                         ),
+				                        array(
+				                                 'title'=>'用户组字段管理',
+				                                 'link'=>'group_cfg/index',
+				                         ),
                                 ),
                         ),
                 ),

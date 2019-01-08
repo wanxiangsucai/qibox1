@@ -2,6 +2,7 @@
 namespace app\common\model;
 
 use think\Model;
+use app\common\fun\Cfgfield;
 //use think\Db;
 
 
@@ -47,6 +48,10 @@ class User extends Model
         $array = getArray($array);
         if ($array) {
             $array['sendmsg'] = json_decode($array['sendmsg'],true)?:[];
+            $array['ext_field'] = json_decode($array['ext_field'],true)?:[];
+            if ($array['ext_field']) {
+                $array = array_merge(Cfgfield::format($array['ext_field'],$array['groupid']),$array);   //ext_field自定义字段的优先级要低于系统字段
+            }
         }
         return $array;
     }
@@ -212,12 +217,12 @@ class User extends Model
 	
 	/**
 	 * 修改用户任意信息,修改成功 返回true
-	 * @param unknown $array 数值当中必须要存在uid
+	 * @param array $array 数值当中必须要存在uid
 	 * @return string|boolean
 	 */
-	public static function edit_user($array) {
+	public static function edit_user($array=[]) {
         
-	    cache('user_'.$array['uid'],null);
+	    //cache('user_'.$array['uid'],null);
 	    
 	    hook_listen('user_edit_begin',$array);
 		
@@ -234,6 +239,22 @@ class User extends Model
 	    }else{
 	        unset($array['password'],$array['password_rand']);
 	    }
+	    
+	    $field_array = table_field('memberdata');
+	    $ext_field = [];   //用户自定义字段
+	    foreach($array AS $key=>$value){
+	        if (!in_array($key, $field_array)) {
+	            $ext_field[$key] = $value;
+	        }
+	    }
+	    $info = self::get($array['uid']);
+	    if ($info['ext_field'] && json_decode($info['ext_field'],true)) {
+	        $array['ext_field'] = array_merge(json_decode($info['ext_field'],true),$ext_field); //新的覆盖之前的
+	    }else{
+	        $array['ext_field'] = $ext_field;
+	    }
+	    
+	    $array['ext_field'] = json_encode($array['ext_field']);
 		
 		if(self::update($array)){
 		    cache('user_'.$array['uid'],null);

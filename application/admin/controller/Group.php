@@ -98,6 +98,16 @@ class Group extends AdminBase
 	    ->addPageTitle('添加菜单');
 	    return $form::fetchs();
 	}
+	
+	protected function check_tpl($file=''){
+	    if (strstr($file,'/')) {
+	        if (!is_file(TEMPLATE_PATH.$file)) {
+	            $this->error('找不到此目录的文件:'.TEMPLATE_PATH.$file);
+	        }	        
+	    }elseif($file && strstr($file,'.htm')){
+	        $this->error('文件名不要加.htm后缀:'.$file);
+	    }
+	}
 
 	public function edit($id=0){
 	    
@@ -107,6 +117,10 @@ class Group extends AdminBase
 	            $result = $this -> validate($data, $this -> validate);
 	            if (true !== $result) $this -> error($result);
 	        }
+	        $this->check_tpl($data['wap_page']);
+	        $this->check_tpl($data['wap_member']);
+	        $this->check_tpl($data['pc_page']);
+	        $this->check_tpl($data['pc_member']);
 	        if (GroupModel::update($data)) {
 	            $this->success('修改成功',url('index'));
 	        } else {
@@ -120,6 +134,10 @@ class Group extends AdminBase
 	    ->addRadio('type','用户组类型','会员级可以自由升级,系统组不能自由升级',['会员组','系统组'])
 	    ->addRadio('allowadmin','是否有后台权限','',['没权限','有后台权限'])
 	    ->addNumber('level','升级所需积分')
+	    ->addText('wap_page','wap个人主页模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/user/目录下，只输入文件名即可，比如“indexppp”，提醒:对于不同的用户组模板文件名如果为index3或index8等即用户组ID结尾的话,这里可以不输入')
+	    ->addText('wap_member','wap会员中心模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/index/目录下，只输入文件名即可，比如“indexppp”')
+	    ->addText('pc_page','pc个人主页模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/user/目录下，只输入文件名即可，比如“indexppp”')
+	    ->addText('pc_member','pc会员中心模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/index/目录下，只输入文件名即可，比如“indexppp”')
 	    ->addJs('type','0','level')
 	    ->addHidden('id',$id);
 

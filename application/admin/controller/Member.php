@@ -4,7 +4,8 @@ namespace app\admin\controller;
 use app\common\controller\AdminBase; 
 use app\common\traits\AddEditList;
 use app\common\model\User as UserModel;
-
+use app\common\model\Groupcfg AS GroupcfgModel;
+use app\common\fun\Cfgfield;
 /**
  * 用户管理
  */
@@ -73,7 +74,8 @@ if("{$rs['weixin_api']}"!=""){
 EOT;
 	            return $code;
 	        }],
-	    ];
+	    ];	    
+	    
 	    $this -> tab_ext['search'] = ['username'=>'用户名','uid'=>'用户ID','regip'=>'注册IP'];    //支持搜索的字段
 	    $this -> tab_ext['order'] = 'money,rmb,uid,regdate,lastvist';   //排序选择
 	    $this -> tab_ext['id'] = 'uid';    //用户数据表非常特殊，没有用id而是用uid ， 这里需要特别指定id为uid
@@ -154,6 +156,13 @@ EOT;
 	        ['radio', 'mob_yz', '手机验证与否','',['未验证','已验证']],
 	        ['radio', 'idcard_yz', '证件验证与否','',['未验证','已验证']],
 	    ];
+	    
+	    //某用户组下面的所有参数选项
+	    $array = Cfgfield::get_form_items($info['groupid']);
+	    if ($array) {
+	        $this->form_items = array_merge($this->form_items,$array);
+	    }
+	    
 	    $info['password']='';
 	    return $this->editContent($info);
 	}

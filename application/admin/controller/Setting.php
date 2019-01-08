@@ -6,7 +6,7 @@ use app\common\model\Config AS ConfigModel;
 use plugins\config_set\model\Group AS GroupModel;
 use app\common\traits\AddEditList;
 use think\Cache;
-use think\Db;
+use app\common\fun\Cfgfield;
 
 
 class Setting extends AdminBase
@@ -149,49 +149,7 @@ class Setting extends AdminBase
         $tab_list = [
                 ['hidden','group',$group]
         ];
-        foreach ($list_data as $key => $rs) {
-            empty($rs['form_type']) && $rs['form_type'] = 'text';
-            empty($rs['title']) && $rs['title'] = '未命名的字段：'.$rs['c_key'];
-            if( in_array($rs['form_type'],['radio','select','checkbox','checkboxtree']) && !empty($rs['options']) ){
-                if(preg_match('/^[a-z]+(\\\[_a-z]+)+@[_a-z]+/i',$rs['options'])){   //执行类
-                    list($class_name,$action,$params) = explode('@',$rs['options']);
-                    if(class_exists($class_name)&&method_exists($class_name, $action)){
-                        $obj = new $class_name;
-                        if ($params!='') {
-                            $_params = json_decode($params,true)?:fun('label@where',$params);
-                        }else{
-                            $_params = [];
-                        }
-                        //$_params = $params!='' ? json_decode($params,true) : [] ;
-                        //$rs['options'] = $obj->$action();
-                        $rs['options'] = call_user_func_array([$obj, $action], isset($_params[0])?$_params:[$_params]);
-                    }
-                }elseif(preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$rs['options'])){
-                    list($table_name,$fields,$params) = explode('@',$rs['options']);
-                    preg_match('/^qb_/i',$table_name) && $table_name = str_replace('qb_', '', $table_name);
-                    if ($params!='') {
-                        $map = json_decode($params,true)?:fun('label@where',$params);
-                    }
-                    is_array($map) || $map = [];
-                    $rs['options'] = Db::name($table_name)->where($map)->column($fields);
-                }else{
-                    $rs['options'] = str_array($rs['options'],"\n");    //后台设置的下拉,多选,单选,都是用换行符做分割的
-                }
-            }
-            $tab_list[]=[
-                $rs['form_type'],
-                $rs['c_key'],
-                $rs['title'],
-                $rs['c_descrip'],
-                $rs['options'],
-                    '',
-                    '',
-                    $rs['htmlcode'],
-                    
-            ];
-        }
-
-        $this->form_items = $tab_list;
+        $this->form_items = array_merge($tab_list,Cfgfield::toForm($list_data));
         
         $data = [];
         foreach($list_data AS $rs){

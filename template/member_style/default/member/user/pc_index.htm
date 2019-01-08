@@ -46,6 +46,7 @@
 						<div>联系QQ：{$info.oicq}</div>
 						<div>注册日期：{:date("Y-m-d H:i:s",$info.regdate)}</div>
 						<div>最后登录：{:date("Y-m-d H:i:s",$info.lastvist)}</div>
+
 					</dd>
 				</dl>
 			</ol>
@@ -59,6 +60,19 @@
 						 
 					</dd>
 				</dl>
+				
+				<br>
+				<dl>
+					<dt><span>用户组扩展信息</span></dt>
+					<dd>
+<!-- field过滤显示的字段,多个用逗号隔开,$f_array跟form表单一样的数组 -->
+{qb:showpage field="test33" f_array="$f_array"}
+		<div>{$rs.title}：{$rs.value}</div>
+{/qb:showpage}
+						 
+					</dd>
+				</dl>
+
 			</li>			
 		</ul>
 	</div>
