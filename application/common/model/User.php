@@ -247,7 +247,7 @@ class User extends Model
 	            $ext_field[$key] = $value;
 	        }
 	    }
-	    $info = self::get($array['uid']);
+	    $info = getArray(self::get($array['uid']));
 	    if ($info['ext_field'] && json_decode($info['ext_field'],true)) {
 	        $array['ext_field'] = array_merge(json_decode($info['ext_field'],true),$ext_field); //新的覆盖之前的
 	    }else{

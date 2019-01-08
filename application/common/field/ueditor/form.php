@@ -28,7 +28,7 @@ jQuery(document).ready(function() {
 <script src="__STATIC__/libs/ueditor/ueditor.config.js"></script>
 <script src="__STATIC__/libs/ueditor/ueditor.all.min.js"></script>
 
-<!--布局模板开始-->
+<!--pc布局模板开始-->
 <script type="text/javascript"> 
 jQuery(document).ready(function() {
 	$('.slectEditMode').each(function(i){
@@ -110,7 +110,7 @@ function hide_nav(node,fullbg){
 </style>
 <div id="editmodes"></div>
 <div class="fullbg" id="fullbg1" onclick="hide_nav($('#editmodes'),$('#fullbg1'))"></div>
-<!--布局模板结束-->
+<!--pc布局模板结束-->
 
 EOT;
 
@@ -121,13 +121,15 @@ $jscode_wap = <<<EOT
 				<link rel="stylesheet" href="__STATIC__/libs/summernote/summernote.css">
 				<script type="text/javascript" src="__STATIC__/libs/summernote/summernote.js"></script>
 				<script type="text/javascript">
-					$(document).ready(function(){
+				var editor_a = [];
+				var editor_i = 0;
+					$(document).ready(function(i){
 					  $('.summernote').each(function(){							
-						var v_summernote = $(this).summernote({
+						var edit = $(this).summernote({
 							height: 200,
 							callbacks: {
 								onImageUpload: function (files) {
-									sendFile(v_summernote, files[0]);
+									sendFile(edit, files[0]);
 								}
 							},
 							toolbar: [
@@ -154,6 +156,7 @@ $jscode_wap = <<<EOT
 									 ],
 
 						  });
+						  editor_a.push(edit);
 						  var sendFile = function(o,files){
 							  var formData = new FormData();
 								formData.append("file", files);
@@ -173,6 +176,102 @@ $jscode_wap = <<<EOT
 					  });
 					});
 				</script>
+<!--wap布局模板开始-->
+<script type="text/javascript"> 
+var cache_summernote_code = '';
+jQuery(document).ready(function() {
+	$('.slectEditMode').each(function(i){
+		$(this).click(function(){
+			editor_i = i;
+			showEditMode();
+		});		
+	});
+})
+function insertHtml(nums) {
+	var strs=$('.stylemode'+nums).html();
+	//editor_a[editor_i].execCommand('insertHtml',strs);
+	//editor_a[editor_i].summernote('pasteHTML', 'gggggggg');
+	editor_a[editor_i].summernote('code', cache_summernote_code.replace(/<!--#@#@#@#@#-->/, strs+'<br>'));
+	hide_nav($('#editmodes'),$('#fullbg1'));
+}
+function showEditMode(){
+	//editor_a[editor_i].summernote('createRange') 选中区域
+	editor_a[editor_i].summernote('insertText', ' ');	//焦点获取失败,避免下面的报错
+	editor_a[editor_i].summernote('pasteHTML', '<!--#@#@#@#@#-->');
+	cache_summernote_code = editor_a[editor_i].summernote('code');
+	if(cache_summernote_code.indexOf('<!--#@#@#@#@#-->')==-1){
+		layer.alert("焦点获取失败,请重新点击选择位置,要在哪插入模板!");
+		return false;
+	}
+
+	$.get("{$editor_tpl}",function(d){
+		$('#editmodes').html(d);
+	});
+	show_nav($('#editmodes'),$('#fullbg1'));
+	$('#fullbg1').height($(window).height());
+	$('#editmodes').height($(window).height());
+}
+function show_nav(node,fullbg){
+	fullbg.css({'display':'block'}).stop().animate({'opacity':.6},500,function(){
+		node.stop().animate({'width':'300px','padding':'0px 10px 0 10px'},300);
+	});
+}
+function hide_nav(node,fullbg){
+	fullbg.animate({'opacity':0},300,function(){
+		$(this).css({'display':'none'});
+	});
+	setTimeout(function(){
+		node.html('');
+		node.stop().animate({'width':'0px','padding':'0px 0px 0 0px'},300);
+	}, 500)
+}
+</script>
+
+<style type="text/css">
+.slectEditMode{
+	padding:5px 0 5px 0;
+}
+.slectEditMode a{
+	display:inline-blodk;
+	padding:5px 10px;
+	background:green;
+	border-radius:5px;
+	color:#FFF;
+}
+.fullbg { 
+	background-color:#000; 
+	opacity:0; 
+	top:0; 
+	left:0; 
+	width:100%; 
+	height:100%; 
+	z-index:1001; 
+	position:fixed;
+	display:none;
+}
+#editmodes{ 
+	position:fixed; 
+	top:0;  
+	right:0; 
+	z-index:1002; 
+	height:100%;
+	width:0px;
+	overflow:auto;
+	overflow-x:hidden;
+	scrollbar-face-color: #FFFFFF;
+	scrollbar-shadow-color: #eee;
+	scrollbar-highlight-color: #eee;
+	scrollbar-3dlight-color: #FFFFFF;
+	scrollbar-darkshadow-color: #FFFFFF;
+	scrollbar-track-color: #FFFFFF;
+	scrollbar-arrow-color: #D2E5F4; 
+	background:#FFF;
+}
+</style>
+<div id="editmodes"></div>
+<div class="fullbg" id="fullbg1" onclick="hide_nav($('#editmodes'),$('#fullbg1'))"></div>
+<!--wap布局模板结束-->
+
 EOT;
 
 }
@@ -187,6 +286,7 @@ if(IN_WAP===true){
 
 <textarea id="{$name}" name="{$name}" class="summernote" placeholder="请输入内容">{$info[$name]}</textarea>
 $jscode_wap
+<div class="slectEditMode"><a href="javascript:;">内容布局模板</a></div>
 
 EOT;
 ;
