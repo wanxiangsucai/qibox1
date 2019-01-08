@@ -48,10 +48,11 @@
 	<ul><ol>最后登录</ol><li>{:date("Y-m-d H:i:s",$info.lastvist)}</li></ul>
 
 	<!-- field过滤显示的字段,多个用逗号隔开,$f_array跟form表单一样的数组 -->
+{if $f_array}
 {qb:showpage field="" f_array="$f_array"}
 		<ul><ol>{$rs.title}</ol><li>{$rs.value}</li></ul>
 {/qb:showpage}
-
+{/if}
 </div>
 
 

@@ -66,10 +66,11 @@
 					<dt><span>用户组扩展信息</span></dt>
 					<dd>
 <!-- field过滤显示的字段,多个用逗号隔开,$f_array跟form表单一样的数组 -->
+{if $f_array}
 {qb:showpage field="test33" f_array="$f_array"}
 		<div>{$rs.title}：{$rs.value}</div>
 {/qb:showpage}
-						 
+{/if}		 
 					</dd>
 				</dl>
 
