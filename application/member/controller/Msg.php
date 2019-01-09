@@ -69,6 +69,9 @@ class Msg extends MemberBase
 			//$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
             $rs['from_username'] = get_user_name($rs['uid']);
             $rs['from_icon'] = get_user_icon($rs['uid']);
+            if($rs['ifread']==0&&$rs['touid']==$this->user['uid']){
+                Model::update(['id'=>$rs['id'],'ifread'=>1]);
+            }
             return $rs;
         });
             return $data_list;

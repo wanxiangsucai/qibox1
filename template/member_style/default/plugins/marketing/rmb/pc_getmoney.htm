@@ -9,7 +9,7 @@
         <table width="100%" border="0" cellspacing="0" cellpadding="0" class="FormTable">
           <tr>
             <td class="tdL" style="width:180px;">可用余额为:</td>
-            <td class="tdR"><span class="b red">{$userdb.rmb}</span>元</td>
+            <td class="tdR"><span class="b red">{$userdb.rmb}</span>元 {if $getout_percent_money>0}（注意：提现手续费 <span style="color:red;font-weight:bold;">{$getout_percent_money}%</span>）{/if}</td>
           </tr>
           <tr>
             <td class="tdL">提现金额为:(<span class="red">*</span>)</td>
@@ -23,7 +23,7 @@
             <td class="tdL">提现到哪个收款帐户:(<span class="red">*</span>)</td>
             <td class="tdR">
 {notempty name="$userdb.weixin_api"}
-				<div><input type="radio" name="banktype" value="weixin 微信钱包" checked="true">微信钱包 (推荐,即绑定登录的微信)</div>
+				<div><input type="radio" name="banktype" value="weixin 微信钱包" checked="true">微信钱包 (强烈推荐,即绑定登录的微信)</div>
 {/notempty}
 
 {volist name="listdb" id="rs"}
@@ -54,9 +54,9 @@
         </table>
         </form>
         <ul class="aboutnote">
-        	    <div>1.提现最低金额不小于{$webdb.min_getout_money|default=50}元,才可提现。{if $webdb.getout_percent_money>0}提现会从申请的金额当中扣除 {$webdb.getout_percent_money}% 作为手续费.{/if}</div>
+        	    <div>1.提现最低金额不小于<span style="color:red;font-weight:bold;">{$webdb.min_getout_money|default=50}</span>元,才可提现。{if $getout_percent_money>0}提现会从申请的金额当中扣除 <span style="color:red;font-weight:bold;">{$getout_percent_money}%</span> 作为手续费.{/if}</div>
 			  	<div>2.提现金额将会被冻结不可用.推荐选择微信钱包</div>
-				<div>3.资料提交后,防止作弊,管理员需要1-3天时间审核处理,请耐心等待.</div>
+				<div>3.资料提交后,需人工审核,要1-3天时间处理(遇节假日会延长),请耐心等待.</div>
 				{if $webdb.getout_need_join_mp}<div>4.提现需要先关注公众号，以方便接收提现动态提醒。</div>{/if}
 				{if ($webdb.getout_need_join_mp && $webdb.mp_code_img)}<div><img src="{$webdb.mp_code_img|tempdir}"></div>{/if}
                     

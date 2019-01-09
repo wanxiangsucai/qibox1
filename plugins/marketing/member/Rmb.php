@@ -59,19 +59,24 @@ class Rmb extends MemberBase
 	
 	//提现
 	public function getmoney(){
+	    
 	    if (empty($this->user['rmb_pwd'])) {
 	        $this->success('你还没有设置支付密码,请先设置支付密码!','pwd');;
 	    }
-	    if(IS_POST){
-	        
-	        if ($this->webdb['getout_need_join_mp']) {
-	            if (empty($this->user['weixin_api'])) {
-	                $this->error("你还没有绑定微信,点击下一步绑定微信",url('member/bindlogin/weixin'));
-	            }elseif( wx_check_attention($this->user['weixin_api'])!==true ){
-	                $imgshow = '<img style="max-width:50%;" src="'.tempdir($this->webdb['mp_code_img']).'">';
-	                $this->error("请先关注公众号，才可以提现，关注公众号方便接收提现申请动态!<br>$imgshow");
-	            }
+	    
+	    $array = is_array($this->webdb['getout_percent_money'])?$this->webdb['getout_percent_money']:json_decode($this->webdb['getout_percent_money'],true);
+	    $getout_percent_money = $array[$this->user['groupid']];
+	    
+	    if ($this->webdb['getout_need_join_mp']) {
+	        if (empty($this->user['weixin_api'])) {
+	            $this->error("你还没有绑定微信不能提现，请点击下一步先绑定微信",url('member/bindlogin/weixin'));
+	        }elseif(empty($this->user['wx_attention']) && wx_check_attention($this->user['weixin_api'])!==true ){
+	            $imgshow = '<img style="max-width:50%;" src="'.tempdir($this->webdb['mp_code_img']).'">';
+	            $this->error("请先关注公众号才可以提现，关注公众号方便接收提现申请动态!<br>$imgshow");
 	        }
+	    }
+	    
+	    if(IS_POST){
 	        
 	        $data = $this->request->post();	        
 	        if($this->user['rmb']<0.3){
@@ -86,12 +91,12 @@ class Rmb extends MemberBase
 	            $this->error("提现金额不能小于 {$min_money} 元");
 	        }elseif($data['money']<0.01){
 	            $this->error("提现金额不能小于 0.01 元");
-	        }elseif($this->user['rmb_pwd']!=md5($data['pwd'])){
+	        }elseif($this->user['rmb_pwd'] && $this->user['rmb_pwd']!=md5($data['pwd'])){
 	            $this->error("支付密码不对!");
 	        }
 	        $data['real_money'] = $data['money'];          //标志实际申请提现金额,即没扣手续费前的
-	        if($this->webdb['getout_percent_money']>0){    //扣除手续费	            
-	            $data['money'] = $data['money'] - $data['money'] * $this->webdb['getout_percent_money'];
+	        if($getout_percent_money>0){    //扣除手续费	            
+	            $data['money'] = $data['money'] - $data['money'] * $getout_percent_money;
 	        }
 	        $data['uid'] = $this->user['uid'];
 	        $data['username'] = $this->user['username'];
@@ -99,7 +104,7 @@ class Rmb extends MemberBase
 	        if ( RmbGetout::create($data) ) {
 	            add_rmb($this->user['uid'],-$data['real_money'],$data['real_money'],'申请提现冻结');
 	            send_admin_msg('有人申请提现了',$this->user['username'].' 申请提现 '.$data['money'].' 元,请尽快审核处理');
-	            $this->success('你的信息已提交，我们将于3个工作日内审核，并邮件通知您，请注意查收。如有疑问请联系客服',auto_url('marketing/rmb/index'));
+	            $this->success('你的信息已提交，请耐心等候审核，我们将于3个工作日内处理(如遇节假日会延长)，请注意查收短消息。如有疑问请联系客服',auto_url('marketing/rmb/index'));
 	        } else {
 	            $this->error('提现失败');
 	        }
@@ -113,6 +118,7 @@ class Rmb extends MemberBase
 	        }
 	    }
 	    $this->assign('listdb',$detail);
+	    $this->assign('getout_percent_money',$getout_percent_money);   //提现手续费
 	    return $this->pfetch();
 	}
 	
