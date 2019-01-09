@@ -392,12 +392,12 @@ trait AddEditList {
 	 */
 	protected function builder_topbtn_url($array=[]){
 	    if ($array) {
-	        foreach($array AS $key=>$rs){
-	            $rs['url'] = $rs['href'] = $rs['url'] ?: $rs['href'];
+	        foreach($array AS $key=>$rs){	            
 	            $rs['title'] = $rs['title'] ?: static::get_top_bottom($rs['type'],'title');
 	            $rs['icon'] = $rs['icon'] ?: static::get_top_bottom($rs['type'],'icon');
 	            $rs['class'] = $rs['class'] ? str_replace('btn ', '', $rs['class']) : static::get_top_bottom($rs['type'],'class');
-	            $rs['href'] = $rs['href'] ?: static::get_top_bottom($rs['type'],'href');
+	            $url = $rs['url'] ?: $rs['href'];
+	            $rs['url'] = $rs['href'] = $url ?: static::get_top_bottom($rs['type'],'href');
 	            $array[$key] = $rs;
 	        }
 	    }
@@ -406,12 +406,12 @@ trait AddEditList {
 	
 	protected function builder_rbtn_url($array=[]){
 	    if ($array) {
-	        foreach($array AS $key=>$rs){
-	            $rs['url'] = $rs['href'] = $rs['url'] ?: $rs['href'];
+	        foreach($array AS $key=>$rs){	            
 	            $rs['title'] = $rs['title'] ?: static::get_right_bottom($rs['type'],'title');
 	            $rs['icon'] = $rs['icon'] ?: static::get_right_bottom($rs['type'],'icon');
 	            $rs['class'] = $rs['class'] ?: static::get_right_bottom($rs['type'],'class');
-	            $rs['href'] = $rs['href'] ?: static::get_right_bottom($rs['type'],'href');
+	            $url = $rs['url'] ?: $rs['href'];
+	            $rs['url'] = $rs['href'] = $url ?: static::get_right_bottom($rs['type'],'href');
 	            $array[$key] = $rs;
 	        }
 	    }
