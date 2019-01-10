@@ -1378,3 +1378,5 @@ ALTER TABLE  `qb_memberdata` ADD  `ext_field` TEXT NOT NULL COMMENT  '自定义�
 UPDATE `qb_config` SET  `form_type`='usergroup',`c_value`=''  WHERE `c_key`='getout_percent_money';
 ALTER TABLE  `qb_group` ADD  `logo` VARCHAR( 150 ) NOT NULL COMMENT  '图标';
 ALTER TABLE  `qb_group` ADD  `wap_page` VARCHAR( 150 ) NOT NULL COMMENT  'wap个人主页模板',ADD  `wap_member` VARCHAR( 150 ) NOT NULL COMMENT  'wap会员中心模板',ADD  `pc_page` VARCHAR( 150 ) NOT NULL COMMENT  'pc个人主页模板',ADD  `pc_member` VARCHAR( 150 ) NOT NULL COMMENT  'pc会员中心模板';
+ALTER TABLE  `qb_shop_content1` ADD  `order_num` MEDIUMINT( 7 ) NOT NULL COMMENT  '下订数量,不确定是否已付款',ADD  `pay_num` MEDIUMINT( 7 ) NOT NULL COMMENT  '付款数量';
+

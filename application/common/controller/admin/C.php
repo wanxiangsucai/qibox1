@@ -316,16 +316,32 @@ abstract class C extends AdminBase
      */
     public function edit($id)
     {
-        $this->mid = $this->model->getMidById($id);
+        if(empty($id)){
+            $this->error('缺少id参数');
+        }
+        
+        $info = $this->getInfoData($id);
+        
+        if(empty($info)){
+            $this->error('信息不存在参数');
+        }
+        
+        $this->mid = $info['mid'];  //$this->model->getMidById($id);
         
         // 保存数据
         if ($this -> request -> isPost()) {
 			//表单数据
 			$data = $this->request->post();
 			
-			if(isset($data['map'])){
-			    list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
+			//接口
+			hook_listen('cms_edit_begin',$data);
+			if (($result=$this->edit_check($id,$info,$data))!==true) {
+			    $this->error($result);
 			}
+			
+// 			if(isset($data['map'])){
+// 			    list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
+// 			}
 
             $this->saveEdit($this->mid,$data);
         }
@@ -355,11 +371,7 @@ abstract class C extends AdminBase
         
         $this->tab_ext['page_title'] = $this->m_model->getNameById($this->mid);
         
-        $this->tab_ext['area'] = config('use_area'); //是否启用地区
-        
-        if(empty($id)) $this->error('缺少参数');
-        
-        $info = $this->getInfoData($id);
+        $this->tab_ext['area'] = config('use_area'); //是否启用地区        
         
         //修改内容后，最好返回到模型列表页，因为有可能修改了栏目
         return $this->editContent($info);

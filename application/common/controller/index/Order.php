@@ -47,8 +47,9 @@ abstract class Order extends IndexBase
             $data = $this -> request -> post();
             $data = \app\common\field\Post::format_all_field($data,-1); //对一些特殊的自定义字段进行处理,比如多选项,以数组的形式提交的
             
-            $order_ids = [];
-            $car_ids = [];  //购买车里的数据
+            $order_ids = [];    //多条订单数据,多个商家就多个订单
+            $car_ids = [];        //购买车里的id数据
+            $car_db = [];        //购买车里的详细数据
             $listdb = $this->car_model->getList($this->user['uid'],1);
             
             $total_money = 0;   //需要支付的总金额
@@ -60,6 +61,7 @@ abstract class Order extends IndexBase
                     $_shop[] = $rs['_car_']['shopid'] . '-' . $rs['_car_']['num']  . '-' . $rs['_car_']['type1'] . '-' .$rs['_car_']['type2'] . '-' .$rs['_car_']['type3'];
                     $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
                     $car_ids[] = $rs['_car_']['id'];
+                    $car_db[] = $rs['_car_'];
                 }
                 $data['shop'] = implode(',', $_shop);
                 $data['order_sn'] = rands(10);      //订单号
@@ -76,7 +78,7 @@ abstract class Order extends IndexBase
                 }
             }
             
-            $this->end_add($order_ids,$car_ids);     //扩展使用
+            $this->end_add($order_ids,$car_ids,$car_db);     //扩展使用
             
             $this->add_address($data);  //添加地址
             
@@ -127,10 +129,12 @@ abstract class Order extends IndexBase
     }
     
     /**
-     * 扩展使用
-     * @param array $order_ids
+     * 成功提交订单,后续的扩展操作
+     * @param array $order_ids 多条订单信息
+     * @param array $car_ids 购物车ID数组
+     * @param array $car_db 购物车详细信息数组数据
      */
-    protected function end_add($order_ids=[],$car_ids=[]){
+    protected function end_add($order_ids=[],$car_ids=[],$car_db=[]){
         $this->car_model->destroy($car_ids);    //购买成功后,就把购买车的数据清掉
     }
     

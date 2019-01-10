@@ -79,38 +79,27 @@ class Init{
 		}elseif($dispatch['module'][0]&&$this->webdb['M__'.$dispatch['module'][0]]){
 			$this->webdb=array_merge($this->webdb,$this->webdb['M__'.$dispatch['module'][0]]);
 		}
-		$this->webdb['QB_VERSION']='X1.0 Beta';   //系统版本号
+		$this->webdb['QB_VERSION']='X1.0';   //系统版本号
 		config('webdb',$this->webdb);
-		/**
-		 * 电脑和手机模板切换
-		 * wapstyle=xxx 手机版风格预览
-		 * style=xxx 电脑版风格预览
-		 */
-		if(in_wap()){
-			if(input('get.wapstyle')){
-				cookie('index_style',input('get.wapstyle'),3600);
-				delete_dir(RUNTIME_PATH.'temp');
-			}
-			if(cookie('index_style')){
-				$index_style=cookie('index_style');    //前台手机风格演示
-			}else{
-				$index_style=$this->webdb['wapstyle']?:'default';    //前台手机版风格
-			}
-		}else{
-			if(input('get.style')){
-				cookie('index_style',input('get.style'),3600);
-				delete_dir(RUNTIME_PATH.'temp');
-			}
-			if(cookie('index_style')){
-				$index_style=cookie('index_style');    //前台风格
-			}else{
-				if(IN_WAP===true){
-					$index_style=$this->webdb['wapstyle']?:'default';    //前台手机版风格
-				}else{
-					$index_style=$this->webdb['style']?:'default';    //前台电脑版风格
-				}
-			}
+		
+		//md5style=xxx 前台风格预览
+		if(input('get.md5style') && mymd5(input('get.md5style'),'DE')){
+		    cookie('index_style',input('get.md5style'),1800);
+		    delete_dir(RUNTIME_PATH.'temp');
 		}
+		
+		if(cookie('index_style') && mymd5(cookie('index_style'),'DE')){
+		    $index_style = mymd5(cookie('index_style'),'DE');              //前台风格预览演示
+		}elseif(in_wap()){
+		    $index_style = $this->webdb['wapstyle']?:'default';      //前台手机版风格
+		}else{
+		    if(IN_WAP===true){
+		        $index_style = $this->webdb['wapstyle']?:'default';    //前台手机版风格
+		    }else{
+		        $index_style = $this->webdb['style']?:'default';          //前台电脑版风格
+		    }
+		}
+		
 		if(in_wap()){
 			$member_style=$this->webdb['member_wapstyle']?:'default';  //手机会员中心风格
 		}else{
