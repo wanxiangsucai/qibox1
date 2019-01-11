@@ -539,7 +539,7 @@ class Attachment extends IndexBase
             return ;
         }
         
-        $thumb_water_pic = PUBLIC_PATH.config('webdb.waterimg');
+        $thumb_water_pic = PUBLIC_PATH.strstr(config('webdb.waterimg'),'uploads/');
         if (!is_file($thumb_water_pic)) {
             return ;
         }

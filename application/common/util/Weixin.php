@@ -128,20 +128,20 @@ class Weixin
         //第一种方法，cert 与 key 分别属于两个.pem文件
         //默认格式为PEM，可以注释
         curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
-        curl_setopt($ch,CURLOPT_SSLCERT,PUBLIC_PATH.$webdb['weixin_apiclient_cert']);
+        curl_setopt($ch,CURLOPT_SSLCERT,PUBLIC_PATH.strstr($webdb['weixin_apiclient_cert'],'uploads/'));
         //默认格式为PEM，可以注释
         curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
-        curl_setopt($ch,CURLOPT_SSLKEY,PUBLIC_PATH.$webdb['weixin_apiclient_key']);
+        curl_setopt($ch,CURLOPT_SSLKEY,PUBLIC_PATH.strstr($webdb['weixin_apiclient_key'],'uploads/'));
         
-        curl_setopt($ch,CURLOPT_CAINFO,'PEM');
-        curl_setopt($ch,CURLOPT_CAINFO,PUBLIC_PATH.$webdb['weixin_rootca']);
+        //curl_setopt($ch,CURLOPT_CAINFO,'PEM');
+        //curl_setopt($ch,CURLOPT_CAINFO,PUBLIC_PATH.strstr($webdb['weixin_rootca'],'uploads/'));
         
         //第二种方式，两个文件合成一个.pem文件
         //curl_setopt($ch,CURLOPT_SSLCERT,getcwd().'/all.pem');
         
         if( count($aHeader) >= 1 ){
             curl_setopt($ch, CURLOPT_HTTPHEADER, $aHeader);
-        }
+        }	
         
         curl_setopt($ch,CURLOPT_POST, 1);
         curl_setopt($ch,CURLOPT_POSTFIELDS,$vars);
