@@ -2,11 +2,12 @@
 namespace app\member\controller;
 
 use app\common\model\User AS UserModel;
-use app\common\controller\MemberBase;
+//use app\common\controller\MemberBase;
+use app\common\controller\IndexBase;
 use app\common\traits\AddEditList;
 use app\common\fun\Cfgfield;
 
-class User extends MemberBase
+class User extends IndexBase
 {
     use AddEditList;
     protected $validate = '';
@@ -27,6 +28,8 @@ class User extends MemberBase
             if(empty($info)){
                 $this->error('该用户不存在!');
             }
+        }elseif (empty($uid)&&empty($this->user)){
+            $this->error('UID不存在!');
         }else{
             $info = $this->user;
         }
@@ -38,17 +41,18 @@ class User extends MemberBase
         return $this->fetch($template);
     }
 
-    public function delete()
-    {
+    public function delete(){
         die('禁止访问!');
     }
-    public function add()
-    {
+    public function add(){
         die('禁止访问!');
     }
     
     public function edit()
     {
+        if (empty($this->user)){
+            $this->error('你还没登录!');
+        }
         $info = $this->model->get_info($this->user['uid']);
         
         $this->form_items = [

@@ -279,6 +279,28 @@ if (!function_exists('url')) {
      */
     function url($url = '', $vars = '', $suffix = true, $domain = false)
     {
+        //齐博修改开始
+        static $array = null;
+        if ($array===null) {
+            $array = @include(RUNTIME_PATH.'url_cfg.php');
+            if (empty($array)) {
+                $array = [];
+            }
+        }
+        if ($vars && is_string($vars)) {
+            parse_str($vars,$vars);
+        }
+        $par = '';
+        if ($vars) {
+            ksort($vars);
+            $par = http_build_query($vars);
+        }        
+        if ($par && $array[$url][$par]) {
+            return Url::build($url.'?'.$par, [], $suffix, $domain);
+        }else{
+            return Url::build($url, $vars, $suffix, $domain);
+        }
+        //齐博修改结束
         return Url::build($url, $vars, $suffix, $domain);
     }
 }

@@ -12,6 +12,10 @@
 //\think\Route::rule('bbs/show/:id','\\app\\bbs\\index\\Content@show');
 use think\Route;
 
+if (is_file(RUNTIME_PATH.'routemy.php')) {      //后台自定义的路由规则
+    include RUNTIME_PATH.'routemy.php';
+}
+
 if (is_file(APP_PATH.'routemy.php')) {      //用户自定义的路由规则
     include APP_PATH.'routemy.php';
 }
@@ -22,7 +26,7 @@ Route::group(['name'=>'cms','ext'=>'html'], [
         'mid-<mid>'=>['cms/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'cms/content/show',
         'list'	=> 'cms/content/index',
-        'index'	=> 'cms/index/index',
+        'index$'	=> 'cms/index/index',
 ]);
 
 Route::group(['name'=>'shop','ext'=>'html'], [
@@ -31,7 +35,7 @@ Route::group(['name'=>'shop','ext'=>'html'], [
         'mid-<mid>'=>['shop/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'shop/content/show',
         'list'	=> 'shop/content/index',
-        'index'	=> 'shop/index/index',
+        'index$'	=> 'shop/index/index',
 ]);
 
 Route::group(['name'=>'bbs','ext'=>'html'], [
@@ -40,7 +44,7 @@ Route::group(['name'=>'bbs','ext'=>'html'], [
         'mid-<mid>'=>['bbs/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'bbs/content/show',
         'list'	=> 'bbs/content/index',
-        'index'	=> 'bbs/index/index',
+        'index$'	=> 'bbs/index/index',
 ]);
 
 Route::group(['name'=>'qun','ext'=>'html'], [
@@ -49,7 +53,7 @@ Route::group(['name'=>'qun','ext'=>'html'], [
         'mid-<mid>'=>['qun/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'qun/content/show',
         'list'	=> 'qun/content/index',
-        'index'	=> 'qun/index/index',
+        'index$'	=> 'qun/index/index',
 ]);
 
 Route::group(['name'=>'hy','ext'=>'html'], [
@@ -58,7 +62,7 @@ Route::group(['name'=>'hy','ext'=>'html'], [
         'mid-<mid>'=>['hy/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'hy/content/show',
         'list'	=> 'hy/content/index',
-        'index'	=> 'hy/index/index',
+        'index$'	=> 'hy/index/index',
 ]);
 
 Route::group(['name'=>'fenlei','ext'=>'html'], [
@@ -67,14 +71,10 @@ Route::group(['name'=>'fenlei','ext'=>'html'], [
         'mid-<mid>'=>['fenlei/content/index',['method'=>'get'],['mid' => '\d+']],
         'show'	=> 'fenlei/content/show',
         'list'	=> 'fenlei/content/index',
-        'index'	=> 'fenlei/index/index',
+        'index$'	=> 'fenlei/index/index',
 ]);
 
 Route::group(['name'=>'p','ext'=>'html'], [
-		'<plugin_name>-<plugin_controller>-<plugin_action>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => '[a-z_0-9]+',]], //必须放在第一行,位置不能移后
-        '<plugin_name>-<plugin_controller>-<plugin_action>-<id>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => 'content','plugin_action' => 'show','id' => '\d+',]],
-       '<plugin_name>-<plugin_controller>-<plugin_action>-<mid>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => 'index','mid' => '\d+',]],
-       '<plugin_name>-<plugin_controller>-<plugin_action>-<fid>$'	=>['index/plugin/execute',['method'=>'get'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9]+','plugin_action' => 'index','fid' => '\d+',]],
         '<plugin_name>-<plugin_controller>-<plugin_action>'	=>['index/plugin/execute',['method'=>'get|post'],['plugin_name' => '[a-z_0-9]+','plugin_controller' => '[a-z_0-9\.]+','plugin_action' => '[a-z_0-9]+',]],
 ]);
 
@@ -82,13 +82,17 @@ Route::group(['name'=>'page','ext'=>'html'], [
         '<id>$'	=>['index/alonepage/index',['method'=>'get'],['id' => '\d+']],
 ]);
 
-return [
-    '__pattern__' => [
-        'name' => '\w+',
-    ],
-    '[hello]'     => [
-        ':id'   => ['index/hello', ['method' => 'get'], ['id' => '\d+']],
-        ':name' => ['index/hello', ['method' => 'post']],
-    ],
+Route::group(['name'=>'home','ext'=>'html'], [
+        '<uid>$'	=>['member/user/index',['method'=>'get'],['uid' => '\d+']],
+]);
 
-];
+// return [
+//     '__pattern__' => [
+//         'name' => '\w+',
+//     ],
+//     '[hello]'     => [
+//         ':id'   => ['index/hello', ['method' => 'get'], ['id' => '\d+']],
+//         ':name' => ['index/hello', ['method' => 'post']],
+//     ],
+
+// ];

@@ -16,3 +16,7 @@ thinkphp\library\think\App.php
 
 library\think\Request.php
 406 齐博增加,解决部分服务器的兼容问题
+
+
+\thinkphp\helper.php
+282行 url函数修改过
