@@ -97,7 +97,7 @@ class Qb extends TagLib{
         $order = $tag['order']; //按什么排序
         //$rows = $tag['rows'];   //取数据库的多少条记录
         $by = $tag['by'];   //升序还是降序
-        $status = empty($tag['status']) ? '' : "'status'=>'$status',";   //审核或推荐
+        $status = empty($tag['status']) ? '' : "'status'=>'{$tag['status']}',";   //审核或推荐
         $where = $tag['where'];   //条件查询
         $mid = $tag['mid'];   //指定模型
         $fid = $tag['fid'];   //指定栏目
@@ -155,7 +155,7 @@ class Qb extends TagLib{
         $order = $tag['order']; //按什么排序
         //$rows = $tag['rows'];   //取数据库的多少条记录
         $by = $tag['by'];   //升序还是降序
-        $status = empty($tag['status']) ? '' : "'status'=>'$status',";   //审核或推荐
+        $status = empty($tag['status']) ? '' : "'status'=>'{$tag['status']}',";   //审核或推荐
         $where = $tag['where'];   //条件查询
         $mid = $tag['mid'];   //指定模型
         $fid = $tag['fid'];   //指定栏目
