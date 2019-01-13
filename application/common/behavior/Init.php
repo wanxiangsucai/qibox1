@@ -140,6 +140,9 @@ class Init{
 				config('template.view_path',APP_PATH.$module.'/view/'.$index_style.'/');
 				$index_style=='default'||config('template.default_view_path',APP_PATH.$module.'/view/default/');
 			}else{
+			    if($this->webdb['hiden_index_php']){
+			        \think\Url::root('/');  //隐藏index.php
+			    }
 				if(!modules_config($module)&&$module!='api'){
 					hook_listen('cannot_find_module');  //这个钩子可以方便扩展开发404跳转插件
 					if(is_dir(APP_PATH.$module)){
@@ -158,10 +161,7 @@ class Init{
 				// 定义模块的前台模板路径
 				config('template.view_path',APP_PATH.$module.'/view/index/'.$index_style.'/');
 				$index_style=='default'||config('template.default_view_path',APP_PATH.$module.'/view/index/default/');
-			}
-			if($this->webdb['hiden_index_php']){
-				\think\Url::root('/');  //隐藏index.php
-			}
+			}			
 		}elseif(ENTRANCE==='member'){
 			if($module===''){
 				header('Location: '.url('member/index'));
