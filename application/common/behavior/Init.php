@@ -145,6 +145,11 @@ class Init{
 					if(is_dir(APP_PATH.$module)){
 						showerr('当前频道已关闭!');
 					}else{
+					    $array = @include(RUNTIME_PATH.'url_cfg.php');
+					    if ($array[$module]) { //解决二级目录路由冲突的问题
+					        header('location:'.url($array[$module]));
+					        exit;
+					    }
 						showerr('当前频道不存在！');
 					}
 				}
