@@ -32,6 +32,7 @@
 <link rel="stylesheet" href="__STATIC__/index/default/leftmenu.css"> 
 <div class="body_LeftMenu">
 	<div class="MenuBox">
+		{qb:tag type="text" name="pc_index_top_title"}
 		<ul>
 			<ol><i class="fa fa-globe"></i></ol>
 			<li>
@@ -67,6 +68,7 @@
 				<a href="/">厦门</a>
 			</li>
 		</ul>
+	{/qb:tag}
 	</div>
 </div>
 {/block}
@@ -76,8 +78,8 @@
 <div class="body_content">
 	<div class="head">
 		<div class="tag"><i class="si si-fire"></i> 热门推荐</div>
-		<div class="tab">拎包就走，轻松出游</div>
-		<div class="more"><a href="/">更多推荐  <i class="fa fa-angle-double-right"></i></a></div>
+		<div class="tab">{qb:tag type="text" name="pc_index_title01"}拎包就走，轻松出游{/qb:tag}</div>
+		<div class="more">{qb:tag type="text" name="pc_index_title02"}<a href="/">更多推荐{/qb:tag}  <i class="fa fa-angle-double-right"></i></a></div>
 	</div>
 	<!---图片展示样式1---->
 	<link rel="stylesheet" href="__STATIC__/css/showpictype1.css">
@@ -118,7 +120,7 @@
 				<ol><a href="{$rs.url}"><img src="{$rs.picurl}"></a></ol>
 				<li>
 					<div class="title"><a href="{$rs.url}">{$rs.title}</a></div>
-					<div class="price">&yen; 168 <span>起</span></div>
+					<div class="price">{$rs.view} <span>关注度</span></div>
 				</li>
 			</ul>
 {/qb:tag}
@@ -131,9 +133,9 @@
 	</script>
 	</div>
 	<div class="head">
-		<div class="tag tag1"><i class="si si-book-open"></i> 旅游攻略</div>
-		<div class="tab">为您提供更多的旅途服务</div>
-		<div class="more"><a href="/">更多推荐 <i class="fa fa-angle-double-right"></i></a></div>
+		<div class="tag tag1"><i class="si si-book-open"></i> {qb:tag type="text" name="pc_index_title03"}旅游攻略{/qb:tag}</div>
+		<div class="tab">{qb:tag type="text" name="pc_index_title04"}为您提供更多的旅途服务{/qb:tag}</div>
+		<div class="more">{qb:tag type="text" name="pc_index_title05"}<a href="/">更多推荐{/qb:tag} <i class="fa fa-angle-double-right"></i></a></div>
 	</div>
 	<!--三列标题列表__STATIC__/css/qb_ui.css中控制---->
 	<div class="qb_ui_ListTitle_list3">

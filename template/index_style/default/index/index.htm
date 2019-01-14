@@ -91,8 +91,8 @@
 					<ol><a href="{$rs.url}"><img src="{$rs.picurl}"></a></ol>
 					<li>
 						<div class="title"><a href="{$rs.url}">{$rs.title}</a></div>
-						<div class="fname"><a href="#">优惠促销</a></div>
-						<div class="price"><div>&yen; {$rs.price}<span>起</span></div></div>
+						<div class="fname"><a href="#">小编推荐</a></div>
+						<div class="price"><div>{$rs.view}<span>关注度</span></div></div>
 						{php}$time=time()-$rs['create_time'];{/php}
 						<div class="time">距离结束<em>{$time}</em> <span></span></div>
 					</li>

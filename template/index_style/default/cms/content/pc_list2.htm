@@ -39,7 +39,7 @@
 			</ul>
 		{/qb:listpage} 
 		</div>
-		<!---异步显示更多调用一个显示更多的碎片模块[shop@content/showmore]，需要预设置如下参数[listurl：访问地址][thispage：开始页][TheListObj：插入对象][ThisRows：条数][listshops：子对象条数]--->
+		<!---异步显示更多调用一个显示更多的碎片模块[content/showmore]，需要预设置如下参数[listurl：访问地址][thispage：开始页][TheListObj：插入对象][ThisRows：条数][listshops：子对象条数]--->
 		<script>
 			var listurl='{qb:list_url name="news_listimg_page_listdata002"/}';	//news_listimg_page_listdata002 跟上面的标签名要一到致
 			var thispage=1;
@@ -47,7 +47,7 @@
 			var ThisRows={$news_listimg_page_listdata002.rows};  //每页显示几条 $news_listimg_page_listdata002 跟上面的标签名要一到致,但是这里多了一个$
 			var listshops=$('.ListInfoBox').children().length;	//当前页面显示了几条内容
 		</script>
-		{include file="shop@content/showmore" /}
+		{include file="content/showmore" /}
 		<!--{$pages} 这是传统分页-->
 	</div>
 </div>
