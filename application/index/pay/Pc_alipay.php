@@ -39,18 +39,22 @@ class Pc_alipay extends Pay{
         
         $pay_end_data_numcode = input('out_trade_no');
         
+        $return_url = $this->return_url;
+        $return_url = strstr($return_url,'?') ? '&' : '?';
         
         if($pay_end_data_numcode){
+            $return_url .= 'ispay=1';
             $result = $this->have_pay($pay_end_data_numcode);
-            if($result==1){
-                $this->success('已支付成功!!',$this->return_url); 
-            }elseif($result==-1){
-                $this->success('订单丢失，请联系管理员，请截图保留该订单号'.$pay_end_data_numcode,$this->return_url);
-            }elseif($result=='ok'){
-                $this->success('支付成功！',$this->return_url);
+            if($result===1){
+                $this->success('已支付成功!!',$return_url); 
+            }elseif($result===-1){
+                $this->success('订单丢失，请联系管理员，请截图保留该订单号'.$pay_end_data_numcode,$return_url);
+            }elseif($result==='ok'){
+                $this->success('支付成功！',$return_url);
             }           
         }else{
-            $this->success('你并没有付款，订单不生效！',$this->return_url);
+            $return_url .= 'ispay=0';
+            $this->error('你并没有付款，订单不生效！',$return_url,[],3);
         }
     }
     

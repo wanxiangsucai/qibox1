@@ -26,14 +26,19 @@ abstract class Order extends IndexBase
     
     /**
      * 付款之后返回的页面
-     * @param string $order_id
+     * @param string $orders_id 订单ID,可能有多个订单
+     * @param number $ispay 是否支付成功
      */
-    public function endpay($order_id = ''){
-        if($this->order_model->pay($order_id)){
-            $this -> success('支付成功', '/');
+    public function endpay($orders_id = '',$ispay=1){
+        if ($ispay==0) {
+            $this->error('支付失败',url('index/index'),[],3);
         }else{
-            $this->error('支付失败');
-        }
+            if($this->order_model->pay($orders_id)){
+                $this -> success('支付成功', url('index/index'));
+            }else{
+                $this->error('订单还在处理中...', url('index/index'),[],3);
+            }
+        }        
     }
     
     

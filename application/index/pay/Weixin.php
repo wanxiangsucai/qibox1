@@ -89,18 +89,21 @@ class Weixin extends Pay{
     public function pay_end_return(){
         $ispay = input('ispay');
         $numcode = input('numcode');
-        
+        $return_url = $this->return_url;
+        $return_url = strstr($return_url,'?') ? '&' : '?';
         if($ispay=='ok'){
+            $return_url .= 'ispay=1';
             $result = $this->have_pay($numcode,false);  //这里不能做操作，仅做检查,因为这个页面用户可以伪造
-            if($result==1){
-                $this->success('支付成功！订单已生效',$this->return_url); 
-            }elseif($result==-1){
-                $this->success('订单丢失，请联系管理员，请截图保留该订单号'.$numcode,$this->return_url);
+            if($result===1){
+                $this->success('支付成功！订单已生效',$return_url); 
+            }elseif($result===-1){
+                $this->success('订单丢失，请联系管理员，请截图保留该订单号'.$return_url);
             }elseif($result===0){
-                $this->success('订单还在处理中，请稍候！',$this->return_url);
+                $this->success('订单还在处理中，请稍候！',$return_url);
             }           
         }else{
-            $this->success('你并没有付款，订单不生效！',$this->return_url);
+            $return_url .= 'ispay=0';
+            $this->error('你并没有付款，订单不生效！',$return_url,[],3);
         }
     }
     
