@@ -115,6 +115,30 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 	width:30%;
 	text-align:right;
 }
+.listsort{
+	clear:both;
+	width:100%;
+	font-size:15px; 
+	line-height:250%;
+	margin-bottom:10px;
+}
+.listsort .title{
+	color:#349ADB;
+	font-weight:bold;
+}
+.listsort a{
+	margin-left:10px;
+	background:#AAA;
+	color:#fff;
+	padding:5px 10px 5px 8px;	
+}
+.category a{
+	background:#349ADB;
+}
+.category a.ck{
+	color:yellow;
+}
+
 </style>
 <div class="MainContainers">
   <div class="Header"><span class="tag">{if ($fid==2)}功能插件{elseif in_array($fid,[4,7,8]) /}模板风格{elseif ($fid==3)/}钩子功能{else/}频道模块{/if}应用市场</span><span class="more">::</span></div>
@@ -131,6 +155,8 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 			</dd>
 			<button class="layui-btn" onclick="search_app()">搜索</button>
 		</div>
+		<div class="category listsort"><span class="title">应用分类： </span><span class="list"></span></div>
+		<div class="goodapp listsort"><span class="title">网友推荐： </span><span class="list"></span></div>
 		<ul class="MarketBox Markercontents"></ul>
 	</div>
 	<div class="ShowPage ShowMoreInfo" style="margin-bottom:20px:text-align:center;width:100%;"><span style="width:200px;margin:auto;display:block;padding:8px;background:#eee;" onclick="showlist()">显示更多</span></div>
@@ -138,7 +164,51 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 
 <script type="text/javascript">
 
-var page = 1,loading=1,order_by='appupdate_time',keyword='';
+$.get("https://x1.php168.com/appstore/wxapp.index/get_category/fid/{$fid}.html",function(res){
+	if(res.code==0){
+		var str = '';
+		res.data.forEach((rs)=>{
+			str += '<a href="javascript:category_search(\''+rs.id+'\')">'+rs.title+'</a>';
+		});
+		$(".category .list").html(str);		
+		$(".category .list a").click(function(){
+			$(".category .list a").removeClass('ck');
+			$(this).addClass('ck');
+		});
+	}
+});
+
+
+$.get("https://x1.php168.com/appstore/wxapp.index/index/fid/{$fid}.html?rows=8&status=2&order_by=appupdate_time",function(res){
+	if(res.code==0){
+		var str = '';
+		res.data.forEach((rs)=>{
+			str += '<a href="javascript:good_search(\''+rs.id+'\')">'+rs.title+'</a>';
+		});
+		$(".goodapp .list").html(str);
+	}
+});
+
+function good_search(title){
+	keyword = title;
+	$('.Markercontents').html('');
+	page = 1;
+	order_by = 'id';
+	category = 0;
+	showlist();
+}
+
+function category_search(id){
+	keyword = '';
+	$('.Markercontents').html('');
+	page = 1;
+	category = id;
+	order_by = 'appupdate_time';
+	showlist();
+}
+
+
+var page = 1,loading=1,order_by='appupdate_time',keyword='',category=0;
 var appUrl = 'https://x1.php168.com/appstore/wxapp.index/index/fid/{$fid}.html?rows=20';
 
 
@@ -173,13 +243,14 @@ function search_app(){
 	}
 	$('.Markercontents').html('');
 	page = 1;
+	category = 0;
 	order_by = 'id';
 	showlist();
 }
 
 function showlist(){
 	layer.load(3,{shade: [0.1,'#333']});
-	var url = appUrl + '&order_by='+order_by+'&page='+page+'&keyword='+keyword;
+	var url = appUrl + '&order_by='+order_by+'&page='+page+'&keyword='+keyword+'&category='+category;
 	$.get(url,function(res){
 		if(res.code==0){
 			layer.closeAll();
@@ -194,7 +265,7 @@ function showlist(){
 				res.data.forEach((rs)=>{
 					str +='<li>'+
 							'<dl>'+
-								'<dt><a href="javascript:;"><img onclick="window.open(this.src)" onerror="this.src=\'__STATIC__/images/nopic.png\'" src="'+rs.picurl+'"></a></dt>'+
+								'<dt><a href="https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html" target="_blank"><img onerror="this.src=\'__STATIC__/images/nopic.png\'" src="'+rs.picurl+'"></a></dt>'+
 								'<dd>'+
 									'<h3>'+rs.title+'<span>'+(rs.downs>10?'热门':'')+'</span></h3>'+
 										(rs.price>0 ? (rs.jifen>0?'<div><span class="price red">&yen; '+rs.price+' 元</span> <span class="price blue">(积分 '+rs.jifen+' 个)</span></div>':'<div class="price red">&yen; '+rs.price+' 元</div>'):'<div class="price blue">免费</div>')+
