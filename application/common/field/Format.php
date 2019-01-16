@@ -14,7 +14,7 @@ class Format
         $array = [];
         foreach($data AS $rs){
             if(in_array($rs['0'], ['select','checkbox','radio'])){
-                $array[$rs[1]] = [
+                $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'title'=>$rs['2'],
@@ -23,13 +23,13 @@ class Format
                         'value'=>$rs['5'],
                 ];
             }elseif($rs['0']=='hidden'){    //隐藏域有点特殊
-                $array[$rs[1]] = [
+                $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'value'=>$rs['2'],
                 ];
             }elseif($rs['0']=='callback'){  //回调函数
-                $array[$rs[1]] = [
+                $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'title'=>$rs['2'],
@@ -38,15 +38,17 @@ class Format
                         'value'=>$rs['5'],
                 ];
             }else{
-                $array[$rs[1]] = [
+                $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'title'=>$rs['2'],
                         'about'=>$rs['3'],
                         'value'=>$rs['4'],
                 ];
-            }            
+            }
+            $array[$rs[1]] = array_merge($rs,$arr);
         }
+        
         return $array;
     }
     

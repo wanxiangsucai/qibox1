@@ -109,7 +109,7 @@ abstract class Label extends IndexBase
                 ['number','leng','标题显示字数','',70],
                 ['number','cleng','内容显示字数','',250],
                 ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
-                ['radio','status','范围限制','',['不限','已审','推荐'],0],
+                ['radio','status','范围限制','',$this->status_array,0],
                 ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
                 ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
                 ['radio','onlymy','是否只调用自己的','不适合在前台,更适合在会员中心调用',['否','是'],'0'],

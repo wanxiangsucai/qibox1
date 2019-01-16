@@ -18,6 +18,18 @@ abstract class C extends AdminBase
     protected $list_items;
     protected $tab_ext;
     protected $mid;
+    protected $status_array = [
+            '未审核',
+            '已审核',
+            '1星推荐',
+            '2星推荐',
+            '3星推荐',
+            '4星推荐',
+            '5星推荐',
+            '6星推荐', 
+            '7星推荐', 
+            '8星推荐',
+    ];
     
     protected function _initialize()
     {
@@ -189,7 +201,7 @@ abstract class C extends AdminBase
                     ['create_time', '发布日期', 'datetime'],
                     ['view', '浏览量', 'text.edit'],
                     ['list', '排序值', 'text.edit'],
-                    ['status', '审核', 'select',['未审','已审','已推荐']],
+                    ['status', '审核', 'select',$this->status_array],
             ];
             //比如万能表单是不需要栏目的，就不要显示栏目
             if(empty(config('post_need_sort'))){
@@ -214,6 +226,9 @@ abstract class C extends AdminBase
             return $this->listall();
         }elseif($type=='excel'){
             return $this->excel($mid,input()['ids']);
+        }
+        if($type!='listall' && !$mid && !$fid && count(model_config())==1){
+            $mid = reset(model_config())['id'];
         }
         if(!$mid && !$fid){
             //$this->error('参数有误！');
@@ -274,7 +289,7 @@ abstract class C extends AdminBase
         //筛选字段
         $this->tab_ext['filter_search'] = array_merge( $this->getEasyfiltrateItems(),[
                 'fid'=>get_sort(0,'all'),
-                'status'=>['未审核','已审核','已推荐']
+                'status'=>$this->status_array
         ]);
         
         if(empty($this->list_items)){
@@ -288,7 +303,7 @@ abstract class C extends AdminBase
                     ['create_time', '创建日期', 'datetime'],
                     ['view', '浏览量', 'text.edit'],
                     ['list', '排序值', 'text.edit'],
-                    ['status', '审核', 'select',['未审','已审','已推荐']],
+                    ['status', '审核', 'select',$this->status_array],
             ];
             
             //比如万能表单是不需要栏目的，就不要显示栏目

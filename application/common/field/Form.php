@@ -256,7 +256,7 @@ class Form extends Base
                 $rs['title'] = $rs['value'];
             }
             if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'){
-                $array[]=[
+                $arr = [
                         $rs['type'],
                         $rs['name'],
                         $rs['title'],
@@ -265,7 +265,7 @@ class Form extends Base
                         $rs['value'],
                 ];
             }else{
-                $array[]=[
+                $arr = [
                         $rs['type'],
                         $rs['name'],
                         $rs['title'],
@@ -274,6 +274,7 @@ class Form extends Base
                         $rs['options']
                 ];
             }
+            $array[] = array_merge($rs,$arr);
         }
         return $array;
     }

@@ -41,6 +41,22 @@ abstract class Order extends IndexBase
         }        
     }
     
+    /**
+     * 检查字段
+     * @param array $data
+     * @param number $mid
+     * @return string|boolean
+     */
+    protected function check_post_filed(&$data=[]){
+        if ($this->request->isPost()){
+            foreach(get_field(-1) AS $rs){
+                if ($rs['ifmust']==1&&$data[$rs['name']]=='') {
+                    return $rs['title'].'不能为空!';
+                }
+            }
+        }
+        return true;
+    }
     
     /**
      * 提交订单,还没进入付款页面
@@ -50,8 +66,11 @@ abstract class Order extends IndexBase
     public function add() {
         if($this -> request -> isPost()){
             $data = $this -> request -> post();
+            $result = $this->check_post_filed($data);
+            if ($result!==true) {
+                $this->error($result);
+            }
             $data = \app\common\field\Post::format_all_field($data,-1); //对一些特殊的自定义字段进行处理,比如多选项,以数组的形式提交的
-            
             $order_ids = [];    //多条订单数据,多个商家就多个订单
             $car_ids = [];        //购买车里的id数据
             $car_db = [];        //购买车里的详细数据

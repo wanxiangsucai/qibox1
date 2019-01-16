@@ -77,13 +77,15 @@ class Menu{
     }
     
     /**
-     * 个性菜单处理
+     * 指定用户组的后台或会员中心个性菜单处理
      * @param array $base_menu
-     * @return array|string[]|NULL[]
+     * @param number $type 0的话就是后台菜单,1是会员中心菜单,2的话是WAP会员中心菜单,
+     * @return unknown|array|string[]|NULL[]
      */
     protected static function build_often_menu($base_menu=[],$type=0){
         $map = [
                 'type'=>$type,
+                'ifshow'=>1,
                 'groupid'=>login_user('groupid'),
         ];
         $_array = [];
@@ -95,6 +97,7 @@ class Menu{
                 $_array[$key]['sons'][]=[
                         'title'=>$vs['name'],
                         'url'=>$vs['url'],
+                        'target'=>$vs['target'],
                 ];
             }             
         }

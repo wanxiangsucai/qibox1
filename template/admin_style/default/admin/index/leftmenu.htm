@@ -50,7 +50,7 @@ $(document).ready(function(){
 <dt><span><i class="{$vo.icon|default='fa fa-fw fa-map-o'}"></i>{$vo.title}</span></dt>
 <dd><ul>
 {foreach name="vo.sons" item="rs" }
-<li><A HREF='{$rs.url}' target='main'>{$rs.title}</A></li>
+<li><A HREF="{$rs.url}" target="{$rs.target?'_blank':'main'}">{$rs.title}</A></li>
 {/foreach}
 </ul></dd>
 </dl>

@@ -437,7 +437,29 @@ trait ModuleContent
 	    if ($this->request->isPost()&&fun('ddos@add',$data)!==true) {    //防灌水
 	        return fun('ddos@add',$data);
 	    }
+	    
+	    $result = $this->check_post_filed($data,$mid);
+	    if ($result!==true) {
+	        return $result;
+	    }
 
+	    return true;
+	}
+	
+	/**
+	 * 检查字段
+	 * @param array $data
+	 * @param number $mid
+	 * @return string|boolean
+	 */
+	protected function check_post_filed(&$data=[],$mid=0){
+	    if ($this->request->isPost()){
+	        foreach(get_field($mid) AS $rs){
+	            if ($rs['ifmust']==1&&$data[$rs['name']]=='') {
+	                return $rs['title'].'不能为空!';
+	            }
+	        }
+	    }
 	    return true;
 	}
 	
@@ -506,7 +528,13 @@ trait ModuleContent
     	    }
 	    }
 	    $data['title'] = filtrate($data['title']);                             //标题过滤
-	    //$data['content'] = fun('Filter@str',$data['content']);     //内容过滤	    
+	    //$data['content'] = fun('Filter@str',$data['content']);     //内容过滤	  
+	    
+	    $result = $this->check_post_filed($data,$info['mid']);
+	    if ($result!==true) {
+	        return $result;
+	    }
+	    
 	    return true;
 	}
 
