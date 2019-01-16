@@ -274,7 +274,7 @@ class Form extends Base
                         $rs['options']
                 ];
             }
-            $array[] = array_merge($rs,$arr);
+            $array[] = $arr+$rs;
         }
         return $array;
     }

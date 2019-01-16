@@ -46,7 +46,7 @@ class Format
                         'value'=>$rs['4'],
                 ];
             }
-            $array[$rs[1]] = array_merge($rs,$arr);
+            $array[$rs[1]] = $arr+$rs;
         }
         
         return $array;

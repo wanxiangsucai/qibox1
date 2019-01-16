@@ -18,7 +18,9 @@ abstract class Order extends MemberBase
      * 订单之前没付款, 现在重新付款
      * 在微信端,就用微信支付,否则就用支付宝支付
      * @param unknown $id 订单ID
-     * @param number $havepay 之付前后判断
+     * @param number $havepay 付款成功后,才可以跳转到这里,才可以设置为1 . 付款失败,就不能设置为1跳到这里来
+     * 如果付款失败，设置为1跳到这里来的话，假如他有足够的余额，就会从余额里自动扣取, 就导致他成功购买,可能他实质想放弃购买的
+     * 如果付款成功，就必须要设置为1 ，这个时候，假如支付宝或微信端还没来得及通知的话，这里就会预先处理订单。
      */
     public function pay($id,$havepay=0){
         $info = $this->model->get($id);

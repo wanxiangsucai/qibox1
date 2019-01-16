@@ -47,6 +47,8 @@ class Index extends MemberBase
     public function map()
     {
         $this->assign('user',$this->user);
+        $this->assign('userdb',$this->user);
+        $this->assign('info',$this->user);
         return $this->fetch();
     }
 

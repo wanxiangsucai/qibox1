@@ -78,8 +78,8 @@ return <<<EOT
 
 <script type="text/javascript">
     // 打开图标选择器
-    $('.js-icon-picker').click(function(){
-        curr_icon_picker = $(this);
+    $('.input-group-addon').click(function(){
+        curr_icon_picker = $('.js-icon-picker');
         var icon_input = curr_icon_picker.find('.icon_input');
         if (icon_input.is(':disabled')) {
             return;
@@ -100,6 +100,7 @@ return <<<EOT
         var icon = $(this).find('i').attr('class');
         curr_icon_picker.find('.input-group-addon.icon').html('<i class="'+icon+'"></i>');
         curr_icon_picker.find('.icon_input').val(icon);
+		console.log(icon)
         layer.close(layer_icon);
     });
 

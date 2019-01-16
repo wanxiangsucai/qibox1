@@ -9,7 +9,7 @@ if(!function_exists('get_group_tpl')){
      */
     function get_group_tpl($type='',$groupid=0){
         $groupdb = getGroupByid($groupid,false);
-        if (in_wap()) {
+        if (IN_WAP===true) {
             $filename = $groupdb['wap_'.$type];
         }else{
             $filename = $groupdb['pc_'.$type];

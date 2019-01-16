@@ -1,6 +1,8 @@
 <?php
 namespace app\common\fun;
 
+use think\Db;
+
 /**
  * 评论用到的相关函数
  */
@@ -38,7 +40,7 @@ class Comment{
    
    /**
     * 取得某条评论
-    * @param number $id
+    * @param number $id 评论ID
     * @return mixed|number
     */
    public function info($id = 0){
@@ -51,5 +53,30 @@ class Comment{
        return $rsdb;
    }
    
-   
+   /**
+    * 获取多条评论
+    * @param number|array $aid 主题ID或者是查询数组
+    * @param number $rows 取多少条记录
+    * @param number|string $sys 频道目录名
+    */
+   public function more($aid=0,$rows=5,$sys=0){
+       if (empty($sys)) {
+           $sys = config('system_dirname');
+       }
+       if (!is_numeric($sys)) {
+           $sys = modules_config($sys)['id'];
+       }
+       if (empty($sys)) {
+           return ;
+       }
+       $map = [];
+       if (is_array($aid)) {
+           $map = $aid;
+       }elseif($aid>0){
+           $map = ['aid'=>$aid];
+       }
+       $map['sysid'] = $sys;
+       $listdb = DB::name('comment_content')->where($map)->order('id desc')->limit($rows)->column(true);
+       return $listdb;
+   }
 }
