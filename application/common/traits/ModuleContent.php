@@ -511,7 +511,7 @@ trait ModuleContent
 	 * @return boolean
 	 */
 	protected function edit_check($id=0,$info=[],&$data=[]){
-	    if($info['uid']!=$this->user['uid']&&empty($this->admin)){
+	    if($info['uid']!=$this->user['uid']&&empty($this->admin)&&ENTRANCE!=='admin'){
 	        return '你没权限!';
 	    }
 	    if($data){
