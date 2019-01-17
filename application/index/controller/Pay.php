@@ -81,13 +81,16 @@ class Pay extends IndexBase
         if ($this->user['rmb']<input('money')) {
             $this->error('你的余额不足!');
         }
-        
         $callback_class = mymd5(urldecode(input('callback_class')),'DE');
         if ($callback_class){
             $this->run_callback($callback_class);
         }
         
-        $this->redirect(input('return_url'));
+        $return_url = input('return_url')?:$this->return_url;
+        $return_url .= strstr($return_url,'?') ? '&' : '?';
+        $return_url .= 'ispay=1';
+        $this->success('支付成功！订单已生效',$return_url);
+        //$this->redirect(input('return_url'));
     }
     
     

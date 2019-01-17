@@ -40,7 +40,7 @@ class Pc_alipay extends Pay{
         $pay_end_data_numcode = input('out_trade_no');
         
         $return_url = $this->return_url;
-        $return_url = strstr($return_url,'?') ? '&' : '?';
+        $return_url .= strstr($return_url,'?') ? '&' : '?';
         
         if($pay_end_data_numcode){
             $return_url .= 'ispay=1';

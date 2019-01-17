@@ -30,7 +30,7 @@ class Alipay extends Pay{
         $pay_end_data_numcode = '';
         include(ROOT_PATH.'plugins/alipay/api/return_url.php');
         $return_url = $this->return_url;
-        $return_url = strstr($return_url,'?') ? '&' : '?';
+        $return_url .= strstr($return_url,'?') ? '&' : '?';
         
         if($pay_end_data_numcode){
             $return_url .= 'ispay=1';

@@ -90,7 +90,7 @@ class Weixin extends Pay{
         $ispay = input('ispay');
         $numcode = input('numcode');
         $return_url = $this->return_url;
-        $return_url = strstr($return_url,'?') ? '&' : '?';
+        $return_url .= strstr($return_url,'?') ? '&' : '?';
         if($ispay=='ok'){
             $return_url .= 'ispay=1';
             $result = $this->have_pay($numcode,false);  //这里不能做操作，仅做检查,因为这个页面用户可以伪造
