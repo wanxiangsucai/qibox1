@@ -33,6 +33,14 @@ class User extends IndexBase
         }else{
             $info = $this->user;
         }
+        
+        $key = 'visit_homepage_' . $uid . '_' . $this->user['uid'];
+        if(time()-get_cookie($key)>600){     //每10分钟更新一次
+            set_cookie($key, time());
+            UserModel::where('uid','=',$uid)->setInc('view',1);
+            cache('user_'.$uid,null);
+        }
+        
         hook_listen( 'view_homepage' , $info  , $this->user);      //监听浏览主页
         $this->assign('info',$info);
         $this->assign('uid',$info['uid']);

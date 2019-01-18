@@ -1428,3 +1428,4 @@ INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(3, '�
 
 
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '模版消息之模板ID', 'weixin_msg_template_id', '', 'text', '', 1, '', '挑选模板的时候,模板代码中必须要包含这两个字段 {{first.DATA}} {{remark.DATA}}', -1, -2);
+ALTER TABLE  `qb_memberdata` ADD  `view` MEDIUMINT( 7 ) NOT NULL COMMENT  '浏览量';

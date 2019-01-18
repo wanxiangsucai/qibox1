@@ -21,8 +21,6 @@ abstract class Car extends IndexBase
             ['radio', 'ifolpay', '支付类型', '', [1 => '在线付款', 0 => '货到付款'], 1],
     ];
     
-    
-    
     public function edit(){
         die('出错了!');
     }
@@ -47,7 +45,7 @@ abstract class Car extends IndexBase
     }
     
     /**
-     * 加入购物车
+     * 加入购物车 如果没有就新增加,如果有的话,就进行修改 功能强于 change_num() 方法
      */
     public function add($shopid=0,$num=1,$type1='',$type2='',$type3=''){
         $result = $this->check_status($shopid,$num,$type1,$type2,$type3);
@@ -130,7 +128,7 @@ abstract class Car extends IndexBase
     }
     
     /**
-     * 更改数量
+     * 更改数量 此方法可以被 add() 取代.
      * @param number $shopid
      * @param number $num
      * @return void|\think\response\Json|void|unknown|\think\response\Json
@@ -245,7 +243,36 @@ abstract class Car extends IndexBase
         $listdb = $this->model->getList($this->user['uid']);
         $this->assign('listdb', $listdb);
         return $this ->fetch();
-    } 
+    }
+    
+    /**
+     * 统计购物车里边的详细信息
+     * @param number $uid
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function getcar($uid=0){
+        if (empty($uid)) {
+            $uid = $this->user['uid'];
+        }
+        $listdb = $this->model->getList($uid);
+        if (empty($listdb)) {
+            return $this->err_js('购物车里没有任何商品');
+        }else{
+            $array = [];
+            $array['shop_num'] = 0; //商品种类总个数
+            $array['num'] = 0;  //总个数,某个商品可能存在多个
+            $array['money'] = 0; //总共需要支付的金额
+            foreach($listdb AS $shop_uid=>$ar){
+                foreach($ar AS $id=>$rs){
+                    $array['shop'][] = array_merge($rs,['shop_uid'=>$shop_uid]);
+                    $array['num'] += $rs['_car_']['num'];
+                    $array['shop_num']++;
+                    $array['money'] += fun('shop@get_price',$rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
+                }
+            }
+            return $this->ok_js($array);
+        }
+    }
     
     
 }
