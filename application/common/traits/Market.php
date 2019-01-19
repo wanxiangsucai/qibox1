@@ -234,7 +234,8 @@ trait Market
         }elseif($this->bind_model($info['bind_modules'],$info['bind_plugins'])!==true){    //检查依赖的模块
             return $this->bind_model($info['bind_modules'],$info['bind_plugins']);
         }
-        into_sql(read_file($basepath."$keywords/install/install.sql"));
+        $sql = read_file($basepath."$keywords/install/install.sql");
+        strlen($sql)>10 && into_sql($sql);
         $info['version_id'] = intval($version_id);
         $result = $this->model->create($info);
         if(empty($result)){
