@@ -10,7 +10,7 @@ abstract class Setting extends _Setting
     //获得模块或插件ID，插件的话，取负数
     //abstract protected function getSysId();
     protected function getSysId(){
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([\w]+)/',get_called_class(),$array);
         $dirname = $array[0][1];
         if(defined('IN_PLUGIN')){
             $array = plugins_config($dirname);
