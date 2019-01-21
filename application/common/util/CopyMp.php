@@ -87,7 +87,7 @@ class CopyMp
         }
         unset($filedb);
         foreach( $listdb AS $key=>$value){
-            $postdb['content'] = str_replace($value,"http://wz.php168.com/wxpic.php?id=$ext_id&fid=$fid&url=".urlencode($value),$postdb['content']);
+            $postdb['content'] = str_replace($value,purl('weixin/mpimg/get',[],'index')."?id=$ext_id&fid=$fid&url=".urlencode($value),$postdb['content']);
         }
         //$postdb['content'] = str_replace(' data-src=',' src=',$postdb['content']);
         $postdb['content'] = stripslashes($postdb['content']);
