@@ -157,7 +157,8 @@ class Pc_page extends Paginator
      */  
     protected function getDisabledTextWrapper($text)  
     {  
-        return '<li><p class="pageEllipsis">' . $text . '</p></li>';  
+		 
+       return '<li><span class="pageEllipsis">' . $text . '</span></li>';  
     }  
   
     /** 
