@@ -28,6 +28,19 @@ var Qibo = function () {
 		});
 	}
 	
+	//超级链接那里加上  class="alert" 就可以实现弹窗确认. 设置 data-alert="你确认要修改吗?"  就可以指定提示语,这个参数也可以不设置.
+	var _confirm = function(){
+		jQuery(document).delegate('a.alert', 'click', function () {
+			var url = $(this).attr("href");
+			var msg = typeof($(this).data('alert'))=='undefined'?'你确认要删除吗?':$(this).data("alert");
+			var title = typeof($(this).data('title'))=='undefined'?'提示':$(this).data('title');
+			layer.confirm(msg, {title:title, btn : [ '确定', '取消' ]}, function(index) {
+				window.location.href = url;
+			});
+			return false;
+		});
+	}
+	
 	//直接使用window.history.go(-1) window.history.back() 遇到新开的页面,就导致无法返回, 用这个函数可以给他默认指定一个返回页面
 	var goBack = function(url) {
 		if ((navigator.userAgent.indexOf('MSIE') >= 0) && (navigator.userAgent.indexOf('Opera') < 0)) { // IE 
@@ -57,6 +70,7 @@ var Qibo = function () {
 	return {
 			init:function(){
 				pop();
+				_confirm();
 			},
 			goBack:function(url){
 				goBack(url);
