@@ -823,6 +823,7 @@ abstract class C extends Model
 //             });
             $array = getArray($data);//print_r($array) ;exit;
             foreach($array['data'] AS $key=>$rs){
+                unset($map['id']);
                 $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->where($map)->find();
                 if (empty($vs)) {
                     unset($array['data'][$key]);
