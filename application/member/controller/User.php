@@ -6,6 +6,7 @@ use app\common\model\User AS UserModel;
 use app\common\controller\IndexBase;
 use app\common\traits\AddEditList;
 use app\common\fun\Cfgfield;
+use app\common\field\Post AS FieldPost;
 
 class User extends IndexBase
 {
@@ -42,9 +43,19 @@ class User extends IndexBase
         }
         
         hook_listen( 'view_homepage' , $info  , $this->user);      //监听浏览主页
+        
+        $info['introducer_1'] = $info['introducer_1']?get_user_name($info['introducer_1']):'';
+        $info['introducer_2'] = $info['introducer_2']?get_user_name($info['introducer_2']):'';
+        $info['introducer_3'] = $info['introducer_3']?get_user_name($info['introducer_3']):'';
+        
+        //自定义字段
+        $f_array = Cfgfield::get_form_items($info['groupid']
+                ,$this->user['uid']==$info['uid']?'admin':'view' //自己看自己的就相当于管理员权限
+                ,$this->user);
+        
         $this->assign('info',$info);
         $this->assign('uid',$info['uid']);
-        $this->assign('f_array',Cfgfield::get_form_items($info['groupid']));        
+        $this->assign('f_array',$f_array);        
         $template = get_group_tpl('page',$info['groupid']);
         return $this->fetch($template);
     }
@@ -71,21 +82,23 @@ class User extends IndexBase
                 ['text', 'email', '邮箱'],
                 ['radio', 'sex', '性别','',[0=>'保密',1=>'男',2=>'女']],
                 ['jcrop', 'icon', '头像'],
-                ['textarea', 'introduce', '自我介绍'],
+                //['textarea', 'introduce', '自我介绍'],
         ];
         //某用户组下面的所有参数选项
-        $array = Cfgfield::get_form_items($info['groupid']);
+        $array = Cfgfield::get_form_items($info['groupid'],'member');
         if ($array) {
             $this->form_items = array_merge($this->form_items,$array);
         }
         
-        if (IS_POST) {
+        if ($this->request->isPost()) {
             
-            $data = get_post('post');
+            $data = $this->request->post();
             
             if ($data['uid']!=$info['uid']) {
                 $this->error('你不能修改别人的资料');
             }
+            
+            $data = FieldPost::format_php_all_field($data,$this->form_items);
 
             // 验证
             if(!empty($this->validate)){

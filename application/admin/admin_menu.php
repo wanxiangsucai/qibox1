@@ -189,7 +189,13 @@ return array(
 				                        array(
 				                                 'title'=>'用户组字段管理',
 				                                 'link'=>'group_cfg/index',
+				                                'power'=>['index','edit','delete','add'=>'手工加字段','autoadd'=>'批量导入内置字段'],
 				                         ),
+				                         array(
+				                                    'title'=>'用户认证升级管理',
+				                                    'link'=>'group_log/index',
+				                                    'power'=>['index','delete','pass'=>'审核操作'],
+				                            ),
                                 ),
                         ),
                 ),

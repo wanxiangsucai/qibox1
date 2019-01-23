@@ -7,13 +7,30 @@ namespace app\common\field;
 class Post
 {
     /**
-     * 对POST数据进行筛选转义处理
+     * 对POST数据进行筛选转义处理         注意:这里是针对于数据表的字段,即有qb_xxx_field字段的数据表
      * @param array $data POST数据
      * @param number $mid
      * @return \app\common\field\NULL|number
      */
     public static function format_all_field($data=[],$mid=0){
         $field_array = get_field($mid);
+        foreach ($field_array as $rs) {
+            $value = self::format($rs,$data);
+            if($value!==null){     //这里要做个判断,MYSQL高版本,不能任意字段随意插入null
+                $data[$rs['name']] = $value;
+            }
+        }
+        return $data;
+    }
+    
+    /**
+     * 对POST数据进行筛选转义处理         注意:这里是针对于程序中定义的字段 数组下标是数字的情况,比如 ['uid', '用户名', 'username'],
+     * @param array $data
+     * @param array $field_array
+     * @return \app\common\field\NULL|number
+     */
+    public static function format_php_all_field($data=[],$field_array=[]){
+        $field_array = Format::form_fields($field_array);
         foreach ($field_array as $rs) {
             $value = self::format($rs,$data);
             if($value!==null){     //这里要做个判断,MYSQL高版本,不能任意字段随意插入null

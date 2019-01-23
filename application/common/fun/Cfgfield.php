@@ -42,7 +42,7 @@ class Cfgfield{
                     $rs['options'] = str_array($rs['options'],"\n");    //后台设置的下拉,多选,单选,都是用换行符做分割的
                 }
             }
-            $tab_list[]=[
+            $arr = [
                     $rs['form_type'],
                     $rs['c_key'],
                     $rs['title'],
@@ -53,21 +53,53 @@ class Cfgfield{
                     $rs['htmlcode'],
                     
             ];
+            $tab_list[] = $arr + $rs;
         }
         return $tab_list;
     }
     
+
     /**
-     * 获取某个用户组的字段
-     * @param number $groupid
-     * @return mixed|\think\cache\Driver|boolean|unknown[][]|array[][]
+     * 获取某个用户组的字段 注意有修改与浏览 及 前台修改及后台修改的区别 默认是后台修改
+     * @param number $groupid 
+     * @param string $type 默认是后台,如果是前台的话,要设置为 admin 后台修改 member 是会员中心修改 view 是前台浏览
+     * @param array $user 当前登录用户信息
+     * @return array|mixed|\think\cache\Driver|boolean
      */
-    public static function get_form_items($groupid=0){
+    public static function get_form_items($groupid=0,$type='admin',$user=[]){
         $list_data = cache('cfgfield_'.$groupid);
         if (empty($list_data)) {
             $list_data = GroupcfgModel::getListByGroup($groupid);
             $list_data = self::toForm($list_data);
             cache('cfgfield_'.$groupid,$list_data);
+        }
+        foreach ($list_data AS $key=>$rs){
+            if($rs['allowview']){
+                $rs[2].='<span class="allowview" title="指定用户组才能查看"> *</span>';
+                $rs['title'].='<span class="allowview"  title="指定用户组才能查看"> *</span>';
+                $list_data[$key] = $rs;
+            }
+        }
+        if ($type==='member') {         //前台会员中心修改
+            foreach($list_data AS $key=>$rs){
+                if($rs['forbid_edit']){
+                    unset($list_data[$key]);
+                }
+            }
+        }elseif ($type==='view') {      //前台会员查看
+            foreach($list_data AS $key=>$rs){
+                if($rs['allowview']){   //设置了浏览权限
+                    if (empty($user) || !in_array($user['groupid'], explode(',',$rs['allowview']))) {
+                        unset($list_data[$key]);
+                    }                    
+                }
+            }
+        }elseif($type==='upgroup'){     //升级认证用户组
+            foreach($list_data AS $key=>$rs){
+                if(empty($rs['ifmust'])){   //非必填字段,就不要显示了
+                    unset($list_data[$key]);
+                }
+            }
         }
         return $list_data;
     }

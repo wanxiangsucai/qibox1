@@ -40,7 +40,7 @@ return array(
                                                 'link'=>'bindlogin/weixin',
                                         ),
 										array(
-                                                'title'=>'升级会员等级',
+                                                'title'=>'认证身份/升级等级',
                                                 'link'=>'group/index',
                                         ),
                                         array(

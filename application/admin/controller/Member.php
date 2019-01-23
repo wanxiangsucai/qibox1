@@ -4,8 +4,10 @@ namespace app\admin\controller;
 use app\common\controller\AdminBase; 
 use app\common\traits\AddEditList;
 use app\common\model\User as UserModel;
-use app\common\model\Groupcfg AS GroupcfgModel;
+//use app\common\model\Groupcfg AS GroupcfgModel;
 use app\common\fun\Cfgfield;
+use app\common\field\Post AS FieldPost;
+
 /**
  * 用户管理
  */
@@ -109,27 +111,7 @@ EOT;
 	public function edit($id = 0)
 	{
 	    if(empty($id)) $this->error('缺少参数');	    
-    	if (IS_POST) {    	    
-    	    $data = get_post('post');    	    
-    	    if(SUPER_ADMIN!==true&&$data['groupid']==3&&$this->user['groupid']!=3){
-    	        $this->error('你无权修改超管资料!');
-    	    }
-    	    // 验证
-    	    if(!empty($this->validate)){
-    	        // 验证
-    	        $result = $this->validate($data, $this->validate);
-    	        if(true !== $result) $this->error($result);
-    	    }
-    	    if ($data['rmb_pwd'] && strlen($data['rmb_pwd'])!=32) {
-    	        $data['rmb_pwd'] = md5($data['rmb_pwd']);
-    	    }
-    	    if ( $this->model->edit_user($data) ) {
-    	        $this->success('修改成功', 'index');
-    	    } else {
-    	        $this->error('修改无效');
-    	    }
-    	}
-	    
+    	
 	    $info = $this->model->get_info($id);
 	    
 	    $this->form_items = [
@@ -163,7 +145,38 @@ EOT;
 	        $this->form_items = array_merge($this->form_items,$array);
 	    }
 	    
+	    if ($this->request->isPost()) {    //修改入库处理
+	        $data = $this->request->post();
+	        if(SUPER_ADMIN!==true&&$data['groupid']==3&&$this->user['groupid']!=3){
+	            $this->error('你无权修改超管资料!');
+	        }
+	        // 验证
+	        if(!empty($this->validate)){
+	            // 验证
+	            $result = $this->validate($data, $this->validate);
+	            if(true !== $result) $this->error($result);
+	        }
+	        $data = FieldPost::format_php_all_field($data,$this->form_items);
+	        if ($data['rmb_pwd'] && strlen($data['rmb_pwd'])!=32) {
+	            $data['rmb_pwd'] = md5($data['rmb_pwd']);
+	        }
+	        if ( $this->model->edit_user($data) ) {
+	            $this->success('修改成功', 'index');
+	        } else {
+	            $this->error('修改无效');
+	        }
+	    }
+	    
 	    $info['password']='';
+	    if (empty($info['introducer_1'])) {
+	        $info['introducer_1']='';
+	    }
+	    if (empty($info['introducer_2'])) {
+	        $info['introducer_2']='';
+	    }
+	    if (empty($info['introducer_3'])) {
+	        $info['introducer_3']='';
+	    }
 	    return $this->editContent($info);
 	}
 	

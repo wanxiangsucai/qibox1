@@ -42,8 +42,7 @@
 						<div>级别：{$info.groupid|getGroupByid}</div>
 						<div>UID：{$info.uid}</div>
 						<div>性别：{switch $info.sex}{case 1}男{/case}{case 2}女{/case}{default /}保密{/switch}</div>
-						<div>生日：{$info.bday}</div>						 
-						<div>联系QQ：{$info.oicq}</div>
+						{if $info.bday}<div>生日：{$info.bday|format_time="Y-m-d"}</div>{/if}
 						<div>注册日期：{:date("Y-m-d H:i:s",$info.regdate)}</div>
 						<div>最后登录：{:date("Y-m-d H:i:s",$info.lastvist)}</div>
 
@@ -67,7 +66,7 @@
 					<dd>
 <!-- field过滤显示的字段,多个用逗号隔开,$f_array跟form表单一样的数组 -->
 {if $f_array}
-{qb:showpage field="test33" f_array="$f_array"}
+{qb:showpage field="money,regdate,lastvist,bday" f_array="$f_array"}
 		<div>{$rs.title}：{$rs.value}</div>
 {/qb:showpage}
 {/if}		 

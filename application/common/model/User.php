@@ -240,10 +240,10 @@ class User extends Model
 	        unset($array['password'],$array['password_rand']);
 	    }
 	    
-	    $field_array = table_field('memberdata');
+	    $field_array = table_field('memberdata');  //主表标准字段
 	    $ext_field = [];   //用户自定义字段
 	    foreach($array AS $key=>$value){
-	        if (!in_array($key, $field_array)) {
+	        if (!in_array($key, $field_array)) {   //非主表的标准字段,就当作自字义字段统一处理
 	            $ext_field[$key] = $value;
 	        }
 	    }
