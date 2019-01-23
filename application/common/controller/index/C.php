@@ -41,6 +41,14 @@ abstract class C extends IndexBase
         if(empty($info['status']) && empty($info['hook_check']) && !$this->admin && $this->user['uid']!=$info['uid']){
             $this->error('内容还没通过审核,你不能查看!');
         }
+        $s_info = get_sort($info['fid'],'config');
+        if ($s_info['allowview']) {
+            if(empty($this->user) || (
+                   // !$this->admin && 
+                    !in_array($this->user['groupid'], explode(',',$s_info['allowview'])))   ){
+                $this->error('你所在用户组无权查看!');
+            }
+        }
     }
     
     /**

@@ -120,6 +120,7 @@ abstract class S extends AdminBase
                         //['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
                         ['icon', 'logo', '图标',],
                         ['checkbox', 'allowpost', '允许发布内容的用户组','全留空,则不作限制',getGroupByid()],
+                        ['checkbox', 'allowview', '允许查看内容的用户组','全留空,则不作限制。注意标题不能限制。',getGroupByid()],
                 ],
                 '模板设置'=>[
                         ['text', 'templates[waplist]', 'wap列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
