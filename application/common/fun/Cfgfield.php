@@ -75,8 +75,8 @@ class Cfgfield{
         }
         foreach ($list_data AS $key=>$rs){
             if($rs['allowview']){
-                $rs[2].='<span class="allowview" title="指定用户组才能查看"> *</span>';
-                $rs['title'].='<span class="allowview"  title="指定用户组才能查看"> *</span>';
+                $rs[2].='                                                                           <span class="allowview" title="指定用户组才能查看"> *</span>';
+                $rs['title'].='                                                                     <span class="allowview"  title="指定用户组才能查看"> *</span>';
                 $list_data[$key] = $rs;
             }
         }
