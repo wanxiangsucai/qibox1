@@ -83,7 +83,7 @@ class Form extends Base
             
             $info[$name] = str_replace(['<','>'], ['&lt;','&gt;'], $info[$name]);
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
-            $field['input_height'] && $field['input_height']="width:{$field['input_height']};";
+            $field['input_height'] && $field['input_height']="height:{$field['input_height']};";
             $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' placeholder='请输入{$field['title']}' class='layui-textarea c_{$name}  {$field['css']}' style='{$field['input_width']}{$field['input_height']}'>{$info[$name]}</textarea>";
             
         }elseif ($field['type'] == 'select') {      // 下拉框

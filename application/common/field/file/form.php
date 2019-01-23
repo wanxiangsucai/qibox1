@@ -229,13 +229,27 @@ EOT;
 $show = $info[$name] ? "<li class='list-group-item file-item'><i class='fa fa-times-circle remove-file'></i><a href='".tempdir($info[$name])."' target='_blank'>{$info[$name]}</a></li>" : '';
 
 return <<<EOT
-
+<style type="text/css">
+.fbtn{
+	float:left;
+	margin-top:5px;
+}
+.puturl{
+	background:#bbb;
+	color:#fff;
+	line-height:45px;
+	margin-left:15px;
+	padding-left:10px;
+	padding-right:10px;
+	border-radius:3px;
+}
+</style>
 <div class="col-sm-12 js-upload-file">
         <ul class="list-group uploader-list" id="file_list_{$name}">
             $show
          </ul>
-        <input type="hidden" name="{$name}" data-multiple="false" data-size="0" data-ext='' id="atc_{$name}" value="{$info[$name]}">
-        <div id="picker_{$name}">上传文件</div>
+        <input type="text" style="width:100%;display:none;" name="{$name}" data-multiple="false" data-size="0" data-ext='' id="atc_{$name}" value="{$info[$name]}">
+        <div id="picker_{$name}" class="fbtn">上传文件</div> <div class="fbtn puturl" onclick="$('#atc_{$name}').show();">输入网址</div>
                 
 </div>
  
