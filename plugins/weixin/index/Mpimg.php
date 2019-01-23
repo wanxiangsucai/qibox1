@@ -27,6 +27,7 @@ class Mpimg extends IndexBase
             return $this->error('图片不存在');
         }
         header('location:'.PUBLIC_URL.'uploads'.$imgpath.$name);
+        exit;
     }
     
     protected function sock_open($url,$method='GET',$postValue='',$Referer='Y'){
