@@ -20,18 +20,6 @@ trait LabelEdit {
     protected $tag_power_cfg;
     protected $tag_ifdata;
     protected $tag_view_tpl;
-    protected $status_array = [
-            '未审核',
-            '已审核',
-            '1星推荐',
-            '2星推荐',
-            '3星推荐',
-            '4星推荐',
-            '5星推荐',
-            '6星推荐',
-            '7星推荐',
-            '8星推荐',
-    ];
     
     /**
      * 权限检查
@@ -41,6 +29,25 @@ trait LabelEdit {
         if ($this->admin === true) {
             return true;
         }
+    }
+    
+    /**
+     * 内容分级调用
+     * @return string[]
+     */
+    protected function get_status(){
+        return [
+                '未审核',
+                '已审核',
+                '1星推荐',
+                '2星推荐',
+                '3星推荐',
+                '4星推荐',
+                '5星推荐',
+                '6星推荐',
+                '7星推荐',
+                '8星推荐',
+        ];
     }
     
     /**
