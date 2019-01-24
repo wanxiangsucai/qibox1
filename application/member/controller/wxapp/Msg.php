@@ -184,11 +184,7 @@ class Msg extends MemberBase
             return $this->err_js('请必须选择一项');
         }
         foreach ($ids AS $id){
-            Model::update([
-                    'id'=>$id,
-                    'ifread'=>1,
-                    'uid'=>$this->user['uid'],
-            ]);
+            Model::where('id',$id)->where('touid',$this->user['uid'])->update(['ifread'=>1]);
         }
         return $this->ok_js();
     }
