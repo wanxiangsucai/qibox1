@@ -99,6 +99,7 @@ abstract class Order extends IndexBase
                 $data['create_time'] = time();
                 if ($result = $this->order_model->create($data)) {
                     $order_ids[] = $result->id;
+                    $this->send_msg($uid,$result->id);
                 }
             }
             
@@ -128,6 +129,18 @@ abstract class Order extends IndexBase
         $address = AddressModel::where('uid',$this->user['uid'])->order('often desc,id desc')->column(true);
         $this->assign('address',$address);
         return $this ->fetch();
+    }
+    
+    /**
+     * 用户下单后,给商家发信息
+     * @param number $shop_uid
+     * @param number $order_id
+     */
+    protected function send_msg($shop_uid=0,$order_id=0){
+        $title = '有客户下单了,请注意查收';
+        $content = $title.'，<a href="'.murl('kehu_order/show',['id'=>$order_id]).'">点击查看详情</a>';
+        send_msg($shop_uid,$title,$content);
+        send_wx_msg($shop_uid, $content);
     }
     
     /**

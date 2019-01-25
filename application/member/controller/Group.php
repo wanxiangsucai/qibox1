@@ -15,11 +15,17 @@ class Group extends MemberBase
     protected $model;
     protected $form_items;
     protected $tab_ext;
+    protected $money_name='积分';
+    protected $money_dw='个';
     
     protected function _initialize()
     {
         parent::_initialize();
         //$this->model = new UserModel();
+        if($this->webdb['up_group_use_rmb']){
+            $this->money_name='金额';
+            $this->money_dw='元';
+        }
     }
     
     public function index()
@@ -31,6 +37,8 @@ class Group extends MemberBase
             }
         }        
         $this->assign('groupdb',$groupdb);
+        $this->assign('money_dw',$this->money_dw);
+        $this->assign('money_name',$this->money_name);
         return $this->fetch();
     }
 
@@ -47,11 +55,19 @@ class Group extends MemberBase
             $this->error('系统组,不可以购买');
         }
         
-        if($this->user['money']<$ginfo['level']){
-            $this->error('你的积分不足: '.$ginfo['level'] .'个，不能申请当前认证，请先充值！');
-        }elseif($this->admin){
+        if($this->admin){
             $this->error('你是管理员,级别很高了,无须认证升级');
         }
+        
+        if($this->webdb['up_group_use_rmb']){
+            if($this->user['rmb']<$ginfo['level']){
+                $this->error('你的余额不足: '.$ginfo['level'] .'元，不能申请当前认证，请先充值！',purl('marketing/rmb/add'));
+            }
+        }else{
+            if($this->user['money']<$ginfo['level']){
+                $this->error('你的积分不足: '.$ginfo['level'] .'个，不能申请当前认证，请先充值！',purl('marketing/jifen/add'));
+            }
+        }        
         
         $this->form_items = Cfgfield::get_form_items($gid,'upgroup');
         if (empty($this->form_items)) { //没有需要填写的项目  , 会终止掉下面所有操作          
@@ -81,7 +97,10 @@ class Group extends MemberBase
             }
         }
         
-        $this->tab_ext['page_title'] = '申请认证为: '.$ginfo['title'].($ginfo['level']?" 本次认证需要消费积分 {$ginfo['level']} 个":' 本次认证免费');
+        $this->assign('money_name',$this->money_name);
+        $this->assign('money_dw',$this->money_dw);
+        
+        $this->tab_ext['page_title'] = '申请认证为: '.$ginfo['title'].($ginfo['level'] ? " 本次认证需要消费".$this->money_name." {$ginfo['level']} ".$this->money_dw:' 本次认证免费');
         $info = $this->user;
         return $this->editContent($info);
     }
@@ -99,7 +118,11 @@ class Group extends MemberBase
         $result = GrouplogModel::create($array);
         if ($result) {
             if ($money>0) {
-                add_jifen($this->user['uid'],-$money,'认证升级用户身份');
+                if($this->webdb['up_group_use_rmb']){
+                    add_rmb($this->user['uid'],-$money,0,'认证升级用户身份');
+                }else{
+                    add_jifen($this->user['uid'],-$money,'认证升级用户身份');
+                }                
             }
             $this->success('信息已提交,请等待管理员审核!',urls('index'));
         }else{

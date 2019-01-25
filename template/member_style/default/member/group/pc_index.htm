@@ -26,9 +26,9 @@
           </tr>
 
           <tr>
-            <td>所需积分</td>
+            <td>所需{$money_name}</td>
 {volist name="groupdb" id="rs"}
-           <td><span class="b red">{$rs.level}</span>个</td>
+           <td><span class="b red">{$rs.level}</span>{$money_dw}</td>
 {/volist}
           </tr>
 
@@ -59,8 +59,8 @@
     </div>
     <div class="cont">
     	<ul class="aboutnote">
-        	<li>1.部分身份认证，需要消费积分，你当前拥有的积分数是： <span class="b red">{$userdb.money}</span> 个</li>
-            <li>2.如果你的积分不足，你可以先在线充值.<a href="{:purl('marketing/jifen/add')}"><span class="b red">在线充值</span></a></li>
+        	<li>1.部分身份认证，需要消费{$money_name}，你当前可用的{$money_name}是： <span class="b red">{$userdb.money}</span> {$money_dw}</li>
+            <li>2.如果你的{$money_name}不足，你可以先在线充值.<a href="{:purl(config('webdb.up_group_use_rmb')?'marketing/rmb/add':'marketing/jifen/add')}"><span class="b red">在线充值</span></a></li>
 			<li>3.认证升级用户组需要管理员人工审核通过后才能生效，请如实填写相关信息。</li>
         </ul>
     </div>

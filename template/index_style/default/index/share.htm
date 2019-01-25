@@ -2,8 +2,9 @@
 $share = is_array($share)?array_merge($info?:[],$share):$info;
 isset($share['about'])||$share['about'] = get_word(str_replace(["'","\r","\n","\t",' ','　'],'',del_html($share['content'])),150);
 isset($share['link'])||$share['link'] = get_url('location');
-preg_match('/^(http:|https:)/',$share['link']) || $share['link'] = request()->domain().$share['link'];
-preg_match('/^(http:|https:)/',$share['picurl']) || $share['picurl'] = request()->domain().$share['picurl'];
+$share['link'] = get_url($share['link']);
+if($userdb['uid']&&!strstr($share['link'],'p_uid='))$share['link'].=(strstr($share['link'],'?')?'&':'?').'p_uid='.$userdb['uid'].'&';
+$share['picurl'] = get_url($share['picurl']);
 $share['title'] = str_replace(["'","\r","\n","\t",' ','　'],'',$share['title']);
 $share['about'] = str_replace(["'","\r","\n","\t",' ','　'],'',$share['about']);
 {/php}
@@ -48,12 +49,9 @@ function ShareTimeline(){
       imgUrl: '{$share.picurl}',
       trigger: function (res) {
         // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
-        //alert('分享到朋友圈后，每进来一位新用户，你都将获得{$webdb[CommendRegHongBao]}元红包的奖励，你若取消关注公众号，将不派发！');
       },
       success: function (res) {
         layer.msg('成功分享到朋友圈');
-		//window.location.reload();
-		//window.location.href='?id=$id&hid=$hid&job=have_shareTimeline';
       },
       cancel: function (res) {
         //alert('系统监测到你没有真正分享到朋友圈，请重新分享！');

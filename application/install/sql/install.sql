@@ -1450,3 +1450,7 @@ CREATE TABLE IF NOT EXISTS `qb_grouplog` (
   `refuse_reason` varchar(255)  NOT NULL COMMENT '被拒绝审核的原因',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='申请升级用户组的申请表' AUTO_INCREMENT=1 ;
+
+
+DELETE FROM  `qb_config` WHERE  `c_key` =  'group_expire_data';
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '用户组升级认证', 'up_group_use_rmb', '', 'radio', '0|使用积分\r\n1|使用金额', 1, '', '', 0, 0);
