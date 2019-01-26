@@ -41,7 +41,7 @@ class Reg extends IndexBase
     }
     
     /**
-     * 核对手机或邮箱注册码
+     * 核对手机或邮箱可微信注册码
      * @param string $type
      * @param string $num
      * @return void|\think\response\Json
@@ -49,8 +49,11 @@ class Reg extends IndexBase
     public function check_num($type='',$num='',$field=''){
         //邮箱注册码与手机注册码,不建议同时启用,所以这里没分开处理
         if($type=='weixin'){
-            //验证码从这里生成 plugins\weixin\libs\keyword\Reg_yz
+            //验证码从这里生成 plugins\weixin\libs\keyword\Reg_yz            
             if( cache('weixin_yznum_'.$num) ){
+                if( config('webdb.weixin_reg_onlyone') && UserModel::get_info( cache('weixin_yznum_'.$num) , 'weixin_api')){
+                    return $this->err_js('请换个微信获取注册码,当前微信已注册过了!');
+                }
                 return $this->ok_js();
             }
         }else{
@@ -125,7 +128,10 @@ class Reg extends IndexBase
             if( config('webdb.reg_weixin_num') ){
                 if( !cache('weixin_yznum_'.$data['weixin_code']) ){
                     $this->error('注册码不对');  
+                }elseif( config('webdb.weixin_reg_onlyone') && UserModel::get_info( cache('weixin_yznum_'.$data['weixin_code']) , 'weixin_api')){
+                    $this->error('系统限制一个微信号只能注册一个帐号,此微信号已经注册过了,请更换一个微信获取注册码.或者用当前微信直接登录即可!');
                 }
+                $data['weixin_api'] = cache('weixin_yznum_'.$data['weixin_code']);
                 cache('weixin_yznum_'.$data['weixin_code'],null);
             }
             
