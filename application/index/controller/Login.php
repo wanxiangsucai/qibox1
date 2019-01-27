@@ -51,7 +51,7 @@ class Login extends IndexBase
     
 
     /**
-     * 登录
+     * 帐号登录
      * @param string $fromurl 返回地址
      * @param string $type 等于iframe 是框架登录
      * @return mixed|string
@@ -92,4 +92,145 @@ class Login extends IndexBase
         $this->assign('type',$type);
         return $this->fetch($type=='iframe'?'iframe':'index');
     }
+    
+    /**
+     * 手机登录或注册
+     */
+    public function phone(){
+        $url = murl('member/index/index');
+        if($this->fromurl && !strstr($this->fromurl,'index/login')){
+            $url = $this->fromurl;
+        }
+        $this->assign('fromurl',$url);
+        return $this->fetch();
+    }
+    
+    /**
+     * 获取手机验证码
+     * @param string $phone
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function get_phone_num($phone=''){
+        if( time()-get_cookie('send_num') <60 ){
+            return $this->err_js('1分钟后,才能再次获取验证码!');
+        }
+        $send_num = get_md5_num($phone.rands(5) , 6);
+        $content = '你的验证码是:'.$send_num;
+        cache('phone_login'.$send_num,$phone,1800);
+
+        $result = send_sms($phone,$send_num);
+
+        if($result===true){
+            set_cookie('send_num', time());
+            return $this->ok_js();
+        }else{
+            return $this->err_js($result);
+        }
+    }
+    
+    /**
+     * 核对手机验证码,如果帐号存在,就直接登录
+     * @param string $num
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function check_phone_num($num=''){
+        $phone_num = cache('phone_login'.$num);
+        if (empty($num)) {
+            return $this->err_js('请输入验证码');
+        }elseif(empty($phone_num)){
+            return $this->err_js('验证码不正确!');
+        }
+        $info = UserModel::get_info($phone_num,'mobphone');
+        if ($info) {    //已注册过的手机号
+            cache('phone_login'.$num,null);
+            $result = UserModel::login($phone_num,'',3600*24*7,true,'mobphone');
+            if (is_array($result)) {
+                return $this->ok_js(
+                        [
+                                'type'=>'login',
+                                'uid'=>$result['uid'],
+                                'username'=>$result['username'],
+                        ],'登录成功');
+            }else{
+                return $this->err_js('系统故障,登录失败!');
+            }
+        }else{  //新用户,提示注册一个帐号
+            return $this->ok_js(
+                    [
+                            'type'=>'reg',
+                            'uid'=>0,
+                            'username'=>substr($phone_num,9),
+                    ],'验证输入正确');
+        }
+    }
+    
+    public function phone_reg()
+    {
+        if ($this->webdb['forbid_normal_reg']) {
+            $this->error('系统关闭了手工注册功能,你可以选择QQ登录或微信登录!!');
+        }
+        if ($this->user) {
+            $this->error('你已经注册过了!');
+        }
+        hook_listen('reg_by_hand_begin',$data);
+        
+        if(IS_POST){
+            
+            $data = get_post('post');
+            if(!empty($data)){
+                $array = explode(',','username,password,password2,email,mobphone,captcha,email_code,phone_code,weixin_code,fromurl');  //允许注册的字段
+                foreach($data AS $key=>$value){
+                    if(!in_array($key, $array)){
+                        unset($data[$key]);
+                    }
+                }
+                if(isset($this->webdb['RegYz'])){
+                    $data['yz'] = $this->webdb['RegYz'];
+                }
+                $data['money'] = $this->webdb['regmoney'];
+            }
+            
+            $phone_num = cache('phone_login'.$data['phone_code']);
+            if (empty($data['phone_code'])) {
+                $this->error('请输入验证码');
+            }elseif(empty($phone_num)){
+                $this->error('验证码不正确!');
+            }
+            cache('phone_login'.$data['phone_code'],null);
+            $data['mobphone'] = $phone_num;     //避免用户中途换号码
+            
+            if( UserModel::get_info( $phone_num , 'mobphone')){
+                $this->error('当前手机号已经注册过了,请直接登录即可!');
+            }
+            
+            $data['email'] || $data['email'] = substr($phone_num,7).rands(3).'@phone.cn';
+            $data['password'] || $data['password'] = rands(6);
+            $data['mob_yz'] = 1;
+            
+            
+            // 验证
+//             $result = $this->validate($data, 'Reg');
+//             if(true !== $result) $this->error($result);
+            
+            $uid = UserModel::register_user($data); //注册帐号
+            if ($uid<2) {
+                $this->error($uid);
+            }
+            
+            hook_listen('reg_by_hand_end',$uid,$data);
+            
+            $result = UserModel::login($phone_num,'',3600*24*7,true,'mobphone');   //帐号同时实现登录
+            if(is_array($result)){
+                $url = murl('member/index/index');
+                if($data['fromurl'] && !strstr($data['fromurl'],'index/login')){
+                    $url = $data['fromurl'];
+                }
+                $this->success('注册成功',$url);
+            }else{
+                $this->error('注册失败！');
+            }
+        }
+        return $this->fetch();
+    }
+    
 }
