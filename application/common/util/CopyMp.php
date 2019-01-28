@@ -123,7 +123,7 @@ class CopyMp
         preg_match("/vid=([^&\"]+)/is",$url,$array2);
         $vid = $array2[1];
         
-        $code="<iframe class=\"video_iframe\" data-vidtype=\"1\" style=\"z-index: 1; width: 320px !important; height: 250px !important; overflow: hidden;\" height=\"250\" width=\"320\" frameborder=\"0\" data-src=\"https://v.qq.com/iframe/preview.html?vid={$vid}&amp;width=500&amp;height=375&amp;auto=0\" allowfullscreen=\"\" src=\"http://v.qq.com/iframe/player.html?vid={$vid}&amp;width=320&amp;height=250&amp;auto=0\" scrolling=\"no\"></iframe>";
+        $code="<iframe class=\"video_iframe\" data-vidtype=\"1\" style=\"z-index: 1; width: 320px !important; height: 250px !important; overflow: hidden;\" height=\"250\" width=\"320\" frameborder=\"0\" data-src=\"https://v.qq.com/iframe/preview.html?vid={$vid}&amp;width=500&amp;height=375&amp;auto=0\" allowfullscreen=\"\" src=\"https://v.qq.com/iframe/player.html?vid={$vid}&amp;width=320&amp;height=250&amp;auto=0\" scrolling=\"no\"></iframe>";
         return $code;
     }
     
