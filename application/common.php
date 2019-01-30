@@ -2774,6 +2774,9 @@ if (!function_exists('weixin_share')) {
      * @return void|string|number|NULL
      */
     function weixin_share($type=''){
+        if (!defined('LOAD_SHARE')) {
+            define('LOAD_SHARE', TRUE);     //方便插件调用判断是否已加载过
+        }
         if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
             return ;
         }
@@ -2781,7 +2784,7 @@ if (!function_exists('weixin_share')) {
             return ;
         }
         static $array = [];
-        if(empty($array)){
+        if(empty($array)){            
             $jssdk = new \app\common\util\Weixin_share(config('webdb.weixin_appid'),config('webdb.weixin_appsecret'));
             $array = $jssdk->GetSignPackage();
         }
