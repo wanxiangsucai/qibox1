@@ -291,6 +291,7 @@ if (!function_exists('url')) {
             parse_str($vars,$vars);
         }
         $par = '';
+        $_vars = $vars;     //避免改变顺序
         if ($vars) {
             ksort($vars);
             $par = http_build_query($vars);
@@ -298,7 +299,7 @@ if (!function_exists('url')) {
         if ($par && $array[$url][$par]) {
             return Url::build($url.'?'.$par, [], $suffix, $domain);
         }else{
-            return Url::build($url, $vars, $suffix, $domain);
+            return Url::build($url, $_vars, $suffix, $domain);
         }
         //齐博修改结束
         return Url::build($url, $vars, $suffix, $domain);
