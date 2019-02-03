@@ -175,7 +175,7 @@ abstract class C extends IndexBase
          $s_info = get_sort($info['fid'],'config');
         
         //如果某个模型有个性模板的话，就不调用母模板
-        $template = $this->get_tpl('show',$this->mid,$s_info);
+         $template = $this->get_tpl('show',$this->mid,$s_info,$info);
         
         //$field_db = $this->getEasyFormItems();     //自定义字段
         
@@ -487,9 +487,10 @@ abstract class C extends IndexBase
      * @param string $type 值为 list 或 show  
      * @param number $mid 模型ID
      * @param array $sort 栏目配置参数,比如设置了栏目模板
+     * @param array $info 内容里边可能有定义了模板
      * @return string
      */
-    protected function get_tpl($type='show',$mid=0,$sort=[]){
+    protected function get_tpl($type='show',$mid=0,$sort=[],$info=[]){
         $template = '';
         //栏目自定义模板，优先级最高
         if($sort['template']){
