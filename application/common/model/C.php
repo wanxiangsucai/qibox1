@@ -698,6 +698,13 @@ abstract class C extends Model
         $info['username'] = get_user_name($info['uid']);
         $info['user_icon'] = get_user_icon($info['uid']);
         $info['user_url'] = get_url('user',$info['uid']);
+        $info['full_title'] = $info['title'];
+        if ($info['font_type']==1) {
+            $info['title'] = '<b>'.$info['title'].'</b>';;
+        }
+        if ($info['font_color']!='') {
+            $info['title'] = '<font color="'.$info['font_color'].'">'.$info['title'].'</font>';;
+        }
         return $info;
     }
     

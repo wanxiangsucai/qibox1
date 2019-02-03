@@ -230,6 +230,109 @@ abstract class Api extends IndexBase
         }
     }
     
+    
+    /**
+     * 标题加粗
+     * @param number $id
+     */
+    public function fonttype($id=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $info;
+        }
+        $table = $info['table'];
+        
+        if (!table_field($table,'font_type')) {
+            query("ALTER TABLE  `qb_{$table}` ADD  `font_type` TINYINT( 1 ) NOT NULL COMMENT  '标题字体加粗或其它'");
+        }
+        
+        $data = [
+                'id'=>$id,
+                'font_type'=>1,
+        ];
+        $result = Db::name($table)->update($data);
+        if($result){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('更新失败');
+        }
+    }
+    
+    
+    /**
+     * 取消标题加粗
+     * @param number $id
+     */
+    public function unfonttype($id=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $info;
+        }
+        $table = $info['table'];
+        
+        $data = [
+                'id'=>$id,
+                'font_type'=>0,
+        ];
+        $result = Db::name($table)->update($data);
+        if($result){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('更新失败');
+        }
+    }
+    
+    /**
+     * 标题加红色
+     * @param number $id
+     */
+    public function fontcolor($id=0,$type='#ff0000'){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $info;
+        }
+        $table = $info['table'];
+        
+        if (!table_field($table,'font_color')) {
+            query("ALTER TABLE  `qb_{$table}` ADD  `font_color`  VARCHAR( 7 ) NOT NULL COMMENT  '标题字体颜色' ");
+        }
+        
+        $data = [
+                'id'=>$id,
+                'font_color'=>$type,
+        ];
+        $result = Db::name($table)->update($data);
+        if($result){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('更新失败');
+        }
+    }
+    
+    
+    /**
+     * 取消标题加红色
+     * @param number $id
+     */
+    public function unfontcolor($id=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $info;
+        }
+        $table = $info['table'];
+        
+        $data = [
+                'id'=>$id,
+                'font_color'=>'',
+        ];
+        $result = Db::name($table)->update($data);
+        if($result){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('更新失败');
+        }
+    }
+    
 }
 
 
