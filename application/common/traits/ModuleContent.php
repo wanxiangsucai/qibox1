@@ -15,6 +15,13 @@ trait ModuleContent
 	    if (config('post_need_sort')==true) {
 	        return self::chooseSort($mid);
 	    }else{
+	        if (empty($mid) && count(model_config())==1) {
+	            $array = model_config();
+	            $array = array_values($array);
+	            $mid = $array[0]['id'];
+	            header("location:".auto_url('add',['mid'=>$mid]));
+	            exit;
+	        }
 	        return self::chooseModule();
 	    }
 	}
