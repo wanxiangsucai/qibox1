@@ -1,6 +1,9 @@
 \thinkphp\library\think\Template.php
 修改函数parseTemplateFile($template)
 
+\thinkphp\library\think\Template.php
+178行及215行增加  (defined('TPL_CACHE_PRE') ? TPL_CACHE_PRE : '') .
+
 
 \thinkphp\library\think\db\Query.php
 1561行,解决一个BUG
@@ -20,3 +23,4 @@ library\think\Request.php
 
 \thinkphp\helper.php
 282行 url函数修改过
+
