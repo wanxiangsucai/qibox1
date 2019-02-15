@@ -138,7 +138,7 @@ abstract class Order extends IndexBase
      */
     protected function send_msg($shop_uid=0,$order_id=0){
         $title = '有客户下单了,请注意查收';
-        $content = $title.'，<a href="'.murl('kehu_order/show',['id'=>$order_id]).'">点击查看详情</a>';
+        $content = $title.'，<a href="'.get_url( murl('kehu_order/show',['id'=>$order_id]) ).'">点击查看详情</a>';
         send_msg($shop_uid,$title,$content);
         send_wx_msg($shop_uid, $content);
     }
