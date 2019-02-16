@@ -197,7 +197,8 @@ abstract class C extends MemberBase
             unset($this->form_items);
         }
         
-        $this->tab_ext['page_title'] = '发布 '.$this->m_model->getNameById($this->mid);        
+        $this->tab_ext['page_title'] = '发布 '.$this->m_model->getNameById($this->mid);
+        $this->assign('fid',$fid);
         return $this->addContent();
     }
     
@@ -255,7 +256,7 @@ abstract class C extends MemberBase
         if( $this->tab_ext['group'] ){
             unset($this->form_items);
         }
-        
+        $this->assign('fid',$info['fid']);
         //修改内容后，最好返回到模型列表页，因为有可能修改了栏目
         return $this->editContent($info , '' ,'member');
     }

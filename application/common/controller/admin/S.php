@@ -81,6 +81,38 @@ abstract class S extends AdminBase
     }
     
     /**
+     * 分组显示设置项
+     * @param number $id 父栏目
+     * @return string[][][]|unknown[][][]|string[][][][]|NULL[][][]
+     */
+    protected function set_field_form($id=0){
+        $msg = '请把模板放在此目录下: '.TEMPLATE_PATH.'index_style/ 然后输入相对路径,比如 default/abc.htm';
+        
+        return [
+                '基础设置'=>[
+                        ['text', 'name', '栏目名称'],
+                        ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle($id)],
+                        //['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
+                        ['icon', 'logo', '图标',],
+                        ['checkbox', 'allowpost', '允许发布内容的用户组','全留空,则不作限制',getGroupByid()],
+                        ['checkbox', 'allowview', '允许查看内容的用户组','全留空,则不作限制。注意标题不能限制。',getGroupByid()],
+                ],
+                '模板设置'=>[
+                        ['text', 'templates[waplist]', 'wap列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
+                        ['text', 'templates[wapshow]', 'wap内容页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
+                        ['text', 'templates[pclist]', 'PC列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
+                        ['text', 'templates[pcshow]', 'PC内容页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<a class="fa fa-plus-square pop" href="/"></a>']],
+                        
+                ],
+                'SEO优化设置'=>[
+                        ['text', 'seo_title', 'SEO标题'],
+                        ['text', 'seo_keywords', 'SEO关键字'],
+                        ['text', 'seo_description', 'SEO描述'],
+                ],
+        ];
+    }
+    
+    /**
      * 修改栏目信息
      * @param unknown $id
      * @return mixed|string
@@ -109,32 +141,8 @@ abstract class S extends AdminBase
         
         if(empty($id)) $this->error('栏目ID不存在');
         
-        $this->form_items = [];
-        
-        $msg = '请把模板放在此目录下: '.TEMPLATE_PATH.'index_style/ 然后输入相对路径,比如 default/abc.htm';
-        
-        $this -> tab_ext['group'] = [
-                '基础设置'=>[
-                        ['text', 'name', '栏目名称'],
-                        ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle($id)],
-                        //['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
-                        ['icon', 'logo', '图标',],
-                        ['checkbox', 'allowpost', '允许发布内容的用户组','全留空,则不作限制',getGroupByid()],
-                        ['checkbox', 'allowview', '允许查看内容的用户组','全留空,则不作限制。注意标题不能限制。',getGroupByid()],
-                ],
-                '模板设置'=>[
-                        ['text', 'templates[waplist]', 'wap列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
-                        ['text', 'templates[wapshow]', 'wap内容页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
-                        ['text', 'templates[pclist]', 'PC列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
-                        ['text', 'templates[pcshow]', 'PC内容页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<a class="fa fa-plus-square pop" href="/"></a>']],
-                        
-                ],
-                'SEO优化设置'=>[
-                        ['text', 'seo_title', 'SEO标题'],
-                        ['text', 'seo_keywords', 'SEO关键字'],
-                        ['text', 'seo_description', 'SEO描述'],
-                ],
-        ];
+        $this->form_items = []; //销毁掉,使用下面分组的形式                
+        $this -> tab_ext['group'] = $this->set_field_form($id);
         
         $form_field =  \app\common\field\Form::get_all_field(-2);
         if ($form_field) {  //把用户自定义字段,追加到基础设置那里,不过也可以另起一个分组的

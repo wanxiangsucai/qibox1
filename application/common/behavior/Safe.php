@@ -4,8 +4,7 @@ namespace app\common\behavior;
 use think\Db;
 
 /**
- * 初始化配置信息行为
- * 将系统配置信息合并到本地配置
+ * 安全防范处理
  * @package app\common\behavior
  */
 class Safe{
