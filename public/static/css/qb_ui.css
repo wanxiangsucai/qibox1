@@ -1252,3 +1252,22 @@
             transform: scale(1); } 
 }
 /***加载中层结束***/
+
+/**自定义字段自动生成的表单**/
+textarea.layui-textarea{
+	width:100%;
+	height:100px;
+}
+input.layui-input{
+	width:100%;
+}
+
+@media (min-width: 1024px) {
+	textarea.layui-textarea{
+		width:500px;
+		height:100px;
+	}
+	input.layui-input{
+		width:500px;
+	}
+}
