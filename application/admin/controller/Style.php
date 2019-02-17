@@ -40,7 +40,7 @@ class Style extends AdminBase
 	    if(!is_writable($basepath)){
 	        return $this->err_js($basepath.'目录不可写,请先修改目录属性可写');
 	    }elseif ( is_dir($basepath.'index_style/'.$keywords) ){
-	        return $this->err_js($basepath.'index_style/'.$keywords.'目录已经存在了,无法安装此风格');
+	        //return $this->err_js($basepath.'index_style/'.$keywords.'目录已经存在了,无法安装此风格');
 	    }
 	    $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
 	    $result = $this->downModel($url,$keywords,$type);
