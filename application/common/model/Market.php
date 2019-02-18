@@ -23,13 +23,13 @@ class Market extends Model
      * @return unknown
      */
     public static function get_list($map=[]){
-        if(!is_table('market')){
-            if(is_file(APP_PATH.'common/upgrade/12.sql')){
-                into_sql(APP_PATH.'common/upgrade/12.sql');
-            }else{
-                return ;
-            }
-        }
+//         if(!is_table('market')){
+//             if(is_file(APP_PATH.'common/upgrade/12.sql')){
+//                 into_sql(APP_PATH.'common/upgrade/12.sql');
+//             }else{
+//                 return ;
+//             }
+//         }
         $data = self::where($map)->column(true);
         return  $data;
     }
