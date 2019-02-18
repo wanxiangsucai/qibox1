@@ -8,7 +8,7 @@ use think\Db;
 class Exam{
     
     private static function get_pre(){
-        return config('system_dirname').'_';
+        return (config('system_dirname')?:'exam') . '_';  //ajax调用的时候,值可能为空,如果是复制的频道会不正常
     }
     
     /**
