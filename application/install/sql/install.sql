@@ -716,7 +716,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(653, 32, '最低提现金额', 'min_getout_money', '50', 'money', '', 0, '', '', 0, -5);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(654, 32, '提现手续费', 'getout_percent_money', '', 'usergroup', '', 0, '', '0即不收手续费,0.01即收取1个点的手续费', 0, -5);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(655, 32, '是否要求先关注公众号才能提现', 'getout_need_join_mp', '', 'radio', '0|不要求\r\n1|要求先关注公众号', 0, '', '', -1, -5);
-
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 32, '1块钱兑换多少个积分', 'money_ratio', '10', 'number', '', 0, '', '', 0, -5);
 -- --------------------------------------------------------
 
 --
