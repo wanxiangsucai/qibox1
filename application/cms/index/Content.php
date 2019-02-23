@@ -23,6 +23,7 @@ class Content extends C
 	 * @see \app\common\controller\index\C::show()
 	 */
 	public function show($id){
+	    $this->haibao = 'content/haibao';  //默认海报模板路径
 	    return parent::show($id);
 	}
 	
