@@ -89,7 +89,7 @@ abstract class S extends Model
             //$where['mid'] = $mid;
         }
         
-        $data_list = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id desc')->column('id,pid,mid,name'));
+        $data_list = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id asc')->column('id,pid,mid,name'));
         foreach ($data_list as $item) {
             if($mid!=0 && $item['mid']!=$mid){
                 continue;
@@ -112,7 +112,7 @@ abstract class S extends Model
             $where['mid'] = $mid;
         }
         $data_list = [];
-        $array = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id desc')->column(true,'id'));
+        $array = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id asc')->column(true,'id'));
         foreach($array AS $rs){
             $data_list[$rs[id]] = $rs;
         }
