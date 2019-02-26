@@ -102,6 +102,10 @@ abstract class Order extends MemberBase
      */
     public function show($id){
         $info = $this->model->getInfo($id);
+        
+        $form_items = \app\common\field\Form::get_all_field(-1);    //自定义字段
+        $info = fun('field@format',$info,'','show','',$form_items);      //数据转义
+        
         if ($info['uid']!=$this->user['uid']) {
             $this->error('你没权限');
         }
