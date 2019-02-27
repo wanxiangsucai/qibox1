@@ -70,8 +70,8 @@
 				</tr>
 				{/if}
 				<!-- 每一组的所有表单 -->
-				{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}
-					<tr id="form_group_{$rs.name}"> 
+				{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}				
+					<tr id="form_group_{$rs.name}" {if $rs.type=='hidden'}style="display:none;"{/if}> 
 					  <td class='tdL'>{$rs.title}: </td>
 					  <td class="tdR {if in_array($rs['type'],['text','password','number','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
 						<div>{$rs.value}</div>

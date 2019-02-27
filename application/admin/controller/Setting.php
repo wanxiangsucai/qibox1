@@ -237,6 +237,7 @@ class Setting extends AdminBase
                 ['hidden','group',$group]
         ];
         $this->form_items = array_merge($tab_list,Cfgfield::toForm($list_data));
+        $this->set_form_group();
         
         $data = [];
         foreach($list_data AS $rs){
@@ -244,6 +245,24 @@ class Setting extends AdminBase
         }
         $this->mid = $group;    //纯属为了模板考虑的
 		return $this->editContent($data);
+    }
+    
+    /**
+     * 分组设置
+     */
+    protected function set_form_group(){
+        $array_a = $array_b = [];
+        foreach($this->form_items AS $rs){
+            if (in_array($rs[1], ['module_pc_index_template','module_wap_index_template','module_pc_list_template','module_wap_list_template','module_pc_show_template','module_wap_show_template','module_pc_index_layout','module_wap_index_layout','module_pc_list_layout','module_wap_list_layout','module_pc_show_layout','module_wap_show_layout'])) {
+                $array_b[] = $rs;
+            }else{
+                $array_a[] = $rs;
+            }
+        }
+        if ($array_b) {
+            $this -> tab_ext['group']['基础设置'] = $array_a;
+            $this -> tab_ext['group']['风格模板设置'] = $array_b;
+        }        
     }
 
 }
