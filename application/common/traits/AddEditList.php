@@ -273,12 +273,12 @@ trait AddEditList {
     
     /**
      * 修改内容 并且自动生成网页模板
-     * @param unknown $info 要修改的内容数据数组
+     * @param array $info 要修改的内容数据数组
      * @param string $url 修改成功后跳转的网址
      * @param string $type 前台还是后台模板
      * @return mixed|string
      */
-    protected function editContent($info, $url = 'index', $type = 'admin') {
+    protected function editContent($info=[], $url = 'index', $type = 'admin') {
         // 保存数据
         if ($this -> request -> isPost()) {
             if ($this -> saveEditContent()) {

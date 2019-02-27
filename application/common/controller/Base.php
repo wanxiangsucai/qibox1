@@ -18,6 +18,7 @@ class Base extends Controller
 	protected $weburl;          //当前网址
 	protected $fromurl;         //来源网址
 	protected $guest;            //游客身份标志
+	protected $index_style_layout; //可以自由定义前台布局模板
 	protected $map = [];
 	protected $admin = false;
 	
@@ -239,13 +240,12 @@ class Base extends Controller
                 die('严重警告!!<br><br>当前模板文件不存在:<br><br>'.getTemplate($_template,false));
             }
 	    }
-        
         $_vars = [
                 'admin'=>$this->admin,
                 'userdb'=>$this->user,
                 'timestamp'=>$this->timestamp,
                 'webdb'=>$this->webdb,
-                'index_style_layout'=>getTemplate('index@layout'),
+                'index_style_layout'=>$this->index_style_layout?:getTemplate('index@layout'),
                 'member_style_layout'=>getTemplate('member@layout'),
                 'site_defalut_html'=>getTemplate(config('site_defalut_html')),
                 'simple_layout'=>getTemplate(config('simple_layout')),  //mui简单模板
@@ -253,8 +253,33 @@ class Base extends Controller
         $vars = array_merge($_vars,$vars);
         return parent::fetch($template, $vars, $replace, $config);
     }
-
-    //插件模板
+    
+    /**
+     * 设置频道的布局模板
+     */
+    protected function get_module_layout($type='show'){
+        if(IN_WAP===true){
+            if( $this->webdb['module_wap_'.$type.'_layout']!='' ){
+                $template = TEMPLATE_PATH.'index_style/'.$this->webdb['module_wap_'.$type.'_layout'];
+            }
+        }else{
+            if( $this->webdb['module_pc_'.$type.'_layout']!='' ){
+                $template = TEMPLATE_PATH.'index_style/'.$this->webdb['module_pc_'.$type.'_layout'];
+            }
+        }
+        if($template!=''&&is_file($template)){
+            $this->index_style_layout = $template;
+        }
+    }
+    
+    /**
+     * 插件模板
+     * @param string $template
+     * @param array $vars
+     * @param array $replace
+     * @param array $config
+     * @return mixed|string
+     */
     protected function pfetch($template = '',  $vars = [], $replace = [], $config = [])
     {
         $plugin_name = input('param.plugin_name');

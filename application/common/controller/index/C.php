@@ -15,6 +15,7 @@ abstract class C extends IndexBase
     protected $m_model;            //模块
     protected $f_model;              //字段
     protected $s_model;              //栏目
+    protected $haibao;                //海报默认路径
     
     
     public function delete(){
@@ -29,6 +30,7 @@ abstract class C extends IndexBase
         $this->s_model     = get_model_class($dirname,'sort');
         $this->m_model   = get_model_class($dirname,'module');
         $this->f_model     = get_model_class($dirname,'field');
+        $this->haibao = TEMPLATE_PATH.'haibao_style/default/show.htm';           //海报默认路径
     }
     
     /**
@@ -49,6 +51,42 @@ abstract class C extends IndexBase
                 $this->error('你所在用户组无权查看!');
             }
         }
+    }
+    
+    /**
+     * 设置海报
+     * @param array $info
+     */
+    protected function set_haibao($info=[]){
+        $haibao = '';
+        if ($info['haibao'] && is_file(TEMPLATE_PATH.'haibao_style/'.$info['haibao'])) {
+            $haibao = TEMPLATE_PATH.'haibao_style/'.$info['haibao'];
+        }
+        if(empty($haibao)){
+            $array = $info['fid'] ? get_sort($info['fid'],'config') : [];
+            if($array['haibao']){
+                list($default_file) = explode(',', $array['haibao']);
+            }
+            if ($default_file && is_file(TEMPLATE_PATH.'haibao_style/'.$default_file)) {
+                $haibao = TEMPLATE_PATH.'haibao_style/'.$default_file;
+            }
+        }
+        if(empty($haibao)){
+            $array = model_config($info['mid']);
+            if($array['haibao']){
+                list($default_file) = explode(',', $array['haibao']);
+            }
+            if ($default_file && is_file(TEMPLATE_PATH.'haibao_style/'.$default_file)) {
+                $haibao = TEMPLATE_PATH.'haibao_style/'.$default_file;
+            }
+        }
+        if (empty($haibao)){
+            //$haibao = 'content/haibao';
+            $haibao = $this->haibao;
+        }else{
+            define('TPL_CACHE_PRE', basename(dirname($haibao)));    //要设置缓存的前缀,否则有缓存会不生效
+        }
+        $this->assign('haibao',$haibao);
     }
     
     /**
@@ -103,7 +141,7 @@ abstract class C extends IndexBase
                 'info'=>$s_info,
                 'm_info'=>$m_info,
         ];
-        
+        $this->get_module_layout('list');   //重新定义布局模板
         return $this->fetch($template,$vars);
     }
     
@@ -138,6 +176,8 @@ abstract class C extends IndexBase
         Hook_listen('cms_content_show',$info,$this->user);
         
         $this->view_check($info);   //访问权限检查
+        
+        $this->set_haibao($info);   //设置海报
         
         $this->updateView($id);     //更新浏览量
         
@@ -188,6 +228,7 @@ abstract class C extends IndexBase
                 'listdb'=>$info['picurls'],
                 's_info'=>$s_info,
         ];
+        $this->get_module_layout('show');   //重新定义布局模板
         return $this->fetch($template,$vars);
     }
     
@@ -482,6 +523,27 @@ abstract class C extends IndexBase
 // 		}
     }
     
+    
+    /**
+     * 获取频道设置的列表页或者是内容风格,但优先级比栏目指定的模板要低
+     * @param string $type
+     * @return string
+     */
+    protected function get_module_tpl($type='show'){
+        if(IN_WAP===true){
+            if( $this->webdb['module_wap_'.$type.'_template']!='' ){
+                $template = TEMPLATE_PATH.'index_style/'.$this->webdb['module_wap_'.$type.'_template'];
+            }
+        }else{
+            if( $this->webdb['module_pc_'.$type.'_template']!='' ){
+                $template = TEMPLATE_PATH.'index_style/'.$this->webdb['module_pc_'.$type.'_template'];
+            }
+        }
+        if(is_file($template)){
+            return $template;
+        }
+    }
+    
     /**
      * 挑选模板 不存在就返回空值
      * @param string $type 值为 list 或 show  
@@ -512,6 +574,12 @@ abstract class C extends IndexBase
                 $template = '';
             }
         }
+        
+        //频道设置的列表或内容页模板
+        if (empty($template)) {
+            $template = $this->get_module_tpl($type);
+        }
+        
         
         //当前风格的模板
         if (empty($template)) {
