@@ -240,6 +240,9 @@ class Base extends Controller
                 die('严重警告!!<br><br>当前模板文件不存在:<br><br>'.getTemplate($_template,false));
             }
 	    }
+	    if (empty($this->index_style_layout)) {
+	        $this->get_module_layout('default');   //频道默认个性布局模板,优化级低于指定的index show list布局模板
+	    }
         $_vars = [
                 'admin'=>$this->admin,
                 'userdb'=>$this->user,
@@ -256,6 +259,8 @@ class Base extends Controller
     
     /**
      * 设置频道的布局模板
+     * @param string $type 主要是4个参数 show list index default 分别代表: 内容页 列表页 频道主页 频道默认个性
+     * default频道默认个性布局模板,优化级低于指定的index show list布局模板
      */
     protected function get_module_layout($type='show'){
         if(IN_WAP===true){

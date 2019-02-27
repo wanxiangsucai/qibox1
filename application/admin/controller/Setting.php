@@ -93,7 +93,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_pc_index_layout',
                         'title'=>'频道主页PC版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道PC版个性布局模板',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -101,7 +101,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_wap_index_layout',
                         'title'=>'频道主页WAP版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道WAP版个性布局模板',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -109,7 +109,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_pc_list_layout',
                         'title'=>'频道列表页PC版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道PC版个性布局模板',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -117,7 +117,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_wap_list_layout',
                         'title'=>'频道列表页WAP版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道WAP版个性布局模板',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -125,7 +125,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_pc_show_layout',
                         'title'=>'频道内容页PC版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道PC版个性布局模板',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -133,7 +133,24 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_wap_show_layout',
                         'title'=>'频道内容页WAP版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道WAP版个性布局模板',
+                        'form_type'=>'text',
+                        'ifsys'=>0,
+                        'list'=>-1,
+                ],
+                
+                [
+                        'c_key'=>'module_wap_default_layout',
+                        'title'=>'频道WAP版个性布局模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级低于index、list、show设置的布局模板',
+                        'form_type'=>'text',
+                        'ifsys'=>0,
+                        'list'=>-1,
+                ],
+                [
+                        'c_key'=>'module_pc_default_layout',
+                        'title'=>'频道PC版个性布局模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级低于index、list、show设置的布局模板',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -253,7 +270,7 @@ class Setting extends AdminBase
     protected function set_form_group(){
         $array_a = $array_b = [];
         foreach($this->form_items AS $rs){
-            if (in_array($rs[1], ['module_pc_index_template','module_wap_index_template','module_pc_list_template','module_wap_list_template','module_pc_show_template','module_wap_show_template','module_pc_index_layout','module_wap_index_layout','module_pc_list_layout','module_wap_list_layout','module_pc_show_layout','module_wap_show_layout'])) {
+            if (in_array($rs[1], ['module_pc_index_template','module_wap_index_template','module_pc_list_template','module_wap_list_template','module_pc_show_template','module_wap_show_template','module_pc_index_layout','module_wap_index_layout','module_pc_list_layout','module_wap_list_layout','module_pc_show_layout','module_wap_show_layout','module_wap_default_layout','module_pc_default_layout'])) {
                 $array_b[] = $rs;
             }else{
                 $array_a[] = $rs;
