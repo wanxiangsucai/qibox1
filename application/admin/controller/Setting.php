@@ -40,7 +40,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_pc_index_template',
                         'title'=>'频道主页PC版风格模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/index/pc_index.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -48,7 +48,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_wap_index_template',
                         'title'=>'频道主页WAP版风格模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/index/wap_index.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -56,7 +56,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_pc_list_template',
                         'title'=>'频道列表页PC版风格模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/content/pc_list.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -64,7 +64,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_wap_list_template',
                         'title'=>'频道列表页WAP版风格模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/content/wap_list.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -72,7 +72,7 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_pc_show_template',
                         'title'=>'频道内容页PC版风格模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/content/pc_show.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
@@ -80,80 +80,79 @@ class Setting extends AdminBase
                 [
                         'c_key'=>'module_wap_show_template',
                         'title'=>'频道内容页WAP版风格模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/content/wap_show.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
                         'list'=>-1,
                 ],
-                
-                
-                
                 
                 
                 [
                         'c_key'=>'module_pc_index_layout',
                         'title'=>'频道主页PC版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道PC版个性布局模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/index/pc_layout.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
-                        'list'=>-1,
+                        'list'=>-2,
                 ],
                 [
                         'c_key'=>'module_wap_index_layout',
                         'title'=>'频道主页WAP版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道WAP版个性布局模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/index/wap_layout.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
-                        'list'=>-1,
+                        'list'=>-2,
                 ],
                 [
                         'c_key'=>'module_pc_list_layout',
                         'title'=>'频道列表页PC版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道PC版个性布局模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/index/pc_layout.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
-                        'list'=>-1,
+                        'list'=>-2,
                 ],
                 [
                         'c_key'=>'module_wap_list_layout',
                         'title'=>'频道列表页WAP版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道WAP版个性布局模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/index/wap_layout.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
-                        'list'=>-1,
+                        'list'=>-2,
                 ],
                 [
                         'c_key'=>'module_pc_show_layout',
                         'title'=>'频道内容页PC版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道PC版个性布局模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/index/pc_layout.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
-                        'list'=>-1,
+                        'list'=>-2,
                 ],
                 [
                         'c_key'=>'module_wap_show_layout',
                         'title'=>'频道内容页WAP版头部布局模板',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级高于频道WAP版个性布局模板',
+                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 xxx/index/wap_layout.htm',
                         'form_type'=>'text',
                         'ifsys'=>0,
-                        'list'=>-1,
+                        'list'=>-2,
                 ],
                 
                 [
                         'c_key'=>'module_wap_default_layout',
-                        'title'=>'频道WAP版个性布局模板(也即频道个性风格)',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级低于index、list、show设置的布局模板',
-                        'form_type'=>'text',
+                        'title'=>'WAP端频道个性风格',
+                        'c_descrip'=>'优化级高于系统风格,但低于模板个性设置',
+                        'form_type'=>'select',
+                        'options'=>'app\\common\\util\\Style@get_indexstyle_template@["layout","pc"]',
                         'ifsys'=>0,
-                        'list'=>3,
+                        'list'=>0,
                 ],
                 [
                         'c_key'=>'module_pc_default_layout',
-                        'title'=>'频道PC版个性布局模板(也即频道个性风格)',
-                        'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级低于index、list、show设置的布局模板',
-                        'form_type'=>'text',
+                        'title'=>'PC端频道个性风格',
+                        'c_descrip'=>'优化级高于系统风格,但低于模板个性设置',
+                        'form_type'=>'select',
+                        'options'=>'app\\common\\util\\Style@get_indexstyle_template@["layout","pc"]',
                         'ifsys'=>0,
-                        'list'=>2,
+                        'list'=>0,
                 ],
                 
                 
@@ -270,7 +269,12 @@ class Setting extends AdminBase
     protected function set_form_group(){
         $array_a = $array_b = [];
         foreach($this->form_items AS $rs){
-            if (in_array($rs[1], ['module_pc_index_template','module_wap_index_template','module_pc_list_template','module_wap_list_template','module_pc_show_template','module_wap_show_template','module_pc_index_layout','module_wap_index_layout','module_pc_list_layout','module_wap_list_layout','module_pc_show_layout','module_wap_show_layout','module_wap_default_layout','module_pc_default_layout'])) {
+            if (in_array($rs[1], ['module_pc_index_template','module_wap_index_template','module_pc_list_template','module_wap_list_template','module_pc_show_template','module_wap_show_template','module_pc_index_layout','module_wap_index_layout','module_pc_list_layout','module_wap_list_layout','module_pc_show_layout','module_wap_show_layout'])) {
+                list(,$pcwap,$filename,$type) = explode('_', $rs[1]);
+                if ($type=='layout') {
+                    $filename = 'layout';
+                }
+                $rs[3] = $rs['c_descrip'] = \app\common\util\Style::select_indexstyle_template($filename,$pcwap,$rs[1]).$rs[3];
                 $array_b[] = $rs;
             }else{
                 $array_a[] = $rs;
@@ -278,7 +282,7 @@ class Setting extends AdminBase
         }
         if ($array_b) {
             $this -> tab_ext['group']['基础设置'] = $array_a;
-            $this -> tab_ext['group']['风格模板设置'] = $array_b;
+            $this -> tab_ext['group']['模板个性设置'] = $array_b;
         }        
     }
 
