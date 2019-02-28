@@ -2437,7 +2437,11 @@ if (!function_exists('getTemplate')) {
       */
      function del_html($content=''){
          $content=preg_replace('/<([^<]*)>/is',"",$content);	       //把HTML代码过滤掉
-         $content = preg_replace("/\[face(\d+)\]/is",'',$content);  //过滤掉QQ表情
+         $content = preg_replace("/\[face(\d+)\]/is",'',$content);  //过滤掉QQ表情 [reply] 请在这括号范围内输入要隐藏的内容 [/reply]
+         $content = preg_replace("/\[reply\](.*?)\[\/reply]/is",'',$content);   //过滤掉回复可见的内容
+         $content = preg_replace("/\[group=([\d,]+)\](.*?)\[\/group]/is",'',$content);  //过滤掉指定用户可见
+         $content = preg_replace("/\[password=([^\]]+)\](.*?)\[\/password]/is",'',$content); //过滤掉密码才能看的内容
+         $content = preg_replace("/\[paymoney=([\d]+)\](.*?)\[\/paymoney]/is",'',$content); //过滤掉积分购买的内容
          return $content;
      }
  }
