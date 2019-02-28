@@ -575,15 +575,16 @@ abstract class C extends IndexBase
             }
         }
         
-        //频道设置的列表或内容页模板
         if (empty($template)) {
-            $template = $this->get_module_tpl($type);
+            $template = $this->get_module_tpl($type);   //频道特别设置了列表或内容页模板
         }
         
-        
-        //当前风格的模板
         if (empty($template)) {
-            $template = $this->get_auto_tpl($type,$mid);
+            $template = $this->get_module_layout_tpl($type,$mid);   //频道特别设置了风格布局模板
+        }
+       
+        if (empty($template)) {
+            $template = $this->get_auto_tpl($type,$mid);    //当前风格的模板
         }
         
         if (empty($template)) { //新风格找不到的话,就寻找默认default模板
@@ -611,6 +612,55 @@ abstract class C extends IndexBase
         }
         
          return $template;
+    }
+    
+    
+    /**
+     * 频道特别设置了布局模板
+     * 按优先级寻找模板 比如优先级序顺是 wap_show2(pc_show2) 最高,其次是 show2 接着是 wap_show(pc_show) 最后是 show
+     * @param string $type 可以为show 或 list
+     * @param number $mid 模型ID
+     * @return string
+     */
+    protected function get_module_layout_tpl($type='show',$mid=0){
+        //模型的模板优先级高于母模板
+        if(IN_WAP===true){
+            $template = $this->check_module_layout_file('wap_'.$type.$mid);
+        }else{
+            $template = $this->check_module_layout_file('pc_'.$type.$mid);
+        }
+        if(empty($template)){
+            $template = $this->check_module_layout_file($type.$mid);
+        }
+        
+        //母模板
+        if(empty($template)){
+            if(IN_WAP===true){
+                $template = $this->check_module_layout_file('wap_'.$type);
+            }else{
+                $template = $this->check_module_layout_file('pc_'.$type);
+            }
+        }
+        if(empty($template)){
+            $template = $this->check_module_layout_file($type);
+        }
+        return $template;
+    }
+    
+    /**
+     * 频道设置了个性风格布局模板
+     * @param unknown $filename
+     * @return string
+     */
+    protected function check_module_layout_file($filename='show'){
+        $layout = $this->get_module_layout('default');
+        if ($layout){
+            $base_path = dirname(dirname($layout)) . '/' . config('system_dirname') . '/content/';
+            $tpl_name = $filename . '.' . config('template.view_suffix');
+            if(is_file($base_path.$tpl_name)){
+                return $base_path.$tpl_name;
+            }
+        }
     }
     
     /**

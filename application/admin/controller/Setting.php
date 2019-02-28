@@ -141,19 +141,19 @@ class Setting extends AdminBase
                 
                 [
                         'c_key'=>'module_wap_default_layout',
-                        'title'=>'频道WAP版个性布局模板',
+                        'title'=>'频道WAP版个性布局模板(也即频道个性风格)',
                         'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级低于index、list、show设置的布局模板',
                         'form_type'=>'text',
                         'ifsys'=>0,
-                        'list'=>-1,
+                        'list'=>3,
                 ],
                 [
                         'c_key'=>'module_pc_default_layout',
-                        'title'=>'频道PC版个性布局模板',
+                        'title'=>'频道PC版个性布局模板(也即频道个性风格)',
                         'c_descrip'=>'请把模板放在此目录下: /template/index_style/ 然后输入相对路径,比如 default/abc.htm,优先级低于index、list、show设置的布局模板',
                         'form_type'=>'text',
                         'ifsys'=>0,
-                        'list'=>-1,
+                        'list'=>2,
                 ],
                 
                 

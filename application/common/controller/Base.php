@@ -227,7 +227,9 @@ class Base extends Controller
 	            }
 	        }
 	    }
-
+	    
+	    $template = $this->get_module_style_template($template);   //频道个性模板的查找
+	    
 	    if( defined('ENTRANCE')&&in_array(ENTRANCE,['index','member','admin']) ) {
             if($template=='' && $this->route[2]==''){
                 $template='index';
@@ -243,6 +245,7 @@ class Base extends Controller
 	    if (empty($this->index_style_layout)) {
 	        $this->get_module_layout('default');   //频道默认个性布局模板,优化级低于指定的index show list布局模板
 	    }
+	    
         $_vars = [
                 'admin'=>$this->admin,
                 'userdb'=>$this->user,
@@ -258,9 +261,40 @@ class Base extends Controller
     }
     
     /**
+     * 如果频道设置了个性风格布局模板后，自动去查找此模板里对应的内容主体模板
+     * @param string $template
+     */
+    protected function get_module_style_template($template=''){
+        if (empty(config('system_dirname')) || ($template && is_file($template)) ) {
+            return $template;
+        }
+        $layout = $this->get_module_layout('default');
+        if ($layout){
+            $tpl = $template?:$this->request->action();
+            $tpl_name = basename($tpl).'.'.config('template.view_suffix');
+            $tpl_path = dirname($tpl);
+            $base_path = dirname(dirname($layout)) . '/' . config('system_dirname') . '/' . strtolower($this->request->controller()) . '/' . ( $tpl_path=='.' ? '' : $tpl_path . '/' );
+            if(IN_WAP===true){
+                if(is_file($base_path.'wap_'.$tpl_name)){
+                    return $base_path.'wap_'.$tpl_name;
+                }
+            }else{
+                if(is_file($base_path.'pc_'.$tpl_name)){
+                    return $base_path.'pc_'.$tpl_name;
+                }
+            }
+            if(is_file($base_path.$tpl_name)){
+                return $base_path.$tpl_name;
+            }
+        }
+        return $template;
+    }
+    
+    /**
      * 设置频道的布局模板
      * @param string $type 主要是4个参数 show list index default 分别代表: 内容页 列表页 频道主页 频道默认个性
      * default频道默认个性布局模板,优化级低于指定的index show list布局模板
+     * @return string
      */
     protected function get_module_layout($type='show'){
         if(IN_WAP===true){
@@ -274,6 +308,7 @@ class Base extends Controller
         }
         if($template!=''&&is_file($template)){
             $this->index_style_layout = $template;
+            return $template;
         }
     }
     

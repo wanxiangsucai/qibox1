@@ -83,7 +83,7 @@
 					{/if}
 					<!-- 每一组的所有表单 -->
 					{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}
-						<dl id="form_group_{$rs.name}">
+						<dl id="form_group_{$rs.name}" {if $rs.type=='hidden'}style="display:none;"{/if}>
 							<dt>{$rs.title}</dt>
 							<dd>
 							<div>{$rs.value}</div>
