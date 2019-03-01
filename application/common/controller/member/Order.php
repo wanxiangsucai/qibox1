@@ -44,6 +44,27 @@ abstract class Order extends MemberBase
     }
     
     /**
+     * 确认收货
+     * @param number $id
+     */
+    public function receive($id=0){
+        $info = $this->model->getInfo($id);
+        if ($info['uid']!=$this->user['uid']) {
+            $this->error('你没权限');
+        }
+        $result = $this->model->update([
+                'id'=>$id,
+                'receive_status'=>1,
+                'receive_time'=>time(),
+        ]);
+        if ($result) {
+            $this->success('确认成功');
+        }else{
+            $this->error('执行失败');
+        }
+    }
+    
+    /**
      * 删除订单
      * @param unknown $id
      */

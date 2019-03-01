@@ -34,12 +34,17 @@ class Order extends AdminBase
         if ($this->request->isPost()) {
             $data = $this->request->post();
             $data = \app\common\field\Post::format_all_field($data,-1); //对一些特殊的自定义字段进行处理,比如多选项,以数组的形式提交的;
+            if ($data['shipping_code']!='') {
+                $data['shipping_status'] = 1;  //标志已发货
+                $data['shipping_time'] = time();
+            }
             $this->request->post($data);
         }else{
             $this->form_items = array_merge(
                     \app\common\field\Form::get_all_field(-1),  //自定义字段
                     [
                             ['text','shipping_code','物流单号'],
+                            ['money','pay_money','应付金额'],
                     ]
                     );
             $info = $this -> getInfoData($id);
@@ -62,6 +67,8 @@ class Order extends AdminBase
         $array = [
                 ['order_sn', '订单号', 'text'],
                 ['pay_status', '支付与否', 'switch'],
+                ['shipping_status', '发货与否', 'yesno'],
+                ['receive_status', '签收与否', 'yesno'],
                 ['totalmoney', '订单总额', 'text'],
                 ['uid', '用户帐号', 'username'],
                 ['create_time', '下单日期', 'text'],
@@ -102,12 +109,14 @@ class Order extends AdminBase
                 [
                         ['text','order_sn', '订单号'],
                         ['text','shipping_code', '物流单号'],
+                        ['radio','shipping_status', '发货与否', '',['未发货','已发货']],
+                        ['radio','receive_status', '签收与否','',['未签收','已签收']],
                         ['text','totalmoney', '订单总额'],
                         ['date','create_time', '下单日期'],
                         ['radio','pay_status', '支付与否','',['未支付','已支付']],
                 ],
                 $form_items
-         );
+          );
         
         $info = getArray( $this->getInfoData($id) );
         $info = fun('field@format',$info,'','show','',$this->form_items);  //数据转义

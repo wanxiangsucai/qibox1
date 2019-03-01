@@ -50,12 +50,17 @@ abstract class KehuOrder extends MemberBase
             $array = [
                     'id'=>$id,
             ];
-            if($info['pay_status']==0 && isset($data['pay_money'])){
-                $array['pay_money'] = $data['pay_money'];
-            }elseif($info['pay_status']!=0 && isset($data['shipping_code'])){
+            if($info['pay_status']==0 && $data['pay_money']>0){
+                $array['pay_money'] = $data['pay_money'];   //未付款前可以修改订单价格
+            }
+            if($data['shipping_code']!=''){
                 $array['shipping_code'] = $data['shipping_code'];
+                $array['shipping_status'] = 1;  //标志已发货
+                if ($data['shipping_code']!=$info['shipping_code']) {
+                    $array['shipping_time'] = time();
+                }                
             }else{
-                $this->error('没有东西可以修改');
+                $array['shipping_status'] = 0;
             }
             $this->model->update($array);
             

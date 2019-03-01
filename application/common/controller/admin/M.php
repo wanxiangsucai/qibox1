@@ -28,7 +28,8 @@ abstract class M extends AdminBase
         
         $this->form_items = [
                 ['text', 'title', '模型名称'],
-                ['text', 'layout', '模板路径','一般请留空,否则必须放在/template/index_style/目录下,然后补全路径:比如:“qiboxxx/cms/content/list2.htm”'],                
+                ['text', 'layout', '模板路径','一般请留空,否则必须放在/template/index_style/目录下,然后补全路径:比如:“qiboxxx/cms/content/list2.htm”'],     
+                ['text', 'haibao', '海报模板路径',fun('haibao@get_haibao_list').'可留空,多个用逗号隔开,需要补全路径(其中haibao_style不用填):比如:“xxx/show.htm”'],
         ];
         
         $this->list_items = [
@@ -101,6 +102,30 @@ abstract class M extends AdminBase
         
         return $this->addContent();
         
+    }
+    
+    public function edit($id = null) {
+        if (empty($id)) $this -> error('缺少参数');
+        
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+            preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+            $dirname = $array[0][1];
+            if ( !table_field($dirname.'_module','haibao') ) {
+                query("ALTER TABLE  `qb_{$dirname}_module` ADD  `haibao` VARCHAR( 255 ) NOT NULL COMMENT  '海报模板';");
+            }
+            if ($data['haibao']) {
+                $detail = explode(',',$data['haibao']);
+                foreach($detail AS $value){
+                    if($value!='' && !is_file(TEMPLATE_PATH.'haibao_style/'.$value)){
+                        $this->error('当前文件不存在:'.TEMPLATE_PATH.'haibao_style/'.$value);
+                    }
+                }
+            }
+        }
+        
+        $info = $this -> getInfoData($id);
+        return $this -> editContent($info);
     }
     
     public function delete($ids = null)

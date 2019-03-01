@@ -98,6 +98,7 @@ abstract class S extends AdminBase
                         ['checkbox', 'allowview', '允许查看内容的用户组','全留空,则不作限制。注意标题不能限制。',getGroupByid()],
                 ],
                 '模板设置'=>[
+                        ['text', 'haibao', '海报模板路径',fun('haibao@get_haibao_list').'可留空,多个用逗号隔开,需要补全路径(其中haibao_style不用填):比如:“xxx/show.htm”'],
                         ['text', 'templates[waplist]', 'wap列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
                         ['text', 'templates[wapshow]', 'wap内容页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
                         ['text', 'templates[pclist]', 'PC列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
@@ -125,7 +126,21 @@ abstract class S extends AdminBase
             if (!empty($this -> validate)) {    // 验证
                 //$result = $this -> validate($data, $this -> validate);
                 //if (true !== $result) $this -> error($result);
-            } 
+            }
+            
+            if ($data['haibao']) {
+                preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+                $dirname = $array[0][1];
+                if ( !table_field($dirname.'_sort','haibao') ) {
+                    query("ALTER TABLE  `qb_{$dirname}_sort` ADD  `haibao` VARCHAR( 255 ) NOT NULL COMMENT  '海报模板';");
+                }
+                $detail = explode(',',$data['haibao']);
+                foreach($detail AS $value){
+                    if($value!='' && !is_file(TEMPLATE_PATH.'haibao_style/'.$value)){
+                        $this->error('当前文件不存在:'.TEMPLATE_PATH.'haibao_style/'.$value);
+                    }
+                }
+            }
             
             $data['allowpost'] = implode(',', $data['allowpost']);  //允许发布内容的用户组
             $data['allowview'] = implode(',', $data['allowview']);  //允许查看内容的用户组
