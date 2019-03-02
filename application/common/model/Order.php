@@ -156,6 +156,21 @@ class Order extends Model
         
         //商家入帐
         add_rmb($order_info['shop_uid'],abs($order_info['pay_money']),0,'销售商品');
+        
+        static::send_msg($order_info);
+    }
+    
+    /**
+     * 支付成功,消息通知
+     * @param array $order_info 订单信息,不是商品信息
+     */
+    protected static function send_msg($order_info=[]){
+        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        $dirname = $array[0][1];
+        $title = '有客户付款了';
+        $content = $title.'，<a href="'.get_url( murl($dirname.'/kehu_order/show',['id'=>$order_info['id']]) ).'">点击查看详情</a>';
+        send_msg($order_info['shop_uid'],$title,$content);
+        send_wx_msg($order_info['shop_uid'], $content);
     }
 	
 }

@@ -31,12 +31,12 @@ abstract class Order extends IndexBase
      */
     public function endpay($orders_id = '',$ispay=1){
         if ($ispay==0) {
-            $this->error('支付失败',url('index/index'),[],3);
+            $this->error('支付失败',murl('order/index'),[],3);
         }else{
             if($this->order_model->pay($orders_id)){
-                $this -> success('支付成功', url('index/index'));
+                $this -> success('支付成功', murl('order/index'));
             }else{
-                $this->error('订单还在处理中...', url('index/index'),[],3);
+                $this->error('订单还在处理中...', murl('order/index'),[],3);
             }
         }        
     }
@@ -99,7 +99,7 @@ abstract class Order extends IndexBase
                 $data['create_time'] = time();
                 if ($result = $this->order_model->create($data)) {
                     $order_ids[] = $result->id;
-                    $this->send_msg($uid,$result->id);
+                    $this->send_msg($uid,$result->id,$shop_array);
                 }
             }
             
@@ -108,7 +108,7 @@ abstract class Order extends IndexBase
             $this->add_address($data);  //添加地址
             
             if (!empty($order_ids)) {
-                $url = '/';
+                $url = murl('order/index');
                 if ($data['ifolpay']==1) {
                     $order_ids = implode(',', $order_ids);
                     $url = post_olpay([
@@ -136,8 +136,12 @@ abstract class Order extends IndexBase
      * @param number $shop_uid
      * @param number $order_id
      */
-    protected function send_msg($shop_uid=0,$order_id=0){
-        $title = '有客户下单了,请注意查收';
+    protected function send_msg($shop_uid=0,$order_id=0,$shop=[]){
+        $shops = [];
+        foreach($shop AS $rs){
+            $shops[] = $rs['title'];
+        }
+        $title = '有客户下单了,订购的商品是:'.implode('、',$shops);
         $content = $title.'，<a href="'.get_url( murl('kehu_order/show',['id'=>$order_id]) ).'">点击查看详情</a>';
         send_msg($shop_uid,$title,$content);
         send_wx_msg($shop_uid, $content);
