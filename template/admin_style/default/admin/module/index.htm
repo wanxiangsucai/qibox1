@@ -27,8 +27,8 @@
     <tr bgcolor="#FFFFFF" class="trA" onmouseover="this.className='trB'" onmouseout="this.className='trA'"> 
       <td>{$rs.id}</td>
       <td>{notempty name="$rs.icon"}<li class="{$rs.icon}"></li>{/notempty}</td>
-      <td class='Left'>{$rs.name}</td>
-      <td class='Left'>{$rs.keywords}</td>
+      <td class='Left'><a href="{:iurl($rs['keywords'].'/index/index')}" target="_blank">{$rs.name}</a></td>
+      <td class='Left'><a href="{:iurl($rs['keywords'].'/index/index')}" target="_blank">{$rs.keywords}</a></td>
 	  <td>{eq name="$rs.ifopen" value="1"}<li style="font-size:20px;color:green;" class='fa fa-fw fa-check-circle-o'></li>{else /}<li class='fa fa-fw fa-ban'></li>{/eq} </td>
 	  <td><a href="{$rs.author_url}" target="_blank">{$rs.author}</a></td>
       <td> 

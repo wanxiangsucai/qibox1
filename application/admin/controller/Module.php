@@ -37,23 +37,7 @@ class Module extends AdminBase
 		                        'class' => '',
 		                ],
 		        ],
-		];
-		$this->list_items = [
-		        ['icon', '图标', 'icon'],
-				['name', '频道名称', 'link',iurl('__keywords__/index/index',[],true,false,'m'),'target'],
-				//['pre', '数据表前缀', 'text'],
-				['keywords', '关键字(目录名)', 'text'],
-				['list', '排序', 'text'],
-		        ['ifsys', '顶部菜单', 'yesno'],
-				['ifopen', '开放与否', 'yesno'],
-		        ['version', '版本更新', 'callback',function($value=''){
-		            list($time) = explode("\t",$value);
-		            return $time;
-		        }],
-		        ['right_button', '操作', 'callback',function($value,$rs){
-		            return ($rs['type']==0?'':'<a title="复制当前模块" icon="fa fa-copy" class="btn btn-xs btn-default" href="'.url('copy',['id'=>$rs['id']]).'" target="_self"><i class="fa fa-copy"></i></a>').$value;
-		        },'__data__'],
-			];		
+		];		
 	}
 	
 	/**
@@ -64,9 +48,25 @@ class Module extends AdminBase
 	    if ($this->request->isPost()) {
 	        return $this->edit_order();
 	    }
-	    if(!table_field('module','version_id')){    //升级数据库
-	        into_sql(APP_PATH.'common/upgrade/6.sql',true,0);
-	    }
+// 	    if(!table_field('module','version_id')){    //升级数据库
+// 	        into_sql(APP_PATH.'common/upgrade/6.sql',true,0);
+// 	    }
+	    $this->list_items = [
+	            ['icon', '图标', 'icon'],
+	            ['name', '频道0名称', 'link',iurl('__keywords__/index/index',[],true,false,'m'),'target'],
+	            //['pre', '数据表前缀', 'text'],
+	            ['keywords', '关键字(目录名)', 'text'],
+	            ['list', '排序', 'text'],
+	            ['ifsys', '顶部菜单', 'yesno'],
+	            ['ifopen', '开放与否', 'yesno'],
+	            ['version', '版本更新', 'callback',function($value=''){
+	                list($time) = explode("\t",$value);
+	                return $time;
+	            }],
+	            ['right_button', '操作', 'callback',function($value,$rs){
+	                return ($rs['type']==0?'':'<a title="复制当前模块" icon="fa fa-copy" class="btn btn-xs btn-default" href="'.url('copy',['id'=>$rs['id']]).'" target="_self"><i class="fa fa-copy"></i></a>').$value;
+	            },'__data__'],
+	    ];
 	    return $this -> getAdminTable(self :: getListData($map = [], $order = [],$rows=50));
 	}
 	
