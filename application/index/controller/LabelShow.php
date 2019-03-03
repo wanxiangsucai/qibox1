@@ -1079,7 +1079,8 @@ code{$tag_name} = code{$tag_name}.length>0 ? code{$tag_name}.prop("outerHTML") :
 \$(document).ready(function(){
 	\$.get("{$ajaxurl}",function(res){
         if(res.code==0){
-             \$(".{$cfg['js']}").html(code{$tag_name}+res.data);            
+            var data = (typeof(res.data)!='string'&&typeof(res.data.data)=='string')?res.data.data:res.data;
+             \$(".{$cfg['js']}").html(code{$tag_name}+data);            
         }else{
             layer.msg(res.msg,{time:500});
         }
