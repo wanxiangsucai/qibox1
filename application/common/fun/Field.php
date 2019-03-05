@@ -12,6 +12,17 @@ class Field{
     }
     
     /**
+     * 列出自字段字段的URL参数,指定$field某个字段的话,则过滤此字段
+     * @param number $mid
+     * @param string $field
+     * @param string $dirname
+     * @return string
+     */
+    public function get_filter_url($mid=0,$field='',$dirname=''){
+        return \app\common\util\Field_filter::make_url($field,$mid,$dirname);
+    }
+    
+    /**
      * 获取列表页的筛选字段
      * @param number $mid 模型ID
      */

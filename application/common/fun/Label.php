@@ -70,31 +70,25 @@ class Label{
                     if($value=="''"){
                         $value='';
                     }
-                    if( substr($value,0,1)=='$' ){
-                        $value = $this->get_label_value(trim($field),$value,$cfg);
+                    $field = trim($field);
+                    if( substr($value,0,1)=='$' ){  //获取动态变量的具体值
+                        $value = $this->get_label_value($field,$value,$cfg);
                         if ($value===null) {
                             continue;
                         }
-                        if($mod=='*'){
-                            $array[trim($field)] = ['LIKE',"%$value%"];
-                        }elseif( strstr($value,',') ){
-                            $array[trim($field)] = [$mod=='='?'in':'not in',explode(',',$value)];
-                        }else{
-                            $array[trim($field)] = [$mod,$value];
-                        }
-                    }elseif($mod=='*'){
-                        $array[trim($field)] = ['LIKE',"%$value%"];
-                    }elseif(strstr($value,',')){
-                        $value = explode(',',$value);
-                        $array[trim($field)] = [
-                                $mod=='<>'?'not in':'in',
-                                $value,                                
-                        ];
-                    }else{
-                        $array[trim($field)] =  [$mod,trim($value)];
                     }
+                    
+                    if($mod=='*'){
+                        $array[$field] = ['LIKE',"%$value%"];
+                    }elseif( strstr($value,',') ){
+                        $array[$field] = [$mod=='='?'in':'not in',explode(',',$value)];
+                    }else{
+                        $array[$field] = [$mod,$value];
+                    }
+                    $this->check_where_range($array,$field);
                     continue;
                 }
+                //下面的计划要弃用
                 list($field,$mod,$value) = explode('|',$str);
                 $field = trim($field);
                 $mod = trim($mod);
@@ -112,9 +106,114 @@ class Label{
                     }
                     $array[$field] = [$mod,$value];
                 }
+                //上面的计划要弃用                
             }
         }
         return $array;
+    }
+    
+    /**
+     * 范围搜索 
+     * 区域范围比如 price_1>=0&price_2<=100 其中price才是真正的字段值
+     * 时间范围处理
+     * 第一种是:距离现在某段时间内的,比如7天内的信息 create_time<7 单位是天 比如最近3天或最近7天或最近30天
+     * 第二种是:某年或某月或某周或某天的开始与结束时间,比如今天的数据或昨天的数据,或本周的数据或上周的数据 create_time=day2
+     * @param array $array
+     * @param string $field
+     */
+    private function check_where_range(&$array=[],$field=''){
+        if ( preg_match("/^([\w]+)_2$/", $field,$data) ) {    //范围搜索 比如 price_1>=0&price_2<=100 其中price才是真正的字段值
+            if ($array["{$data[1]}_1"] && preg_match("/(<|>)/", $array["{$data[1]}_1"][0]) && preg_match("/(<|>)/", $array["{$data[1]}_2"][0]) ) {
+//                 if( preg_match("/(time|date)$/", $data[1]) ){   //时间范围处理,比如只限昨天的信息 create_time>1&create_time<3 单位是天 今天内的信息就是 create_time>0&create_time<2
+//                     if( is_numeric($array["{$data[1]}_2"][1]) && $array["{$data[1]}_2"][1]<3650 ){
+//                         $array["{$data[1]}_1"][1] = time()-$array["{$data[1]}_1"][1]*3600*24;
+//                         $array["{$data[1]}_2"][1] = time()-$array["{$data[1]}_2"][1]*3600*24;
+//                         $array["{$data[1]}_1"][0] = str_replace('>', '<', $array["{$data[1]}_1"][0]);
+//                         $array["{$data[1]}_2"][0] = str_replace('<', '>', $array["{$data[1]}_2"][0]);
+//                     }
+//                 }
+                $array[$data[1]] = [
+                        [ $array["{$data[1]}_1"][0] , $array["{$data[1]}_1"][1] ],
+                        [ $array["{$data[1]}_2"][0] , $array["{$data[1]}_2"][1] ],
+                        'and'
+                ];
+                unset($array["{$data[1]}_1"],$array["{$data[1]}_2"]);
+            }
+        }elseif( preg_match("/(time|date)$/", $field) ){        //时间范围选择,比如 create_time<3 这是距离当前某段时间内的, create_time=day3 这仅仅是前天的数据,不包含昨天今天的
+            if (in_array($array[$field][0], ['<','<=']) && is_numeric($array[$field][1]) && $array[$field][1]<3650) {     //时间范围处理,距离现在某段时间内的,比如7天内的信息 create_time<7 单位是天
+                $array[$field] = [
+                        str_replace('<', '>', $array[$field][0]),
+                        time()-$array[$field][1]*3600*24,
+                ];
+            }elseif($array[$field][0]=='=' && preg_match("/^(day|week|month|year)([\d]*)$/", $array[$field][1],$data)){     //某个周期内的时间段
+                list($min,$max) = $this->get_time_bynum($data[1],$data[2]);
+                $array[$field] = [
+                        ['>',$min],
+                        ['<',$max],
+                        'and'
+                ];
+            }
+        }
+    }
+    
+    /**
+     * 根据day今天 day2昨天 day3前天数据对应那天的开始与结束时间, 年月周同理,也是对应的那年或那月或那周的开始与结束时间
+     * @param string $type
+     * @param string $num 1可以不写,2就代表上一个周期,
+     * @return number[]
+     */
+    public function get_time_bynum($type='',$num=''){
+        list($y,$m,$d,$w) = explode(' ',date('Y m d w'));
+        if($type=='day'){
+            $time = strtotime("{$y}-{$m}-{$d} 00:00:00");     //今天凌晨0点是分隔界
+            if ($num>1) {                
+                $min = $time - ($num-1)*3600*24;
+                $max = $time - ($num-2)*3600*24;
+            }else{
+                $min = $time;
+                $max = time();
+            }
+        }elseif($type=='week'){
+            $w = $w==0 ? 7 : $w;
+            $time = strtotime("{$y}-{$m}-{$d} 00:00:00") - ($w-1)*3600*24; //本周一凌晨0点的分隔界
+            if ($num>1) {
+                $min = $time - ($num-1)*3600*24*7;
+                $max = $time - ($num-2)*3600*24*7;
+            }else{
+                $max = time();
+                $min = $time;
+            }
+        }elseif($type=='year'){
+            if ($num>1) {
+                $y2 = $y - ($num-2);
+                $y1 = $y - ($num-1);
+                $max = strtotime("{$y2}-01-01 00:00:00");
+                $min = strtotime("{$y1}-01-01 00:00:00");
+            }else{
+                $max = time();
+                $min =  strtotime("{$y}-01-01 00:00:00");
+            }
+        }elseif($type=='month'){
+            if ($num>1) {
+                $y2 = $y1 = $y;
+                $m2 = $m - ($num-2);
+                if ($m2<1) {
+                    $m2 +=12;
+                    $y2--;
+                }
+                $m1 = $m - ($num-1);
+                if ($m1<1) {
+                    $m1 +=12;
+                    $y1--;
+                }
+                $max = strtotime("{$y2}-{$m2}-01 00:00:00");
+                $min = strtotime("{$y1}-{$m1}-01 00:00:00");
+            }else{
+                $max = time();
+                $min =  strtotime("{$y}-{$m}-01 00:00:00");
+            }
+        }
+        return [$min,$max];
     }
     
     /**
