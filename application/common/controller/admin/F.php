@@ -30,6 +30,10 @@ abstract class F extends AdminBase
         if ($this->request->isPost() && !table_field($dirname.'_field','script')) {
             query("ALTER TABLE  `qb_{$dirname}_field` ADD  `script` TEXT NOT NULL COMMENT  'JS脚本',ADD  `trigger` VARCHAR( 255 ) NOT NULL COMMENT  '选择某一项后,联动触发显示其它字段';");
         }
+        
+        if ($this->request->isPost() && !table_field($dirname.'_field','range_opt')) {
+            query("ALTER TABLE  `qb_{$dirname}_field` ADD  `range_opt` TEXT NOT NULL COMMENT  '范围选择,比如价格范围',ADD  `group_view` VARCHAR( 255 ) NOT NULL COMMENT  '允许哪些用户组查看',ADD  `index_hide` TINYINT( 1 ) NOT NULL COMMENT  '是否前台不显示并不做转义处理';");
+        }
     }
     
     protected function set_config(){
@@ -50,7 +54,10 @@ abstract class F extends AdminBase
                 ['text', 'field_type', '数据库字段类型','','varchar(128) NOT NULL'],
                 ['radio', 'listshow', '是否在列表显示', '', ['不在列表显示', '显示'], 0],
                 ['radio', 'ifsearch', '是否作为内容搜索选项', '', ['否', '是'], 0],
+                ['textarea', 'range_opt', '列表页范围筛选参数', '(每个值换一行)<br>如下示例:<br>-1,0|免费<br>0,100|100元以下<br>100,500|100元-500元 <br>默认搜索的条件“&gt;=,&lt;=”是大于或等于第一项并且小于或等于第二项,如果要调整的话,就需要加多一项参数,比如“0,100|一百元以下|&gt;,&lt;=”代表大于0而不包含0,小于100包含100'],
                 ['radio', 'ifmust', '是否属于必填项', '', ['可不填', '必填'], 0],
+                ['checkbox', 'group_view', '仅限哪些用户组查看', '', getGroupByid()],
+                ['radio', 'index_hide', '详情页是否隐藏', '二次开发才会用到隐藏', ['显示', '隐藏'], 0],
                 ['text', 'about', '描述说明'],
                 ['text', 'list', '排序值'],
                 ['text', 'nav', '分组名[:对于不重要的字段,你可以添加组名,让他在更多那里显示]'],
@@ -63,6 +70,8 @@ abstract class F extends AdminBase
                 'page_title'=>'表单字段管理',
                 'trigger'=>[
                         ['type', 'checkbox,radio,select', 'options'],
+                        ['type', 'text,money,number', 'range_opt'],
+                        ['ifsearch', '1', 'range_opt'],
                 ],
         ];
         
@@ -146,6 +155,9 @@ abstract class F extends AdminBase
                 $result = $this->validate($data, $this->validate);
                 if(true !== $result) $this->error($result);
             }
+            $data['group_view'] = $data['group_view'] ? implode(',', $data['group_view']) : '';
+            
+            $this -> request -> post(['group_view'=>$data['group_view']]);
             
             $result = $this->model->updateField($id,$data); // 更新字段信息
             if ($result===true) {
@@ -165,8 +177,7 @@ abstract class F extends AdminBase
     }
     
     public function delete($ids = null)
-    {
-        
+    {        
         $field_array = $this->getInfoData( $ids );
         $this->model->deleteField($field_array);
         if( $this->deleteContent($ids) ){

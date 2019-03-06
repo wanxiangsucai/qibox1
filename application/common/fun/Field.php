@@ -29,14 +29,22 @@ class Field{
     public function list_filter($mid=0){
         $array = \app\common\util\Field_filter::get_field($mid);
         foreach ($array AS $name=>$rs){
-            $url = \app\common\util\Field_filter::make_url($name,$mid);  //其它字段的网址
+            $url = \app\common\util\Field_filter::make_url($name,$mid);  //其它字段的网址检测生成,如果值存在就生成,不存在值,就不生成
             $_ar = [];
             foreach($rs['options'] AS $k=>$v){
-                $_ar[] = [
-                        'key'=>$k,
-                        'title'=>$v,
-                        'url'=>  $url . $name . '=' . $k,
-                ];
+                if (is_array($v)) {
+                    $_ar[] = [
+                            'key'=>$v[0],
+                            'title'=>$k,
+                            'url'=>  $url . $name . '_1=' . $v[0] . '&'  . $name . '_2=' . $v[1] . '&'  . $name . '=' . $v[0],
+                    ];
+                }else{
+                    $_ar[] = [
+                            'key'=>$k,
+                            'title'=>$v,
+                            'url'=>  $url . $name . '=' . $k,
+                    ];
+                }                
             }
             $rs['opt'] = $_ar;
             $rs['opt_url'] = $url;
@@ -65,7 +73,13 @@ class Field{
             $value = \app\common\field\Index::get_field($field_array[$field],$info,$pagetype);
         }else{
             foreach($field_array AS $name=>$rs){
-                $info[$name] = \app\common\field\Index::get_field($rs,$info,$pagetype);
+                if($rs['group_view']!=''&&!in_array(login_user('groupid'), explode(',', $rs['group_view']))){  //指定用户组才能看
+                    unset($info[$name]);
+                    continue;
+                }
+                if ($rs['index_hide']!=1) {    //满足二开要求,前台不做转义
+                    $info[$name] = \app\common\field\Index::get_field($rs,$info,$pagetype);
+                }                
             }
         }
         return $field ? $value : $info;

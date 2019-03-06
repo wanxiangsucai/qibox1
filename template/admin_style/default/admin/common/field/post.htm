@@ -137,9 +137,9 @@
       <td class='tdL'>是否为必填选项:<br>
       </td>
       <td class='tdR'> 
-        <input type="radio" name="ifmust" value="0" {eq name="$info.ifmust" value="0"} checked {/eq}>
+        <input type="radio" name="ifmust" value="0" {if empty($info.ifmust)} checked {/if}>
         不限制 
-        <input type="radio" name="ifmust" value="1" {eq name="$info.ifmust" value="1"} checked {/eq}>
+        <input type="radio" name="ifmust" value="1" {if $info.ifmust} checked {/if}>
         必填 </td>
     </tr>
 	<!--
@@ -157,20 +157,99 @@
 	-->
 	<tr id="IfListShow_tr"> 
       <td class='tdL'>是否在列表显示: </td>
-      <td class='tdR'><input type="radio" name="listshow" value="1" {eq name="$info.listshow" value="1"} checked {/eq}>
+      <td class='tdR'>
+        <input type="radio" name="listshow" value="0" {if empty($info.listshow)} checked {/if}>
+        不显示 
+		<input type="radio" name="listshow" value="1" {if $info.listshow} checked {/if}>
         列表显示 
-        <input type="radio" name="listshow" value="0" {eq name="$info.listshow" value="0"} checked {/eq}>
-        不显示 </td>
+		</td>
     </tr>
    
 	<tr id="IfListSearch_tr"> 
       <td class='tdL'>是否作为搜索选项:<br>
         (一般为不启用) </td>
       <td class='tdR'> 
-        <input type="radio" name="ifsearch" value="0" {eq name="$info.ifsearch" value="0"} checked {/eq}>
+        <input type="radio" name="ifsearch" onclick="is_rangeopt()" value="0" {if empty($info.ifsearch)} checked {/if}>
         不启用 
-        <input type="radio" name="ifsearch" value="1" {eq name="$info.ifsearch" value="1"} checked {/eq} >
+        <input type="radio" name="ifsearch" onclick="is_rangeopt()" value="1" {if $info.ifsearch} checked {/if} >
         启用</td>
+    </tr>
+
+	<tr id="form_rangeopt_tr" style="display:none;"> 
+      <td class='tdL'>列表页范围筛选参数:<br>
+        (每个值换一行)<br>如下示例:<br>-1,0|免费<br>
+0,100|100元以下<br>
+100,500|100元-500元 </td>
+      <td class='tdR'> 
+        <textarea name="range_opt" cols="100" rows="5">{$info.range_opt}</textarea>
+		<br>默认搜索的条件“&gt;=,&lt;=”是大于或等于第一项并且小于或等于第二项,如果要调整的话,就需要加多一项参数,比如“0,100|一百元以下|&gt;,&lt;=”代表大于0而不包含0,小于100包含100
+<script type="text/javascript">
+function is_rangeopt(){
+	if( ($("#field_type").val()).indexOf('text')>-1 || ($("#field_type").val()).indexOf('varchar')>-1 ){
+		return ;
+	}
+	var ftype = $("#form_typeid").val();
+	if( (ftype=='text'||ftype=='money'||ftype=='number') && $("input[name=ifsearch][value=1]").is(":checked")){
+		$("#form_rangeopt_tr").show();
+	}else{
+		$("#form_rangeopt_tr").hide();
+	}
+}
+//is_rangeopt();
+</script>
+	  </td>
+    </tr>
+
+	<tr id="indexhide_tr"> 
+      <td class='tdL'>详情页是否隐藏:<br>
+        (二次开发才会用到隐藏) </td>
+      <td class='tdR'> 
+        <input type="radio" name="index_hide" value="0" {if empty($info.index_hide)} checked {/if}>
+        显示 
+        <input type="radio" name="index_hide" value="1" {if $info.index_hide} checked {/if} >
+        隐藏</td>
+    </tr>
+
+	<tr id="groupview_tr"> 
+      <td class='tdL'>仅限哪些用户组查看:   </td>
+      <td class='tdR'> 
+{volist name=":getGroupByid()" id="name"}
+        <input type="checkbox" name="" value="{$key}">{$name} 
+{/volist}
+<input type="hidden" name="group_view" value="{$info.group_view}">
+<script type="text/javascript">
+$(function(){
+		var base = $('#groupview_tr');
+ 
+		var count_value = function(){
+			var vals = [];
+			base.find("input[type=checkbox]:checked").each(function(){
+				vals.push($(this).val());
+			});
+			base.find('input[name=group_view]').val( vals.join(',')  );
+		}
+
+		base.find("input[type=checkbox]").on('click',
+				function(){
+					count_value();
+				}
+		);
+		
+		//初始化
+		var str = base.find('input[name=group_view]').val();
+		if(str!=''){
+			var ar = str.split(',');
+			for (var i=0;i<ar.length;i++) {
+				base.find("input[type=checkbox]").each(function(){
+					if($(this).val()==ar[i]){
+						$(this).attr('checked',true);
+					}
+				});
+			}
+		}
+});
+</script>
+</td>
     </tr>
  
 	
@@ -231,7 +310,7 @@
 <SCRIPT LANGUAGE="JavaScript">
 <!--
 function field_choose(va){
-	$("input[name='field_type']").val(va);
+	$("input[name='field_type']").val(va);	
 }
 
 function form_choose(t){
@@ -309,6 +388,8 @@ function form_choose(t){
 	}else{
 		$(".t_textinput").hide();
 	}
+
+	is_rangeopt();
 }
 form_choose('{$info.type}');
 //-->

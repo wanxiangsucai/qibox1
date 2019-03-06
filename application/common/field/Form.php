@@ -194,11 +194,18 @@ class Form extends Base
     public static function setTrigger($trigger=[]){
         if (empty($trigger)) {
             return ;
-        }        
+        }
+        $field_triggers = $field_more_triggers = [];
         foreach ($trigger as $rs) {
             $field_hide   .= $rs[2].',';
             $field_values .= $rs[1].',';
             $field_triggers[$rs[0]][] = "['{$rs[1]}', '{$rs[2]}']";
+            $detail = explode(',',$rs[2]);
+            foreach($detail AS $v_field){
+                if ($v_field) {
+                    $field_more_triggers[$v_field][$rs[0]] = $rs[1];
+                }
+            }            
         }
         $show = '';
         foreach($field_triggers as $field=>$ar){
@@ -206,7 +213,16 @@ class Form extends Base
         }
         $show ="'triggers' : { $show },";
         $show .= "\r\n'field_hide': '$field_hide',\r\n'field_values': '$field_values',";
-        return $show;
+        foreach($field_more_triggers AS $t_field=>$arr){
+            if(count($arr)>1){
+                $code='';
+                foreach($arr AS $c_field=>$vals){
+                    $code .="'$c_field':'$vals',";
+                }
+                $show .="\r\n'$t_field':{ $code },";
+            }
+        }
+        return $show."\r\n";
     }
     
 

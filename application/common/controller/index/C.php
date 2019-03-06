@@ -253,7 +253,7 @@ abstract class C extends IndexBase
 //                     }else{
 //                         $map[$key] = ['like',"%$value%"];
 //                     }         
-                    $map[$key] = \app\common\field\Search::get_map($farray[$key]['type'],$value);
+                    $map[$key] = \app\common\field\Search::get_map($farray[$key]['type'],$value,$farray[$key]);
                 }elseif(in_array($key, ['province_id','city_id','zone_id','street_id'])){
                     $map[$key] = $value;
                 }

@@ -522,10 +522,11 @@ class LabelShow extends IndexBase
         
         $_val = [];
         foreach ($array AS $rs){
-            if(in_array($rs['name'], $filtrate_field)){
+            if(in_array($rs['name'], $filtrate_field)){     //模板中指定了哪些字段不要自动显示出来
                 continue;
-            }
-            if($_info[$rs['name']]===''||$_info[$rs['name']]===null){
+            }elseif($rs['index_hide']==1){  //后台指定了二开字段,不要显示
+                continue;
+            }elseif($_info[$rs['name']]===''||$_info[$rs['name']]===null){  //值为空就不显示,为0的话,还是会显示的
                 continue;
             }
             $_val[] = array_merge($rs,

@@ -70,7 +70,20 @@ jQuery(document).ready(function() {
                             if (!targets_array.hasOwnProperty(index)) {
                                 continue;
                             }
-                            $('#form_group_'+targets_array[index]).show();
+							var ck = true;
+							var fname = targets_array[index];
+							for(var kname in trigger_config[fname]){								
+								var varray = (trigger_config[fname][kname]).split(',');
+								var val = $("#atc_"+kname).val();
+								if(val==undefined){
+									val = $("input[name="+kname+"]:checked").val();
+								}								
+								if( $.inArray( val , varray) ==-1 ){
+									ck = false;
+								}								
+								//console.log('wrf='+kname, $.inArray('text', varray) );
+							}							
+                            if(ck==true)$('#form_group_'+targets_array[index]).show();
                         }
                     } else {
                         for (var item in targets_array) {
