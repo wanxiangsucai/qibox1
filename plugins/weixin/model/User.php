@@ -4,6 +4,18 @@ use app\common\model\User AS UserModel;
 
 class User extends UserModel
 {
+    /**
+     * 过滤掉微信emoji表情
+     * @param unknown $str
+     * @return mixed
+     */
+    protected static function filterEmoji($str){
+        $str=preg_replace_callback('/./u',function(  $match){print_r($match);
+        return strlen($match[0]) >= 4 ? '' :$match[0];
+        },$str);
+        return $str;
+    }
+    
     //微信用户注册
     public static function weixin_reg($openid,$data=array(),$Marray=array()){
         
@@ -29,7 +41,8 @@ class User extends UserModel
             return '当前微信号已经注册过了！';
         }
         
-        $username = $nickname = str_replace(array('|',' ','',"'",'"','/','*',',','~',';','<','>','$',"\\","\r","\t","\n","`","!","?","%","^"),'',$data['nickname']);
+        $data['nickname'] = str_replace(array('|',' ','',"'",'"','/','*',',','~',';','<','>','$',"\\","\r","\t","\n","`","!","?","%","^"),'',$data['nickname']);
+        $username = $nickname = self::filterEmoji($data['nickname']);
         
         $address = filtrate("{$data['country']} {$data['province']} {$data['city']}");
         
