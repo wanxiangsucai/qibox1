@@ -8,7 +8,7 @@
     <div class="cont">
     	<div class="Showpage">
 
-		<div style="color:red;padding:10px;">提示:你的手机号码 {$userdb.mobphone} 已经成功验证,如有需要,可以更换其它手机号进行验证</div>
+		<div style="color:red;padding:10px;">提示:{if $userdb.mob_yz}你的手机号码 {$userdb.mobphone} 已经成功验证,如有需要,可以更换其它手机号进行验证{else /}你还没有绑定手机号,请立即绑定手机号,方便下次登录,并可以享受更多权利!{/if}</div>
         <form name="form1" method="post" action="{:urls('mob')}" class="yzuserfrom">
               {eq name='$userdb.mob_yz' value='1'}更换新{/eq}手机号：<input type="text" name="mobphone" value="{eq name='$userdb.mob_yz' value='0'}{$userdb.mobphone}{/eq}" size="13">
               <input type="button"  value="发送验证码" onclick="get_code_num('mobphone')">

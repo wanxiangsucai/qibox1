@@ -7,7 +7,7 @@
 	<div class="head"><div class="tag">邮箱验证</div></div>
     <div class="cont">
     	<div class="Showpage">
-		<div style="color:red;padding:10px;">提示:你的邮箱 {$userdb.email} 已经成功验证,如有需要,可以更换其它邮箱进行验证</div>
+		<div style="color:red;padding:10px;">提示:{if $userdb.email_yz}你的邮箱 {$userdb.email} 已经成功验证,如有需要,可以更换其它邮箱进行验证{else /}你的邮箱还没有通过验证,请最好验证,可以享受更多权利.{/if}</div>
 		<form name="form1" method="post" action="{:urls('index')}" class="yzuserfrom">
               {eq name='$userdb.email_yz' value='1'}更换新{/eq}邮箱：<input type="text" name="email" value="{eq name='$userdb.email_yz' value='0'}{$userdb.email}{/eq}" size="13">
               <input type="button"  value="发送验证码" onclick="get_code_num('email')"> <br><br>
