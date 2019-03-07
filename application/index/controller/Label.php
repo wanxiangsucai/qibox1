@@ -54,6 +54,8 @@ class Label extends IndexBase
                 $url = url("index/label/ueditor",$url_array);
             }elseif($type=='member'){
                 $url = url("index/label/member",$url_array);
+            }elseif($type=='link'){
+                $url = url("index/label/link",$url_array);
             }elseif($type=='sql'){
                 $url = url("index/label/sql",$url_array);
             }elseif(modules_config($type)){
