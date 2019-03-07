@@ -64,12 +64,21 @@ abstract class M extends AdminBase
                                 'icon'  => 'fa fa-fw fa-table',
                                 'href'  => auto_url('field/index', ['mid' => '__id__'])
                         ],
+                        [
+                                'title' => '复制模型',
+                                'icon'  => 'fa fa-copy',
+                                'href'  => auto_url('add', ['type' => 'copy','mid' => '__id__'])
+                        ],
                         ['type'=>'delete',],
                         ['type'=>'edit',],
                 ],
         ];
     }
     
+    /**
+     * 模型列表
+     * @return unknown|mixed|string
+     */
     public function index() {
         if ($this->request->isPost()) {
             //修改排序
@@ -79,31 +88,67 @@ abstract class M extends AdminBase
         return $this -> getAdminTable($listdb);
     }
     
-    public function add(){
+    /**
+     * 创建模型
+     * @param string $type 等于copy的时候就是复制模型
+     * @param number $mid 原型ID
+     * @return mixed|string
+     */
+    public function add($type='',$mid=0){
         
         // 保存数据
         if ($this->request->isPost()) {
             // 表单数据
-            $data = $this->request->post();
-            
+            $data = $this->request->post();            
+            if (empty($data['title'])) {
+                $this->error('模型名称不能为空');
+            }
+            if ($data['type']=='copy') {
+                return $this->copy($data['title'],$data['mid']);
+            }
             if ($result = $this->saveAddContent()) {
-                
                 if ($this->model->createTable($result->id,$data['title'])) {
-                    
                     $this->success('模型创建成功', auto_url('index'));
                 }else{
                     $this->model->where('id','=',$result->id)->delete();
                     $this->error('模型数据表创建失败');
                 }
             }
-            
             $this->error('模型创建失败');
-        }
-        
-        return $this->addContent();
-        
+        }        
+        if ($type=='copy') {
+            $this->tab_ext['page_title'] = '复制模型';
+            $this->form_items = [
+                    ['text', 'title', '复制后新的模型名称'],
+                    ['hidden','type',$type],
+                    ['hidden','mid',$mid]
+            ];
+        }        
+        return $this->addContent();        
     }
     
+    /**
+     * 复制模型
+     * @param string $name 新模型名称
+     * @param number $mid 原模型ID
+     */
+    public function copy($name='新模型',$mid=0){
+        if (empty($mid)) {
+            $this->error('原模型ID不存在!');;
+        }
+        $newid = $this->model->copyTable($name,$mid);
+        if ($newid) {
+            $this->success('模型复制成功', auto_url('index'));
+        }else{
+            $this->error('模型复制失败');
+        }
+    }
+    
+    /**
+     * 修改模型基本信息,不包含字段
+     * @param unknown $id
+     * @return mixed|string
+     */
     public function edit($id = null) {
         if (empty($id)) $this -> error('缺少参数');
         
@@ -128,6 +173,10 @@ abstract class M extends AdminBase
         return $this -> editContent($info);
     }
     
+    /**
+     * 删除模型
+     * @param unknown $ids
+     */
     public function delete($ids = null)
     {
         //删除对应的模型分表

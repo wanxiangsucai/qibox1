@@ -18,7 +18,9 @@ abstract class M extends Model
     protected static $model_key;
     protected static $table_pre;
     
-    //为了调用initialize初始化,生成数据表前缀$model_key
+    /**
+     * 为了调用initialize初始化,生成数据表前缀$model_key
+     */
     protected static function scopeInitKey(){}
     protected function initialize()
     {
@@ -31,15 +33,25 @@ abstract class M extends Model
         $this->table = self::$table_pre.self::$model_key.'_module';
     }
     
+    /**
+     * 仅权限模型的名称
+     * @param array $map
+     * @return NULL
+     */
     public static function getTitleList($map = [])
     {
         static $list = NULL;
         if($list==NULL){
-            $list = self::where($map)->order('list','desc')->column('id,title');
+            $list = self::where($map)->order('list desc,id asc')->column('id,title');
         }
         return $list;
     }
     
+    /**
+     * 获取模型的所有信息,不包含字段信息
+     * @param array $map
+     * @return NULL
+     */
     public static function getList($map = [])
     {
         static $list = NULL;
@@ -49,7 +61,11 @@ abstract class M extends Model
         return $list;
     }
     
-    //通过ID得到相应的标题名称
+    /**
+     * 通过ID得到相应的标题名称
+     * @param unknown $id
+     * @return void|NULL
+     */
     public static function getNameById($id)
     {
         if (empty($id)) {
@@ -61,7 +77,10 @@ abstract class M extends Model
         }
     }
     
-    //获取一个值，给某些地方没有指定MID的地方默认使用
+    /**
+     * 获取一个值，给某些地方没有指定MID的地方默认使用
+     * @return mixed
+     */
     public static function getId()
     {
         $list = static::getTitleList();
@@ -70,7 +89,11 @@ abstract class M extends Model
         }        
     }
     
-    //删除模型
+    /**
+     * 删除模型
+     * @param unknown $mid
+     * @return boolean
+     */
     public static function deleteModule($mid = null)
     {
         if (empty($mid)) {
@@ -89,7 +112,75 @@ abstract class M extends Model
         return false !== Db::execute('DROP TABLE IF EXISTS `' . self::$table_pre . self::$base_table . $mid . '`');
     }
     
-    //创建模型
+    /**
+     * 复制模型
+     * @param number $id
+     */
+    public static function copyTable($name='',$id=0){
+        $newid = static::copyModelTable($name,$id);
+        if ($newid>0) {
+            static::copyContentTable($name,$id,$newid);
+            static::copyFieldTable($id,$newid);
+            return $newid;
+        }
+    }
+    
+    /**
+     * 复制模型信息
+     * @param string $name
+     * @param number $id
+     * @return number|string
+     */
+    protected static function copyModelTable($name='',$id=0){
+        $table = self::$model_key.'_module';
+        $maxid = Db::name($table)->order('id desc')->value('id');
+        $info = Db::name($table)->where('id',$id)->find();
+        $info['id'] = $maxid+1;
+        $info['create_time'] = time();
+        $info['title'] = $name;
+        $result = Db::name($table)->insertGetId($info);
+        return $result;
+    }
+    
+    /**
+     * 复制模型字段
+     * @param number $oldid
+     * @param number $newid
+     */
+    protected static function copyFieldTable($oldid=0,$newid=0){
+        $table = self::$model_key.'_field';
+        $listdb = Db::name($table)->where('mid',$oldid)->column(true);
+        $data = [];
+        foreach ($listdb AS $rs){
+            unset($rs['id']);
+            $rs['mid'] = $newid;
+            $data[] = $rs;
+        }
+        Db::name($table)->insertAll($data);
+    }
+    
+    /**
+     * 复制模型内容主表
+     * @param string $name
+     * @param number $oldid
+     * @param number $newid
+     * @return mixed
+     */
+    protected static function copyContentTable($name='',$oldid=0,$newid=0){
+        $table = self::$table_pre .self::$base_table;
+        $array = Db::query("SHOW CREATE TABLE {$table}{$oldid}");
+        $sql = $array[0]['Create Table'];
+        $sql = preg_replace("/CREATE TABLE `{$table}([\d]+)`/i", "CREATE TABLE `{$table}{$newid}`", $sql);
+        $sql = preg_replace("/ COMMENT='([^']+)'/i", " COMMENT='{$name}内容主表'", $sql);
+        Db::query($sql);
+    }
+    
+    /**
+     * 新建模型
+     * @param unknown $id
+     * @param unknown $name
+     * @return boolean
+     */
     public static function createTable($id,$name)
     {
         $table = self::$base_table.$id;
