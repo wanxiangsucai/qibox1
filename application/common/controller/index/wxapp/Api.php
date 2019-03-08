@@ -39,9 +39,9 @@ abstract class Api extends IndexBase
         if (empty($info)) {
             return '信息内容不存在';
         }
-        $table = $this->model->getTableByMid($info['mid']);
-         
-        return array_merge($info,['table'=>$table]);
+//         $table = $this->model->getTableByMid($info['mid']);         
+//         return array_merge($info,['table'=>$table]);
+        return $info;
     }
     
     /**
@@ -56,13 +56,14 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }        
-        $table = $info['table'];
+//        $table = $info['table'];
         $list = $time*3600+time();
         $data = [
                 'id'=>$id,
                 'list'=>$list,
         ];
-        $result = Db::name($table)->update($data);
+//         $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -81,8 +82,7 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-        
+//        $table = $info['table'];        
         if ($time==0) {
             $list = 0;
         }else{
@@ -93,7 +93,8 @@ abstract class Api extends IndexBase
                 'id'=>$id,
                 'list'=>$list,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -112,8 +113,7 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-        
+//        $table = $info['table'];        
         if ($info['update_time']) {
             $list = $info['update_time'];
         }else{
@@ -124,7 +124,8 @@ abstract class Api extends IndexBase
                 'id'=>$id,
                 'list'=>$list,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -141,13 +142,13 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-    
+ //       $table = $info['table'];    
         $data = [
             'id'=>$id,
             'status'=>2,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -164,13 +165,13 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-    
+ //       $table = $info['table'];    
         $data = [
             'id'=>$id,
             'status'=>1,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -188,8 +189,7 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-        
+        $table = $this->model->getTableByMid($info['mid']);
         if (!table_field($table,'lock')) {
             query("ALTER TABLE  `qb_{$table}` ADD  `lock` TINYINT( 1 ) NOT NULL COMMENT  '是否锁定不给修改,删除,回复' AFTER  `status`");
         }
@@ -198,7 +198,8 @@ abstract class Api extends IndexBase
                 'id'=>$id,
                 'lock'=>1,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -216,13 +217,13 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-        
+//        $table = $info['table'];        
         $data = [
                 'id'=>$id,
                 'lock'=>0,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -240,17 +241,16 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-        
+        $table = $this->model->getTableByMid($info['mid']); 
         if (!table_field($table,'font_type')) {
             query("ALTER TABLE  `qb_{$table}` ADD  `font_type` TINYINT( 1 ) NOT NULL COMMENT  '标题字体加粗或其它'");
-        }
-        
+        }        
         $data = [
                 'id'=>$id,
                 'font_type'=>1,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -268,13 +268,13 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-        
+//        $table = $info['table'];        
         $data = [
                 'id'=>$id,
                 'font_type'=>0,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -291,8 +291,7 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-        
+        $table = $this->model->getTableByMid($info['mid']); 
         if (!table_field($table,'font_color')) {
             query("ALTER TABLE  `qb_{$table}` ADD  `font_color`  VARCHAR( 7 ) NOT NULL COMMENT  '标题字体颜色' ");
         }
@@ -301,7 +300,8 @@ abstract class Api extends IndexBase
                 'id'=>$id,
                 'font_color'=>$type,
         ];
-        $result = Db::name($table)->update($data);
+//        $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -319,13 +319,13 @@ abstract class Api extends IndexBase
         if (is_string($info)) {
             return $info;
         }
-        $table = $info['table'];
-        
+ //       $table = $info['table'];        
         $data = [
                 'id'=>$id,
                 'font_color'=>'',
         ];
-        $result = Db::name($table)->update($data);
+ //       $result = Db::name($table)->update($data);
+        $result = $this->model->updates($data);
         if($result){
             return $this->ok_js();
         }else{
@@ -334,12 +334,6 @@ abstract class Api extends IndexBase
     }
     
 }
-
-
-
-
-
-
 
 
 

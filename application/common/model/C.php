@@ -2,6 +2,7 @@
 namespace app\common\model;
 use think\Model;
 use think\Db;
+use think\db\Query;
 
 abstract class C extends Model
 {
@@ -181,6 +182,12 @@ abstract class C extends Model
         if(empty($table)){
             return false;
         }
+        foreach ($data AS $key=>$value){
+            if (in_array($key, ['view','status','list'])) {
+                Db::name(self::$base_table)->update($data);
+                break;
+            }
+        }
         if (isset($data['picurl'])) {
             $data['ispic'] = $data['picurl'] ? 1 : 0;
         }
@@ -268,6 +275,15 @@ abstract class C extends Model
         self::InitKey();
         $table = self::getTableById($id);
         if($table){
+            if (defined('NEED_UPDATE_TABLE')) { //兼容升级的情况
+                $info = Db::name($table)->where('id','=',$id)->find();
+                Db::name(self::$base_table)->where('id','=',$id)->update([
+                        'view'=>$info['view'],
+                        'status'=>$info['status'],
+                        'list'=>$info['list'],
+                ]);
+            }
+            Db::name(self::$base_table)->where('id','=',$id)->setInc('view',1);
             return Db::name($table)->where('id','=',$id)->setInc('view',1);
         }        
     }
@@ -320,7 +336,27 @@ abstract class C extends Model
         static::check_model();
         static $mids = [];
         if(empty($mids[$id])){
-            $mids[$id] = Db::name(self::$base_table)->where('id','=',$id)->value('mid');
+            $info = Db::name(self::$base_table)->where('id','=',$id)->find();
+            if ($info) {
+                $table = config('database.prefix') . self::$base_table;
+                if (!isset($info['view'])) {
+                    Db::execute("ALTER TABLE  `{$table}` ADD  `view` MEDIUMINT( 7 ) NOT NULL COMMENT  '浏览量';");
+                    Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `view` );");
+                }
+                if (!isset($info['status'])) {
+                    Db::execute("ALTER TABLE  `{$table}` ADD  `status` TINYINT( 2 ) NOT NULL COMMENT  '状态：0未审 1已审 2推荐';");
+                    Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `status` );");
+                    Db::execute("UPDATE  `{$table}` SET  `status` =1");
+                }
+                if (!isset($info['list'])) {
+                    Db::execute("ALTER TABLE  `{$table}` ADD  `list` INT( 10 ) NOT NULL COMMENT  '可控排序';");
+                    Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `list` );");
+                }
+                if ($info['view']==0&&$info['list']==0) {
+                    define('NEED_UPDATE_TABLE', true); //兼容升级的情况,通知要同步数据
+                }
+            }
+            $mids[$id] = $info['mid'];
         }
         return $mids[$id];
     }
