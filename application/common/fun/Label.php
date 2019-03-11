@@ -15,6 +15,7 @@ class Label{
         if($code==''){
             return ;
         }
+        $array = [];
         $detail = strstr($code,'@') ? explode('@',$code) : explode('&',$code);
         foreach($detail AS $str){
             if( !strstr($str,'|') ){
@@ -24,9 +25,9 @@ class Label{
             }
             $field = trim($field);
             $value = trim($value);
-            if(substr($value,0,1)=='$'){
+            if(substr($value,0,1)=='$'){    //存在变量的时候
                 if(strstr($value,'.')){
-                    $value = str_replace('.','[',$value).']';
+                    $value = str_replace('.','[\'',$value).'\']';
                 }
                 $array[] = $field.'='.substr($value,1);
             }            
@@ -42,8 +43,10 @@ class Label{
      * @return string|unknown
      */
     private function get_label_value($field,$value,$cfg){
-        if( substr($value,0,1)=='$' ){
+        if( substr($value,0,1)=='$' ){            
             $value = isset($cfg[$field]) ? $cfg[$field] : null ;
+//             $_v = substr($value,1);
+//             $value = isset($cfg[$_v]) ? $cfg[$_v] : null ;
         }
         return $value;
     }

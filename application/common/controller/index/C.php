@@ -238,7 +238,7 @@ abstract class C extends IndexBase
      * @return mixed[]
      */
     private function map_filter_field($mid=0){
-        $data = input();
+        $data = get_post(); //不通知用input因为有优化级的处理
         $map = [];
         unset($data['fid'],$data['mid'],$data['page']);
         if(count($data)>0){
@@ -263,16 +263,16 @@ abstract class C extends IndexBase
     }
     
     /**
-     * 列表页通过标签显示的数据
+     * 列表页通过标签显示的数据。 注意 并不包含分页采用ajax的情况
      * @param array $cfg
      * @return number|mixed|string|\think\Paginator
      */
-    public function label_list_data($cfg = []){    
-        $map = [];
+    public function label_list_data($cfg = []){
+//        $map = [];
         //筛选字段的处理,比如分类信息常用的
-        if(function_exists('get_filter_fields')){
+//         if(function_exists('get_filter_fields')){
             $map = $this->map_filter_field($cfg['mid']);
-        }
+//         }
         
         if($cfg['status']>0){
             $map['status'] = ['>=',$cfg['status']];    //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
@@ -430,6 +430,7 @@ abstract class C extends IndexBase
         }
         
         $tag_array = cache('qb_tag_'.$name);    //数据库参数配置文件
+        
         if(empty($tag_array)){                             //数据库设定的模板优先
             $tag_array = LabelModel::get_tag_data_cfg($name , $pagename);
             //cache('qb_tag_'.$tag_name,$tag_array,$tag_array['cache_time']);
@@ -439,23 +440,31 @@ abstract class C extends IndexBase
             return $this->err_js('not_tpl');
             //die('tpl not exists !');
         }
-        $cfg = unserialize($tag_array['cfg']);
+        $cfg = unserialize($tag_array['cfg']);  //保存在数据库,用户特别设置的
         $map = [];
         if($cfg['status']>0){
             $map = [
                     'status'=>['>=',$cfg['status']],    //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
             ];
+        }elseif (input('status')!==null){
+            $map = [
+                    'status'=>['>=',input('status')],    //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
+            ];
         }
         if($type=='good'){  //取精华数据 这里容易跟上面的条件造成冲突,要注意
             $map = ['status'=>2];
         }
+        $filter_array = $this->map_filter_field($mid);   //列表页的选择字段
+        if ($filter_array) {
+            $map = array_merge($map,$filter_array);
+        }
         
-        if($cfg['where']){  //用户自定义的查询语句
+        if($cfg['where']){  ///保存在数据库,用户自定义的查询语句
             $_array = fun('label@where',$cfg['where'],$cfg);
             if($_array){
                 $map = array_merge($map,$_array);
             }
-        }elseif($where=mymd5($where,'DE')){ //where语句解密处理,避免用户恶意修改
+        }elseif($where=mymd5($where,'DE')){ //URL中的where语句解密处理,避免用户恶意修改
             $_array = fun('label@where',$where,array_merge(input('route.'),$getData));
             $map = array_merge($map,$_array);
         }
@@ -467,7 +476,6 @@ abstract class C extends IndexBase
 //                 $whereor = $_array;
 //             }
 //         }
-        
         $data_list = $this->label_get_list_data($fid,$mid,$rows,$order,$by,$map);
         $array = getArray($data_list);
         $__LIST__ = $array['data'];

@@ -860,12 +860,14 @@ abstract class C extends Model
             }
             $_map = [];
             foreach($map AS $key=>$value){
-                if (in_array($key, ['id','uid'])) {
+                if (in_array($key, ['id','uid','list','view','status'])) {
                     $_map[$key] = $value;
                 }
             }
-            
-            $data = Db::name(self::$base_table)->where($_map)->field('id,mid')->order('id',$by)->paginate($rows,false,['page'=>$page]);
+            if (!preg_match("/^(id|uid|list|view|status)/i", $order)) {
+                $order = 'id';
+            }            
+            $data = Db::name(self::$base_table)->where($_map)->field('id,mid')->order($order,$by)->paginate($rows,false,['page'=>$page]);
 //             $data->each(function($rs,$key){
 //                 $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->find();
 //                 return $vs;

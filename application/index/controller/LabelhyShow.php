@@ -24,11 +24,11 @@ class LabelhyShow extends LabelShow
     
     /**
      * 通用标签AJAX获取分页数据
-     * @param string $name 标签变量名
+     * @param string $tagname 标签变量名
      * @param string $page 第几页
      * @param string $pagename 标签所在哪个页面
      */
-    public function ajax_get($name='' , $page='' , $pagename='' , $hy_id=0){
+    public function ajax_get($tagname='' , $page='' , $pagename='' , $hy_id=0){
         
         //对应fetch方法,传入一些常用的参数
         $admin = $this->admin;
@@ -56,16 +56,16 @@ class LabelhyShow extends LabelShow
             }
         }
         
-        $_cfg = cache('tag_default_'.$name);    //主要为的是传递where参数
+        $_cfg = cache('tag_default_'.$tagname);    //主要为的是传递where参数
         $parameter = array_merge($_cfg,$parameter);
         
         $live_cfg = self::union_live_parameter($parameter);
         
-        $tag_array = LabelModel::get_tag_data_cfg($name , $pagename , $page, $live_cfg, $hy_id);
-        //$view_tpl = cache('tags_tpl_code_'.$name);      //原始模板缓存，非数据库的
+        $tag_array = LabelModel::get_tag_data_cfg($tagname , $pagename , $page, $live_cfg, $hy_id);
+        //$view_tpl = cache('tags_tpl_code_'.$tagname);      //原始模板缓存，非数据库的
         $_array = cache('tags_page_demo_tpl_'.$pagename);      //原始模板缓存，非数据库的
         if(!empty($_array)){
-            $view_tpl = $_array[$name]['tpl'];
+            $view_tpl = $_array[$tagname]['tpl'];
         }
         
         if(!empty($tag_array['view_tpl'])){         //数据库设定的模板优先
@@ -214,7 +214,7 @@ class LabelhyShow extends LabelShow
         if($cfg['js']){ //ajax显示数据,可以加快页面的打开速度
             $ajaxurl = $this->build_tag_ajax_url( array_merge(
                     [
-                            'name'=>$tag_name,
+                            'tagname'=>$tag_name,
                             'pagename'=>$pagename,
                             'page'=>1,
                     ],

@@ -70,11 +70,11 @@ class LabelShow extends IndexBase
     
     /**
      * 通用标签AJAX获取分页数据
-     * @param string $name 标签变量名
+     * @param string $tagname 标签变量名
      * @param string $page 第几页
      * @param string $pagename 标签所在哪个页面
      */
-    public function ajax_get($name='' , $page='' , $pagename=''){
+    public function ajax_get($tagname='' , $page='' , $pagename=''){
         
         //对应fetch方法,传入一些常用的参数
         $admin = $this->admin;
@@ -104,11 +104,11 @@ class LabelShow extends IndexBase
 
         $live_cfg = self::union_live_parameter($parameter);
         
-        $tag_array = LabelModel::get_tag_data_cfg($name , $pagename , $page, $live_cfg);
+        $tag_array = LabelModel::get_tag_data_cfg($tagname , $pagename , $page, $live_cfg);
         //$view_tpl = cache('tags_tpl_code_'.$name);      //原始模板缓存，非数据库的
         $_array = cache('tags_page_demo_tpl_'.$pagename);      //原始模板缓存，非数据库的
         if(!empty($_array)){
-            $view_tpl = $_array[$name]['tpl'];
+            $view_tpl = $_array[$tagname]['tpl'];
         }
         
         if(!empty($tag_array['view_tpl'])){         //数据库设定的模板优先
@@ -118,7 +118,7 @@ class LabelShow extends IndexBase
         $__LIST__ = $tag_array['data'];
         $array = $tag_array['pages'];       //分页数据
         
-        $_cfg = cache('tag_default_'.$name);
+        $_cfg = cache('tag_default_'.$tagname);
         if(empty($tag_array)){    //未入库前,随便给些演示数据            
             $live_cfg && $_cfg = array_merge($_cfg,$live_cfg) ;
             $_cfg['sys_type'] && $_cfg['systype'] = $_cfg['sys_type'];      //重新定义了调取数据的类型, 也即动态变换
@@ -617,6 +617,32 @@ class LabelShow extends IndexBase
     }
     
     /**
+     * 列表页可能用到的筛选字段的处理,比如分类信息最常用的筛选字段
+     * @param number $mid 模型ID
+     * @return mixed[]
+     */
+    protected function listpage_filter_field($mid=0){
+        $data = input();
+        $map = [];
+        unset($data['fid'],$data['mid'],$data['page']);
+        if(count($data)>0){
+            $farray = get_field($mid);
+            foreach($data AS $key=>$value){
+                if($farray[$key]){  //字段存在
+                    if($farray[$key]['range_opt'] ){    //范围筛选
+                        $map["{$key}_1"] = $data["{$key}_1"];
+                        $map["{$key}_2"] = $data["{$key}_2"];
+                    }
+                    $map[$key] = $value;
+                }elseif(in_array($key, ['province_id','city_id','zone_id','street_id'])){
+                    $map[$key] = $value;
+                }
+            }
+        }
+        return $map;
+    }
+    
+    /**
      * 列表页标签模板
      * @param string $tag_name 标签名字
      * @param array $cfg 配置参数
@@ -657,11 +683,12 @@ class LabelShow extends IndexBase
         }
         $cfg_array = array_merge($cfg_array, self::union_live_parameter($cfg));     //动态变量参数
         
+        $listpage_filtrate = $this->listpage_filter_field($cfg['mid']); //比如分类的列表筛选
         //列表页,给AJAX传输数据用
-        self::$list_page_cfg = [$tag_name=> $cfg_array];    //列表页标签也可以存在多个的
+        self::$list_page_cfg = [$tag_name=> $listpage_filtrate?array_merge($cfg_array,$listpage_filtrate):$cfg_array];    //列表页标签也可以存在多个的
         
         $tag_data = cache('qb_tag_data_'.$tag_name);    //首页列表数据缓存
-        if($cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存
+        if($listpage_filtrate || $cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存或者存在列表筛选
             $tag_data = controller('content','index')->label_list_data($cfg_array);
             $tag_array['cache_time']>0 && cache('qb_tag_data_'.$tag_name,$tag_array,$tag_array['cache_time']);
         }
@@ -711,7 +738,7 @@ class LabelShow extends IndexBase
         $array = self::tag_cfg_parameter($tag_name);
         echo  $this->build_tag_ajax_url(array_merge(
                 [
-                        'name'=>$tag_name,
+                        'tagname'=>$tag_name,
                         'pagename'=>$pagename,
                 ],
                 self::union_live_parameter($array)
@@ -1065,7 +1092,7 @@ class LabelShow extends IndexBase
         if($cfg['js']){ //ajax显示数据,可以加快页面的打开速度
             $ajaxurl = $this->build_tag_ajax_url( array_merge(
                     [
-                    'name'=>$tag_name,
+                    'tagname'=>$tag_name,
                     'pagename'=>$pagename,
                     'page'=>1,
                     ],

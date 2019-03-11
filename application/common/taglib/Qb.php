@@ -241,7 +241,14 @@ class Qb extends TagLib{
             }
             list($a,$b) = explode('=',$value);
             $_par[] = $a;
-            $b || $b=$a;
+            if (empty($b)) {
+                $b=$a;
+            }elseif(substr($b,0,1)=='$'){
+                if(strstr($b,'.')){
+                    $b = str_replace('.','[\'',$b).'\']';
+                }
+                $b = substr($b,1);
+            }
             $_str .= "'$a'=>\$$b,";
         }
         return "'union'=>'".implode(',',$_par)."',".$_str;
