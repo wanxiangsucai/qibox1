@@ -218,6 +218,11 @@ abstract class C extends Model
         }
         $data['mid'] = $mid;
         $data['uid'] || $data['uid'] = intval(login_user('uid'));
+        $data['create_time'] || $data['create_time'] = time();
+        $data['list'] = time();
+        $data['ip'] = get_ip();
+        $data['picurl'] && $data['ispic'] = 1 ;
+        
         //先要往索引表插一条记录做索引用 , 模型表的ID以主表的ID为标准 
         try {
             hook_listen('cms_model_add_begin',$data,$mid);    //入库前的钩子,可以在这里设置禁止发布信息
@@ -227,11 +232,7 @@ abstract class C extends Model
         }        
         if( empty($data['id']) ){
             return '新增ID不存在';
-        }
-        $data['create_time'] || $data['create_time'] = time();
-        $data['list'] = time();
-        $data['ip'] = get_ip();
-        $data['picurl'] && $data['ispic'] = 1 ;
+        }        
         
         $table = self::getTableByMid($mid); //内容主表
         try {
