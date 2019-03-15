@@ -56,8 +56,9 @@ trait ModuleContent
 	 * @param number $mid 模型ID
 	 * @param number $fid 栏目ID
 	 * @param array $data POST表单的数据
+	 * @param string $url 发表成功后,返回的URL地址
 	 */
-	protected function saveAdd($mid=0,$fid=0,$data=[]){
+	protected function saveAdd($mid=0,$fid=0,$data=[],$url=''){
 
 	    //主要针对多选项的数组进行处理
 	    $data = $this->format_post_data($data);
@@ -77,7 +78,7 @@ trait ModuleContent
 			hook_listen('cms_add_end',$id,['data' =>$data, 'module' =>$this->request->module()]);	    
 			$this->end_add($id,$data);
 
-	        $this->success('新增成功', auto_url('index',$fid ? ['fid'=>$fid] : ['mid'=>$mid]) );
+			$this->success('新增成功', $url?:auto_url('index',$fid ? ['fid'=>$fid] : ['mid'=>$mid]) );
 	    }else{
 	        $this -> error('新增失败:'.$id);
 	    }
@@ -86,8 +87,10 @@ trait ModuleContent
 	/**
 	 * 保存修改的数据
 	 * @param number $mid
+	 * @param array $data POST表单的数据
+	 * @param string $url 发表成功后,返回的URL地址
 	 */
-	protected function saveEdit($mid=0,$data=[]){	    
+	protected function saveEdit($mid=0,$data=[],$url=''){
 	    
 	    //主要针对多选项的数组进行处理
 	    $data = $this->format_post_data($data);
@@ -108,7 +111,7 @@ trait ModuleContent
 	        hook_listen('cms_edit_end',$data,['result' =>$result, 'module' =>$this->request->module(),'info'=>$info]);	        
 	        $this->end_edit($data['id'],$data,$info);
 	        
-	        $this -> success('修改成功', auto_url('index',['mid'=>$mid]) );
+	        $this -> success('修改成功', $url?:auto_url('index',['mid'=>$mid]) );
 	    }else{
 	        $this -> error('修改无效');
 	    }
@@ -439,7 +442,7 @@ trait ModuleContent
 	    if(isset($data['map'])&&strstr($data['map'],',')){
 	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
 	    }
-	    $data['title'] = filtrate($data['title']);                             //标题过滤
+	    //$data['title'] = filtrate($data['title']);                             //标题过滤
 	    //$data['content'] = fun('filter@str',$data['content']);     //内容过滤
 	    if ($this->request->isPost()&&fun('ddos@add',$data)!==true) {    //防灌水
 	        return fun('ddos@add',$data);
@@ -464,6 +467,10 @@ trait ModuleContent
 	        foreach(get_field($mid) AS $rs){
 	            if ($rs['ifmust']==1&&$data[$rs['name']]=='') {
 	                return $rs['title'].'不能为空!';
+	            }elseif($data[$rs['name']]!=''){
+	                if (in_array($rs['type'], ['text','image','images','file','files'])) {
+	                    $data[$rs['name']] = filtrate($data[$rs['name']]);
+	                }
 	            }
 	        }
 	    }
@@ -534,7 +541,7 @@ trait ModuleContent
     	        if(true !== $result) return $result;
     	    }
 	    }
-	    $data['title'] = filtrate($data['title']);                             //标题过滤
+	    //$data['title'] = filtrate($data['title']);                             //标题过滤
 	    //$data['content'] = fun('Filter@str',$data['content']);     //内容过滤	  
 	    
 	    $result = $this->check_post_filed($data,$info['mid']);

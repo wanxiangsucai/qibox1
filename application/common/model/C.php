@@ -728,7 +728,7 @@ abstract class C extends Model
         }
         
         
-        $cfg['leng'] && $info['title'] = get_word($info['full_title'] = $info['title'], $cfg['leng']);
+        $cfg['leng'] && $info['title'] = get_word($info['full_title'] = del_html($info['title']), $cfg['leng']);
         $info['full_content'] = $info['content'];   //原始内容数据
         $info['content'] = preg_replace('/<([^<]*)>/is',"",$info['content']);	//把HTML代码过滤掉
         $cfg['cleng'] && $info['content'] = get_word($info['content'], $cfg['cleng']);

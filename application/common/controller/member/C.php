@@ -167,10 +167,11 @@ abstract class C extends MemberBase
         
         // 保存数据
         if ($this -> request -> isPost()) {
-            input('?get.ext_id') && $this->request->post(['ext_id'=>input('get.ext_id')]);
-            $this->saveAdd($mid,$fid,$data);
-            
+            //input('?get.ext_id') && $this->request->post(['ext_id'=>input('get.ext_id')]);
+            return $this->saveAdd($mid,$fid,$data,get_cookie('fromurl'));
         }
+        
+        set_cookie('fromurl', input('fromurl')?:null );
         
         //发表时可选择的栏目
         $sort_array = $this->s_model->getTreeTitle(0,$mid);
@@ -227,8 +228,10 @@ abstract class C extends MemberBase
         
         // 保存数据
         if ($this -> request -> isPost()) {
-            $this->saveEdit($this->mid,$data);
+            return $this->saveEdit($this->mid,$data,get_cookie('fromurl'));
         }
+        
+        set_cookie('fromurl', input('fromurl')?:null );
         
         //发表时可选择的栏目
         $sort_array = $this->s_model->getTreeTitle(0,$this->mid);
