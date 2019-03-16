@@ -10,7 +10,7 @@ class User extends UserModel
      * @return mixed
      */
     protected static function filterEmoji($str){
-        $str=preg_replace_callback('/./u',function(  $match){print_r($match);
+        $str=preg_replace_callback('/./u',function($match){
         return strlen($match[0]) >= 4 ? '' :$match[0];
         },$str);
         return $str;
