@@ -629,6 +629,37 @@ trait ModuleContent
 	    $this->delete_post_money($info);
 	}
 	
+	/**
+	 * 获取用户加入过的圈子
+	 * @param array $info 内容信息
+	 * @return array
+	 */
+	protected function get_my_qun($info=[]){
+	    $marray = modules_config('qun');
+	    if ( empty($marray) || config('post_need_sort')!==true || config('system_dirname')=='qun') {
+	        return [];
+	    }
+	    if ($info&&$info['uid']) {
+	        $uid = $info['uid'];
+	    }else{
+	        $uid = $this->user['uid'];
+	    }
+	    $array = fun('qun@myjoin',$uid);
+	    if ($array) {
+	        $ext_sys = $marray['id'];
+	        $data = [];
+	        foreach($array AS $rs){
+	            $data[$rs['id']] = $rs['title'];
+	        }
+	        return [
+	                [ 'select','ext_id','所属'.QUN,'',$data],
+	                [ 'hidden','ext_sys',$ext_sys],	                
+	        ];
+	    }else{
+	        return [];
+	    }	    
+	}
+	
 }
 
 

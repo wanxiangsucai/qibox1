@@ -103,6 +103,7 @@ abstract class C extends AdminBase
                                 [ 'select','fid','所属栏目','',$sort_array,$fid],
                                // [ 'linkages','street_id','所属地区','','area',4],
                         ],
+                        $this->get_my_qun(),
                         $this->form_items
                         //$this->getEasyFormItems()
                     );
@@ -371,6 +372,7 @@ abstract class C extends AdminBase
                     [
                             [ 'select','fid','所属栏目','',$sort_array],
                     ],
+                    $this->get_my_qun($info),
                     //$this->getEasyFormItems()
                     $this->form_items
                     );

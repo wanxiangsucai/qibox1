@@ -183,6 +183,7 @@ abstract class C extends MemberBase
                     [
                             [ 'select','fid','所属栏目','',$sort_array,$fid],
                     ],
+                    $this->get_my_qun(),
                     $this->getEasyFormItems()
                     );
         }
@@ -243,6 +244,7 @@ abstract class C extends MemberBase
                     [
                             [ 'select','fid','所属栏目','',$sort_array],
                     ],
+                    $this->get_my_qun($info),
                     $this->getEasyFormItems()
                     );
         }

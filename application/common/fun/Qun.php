@@ -1,6 +1,7 @@
 <?php
 namespace app\common\fun;
 use think\Db;
+use app\qun\model\Content AS ContentModel;
 
 class Qun{
     
@@ -32,7 +33,8 @@ class Qun{
         static $array = [];
         $info = $array[$id];
         if (empty($info)) {
-            $info = getArray( query('qun_content1')->where('id',$id)->find() );
+            //$info = getArray( query('qun_content1')->where('id',$id)->find() );
+            $info = ContentModel::getInfoByid($id);
             if (empty($info)) {
                 return ;
             }
@@ -56,7 +58,12 @@ class Qun{
 		if(empty($uid)){
 			return [];
 		}
-		$listdb = Db::name('qun_member')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->order('A.id desc')->select();
+		//$listdb = Db::name('qun_member')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->order('A.id desc')->select();
+		$array = Db::name('qun_member')->where('uid',$uid)->order('type desc,id desc')->column('aid');
+		$listdb = [];
+		foreach($array AS $aid){
+		    $listdb[] = ContentModel::getInfoByid($aid);
+		}
         return $listdb;
     }
     
@@ -73,7 +80,12 @@ class Qun{
         if(empty($uid)){
             return [];
         }
-        $listdb = Db::name('qun_visit')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->order('A.id desc')->select();
+        //$listdb = Db::name('qun_visit')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->order('A.id desc')->select();
+        $array = Db::name('qun_visit')->where('uid',$uid)->order('visittime desc')->column('aid');
+        $listdb = [];
+        foreach($array AS $aid){
+            $listdb[] = ContentModel::getInfoByid($aid);
+        }
         return $listdb;
     }
     
@@ -93,8 +105,13 @@ class Qun{
         static $array = [];
         $listdb = $array[$uid];
         if (empty($listdb)) {
-            $listdb = query('qun_content1')->where('uid',$uid)->order('usernum desc')->column(true);
-            $listdb = array_values($listdb);
+            //$listdb = query('qun_content1')->where('uid',$uid)->order('usernum desc')->column(true);
+            //$listdb = array_values($listdb);
+            $array = Db::name('qun_content')->where('uid',$uid)->order('id desc')->column('id');
+            $listdb = [];
+            foreach($array AS $aid){
+                $listdb[] = ContentModel::getInfoByid($aid);
+            }
             $array[$uid] = $listdb;
         }        
         return $listdb;
