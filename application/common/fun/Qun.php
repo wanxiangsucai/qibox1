@@ -59,7 +59,7 @@ class Qun{
 			return [];
 		}
 		//$listdb = Db::name('qun_member')->alias('A')->join('qun_content1 B','A.aid=B.id','left')->field('B.*')->where('A.uid='.$uid)->order('A.id desc')->select();
-		$array = Db::name('qun_member')->where('uid',$uid)->order('type desc,id desc')->column('aid');
+		$array = Db::name('qun_member')->where('uid',$uid)->where('type','>',0)->order('type desc,id desc')->column('aid');
 		$listdb = [];
 		foreach($array AS $aid){
 		    $listdb[] = ContentModel::getInfoByid($aid);
