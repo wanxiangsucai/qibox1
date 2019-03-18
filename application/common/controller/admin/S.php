@@ -12,6 +12,7 @@ abstract class S extends AdminBase
     protected $validate = 'Sort';
     protected $model;
     protected $m_model;
+    protected $c_model;
     protected $form_items;
     
     protected $list_items;
@@ -24,6 +25,7 @@ abstract class S extends AdminBase
         $dirname = $array[0][1];
         $this->model = get_model_class($dirname,'sort');
         $this->m_model = get_model_class($dirname,'module');
+        $this->c_model = get_model_class($dirname,'content');
         $this->set_config();
     }
     
@@ -31,6 +33,9 @@ abstract class S extends AdminBase
         $this->list_items = [
                 ['name', '栏目名称', 'link',iurl('content/index',['fid'=>'__id__']),'_blank'],
                 ['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
+                ['id','统计','callback',function($value,$rs){
+                    return $this->c_model->getNumByMid($rs['mid'],['fid'=>$value]);
+                }],
                 ['list', '排序值', 'text.edit'],
         ];
         
@@ -82,7 +87,7 @@ abstract class S extends AdminBase
     
     /**
      * 分组显示设置项
-     * @param number $id 父栏目
+     * @param number $id 当前栏目ID
      * @return string[][][]|unknown[][][]|string[][][][]|NULL[][][]
      */
     protected function set_field_form($id=0){
@@ -92,7 +97,7 @@ abstract class S extends AdminBase
                 '基础设置'=>[
                         ['text', 'name', '栏目名称'],
                         ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle($id)],
-                        //['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
+                        ($this->c_model->getNumByMid($this->c_model->getMidByFid($id),['fid'=>$id])>0?['hidden','mid']:['select', 'mid', '所属模型','有内容后就不能再修改',$this->m_model->getTitleList()]),
                         ['icon', 'logo', '图标',],
                         ['checkbox', 'allowpost', '允许发布内容的用户组','全留空,则不作限制',getGroupByid()],
                         ['checkbox', 'allowview', '允许查看内容的用户组','全留空,则不作限制。注意标题不能限制。',getGroupByid()],
