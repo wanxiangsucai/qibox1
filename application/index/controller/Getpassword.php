@@ -37,7 +37,7 @@ class Getpassword extends IndexBase
             set_cookie('send_num', time());
             return $this->ok_js();
         }else{
-            return $this->err_js($result.$send_num);
+            return $this->err_js($result);
         }
     }
     
