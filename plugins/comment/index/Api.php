@@ -103,11 +103,42 @@ class Api extends IndexBase
                     self::$get_children = $pid;
                     contentModel::where('id',$pid)->setInc('reply',1);
                 }
+                $this->send_msg($data);
                 return self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
             } else {
                 return $this->err_js('数据库执行失败!');
             }
         }
+    }
+    
+    /**
+     * 发送消息
+     * @param array $data
+     */
+    protected function send_msg($data=[]){
+        $topic = fun('Content@info',$data['aid'],$data['sysid'],false);
+        $mods = modules_config($data['sysid']);
+        
+        $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
+        //if( $this->webdb['comment_send_msg'] ){
+            $content = $mods['name'].' 里的信息: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了评论,<a target="_blank" href="'.get_url(urls($mods['keywords'].'/content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
+            $title = $this->user['username'].' 对你评论了!';            
+            if($topic['uid']!=$this->user['uid']){
+                //if($this->forbid_remind($topic['uid'])!==true){
+                    send_msg($topic['uid'],$title,$content);
+                    send_wx_msg($topic['uid'], '你发表的'.$content);
+                //}
+            }
+            
+            if($pinfo && $topic['uid']!=$pinfo['uid']){
+                if($pinfo['uid']!=$this->user['uid']){                    
+                    //if($this->forbid_remind($pinfo['uid'])!==true){
+                        send_msg($pinfo['uid'],$title,$content);
+                        send_wx_msg($pinfo['uid'], '你参与评论的'.$content);
+                    //}
+                }
+            }
+        //}
     }
     
     private function get_tag_config($name='',$pagename=''){
