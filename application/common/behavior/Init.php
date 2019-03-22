@@ -50,6 +50,7 @@ class Init{
 		        '__DOMAIN__'=>request()->domain(),
 		        '__QUN__'=>QUN,
 		];
+		define('ADMIN_FILENAME',config('admin.filename')?:'admin.php');     //后台入口文件名
 		//存入配置文件方便调用
 		config('view_replace_str',$view_replace_str);
 		$module='';

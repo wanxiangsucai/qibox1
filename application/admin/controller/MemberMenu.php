@@ -87,7 +87,7 @@ class MemberMenu extends AdminBase
 	            $data2['groupid'] = $gid;
 	            $data2['type'] = 1;
 	            foreach($array2['sons'] AS $rs){	                	                
-	                $data2['url'] = str_replace(['admin.php/admin/','admin.php/'], ['member.php/member/','member.php/'], $rs['url']);
+	                $data2['url'] = str_replace([ADMIN_FILENAME.'/admin/',ADMIN_FILENAME.'/'], ['member.php/member/','member.php/'], $rs['url']);
 	                if (empty(MenuModel::get($data2))) {
 	                    $num2++;
 	                    $data2['name'] = $rs['title'];

@@ -386,12 +386,12 @@ if (!function_exists('urls')) {
         list($module) = explode('/',$url);
         $_url = url($url, $vars, $suffix, $domain);
         if($module=='index' && ENTRANCE!='index'){
-            $_url = str_replace(array('admin.php','member.php'), 'index.php', $_url);
+            $_url = str_replace(array(ADMIN_FILENAME,'member.php'), 'index.php', $_url);
         }elseif($module=='member' && ENTRANCE!='member'){
             if(preg_match('/^\/member\//i', $_url)){
                 $_url = '/member.php'.$_url;
             }else{
-                $_url = str_replace(array('admin.php','index.php'), 'member.php', $_url);
+                $_url = str_replace(array(ADMIN_FILENAME,'index.php'), 'member.php', $_url);
             }            
         }
         return $_url ;
@@ -454,12 +454,12 @@ if (!function_exists('purl')) {
         $module || $module = ENTRANCE;
         $url = url($module .'/plugin/execute', $params);
         if($module=='index' && ENTRANCE!='index'){
-            $url = str_replace(array('admin.php','member.php'), 'index.php', $url);
+            $url = str_replace(array(ADMIN_FILENAME,'member.php'), 'index.php', $url);
         }elseif($module=='member' && ENTRANCE!='member'){
             if(preg_match('/^\/member\//i', $url)){
                 $url = '/member.php'.$url;
             }else{
-                $url = str_replace(array('admin.php','index.php'), 'member.php', $url);
+                $url = str_replace(array(ADMIN_FILENAME,'index.php'), 'member.php', $url);
             }            
         }
         return $url;
@@ -510,7 +510,7 @@ if (!function_exists('iurl')) {
         }else{
             $_url = url(full_url($url), $vars, $suffix, $domain);
         }
-        $url = str_replace(array('admin.php','member.php'), 'index.php', $_url);
+        $url = str_replace(array(ADMIN_FILENAME,'member.php'), 'index.php', $_url);
         if(config('webdb.hiden_index_php') && preg_match('/\/index\.php\//', $url)){
             $url = str_replace('/index.php/', '/', $url);
         }
@@ -574,8 +574,8 @@ if (!function_exists('murl')) {
         if(preg_match('/^\/[\w]+\//', $_url)){
             $url = '/member.php'.$_url;
         }else{
-            $url = str_replace(['admin.php/admin','index.php/index'],'member.php/member', $_url);
-            $url = str_replace(['admin.php','index.php'],'member.php', $url);
+            $url = str_replace([ADMIN_FILENAME.'/admin','index.php/index'],'member.php/member', $_url);
+            $url = str_replace([ADMIN_FILENAME,'index.php'],'member.php', $url);
         }        
 
         if(!preg_match('/^member.php/', $url)){
