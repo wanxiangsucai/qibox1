@@ -604,7 +604,7 @@ CREATE TABLE IF NOT EXISTS `qb_config` (
 -- 转存表中的数据 `qb_config`
 --
 
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(29, 2, '是否对图片加水印', 'is_waterimg', '2', 'radio', '1|启用\n2|禁用', 1, '', '', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(29, 2, '是否对图片加水印', 'is_waterimg', '0', 'radio', '1|启用\r\n0|禁用', 1, '', '', 0, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(62, 8, '是否允许重复的邮箱', 'emailOnly', '1', 'radio', '0|允许重复\r\n1|不允许重复', 1, '', '', 97, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(89, 20, 'QQ登录接口ID', 'qqlogin_appid', '', 'text', '', 1, '', '', 0, -9);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(142, 20, 'QQ登录接口密钥', 'qqlogin_appsecret', '', 'text', '', 1, '', '网站回调域是:    http://你的域名/index.php/p/login-qq-index.html;http://你的域名/p/login-qq-index.html', 0, -9);
@@ -1459,3 +1459,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 
 
 ALTER TABLE  `qb_memberdata` ADD  `introducer_num` MEDIUMINT( 5 ) NOT NULL COMMENT  '直接推荐用户数',ADD  `introducer_nums` MEDIUMINT( 5 ) NOT NULL COMMENT  '间接推荐用户数';
+UPDATE `qb_config` SET    `options`='1|启用\r\n0|禁用' WHERE  `c_key` LIKE  'is_waterimg';
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '后台主页显示升级提醒', 'forbid_upgrade', '0', 'radio', '1|不提醒\r\n0|提醒', 1, '', '', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '指定圈子黄页作为网站主页', 'qun_index_id', '', 'number', '', 1, '', '如果你要设置某个圈子黄页作为网站主页的话,就输入其ID值,否则就留空.', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '后台入口文件名', 'admin_filename', 'admin.php', 'text', '', 1, '', '默认是admin.php,为安全起见,你可以改成其它文件名,但必须是.php结尾', 0, 0);

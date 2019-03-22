@@ -111,7 +111,7 @@ function check_upgrade(){
 		}
 	});
 }
-{if $userdb['groupid']==3} check_upgrade(); {/if}
+{if $userdb['groupid']==3&&empty(config('webdb.forbid_upgrade'))} check_upgrade(); {/if}
 
 </script>
 

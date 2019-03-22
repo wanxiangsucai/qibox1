@@ -8,8 +8,10 @@ small{font-size:12px;}
 ul,ol{list-style:none;}
 a{text-decoration:none;color:#2d374b;}
 a:hover {color:#d00;}
+/*
 sup{vertical-align:text-top;}
 sub{vertical-align:text-bottom;}
+*/
 legend{color:#000;}
 fieldset,img{border:0;}
 button,input,select,textarea{font-size:100%;}

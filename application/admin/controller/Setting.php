@@ -7,6 +7,7 @@ use plugins\config_set\model\Group AS GroupModel;
 use app\common\traits\AddEditList;
 use think\Cache;
 use app\common\fun\Cfgfield;
+use think\Db;
 
 
 class Setting extends AdminBase
@@ -225,6 +226,38 @@ class Setting extends AdminBase
         ];
     }
     
+    /**
+     * 修改后台入口文件名
+     * @param string $filename
+     */
+    private function rename_adminfile($filename=''){
+        if ($filename!=''&&$filename!=config('admin.filename')) {
+            if(!is_writable(APP_PATH.'extra/admin.php')){
+                $this->error('修改后台入口失败,此文件不可写:'.APP_PATH.'extra/admin.php');
+            }elseif(is_file(ROOT_PATH.$filename)){
+                $this->error('此文件已存在,请更换一个:'.ROOT_PATH.$filename);
+            }elseif(!preg_match('/^([\w]+)\.php$/', $filename)){
+                $this->error('文件名不符合规划!');
+            }
+            //rename有时候不能改动正在使用的文件
+            if(copy(ROOT_PATH.config('admin.filename'),ROOT_PATH.$filename) && unlink(ROOT_PATH.config('admin.filename')) ){
+                $array = config('admin');
+                $array['filename'] = $filename;
+                write_file(APP_PATH.'extra/admin.php', '<?php return '.var_export($array,true).';');
+                $listdb = Db::name('admin_menu')->order('id desc')->column(true);
+                foreach($listdb AS $rs){
+                    if(strstr($rs['url'],config('admin.filename'))){
+                        $rs['url'] = str_replace(config('admin.filename'), $filename, $rs['url']);
+                        Db::name('admin_menu')->where('id',$rs['id'])->update(['url'=>$rs['url']]);
+                    }
+                }
+                $this->success('后台入口名修改成功,请重新登录后台',get_url('/'.$filename.'/admin/index/quit.html'));
+            }else{
+                $this->error('后台入口名修改失败,请进服务器手工改名');
+            }
+        }
+    }
+    
     
     /**
      * 参数设置
@@ -238,6 +271,9 @@ class Setting extends AdminBase
             // 表单数据
             $data = $this->request->post();
             if( $this->model->save_group_data($data,$data['group']?$data['group']:$group) ){
+                if ($group==1) {
+                    $this->rename_adminfile($data['admin_filename']);
+                }
                 $this->success('修改成功');
             }            
         }
@@ -258,6 +294,9 @@ class Setting extends AdminBase
         $data = [];
         foreach($list_data AS $rs){
             $data[$rs['c_key']] = $rs['c_value'];
+        }
+        if ($group==1) {
+            $data['admin_filename'] = config('admin.filename');
         }
         $this->mid = $group;    //纯属为了模板考虑的
 		return $this->editContent($data);
