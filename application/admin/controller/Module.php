@@ -53,7 +53,7 @@ class Module extends AdminBase
 // 	    }
 	    $this->list_items = [
 	            ['icon', '图标', 'icon'],
-	            ['name', '频道0名称', 'link',iurl('__keywords__/index/index',[],true,false,'m'),'target'],
+	            ['name', '频道名称', 'link',iurl('__keywords__/index/index',[],true,false,'m'),'target'],
 	            //['pre', '数据表前缀', 'text'],
 	            ['keywords', '关键字(目录名)', 'text'],
 	            ['list', '排序', 'text'],
@@ -183,12 +183,23 @@ class Module extends AdminBase
 	
 	/**
 	 * 修改模块设置
-	 * @param unknown $id
+	 * @param number $id
+	 * @param string $type
 	 * @return mixed|string
 	 */
-	public function edit($id = null)
+	public function edit($id = 0,$type='')
 	{
 	    if (empty($id)) $this->error('缺少参数');
+	    
+	    if($type=='refresh'){
+	        $data = [
+	                'id'=>$id,
+	                'version'=>'',
+	        ];
+	        $this->model->update($data);
+	        \think\Cache::clear();
+	        $this -> success('刷新成功',url('admin/upgrade/index'));
+	    }
 	    
 	    $info = $this->getInfoData($id);
 	    
