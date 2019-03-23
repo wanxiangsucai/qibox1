@@ -44,7 +44,11 @@ class AdminBase extends Base
             Action::write(); //操作日志
             //把缓存全清除
             if($this->user['groupid']==3){
-                \think\Hook::add('app_end', function(){Cache::clear();});
+                \think\Hook::add('app_end', function(){
+                    if (!defined('IN_PLUGIN')&&!defined('FORBID_CLEAR_CACHE')&&empty(cache('forbid_clear_cache'))) {
+                        Cache::clear();
+                    }                    
+                });
             }
         }
         
