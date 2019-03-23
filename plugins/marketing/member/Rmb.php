@@ -74,6 +74,10 @@ class Rmb extends MemberBase
 	            $imgshow = '<img style="max-width:50%;" src="'.tempdir($this->webdb['mp_code_img']).'">';
 	            $this->error("请先关注公众号才可以提现，关注公众号方便接收提现申请动态!<br>$imgshow");
 	        }
+	    }elseif($this->webdb['getout_need_yzphone']){
+	        if (empty($this->user['mobphone'])||empty($this->user['mob_yz'])) {
+	            $this->error("你还没有绑定手机号不能提现，请点击下一步先绑定手机号才能提现",url('member/yz/mob'));
+	        }
 	    }
 	    
 	    if(IS_POST){

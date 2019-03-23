@@ -68,6 +68,15 @@ class Group extends AdminBase
 	
 	public function index()
 	{
+	    $this->tab_ext['right_button'] = [
+	            ['type'=>'delete'],
+	            [
+	                    'title'=>'管理',
+	                    'icon'=>'fa fa-list',
+	                    'url'=>purl('config_set/config/index',['group'=>'__id__']),
+	            ],
+	            ['type'=>'edit'],	            
+	    ];
 	    $data = $this->model->order('list','desc')->select();
 	    foreach($data AS $key=>$rs){
 	        if($rs['sys_id']==0){
