@@ -232,6 +232,9 @@ class Setting extends AdminBase
      */
     private function rename_adminfile($filename=''){
         if ($filename!=''&&$filename!=config('admin.filename')) {
+            if (!is_file(APP_PATH.'extra/admin.php')) {
+                write_file(APP_PATH.'extra/admin.php', '<?php ');
+            }
             if(!is_writable(APP_PATH.'extra/admin.php')){
                 $this->error('修改后台入口失败,此文件不可写:'.APP_PATH.'extra/admin.php');
             }elseif(is_file(ROOT_PATH.$filename)){
@@ -296,7 +299,7 @@ class Setting extends AdminBase
             $data[$rs['c_key']] = $rs['c_value'];
         }
         if ($group==1) {
-            $data['admin_filename'] = config('admin.filename');
+            $data['admin_filename'] = config('admin.filename')=='admin.php'?'':config('admin.filename');
         }
         $this->mid = $group;    //纯属为了模板考虑的
 		return $this->editContent($data);

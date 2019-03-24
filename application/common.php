@@ -21,6 +21,10 @@ use app\common\controller\Base;
 
 error_reporting(E_ERROR | E_PARSE );
 
+if (is_file(APP_PATH.'function.php')) {      //用户二开的方法优先级更高,可以把下面默认的替换掉
+    include_once APP_PATH.'function.php';
+}
+
 if(!function_exists('fun')){
     /**
      * 扩展函数,第一项是函数文件名@方法名,之后可以设置任意多项参数,它会对应到你自己定义的函数,比如这里第二项,会对应到你的函数第一项
