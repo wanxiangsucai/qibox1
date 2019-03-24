@@ -11,10 +11,10 @@
 	<div class="ListComment">
 		{volist name="listdb" id="rs"}
 		<ul class="lists">
-			<ol class="icon"><a href="/"><img src="{$rs.icon}" onerror="this.src='__STATIC__/images/nobody.gif'"/></a></ol>
+			<ol class="icon"><a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.icon}" onerror="this.src='__STATIC__/images/nobody.gif'"/></a></ol>
 			<li class="infos">
 				<dl>
-					<dt><a href="/">{$rs.username}</a> <span>{$rs.time}</span></dt>
+					<dt><a href="{:murl('member/msg/add',['uid'=>$rs.uid])}" class="_pop">{$rs.username}</a> <span>{$rs.time}</span></dt>
 					<dd>
 						<em onclick="dingcomment({$rs.id})"><i class="si si-like"></i> <a class="agree{$rs.id}">{$rs.agree}</a></em> 
 						<span onclick="post_comment({$rs.id})"><i class="fa fa-commenting-o"></i> 回复</span>

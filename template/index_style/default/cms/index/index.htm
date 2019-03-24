@@ -25,17 +25,17 @@
 			<ul>
 	{switch name="rs.image_type"}
 		{case value="1"}
-				<ol><a href="#"><img src="{$rs.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
-				<li><a href="#">{$rs.content|get_word=80}</a></li>
+				<ol><a href="{$rs.url}"><img src="{$rs.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
+				<li><a href="{$rs.url}">{$rs.content|get_word=80}</a></li>
 		{/case}
 		{case value="2"}
 			{volist name="rs.picurls" id="imgurl"}
-				<ol><a href="#"><img src="{$imgurl.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
+				<ol><a href="{$rs.url}"><img src="{$imgurl.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'></a></ol>
 
 			{/volist}
 		{/case}
 		{default /}
-				<li><a href="#">{$rs.content|get_word=120}</a></li>
+				<li><a href="{$rs.url}">{$rs.content|get_word=120}</a></li>
 	{/switch}
 			</ul>
 			<div class="mores"><span><i class="glyphicon glyphicon-time"></i> {$rs.create_time|date="Y-m-d",###}</span><em> <i class="si si-eye"></i> {$rs.view}</em></div>
