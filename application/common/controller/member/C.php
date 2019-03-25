@@ -178,13 +178,13 @@ abstract class C extends MemberBase
         //发布页要填写的字段
         $this->form_items = $this->getEasyFormItems();     //发布表单里的自定义字段
         //如果栏目存在才显示栏目选择项
-        if(count($sort_array)>1){
+        if(count($sort_array)>0){
             $this->form_items = array_merge(
                     [
                             [ 'select','fid','所属栏目','',$sort_array,$fid],
                     ],
-                    $this->get_my_qun(),
-                    $this->getEasyFormItems()
+                    input('ext_id')?[]:$this->get_my_qun(),
+                    $this->form_items
                     );
         }
         
