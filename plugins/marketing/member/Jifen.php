@@ -25,7 +25,7 @@ class Jifen extends MemberBase
         return $this->pfetch();
     }
     
-    public function pay_end($numcode=''){
+    private function pay_end($numcode=''){
         $info = RmbInfull::get(['numcode'=>$numcode]);
         if ($info['ifpay']==0) {
             $this->error('你还没有支付成功');
@@ -35,14 +35,22 @@ class Jifen extends MemberBase
             $this->webdb['money_ratio']>0 || $this->webdb['money_ratio']=10;
             add_jifen($this->user['uid'],$info['money']*$this->webdb['money_ratio'],'在线充值积分');
             add_rmb($this->user['uid'], -abs($info['money']), 0,'充值积分消费');
+            return true;
         }
     }
     
-    public function add($numcode='')
+    public function add($numcode='',$ispay=0)
     {
         if($numcode){
-            $this->pay_end($numcode);
-            $this->success('充值成功','index');
+            if ($ispay==1) {
+                if($this->pay_end($numcode)===true){
+                    $this->success('充值成功','index');
+                }else{
+                    $this->error('充值失败','index');
+                }
+            }else{
+                $this->error('你并没有付款','index');
+            }
         }
         if (IS_POST) {
             $data = $this->request->post();
