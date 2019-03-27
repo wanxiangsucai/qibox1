@@ -78,9 +78,17 @@ class Base extends Controller
         }
         
         if($this->user['groupid']!=3 && in_array(ENTRANCE, ['member','index'])){
+            
+            if ($this->webdb['must_yz_phone'] && $this->user && empty($this->user['mob_yz']) ) {
+                if( !(($this->route[0]=='member'&&$this->route[1]=='yz') || ($this->route[0]=='index'&&$this->route[1]=='login')) ){
+                    $this->error('请先验证手机号，才能进行其它操作!',murl('member/yz/mob'));
+                }
+            }
+            
             if ($this->request->isPost()) {
                 $this->request->post(fun('filter@all',$this->request->post())); //安全过滤
             }
+            
             fun('filter@check_safe'); //禁止提交eval <?php
         }
         

@@ -147,18 +147,16 @@ class User extends Model
 	        }
 	    }
 	    if(!$array['username']){
-	        return '用户名不能为空';
-	    }elseif(!$array['email']){
-	        return '邮箱不能为空';
+	        return '帐号不能为空';
 	    }elseif(!$array['password']){
 	        return '密码不能为空';
 	    }elseif(strlen($array['username'])>50||strlen($array['username'])<2){
 	        return '用户名不能小于2个字节或大于50个字节';
 	    }elseif (strlen($array['password'])>30 || strlen($array['password'])<5){
 	        return '密码不能小于5个字符或大于30个字符';
-	    }elseif(!preg_match("/^[-a-zA-Z0-9_\.]+\@([0-9A-Za-z][0-9A-Za-z-]+\.)+[A-Za-z]{2,5}$/",$array['email'])){
+	    }elseif($array['email']&&!preg_match("/^[-a-zA-Z0-9_\.]+\@([0-9A-Za-z][0-9A-Za-z-]+\.)+[A-Za-z]{2,5}$/",$array['email'])){
 	        return '邮箱不符合规则';
-	    }elseif( config('webdb.emailOnly') && self::check_emailexists($array['email'])){
+	    }elseif( config('webdb.emailOnly') && $array['email'] && self::check_emailexists($array['email'])){
 	        return "当前邮箱“{$array['email']}”已被注册了,请更换一个邮箱!";
 	    }
 	    

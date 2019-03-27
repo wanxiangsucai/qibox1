@@ -11,7 +11,7 @@ class Reg extends Validate
         'username|用户名'   => 'require|chsDash|length:2,25|unique:memberdata',
 		'password|密码'   => 'require|length:5,20',
         'password2|确认密码'   => 'require|confirm:password',
-        'email|邮箱'  => 'require|email',
+        'email|邮箱'  => 'email',
         'captcha|验证码'  => 'captcha',
     ];
     
