@@ -1465,4 +1465,4 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '后台入口文件名', 'admin_filename', 'admin.php', 'text', '', 1, '', '默认是admin.php,为安全起见,你可以改成其它文件名,但必须是.php结尾', 0, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, '32', '是否要求先绑定手机号才能提现', 'getout_need_yzphone', '', 'radio', '0|不强制\r\n1|强制绑定手机号', 0, '', '', 0, '-5');
 
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 8, '是否强制绑定手机号', 'must_yz_phone', '1', 'radio', '0|不强制\r\n1|强制绑定', 1, '', '', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 8, '是否强制绑定手机号', 'must_yz_phone', '0', 'radio', '0|不强制\r\n1|强制绑定', 1, '', '', 0, 0);
