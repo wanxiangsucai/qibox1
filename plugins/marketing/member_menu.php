@@ -23,7 +23,10 @@ return array(
 								                'title'=>'收款帐号设置',
 								                'link'=>'rmb/edit',
 								        ),
-								        
+								        array(
+								                'title'=>'虚拟币兑换积分',
+								                'link'=>'money/index',
+								        ),
 								),
 							),
 				),

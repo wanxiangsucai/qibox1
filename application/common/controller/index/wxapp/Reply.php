@@ -223,11 +223,10 @@ abstract class Reply extends IndexBase
         }
         if($group_array[$groupid]<0){
             return ;
-            //$msg = M('name') . '发布扣除积分:'.$info['title'];
         }else{
-            $msg = M('name') . '回复奖励积分:'.$info['title'];
+            $msg = M('name') . '回复奖励:'.$info['title'];
         }
-        add_jifen($this->user['uid'], $group_array[$groupid],$msg);
+        add_jifen($this->user['uid'], $group_array[$groupid],$msg,$this->webdb['group_reply_jftype']);
     }
     
     /**
@@ -243,9 +242,9 @@ abstract class Reply extends IndexBase
         if($group_array[$groupid]<0){
             return ;
         }else{
-            $msg = M('name') . '删除回复扣积分:'.$info['title'];
+            $msg = M('name') . '删除回复扣除:'.$info['title'];
         }
-        add_jifen($this->user['uid'], -$group_array[$groupid],$msg);
+        add_jifen($this->user['uid'], -$group_array[$groupid],$msg,$this->webdb['group_reply_jftype']);
     }
     
     /**

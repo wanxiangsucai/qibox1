@@ -66,11 +66,15 @@ abstract class Setting extends _Setting
      * @see \app\admin\controller\Setting::setNav()
      */
     protected function setNav($group){
-        $this->tab_ext = [
-                'nav'=>[
-                        GroupModel::getNav(false,$this->getSysId()),   //分组导航
-                        $group
-                ],
+//         $this->tab_ext = [
+//                 'nav'=>[
+//                         GroupModel::getNav(false,$this->getSysId()),   //分组导航
+//                         $group
+//                 ],
+//         ];
+        $this->tab_ext['nav'] = [
+                GroupModel::getNav(false,$this->getSysId()),   //分组导航
+                $group
         ];
     }
     

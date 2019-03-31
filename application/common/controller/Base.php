@@ -351,6 +351,7 @@ class Base extends Controller
         if(ENTRANCE!='admin'){
             return [];
         }
+        $search_fields    = input()['search_fields'];
         $search_field     = input('param.search_field/s', '');
         $keyword          = input('param.keyword/s', '');
         $filter           = input('param._filter/s', '');
@@ -369,6 +370,18 @@ class Base extends Controller
                 $map[$search_field] = ['=', $keyword];
             }else{
                 $map[$search_field] = ['like', "%$keyword%"];
+            }
+        }
+        if (is_array($search_fields)) {
+            foreach($search_fields AS $key=>$value){
+                if ($value===''||$value===null) {
+                    continue;
+                }
+                if (in_array($key, ['id','uid']) || (is_numeric($value)&&$value<999999)) {
+                    $map[$key] = ['=', $value];
+                }else{
+                    $map[$key] = ['like', "%$value%"];
+                }
             }
         }
 

@@ -30,9 +30,16 @@ class Moneylog extends AdminBase
     {
 		parent::_initialize();
 		$this->model = new MoneylogModel();
+		//筛选字段
+		$this -> tab_ext['filter_search'] = [
+		        'type'=>jf_name(),
+		];
 		$this->list_items = [
 				['uid', '用户名', 'username'],
                 ['money', '数额', 'text'],
+		        ['type', '分类', 'callback', function($type){
+		            return jf_name($type);
+		        }],
 				['money', '类型', 'callback', function($value){
                     return $value>0 ? '<span style="color:red">赚取</span>' : '<span style="color:blue">消费</span>';
                 }],

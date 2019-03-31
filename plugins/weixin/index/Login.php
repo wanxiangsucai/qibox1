@@ -20,7 +20,7 @@ class Login extends IndexBase
                 $this->error('信息有误!');
             }
         }elseif($this->user){
-            $this->error('你已经登录了,请不要重复登录!');
+            $this->error('你已经登录了',get_url('member'),'',1);
         }elseif(!in_weixin()){
             return $this->fetch();
         }

@@ -35,7 +35,7 @@ class Scan extends IndexBase
      */
     public function cklogin($type=''){
         if($type=='success'){            
-            $this->success('登录成功','/');
+            $this->success('登录成功',iurl('index/index/index'));
         }
         $info = getArray( ScanModel::where('sid',self::$sid )->find() );
         if($info['uid']){
@@ -84,7 +84,7 @@ class Scan extends IndexBase
                     'posttime'=>time(),
             ];
             ScanModel::create($data);
-            $this->success('电脑端登录成功，你可以关闭本页面' , '/' , 20);            
+            $this->success('电脑端登录成功，你可以关闭本页面' , get_url('member') , 20);            
         }
     }
 }

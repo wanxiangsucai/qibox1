@@ -916,6 +916,27 @@ if (!function_exists('get_user_icon')) {
         return tempdir($info['icon']);
     }
 }
+
+if (!function_exists('get_user_money')) {
+    /**
+     * 获取用户虚拟币
+     * @param number $type 虚拟币类型
+     * @param number $uid 用户的UID
+     * @return number
+     */
+    function get_user_money($type=0,$uid=0)
+    {
+        if ($type==0) {
+            return get_user($uid)['money'];
+        }
+        static $array = null;
+        if(empty($array[$uid])){
+            $array[$uid] = \plugins\marketing\model\Money::where('uid',$uid)->column('type,money');
+        }
+        return intval($array[$uid][$type]);
+    }
+}
+
 if(!function_exists('getArray')){
     /**
      * 把数据库取出的对象数据转成数组
@@ -2364,28 +2385,60 @@ if (!function_exists('getTemplate')) {
 
  if (!function_exists('add_jifen')) {
      /**
-      * 积分日志
+      * 积分(包括用户自定义虚拟币)增减及日志 
       * @param number $uid 用户UID
       * @param number $money 可以是负数,就是减积分
       * @param string $about 附注说明
+      * @param number $type 用户自定义的积分类型,默认0是系统积分
       */
-     function add_jifen($uid=0,$money=0,$about=''){        
-         if ($money>0) {
-             UserModel::where('uid',$uid)->setInc('money',$money);
+     function add_jifen($uid=0,$money=0,$about='',$type=0){
+         if ($type>0) { //用户自定义虚拟币
+             \plugins\marketing\model\Money::add($uid,$money,$type);
          }else{
-             UserModel::where('uid',$uid)->setDec('money',abs($money));
+             if ($money>0) {
+                 UserModel::where('uid',$uid)->setInc('money',$money);
+             }else{
+                 UserModel::where('uid',$uid)->setDec('money',abs($money));
+             }
          }
+         
          cache('user_'.$uid,null);
          //添加日志
          \plugins\marketing\model\Moneylog::create([
                  'uid'=>$uid,
                  'money'=>$money,
                  'about'=>$about,
+                 'type'=>$type,
                  'posttime'=>time(),
          ]);
      }
  }
 
+ if (!function_exists('jf_name')) {
+     /**
+      * 获取虚拟币名称
+      * @param unknown $type 非数字的时候,就把所有名称以数组形式列出来
+      * @return mixed|array
+      */
+     function jf_name($type=null,$all=false){
+         $array = cache('money_types');
+         if (empty($array)) {
+             $array = \plugins\marketing\model\Moneytype::getList();
+         }
+         if ($all==false) {
+             foreach($array AS $key=>$rs){
+                 $array[$key] = $rs['name'];
+             }
+         }
+         $default_name = config('webdb.MoneyName')?:'积分';
+         $array = array_merge( [$default_name], $array );
+         if (is_numeric($type)) {
+             return $array[$type];
+         }else{
+             return $array;
+         }
+     }
+ }
  
  if (!function_exists('add_dou')) {
      /**
@@ -2556,7 +2609,7 @@ if (!function_exists('getTemplate')) {
                  $url = request()->domain().'/';
               break;
              case 'member':  //会员中心
-                 $url = '/member.php';
+                 $url = request()->domain().'/member.php';
                  break;
              case 'user':   //用户的主页
                  $url = murl('member/user/index',is_numeric($array)?['uid'=>$array]:$array);

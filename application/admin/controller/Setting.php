@@ -26,7 +26,8 @@ class Setting extends AdminBase
     {
         parent::_initialize();
         $this->model = new ConfigModel();
-        $this->tab_ext = [ 'help_msg'=>'系统参数配置',];
+//         $this->tab_ext = [ 'help_msg'=>'系统参数配置',];
+        $this->tab_ext['help_msg'] = '系统参数配置';
         $this->add_module_config();
     }
     
@@ -167,9 +168,18 @@ class Setting extends AdminBase
                 ],
                 [
                         'c_key'=>'group_post_money',
-                        'title'=>'发布主题对应用户组的积分变化',
+                        'title'=>'发布主题对应用户组的虚拟币变化',
                         'c_descrip'=>'填负数才是扣积分，否则就是奖励积分，0或留空则不做处理',
                         'form_type'=>'usergroup',
+                        'ifsys'=>0,
+                        'list'=>-1,
+                ],
+                [
+                        'c_key'=>'group_topic_jftype',
+                        'title'=>'发布主题奖励哪种虚拟币',
+                        'c_descrip'=>'',
+                        'c_value'=>'0',
+                        'form_type'=>'jftype',
                         'ifsys'=>0,
                         'list'=>-1,
                 ],
@@ -218,11 +228,15 @@ class Setting extends AdminBase
      * @param unknown $group
      */
     protected function setNav($group){
-        $this->tab_ext = [
-                'nav'=>[
-                        GroupModel::getNav(true),   //分组导航
-                        $group
-                ],
+//         $this->tab_ext = [
+//                 'nav'=>[
+//                         GroupModel::getNav(true),   //分组导航
+//                         $group
+//                 ],
+//         ];
+        $this->tab_ext['nav'] = [
+                GroupModel::getNav(true),   //分组导航
+                $group
         ];
     }
     
@@ -277,6 +291,7 @@ class Setting extends AdminBase
                 if ($group==1) {
                     $this->rename_adminfile($data['admin_filename']);
                 }
+                cache('webdb',null);
                 $this->success('修改成功');
             }            
         }

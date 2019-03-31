@@ -77,7 +77,18 @@ body .Notes{margin:0 2px 15px 0;}
 	<div class="head"><div class="tag">财务信息</div></div>
     <div class="cont">
     	<ul class="rmbinfo">
-		<li><div class="tg">可用积分:</div><div><span>{$userdb.money}</span>个</div><div class="rmb"><a href="{:purl('marketing/jifen/index')}">明细查询</a></div><div class="add"><a href="{:purl('marketing/jifen/add')}">充值</a></div></li>
+		<li><div class="tg">虚拟财富:</div>
+		<div>
+		积分<span>{$userdb.money}</span>个 
+		{volist name=":jf_name()" id="name"}
+			{if get_user_money($key,$userdb.uid)}
+				{$name}<span>{:get_user_money($key,$userdb.uid)}</span>个
+			{/if}
+		{/volist}
+		</div>
+		<div class="rmb"><a href="{:purl('marketing/jifen/index')}">明细查询</a></div>
+		<div class="add"><a href="{:purl('marketing/jifen/add')}">充值</a> <a href="{:purl('marketing/money/index')}">兑换</a> </div>
+		</li>
 		
         	<li><div class="tg">可用余额:</div><div><span>{$userdb.rmb}</span>元</div><div class="rmb"><a href="{:purl('marketing/rmb/index')}">明细查询</a></div><div class="add"><a href="{:purl('marketing/rmb/add')}">充值</a></div><div class="free"><a href="{:purl('marketing/rmb/getmoney')}">提现</a></div></li>
             <li><div class="tg">冻结余额:</div><div><span>{$userdb.rmb_freeze}</span>元</div></li>

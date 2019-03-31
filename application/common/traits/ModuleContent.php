@@ -588,11 +588,11 @@ trait ModuleContent
 	        return ;
 	    }
 	    if($group_array[$groupid]<0){
-	        $msg = M('name') . '发布扣除积分:'.$info['title'];
+	        $msg = M('name') . '发布扣除:'.$info['title'];
 	    }else{
-	        $msg = M('name') . '发布奖励积分:'.$info['title'];
+	        $msg = M('name') . '发布奖励:'.$info['title'];
 	    }
-	    add_jifen($this->user['uid'], $group_array[$groupid],$msg);
+	    add_jifen($this->user['uid'], $group_array[$groupid],$msg,$this->webdb['group_topic_jftype']);
 	}
 	
 	/**
@@ -607,9 +607,9 @@ trait ModuleContent
 	    if($group_array[$groupid]<0){
 	        return ;
 	    }else{
-	        $msg = M('name') . '删除主题扣积分:'.$info['title'];
+	        $msg = M('name') . '删除主题扣除:'.$info['title'];
 	    }
-	    add_jifen($this->user['uid'], -$group_array[$groupid],$msg);
+	    add_jifen($this->user['uid'], -$group_array[$groupid],$msg,$this->webdb['group_topic_jftype']);
 	}
 	
 	/**

@@ -18,7 +18,7 @@ class Qq extends IndexBase
                 $this->error('请用其它帐号登录后,才能绑定QQ登录!');
             }
         }elseif($this->user){
-            $this->error('你已经登录了,请不要重复登录!');
+            $this->error('你已经登录了',get_url('member'),'',1);
         }
         
         $state = input('state');

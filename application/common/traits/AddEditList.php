@@ -12,7 +12,7 @@ trait AddEditList {
             //修改排序
             return $this->edit_order();
         }
-        $listdb = $this->getListData($map = [], $order = []);
+        $listdb = $this->getListData($map = [], $order = '');
         return $this -> getAdminTable($listdb);
     }
     

@@ -25,6 +25,7 @@ return  array(
   'hidden' => '隐藏',
   'array' => '数组',
   'usergroup' => '用户组',
+  'jftype' => '虚拟币种类',
   'password' => '密码',
 
   //'linkage' => '普通联动下拉框',

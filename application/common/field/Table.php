@@ -129,13 +129,14 @@ class Table extends Base
             }
             $show = "<input type='text' class='quick_edit {$_class}' data-value='{$field_value}' data-name='$name' data-id='{$info['id']}' name='{$name}[{$info['id']}]' size='$size' value='{$field_value}'>";
         }elseif($field['type'] == 'callback'){
+            //$qs 这个参数将要统一为$info的值,不允许再定义为其它值,也即下面几行将要弃用
             $field['opt'] = str_replace('__','',$field['opt']);
             if($field['opt']=='data'||empty($field['opt'])){
                 $qs = $info;
             }else{
-                $qs = $info[$field['opt']];
-            }
-            $show = $field['fun']($field_value,$qs);
+                $qs = isset($info[$field['opt']])?$info[$field['opt']]:$info;
+            }            
+            $show = $field['fun']($field_value,$qs,$field['opt']);
         }else{
             $show = $info[$name];
         }

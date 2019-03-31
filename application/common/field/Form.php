@@ -101,8 +101,10 @@ class Form extends Base
             }            
             $show = "<select $ifmust name='{$name}' id='atc_{$name}' lay-filter='{$name}'>$_show</select>";
         
-        }elseif ($field['type'] == 'radio') {    // 单选按钮
-            
+        }elseif ($field['type'] == 'radio' || $field['type'] == 'jftype' ) {    // 单选按钮 或虚拟币种
+            if($field['type'] == 'jftype'){ //虚拟币种
+                $field['options'] = jf_name();
+            }
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' checked ':'';
@@ -158,7 +160,7 @@ class Form extends Base
             
             // 检验表单
             if ($field['match']) {
-                $jsck = ' onBlur="if(this.value!=\'\'&&' . $field['match'] . '.test(this.value)==false){layer.alert(\'' . '你输入的内容不符合要求' . '\');this.focus();}"';
+                $jsck = ' onchange="if(this.value!=\'\'&&' . $field['match'] . '.test(this.value)==false){layer.alert(\'' . '你输入的内容不符合要求' . '\');this.focus();}"';
             }
             
             $readonly = $field['type'] == 'static' ? ' readonly ' : '';

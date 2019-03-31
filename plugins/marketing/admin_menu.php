@@ -31,6 +31,15 @@ return array(
 								                'link'=>'moneylog/index',
 								                'power'=>['delete'],
 								        ),
+								        
+								        array(
+								                'title'=>'会员积分财务管理',
+								                'link'=>'member/index',
+								        ),
+								        array(
+								                'title'=>'虚拟币种类设置',
+								                'link'=>'moneytype/index',
+								        ),
 								),
 							),
 				),
