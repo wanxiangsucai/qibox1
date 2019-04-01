@@ -58,6 +58,7 @@ class Style extends AdminBase
 	            'type'=>$info['type']?:'',
 	            'keywords'=>$keywords,
 	            'version_id'=>$id,
+	            'name'=>$info['title']?:'',
 	            'author'=>$info['author']?:'',
 	            'author_url'=>$info['author_url']?:'',
 	    ];

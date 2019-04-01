@@ -1505,3 +1505,5 @@ ALTER TABLE  `qb_moneylog` ADD  `type` smallint( 4 ) NOT NULL COMMENT  '虚拟�
 ALTER TABLE  `qb_moneylog` ADD INDEX (  `type` );
 
 UPDATE `qb_config` SET `c_value`='积分'  WHERE `c_key`='MoneyName';
+
+ALTER TABLE  `qb_market` ADD  `name` VARCHAR( 255 ) NOT NULL COMMENT  '名称';

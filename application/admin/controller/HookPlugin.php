@@ -53,10 +53,10 @@ class HookPlugin extends AdminBase
         
         $basepath = APP_PATH.'common/hook/';
         
-        if(!is_writable($basepath)){
-            return $this->err_js($basepath.'目录不可写,请先修改目录属性可写');
+        if(!is_writable($basepath) && !mkdir($basepath,0777,true)){
+            return $this->err_js($basepath.'目录不可写,请先修改目录属性可写,如果此目录不存在,就手工创建');
         }elseif ( is_file($basepath.ucfirst($keywords).'.php' ) ){
-            return $this->err_js($basepath.$keywords.'文件已经存在了,无法安装此钩子');
+            return $this->err_js($basepath.$keywords.'文件已经存在了,无法安装此钩子,请先卸载再安装');
         }
         $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
         $result = $this->downModel($url,$keywords,$type);
@@ -66,12 +66,40 @@ class HookPlugin extends AdminBase
         
         $result = $this->install($keywords,$id);
         if($result!==true){
-            unlink(APP_PATH.'common/hook/'.ucfirst($keywords));
+            unlink($basepath.ucfirst($keywords).'.php');
             return $this->err_js($result);
+        }
+        if(defined('ADD_PACKET')){
+            return $this->ok_js(['url'=>url('market')],'增强包安装成功');
         }
         cache('hook_plugins', NULL);
         return $this->ok_js(['url'=>url('hook_plugin/index')],'钩子安装成功,请在钩子设置那里选择启用');
         
+    }
+    
+    /**
+     * 安装增强包,不一定是钩子
+     * @param unknown $keywords
+     * @param unknown $id
+     */
+    protected function add_packet($keywords,$id){
+        $appkey= input('appkey');
+        $domain= input('domain');
+        $url = "https://x1.php168.com/appstore/getapp/info.html?id=$id&domain=$domain&appkey=$appkey";
+        if(($str=file_get_contents($url))==false){
+            $str = http_curl($url);
+        }
+        $info = json_decode($str,true);
+
+        $data = [
+                'type'=>$info['type']?:'packet',
+                'keywords'=>$keywords,
+                'version_id'=>$id,
+                'name'=>$info['title']?:'',
+                'author'=>$info['author']?:'',
+                'author_url'=>$info['author_url']?:'',
+        ];
+        \app\common\model\Market::create($data);
     }
 
     /**
@@ -83,7 +111,10 @@ class HookPlugin extends AdminBase
     protected function install($keywords,$id=0){
         $classname = "app\\common\hook\\".ucfirst($keywords);
         if(!class_exists($classname)){
-            return '钩子程序代码不符合规则!'.$classname;
+            //return '钩子程序代码不符合规则!'.$classname;
+            $this->add_packet($keywords,$id);   //不是钩子,仅仅是增强包
+            define('ADD_PACKET',true);
+            return true;
         }
         $class = new $classname;
         $info = $class->info;

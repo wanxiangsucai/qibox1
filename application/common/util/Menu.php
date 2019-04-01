@@ -46,11 +46,40 @@ class Menu{
      */
     public static function get_sys_menu(){
         if (self::$type=='admin') {
-            $base_menu = include(APP_PATH."admin/admin_menu.php");
+            $base_menu = include(APP_PATH.'admin/admin_menu.php');
+            self::get_ext_menu($base_menu,APP_PATH.'admin/admin_menu.php');
         }else{
-            $base_menu = include(APP_PATH."member/member_menu.php");
+            $base_menu = include(APP_PATH.'member/member_menu.php');
+            self::get_ext_menu($base_menu,APP_PATH.'member/member_menu.php');
         }
         return $base_menu;
+    }
+    
+    /**
+     * 二开的扩展菜单
+     * @param array $array
+     * @param string $file
+     */
+    protected static function get_ext_menu(&$array=[],$file=''){
+        $path = dirname($file);
+        $dir = opendir($path);
+        $name = substr(basename($file),0,-4);
+        while($f=readdir($dir)){
+            if(preg_match("/^".$name."([\w\.-]+)\.php$/", $f)){
+                $ar = include($path.'/'.$f);
+                foreach($ar AS $key1=>$value1){
+                    foreach($array[$key1]['sons'] AS $k1=>$v1){
+                        if($v1['title']==$value1['sons'][0]['title']){
+                            $array[$key1]['sons'][$k1]['sons'] = array_merge($v1['sons'],$value1['sons'][0]['sons']) ;
+                            unset($value1['sons'][0]);
+                        }
+                    }
+                    if ($value1['sons'][0]) {
+                        $array[$key1]['sons'][] = $value1['sons'][0];
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -127,6 +156,7 @@ class Menu{
             $file = APP_PATH.$model['keywords'].'/'.self::get_menu_file();
             if(is_file($file)){
                 $array = include($file);
+                self::get_ext_menu($array,$file);
                 foreach($array AS $key=>$ar){
                     
                     //打上标志是哪个模块的系统，方便处理URL指向

@@ -133,8 +133,14 @@ abstract class Post extends IndexBase
 		if( empty($this->request->isPost()) ){
 			return $this->err_js('必须POST方式提交数据');
 		}
-        $this->mid = $mid;
-        $data = get_post();
+		$data = get_post();
+		if ($data['fid']) {
+		    $mid = get_sort($data['fid'],'mid');  //避免MID不一致
+		    if (empty($mid)) {
+		        return $this->err_js('当前栏目的MID值不存在');
+		    }
+		}
+        $this->mid = $mid;        
         
         //接口
         hook_listen('cms_add_begin',$data);
