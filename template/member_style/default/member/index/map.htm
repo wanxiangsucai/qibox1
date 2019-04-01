@@ -81,7 +81,7 @@ body .Notes{margin:0 2px 15px 0;}
 		<div>
 		积分<span>{$userdb.money}</span>个 
 		{volist name=":jf_name()" id="name"}
-			{if get_user_money($key,$userdb.uid)}
+			{if $key!=0&&get_user_money($key,$userdb.uid)}
 				{$name}<span>{:get_user_money($key,$userdb.uid)}</span>个
 			{/if}
 		{/volist}
