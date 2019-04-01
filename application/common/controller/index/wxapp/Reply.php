@@ -45,15 +45,49 @@ abstract class Reply extends IndexBase
      */
     public function delete($id=0){
         $info = $this->model->get($id);
-        if($info['uid']!=$this->user['uid'] && !$this->admin){
-            return $this->err_js('你没权限');
+        $result = $this->delete_check($info);
+        if($result!==true){
+            return $this->err_js($result);
         }
         if($this->model->delete_Info($id)){
-            $this->delete_post_money($info);
+            $this->end_delete($info);
             return $this->ok_js();
         }else{
             return $this->err_js('删除失败');
         }
+    }
+    
+    /**
+     * 删除回复 前的处理
+     * @param array $info
+     * @return \app\common\controller\unknown|\app\common\controller\NULL|string|boolean
+     */
+    protected function delete_check($info=[]){
+        //齐博首创 钩子文件扩展接口
+        $result = $this->get_hook('reply_delete_check',$info,['id'=>$info['id']]);
+        if($result!==null){
+            return $result;
+        }
+        
+        if($info['uid']!=$this->user['uid'] && !$this->admin){
+            return '你没权限';
+        }
+        return true;
+    }
+    
+    /**
+     *  删除回复 后的处理
+     * @param array $info
+     * @return \app\common\controller\unknown|\app\common\controller\NULL|boolean
+     */
+    protected function end_delete($info=[]){
+        //齐博首创 钩子文件扩展接口
+        $result = $this->get_hook('reply_end_delete',$info,['id'=>$info['id']]);
+        if($result!==null){
+            return $result;
+        }
+        $this->delete_post_money($info);
+        return true;
     }
     
     
@@ -105,8 +139,7 @@ abstract class Reply extends IndexBase
 //         unset($data['id']);
 //         $data['uid'] = $this->user['uid'];
         
-        //以下是接口        
-        hook_listen('reply_add_begin',$data);
+        
         $result = $this->add_check($data,$id,$pid);
         if($result!==true){
             return $this->err_js($result);
@@ -115,9 +148,7 @@ abstract class Reply extends IndexBase
         if( ($result = $this->model->add($data,$id,$pid))!=false ){
             $array = getArray($this->model->getListByAid($id,'','id desc',10));
             
-            //以下是接口
-            $this->end_add($data,$result->id);
-            hook_listen('reply_add_end',$data,$result->id);
+            $this->end_add($data,$result->id);         
             
             return $this->ok_js($array);
         }else{
@@ -134,6 +165,16 @@ abstract class Reply extends IndexBase
      */
     protected function add_check(&$data=[],$id=0,$pid=0){
         $info = $this->topic_model->getInfoByid($id);
+        
+        //以下是接口
+        hook_listen('reply_add_begin',$data,$info);
+        
+        //齐博首创 钩子文件扩展接口
+        $result = $this->get_hook('reply_add_check',$data,$info,['id'=>$id,'pid'=>$pid]);
+        if($result!==null){
+            return $result;
+        }
+        
         if(!$info){
             return '主题不存在!';
         }elseif(!$this->user){
@@ -178,17 +219,22 @@ abstract class Reply extends IndexBase
         return true;
     }
     
-    /**
-     * 提交后的处理,可重新定义
-     * @param array $data 入库后取出的数据
-     */
+
     /**
      * 提交后的处理,可重新定义
      * @param array $data 提交的数据
      * @param unknown $id 入库后返回的ID
      */
-    protected function end_add($data=[],$id){
+    protected function end_add($data=[],$id=0){
         $topic = $this->topic_model->getInfoByid($data['aid']);
+        
+        hook_listen('reply_add_end',$data,$id);
+        
+        //齐博首创 钩子文件扩展接口
+        $result = $this->get_hook('reply_end_add',$data,$topic,['id'=>$id]);
+        if($result!==null){
+            return $result;
+        }
         
         $this->add_reply_money($topic);     //评论奖励
         
@@ -221,11 +267,11 @@ abstract class Reply extends IndexBase
         if( empty($group_array[$groupid]) ){
             return ;
         }
-        if($group_array[$groupid]<0){
-            return ;
-        }else{
+//         if($group_array[$groupid]<0){
+//             return ;
+//         }else{
             $msg = M('name') . '回复奖励:'.$info['title'];
-        }
+ //       }
         add_jifen($this->user['uid'], $group_array[$groupid],$msg,$this->webdb['group_reply_jftype']);
     }
     
@@ -239,11 +285,11 @@ abstract class Reply extends IndexBase
         if( empty($group_array[$groupid]) ){
             return ;
         }
-        if($group_array[$groupid]<0){
-            return ;
-        }else{
+//         if($group_array[$groupid]<0){
+//             return ;
+//         }else{
             $msg = M('name') . '删除回复扣除:'.$info['title'];
-        }
+//        }
         add_jifen($this->user['uid'], -$group_array[$groupid],$msg,$this->webdb['group_reply_jftype']);
     }
     

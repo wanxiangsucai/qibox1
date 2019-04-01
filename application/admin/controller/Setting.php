@@ -20,7 +20,7 @@ class Setting extends AdminBase
     protected $tab_ext;
     protected $group = 'base';
     protected $_config = [];    //系统强制要补上的字段
-    protected $config = [];    //频道或插件强制要补上的字段
+    protected $config = null;    //频道或插件强制要补上的字段
 
     protected function _initialize()
     {
@@ -33,9 +33,10 @@ class Setting extends AdminBase
     
     /**
      * 模块里要强制补上的配置参数
+     * 提醒,如果你的频道不想要下面的字段,就需要在你频道那里设置 protected $config = [];
      */
     protected function add_module_config(){
-        if ($this->config || defined('IN_PLUGIN') || empty(config('system_dirname'))) {
+        if ($this->config!==null || defined('IN_PLUGIN') || empty(config('system_dirname'))) {
             return ;
         }
         $this->config = [
@@ -190,7 +191,7 @@ class Setting extends AdminBase
      * 补全系统强制要加上的字段
      * @param number $group 分组ID
      */
-    protected function add_config($group=0){
+    protected function add_config($group=0){        
         if (empty($group)) {
             return ;
         }
@@ -292,9 +293,15 @@ class Setting extends AdminBase
                     $this->rename_adminfile($data['admin_filename']);
                 }
                 cache('webdb',null);
+               
+                $this->get_hook('setting_post');     //扩展增强文件接口
+                
                 $this->success('修改成功');
             }            
         }
+
+        
+        $this->get_hook('setting_get');     //扩展增强文件接口
         
         $this->add_config($group);      //补全字段
         

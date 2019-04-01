@@ -320,6 +320,7 @@ class Base extends Controller
         }
     }
     
+    
     /**
      * 插件模板
      * @param string $template
@@ -432,4 +433,33 @@ class Base extends Controller
             return $extra_order;
         }
     }
+    
+    /**
+     * 齐博首创 钩子文件扩展接口
+     * @param string $type 文件类型
+     * @param array $data
+     * @param array $info
+     * @param array $array
+     * @return unknown|NULL
+     */
+    protected function get_hook($type='',&$data=[],$info=[],$array=[]){
+        preg_match_all('/([_a-z]+)/',get_called_class(),$carray);
+        $dirname = $carray[0][1];
+        $path = defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH.$dirname.'/ext/';
+        if (is_dir($path)) {
+            $dir = opendir($path);
+            while($file = readdir($dir)){
+                if(preg_match("/^".$type."[\w\.-]*\.php$/i", $file)){
+                    $result = include($path.$file);
+                    if ($result===true) {
+                        return $result;
+                    }elseif(is_string($result)){
+                        return $result;
+                    }
+                }
+            }
+        }
+        return NULL;
+    }
+    
 }

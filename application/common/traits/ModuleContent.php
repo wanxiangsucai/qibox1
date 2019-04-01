@@ -376,6 +376,37 @@ trait ModuleContent
 	    return $_group;
 	}
 	
+	/**
+	 * 齐博首创 钩子文件扩展接口 每个应用下的对应文件,比如 bbs/ext/add_check_xxxx.php
+	 * preg_replace("/([^:]+)::([^:]+)/i", "\\2", __METHOD__)
+	 * @param string $type 类型分别是 add_check,edit_check,delete_check,end_add,end_edit,end_delete
+	 * @param number $id
+	 * @param number $mid
+	 * @param number $fid
+	 * @param array $info
+	 * @param array $data
+	 * @return string
+	 */
+	protected function get_hook($type='',$id=0,$mid=0,$fid=0,$info=[],&$data=[]){
+	    preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+	    $dirname = $array[0][1];
+	    $path = defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH.$dirname.'/ext/';	    
+	    if (is_dir($path)) {
+	        $dir = opendir($path);
+	        while($file = readdir($dir)){
+	            if(preg_match("/^".$type."[\w\.-]+\.php$/i", $file)){
+	                $result = include($path.$file);
+	                if ($result===true) {
+	                    return $result;
+	                }elseif(is_string($result)){
+	                    return $result;
+	                }
+	            }
+	        }
+	    }
+	    return NULL;
+	}
+	
 
 	/**
 	 * 适用于前台会员 新增加前做检查
@@ -385,6 +416,13 @@ trait ModuleContent
 	 * @return boolean
 	 */
 	protected function add_check($mid=0,$fid=0,&$data=[]){
+	    
+	    //齐博首创 钩子文件扩展接口
+	    $result = $this->get_hook('add_check',$id=0,$mid,$fid,$info=[],$data);
+	    if($result!==null){
+	        return $result;
+	    }
+	    
 	    if(empty($this->webdb['allow_guest_post']) && !$this->user){
 	        return '请先登录!';
 	    }elseif($this->user['groupid']==2){
@@ -525,6 +563,13 @@ trait ModuleContent
 	 * @return boolean
 	 */
 	protected function edit_check($id=0,$info=[],&$data=[]){
+	    
+	    //齐博首创 钩子文件扩展接口
+	    $result = $this->get_hook('edit_check',$id,$mid=0,$fid=0,$info,$data);
+	    if($result!==null){
+	        return $result;
+	    }
+	    
 	    if($info['uid']!=$this->user['uid']&&empty($this->admin)&&ENTRANCE!=='admin'){
 	        return '你没权限!';
 	    }
@@ -559,6 +604,13 @@ trait ModuleContent
 	 * @return boolean
 	 */
 	protected function delete_check($id=0,$info=[]){
+	    
+	    //齐博首创 钩子文件扩展接口
+	    $result = $this->get_hook('delete_check',$id,$mid=0,$fid=0,$info,$data=[]);
+	    if($result!==null){
+	        return $result;
+	    }
+	    
 	    if( empty($this->admin) ){
 	        if ($info['uid']!=$this->user['uid'] || empty($info['uid'])) {
 	            return '你没权删除ID:' . $id;
@@ -573,6 +625,13 @@ trait ModuleContent
 	 * @param number $data 内容数据
 	 */
 	protected function end_add($id=0,$data=[]){
+	    
+	    //齐博首创 钩子文件扩展接口
+	    $result = $this->get_hook('end_add',$id,$mid=0,$fid=0,$info=[],$data);
+	    if($result!==null){
+	        return $result;
+	    }
+	    
 	    $this->add_post_money($data);
 	    set_cookie('cms_title', md5($data['title']));
 	    set_cookie('cms_content', md5($data['content']));
@@ -618,6 +677,13 @@ trait ModuleContent
 	 * @param array $data 内容数据
 	 */
 	protected function end_edit($id=0,$data=[]){
+	    
+	    //齐博首创 钩子文件扩展接口
+	    $result = $this->get_hook('end_edit',$id,$mid=0,$fid=0,$info=[],$data);
+	    if($result!==null){
+	        return $result;
+	    }
+	    
 	}
 	
 	/**
@@ -626,6 +692,13 @@ trait ModuleContent
 	 * @param array $info 内容数据
 	 */
 	protected function end_delete($id=0,$info=[]){
+	    
+	    //齐博首创 钩子文件扩展接口
+	    $result = $this->get_hook('end_delete',$id,$mid=0,$fid=0,$info,$data=[]);
+	    if($result!==null){
+	        return $result;
+	    }
+	    
 	    $this->delete_post_money($info);
 	}
 	
