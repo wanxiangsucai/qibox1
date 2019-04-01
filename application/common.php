@@ -2408,7 +2408,7 @@ if (!function_exists('getTemplate')) {
                  'uid'=>$uid,
                  'money'=>$money,
                  'about'=>$about,
-                 'type'=>$type,
+                 'type'=>intval($type),
                  'posttime'=>time(),
          ]);
      }
