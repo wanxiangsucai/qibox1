@@ -175,7 +175,9 @@ class Login extends IndexBase
         if ($this->user) {
             $this->error('你已经注册过了!');
         }
-        hook_listen('reg_by_hand_begin',$data);
+		
+		$this->get_hook('reg_by_hand_begin',$data);
+        hook_listen('reg_by_hand_begin',$data);		
         
         if(IS_POST){
             
@@ -219,8 +221,9 @@ class Login extends IndexBase
             if ($uid<2) {
                 $this->error($uid);
             }
-            
-            hook_listen('reg_by_hand_end',$uid,$data);
+
+            $this->get_hook('reg_by_hand_end',$data,[],['uid'=>$uid]);
+            hook_listen('reg_by_hand_end',$uid,$data);			
             
             $result = UserModel::login($phone_num,'',3600*24*7,true,'mobphone');   //帐号同时实现登录
             if(is_array($result)){

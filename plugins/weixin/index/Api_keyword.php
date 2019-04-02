@@ -19,11 +19,19 @@ class Api_keyword extends Api
                 'user'=>$this->user,                          //用户的登录信息
                 'user_token'=>$this->user_token,      //用户登录标志,传递给URL使用
         ];
+
+		$result = $this->get_hook('weixin_mp_keyword',$array);
+        if($result!==null){
+            echo $this->give_text($result);
+            exit;
+        }
+
         $result = hook_listen('weixin_mp_keyword',$array,'',true);
         if ($result!='') {      //如果钩子有返回数据,就直接在这里输出,要终止掉下面的所有应用
             echo $this->give_text($result);
             exit;
-        }
+        }        
+        
         
         $this->run_model();     // 执行\plugins\weixin\libs\keyword 目录下面的PHP文件
 

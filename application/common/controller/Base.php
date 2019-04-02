@@ -3,7 +3,6 @@
 namespace app\common\controller;
 
 use app\common\model\User AS UserModel;
-use app\common\model\Config AS ConfigModel;
 use think\Controller;
 
 /**
@@ -26,8 +25,8 @@ class Base extends Controller
     {
         parent::_initialize();
         
-        $this->onlineip = get_ip();
-        $this->timestamp = time();
+        $this->onlineip = $this->request->ip();
+        $this->timestamp =$this->request->time();
         $this->weburl = $this->request->url(true);
         $this->fromurl = $_SERVER["HTTP_REFERER"];
         $this->guest = md5($_SERVER['HTTP_USER_AGENT'].$this->onlineip);
@@ -39,29 +38,6 @@ class Base extends Controller
         $this->route = $dispatch['module'];
         
         $this->webdb = config('webdb');
-//         $this->webdb = cache('webdb');
-//         if(empty($this->webdb)){
-//             $this->webdb = ConfigModel::getConfig();
-//             cache('webdb',$this->webdb);
-//         }
-//         $this->webdb['QB_VERSION'] = 'X1.0 Beta';
-                
-//         //把相应的插件或频道模块的二维数组插入到一维数组去使用
-//         if($array['module'][1]=='plugin' && $array['module'][1]=='execute'){
-//             $plugin_name = input('plugin_name');
-//             if( $plugin_name && is_array( $this->webdb['P__'.$plugin_name] ) ){
-//                 $this->webdb = array_merge(
-//                         $this->webdb,
-//                         $this->webdb['P__'.$plugin_name]
-//                         );
-//             }
-//         }elseif( $array['module'][0] && $this->webdb['M__'.$array['module'][0]] ){
-//             $this->webdb = array_merge(
-//                     $this->webdb,
-//                     $this->webdb['M__'.$array['module'][0]]
-//                     );
-//         }
-//         config('webdb',$this->webdb);
         
         //用户登录信息，如果没登录的话，就为空值
         $this->user = UserModel::login_info();
@@ -436,29 +412,50 @@ class Base extends Controller
     
     /**
      * 齐博首创 钩子文件扩展接口
-     * @param string $type 文件类型
-     * @param array $data
-     * @param array $info
-     * @param array $array
+     * @param string $type 钩子标志,不能重复
+     * @param array $data POST表单数据 可以改变其值
+     * @param array $info 数据库资料
+     * @param array $array 其它参数
+     * @param string $use_common 默认同时调用全站通用的
      * @return unknown|NULL
      */
-    protected function get_hook($type='',&$data=[],$info=[],$array=[]){
+    protected function get_hook($type='',&$data=[],$info=[],$array=[],$use_common=true){
+        $path_array = [];
         preg_match_all('/([_a-z]+)/',get_called_class(),$carray);
         $dirname = $carray[0][1];
-        $path = defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH.$dirname.'/ext/';
-        if (is_dir($path)) {
-            $dir = opendir($path);
-            while($file = readdir($dir)){
-                if(preg_match("/^".$type."[\w\.-]*\.php$/i", $file)){
-                    $result = include($path.$file);
-                    if ($result===true) {
-                        return $result;
-                    }elseif(is_string($result)){
-                        return $result;
+        $path_array[] = (defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH).$dirname.DS.'ext'.DS.$type.DS;
+        if ($use_common===true) {
+            $path_array[] = APP_PATH.'common'.DS.'ext'.DS.$type.DS;
+        }
+        $array = [];
+        foreach ($path_array AS $path){
+            if (is_dir($path)) {
+                $sarray = [];
+                $dir = opendir($path);
+                while($file = readdir($dir)){
+                    if(preg_match("/^([\w\.-]*)\.php$/i", $file,$sar)){
+                        if (in_array($sar[1], $array)) {
+                            continue ; //出现同名,就跳过
+                        }
+                        $sarray[$path.DS.$file] = $sar[1];
                     }
+                }
+                asort($sarray);
+                $array = array_merge($array,$sarray);
+            }
+        }
+        
+        if ($array) {
+            foreach($array AS $file=>$v){
+                $result = include($file);
+                if ($result===true) {
+                    return $result;
+                }elseif(is_string($result)){
+                    return $result;
                 }
             }
         }
+        
         return NULL;
     }
     

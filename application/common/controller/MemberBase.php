@@ -18,7 +18,12 @@ class MemberBase extends Base
     {
         parent::_initialize();
         
-        hook_listen('member_begin',$array=['user'=>$this->user]);     //钩子扩展
+        if (!defined('LOAD_MEMBERBASE')) {
+            define('LOAD_MEMBERBASE',TRUE);
+            //钩子扩展
+            $this->get_hook('member_begin',$data=[],$this->user);
+            hook_listen('member_begin',$array=['user'=>$this->user]);
+        }
         
         if(empty($this->user)){            
             $this->error('请先登录');

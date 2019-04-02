@@ -145,7 +145,11 @@ class Init{
 			        \think\Url::root('/');  //隐藏index.php
 			    }
 				if(!modules_config($module)&&$module!='api'){
-					hook_listen('cannot_find_module');  //这个钩子可以方便扩展开发404跳转插件
+				    
+				    //钩子可以方便扩展开发404跳转插件
+					get_hook('cannot_find_module');
+					hook_listen('cannot_find_module');		
+					
 					if(is_dir(APP_PATH.$module)){
 						showerr('当前频道已关闭!');
 					}else{

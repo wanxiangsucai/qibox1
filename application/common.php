@@ -158,7 +158,10 @@ if (!function_exists('hook_listen')) {
      * @param  bool   $once   只获取一个有效返回值
      * @return string|mixed|mixed[]
      */
-    function hook_listen($tag = '', &$params = null, $extra = null, $once = false) {
+    function hook_listen($tag = '', &$params = null, $extra = null, $once = false) {        
+        if ($once===true && hook_if_load($tag)===false) {   //这个纯属是为了兼容以前的模板中放的钩子            
+            get_hook($tag,$params,$extra,['from'=>'hook'],$once);
+        }
         try {
             $result = \think\Hook::listen($tag, $params, $extra, $once);
         } catch(\Exception $e) {
@@ -170,6 +173,90 @@ if (!function_exists('hook_listen')) {
             }            
         }
         return $result;
+    }
+}
+
+if (!function_exists('hook_if_load')) {
+    /**
+     * 检查是否重复加载钩子
+     * @param string $tag
+     * @return boolean
+     */
+    function hook_if_load($tag=''){
+        static $array = [];
+        if ($array[$tag]) {
+            return true;
+        }else{
+            $array[$tag] = true;
+            return false;
+        }
+    }
+}
+
+if (!function_exists('get_hook')) {
+    /**
+     * 齐博首创 钩子文件扩展接口
+     * @param string $type 钩子标志,不能重复
+     * @param array $data POST表单数据
+     * @param array $info 数据库资料
+     * @param array $array 其它参数
+     * @param string $use_common 默认同时调用全站通用的
+     * @return unknown|NULL
+     */
+    function get_hook($type='',&$data=[],$info=[],$array=[],$use_common=true){
+        if (hook_if_load($type)===true && $array['from']!='hook') {
+            return NULL;
+        }
+        $path_array = [];
+        $dirname = config('system_dirname');
+        if ( empty($dirname) ) {
+            if (defined('IN_PLUGIN')) {
+                $dirname = input('plugin_controller');
+            }else{
+                $dispatch=request()->dispatch();
+                if ($dispatch['module'][0]) {
+                    $dirname = $dispatch['module'][0];
+                }else{
+                    $dirname = 'index';
+                }
+            }
+        }
+        $path_array[] = (defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH).($dirname?$dirname.DS:'').'ext'.DS.$type.DS;
+        if ($use_common===true) {
+            $path_array[] = APP_PATH.'common'.DS.'ext'.DS.$type.DS;
+        }
+        
+        $array = [];
+        foreach ($path_array AS $path){
+            if (is_dir($path)) {
+                $sarray = [];
+                $dir = opendir($path);
+                while($file = readdir($dir)){
+                    if(preg_match("/^([\w\.-]*)\.php$/i", $file,$sar)){
+                        if (in_array($sar[1], $array)) {
+                            continue ; //出现同名,就跳过
+                        }
+                        $sarray[$path.DS.$file] = $sar[1];
+                    }
+                }
+                asort($sarray);
+                $array = array_merge($array,$sarray);
+            }
+        }
+        
+        if ($array) {
+            foreach($array AS $file=>$v){
+                $result = include($file);
+                if ($result===true) {
+                    return $result;
+                }elseif(is_string($result)){
+                    return $result;
+                }
+            }
+        }
+        
+        return NULL;
+        
     }
 }
 

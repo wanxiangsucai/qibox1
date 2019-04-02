@@ -41,8 +41,10 @@ class User extends IndexBase
             UserModel::where('uid','=',$uid)->setInc('view',1);
             cache('user_'.$uid,null);
         }
-        
+
+        $this->get_hook('view_homepage',$info , $this->user);
         hook_listen( 'view_homepage' , $info  , $this->user);      //监听浏览主页
+		
         
         $info['introducer_1'] = $info['introducer_1']?get_user_name($info['introducer_1']):'';
         $info['introducer_2'] = $info['introducer_2']?get_user_name($info['introducer_2']):'';

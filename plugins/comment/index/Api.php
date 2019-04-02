@@ -44,7 +44,12 @@ class Api extends IndexBase
                 return $this->err_js('一小时内,只能点赞一次!');
             }
             set_cookie('comment_'.$id, time());
-            hook_listen( 'comment_agree' , $id , ['aid'=>$aid,'sysid'=>$sysid] );      //监听点赞回复
+
+			//监听点赞回复
+			$this->get_hook('comment_agree',$data=[],[],['id'=>$id,'aid'=>$aid,'sysid'=>$sysid]);
+            hook_listen( 'comment_agree' , $id , ['aid'=>$aid,'sysid'=>$sysid] );      
+			
+
             if( contentModel::where('id',$id)->setInc('agree',1) ){
                 //echo self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
                 return $this->ok_js();
@@ -98,7 +103,11 @@ class Api extends IndexBase
             $data['uid'] = intval($this->user['uid']);
             $result = contentModel::create($data);
             if ($result) {
-                hook_listen('comment_add_end',$data,$result->id);   //钩子接口
+
+				//钩子接口
+				$this->get_hook('comment_add_end',$data,[],['id'=>$result->id]);
+                hook_listen('comment_add_end',$data,$result->id);		
+
                 if($pid){
                     self::$get_children = $pid;
                     contentModel::where('id',$pid)->setInc('reply',1);

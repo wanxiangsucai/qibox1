@@ -14,15 +14,20 @@ class IndexBase extends Base
     {
         parent::_initialize();
         
-        hook_listen('index_begin',$array=['user'=>$this->user]);     //钩子扩展
-        
-        //自动模板的布局母模板
-        $this->assign('auto_tpl_base_layout', APP_PATH.'member/view/default/layout.htm');
+        if (!defined('LOAD_INDEXBASE')) {
+            define('LOAD_INDEXBASE',TRUE);
+            
+            //钩子扩展
+            $this->get_hook('index_begin',$data=[],$this->user);
+            hook_listen('index_begin',$array=['user'=>$this->user]);
+            
+            //自动模板的布局母模板
+            $this->assign('auto_tpl_base_layout', APP_PATH.'member/view/default/layout.htm');
+        }
       
         if( isset($this->webdb['web_open']) && empty($this->webdb['web_open']) && empty($this->admin) ){
             $this->error('网站维护当中,暂停访问!');
         }
-        
         
     }
 }

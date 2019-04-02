@@ -20,7 +20,10 @@ class AdminBase extends Base
     {
         parent::_initialize();
         if(SUPER_ADMIN!==true){
-            hook_listen('admin_begin',$array=['user'=>$this->user]);     //钩子扩展
+			//钩子扩展
+			$this->get_hook('admin_begin',$data=[],$this->user);
+            hook_listen('admin_begin',$array=['user'=>$this->user]);			
+
             if(empty($this->user)){
                 if( ($this->route[0]=='admin' && $this->route[1]=='index' && $this->route[2]=='login') ){
                 }elseif( ($this->route[0]=='admin' && $this->route[1]=='mysql' && $this->route[2]=='into') ){

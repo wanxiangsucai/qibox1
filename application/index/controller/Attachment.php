@@ -53,11 +53,16 @@ class Attachment extends IndexBase{
 			$new_file = config( 'upload_path' ) . '/' . $dir . '/' . date( 'Ymd' ) . '/';
 			$path = str_replace( PUBLIC_PATH,'',$new_file );
 			$new_file = $new_file . $name;
-			Hook_listen( 'upload_attachment_begin',$data,[
+			
+			//钩子接口,上传前处理
+			$this->get_hook('upload_attachment_begin',$data,[],$sar=[
 				'base64' => true,
 				'from'   => $from,
 				'module' => $module,
-			] );  //钩子接口,上传前处理
+			]);
+			Hook_listen( 'upload_attachment_begin',$data,$sar );  
+			
+
 			if ( file_put_contents( $new_file,base64_decode( str_replace( $result[1],'',$base64_image_content ) ) ) ) {
 				$_array = @getimagesize( $new_file );
 				if ( $_array[0] < 1 || $_array[1] < 1 || ! preg_match( '/image/i',$_array['mime'] ) ) {
@@ -88,11 +93,15 @@ class Attachment extends IndexBase{
 						return $hook_result;
 					}
 				}
-				Hook_listen( 'upload_attachment_end',$file_info,[
+				
+				$this->get_hook('upload_attachment_end',$data,$file_info,$array=[
 					'base64' => true,
 					'from'   => $from,
 					'module' => $module,
-				] );  //钩子接口,上传后处理
+				]);
+				Hook_listen( 'upload_attachment_end',$file_info,$array );  //钩子接口,上传后处理
+				
+
 				return $this->succeFile( $from,$path . $name,$file_info );
 			} else {
 				return $this->errFile( $from,'文件写入失败！' );
@@ -310,7 +319,11 @@ class Attachment extends IndexBase{
 		if ( $error_msg !== false ) {
 			return $this->errFile( $from,$error_msg );
 		}
-		Hook_listen( 'upload_attachment_begin',$file,[ 'from' => $from,'module' => $module ] );  //钩子接口,上传前处理
+		//钩子接口,上传前处理
+		$this->get_hook('upload_attachment_begin',$file,$info=[],$sar=[ 'from' => $from,'module' => $module ]);
+		Hook_listen( 'upload_attachment_begin',$file,$sar );
+		
+
 		//用于第三方文件上传扩展
 		//         $hook_result = Hook_listen('upload_driver', $file, ['from' => $from, 'module' => $module], true);
 		//         if ($hook_result['code']==1) {
@@ -337,7 +350,10 @@ class Attachment extends IndexBase{
 			if ( in_array( $file_ext,[ 'jpeg','jpg','png','bmp' ] ) && $file->getInfo( 'size' ) > 1000000 ) {
 				$this->compress_image( PUBLIC_PATH . $path );
 			}
-			Hook_listen( 'upload_attachment_end',$info,[ 'from' => $from,'module' => $module ] );  //钩子接口,上传后处理
+			
+			$this->get_hook('upload_attachment_end',$file,$info ,$sar=[ 'from' => $from,'module' => $module ]);
+			Hook_listen( 'upload_attachment_end',$info,$sar );  //钩子接口,上传后处理
+			
 			// 图片加水印
 			if ( in_array( $file_ext,[
 					'jpeg',

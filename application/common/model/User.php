@@ -180,12 +180,19 @@ class User extends Model
 	    foreach($array AS $key=>$value){
 	        $array[$key] = filtrate($value);
 	    }
-	    hook_listen('user_add_begin',$array);
+
+		$result = get_hook('user_add_begin',$array,[],[],true);
+	    if ($result!==null) {
+	        return $result;
+	    }
+	    hook_listen('user_add_begin',$array);	    
 
 	    if(($array['uid'] = static::insert_data($array))==false){
 	        return "创建用户失败";
 	    }
-	    hook_listen('user_add_end',$array);
+		get_hook('user_add_end',$array,[],[],true);
+	    hook_listen('user_add_end',$array);	    
+	    
 	    return $array['uid'];
 	}
 	
@@ -222,7 +229,11 @@ class User extends Model
         
 	    //cache('user_'.$array['uid'],null);
 	    
-	    hook_listen('user_edit_begin',$array);
+		$result = get_hook('user_edit_begin',$array,[],[],true);
+	    if ($result!==null) {
+	        return $result;
+	    }
+	    hook_listen('user_edit_begin',$array);	    
 		
 	    if( config('webdb.emailOnly') && $array['email'] ){
 	        $r = self::check_emailexists($array['email']);
@@ -256,7 +267,8 @@ class User extends Model
 		
 		if(self::update($array)){
 		    cache('user_'.$array['uid'],null);
-		    hook_listen('user_edit_end',$array);
+			get_hook('user_edit_end',$array,[],[],true);
+		    hook_listen('user_edit_end',$array);		   
 		    return true;
 		}else{
 		    return '数据库修改失败';
@@ -270,11 +282,13 @@ class User extends Model
 	 * @return boolean
 	 */
 	public static function delete_user($uid=0) {
-	    hook_listen('user_delete_begin',$uid);
+		get_hook('user_delete_begin',$array=[],[],['uid'=>$uid],true);
+	    hook_listen('user_delete_begin',$uid);	    
 
 		if(self::destroy($uid)){
 		    cache('user_'.$uid,null);
-		    hook_listen('user_delete_end',$uid);
+			get_hook('user_delete_end',$array=[],[],['uid'=>$uid],true);
+		    hook_listen('user_delete_end',$uid);		    
 		    return true;
 		}
 	}
@@ -330,7 +344,9 @@ class User extends Model
 	            'not_pwd'=>$not_pwd,
 	            'type'=>$type,
 	    ];
-	    hook_listen('user_login_begin', $array);
+		get_hook('user_login_begin',$array,[],[],true);
+	    hook_listen('user_login_begin', $array);	    
+	    
 	    if($username==''){
             return 0;
         }
@@ -360,7 +376,9 @@ class User extends Model
 		        'not_pwd'=>$not_pwd,
 		        'type'=>$type,
 		];
-		hook_listen('user_login_end', $array);
+		get_hook('user_login_end',$array,[],[],true);
+		hook_listen('user_login_end', $array);		
+		
 		return $rs;
 	}
 	
@@ -374,7 +392,8 @@ class User extends Model
 		cache('user_'.$uid,null);
 		set_cookie('token_secret',null);
 		setcookie('adminID',null);	//同步后台退出
-		hook_listen('user_quit_end',$uid);
+		get_hook('user_quit_end',$array=[],[],['uid'=>$uid],true);
+		hook_listen('user_quit_end',$uid);		
 	}
 	
 	/**

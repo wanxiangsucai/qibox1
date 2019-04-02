@@ -102,8 +102,9 @@ class Getpassword extends IndexBase
         }
         
         $data = get_post('post');
-        
-        hook_listen('getpassword_begin',$data);
+
+        $this->get_hook('getpassword_begin',$data);
+        hook_listen('getpassword_begin',$data);		
         
         if(IS_POST){
             $info = UserModel::get_info($data['username'],'username');
@@ -131,8 +132,9 @@ class Getpassword extends IndexBase
             ];
             
             $result = UserModel::edit_user($array); 
-            
-            hook_listen('getpassword_end',$info,$data);
+
+            $this->get_hook('getpassword_end',$data,$info)
+            hook_listen('getpassword_end',$info,$data);			
             
             if($result){
                 $this->success('密码设置成功','index/index');

@@ -46,7 +46,7 @@ class HookPlugin extends AdminBase
         }
     } 
     
-    protected function get_hook($id=0,$type='hook'){
+    protected function get_app_hook($id=0,$type='hook'){
         $keywords = input('keywords');
         $appkey= input('appkey');
         $domain= input('domain');
@@ -162,7 +162,7 @@ class HookPlugin extends AdminBase
     public function market($id=0,$page=0){
         //执行安装云端模块
         if($id){
-            return $this->get_hook($id,'hook');
+            return $this->get_app_hook($id,'hook');
         }
         $this->assign('fid',3);
         return $this->fetch();

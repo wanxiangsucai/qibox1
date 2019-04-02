@@ -121,8 +121,9 @@ class Reg extends IndexBase
             }
             $data['money'] = $this->webdb['regmoney'];
         }
-        
-        hook_listen('reg_by_hand_begin',$data);
+
+        $this->get_hook('reg_by_hand_begin',$data );
+        hook_listen('reg_by_hand_begin',$data);		
         
         if(IS_POST){
             
@@ -166,8 +167,9 @@ class Reg extends IndexBase
             if ($uid<2) {
                 $this->error($uid);
             }
-            
-            hook_listen('reg_by_hand_end',$uid,$data);
+
+            $this->get_hook('reg_by_hand_end',$data,[],['uid'=>$uid] );
+            hook_listen('reg_by_hand_end',$uid,$data);			
             
             $result = UserModel::login($data['username'],$data['password'],$data['cookietime']);   //帐号同时实现登录
             if(is_array($result)){

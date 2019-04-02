@@ -294,14 +294,14 @@ class Setting extends AdminBase
                 }
                 cache('webdb',null);
                
-                $this->get_hook('setting_post');     //扩展增强文件接口
+                $this->get_hook('setting_post',$data,[],[],false);     //扩展增强文件接口
                 
                 $this->success('修改成功');
             }            
         }
 
         
-        $this->get_hook('setting_get');     //扩展增强文件接口
+        $this->get_hook('setting_get',$data=[],[],[],false);     //扩展增强文件接口
         
         $this->add_config($group);      //补全字段
         

@@ -379,32 +379,13 @@ trait ModuleContent
 	/**
 	 * 齐博首创 钩子文件扩展接口 每个应用下的对应文件,比如 bbs/ext/add_check_xxxx.php
 	 * preg_replace("/([^:]+)::([^:]+)/i", "\\2", __METHOD__)
-	 * @param string $type 类型分别是 add_check,edit_check,delete_check,end_add,end_edit,end_delete
-	 * @param number $id
-	 * @param number $mid
-	 * @param number $fid
-	 * @param array $info
-	 * @param array $data
-	 * @return string
+	 * @param string $type 类型分别是 cms_add_begin,cms_edit_begin,cms_delete_begin,cms_add_end,cms_edit_end,cms_delete_end
+	 * @param array $data POST表单提交的内容
+	 * @param array $info 数据库的内容
+	 * @param array $array 附加参数
 	 */
-	protected function get_hook($type='',$id=0,$mid=0,$fid=0,$info=[],&$data=[]){
-	    preg_match_all('/([_a-z]+)/',get_called_class(),$array);
-	    $dirname = $array[0][1];
-	    $path = defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH.$dirname.'/ext/';	    
-	    if (is_dir($path)) {
-	        $dir = opendir($path);
-	        while($file = readdir($dir)){
-	            if(preg_match("/^".$type."[\w\.-]+\.php$/i", $file)){
-	                $result = include($path.$file);
-	                if ($result===true) {
-	                    return $result;
-	                }elseif(is_string($result)){
-	                    return $result;
-	                }
-	            }
-	        }
-	    }
-	    return NULL;
+	protected function get_hook($type='',&$data=[],$info=[],$array=[]){
+	    return parent::get_hook($type,$data,$info,$array);    //继承 \app\common\controller\base.php
 	}
 	
 
@@ -418,7 +399,7 @@ trait ModuleContent
 	protected function add_check($mid=0,$fid=0,&$data=[]){
 	    
 	    //齐博首创 钩子文件扩展接口
-	    $result = $this->get_hook('add_check',$id=0,$mid,$fid,$info=[],$data);
+	    $result = $this->get_hook('cms_add_begin',$data,$info=[],['mid'=>$mid,'fid'=>$fid]);
 	    if($result!==null){
 	        return $result;
 	    }
@@ -565,7 +546,7 @@ trait ModuleContent
 	protected function edit_check($id=0,$info=[],&$data=[]){
 	    
 	    //齐博首创 钩子文件扩展接口
-	    $result = $this->get_hook('edit_check',$id,$mid=0,$fid=0,$info,$data);
+	    $result = $this->get_hook('cms_edit_begin',$data,$info,['id'=>$id]);
 	    if($result!==null){
 	        return $result;
 	    }
@@ -606,7 +587,7 @@ trait ModuleContent
 	protected function delete_check($id=0,$info=[]){
 	    
 	    //齐博首创 钩子文件扩展接口
-	    $result = $this->get_hook('delete_check',$id,$mid=0,$fid=0,$info,$data=[]);
+	    $result = $this->get_hook('cms_delete_begin',$data=[],$info,['id'=>$id]);
 	    if($result!==null){
 	        return $result;
 	    }
@@ -627,7 +608,7 @@ trait ModuleContent
 	protected function end_add($id=0,$data=[]){
 	    
 	    //齐博首创 钩子文件扩展接口
-	    $result = $this->get_hook('end_add',$id,$mid=0,$fid=0,$info=[],$data);
+	    $result = $this->get_hook('cms_add_end',$data,$info=[],['id'=>$id]);
 	    if($result!==null){
 	        return $result;
 	    }
@@ -679,7 +660,7 @@ trait ModuleContent
 	protected function end_edit($id=0,$data=[]){
 	    
 	    //齐博首创 钩子文件扩展接口
-	    $result = $this->get_hook('end_edit',$id,$mid=0,$fid=0,$info=[],$data);
+	    $result = $this->get_hook('cms_edit_end',$data,$info=[],['id'=>$id]);
 	    if($result!==null){
 	        return $result;
 	    }
@@ -694,7 +675,7 @@ trait ModuleContent
 	protected function end_delete($id=0,$info=[]){
 	    
 	    //齐博首创 钩子文件扩展接口
-	    $result = $this->get_hook('end_delete',$id,$mid=0,$fid=0,$info,$data=[]);
+	    $result = $this->get_hook('cms_delete_end',$data=[],$info,['id'=>$id]);
 	    if($result!==null){
 	        return $result;
 	    }
