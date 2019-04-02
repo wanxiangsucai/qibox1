@@ -196,6 +196,7 @@ if (!function_exists('hook_if_load')) {
 if (!function_exists('get_hook')) {
     /**
      * 齐博首创 钩子文件扩展接口
+     * 详细使用教程 https://www.kancloud.cn/php168/x1_of_qibo/1010065
      * @param string $type 钩子标志,不能重复
      * @param array $data POST表单数据
      * @param array $info 数据库资料
@@ -247,9 +248,9 @@ if (!function_exists('get_hook')) {
         if ($array) {
             foreach($array AS $file=>$v){
                 $result = include($file);
-                if ($result===true) {
+                if ($result===true||$result===false) {
                     return $result;
-                }elseif(is_string($result)){
+                }elseif(is_string($result) || is_array($result)){
                     return $result;
                 }
             }
