@@ -21,7 +21,7 @@ class AdminBase extends Base
         parent::_initialize();
         if(SUPER_ADMIN!==true){
 			//钩子扩展
-			$this->get_hook('admin_begin',$data=[],$this->user);
+			method_exists($this,'get_hook') && $this->get_hook('admin_begin',$data=[],$this->user);
             hook_listen('admin_begin',$array=['user'=>$this->user]);			
 
             if(empty($this->user)){

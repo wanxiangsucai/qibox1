@@ -173,6 +173,7 @@ abstract class C extends IndexBase
         //获取内容数据
         $info = $this->getInfoData($id);
         
+        $this->get_hook('cms_content_show',$info,$this->user);
         Hook_listen('cms_content_show',$info,$this->user);
         
         $this->view_check($info);   //访问权限检查
