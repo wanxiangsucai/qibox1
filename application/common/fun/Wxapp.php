@@ -5,6 +5,9 @@ namespace app\common\fun;
 class Wxapp{
     
     public static function mp_code($id=0){
+        if( config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
+            return '系统没有配置公众号';
+        }
         $path = config('upload_path') . '/mp_code/';
         $img_path  = $path.$id.'.png';
         if (is_file($img_path)) {
@@ -48,6 +51,9 @@ class Wxapp{
      * 加前缀处理的方法是 qun/Error.php/_initialize 务必用_下画线做分隔符,比如 bbs_123
      */
     public static function qun_code($id=0){
+        if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
+            return '系统没有配置小程序';
+        }
         $path = config('upload_path') . '/qun_code/';
         $img_path  = $path.$id.'.png';
         if (is_file($img_path)) {
