@@ -109,8 +109,8 @@ class Index extends AdminBase
 	}
 	
 	public function leftmenu($type='often')
-    {
-        $array = Menu::get_menu();
+	{
+	    $array = Menu::get_menu($this->user['groupid']);
        
         //菜单权限判断
         if(SUPER_ADMIN!==true&&$type!='often'){

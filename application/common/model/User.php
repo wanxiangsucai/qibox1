@@ -334,9 +334,9 @@ class User extends Model
 	 * @return number|unknown 登录成功返回用户的所有信息, 0代表用户不存在,-1代表密码错误
 	 */
 	public static function login($username='',$password='',$cookietime=null,$not_pwd=false,$type='username'){
-	    if(!table_field('memberdata','password_rand')){    //升级数据库
-	        into_sql(APP_PATH.'common/upgrade/5.sql');
-	    }
+// 	    if(!table_field('memberdata','password_rand')){    //升级数据库
+// 	        into_sql(APP_PATH.'common/upgrade/5.sql');
+// 	    }
 	    $array = [
 	            'username'=>$username,
 	            'password'=>$password,

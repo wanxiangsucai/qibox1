@@ -38,9 +38,25 @@ class AdminBase extends Base
                     $this->success('请先登录',url('admin/index/login'),'',0);
                 }                
             }else{
+                $admin_uid = $time = $ip = NULL;
+                list($admin_uid,$time,$ip) = explode("\t",mymd5(get_cookie('admin_login'),'DE'));
                 if($this->check_power()!==true){
-                    $this->error('你没有此后台权限!!');
-                }                
+                    if ($admin_uid) {
+                        if (time()-$time>3600*12) {
+                            $this->error('已经超时了，请重新登录！');
+                        }elseif($ip!=get_ip()){
+                            $this->error('IP换了，请重新登录！');
+                        }
+                        $this->user = get_user($admin_uid);
+                        if($this->check_power()!==true){
+                            $this->error('权限检验失败，请重新登录！');
+                        }
+                    }else{
+                        $this->error('你没有此后台权限!!');
+                    }                    
+                }elseif(empty($admin_uid)){
+                    set_cookie('admin_login',mymd5($this->user['uid']."\t".time()."\t".get_ip()));
+                }
             }
         }
         if($this->request->isPost() || $this->route[2]=='delete'){
@@ -118,6 +134,9 @@ class AdminBase extends Base
         }
     }
     
+    /**
+     * 快速编辑,修改字段
+     */
     public function quickedit(){
         $data = input();
         if($data['name']&&$data['pk']){
@@ -132,7 +151,6 @@ class AdminBase extends Base
             }else{
                 $this->error('设置失败');
             }
-            //return $data;
         }
     }
     

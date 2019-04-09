@@ -6,6 +6,7 @@ use app\admin\model\AdminMenu;
 class Menu{
     //protected static $instance;
     protected static $type= 'admin';
+    protected static $groupid=null;
     
     protected function __construct($type)
     {
@@ -18,7 +19,7 @@ class Menu{
        // }
         self::$type = $type;
         return self::get_menu();
-    }
+    }    
     
     /**
      * 打上标志是哪个模块的系统，方便处理URL指向
@@ -115,7 +116,7 @@ class Menu{
         $map = [
                 'type'=>$type,
                 'ifshow'=>1,
-                'groupid'=>login_user('groupid'),
+                'groupid'=>self::$groupid?:login_user('groupid'),
         ];
         $_array = [];
         $listdb = get_sons( AdminMenu::getTreeList($map) );
@@ -227,10 +228,14 @@ class Menu{
     
     /**
      * 供外部调用所有菜单
+     * @param unknown $groupid 用户组的ID
      * @return string|array
      */
-    public static function get_menu()
+    public static function get_menu($groupid=NULL)
     {
+        if ($groupid) {
+            self::$groupid = $groupid;
+        }
         //系统菜单
         $base_menu = self::build_sys_menu();
         

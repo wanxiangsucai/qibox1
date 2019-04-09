@@ -76,6 +76,10 @@ if("{$rs['weixin_api']}"!=""){
 EOT;
 	            return $code;
 	        }],
+	        ['uid','登录','callback',function($k,$v){
+	            $url = urls('edit',['type'=>'login','id'=>$k]);
+	            return "<a target='_blank' href='$url' class='fa fa-child' onclick='return confirm(\"你确认要登录他的帐号吗?\")' title='你确认要登录他的帐号吗?'>登录</a>";
+	        }],
 	    ];	    
 	    
 	    $this -> tab_ext['search'] = ['username'=>'用户名','uid'=>'用户ID','regip'=>'注册IP'];    //支持搜索的字段
@@ -102,15 +106,32 @@ EOT;
 	    }
 	    
 	    return $this -> getAdminTable(self::getListData($map, $order ));
-	} 
+	}
+	
+	/**
+	 * 登录他人的帐号
+	 * @param number $id
+	 */
+	public function login($id=0){
+	    $result = UserModel::login($id,$password='',$cookietime=null,$not_pwd=true,$type='uid');
+	    if (is_array($result)) {
+	        return $this->success('登录成功',get_url('member'));
+	    }else{
+	        return $this->error('登录失败');
+	    }
+	}
 	
 	/**
 	 * 修改用户资料
 	 * @param number $id 用户UID
 	 */
-	public function edit($id = 0)
+	public function edit($id = 0,$type='')
 	{
-	    if(empty($id)) $this->error('缺少参数');	    
+	    if(empty($id)) $this->error('缺少参数');
+	    
+	    if ($type=='login') {
+	        $this->login($id);
+	    }
     	
 	    $info = $this->model->get_info($id);
 	    
