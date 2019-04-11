@@ -98,7 +98,7 @@ class Config extends AdminBase
 	        $result = $this->validate($data,
 	                [
 	                        'c_key'  => 'require|regex:^[_a-zA-Z]\w{0,39}$',
-	                        'title'   => 'require|max:50',
+	                        'title'   => 'require|max:90',
 	                ]);
 	        if($result !== true ){
 	            $this->error($result);
