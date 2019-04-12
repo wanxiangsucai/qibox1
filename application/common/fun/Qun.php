@@ -174,4 +174,28 @@ class Qun{
         ];
     }
     
+    /**
+     * 列出所有风格
+     * @param string $olny_free 设置为true的话,只列出免费风格 否则是所有风格
+     * @return string[]
+     */
+    public static function list_style($olny_free=false){
+        $array = [];
+        $template_path = TEMPLATE_PATH."qun_style/";
+        $dir=opendir($template_path);
+        while( $file=readdir($dir)){
+            if($file!='.' && $file!='..' && $file!='.svn' && is_file($template_path.$file.'/info.php')){
+                $rs = include($template_path.$file.'/info.php');
+                if ($olny_free==true && $rs['money']>0) {
+                    continue;
+                }
+                $rs['keyword'] = $file;
+                $rs['picurl'] = config('view_replace_str.__STATIC__').'/qun_style/'.$file.'/demo_min.jpg';
+                $rs['demo'] = config('view_replace_str.__STATIC__').'/qun_style/'.$file.'/demo.jpg';
+                $array[] = $rs;
+            }
+        }
+        return $array;
+    }
+    
 }
