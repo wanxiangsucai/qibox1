@@ -140,6 +140,7 @@ EOT;
 	            ['static', 'username', '用户名','用户名不可修改'],
 	            ['text', 'password', '密码','留空则代表不修改密码,之前加密后的密码是：'.$info['password']],
 	            ['select', 'groupid', '用户组','',getGroupByid()],
+	        ['datetime', 'group_endtime', '用户组有效期','留空则长期有效,除普通用户组外其它任何用户组（包括超管及黑名单）都可以设置有效期，过期后统一归为普通用户组'],
 	            ['text', 'nickname', '昵称'],
 	            ['text', 'email', '邮箱'],
 	            ['text', 'weixin_api', '微信接口ID'],

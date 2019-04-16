@@ -1,0 +1,1 @@
+ALTER TABLE  `qb_memberdata` ADD  `group_endtime` INT( 10 ) NOT NULL COMMENT  '用户组截止日期';

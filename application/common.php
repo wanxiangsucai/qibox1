@@ -965,6 +965,14 @@ if (!function_exists('get_user')) {
         }elseif($value!==''){
 		    $mod = model('common/user');
 		    $rarray = $mod->get_info($value,$type);
+        }
+		if ($rarray['group_endtime'] && $rarray['groupid'] != 8 && $rarray['group_endtime']<time()) { //用户 组过期了
+		    $rarray['groupid'] = 8;
+		    edit_user([
+		        'uid'=>$rarray['uid'],
+		        'groupid'=>8,
+		    ]);
+		    cache('user_'.$rarray['uid'],null);
 		}
 		return $rarray;
     }

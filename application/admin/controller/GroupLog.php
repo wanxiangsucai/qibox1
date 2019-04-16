@@ -33,9 +33,11 @@ class GroupLog extends AdminBase
 	    ];
 	    $result = GrouplogModel::update($array);
 	    if ($result) {
+	        $gdb = getGroupByid($info['gid'],false);
 	        $data = [
-	                'uid'=>$info['uid'],
-	                'groupid'=>$info['gid'],
+	            'uid'=>$info['uid'],
+	            'groupid'=>$info['gid'],
+	            'group_endtime'=>$gdb['daytime']?($gdb['daytime']*3600*24+time()):0,
 	        ];
 	        if ($status==1) {	            
 	            edit_user($data);

@@ -438,6 +438,14 @@ class User extends Model
 	    if( mymd5($usr_info['password'],'EN') != $token['password'] ){
 	        static::quit($usr_info['uid']);
 	        return false;
+	    }
+		if ($usr_info['group_endtime'] && $usr_info['groupid'] != 8 && $usr_info['group_endtime']<time()) { //用户 组过期了
+		    $usr_info['groupid'] = 8;
+		    edit_user([
+		        'uid'=>$usr_info['uid'],
+		        'groupid'=>8,
+		    ]);
+		    cache('user_'.$usr_info['uid'],null);
 		}
 		return $usr_info;
 	}
