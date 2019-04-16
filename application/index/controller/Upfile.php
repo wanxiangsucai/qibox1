@@ -18,6 +18,10 @@ class Upfile extends IndexBase
             $obj = new Attachment();
             $o = $obj->upload('pop');
             $info = $o->getData();
+            if (preg_match('/^\/public\//', $info['path'])) {
+                empty($info['url']) && $info['url'] = $info['path'];
+                $info['path'] = str_replace('/public/', '', $info['path']);
+            }
             $this->assign('info',$info);
             $this->assign('fn',$fn);
             $this->assign('par',$par);

@@ -108,6 +108,9 @@ class Yz extends MemberBase
                      'idcardpic'=>$data['idcardpic'],
             ];
             if (UserModel::edit_user($array)) {
+                $title = $this->user['username'].'申请实名认证了，请尽快进后台用户资料管理那里进行审核！';
+                $content = $title;
+                send_admin_msg($title,$content);
                 $this->success('数据已成功提交,请等待管理员人工审核');
             }else{
                 $this->error('数据写入失败');

@@ -195,7 +195,12 @@ return array(
 				                                    'title'=>'用户认证升级管理',
 				                                    'link'=>'group_log/index',
 				                                    'power'=>['index','delete','pass'=>'审核操作'],
-				                            ),
+				                         ),
+				                        array(
+				                            'title'=>'用户实名审核管理',
+				                            'link'=>'yz/index',
+				                            'power'=>['index','edit'=>'审核'],
+				                        ),
                                 ),
                         ),
                 ),
