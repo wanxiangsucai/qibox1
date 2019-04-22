@@ -237,7 +237,7 @@ class Upgrade extends AdminBase
 	 */
 	protected function get_server_file($filename='',$id=0){
 	    @set_time_limit(600);  //防止超时
-	    $str = http_curl('https://x1.php168.com/appstore/upgrade/make_client_file.html?filename='.$filename.'&id='.$id.'&appkey='.$this->webdb['mymd5'].'&domain='.urlencode($this->request->domain()));
+	    $str = http_curl('https://x1.php168.com/appstore/upgrade/make_client_file.html?filename='.$filename.'&id='.$id.'&appkey='.urlencode($this->webdb['mymd5']).'&domain='.urlencode($this->request->domain()));
 	    if(substr($str,0,2)=='QB'){    //文件核对,防止网络故障,抓取一些出错信息
 	        $str = substr($str,2);
 	    }else{
@@ -251,7 +251,7 @@ class Upgrade extends AdminBase
 	 * @return string|mixed
 	 */
 	protected function getfile(){
-	    $str = http_curl('https://x1.php168.com/appstore/upgrade/get_list_file.html?domain='.$this->request->domain(),['app_edition'=>fun('upgrade@local_edition')]);
+	    $str = http_curl('https://x1.php168.com/appstore/upgrade/get_list_file.html?typeid='.$this->webdb['typeid'].'&appkey='.urlencode($this->webdb['mymd5']).'&domain='.urlencode($this->request->domain()),['app_edition'=>fun('upgrade@local_edition')]);
 	    return $str ? json_decode($str,true) : '';
 	}
 

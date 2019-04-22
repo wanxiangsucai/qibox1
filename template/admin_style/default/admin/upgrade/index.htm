@@ -65,7 +65,12 @@ var upgrade_data = {};
 //检查版本更新
 function check_upgrade(){
 	var now_edition = "{$upgrade.md5}";
-	$.post("https://x1.php168.com/appstore/upgrade/get_edition.html?"+Math.random(),{app_edition:"{:fun('upgrade@local_edition')}",sys_edition:now_edition}).success( function(res){
+	$.post("https://x1.php168.com/appstore/upgrade/get_edition.html?typeid={$webdb.typeid}&"+Math.random(),{
+		app_edition:"{:fun('upgrade@local_edition')}",
+		sys_edition:now_edition,
+		domin:'{:request()->domain()}',
+		appkey:'{$webdb.mymd5}'
+	}).success( function(res){
 		if(res.code==0){
 			upgrade_data = res.data;
 			if(res.data.md5!=now_edition||typeof(res.data.upgrade_msg) != "undefined"){
