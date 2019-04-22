@@ -657,10 +657,10 @@ trait ModuleContent
 	 * @param number $id 内容ID
 	 * @param array $data 内容数据
 	 */
-	protected function end_edit($id=0,$data=[]){
+	protected function end_edit($id=0,$data=[],$info=[]){
 	    
 	    //齐博首创 钩子文件扩展接口
-	    $result = $this->get_hook('cms_edit_end',$data,$info=[],['id'=>$id]);
+	    $result = $this->get_hook('cms_edit_end',$data,$info,['id'=>$id]);
 	    if($result!==null){
 	        return $result;
 	    }
