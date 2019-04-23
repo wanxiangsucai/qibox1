@@ -133,7 +133,7 @@ class Getpassword extends IndexBase
             
             $result = UserModel::edit_user($array); 
 
-            $this->get_hook('getpassword_end',$data,$info)
+            $this->get_hook('getpassword_end',$data,$info);
             hook_listen('getpassword_end',$info,$data);			
             
             if($result){
