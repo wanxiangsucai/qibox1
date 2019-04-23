@@ -35,7 +35,11 @@ class Player{
             $url = tempdir($url);
         }
         
-        $content = $this->ckplayer($url,$width,$height);        
+        if (strstr($url,'.swf')) {
+            return $this->swfpay($url,$width,$height);
+        }
+        
+        $content = $this->ckplayer($url,$width,$height);
         return $content;
     }
     
@@ -63,6 +67,39 @@ class Player{
                 	};
                 	var player{$array_id} = new ckplayer(videoObject);
                 </script>";
+    }
+    
+    /**
+     * FLASH需要点击激活，所以要使用原始播放器
+     * @param string $url
+     * @param string $width
+     * @param string $height
+     * @return string
+     */
+    private function swfpay($url='',$width='',$height=''){
+        return "<object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0' width='{$width}' height='{$height}'>
+<param name=movie value='{$url}' ref>
+<param name=quality value=High>
+<param name='_cx' value='12383'>
+<param name='_cy' value='1588'>
+<param name='FlashVars' value>
+<param name='Src' ref value='{$url}'>
+<param name='WMode' value='Window'>
+<param name='Play' value='-1'>
+<param name='Loop' value='-1'>
+<param name='SAlign' value>
+<param name='Menu' value='-1'>
+<param name='Base' value>
+<param name='AllowScriptAccess' value='always'>
+<param name='Scale' value='ShowAll'>
+<param name='DeviceFont' value='0'>
+<param name='EmbedMovie' value='0'>
+<param name='BGColor' value>
+<param name='SWRemote' value>
+<param name='MovieData' value>
+<embed src='{$url}' quality=high pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash' type='application/x-shockwave-flash' width='{$width}' height='{$height}'>
+</embed>
+</object>";
     }
      
 }

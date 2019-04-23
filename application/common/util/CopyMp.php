@@ -39,7 +39,7 @@ class CopyMp
         preg_match("/id=\"js_content\">(.*?)<script nonce=/is",$content,$array);
         $postdb['content'] = '<div>'.$array[1];
         
-        if(strstr($postdb['content'],'v.qq.com/iframe/')){
+        if(strstr($postdb['content'],'v.qq.com/iframe/')||strstr($postdb['content'],'pages/video_player_tmpl')){
             $postdb['content'] = static::get_iframe_mv($postdb['content']);
         }
         
@@ -119,7 +119,13 @@ class CopyMp
 //     }
     
     protected static function get_iframe_mv_id($array=[]){
+        //https://mp.weixin.qq.com/mp/readtemplate?t=pages/video_player_tmpl&amp;action=mpvideo&amp;auto=0&amp;vid=wxv_774069477334974465
+        
         $url = $array[2];
+        if (strstr($url,'pages/video_player_tmpl')) {
+            return "<iframe class=\"video_iframe\" data-vidtype=\"1\" style=\"z-index: 1; width: 320px !important; height: 250px !important; overflow: hidden;\" height=\"250\" width=\"320\" frameborder=\"0\" data-src=\"{$url}\" allowfullscreen=\"\" src=\"{$url}\" scrolling=\"no\"></iframe>
+                    <br><a href='{$url}'>若视频播放不了，请点击查看视频</a>";
+        }
         preg_match("/vid=([^&\"]+)/is",$url,$array2);
         $vid = $array2[1];
         
