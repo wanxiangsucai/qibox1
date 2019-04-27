@@ -146,7 +146,7 @@ class MemberMenu extends AdminBase
 	            if (true !== $result) $this -> error($result);
 	        }
 	        if (MenuModel::update($data)) {
-	            $this->success('修改成功',url('index',['type'=>$data['type']]));
+	            $this->success('修改成功',url('index',['gid'=>$data['groupid']]));
 	        } else {
 	            $this->error('修改失败');
 	        }
@@ -162,6 +162,7 @@ class MemberMenu extends AdminBase
 	    ->addRadio('ifshow','是否隐藏','',['隐藏','显示(不隐藏)'])
 	    ->addNumber('list','排序值')
 	    ->addIcon('icon','小图标')
+	    ->addHidden('groupid')
 	    ->addHidden('id',$id);
 
 	    return $form::fetchs();

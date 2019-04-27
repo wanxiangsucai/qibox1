@@ -159,6 +159,9 @@ EOT;
 	        ['radio', 'email_yz', '邮箱验证与否','',['未验证','已验证']],
 	        ['radio', 'mob_yz', '手机验证与否','',['未验证','已验证']],
 	        ['radio', 'idcard_yz', '证件验证与否','',['未验证','已验证']],
+	        ['number', 'introducer_1', '直接推荐人'],
+	        ['number', 'introducer_2', '2级推荐人'],
+	        ['number', 'introducer_3', '3级推荐人'],
 	    ];
 	    
 	    //某用户组下面的所有参数选项
