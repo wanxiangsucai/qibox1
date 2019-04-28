@@ -108,7 +108,8 @@ trait Market
                     if(is_file(RUNTIME_PATH."model/$file")){
                         copy(RUNTIME_PATH."model/$file",APP_PATH.'common/hook/'.$file);
                     }else{
-                        return '钩子文件目录有误或者不存在';
+						copy_dir(RUNTIME_PATH."model/$file",ROOT_PATH.$file);
+                        //return '钩子文件目录有误或者不存在';
                     }
                 }
             }else{
