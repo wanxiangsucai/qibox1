@@ -50,6 +50,7 @@ class Index extends AdminBase
             $this->error('你还没登录！','index');
         }
         UserModel::quit($this->user['uid']);
+        set_cookie('admin_login',null);
         $this->success('成功退出','index');
     }
 	

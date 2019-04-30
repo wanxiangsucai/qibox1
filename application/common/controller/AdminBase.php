@@ -43,12 +43,15 @@ class AdminBase extends Base
                 if($this->check_power()!==true){
                     if ($admin_uid) {
                         if (time()-$time>3600*12) {
+                            set_cookie('admin_login',null);
                             $this->error('已经超时了，请重新登录！');
                         }elseif($ip!=get_ip()){
+                            set_cookie('admin_login',null);
                             $this->error('IP换了，请重新登录！');
                         }
                         $this->user = get_user($admin_uid);
                         if($this->check_power()!==true){
+                            set_cookie('admin_login',null);
                             $this->error('权限检验失败，请重新登录！');
                         }
                     }else{
