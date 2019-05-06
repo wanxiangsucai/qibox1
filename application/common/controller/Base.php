@@ -428,26 +428,26 @@ class Base extends Controller
         if ($use_common===true) {
             $path_array[] = APP_PATH.'common'.DS.'ext'.DS.$type.DS;
         }
-        $array = [];
+        $file_array = [];
         foreach ($path_array AS $path){
             if (is_dir($path)) {
                 $sarray = [];
                 $dir = opendir($path);
                 while($file = readdir($dir)){
                     if(preg_match("/^([\w\.-]*)\.php$/i", $file,$sar)){
-                        if (in_array($sar[1], $array)) {
+                        if (in_array($sar[1], $file_array)) {
                             continue ; //出现同名,就跳过
                         }
                         $sarray[$path.DS.$file] = $sar[1];
                     }
                 }
                 asort($sarray);
-                $array = array_merge($array,$sarray);
+                $file_array = array_merge($file_array,$sarray);
             }
         }
         
-        if ($array) {
-            foreach($array AS $file=>$v){
+        if ($file_array) {
+            foreach($file_array AS $file=>$v){
                 $result = include($file);
                 if ($result===true||$result===false) {
                     return $result;
