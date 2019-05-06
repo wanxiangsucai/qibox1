@@ -158,6 +158,8 @@ class Order extends Model
         add_rmb($order_info['shop_uid'],abs($order_info['pay_money']),0,'销售商品');
         
         static::send_msg($order_info);
+        
+        get_hook('order_have_pay',$data=[],$order_info,$array=['dirname'=>self::$model_key],$use_common=true,self::$model_key);   //钩子扩展
     }
     
     /**

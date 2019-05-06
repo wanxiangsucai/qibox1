@@ -202,14 +202,15 @@ if (!function_exists('get_hook')) {
      * @param array $info 数据库资料
      * @param array $array 其它参数
      * @param string $use_common 默认同时调用全站通用的
+     * @param string $dirname 可以指定模块目录，比如在模型里边被其它调用的话，就需要预先指定目录，避免获取不到真实目录
      * @return unknown|NULL
      */
-    function get_hook($type='',&$data=[],$info=[],$array=[],$use_common=true){
+    function get_hook($type='',&$data=[],$info=[],$array=[],$use_common=true,$dirname=''){
         if (hook_if_load($type)===true && $array['from']!='hook') {
             return NULL;
         }
         $path_array = [];
-        $dirname = config('system_dirname');
+        $dirname = $dirname?:config('system_dirname');
         if ( empty($dirname) ) {
             if (defined('IN_PLUGIN')) {
                 $dirname = input('plugin_controller');
@@ -227,26 +228,26 @@ if (!function_exists('get_hook')) {
             $path_array[] = APP_PATH.'common'.DS.'ext'.DS.$type.DS;
         }
         
-        $array = [];
+        $file_array = [];
         foreach ($path_array AS $path){
             if (is_dir($path)) {
                 $sarray = [];
                 $dir = opendir($path);
                 while($file = readdir($dir)){
                     if(preg_match("/^([\w\.-]*)\.php$/i", $file,$sar)){
-                        if (in_array($sar[1], $array)) {
+                        if (in_array($sar[1], $file_array)) {
                             continue ; //出现同名,就跳过
                         }
                         $sarray[$path.DS.$file] = $sar[1];
                     }
                 }
                 asort($sarray);
-                $array = array_merge($array,$sarray);
+                $file_array = array_merge($file_array,$sarray);
             }
         }
         
-        if ($array) {
-            foreach($array AS $file=>$v){
+        if ($file_array) {
+            foreach($file_array AS $file=>$v){
                 $result = include($file);
                 if ($result===true||$result===false) {
                     return $result;
