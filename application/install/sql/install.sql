@@ -1538,3 +1538,50 @@ INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`,
 INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(8, 0, '普通会员', 0, 'a:80:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:13:"EditPassPower";s:1:"0";s:17:"SearchArticleType";s:1:"1";s:12:"SetTileColor";s:1:"0";s:14:"SetSellArticle";s:1:"0";s:13:"SetSmallTitle";s:1:"0";s:17:"SetSpecialArticle";s:1:"1";s:17:"SetArticleKeyword";s:1:"1";s:20:"AddArticleKeywordNum";s:1:"0";s:16:"PostArticleYzImg";s:1:"0";s:21:"AddArticleCopyfromNum";s:1:"0";s:16:"SelectArticleTpl";s:1:"0";s:13:"SetArticleTpl";s:1:"0";s:18:"SelectArticleStyle";s:1:"0";s:18:"SetArticlePosttime";s:1:"0";s:18:"SetArticleViewtime";s:1:"0";s:16:"SetArticleHitNum";s:1:"0";s:18:"SetArticlePassword";s:1:"0";s:19:"SetArticleDownGroup";s:1:"0";s:19:"SetArticleViewGroup";s:1:"0";s:17:"SetArticleJumpurl";s:1:"0";s:19:"SetArticleIframeurl";s:1:"0";s:21:"SetArticleDescription";s:1:"0";s:16:"SetArticleTopCom";s:1:"0";s:17:"CollectArticleNum";s:2:"30";s:15:"CreatSpecialNum";s:1:"7";s:19:"CommentArticleYzImg";s:1:"1";s:11:"SetHtmlName";s:1:"0";s:7:"SetVote";s:1:"1";s:16:"PassContributeSP";s:1:"0";s:13:"PostNoDelCode";s:1:"0";s:14:"AllowUploadMax";s:1:"0";s:11:"comment_num";s:0:"";s:10:"comment_yz";s:1:"0";s:11:"comment_img";s:1:"0";s:16:"sell_postauto_yz";s:1:"1";s:15:"buy_postauto_yz";s:1:"1";s:15:"post_pingpai_yz";s:1:"1";s:10:"use2domain";s:1:"0";s:16:"useHomepageStyle";s:1:"1";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:1:"5";s:12:"post_buy_num";s:1:"5";s:13:"post_news_num";s:1:"5";s:14:"post_photo_num";s:2:"10";s:11:"post_hr_num";s:1:"5";s:17:"post_zhanghui_num";s:1:"5";s:12:"post_ZLG_num";s:1:"0";s:16:"post_pingpai_num";s:1:"5";s:19:"post_baojiadian_num";s:1:"5";s:19:"post_xunjiadian_num";s:1:"5";s:24:"post_info_collection_num";s:2:"30";s:18:"allow_get_homepage";s:1:"1";s:16:"shop_postauto_yz";s:1:"1";s:14:"tg_postauto_yz";s:1:"1";s:14:"post_coupon_yz";s:1:"1";s:13:"post_shop_num";s:1:"5";s:11:"post_tg_num";s:1:"3";s:15:"post_coupon_num";s:1:"3";s:13:"post_gift_num";s:1:"0";s:18:"shoptg_postauto_yz";s:1:"0";s:15:"post_shoptg_num";s:0:"";s:13:"postNewsYzImg";s:1:"1";s:13:"view_hy_money";s:0:"";s:13:"postShopYzImg";s:1:"1";s:11:"postTgYzImg";s:1:"1";s:15:"postShopTgYzImg";s:1:"1";s:11:"postHrYzImg";s:1:"1";s:15:"postCouponYzImg";s:1:"1";s:10:"post_hr_yz";s:1:"1";s:14:"consumptionMin";s:2:"10";s:10:"GetCashMin";s:2:"10";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"0";s:13:"AllowUesStyle";s:1:"0";s:13:"postHyNewsNum";s:2:"30";s:18:"AllowUesPicMsgSort";s:1:"1";}', 0, '', '', '', '', '', '', 0);
 INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(12, 1, '普通管理员', 0, '', 1, NULL, '', '', '', '', '', 0);
 ALTER TABLE  `qb_memberdata` ADD  `group_endtime` INT( 10 ) NOT NULL COMMENT  '用户组截止日期';
+
+
+
+ALTER TABLE  `qb_attachment` ADD INDEX (  `uid` );
+ALTER TABLE  `qb_attachment` ADD INDEX (  `md5` );
+ALTER TABLE  `qb_memberdata` COMMENT =  '用户数据表';
+
+
+
+DROP TABLE IF EXISTS `qb_rmb_consume`;
+CREATE TABLE IF NOT EXISTS `qb_rmb_consume` (
+  `id` mediumint(7) NOT NULL AUTO_INCREMENT,
+  `uid` mediumint(7) NOT NULL DEFAULT '0' COMMENT '用户UID',
+  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'RMB变化金额，有增有减',
+  `about` varchar(255) NOT NULL DEFAULT '' COMMENT '变动说明注释',
+  `posttime` int(10) NOT NULL DEFAULT '0' COMMENT '发生时间',
+  `freeze` tinyint(1) NOT NULL DEFAULT '0' COMMENT '冻结金额，一般是提现时冻结',
+  `fx` tinyint(2) NOT NULL COMMENT '是否为分销金额，暂时没用到',
+  `shopid` int(10) NOT NULL COMMENT '分销商品ID，暂时没用到',
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `fx` (`fx`),
+  KEY `shopid` (`shopid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员余额RMB赚取与消费记录' AUTO_INCREMENT=1 ;
+
+
+DROP TABLE IF EXISTS `qb_rmb_getout`;
+CREATE TABLE IF NOT EXISTS `qb_rmb_getout` (
+  `id` mediumint(7) NOT NULL AUTO_INCREMENT,
+  `uid` mediumint(7) NOT NULL DEFAULT '0' COMMENT '用户UID',
+  `username` varchar(30) NOT NULL DEFAULT '' COMMENT '用户帐号，可不填，将弃用',
+  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '提现金额',
+  `posttime` int(10) NOT NULL DEFAULT '0' COMMENT '提现时间',
+  `banktype` varchar(20) NOT NULL DEFAULT '' COMMENT '申请转入此收款银行',
+  `bankname` varchar(100) NOT NULL DEFAULT '' COMMENT '转入银行帐号',
+  `ifpay` tinyint(1) NOT NULL DEFAULT '0' COMMENT '支付与否',
+  `why` varchar(255) NOT NULL DEFAULT '' COMMENT '提现说明原因',
+  `truename` varchar(30) NOT NULL DEFAULT '' COMMENT '真实姓名',
+  `tel` varchar(20) NOT NULL DEFAULT '' COMMENT '联系电话',
+  `quitabout` text NOT NULL COMMENT '管理员回复信息',
+  `admin` varchar(30) NOT NULL DEFAULT '' COMMENT '管理员帐号',
+  `replytime` int(10) NOT NULL DEFAULT '0' COMMENT '支付时间',
+  `real_money` decimal(10,2) NOT NULL COMMENT '实际申请提现金额，针对扣手续费的情况',
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `ifpay` (`ifpay`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员余额申请提现记录' AUTO_INCREMENT=1;

@@ -69,6 +69,17 @@ class Attachment extends IndexBase{
 					unlink( $new_file );
 					return $this->errFile( $from,'非图片类型的文件！' );
 				}
+				
+				// 判断附件存在的情况
+				if ( ( $file_exists = AttachmentModel::get( [ 'md5' => md5_file( $new_file ) ] ) ) != false ) {
+// 				    if ( $file_exists['driver'] == 'local' ) {
+// 				        $file_path = PUBLIC_URL . $file_exists['path'];
+// 				    } else {
+				        $file_path = $file_exists['path'];
+// 				    }
+				    return $this->succeFile( $from,$file_path,$file_exists );
+				}
+				
 				/*随风修改了这里*/
 				$file_info = [
 					'path'     => $path . $name,
@@ -92,6 +103,24 @@ class Attachment extends IndexBase{
 						@unlink( $new_file );
 						return $hook_result;
 					}
+				}
+				
+				$file_info = [
+				    'uid'    => intval( $this->user['uid'] ),
+				    'name'   => $name,
+				    'mime'   => 'image/'.$type,
+				    'path'   => $path . $name,
+				    'ext'    => $type,
+				    'size'   => filesize($new_file),
+				    'md5'    => md5_file( $new_file ),
+				    'sha1'   => sha1_file( $new_file ),
+				    'thumb'  => '',
+				    'module' => $module,
+				];
+				
+				// 写入数据库
+				if ( ( $file_add = AttachmentModel::create( $file_info ) ) != false ) {
+				    
 				}
 				
 				$this->get_hook('upload_attachment_end',$data,$file_info,$array=[
