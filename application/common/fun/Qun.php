@@ -6,6 +6,61 @@ use app\qun\model\Content AS ContentModel;
 class Qun{
     
     /**
+     * 获取群的角色名称
+     * @param unknown $groupid
+     * @return number|string|unknown|array|number[][]|string[][]|unknown[][]|array[][]
+     */
+    function get_group($groupid=null){
+        $array = [];
+        $i = 0;
+        $str = explode("\n", str_replace("\r", '', config('webdb.qun_groups')));
+        foreach($str AS $value){
+            if (empty($value)) {
+                continue;
+            }
+            list($name,$sysgid) = explode("|", $value);
+            $i++;
+            $admin = 0;
+            //1,2,3是保留数字，分别是正式成员、副管理员、管理员
+            if ($i==1) {    //管理员
+                $gid = 3;
+                $admin = 1;
+            }elseif($i==2){ //副管理员
+                $gid = 2;
+                $admin = 1;
+            }elseif($i==3){ //正式成员
+                $gid = 1;
+            }else{
+                $gid = $i;
+            }
+            $array[$gid] = [
+                'gid'=>$gid,
+                'name'=>$name,
+                'sysgid'=>$sysgid,
+                'admin'=>$admin,
+            ];
+        }
+        $array[3] || $array[3] = [
+            'gid'=>3,
+            'name'=>QUN.'创建人',
+            'admin'=>1,
+        ];
+        $array[1] || $array[1] = [
+            'gid'=>1,
+            'name'=>'正式成员',
+            'admin'=>0,
+        ];
+        $array[0] = [
+            'gid'=>0,
+            'name'=>'待审成员',
+        ];
+        if (is_numeric($groupid)) {
+            return $array[$groupid]['name'];
+        }
+        return $array;
+    }
+    
+    /**
      * 统计某个圈子里的图片或商品或贴子的数量
      * @param string $table 统计的数据表,不用加前缀
      * @param number $id 圈子ID
