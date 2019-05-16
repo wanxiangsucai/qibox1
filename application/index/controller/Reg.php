@@ -20,8 +20,8 @@ class Reg extends IndexBase
         }elseif( time()-cache('send_num'.md5(get_ip()))<60){
             return $this->err_js('1分钟后,当前IP才能再次获取验证码!');
         }
-        //$num = cache(get_cookie('user_sid').'_reg') ?: rand(1000,9999);
-        $send_num = get_md5_num($to.rands(5),6);
+        //$num = cache(get_cookie('user_sid').'_reg') ?: rand(1000,9999);        
+        $send_num = $this->webdb['phone_rand_num_complex'] ? get_md5_num($to.rands(5),6) : rand(100000,999999);
         $title = '来自《'.config('webdb.webname').'》的注册验证码,请注册查收';
         $content = '你的注册验证码是:'.$send_num;
         

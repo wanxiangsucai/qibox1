@@ -116,7 +116,7 @@ class Login extends IndexBase
         }elseif( time()-cache('send_num'.md5(get_ip()))<60){
             return $this->err_js('1分钟后,当前IP才能再次获取验证码!');
         }
-        $send_num = get_md5_num($phone.rands(5) , 6);
+        $send_num = $this->webdb['phone_rand_num_complex'] ? get_md5_num($phone.rands(5) , 6) : rand(100000,999999);
         $content = '你的验证码是:'.$send_num;
         cache('phone_login'.$send_num,$phone,1800);
         

@@ -100,6 +100,9 @@ function check_upgrade(){
 	}).success(function(res){
 		if(res.code==0){
 			if(res.data.md5!=now_edition||typeof(res.data.upgrade_msg) != "undefined"){
+				if(typeof(res.data.time) == "undefined"){
+					return ;
+				}
 				//upgrade_edition = res.data.md5;
 				var msg = typeof(res.data.upgrade_msg) != "undefined" ? res.data.upgrade_msg : '你的系统需要升级<br>云端更新日期:'+res.data.time;
 				layer.confirm(msg, {
