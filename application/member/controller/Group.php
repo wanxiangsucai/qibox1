@@ -110,8 +110,15 @@ class Group extends MemberBase
                 'uid'=>$this->user['uid'],
                 'gid'=>$gid,
         ];
-        $info = GrouplogModel::get($array);
-        if ($info && empty($info['status'])) {
+        $info = GrouplogModel::where($array)->order('id desc')->find();
+
+        if($this->user['groupid']==$gid){
+            $msg = '你当前的用户组已经是'.getGroupByid($gid).'，未到期不可重复申请!';
+            if ($this->user['group_endtime']) {
+                $msg.= "请在 ".date('Y-m-d H:i',$this->user['group_endtime']).' 到期后，再过来申请！';
+            }
+            $this->error($msg);
+        }elseif ($info && empty($info['status'])) {
             $this->error('你之前的认证资料还没通过审核,暂时不能重复申请!');
         }
         $array['create_time'] = time();
@@ -124,6 +131,9 @@ class Group extends MemberBase
                     add_jifen($this->user['uid'],-$money,'认证升级用户身份');
                 }                
             }
+            $title = $this->user['groupid'].'申请升级用户组为 '.getGroupByid($gid).'请尽快进后台审核处理！';
+            $content = $title.'<br>申请日期：'.date('Y-m-d H:i');
+            send_admin_msg($title,$content);
             $this->success('信息已提交,请等待管理员审核!',urls('index'));
         }else{
             $this->error('数据提交失败');
