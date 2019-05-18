@@ -458,9 +458,12 @@ trait ModuleContent
 	    foreach($array AS $key){
 	        unset($data[$key]);
 	    }
-	    if(isset($data['map'])&&strstr($data['map'],',')){
-	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
-	    }
+	    
+	    $this->get_bdmap($data,$mid);
+// 	    if(isset($data['map'])&&strstr($data['map'],',')){
+// 	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
+// 	    }
+
 	    //$data['title'] = filtrate($data['title']);                             //标题过滤
 	    //$data['content'] = fun('filter@str',$data['content']);     //内容过滤
 	    if ($this->request->isPost()&&fun('ddos@add',$data)!==true) {    //防灌水
@@ -555,9 +558,10 @@ trait ModuleContent
 	        return '你没权限!';
 	    }
 	    if($data){
-    	    if(isset($data['map'])){
-    	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
-    	    }
+	        $this->get_bdmap($data,$info['mid']);
+//     	    if(isset($data['map'])){
+//     	        list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
+//     	    }
     	    unset($data['uid'],$data['status'],$data['view'],$data['mid'],$data['list']);
     	    if (isset($data['picurl'])) {
     	        $data['ispic'] = empty($data['picurl']) ? 0 : 1 ;
@@ -576,6 +580,20 @@ trait ModuleContent
 	    }
 	    
 	    return true;
+	}
+	
+	/**
+	 * 获取地图坐标
+	 * @param array $data
+	 * @param number $mid
+	 */
+	protected function get_bdmap(&$data=[],$mid=0){
+	    foreach(get_field($mid) AS $k=>$rs){
+	        if ($rs['type']=='bmap' && isset($data[$k]) && $data[$k]) {
+	            list($data['map_x'],$data['map_y']) = explode(',', $data[$k]);
+	            return ;
+	        }
+	    }
 	}
 
 	/**
