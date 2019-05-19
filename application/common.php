@@ -2528,7 +2528,7 @@ if (!function_exists('getTemplate')) {
              }
          }
          $default_name = config('webdb.MoneyName')?:'积分';
-         $array = array_merge( [$default_name], $array );
+         $array = [$default_name] + ($array?:[]);
          if (is_numeric($type)) {
              return $array[$type];
          }else{

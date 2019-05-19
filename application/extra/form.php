@@ -26,6 +26,7 @@ return  array(
   'array' => '数组',
   'usergroup' => '用户组',
   'jftype' => '虚拟币种类',
+  'jftype2' => '虚拟币种类(含余额)',
   'password' => '密码',
 
   //'linkage' => '普通联动下拉框',

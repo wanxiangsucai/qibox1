@@ -101,9 +101,11 @@ class Form extends Base
             }            
             $show = "<select $ifmust name='{$name}' id='atc_{$name}' lay-filter='{$name}'>$_show</select>";
         
-        }elseif ($field['type'] == 'radio' || $field['type'] == 'jftype' ) {    // 单选按钮 或虚拟币种
+        }elseif ($field['type'] == 'radio' || $field['type'] == 'jftype' || $field['type'] == 'jftype2' ) {    // 单选按钮 或虚拟币种
             if($field['type'] == 'jftype'){ //虚拟币种
                 $field['options'] = jf_name();
+            }elseif($field['type'] == 'jftype2'){ //虚拟币种包含RMB
+                $field['options'] = [-1=>'RMB']+jf_name();
             }
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
