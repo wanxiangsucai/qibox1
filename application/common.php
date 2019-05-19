@@ -2489,6 +2489,10 @@ if (!function_exists('getTemplate')) {
       * @param number $type 用户自定义的积分类型,默认0是系统积分
       */
      function add_jifen($uid=0,$money=0,$about='',$type=0){
+         if ($type==-1) {
+             add_rmb($uid,$money,0,$about);
+             return ;
+         }
          if ($type>0) { //用户自定义虚拟币
              \plugins\marketing\model\Money::add($uid,$money,$type);
          }else{
