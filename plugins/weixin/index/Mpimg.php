@@ -12,7 +12,7 @@ class Mpimg extends IndexBase
         }
         $fid = intval($fid);
         $id = intval($id);
-        $name=$id."_".substr(md5($url),0,10).'.gif';
+        $name = login_user('uid')."_".substr(md5($url),0,10).'.gif';
         $imgpath = '/mpimg/'.substr(md5($url),0,2).'/';
         $path = config('upload_path').$imgpath;
         makepath($path);
@@ -21,13 +21,44 @@ class Mpimg extends IndexBase
             $filestr = $this->sock_open($url,'GET','',$Referer);
             if(strlen($filestr)>100){
                 file_put_contents( $path.$name ,$filestr);
+                self::oss('uploads'.$imgpath.$name);
             }
         }
         if(!is_file($path.$name)){
             return $this->error('图片不存在');
         }
-        header('location:'.PUBLIC_URL.'uploads'.$imgpath.$name);
+        $file = read_file($path.$name);
+        if (preg_match('/^http/', $file)) {
+            $url = $file;
+        }else{
+            $url = PUBLIC_URL.'uploads'.$imgpath.$name;
+        }
+        header('location:'.$url);
         exit;
+    }
+    
+    private static function oss($path='',$module='cms'){
+        $from='wangeditor';
+        $file_info = [
+            'path'     => $path,
+            'url'      => PUBLIC_URL . $path,
+            'name'     => basename($path),
+            'tmp_name' => PUBLIC_PATH . $path,
+            'size'     => '0',
+            'type'     => 'image/gif',
+        ];
+        if ( config( 'webdb.upload_driver' ) && config( 'webdb.upload_driver' ) != 'local' ) {
+            $hook_result = \think\Hook::listen( 'upload_driver',$file_info,[
+                'from'   => $from,
+                'module' => $module,
+                'type'   => 'gather',
+            ],true );
+            if ( false !== $hook_result && strstr($hook_result,'http')) {
+                write_file( PUBLIC_PATH . $path , $hook_result);
+                return $hook_result;
+            }
+        }
+        return $path;
     }
     
     protected function sock_open($url,$method='GET',$postValue='',$Referer='Y'){
