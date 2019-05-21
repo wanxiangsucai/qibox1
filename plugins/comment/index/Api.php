@@ -328,20 +328,25 @@ class Api extends IndexBase
     
 
 	
-	public function delete($ids){
-	    if (empty($ids)) {
-	        return $this->err_js('ID有误');
-	    }
-	    $ids = is_array($ids)?$ids:[$ids];
-	    $info = contentModel::get($ids[0]);
-	    if($info['uid']!=$this->user['uid'] && !$this->admin){
-	        return $this->err_js('你没权限');
-	    }
-	    if (contentModel::destroy($ids)) {
-	        return $this->ok_js();
-	    } else {
-	        return $this->err_js('删除失败');
-	    }
-	}
+    public function delete($ids){
+        if (empty($ids)) {
+            return $this->err_js('ID有误');
+        }
+        $ids = is_array($ids)?$ids:[$ids];
+        foreach ($ids AS $id){
+            $info = contentModel::get($id);
+            if($info['uid']!=$this->user['uid'] && !$this->admin){
+                return $this->err_js('你没权限');
+            }
+            if(contentModel::where('pid',$id)->count('id')>0){
+                contentModel::where('pid',$id)->update(['pid'=>0]);
+            }
+        }
+        if (contentModel::destroy($ids)) {
+            return $this->ok_js();
+        } else {
+            return $this->err_js('删除失败');
+        }
+    }
 	
 }

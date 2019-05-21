@@ -6,15 +6,19 @@
 		</div>
 		<div class="ListComment">
 			{volist name="listdb" id="rs"}
-				<ul class="lists">
+				<ul class="lists" id="comment_cnt_{$rs.id}">
 					<ol class="icon"><a href="{:get_url('user',$rs.uid)}"><img src="{$rs.icon}" onerror="this.src='__STATIC__/images/nobody.gif'"/></a></ol>
 					<li class="infos">
 						<div class="name"><a href="{:murl('member/msg/add',['uid'=>$rs.uid])}">{$rs.username}</a></div>
 						<div class="comment">{$rs.content}</div>
-						<dl><dt>{$rs.time}</dt><dd><em onclick="dingcomment({$rs.id})"><i class="si si-like"></i> <a class="agree{$rs.id}">{$rs.agree}</a></em> <span onclick="post_comment({$rs.id})"><i class="fa fa-commenting-o"></i> 回复</span></dd></dl>
+						<dl><dt>{$rs.time}</dt><dd><em onclick="dingcomment({$rs.id})"><i class="si si-like"></i> <a class="agree{$rs.id}">{$rs.agree}</a></em> <span onclick="post_comment({$rs.id})"><i class="fa fa-commenting-o"></i> 回复</span>
+						{if $rs.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$rs.id})"><i class="fa fa-close"></i></span>{/if}
+						</dd></dl>
 						<div class="repalyinfs repalyinfs{$rs.id}">
 							{volist name="rs.children" id="vo"}
-							<div><a href="/">{$vo.username}：</a>{$vo.content}</div>
+							<div id="comment_cnt_{$vo.id}"><a href="{:get_url('user',$vo.uid)}" target="_blank">{$vo.username}：</a>{$vo.content}
+								{if $rs.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$vo.id})" style="float:right;"><i class="fa fa-close"></i></span>{/if}
+							</div>
 							{/volist}
 						</div>
 					</li>
@@ -25,13 +29,14 @@
 	</div>
 	
 	<script type="text/javascript">
-		var posturl="{posturl}";
+		var posturl,baseurl;
+			posturl=baseurl="{posturl}";
 		var repalyid=0;
 		var commentpage=1;
 		function post_comment(pid){			
 			if(pid>0){
 				repalyid=pid;
-				posturl=posturl+"?pid="+pid;
+				posturl=baseurl+"?pid="+pid;
 			}
 			layer.open({
 			  type: 1,
@@ -43,6 +48,22 @@
 			  content: '<ul class="PostCommentBox"><ol><textarea placeholder="请输入评论内容"></textarea></ol><li><button type="butter" onclick="post_comment1()">发表</button><button type="butter" onclick="layer.closeAll()">取消</button></li></ul>'
 			});
 		}
+
+
+function del_comment(id){
+	layer.confirm('你确认要删除吗？',function(){
+		$.get("{:purl('comment/api/delete')}?ids="+id,function(res){
+			if(res.code==0){
+				layer.msg('删除成功');
+				$("#comment_cnt_"+id).hide();
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	});
+}
+
+
 		function post_comment1(){
 			var contents=$('.PostCommentBox textarea').val();
 			if(contents==''){
