@@ -167,12 +167,18 @@ class Order extends Model
      * @param array $order_info 订单信息,不是商品信息
      */
     protected static function send_msg($order_info=[]){
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
-        $dirname = $array[0][1];
+        //preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        //$dirname = $array[0][1];
+        $dirname = self::$model_key;
         $title = '有客户付款了';
         $content = $title.'，<a href="'.get_url( murl($dirname.'/kehu_order/show',['id'=>$order_info['id']]) ).'">点击查看详情</a>';
-        send_msg($order_info['shop_uid'],$title,$content);
-        send_wx_msg($order_info['shop_uid'], $content);
+        $webdb = config('webdb.M__'.$dirname);
+        if(!isset($webdb['pay_order_msg_hy']) || $webdb['pay_order_msg_hy']){
+            send_msg($order_info['shop_uid'],$title,$content);
+        }
+        if(!isset($webdb['pay_order_wx_hy']) || $webdb['pay_order_wx_hy']){
+            send_wx_msg($order_info['shop_uid'], $content);
+        }
     }
 	
 }

@@ -143,8 +143,12 @@ abstract class Order extends IndexBase
         }
         $title = '有客户下单了,订购的商品是:'.implode('、',$shops);
         $content = $title.'，<a href="'.get_url( murl('kehu_order/show',['id'=>$order_id]) ).'">点击查看详情</a>';
-        send_msg($shop_uid,$title,$content);
-        send_wx_msg($shop_uid, $content);
+        if ( !isset($this->webdb['post_order_msg_hy'])||$this->webdb['post_order_msg_hy'] ) {
+            send_msg($shop_uid,$title,$content);
+        }        
+        if ( !isset($this->webdb['post_order_wx_hy'])||$this->webdb['post_order_wx_hy'] ) {
+            send_wx_msg($shop_uid, $content);
+        }
     }
     
     /**
