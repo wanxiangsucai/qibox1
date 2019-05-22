@@ -34,7 +34,7 @@ foreach($listdb AS $key=>$rs){
   <tr> 
     <td class='b red'> {$rs.j}</td>
     <td class='Left'>
-		<a href="{:urls('showtable','table='.$rs['Name'])}" target="main">{$rs.Name}</a> <font color="#999">{$rs.Annotation}</font>
+		<a href="{:urls('showtable','table='.$rs['Name'])}"  title="点击可以进行修改">{$rs.Name}</a> <font color="#999">{$rs.Annotation}</font>
 	</td>
     <td> 
 		<div align='center'>{$rs.Rows}</div>

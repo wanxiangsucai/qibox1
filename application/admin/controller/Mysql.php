@@ -129,22 +129,23 @@ class Mysql extends AdminBase
 	    foreach($listdb AS $key=>$rs){
 	        foreach($titledb AS $_field){
 	            $value = $rs[$_field];
-	            if(strlen($value)>32){
-	                $value = str_replace(array('<','>','&nbsp;'),array('&lt;','&gt;','&amp;nbsp;'),$value);
-	                $value = "<textarea name='textfield' style='width:300px;height:50px'>{$value}</textarea>";
-	            }elseif( is_null($value) ){
-	                $value= 'NULL';
-	            }elseif($value == ''){
-	                $value = '&nbsp;';
-	            }
+// 	            if(strlen($value)>32){
+// 	                $value = str_replace(array('<','>','&nbsp;'),array('&lt;','&gt;','&amp;nbsp;'),$value);
+// 	                $value = "<textarea name='textfield' style='width:300px;height:50px'>{$value}</textarea>";
+// 	            }elseif( is_null($value) ){
+// 	                $value= 'NULL';
+// 	            }elseif($value == ''){
+// 	                $value = '&nbsp;';
+// 	            }
 	            $rs[$_field] = $value;
 	        }
 	        $listdb[$key] = $rs;
 	    }
 	    
 	    $array = Db::query("SHOW CREATE TABLE $table");
-
-	    $this->assign('create_table',$array[0]['Create Table']);
+        
+	    $create_table = $array[0]['Create Table'];
+	    $this->assign('create_table',$create_table);
 	    
 	    $this->assign('listdb',$listdb);
 	    $this->assign('titledb',$titledb);
@@ -156,12 +157,32 @@ class Mysql extends AdminBase
 	    $this->assign('field',$field);
 	    $this->assign('types',$types);
 	    $this->assign('keyword',$keyword);
+	    $this->assign('table_describe',$this->table_describe($create_table));
+	    $this->assign('field_describe',$this->field_describe($create_table));
 	    
 	    return $this->fetch();
 	}
 	
-	public function tool($sql='')
+	private function table_describe($create_table){
+	    preg_match("/ENGINE=([a-z]+) ([^']+) COMMENT='([^']+)'/i", $create_table,$array);
+	    return $array[3];
+	}
+	
+	private function field_describe($create_table){
+	    preg_match_all("/`([\w]+)` ([^,]+) COMMENT '([^']+)',/i", $create_table,$array);
+	    foreach($array[1] AS $key=>$value){
+	        $data[$value] = $array[3][$key];
+	    }
+	    return $data;
+	}
+	
+	public function tool($sql='',$type='')
     {
+        if($type=='edit'){
+            $data = input();
+	        return $this->edit($data['table'],$data['id_field'],$data['id_value'],$data['v_field'],$data['v_value']);
+	    }
+	    
         if(IS_POST){
             if ($sql && into_sql($sql)) {
             //if ($sql && Db::execute($sql) ) {
@@ -171,6 +192,22 @@ class Mysql extends AdminBase
             }
 		}
 		return $this->fetch();		
+	}
+	
+	
+	public function edit($table='',$id_field='id',$id_value='',$v_field='title',$v_value=''){
+	    $table = preg_replace('/^'.config('database.prefix').'/', '', $table);
+	    
+	    if (Db::name($table)->where($id_field,$id_value)->count($id_field)==1) {
+	        $reulst = Db::name($table)->where($id_field,$id_value)->update([$v_field=>$v_value]);
+	        if ($reulst) {
+	            return $this->ok_js();
+	        }else{
+	            return $this->err_js('修改失败！');
+	        }
+	    }else{
+	        return $this->err_js('记录不仅一条，不能修改！');
+	    }
 	}
 
 }

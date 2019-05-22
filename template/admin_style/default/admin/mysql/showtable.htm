@@ -69,11 +69,11 @@ table{border-collapse:collapse;border-spacing:0;}
  
 
 <div class="MainContainers">
-<div style="padding:10px;"><button onclick="history.go(-1)" class="layui-btn layui-btn-normal">返回</button> {$table}</div>
+<div style="padding:10px;"><button onclick="history.go(-1)" class="layui-btn layui-btn-normal">返回</button> {$table} {$table_describe}</div>
 <table class="ListTable">
  <tr>
 {volist name="titledb" id="value"}
- 	<th><a href="{:url('showtable',['table'=>$table,'ordertype'=>$value,'orderby'=>($orderby=='desc'?'asc':'desc')])}" {eq name="ordertype" value="$value"}style="color:red;"{/eq}>{$value}</a></th>
+ 	<th style="line-height:14px;"><a href="{:url('showtable',['table'=>$table,'ordertype'=>$value,'orderby'=>($orderby=='desc'?'asc':'desc')])}" {eq name="ordertype" value="$value"}style="color:red;"{/eq}>{$value}</a><br><font style="font-size:12px;font-weight:normal;color:#666;">{$field_describe[$value]}</font></th>
 
 {/volist}
  </tr>
@@ -81,29 +81,64 @@ table{border-collapse:collapse;border-spacing:0;}
 {volist name="listdb" id="rs"}
   <tr>
 	{volist name="titledb" id="value"}
-    <td>{$rs[$value]}</td>
+{php}
+	if($key==0) { $f_id=$value;$f_value=$rs[$f_id]; }
+{/php}
+    <td ondblclick="edit_value($(this))" data-url="table={$table}&id_field={$f_id}&id_value={$f_value}&v_field={$value}">
+{if strlen($rs[$value])>32}
+	{php}$rs[$value] = str_replace(array('<','>','&nbsp;'),array('&lt;','&gt;','&amp;nbsp;'),$rs[$value]); {/php}
+	<textarea name='textfield' style='width:300px;height:50px'  onchange="end_edit($(this))" data-url="table={$table}&id_field={$f_id}&id_value={$f_value}&v_field={$value}">{$rs[$value]}</textarea>
+{else /}
+	<div>{$rs[$value]}</div>
+{/if}
+	</td>
 	{/volist}
   </tr>
 {/volist}
 
 </table>
 
+<script type="text/javascript">
+function edit_value(obj){ 
+	if( obj.find('input').length==0 ){
+		var son = obj.find('div');
+		var v = obj.find('div').html();
+		son.html('<input onchange="end_edit($(this))" type="text" name="" value="'+v+'" data-url="'+obj.data('url')+'" style="width:auto;">');
+	}	
+}
+function end_edit(obj){
+	layer.confirm('你确认要修改吗?',function(){
+		$.post("{:url('tool','type=edit')}?"+obj.data('url'),{v_value:obj.val()},function(res){
+			if(res.code==0){
+				layer.msg('修改成功');
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	});	
+}
+</script>
+
 {empty name="listdb"}
 <div class="Nodata">当前数据表没有相应内容,记录为空!!</div>
 {/empty}
 <div class="SearchBox">
-<form name="form_order" method="get" action="">
-	关键词 <input name="keyword" type="text" value="{$keyword}"/>
-	字段
+<form name="form_order" method="get" action="" class="layui-form">
+
+	 <div style="float:left;line-height:40px;padding-right:10px;">关键词:</div> <div style="float:left;"><input style="width:200px;" class="layui-input" name="keyword" type="text" value="{$keyword}"/></div>
+	 <div style="float:left;line-height:40px;padding-right:10px;">字段：</div>
+	<div  style="width:100px;float:left;">
 	<select name="field"> 
 {volist name="titledb" id="value"}
 	  <option value="{$value}" {eq name="field" value="$value"}selected{/eq}>{$value}</option>
 {/volist}
 	</select>
-	<input name="types" type="radio" value="0" {empty name="types"}checked{/empty} /> 模糊
-	<input name="types" type="radio" value="1" {eq name="types" value="1"}checked{/eq} /> 精确
-	<input name="" type="submit" value="搜索">
-	<a href="{:url('showtable',['table'=>$table])}">查看全部</a>
+	</div>
+	<input name="types" type="radio" value="0" {empty name="types"}checked{/empty} title="模糊搜索" /> 
+	<input name="types" type="radio" value="1" {eq name="types" value="1"}checked{/eq} title="精确搜索" /> 
+	 
+	<button class="layui-btn" lay-submit lay-filter="formDemo">立即搜索</button>
+	<a href="{:url('showtable',['table'=>$table])}" class="layui-btn layui-btn-warm">查看全部</a>
 </form>
 </div>
 <div class="ShowPage">{$showpage}</div>
