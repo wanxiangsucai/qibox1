@@ -121,15 +121,22 @@ class Upgrade extends AdminBase
 	 * @param string $filename
 	 */
 	private function up_run($filename=''){
-	    if(preg_match('/^\/application\/common\/upgrade\/([\w]+)\.php/', $filename)){
+	    if(preg_match('/^\/application\/common\/upgrade\/([\w]+)\.php$/', $filename)){
 	        $classname = "app\\common\\upgrade\\".ucfirst(substr(basename($filename), 0,-4));
-	        if( class_exists($classname) && method_exists($classname, 'up') ){
-	            $obj = new $classname;
-	            try {
-	                $obj->up();
-	            } catch(\Exception $e) {
-	                //echo $e;
-	            }
+	    }elseif(  preg_match('/(application|plugins)\/([\w]+)\/upgrade\/([\w]+)\.php$/',$filename,$array) ){     //实际已包含了上面的
+	        $m_p = $array[1]=='application'?'app':'plugins';
+	        $model = $array[2];
+	        $file = $array[3];
+	        $classname = "$m_p\\$model\\upgrade\\".ucfirst($file);
+	    }else{
+	        return;
+	    }
+	    if( class_exists($classname) && method_exists($classname, 'up') ){
+	        $obj = new $classname;
+	        try {
+	            $obj->up();
+	        } catch(\Exception $e) {
+	            //echo $e;
 	        }
 	    }
 	}
