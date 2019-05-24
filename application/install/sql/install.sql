@@ -1585,3 +1585,7 @@ CREATE TABLE IF NOT EXISTS `qb_rmb_getout` (
   KEY `uid` (`uid`),
   KEY `ifpay` (`ifpay`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员余额申请提现记录' AUTO_INCREMENT=1;
+
+
+ALTER TABLE  `qb_msg` ADD  `ext_sys` INT( 7 ) NOT NULL COMMENT  '系统模型ID',ADD  `ext_id` INT( 7 ) NOT NULL COMMENT  '内容ID';
+ALTER TABLE  `qb_msg` ADD INDEX (  `ext_sys` ,  `ext_id` );
