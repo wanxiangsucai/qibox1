@@ -174,7 +174,9 @@ CREATE TABLE IF NOT EXISTS `qb_attachment` (
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `sort` int(11) NOT NULL DEFAULT '100' COMMENT '排序',
   `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `md5` (`md5`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='附件表' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -598,7 +600,7 @@ CREATE TABLE IF NOT EXISTS `qb_config` (
   KEY `list` (`list`),
   KEY `sys_type` (`sys_id`),
   KEY `c_key` (`c_key`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统参数配置' AUTO_INCREMENT=660 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统参数配置' AUTO_INCREMENT=669 ;
 
 --
 -- 转存表中的数据 `qb_config`
@@ -653,7 +655,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(366, 4, '微信支付接口KEY（商户API密钥）', 'weixin_paykey', '', 'text', '', 1, '', '认证服务号才有的微信支付功能，留空就不能收款，填写后，才能在线收款', 79, -2);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(405, 1, 'ICP备案号', 'miibeian_gov_cn', '京ICP备050453号', 'text', '', 1, '', '', -2, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(425, 1, '积分名称', 'MoneyName', '积分', 'text', '', 1, '', '可以取名为积分、金币', 0, 0);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(433, 1, '站点加密字符串', 'mymd5', '59baac32f909', 'text', '', 1, '', '设置后就不要随意修改，不然会影响到之前的数据', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(433, 1, '站点加密字符串', 'mymd5', '786c3125a14c5984', 'text', '', 1, '', '设置后就不要随意修改，不然会影响到之前的数据', 0, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(439, 11, 'wap版支付宝接口合作者身份', 'wap_ali_partner', '', 'text', '', 1, '', '', 98, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(440, 11, 'wap版支付宝接口私钥', 'wap_ali_private_key', '', 'text', '', 1, '', '这一项可以留空，使用默认的', 96, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(441, 11, 'wap版支付宝接口公钥', 'wap_ali_public_key', '', 'text', '', 1, '', '', 97, 0);
@@ -671,7 +673,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(478, 12, '新用户关注微信时图文链接', 'weixin_welcome_link', '', 'text', '', 1, '', '', 97, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(479, 12, '新用户关注微信时图文描述', 'weixin_welcome_desc', '', 'textarea', '', 1, '', '', 96, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(481, 4, '公众号类型', 'weixin_type', '0', 'radio', '0|没有对接公众号\n-1|未认证的订阅号\n1|未认证的服务号\n2|认证订阅号\n3|认证服务号', 1, '', '', 101, -2);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(482, 1, '购买用户组有效天数', 'group_expire_data', '365', 'number', '', 1, '', '', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(662, 1, '用户组升级认证', 'up_group_use_rmb', '', 'radio', '0|使用积分\r\n1|使用金额', 1, '', '', 0, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(483, 14, 'SEO标题', 'mseo_title', '', 'text', '', 0, '', '', 100, 1);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(484, 14, 'SEO优化关键字keywords', 'mseo_keyword', '', 'text', '', 0, '', '', 99, 1);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(485, 17, '客服邮箱', 'service_email', '', 'text', '', 1, '', '', 0, 0);
@@ -716,7 +718,15 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(653, 32, '最低提现金额', 'min_getout_money', '50', 'money', '', 0, '', '', 0, -5);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(654, 32, '提现手续费', 'getout_percent_money', '', 'usergroup', '', 0, '', '0即不收手续费,0.01即收取1个点的手续费', 0, -5);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(655, 32, '是否要求先关注公众号才能提现', 'getout_need_join_mp', '', 'radio', '0|不要求\r\n1|要求先关注公众号', 0, '', '', -1, -5);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 32, '1块钱兑换多少个积分', 'money_ratio', '10', 'number', '', 0, '', '', 0, -5);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(660, 32, '1块钱兑换多少个积分', 'money_ratio', '10', 'number', '', 0, '', '', 0, -5);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(661, 4, '模版消息之模板ID', 'weixin_msg_template_id', '', 'text', '', 1, '', '挑选模板的时候,模板代码中必须要包含这两个字段 {{first.DATA}} {{remark.DATA}}', -1, -2);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(663, 8, '是否限制一个微信号只能注册一个帐号', 'weixin_reg_onlyone', '0', 'radio', '0|不限制\r\n1|只能注册一个帐号', 1, '', '需要启用微信公众号获取验证码才有效', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(664, 1, '后台主页显示升级提醒', 'forbid_upgrade', '0', 'radio', '1|不提醒\r\n0|提醒', 1, '', '', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(665, 1, '指定圈子黄页作为网站主页', 'qun_index_id', '', 'number', '', 1, '', '如果你要设置某个圈子黄页作为网站主页的话,就输入其ID值,否则就留空.', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(666, 1, '后台入口文件名', 'admin_filename', 'admin.php', 'text', '', 1, '', '默认是admin.php,为安全起见,你可以改成其它文件名,但必须是.php结尾', 0, 0);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(667, 32, '是否要求先绑定手机号才能提现', 'getout_need_yzphone', '', 'radio', '0|不强制\r\n1|强制绑定手机号', 0, '', '', 0, -5);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(668, 8, '是否强制绑定手机号', 'must_yz_phone', '0', 'radio', '0|不强制\r\n1|强制绑定', 1, '', '', 0, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -775,6 +785,7 @@ CREATE TABLE IF NOT EXISTS `qb_group` (
   `wap_member` varchar(150) NOT NULL COMMENT 'wap会员中心模板',
   `pc_page` varchar(150) NOT NULL COMMENT 'pc个人主页模板',
   `pc_member` varchar(150) NOT NULL COMMENT 'pc会员中心模板',
+  `daytime` smallint(5) NOT NULL COMMENT '用户组有效期',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统会员用户组' AUTO_INCREMENT=13 ;
 
@@ -782,12 +793,11 @@ CREATE TABLE IF NOT EXISTS `qb_group` (
 -- 转存表中的数据 `qb_group`
 --
 
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`) VALUES(2, 1, '黑名单', 0, 'a:54:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:17:"SearchArticleType";s:1:"1";s:16:"PostArticleYzImg";s:1:"1";s:13:"EditPassPower";s:1:"0";s:12:"SetTileColor";s:1:"0";s:14:"SetSellArticle";s:1:"0";s:17:"SetSpecialArticle";s:1:"0";s:17:"SetArticleKeyword";s:1:"0";s:20:"AddArticleKeywordNum";s:0:"";s:21:"AddArticleCopyfromNum";s:0:"";s:18:"SelectArticleStyle";s:1:"0";s:16:"SelectArticleTpl";s:1:"0";s:13:"SetArticleTpl";s:1:"0";s:18:"SetArticlePosttime";s:1:"0";s:18:"SetArticleViewtime";s:1:"0";s:16:"SetArticleHitNum";s:1:"0";s:18:"SetArticlePassword";s:1:"0";s:19:"SetArticleDownGroup";s:1:"0";s:19:"SetArticleViewGroup";s:1:"0";s:17:"SetArticleJumpurl";s:1:"0";s:19:"SetArticleIframeurl";s:1:"0";s:21:"SetArticleDescription";s:1:"0";s:16:"SetArticleTopCom";s:1:"0";s:13:"SetSmallTitle";s:1:"0";s:19:"CommentArticleYzImg";s:1:"1";s:17:"CollectArticleNum";s:0:"";s:15:"CreatSpecialNum";s:0:"";s:13:"PostNoDelCode";s:1:"0";s:7:"SetVote";s:1:"0";s:11:"SetHtmlName";s:1:"0";s:16:"PassContributeSP";s:1:"0";s:14:"AllowUploadMax";s:1:"0";s:11:"comment_num";s:2:"10";s:10:"comment_yz";s:1:"1";s:11:"comment_img";s:1:"0";s:16:"sell_postauto_yz";s:1:"0";s:15:"buy_postauto_yz";s:1:"0";s:15:"post_pingpai_yz";s:1:"0";s:10:"use2domain";s:1:"0";s:16:"useHomepageStyle";s:1:"0";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:0:"";s:12:"post_buy_num";s:0:"";s:13:"post_news_num";s:0:"";s:14:"post_photo_num";s:0:"";s:11:"post_hr_num";s:0:"";s:17:"post_zhanghui_num";s:0:"";s:12:"post_ZLG_num";s:0:"";s:16:"post_pingpai_num";s:0:"";s:19:"post_baojiadian_num";s:0:"";s:19:"post_xunjiadian_num";s:0:"";s:24:"post_info_collection_num";s:0:"";}', 0, '', '', '', '', '', '');
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`) VALUES(3, 1, '超级管理员', 0, 'a:51:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:13:"EditPassPower";s:1:"0";s:14:"AllowUploadMax";s:1:"1";s:11:"comment_num";s:3:"999";s:10:"comment_yz";s:1:"1";s:11:"comment_img";s:1:"1";s:16:"sell_postauto_yz";s:1:"0";s:15:"buy_postauto_yz";s:1:"0";s:15:"post_pingpai_yz";s:1:"0";s:10:"use2domain";s:1:"1";s:16:"useHomepageStyle";s:1:"1";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:0:"";s:12:"post_buy_num";s:0:"";s:13:"post_news_num";s:3:"999";s:14:"post_photo_num";s:3:"999";s:11:"post_hr_num";s:3:"999";s:17:"post_zhanghui_num";s:0:"";s:12:"post_ZLG_num";s:0:"";s:16:"post_pingpai_num";s:0:"";s:19:"post_baojiadian_num";s:0:"";s:19:"post_xunjiadian_num";s:0:"";s:24:"post_info_collection_num";s:3:"999";s:18:"allow_get_homepage";s:1:"1";s:18:"shoptg_postauto_yz";s:1:"1";s:16:"shop_postauto_yz";s:1:"1";s:14:"tg_postauto_yz";s:1:"1";s:14:"post_coupon_yz";s:1:"1";s:15:"post_shoptg_num";s:3:"999";s:13:"post_shop_num";s:3:"999";s:11:"post_tg_num";s:3:"999";s:15:"post_coupon_num";s:3:"999";s:13:"post_gift_num";s:3:"999";s:13:"postNewsYzImg";s:1:"0";s:13:"postShopYzImg";s:1:"0";s:11:"postTgYzImg";s:1:"0";s:15:"postShopTgYzImg";s:1:"0";s:11:"postHrYzImg";s:1:"0";s:15:"postCouponYzImg";s:1:"0";s:13:"view_hy_money";s:0:"";s:10:"post_hr_yz";s:1:"1";s:14:"consumptionMin";s:1:"1";s:10:"GetCashMin";s:2:"20";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"1";s:13:"AllowUesStyle";s:1:"1";s:18:"AllowUesPicMsgSort";s:1:"1";s:13:"postHyNewsNum";s:4:"5000";}', 1, '{"base-admin-setting\\/index":"1","base-admin-setting\\/clearcache":"1","base-admin-plugin\\/index":"1","base-admin-plugin\\/add":"1","base-admin-plugin\\/market":"1","base-admin-plugin\\/edit":"1","base-admin-plugin\\/delete":"1","base-admin-plugin\\/copy":"1","base-admin-module\\/index":"1","base-admin-module\\/add":"1","base-admin-module\\/market":"1","base-admin-module\\/edit":"1","base-admin-module\\/delete":"1","base-admin-module\\/copy":"1","base-admin-hook\\/index":"1","base-admin-hook\\/add":"1","base-admin-hook\\/edit":"1","base-admin-hook\\/delete":"1","base-admin-hook_plugin\\/market":"1","base-admin-hook_plugin\\/index":"1","base-admin-hook_plugin\\/add":"1","base-admin-hook_plugin\\/edit":"1","base-admin-hook_plugin\\/delete":"1","base-admin-admin_menu\\/index":"1","base-admin-admin_menu\\/add":"1","base-admin-admin_menu\\/edit":"1","base-admin-admin_menu\\/delete":"1","base-admin-member_menu\\/index":"1","base-admin-member_menu\\/add":"1","base-admin-member_menu\\/edit":"1","base-admin-member_menu\\/delete":"1","base-admin-member_menu\\/copy":"1","base-admin-webmenu\\/index":"1","base-admin-webmenu\\/add":"1","base-admin-webmenu\\/edit":"1","base-admin-webmenu\\/delete":"1","base-admin-alonepage\\/index":"1","base-admin-alonepage\\/add":"1","base-admin-alonepage\\/edit":"1","base-admin-alonepage\\/delete":"1","base-admin-style\\/market":"1","base-admin-style\\/add":"1","base-admin-upgrade\\/index":"1","base-admin-upgrade\\/sysup":"1","base-admin-upgrade\\/check_files":"1","base-admin-upgrade\\/view_file":"1","base-admin-mysql\\/index":"1","base-admin-mysql\\/backup":"1","base-admin-mysql\\/showtable":"1","base-admin-mysql\\/into":"1","base-admin-mysql\\/tool":"1","member-admin-member\\/index":"1","member-admin-member\\/add":"1","member-admin-member\\/edit":"1","member-admin-member\\/delete":"1","member-admin-group\\/index":"1","member-admin-group\\/add":"1","member-admin-group\\/edit":"1","member-admin-group\\/delete":"1","member-admin-group\\/admin_power":"1","member-admin-group_cfg\\/index":"1","member-admin-group_cfg\\/edit":"1","member-admin-group_cfg\\/delete":"1","member-admin-group_cfg\\/add":"1","member-admin-group_cfg\\/autoadd":"1","member-admin-group_log\\/index":"1","member-admin-group_log\\/delete":"1","member-admin-group_log\\/pass":"1","module-diaocha-setting\\/index":"1","module-diaocha-category\\/index":"1","module-diaocha-category\\/add":"1","module-diaocha-category\\/edit":"1","module-diaocha-category\\/delete":"1","module-diaocha-info\\/index":"1","module-diaocha-info\\/add":"1","module-diaocha-info\\/edit":"1","module-diaocha-info\\/delete":"1","module-diaocha-content\\/index":"1","module-diaocha-content\\/add":"1","module-diaocha-content\\/edit":"1","module-diaocha-content\\/delete":"1","module-diaocha-sort_field\\/index":"1","module-diaocha-sort_field\\/add":"1","module-diaocha-sort_field\\/edit":"1","module-diaocha-sort_field\\/delete":"1","module-hbfenlei-setting\\/index":"1","module-hbfenlei-content\\/postnew":"1","module-hbfenlei-content\\/index":"1","module-hbfenlei-content\\/add":"1","module-hbfenlei-content\\/edit":"1","module-hbfenlei-content\\/delete":"1","module-hbfenlei-sort\\/index":"1","module-hbfenlei-sort\\/add":"1","module-hbfenlei-sort\\/edit":"1","module-hbfenlei-sort\\/delete":"1","module-hbfenlei-module\\/index":"1","module-hbfenlei-module\\/add":"1","module-hbfenlei-module\\/edit":"1","module-hbfenlei-module\\/delete":"1","module-hbfenlei-field\\/index":"1","module-hbfenlei-field\\/add":"1","module-hbfenlei-field\\/edit":"1","module-hbfenlei-field\\/delete":"1","module-tongji-setting\\/index":"1","module-booking-setting\\/index":"1","module-booking-content\\/postnew":"1","module-booking-content\\/index":"1","module-booking-content\\/add":"1","module-booking-content\\/edit":"1","module-booking-content\\/delete":"1","module-booking-sort\\/index":"1","module-booking-sort\\/add":"1","module-booking-sort\\/edit":"1","module-booking-sort\\/delete":"1","module-booking-module\\/index":"1","module-booking-module\\/add":"1","module-booking-module\\/edit":"1","module-booking-module\\/delete":"1","module-booking-field\\/index":"1","module-booking-field\\/add":"1","module-booking-field\\/edit":"1","module-booking-field\\/delete":"1","module-booking-order\\/index":"1","module-booking-order\\/edit":"1","module-booking-order\\/delete":"1","module-booking-order\\/show":"1","module-booking-order_field\\/index":"1","module-booking-order_field\\/add":"1","module-booking-order_field\\/edit":"1","module-booking-order_field\\/delete":"1","module-party-setting\\/index":"1","module-party-content\\/postnew":"1","module-party-content\\/index":"1","module-party-content\\/add":"1","module-party-content\\/edit":"1","module-party-content\\/delete":"1","module-party-sort\\/index":"1","module-party-sort\\/add":"1","module-party-sort\\/edit":"1","module-party-sort\\/delete":"1","module-party-module\\/index":"1","module-party-module\\/add":"1","module-party-module\\/edit":"1","module-party-module\\/delete":"1","module-party-field\\/index":"1","module-party-field\\/add":"1","module-party-field\\/edit":"1","module-party-field\\/delete":"1","module-party-order\\/index":"1","module-party-order\\/edit":"1","module-party-order\\/delete":"1","module-party-order_field\\/index":"1","module-party-order_field\\/add":"1","module-party-order_field\\/edit":"1","module-party-order_field\\/delete":"1","module-miaosha-setting\\/index":"1","module-miaosha-content\\/postnew":"1","module-miaosha-content\\/index":"1","module-miaosha-content\\/add":"1","module-miaosha-content\\/edit":"1","module-miaosha-content\\/delete":"1","module-miaosha-sort\\/index":"1","module-miaosha-sort\\/add":"1","module-miaosha-sort\\/edit":"1","module-miaosha-sort\\/delete":"1","module-miaosha-module\\/index":"1","module-miaosha-module\\/add":"1","module-miaosha-module\\/edit":"1","module-miaosha-module\\/delete":"1","module-miaosha-field\\/index":"1","module-miaosha-field\\/add":"1","module-miaosha-field\\/edit":"1","module-miaosha-field\\/delete":"1","module-miaosha-order\\/index":"1","module-miaosha-order\\/edit":"1","module-miaosha-order\\/delete":"1","module-giftshop-setting\\/index":"1","module-giftshop-content\\/postnew":"1","module-giftshop-content\\/index":"1","module-giftshop-content\\/add":"1","module-giftshop-content\\/edit":"1","module-giftshop-content\\/delete":"1","module-giftshop-sort\\/index":"1","module-giftshop-sort\\/add":"1","module-giftshop-sort\\/edit":"1","module-giftshop-sort\\/delete":"1","module-giftshop-module\\/index":"1","module-giftshop-module\\/add":"1","module-giftshop-module\\/edit":"1","module-giftshop-module\\/delete":"1","module-giftshop-field\\/index":"1","module-giftshop-field\\/add":"1","module-giftshop-field\\/edit":"1","module-giftshop-field\\/delete":"1","module-giftshop-order\\/index":"1","module-giftshop-order\\/edit":"1","module-giftshop-order\\/delete":"1","module-search-setting\\/index":"1","module-search-setting\\/add":"1","module-search-setting\\/edit":"1","module-search-setting\\/delete":"1","module-search-content\\/index":"1","module-search-content\\/add":"1","module-search-content\\/edit":"1","module-search-content\\/delete":"1","module-bbs-setting\\/index":"1","module-bbs-content\\/postnew":"1","module-bbs-content\\/index":"1","module-bbs-content\\/add":"1","module-bbs-content\\/edit":"1","module-bbs-content\\/delete":"1","module-bbs-reply\\/index":"1","module-bbs-reply\\/add":"1","module-bbs-reply\\/edit":"1","module-bbs-reply\\/delete":"1","module-bbs-sort\\/index":"1","module-bbs-sort\\/add":"1","module-bbs-sort\\/edit":"1","module-bbs-sort\\/delete":"1","module-bbs-module\\/index":"1","module-bbs-module\\/add":"1","module-bbs-module\\/edit":"1","module-bbs-module\\/delete":"1","module-bbs-field\\/index":"1","module-bbs-field\\/add":"1","module-bbs-field\\/edit":"1","module-bbs-field\\/delete":"1","module-exam-setting\\/index":"1","module-exam-content\\/postnew":"1","module-exam-content\\/batchadd":"1","module-exam-category\\/add":"1","module-exam-category\\/randomadd":"1","module-exam-content\\/index":"1","module-exam-content\\/add":"1","module-exam-content\\/edit":"1","module-exam-content\\/delete":"1","module-exam-grade\\/index":"1","module-exam-grade\\/add":"1","module-exam-grade\\/edit":"1","module-exam-grade\\/delete":"1","module-exam-kemu\\/index":"1","module-exam-kemu\\/add":"1","module-exam-kemu\\/edit":"1","module-exam-kemu\\/delete":"1","module-exam-step\\/index":"1","module-exam-step\\/add":"1","module-exam-step\\/edit":"1","module-exam-step\\/delete":"1","module-exam-category\\/index":"1","module-exam-category\\/edit":"1","module-exam-category\\/delete":"1","module-exam-info\\/index":"1","module-exam-info\\/add":"1","module-exam-info\\/edit":"1","module-exam-info\\/delete":"1","module-exam-module\\/index":"1","module-exam-module\\/add":"1","module-exam-module\\/edit":"1","module-exam-module\\/delete":"1","module-exam-field\\/index":"1","module-exam-field\\/add":"1","module-exam-field\\/edit":"1","module-exam-field\\/delete":"1","module-exam-sort_field\\/index":"1","module-exam-sort_field\\/add":"1","module-exam-sort_field\\/edit":"1","module-exam-sort_field\\/delete":"1","module-shop-setting\\/index":"1","module-shop-content\\/postnew":"1","module-shop-content\\/index":"1","module-shop-content\\/add":"1","module-shop-content\\/edit":"1","module-shop-content\\/delete":"1","module-shop-sort\\/index":"1","module-shop-sort\\/add":"1","module-shop-sort\\/edit":"1","module-shop-sort\\/delete":"1","module-shop-module\\/index":"1","module-shop-module\\/add":"1","module-shop-module\\/edit":"1","module-shop-module\\/delete":"1","module-shop-field\\/index":"1","module-shop-field\\/add":"1","module-shop-field\\/edit":"1","module-shop-field\\/delete":"1","module-shop-order\\/index":"1","module-shop-order\\/edit":"1","module-shop-order\\/delete":"1","module-shop-order\\/show":"1","module-shop-sort_field\\/index":"1","module-shop-sort_field\\/add":"1","module-shop-sort_field\\/edit":"1","module-shop-sort_field\\/delete":"1","module-shop-order_field\\/index":"1","module-shop-order_field\\/add":"1","module-shop-order_field\\/edit":"1","module-shop-order_field\\/delete":"1","plugin-weixin-setting\\/index":"1","plugin-weixin-menu\\/config":"1","plugin-weixin-weixin_autoreply\\/index":"1","plugin-weixin-weixin_autoreply\\/add":"1","plugin-weixin-weixin_autoreply\\/edit":"1","plugin-weixin-weixin_autoreply\\/delete":"1","plugin-weixin-weixin_msg\\/index":"1","plugin-log-action\\/index":"1","plugin-log-action\\/delete":"1","plugin-log-login\\/index":"1","plugin-log-login\\/delete":"1","plugin-config_set-config\\/index":"1","plugin-config_set-config\\/add":"1","plugin-config_set-config\\/edit":"1","plugin-config_set-config\\/delete":"1","plugin-config_set-group\\/index":"1","plugin-config_set-group\\/add":"1","plugin-config_set-group\\/edit":"1","plugin-config_set-group\\/delete":"1","plugin-oss-oss\\/index":"1","plugin-oss-oss\\/add":"1","plugin-oss-oss\\/edit":"1","plugin-oss-oss\\/delete":"1","plugin-qunfa-info\\/add":"1","plugin-haibao-setting\\/index":"1","plugin-haibao-content\\/postnew":"1","plugin-haibao-content\\/index":"1","plugin-haibao-content\\/add":"1","plugin-haibao-content\\/edit":"1","plugin-haibao-content\\/delete":"1","plugin-haibao-module\\/index":"1","plugin-haibao-module\\/add":"1","plugin-haibao-module\\/edit":"1","plugin-haibao-module\\/delete":"1","plugin-haibao-field\\/index":"1","plugin-haibao-field\\/add":"1","plugin-haibao-field\\/edit":"1","plugin-haibao-field\\/delete":"1","plugin-chadu-info\\/yun":"1","plugin-chadu-info\\/clean":"1","plugin-chadu-info\\/get_files":"1","plugin-chadu-info\\/cha":"1","plugin-chadu-info\\/check_dir":"1","plugin-urlroute-info\\/index":"1","plugin-urlroute-info\\/add":"1","plugin-urlroute-info\\/edit":"1","plugin-urlroute-info\\/delete":"1","plugin-urlroute-info\\/autoadd":"1","plugin-huoma-info\\/index":"1","plugin-huoma-info\\/add":"1","plugin-huoma-info\\/edit":"1","plugin-huoma-info\\/delete":"1","plugin-sockpuppet-setting\\/index":"1","plugin-sockpuppet-member\\/index":"1","plugin-sockpuppet-member\\/delete":"1","plugin-meeting_sign-setting\\/index":"1","plugin-meeting_sign-sort\\/index":"1","plugin-meeting_sign-sort\\/add":"1","plugin-meeting_sign-sort\\/edit":"1","plugin-meeting_sign-sort\\/delete":"1","plugin-meeting_sign-content\\/index":"1","plugin-meeting_sign-content\\/add":"1","plugin-meeting_sign-content\\/edit":"1","plugin-meeting_sign-content\\/delete":"1","plugin-meeting_sign-field\\/index":"1","plugin-meeting_sign-field\\/add":"1","plugin-meeting_sign-field\\/edit":"1","plugin-meeting_sign-field\\/delete":"1","plugin-meeting_sign-sort_field\\/index":"1","plugin-meeting_sign-sort_field\\/add":"1","plugin-meeting_sign-sort_field\\/edit":"1","plugin-meeting_sign-sort_field\\/delete":"1","plugin-voicehb-setting\\/index":"1","plugin-voicehb-content\\/postnew":"1","plugin-voicehb-content\\/index":"1","plugin-voicehb-content\\/add":"1","plugin-voicehb-content\\/edit":"1","plugin-voicehb-content\\/delete":"1","plugin-voicehb-module\\/index":"1","plugin-voicehb-module\\/add":"1","plugin-voicehb-module\\/edit":"1","plugin-voicehb-module\\/delete":"1","plugin-voicehb-field\\/index":"1","plugin-voicehb-field\\/add":"1","plugin-voicehb-field\\/edit":"1","plugin-voicehb-field\\/delete":"1","plugin-propagandize-log\\/index":"1","plugin-propagandize-setting\\/index":"1","plugin-jifen_mall-setting\\/index":"1","plugin-jifen_mall-content\\/index":"1","plugin-jifen_mall-content\\/delete":"1","plugin-dianka-card\\/index":"1","plugin-dianka-card\\/add":"1","plugin-dianka-card\\/delete":"1","plugin-guestbook-setting\\/index":"1","plugin-guestbook-content\\/index":"1","plugin-guestbook-content\\/add":"1","plugin-guestbook-content\\/edit":"1","plugin-guestbook-content\\/delete":"1","plugin-guestbook-sort\\/index":"1","plugin-guestbook-sort\\/add":"1","plugin-guestbook-sort\\/edit":"1","plugin-guestbook-sort\\/delete":"1","plugin-guestbook-module\\/index":"1","plugin-guestbook-module\\/add":"1","plugin-guestbook-module\\/edit":"1","plugin-guestbook-module\\/delete":"1","plugin-guestbook-field\\/index":"1","plugin-guestbook-field\\/add":"1","plugin-guestbook-field\\/edit":"1","plugin-guestbook-field\\/delete":"1","plugin-gamedial-setting\\/index":"1","plugin-gamedial-log\\/index":"1","plugin-gamedial-log\\/delete":"1","plugin-givemoney-log\\/index":"1","plugin-givemoney-log\\/delete":"1","plugin-signin-setting\\/index":"1","plugin-signin-log\\/index":"1","plugin-signin-log\\/delete":"1","plugin-fav-fav\\/index":"1","plugin-fav-fav\\/delete":"1","plugin-xiaochengxu-setting\\/xcxset":"1","plugin-xiaochengxu-setting\\/down":"1","plugin-android_iframe-setting\\/down":"1","plugin-xcx_iframe-setting\\/xcxset":"1","plugin-xcx_iframe-setting\\/down":"1","plugin-form-setting\\/index":"1","plugin-form-content\\/postnew":"1","plugin-form-content\\/index":"1","plugin-form-content\\/add":"1","plugin-form-content\\/edit":"1","plugin-form-content\\/delete":"1","plugin-form-module\\/index":"1","plugin-form-module\\/add":"1","plugin-form-module\\/edit":"1","plugin-form-module\\/delete":"1","plugin-form-field\\/index":"1","plugin-form-field\\/add":"1","plugin-form-field\\/edit":"1","plugin-form-field\\/delete":"1","plugin-smsali-setting\\/index":"1","plugin-hongbao-content\\/postnew":"1","plugin-hongbao-content\\/index":"1","plugin-hongbao-content\\/add":"1","plugin-hongbao-content\\/edit":"1","plugin-hongbao-content\\/delete":"1","plugin-hongbao-module\\/index":"1","plugin-hongbao-module\\/add":"1","plugin-hongbao-module\\/edit":"1","plugin-hongbao-module\\/delete":"1","plugin-hongbao-field\\/index":"1","plugin-hongbao-field\\/add":"1","plugin-hongbao-field\\/edit":"1","plugin-hongbao-field\\/delete":"1","plugin-label-index\\/index":"1","plugin-label-index\\/edit":"1","plugin-label-index\\/delete":"1","plugin-label-index\\/set":"1","plugin-label-applabel\\/index":"1","plugin-label-applabel\\/add":"1","plugin-label-applabel\\/edit":"1","plugin-label-applabel\\/delete":"1","plugin-label-applabel\\/set":"1","plugin-login-setting\\/index":"1","plugin-comment-content\\/index":"1","plugin-comment-content\\/delete":"1","plugin-comment-setting\\/index":"1","plugin-area-province\\/index":"1","plugin-area-province\\/add":"1","plugin-area-province\\/edit":"1","plugin-area-province\\/delete":"1","plugin-area-city\\/index":"1","plugin-area-city\\/add":"1","plugin-area-city\\/edit":"1","plugin-area-city\\/delete":"1","plugin-area-zone\\/index":"1","plugin-area-zone\\/add":"1","plugin-area-zone\\/edit":"1","plugin-area-zone\\/delete":"1","plugin-area-street\\/index":"1","plugin-area-street\\/add":"1","plugin-area-street\\/edit":"1","plugin-area-street\\/delete":"1","plugin-marketing-setting\\/index":"1","plugin-marketing-setting\\/add":"1","plugin-marketing-setting\\/edit":"1","plugin-marketing-setting\\/delete":"1","plugin-marketing-rmb_getout\\/index":"1","plugin-marketing-rmb_getout\\/delete":"1","plugin-marketing-rmb_getout\\/pay":"1","plugin-marketing-rmb_getout\\/log":"1","plugin-marketing-rmb_infull\\/index":"1","plugin-marketing-rmb_infull\\/delete":"1","plugin-marketing-rmb_consume\\/index":"1","plugin-marketing-rmb_consume\\/delete":"1","plugin-marketing-moneylog\\/index":"1","plugin-marketing-moneylog\\/delete":"1","plugin-marketing-member\\/index":"1","plugin-marketing-member\\/add":"1","plugin-marketing-member\\/edit":"1","plugin-marketing-member\\/delete":"1","plugin-marketing-moneytype\\/index":"1","plugin-marketing-moneytype\\/add":"1","plugin-marketing-moneytype\\/edit":"1","plugin-marketing-moneytype\\/delete":"1","cms-cms-setting\\/index":"1","cms-cms-content\\/postnew":"1","cms-cms-content\\/index":"1","cms-cms-content\\/add":"1","cms-cms-content\\/edit":"1","cms-cms-content\\/delete":"1","cms-cms-sort\\/index":"1","cms-cms-sort\\/add":"1","cms-cms-sort\\/edit":"1","cms-cms-sort\\/delete":"1","cms-cms-module\\/index":"1","cms-cms-module\\/add":"1","cms-cms-module\\/edit":"1","cms-cms-module\\/delete":"1","cms-cms-field\\/index":"1","cms-cms-field\\/add":"1","cms-cms-field\\/edit":"1","cms-cms-field\\/delete":"1","cms-cms-category\\/index":"1","cms-cms-category\\/add":"1","cms-cms-category\\/edit":"1","cms-cms-category\\/delete":"1","cms-cms-info\\/index":"1","cms-cms-info\\/add":"1","cms-cms-info\\/edit":"1","cms-cms-info\\/delete":"1","cms-cms-sort_field\\/index":"1","cms-cms-sort_field\\/add":"1","cms-cms-sort_field\\/edit":"1","cms-cms-sort_field\\/delete":"1","fenlei-fenlei-setting\\/index":"1","fenlei-fenlei-content\\/postnew":"1","fenlei-fenlei-content\\/index":"1","fenlei-fenlei-content\\/add":"1","fenlei-fenlei-content\\/edit":"1","fenlei-fenlei-content\\/delete":"1","fenlei-fenlei-sort\\/index":"1","fenlei-fenlei-sort\\/add":"1","fenlei-fenlei-sort\\/edit":"1","fenlei-fenlei-sort\\/delete":"1","fenlei-fenlei-module\\/index":"1","fenlei-fenlei-module\\/add":"1","fenlei-fenlei-module\\/edit":"1","fenlei-fenlei-module\\/delete":"1","fenlei-fenlei-field\\/index":"1","fenlei-fenlei-field\\/add":"1","fenlei-fenlei-field\\/edit":"1","fenlei-fenlei-field\\/delete":"1","hy-hy-setting\\/index":"1","hy-hy-content\\/postnew":"1","hy-hy-content\\/index":"1","hy-hy-content\\/add":"1","hy-hy-content\\/edit":"1","hy-hy-content\\/delete":"1","hy-hy-sort\\/index":"1","hy-hy-sort\\/add":"1","hy-hy-sort\\/edit":"1","hy-hy-sort\\/delete":"1","hy-hy-module\\/index":"1","hy-hy-module\\/add":"1","hy-hy-module\\/edit":"1","hy-hy-module\\/delete":"1","hy-hy-field\\/index":"1","hy-hy-field\\/add":"1","hy-hy-field\\/edit":"1","hy-hy-field\\/delete":"1","appstore-appstore-setting\\/index":"1","appstore-appstore-content\\/postnew":"1","appstore-appstore-content\\/index":"1","appstore-appstore-content\\/add":"1","appstore-appstore-content\\/edit":"1","appstore-appstore-content\\/delete":"1","appstore-appstore-sort\\/index":"1","appstore-appstore-sort\\/add":"1","appstore-appstore-sort\\/edit":"1","appstore-appstore-sort\\/delete":"1","appstore-appstore-module\\/index":"1","appstore-appstore-module\\/add":"1","appstore-appstore-module\\/edit":"1","appstore-appstore-module\\/delete":"1","appstore-appstore-field\\/index":"1","appstore-appstore-field\\/add":"1","appstore-appstore-field\\/edit":"1","appstore-appstore-field\\/delete":"1","appstore-appstore-order\\/index":"1","appstore-appstore-order\\/edit":"1","appstore-appstore-order\\/delete":"1","appstore-appstore-cache\\/index":"1","appstore-appstore-cache\\/add":"1","appstore-appstore-cache\\/edit":"1","appstore-appstore-cache\\/delete":"1","qun-qun-setting\\/index":"1","qun-qun-content\\/postnew":"1","qun-qun-content\\/index":"1","qun-qun-content\\/add":"1","qun-qun-content\\/edit":"1","qun-qun-content\\/delete":"1","qun-qun-sort\\/index":"1","qun-qun-sort\\/add":"1","qun-qun-sort\\/edit":"1","qun-qun-sort\\/delete":"1","qun-qun-module\\/index":"1","qun-qun-module\\/add":"1","qun-qun-module\\/edit":"1","qun-qun-module\\/delete":"1","qun-qun-field\\/index":"1","qun-qun-field\\/add":"1","qun-qun-field\\/edit":"1","qun-qun-field\\/delete":"1","qun-qun-style\\/index":"1","qun-qun-style\\/set":"1","qun-qun-style\\/del":"1"}', '', 'index_dev', '', 'pc_index_dev', '');
-
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`) VALUES(11, 0, 'VIP会员', 5000, 'a:11:{s:14:"AllowUploadMax";s:1:"0";s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"consumptionMin";s:2:"10";s:10:"GetCashMin";s:2:"10";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"0";s:13:"AllowUesStyle";s:1:"0";s:18:"AllowUesPicMsgSort";s:1:"1";s:13:"postHyNewsNum";s:4:"5000";}', 0, NULL, '', '', '', '', '');
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`) VALUES(8, 0, '普通会员', 0, 'a:80:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:13:"EditPassPower";s:1:"0";s:17:"SearchArticleType";s:1:"1";s:12:"SetTileColor";s:1:"0";s:14:"SetSellArticle";s:1:"0";s:13:"SetSmallTitle";s:1:"0";s:17:"SetSpecialArticle";s:1:"1";s:17:"SetArticleKeyword";s:1:"1";s:20:"AddArticleKeywordNum";s:1:"0";s:16:"PostArticleYzImg";s:1:"0";s:21:"AddArticleCopyfromNum";s:1:"0";s:16:"SelectArticleTpl";s:1:"0";s:13:"SetArticleTpl";s:1:"0";s:18:"SelectArticleStyle";s:1:"0";s:18:"SetArticlePosttime";s:1:"0";s:18:"SetArticleViewtime";s:1:"0";s:16:"SetArticleHitNum";s:1:"0";s:18:"SetArticlePassword";s:1:"0";s:19:"SetArticleDownGroup";s:1:"0";s:19:"SetArticleViewGroup";s:1:"0";s:17:"SetArticleJumpurl";s:1:"0";s:19:"SetArticleIframeurl";s:1:"0";s:21:"SetArticleDescription";s:1:"0";s:16:"SetArticleTopCom";s:1:"0";s:17:"CollectArticleNum";s:2:"30";s:15:"CreatSpecialNum";s:1:"7";s:19:"CommentArticleYzImg";s:1:"1";s:11:"SetHtmlName";s:1:"0";s:7:"SetVote";s:1:"1";s:16:"PassContributeSP";s:1:"0";s:13:"PostNoDelCode";s:1:"0";s:14:"AllowUploadMax";s:1:"0";s:11:"comment_num";s:0:"";s:10:"comment_yz";s:1:"0";s:11:"comment_img";s:1:"0";s:16:"sell_postauto_yz";s:1:"1";s:15:"buy_postauto_yz";s:1:"1";s:15:"post_pingpai_yz";s:1:"1";s:10:"use2domain";s:1:"0";s:16:"useHomepageStyle";s:1:"1";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:1:"5";s:12:"post_buy_num";s:1:"5";s:13:"post_news_num";s:1:"5";s:14:"post_photo_num";s:2:"10";s:11:"post_hr_num";s:1:"5";s:17:"post_zhanghui_num";s:1:"5";s:12:"post_ZLG_num";s:1:"0";s:16:"post_pingpai_num";s:1:"5";s:19:"post_baojiadian_num";s:1:"5";s:19:"post_xunjiadian_num";s:1:"5";s:24:"post_info_collection_num";s:2:"30";s:18:"allow_get_homepage";s:1:"1";s:16:"shop_postauto_yz";s:1:"1";s:14:"tg_postauto_yz";s:1:"1";s:14:"post_coupon_yz";s:1:"1";s:13:"post_shop_num";s:1:"5";s:11:"post_tg_num";s:1:"3";s:15:"post_coupon_num";s:1:"3";s:13:"post_gift_num";s:1:"0";s:18:"shoptg_postauto_yz";s:1:"0";s:15:"post_shoptg_num";s:0:"";s:13:"postNewsYzImg";s:1:"1";s:13:"view_hy_money";s:0:"";s:13:"postShopYzImg";s:1:"1";s:11:"postTgYzImg";s:1:"1";s:15:"postShopTgYzImg";s:1:"1";s:11:"postHrYzImg";s:1:"1";s:15:"postCouponYzImg";s:1:"1";s:10:"post_hr_yz";s:1:"1";s:14:"consumptionMin";s:2:"10";s:10:"GetCashMin";s:2:"10";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"0";s:13:"AllowUesStyle";s:1:"0";s:13:"postHyNewsNum";s:2:"30";s:18:"AllowUesPicMsgSort";s:1:"1";}', 0, '', '', '', '', '', '');
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`) VALUES(12, 1, '普通管理员', 0, '', 1, NULL, '', '', '', '', '');
+INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(2, 1, '黑名单', 0, 'a:54:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:17:"SearchArticleType";s:1:"1";s:16:"PostArticleYzImg";s:1:"1";s:13:"EditPassPower";s:1:"0";s:12:"SetTileColor";s:1:"0";s:14:"SetSellArticle";s:1:"0";s:17:"SetSpecialArticle";s:1:"0";s:17:"SetArticleKeyword";s:1:"0";s:20:"AddArticleKeywordNum";s:0:"";s:21:"AddArticleCopyfromNum";s:0:"";s:18:"SelectArticleStyle";s:1:"0";s:16:"SelectArticleTpl";s:1:"0";s:13:"SetArticleTpl";s:1:"0";s:18:"SetArticlePosttime";s:1:"0";s:18:"SetArticleViewtime";s:1:"0";s:16:"SetArticleHitNum";s:1:"0";s:18:"SetArticlePassword";s:1:"0";s:19:"SetArticleDownGroup";s:1:"0";s:19:"SetArticleViewGroup";s:1:"0";s:17:"SetArticleJumpurl";s:1:"0";s:19:"SetArticleIframeurl";s:1:"0";s:21:"SetArticleDescription";s:1:"0";s:16:"SetArticleTopCom";s:1:"0";s:13:"SetSmallTitle";s:1:"0";s:19:"CommentArticleYzImg";s:1:"1";s:17:"CollectArticleNum";s:0:"";s:15:"CreatSpecialNum";s:0:"";s:13:"PostNoDelCode";s:1:"0";s:7:"SetVote";s:1:"0";s:11:"SetHtmlName";s:1:"0";s:16:"PassContributeSP";s:1:"0";s:14:"AllowUploadMax";s:1:"0";s:11:"comment_num";s:2:"10";s:10:"comment_yz";s:1:"1";s:11:"comment_img";s:1:"0";s:16:"sell_postauto_yz";s:1:"0";s:15:"buy_postauto_yz";s:1:"0";s:15:"post_pingpai_yz";s:1:"0";s:10:"use2domain";s:1:"0";s:16:"useHomepageStyle";s:1:"0";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:0:"";s:12:"post_buy_num";s:0:"";s:13:"post_news_num";s:0:"";s:14:"post_photo_num";s:0:"";s:11:"post_hr_num";s:0:"";s:17:"post_zhanghui_num";s:0:"";s:12:"post_ZLG_num";s:0:"";s:16:"post_pingpai_num";s:0:"";s:19:"post_baojiadian_num";s:0:"";s:19:"post_xunjiadian_num";s:0:"";s:24:"post_info_collection_num";s:0:"";}', 0, '', '', '', '', '', '', 0);
+INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(3, 1, '超级管理员', 0, 'a:51:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:13:"EditPassPower";s:1:"0";s:14:"AllowUploadMax";s:1:"1";s:11:"comment_num";s:3:"999";s:10:"comment_yz";s:1:"1";s:11:"comment_img";s:1:"1";s:16:"sell_postauto_yz";s:1:"0";s:15:"buy_postauto_yz";s:1:"0";s:15:"post_pingpai_yz";s:1:"0";s:10:"use2domain";s:1:"1";s:16:"useHomepageStyle";s:1:"1";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:0:"";s:12:"post_buy_num";s:0:"";s:13:"post_news_num";s:3:"999";s:14:"post_photo_num";s:3:"999";s:11:"post_hr_num";s:3:"999";s:17:"post_zhanghui_num";s:0:"";s:12:"post_ZLG_num";s:0:"";s:16:"post_pingpai_num";s:0:"";s:19:"post_baojiadian_num";s:0:"";s:19:"post_xunjiadian_num";s:0:"";s:24:"post_info_collection_num";s:3:"999";s:18:"allow_get_homepage";s:1:"1";s:18:"shoptg_postauto_yz";s:1:"1";s:16:"shop_postauto_yz";s:1:"1";s:14:"tg_postauto_yz";s:1:"1";s:14:"post_coupon_yz";s:1:"1";s:15:"post_shoptg_num";s:3:"999";s:13:"post_shop_num";s:3:"999";s:11:"post_tg_num";s:3:"999";s:15:"post_coupon_num";s:3:"999";s:13:"post_gift_num";s:3:"999";s:13:"postNewsYzImg";s:1:"0";s:13:"postShopYzImg";s:1:"0";s:11:"postTgYzImg";s:1:"0";s:15:"postShopTgYzImg";s:1:"0";s:11:"postHrYzImg";s:1:"0";s:15:"postCouponYzImg";s:1:"0";s:13:"view_hy_money";s:0:"";s:10:"post_hr_yz";s:1:"1";s:14:"consumptionMin";s:1:"1";s:10:"GetCashMin";s:2:"20";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"1";s:13:"AllowUesStyle";s:1:"1";s:18:"AllowUesPicMsgSort";s:1:"1";s:13:"postHyNewsNum";s:4:"5000";}', 1, '{"base-admin-setting\\/index":"1","base-admin-setting\\/clearcache":"1","base-admin-plugin\\/index":"1","base-admin-plugin\\/add":"1","base-admin-plugin\\/market":"1","base-admin-plugin\\/edit":"1","base-admin-plugin\\/delete":"1","base-admin-plugin\\/copy":"1","base-admin-module\\/index":"1","base-admin-module\\/add":"1","base-admin-module\\/market":"1","base-admin-module\\/edit":"1","base-admin-module\\/delete":"1","base-admin-module\\/copy":"1","base-admin-hook\\/index":"1","base-admin-hook\\/add":"1","base-admin-hook\\/edit":"1","base-admin-hook\\/delete":"1","base-admin-hook_plugin\\/market":"1","base-admin-hook_plugin\\/index":"1","base-admin-hook_plugin\\/add":"1","base-admin-hook_plugin\\/edit":"1","base-admin-hook_plugin\\/delete":"1","base-admin-timedtask\\/index":"1","base-admin-timedtask\\/add":"1","base-admin-timedtask\\/edit":"1","base-admin-timedtask\\/delete":"1","base-admin-timedtask\\/log":"1","base-admin-admin_menu\\/index":"1","base-admin-admin_menu\\/add":"1","base-admin-admin_menu\\/edit":"1","base-admin-admin_menu\\/delete":"1","base-admin-member_menu\\/index":"1","base-admin-member_menu\\/add":"1","base-admin-member_menu\\/edit":"1","base-admin-member_menu\\/delete":"1","base-admin-member_menu\\/copy":"1","base-admin-webmenu\\/index":"1","base-admin-webmenu\\/add":"1","base-admin-webmenu\\/edit":"1","base-admin-webmenu\\/delete":"1","base-admin-alonepage\\/index":"1","base-admin-alonepage\\/add":"1","base-admin-alonepage\\/edit":"1","base-admin-alonepage\\/delete":"1","base-admin-style\\/market":"1","base-admin-style\\/add":"1","base-admin-upgrade\\/index":"1","base-admin-upgrade\\/sysup":"1","base-admin-upgrade\\/check_files":"1","base-admin-upgrade\\/view_file":"1","base-admin-mysql\\/index":"1","base-admin-mysql\\/backup":"1","base-admin-mysql\\/showtable":"1","base-admin-mysql\\/into":"1","base-admin-mysql\\/tool":"1","member-admin-member\\/index":"1","member-admin-member\\/add":"1","member-admin-member\\/edit":"1","member-admin-member\\/delete":"1","member-admin-group\\/index":"1","member-admin-group\\/add":"1","member-admin-group\\/edit":"1","member-admin-group\\/delete":"1","member-admin-group\\/admin_power":"1","member-admin-group_cfg\\/index":"1","member-admin-group_cfg\\/edit":"1","member-admin-group_cfg\\/delete":"1","member-admin-group_cfg\\/add":"1","member-admin-group_cfg\\/autoadd":"1","member-admin-group_log\\/index":"1","member-admin-group_log\\/delete":"1","member-admin-group_log\\/pass":"1","member-admin-yz\\/index":"1","member-admin-yz\\/edit":"1","module-cms-setting\\/index":"1","module-cms-content\\/postnew":"1","module-cms-content\\/index":"1","module-cms-content\\/add":"1","module-cms-content\\/edit":"1","module-cms-content\\/delete":"1","module-cms-sort\\/index":"1","module-cms-sort\\/add":"1","module-cms-sort\\/edit":"1","module-cms-sort\\/delete":"1","module-cms-module\\/index":"1","module-cms-module\\/add":"1","module-cms-module\\/edit":"1","module-cms-module\\/delete":"1","module-cms-field\\/index":"1","module-cms-field\\/add":"1","module-cms-field\\/edit":"1","module-cms-field\\/delete":"1","module-cms-category\\/index":"1","module-cms-category\\/add":"1","module-cms-category\\/edit":"1","module-cms-category\\/delete":"1","module-cms-info\\/index":"1","module-cms-info\\/add":"1","module-cms-info\\/edit":"1","module-cms-info\\/delete":"1","module-cms-sort_field\\/index":"1","module-cms-sort_field\\/add":"1","module-cms-sort_field\\/edit":"1","module-cms-sort_field\\/delete":"1","plugin-log-action\\/index":"1","plugin-log-action\\/delete":"1","plugin-log-login\\/index":"1","plugin-log-login\\/delete":"1","plugin-weixin-setting\\/index":"1","plugin-weixin-menu\\/config":"1","plugin-weixin-weixin_autoreply\\/index":"1","plugin-weixin-weixin_autoreply\\/add":"1","plugin-weixin-weixin_autoreply\\/edit":"1","plugin-weixin-weixin_autoreply\\/delete":"1","plugin-weixin-weixin_msg\\/index":"1","plugin-config_set-config\\/index":"1","plugin-config_set-config\\/add":"1","plugin-config_set-config\\/edit":"1","plugin-config_set-config\\/delete":"1","plugin-config_set-group\\/index":"1","plugin-config_set-group\\/add":"1","plugin-config_set-group\\/edit":"1","plugin-config_set-group\\/delete":"1","plugin-label-index\\/index":"1","plugin-label-index\\/edit":"1","plugin-label-index\\/delete":"1","plugin-label-index\\/set":"1","plugin-label-applabel\\/index":"1","plugin-label-applabel\\/add":"1","plugin-label-applabel\\/edit":"1","plugin-label-applabel\\/delete":"1","plugin-label-applabel\\/set":"1","plugin-login-setting\\/index":"1","plugin-comment-content\\/index":"1","plugin-comment-content\\/delete":"1","plugin-comment-content\\/edit":"1","plugin-comment-setting\\/index":"1","plugin-area-province\\/index":"1","plugin-area-province\\/add":"1","plugin-area-province\\/edit":"1","plugin-area-province\\/delete":"1","plugin-area-city\\/index":"1","plugin-area-city\\/add":"1","plugin-area-city\\/edit":"1","plugin-area-city\\/delete":"1","plugin-area-zone\\/index":"1","plugin-area-zone\\/add":"1","plugin-area-zone\\/edit":"1","plugin-area-zone\\/delete":"1","plugin-area-street\\/index":"1","plugin-area-street\\/add":"1","plugin-area-street\\/edit":"1","plugin-area-street\\/delete":"1","plugin-marketing-setting\\/index":"1","plugin-marketing-setting\\/add":"1","plugin-marketing-setting\\/edit":"1","plugin-marketing-setting\\/delete":"1","plugin-marketing-rmb_getout\\/index":"1","plugin-marketing-rmb_getout\\/delete":"1","plugin-marketing-rmb_getout\\/pay":"1","plugin-marketing-rmb_getout\\/log":"1","plugin-marketing-rmb_infull\\/index":"1","plugin-marketing-rmb_infull\\/delete":"1","plugin-marketing-rmb_consume\\/index":"1","plugin-marketing-rmb_consume\\/delete":"1","plugin-marketing-moneylog\\/index":"1","plugin-marketing-moneylog\\/delete":"1","plugin-marketing-member\\/index":"1","plugin-marketing-member\\/add":"1","plugin-marketing-member\\/edit":"1","plugin-marketing-member\\/delete":"1","plugin-marketing-moneytype\\/index":"1","plugin-marketing-moneytype\\/add":"1","plugin-marketing-moneytype\\/edit":"1","plugin-marketing-moneytype\\/delete":"1"}', '', 'index_dev', '', 'pc_index_dev', '', 0);
+INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(11, 0, 'VIP会员', 5000, 'a:11:{s:14:"AllowUploadMax";s:1:"0";s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"consumptionMin";s:2:"10";s:10:"GetCashMin";s:2:"10";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"0";s:13:"AllowUesStyle";s:1:"0";s:18:"AllowUesPicMsgSort";s:1:"1";s:13:"postHyNewsNum";s:4:"5000";}', 0, NULL, '', '', '', '', '', 0);
+INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(8, 0, '普通会员', 0, 'a:80:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:13:"EditPassPower";s:1:"0";s:17:"SearchArticleType";s:1:"1";s:12:"SetTileColor";s:1:"0";s:14:"SetSellArticle";s:1:"0";s:13:"SetSmallTitle";s:1:"0";s:17:"SetSpecialArticle";s:1:"1";s:17:"SetArticleKeyword";s:1:"1";s:20:"AddArticleKeywordNum";s:1:"0";s:16:"PostArticleYzImg";s:1:"0";s:21:"AddArticleCopyfromNum";s:1:"0";s:16:"SelectArticleTpl";s:1:"0";s:13:"SetArticleTpl";s:1:"0";s:18:"SelectArticleStyle";s:1:"0";s:18:"SetArticlePosttime";s:1:"0";s:18:"SetArticleViewtime";s:1:"0";s:16:"SetArticleHitNum";s:1:"0";s:18:"SetArticlePassword";s:1:"0";s:19:"SetArticleDownGroup";s:1:"0";s:19:"SetArticleViewGroup";s:1:"0";s:17:"SetArticleJumpurl";s:1:"0";s:19:"SetArticleIframeurl";s:1:"0";s:21:"SetArticleDescription";s:1:"0";s:16:"SetArticleTopCom";s:1:"0";s:17:"CollectArticleNum";s:2:"30";s:15:"CreatSpecialNum";s:1:"7";s:19:"CommentArticleYzImg";s:1:"1";s:11:"SetHtmlName";s:1:"0";s:7:"SetVote";s:1:"1";s:16:"PassContributeSP";s:1:"0";s:13:"PostNoDelCode";s:1:"0";s:14:"AllowUploadMax";s:1:"0";s:11:"comment_num";s:0:"";s:10:"comment_yz";s:1:"0";s:11:"comment_img";s:1:"0";s:16:"sell_postauto_yz";s:1:"1";s:15:"buy_postauto_yz";s:1:"1";s:15:"post_pingpai_yz";s:1:"1";s:10:"use2domain";s:1:"0";s:16:"useHomepageStyle";s:1:"1";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:1:"5";s:12:"post_buy_num";s:1:"5";s:13:"post_news_num";s:1:"5";s:14:"post_photo_num";s:2:"10";s:11:"post_hr_num";s:1:"5";s:17:"post_zhanghui_num";s:1:"5";s:12:"post_ZLG_num";s:1:"0";s:16:"post_pingpai_num";s:1:"5";s:19:"post_baojiadian_num";s:1:"5";s:19:"post_xunjiadian_num";s:1:"5";s:24:"post_info_collection_num";s:2:"30";s:18:"allow_get_homepage";s:1:"1";s:16:"shop_postauto_yz";s:1:"1";s:14:"tg_postauto_yz";s:1:"1";s:14:"post_coupon_yz";s:1:"1";s:13:"post_shop_num";s:1:"5";s:11:"post_tg_num";s:1:"3";s:15:"post_coupon_num";s:1:"3";s:13:"post_gift_num";s:1:"0";s:18:"shoptg_postauto_yz";s:1:"0";s:15:"post_shoptg_num";s:0:"";s:13:"postNewsYzImg";s:1:"1";s:13:"view_hy_money";s:0:"";s:13:"postShopYzImg";s:1:"1";s:11:"postTgYzImg";s:1:"1";s:15:"postShopTgYzImg";s:1:"1";s:11:"postHrYzImg";s:1:"1";s:15:"postCouponYzImg";s:1:"1";s:10:"post_hr_yz";s:1:"1";s:14:"consumptionMin";s:2:"10";s:10:"GetCashMin";s:2:"10";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"0";s:13:"AllowUesStyle";s:1:"0";s:13:"postHyNewsNum";s:2:"30";s:18:"AllowUesPicMsgSort";s:1:"1";}', 0, '', '', '', '', '', '', 0);
+INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(12, 1, '普通管理员', 0, '', 1, NULL, '', '', '', '', '', 0);
 
 -- --------------------------------------------------------
 
@@ -807,11 +817,37 @@ CREATE TABLE IF NOT EXISTS `qb_groupcfg` (
   `htmlcode` text NOT NULL COMMENT 'html额外代码',
   `c_descrip` varchar(256) NOT NULL COMMENT '选项详细介绍描述',
   `list` int(10) NOT NULL COMMENT '排序值',
+  `allowview` varchar(255) NOT NULL COMMENT '允许浏览此字段的用户组',
+  `ifmust` tinyint(1) NOT NULL COMMENT '升级此用户组需要的必填字段',
+  `forbid_edit` tinyint(1) NOT NULL COMMENT '是否禁止修改',
+  `nav` varchar(30) NOT NULL COMMENT '表单分组名',
+  `input_width` varchar(7) NOT NULL COMMENT '表单宽度',
+  `input_height` varchar(7) NOT NULL COMMENT '表单高度',
+  `match` varchar(255) NOT NULL COMMENT '用户输入时的正则匹配',
+  `css` varchar(30) NOT NULL COMMENT '自定义css的类名',
   PRIMARY KEY (`id`),
   KEY `type` (`type`),
   KEY `list` (`list`),
   KEY `c_key` (`c_key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统参数配置' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qb_grouplog`
+--
+
+DROP TABLE IF EXISTS `qb_grouplog`;
+CREATE TABLE IF NOT EXISTS `qb_grouplog` (
+  `id` int(7) NOT NULL AUTO_INCREMENT,
+  `uid` int(7) NOT NULL COMMENT '用户UID',
+  `gid` mediumint(5) NOT NULL COMMENT '用户申请提升的用户组',
+  `status` tinyint(1) NOT NULL COMMENT '审核状态',
+  `create_time` int(10) NOT NULL COMMENT '申请时间',
+  `check_time` int(10) NOT NULL COMMENT '审核时间',
+  `refuse_reason` varchar(255) NOT NULL COMMENT '被拒绝审核的原因',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='申请升级用户组的申请表' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -884,7 +920,13 @@ CREATE TABLE IF NOT EXISTS `qb_hook_plugin` (
   PRIMARY KEY (`id`),
   KEY `hook_id` (`hook_key`),
   KEY `plugin_id` (`plugin_key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='可供使用的接口钩子功能' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='可供使用的接口钩子功能' AUTO_INCREMENT=2 ;
+
+--
+-- 转存表中的数据 `qb_hook_plugin`
+--
+
+INSERT INTO `qb_hook_plugin` (`id`, `hook_key`, `plugin_key`, `hook_class`, `about`, `ifopen`, `list`, `author`, `author_url`, `version`, `version_id`) VALUES(1, 'layout_body_foot', '', 'app\\index\\controller\\Task', '定时任务前台唤醒', 1, 0, '', '', '', 0);
 
 -- --------------------------------------------------------
 
@@ -978,13 +1020,15 @@ CREATE TABLE IF NOT EXISTS `qb_log_action` (
   `content` text NOT NULL COMMENT '用户提交的内容',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`,`create_time`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='后台操作日志' AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='后台操作日志' AUTO_INCREMENT=4 ;
 
 --
 -- 转存表中的数据 `qb_log_action`
 --
 
 INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(1, 1, 1547433113, '127.0.0.1', 'cms', 'field', 'edit', '', '{"title":"\\u6587\\u7ae0\\u5185\\u5bb9","name":"content","type":"ueditor","field_type":"mediumtext NOT NULL","postdb":{"field_type":"mediumtext NOT NULL"},"list":"-1","Submit":"\\u63d0\\u4ea4","id":"12"}');
+INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(2, 1, 1559006001, '127.0.0.1', 'admin', 'group', 'admin_power', '', '{"powerdb":{"base-admin-setting\\/index":"1","base-admin-setting\\/clearcache":"1","base-admin-plugin\\/index":"1","base-admin-plugin\\/add":"1","base-admin-plugin\\/market":"1","base-admin-plugin\\/edit":"1","base-admin-plugin\\/delete":"1","base-admin-plugin\\/copy":"1","base-admin-module\\/index":"1","base-admin-module\\/add":"1","base-admin-module\\/market":"1","base-admin-module\\/edit":"1","base-admin-module\\/delete":"1","base-admin-module\\/copy":"1","base-admin-hook\\/index":"1","base-admin-hook\\/add":"1","base-admin-hook\\/edit":"1","base-admin-hook\\/delete":"1","base-admin-hook_plugin\\/market":"1","base-admin-hook_plugin\\/index":"1","base-admin-hook_plugin\\/add":"1","base-admin-hook_plugin\\/edit":"1","base-admin-hook_plugin\\/delete":"1","base-admin-timedtask\\/index":"1","base-admin-timedtask\\/add":"1","base-admin-timedtask\\/edit":"1","base-admin-timedtask\\/delete":"1","base-admin-timedtask\\/log":"1","base-admin-admin_menu\\/index":"1","base-admin-admin_menu\\/add":"1","base-admin-admin_menu\\/edit":"1","base-admin-admin_menu\\/delete":"1","base-admin-member_menu\\/index":"1","base-admin-member_menu\\/add":"1","base-admin-member_menu\\/edit":"1","base-admin-member_menu\\/delete":"1","base-admin-member_menu\\/copy":"1","base-admin-webmenu\\/index":"1","base-admin-webmenu\\/add":"1","base-admin-webmenu\\/edit":"1","base-admin-webmenu\\/delete":"1","base-admin-alonepage\\/index":"1","base-admin-alonepage\\/add":"1","base-admin-alonepage\\/edit":"1","base-admin-alonepage\\/delete":"1","base-admin-style\\/market":"1","base-admin-style\\/add":"1","base-admin-upgrade\\/index":"1","base-admin-upgrade\\/sysup":"1","base-admin-upgrade\\/check_files":"1","base-admin-upgrade\\/view_file":"1","base-admin-mysql\\/index":"1","base-admin-mysql\\/backup":"1","base-admin-mysql\\/showtable":"1","base-admin-mysql\\/into":"1","base-admin-mysql\\/tool":"1","member-admin-member\\/index":"1","member-admin-member\\/add":"1","member-admin-member\\/edit":"1","member-admin-member\\/delete":"1","member-admin-group\\/index":"1","member-admin-group\\/add":"1","member-admin-group\\/edit":"1","member-admin-group\\/delete":"1","member-admin-group\\/admin_power":"1","member-admin-group_cfg\\/index":"1","member-admin-group_cfg\\/edit":"1","member-admin-group_cfg\\/delete":"1","member-admin-group_cfg\\/add":"1","member-admin-group_cfg\\/autoadd":"1","member-admin-group_log\\/index":"1","member-admin-group_log\\/delete":"1","member-admin-group_log\\/pass":"1","member-admin-yz\\/index":"1","member-admin-yz\\/edit":"1","module-cms-setting\\/index":"1","module-cms-content\\/postnew":"1","module-cms-content\\/index":"1","module-cms-content\\/add":"1","module-cms-content\\/edit":"1","module-cms-content\\/delete":"1","module-cms-sort\\/index":"1","module-cms-sort\\/add":"1","module-cms-sort\\/edit":"1","module-cms-sort\\/delete":"1","module-cms-module\\/index":"1","module-cms-module\\/add":"1","module-cms-module\\/edit":"1","module-cms-module\\/delete":"1","module-cms-field\\/index":"1","module-cms-field\\/add":"1","module-cms-field\\/edit":"1","module-cms-field\\/delete":"1","module-cms-category\\/index":"1","module-cms-category\\/add":"1","module-cms-category\\/edit":"1","module-cms-category\\/delete":"1","module-cms-info\\/index":"1","module-cms-info\\/add":"1","module-cms-info\\/edit":"1","module-cms-info\\/delete":"1","module-cms-sort_field\\/index":"1","module-cms-sort_field\\/add":"1","module-cms-sort_field\\/edit":"1","module-cms-sort_field\\/delete":"1","plugin-log-action\\/index":"1","plugin-log-action\\/delete":"1","plugin-log-login\\/index":"1","plugin-log-login\\/delete":"1","plugin-weixin-setting\\/index":"1","plugin-weixin-menu\\/config":"1","plugin-weixin-weixin_autoreply\\/index":"1","plugin-weixin-weixin_autoreply\\/add":"1","plugin-weixin-weixin_autoreply\\/edit":"1","plugin-weixin-weixin_autoreply\\/delete":"1","plugin-weixin-weixin_msg\\/index":"1","plugin-config_set-config\\/index":"1","plugin-config_set-config\\/add":"1","plugin-config_set-config\\/edit":"1","plugin-config_set-config\\/delete":"1","plugin-config_set-group\\/index":"1","plugin-config_set-group\\/add":"1","plugin-config_set-group\\/edit":"1","plugin-config_set-group\\/delete":"1","plugin-label-index\\/index":"1","plugin-label-index\\/edit":"1","plugin-label-index\\/delete":"1","plugin-label-index\\/set":"1","plugin-label-applabel\\/index":"1","plugin-label-applabel\\/add":"1","plugin-label-applabel\\/edit":"1","plugin-label-applabel\\/delete":"1","plugin-label-applabel\\/set":"1","plugin-login-setting\\/index":"1","plugin-comment-content\\/index":"1","plugin-comment-content\\/delete":"1","plugin-comment-content\\/edit":"1","plugin-comment-setting\\/index":"1","plugin-area-province\\/index":"1","plugin-area-province\\/add":"1","plugin-area-province\\/edit":"1","plugin-area-province\\/delete":"1","plugin-area-city\\/index":"1","plugin-area-city\\/add":"1","plugin-area-city\\/edit":"1","plugin-area-city\\/delete":"1","plugin-area-zone\\/index":"1","plugin-area-zone\\/add":"1","plugin-area-zone\\/edit":"1","plugin-area-zone\\/delete":"1","plugin-area-street\\/index":"1","plugin-area-street\\/add":"1","plugin-area-street\\/edit":"1","plugin-area-street\\/delete":"1","plugin-marketing-setting\\/index":"1","plugin-marketing-setting\\/add":"1","plugin-marketing-setting\\/edit":"1","plugin-marketing-setting\\/delete":"1","plugin-marketing-rmb_getout\\/index":"1","plugin-marketing-rmb_getout\\/delete":"1","plugin-marketing-rmb_getout\\/pay":"1","plugin-marketing-rmb_getout\\/log":"1","plugin-marketing-rmb_infull\\/index":"1","plugin-marketing-rmb_infull\\/delete":"1","plugin-marketing-rmb_consume\\/index":"1","plugin-marketing-rmb_consume\\/delete":"1","plugin-marketing-moneylog\\/index":"1","plugin-marketing-moneylog\\/delete":"1","plugin-marketing-member\\/index":"1","plugin-marketing-member\\/add":"1","plugin-marketing-member\\/edit":"1","plugin-marketing-member\\/delete":"1","plugin-marketing-moneytype\\/index":"1","plugin-marketing-moneytype\\/add":"1","plugin-marketing-moneytype\\/edit":"1","plugin-marketing-moneytype\\/delete":"1"},"Submit":"\\u63d0\\u4ea4","id":"3"}');
+INSERT INTO `qb_log_action` (`id`, `uid`, `create_time`, `ip`, `model`, `controller`, `action`, `plugin`, `content`) VALUES(3, 1, 1559006040, '127.0.0.1', 'admin', 'hook_plugin', 'edit', '', '{"hook_class":"app\\\\index\\\\controller\\\\Task","hook_key":"layout_body_foot","about":"\\u5b9a\\u65f6\\u4efb\\u52a1\\u524d\\u53f0\\u5524\\u9192","ifopen":"1","id":"1"}');
 
 -- --------------------------------------------------------
 
@@ -1002,7 +1046,13 @@ CREATE TABLE IF NOT EXISTS `qb_log_login` (
   `password` varchar(32) NOT NULL COMMENT '登录密码,登录成功密码就加密',
   PRIMARY KEY (`id`),
   KEY `create_time` (`create_time`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户登录日志' AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户登录日志' AUTO_INCREMENT=4 ;
+
+--
+-- 转存表中的数据 `qb_log_login`
+--
+
+INSERT INTO `qb_log_login` (`id`, `type`, `ip`, `create_time`, `username`, `password`) VALUES(3, 1, '127.0.0.1', 1559005973, 'admin', '7505b9c72ab4aa94b1a4ed7b207b67fb');
 
 -- --------------------------------------------------------
 
@@ -1020,6 +1070,7 @@ CREATE TABLE IF NOT EXISTS `qb_market` (
   `author_url` varchar(120) NOT NULL COMMENT '开发者网站',
   `version` varchar(60) NOT NULL COMMENT '版本信息',
   `version_id` mediumint(7) NOT NULL DEFAULT '0' COMMENT '云端对应的ID',
+  `name` varchar(255) NOT NULL COMMENT '名称',
   PRIMARY KEY (`id`),
   KEY `type` (`type`),
   KEY `keywords` (`keywords`)
@@ -1053,7 +1104,7 @@ CREATE TABLE IF NOT EXISTS `qb_memberdata` (
   `regdate` int(10) NOT NULL DEFAULT '0' COMMENT '注册日期',
   `regip` varchar(15) NOT NULL DEFAULT '' COMMENT '注册IP',
   `sex` tinyint(1) NOT NULL DEFAULT '0' COMMENT '性别',
-  `bday` date NOT NULL DEFAULT '0000-00-00' COMMENT '出生日期',
+  `bday` int(10) NOT NULL COMMENT '出生日期',
   `icon` varchar(255) NOT NULL DEFAULT '' COMMENT '会员头像',
   `introduce` varchar(255) NOT NULL COMMENT '签名或自我介绍',
   `qq` varchar(11) NOT NULL DEFAULT '' COMMENT 'QQ号码',
@@ -1077,6 +1128,10 @@ CREATE TABLE IF NOT EXISTS `qb_memberdata` (
   `wx_attention` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否关注微信',
   `sendmsg` text NOT NULL COMMENT '不接收系统哪些消息',
   `ext_field` text NOT NULL COMMENT '自定义字段参数',
+  `view` mediumint(7) NOT NULL COMMENT '浏览量',
+  `introducer_num` mediumint(5) NOT NULL COMMENT '直接推荐用户数',
+  `introducer_nums` mediumint(5) NOT NULL COMMENT '间接推荐用户数',
+  `group_endtime` int(10) NOT NULL COMMENT '用户组截止日期',
   PRIMARY KEY (`uid`),
   KEY `groups` (`groups`),
   KEY `sex` (`sex`,`bday`,`cityid`),
@@ -1087,13 +1142,13 @@ CREATE TABLE IF NOT EXISTS `qb_memberdata` (
   KEY `money` (`money`),
   KEY `rmb` (`rmb`),
   KEY `dou` (`dou`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户数据表' AUTO_INCREMENT=2 ;
 
 --
 -- 转存表中的数据 `qb_memberdata`
 --
 
-INSERT INTO `qb_memberdata` (`uid`, `password`, `password_rand`, `username`, `nickname`, `qq_api`, `weixin_api`, `wxapp_api`, `groupid`, `grouptype`, `groups`, `yz`, `money`, `dou`, `oltime`, `lastvist`, `lastip`, `regdate`, `regip`, `sex`, `bday`, `icon`, `introduce`, `qq`, `email`, `provinceid`, `cityid`, `address`, `mobphone`, `idcard`, `truename`, `config`, `email_yz`, `mob_yz`, `idcard_yz`, `rmb`, `rmb_freeze`, `rmb_pwd`, `introducer_1`, `introducer_2`, `introducer_3`, `wx_attention`, `sendmsg`, `ext_field`) VALUES(1, '0eb4ae4ac4908bb550fcbecd3a9ce405', '430b2', 'admin', '我是超管', '', 'wf', '', 3, 1, '', 1, 186, 0, 8774571, 1547430873, '127.0.0.1', 1547430866, '127.0.0.1', 1, '1890-00-00', 'uploads/images/20180320/719d42cdf564010d411f2be85c5f47b9.jpeg', 'fdfdf', '', 'bb@126.com', 0, 1, 'cvbnmmm', '13399999999', '', '张学友', 'a:4:{s:7:"endtime";s:0:"";s:9:"alipay_id";s:6:"666666";s:4:"bank";s:114:"62223333333333373 张三 中国工商银行北京**支行\n62284444444919 张三 中国农业银行北京***分行";s:7:"pay_pwd";s:1:"3";}', 0, 0, 0, '77.90', '359.00', 'e10adc3949ba59abbe56e057f20f883e', 22, 0, 0, 0, 'a:1:{s:6:"RegMsg";i:1;}', '[]');
+INSERT INTO `qb_memberdata` (`uid`, `password`, `password_rand`, `username`, `nickname`, `qq_api`, `weixin_api`, `wxapp_api`, `groupid`, `grouptype`, `groups`, `yz`, `money`, `dou`, `oltime`, `lastvist`, `lastip`, `regdate`, `regip`, `sex`, `bday`, `icon`, `introduce`, `qq`, `email`, `provinceid`, `cityid`, `address`, `mobphone`, `idcard`, `truename`, `config`, `email_yz`, `mob_yz`, `idcard_yz`, `rmb`, `rmb_freeze`, `rmb_pwd`, `introducer_1`, `introducer_2`, `introducer_3`, `wx_attention`, `sendmsg`, `ext_field`, `view`, `introducer_num`, `introducer_nums`, `group_endtime`) VALUES(1, 'ab1f8a441af98189aa8b3830d5574d27', '514f7', 'admin', '我是超管', '', 'wf', '', 3, 1, '', 1, 186, 0, 8774571, 1559005973, '127.0.0.1', 1559005968, '127.0.0.1', 1, 1890, 'uploads/images/20180320/719d42cdf564010d411f2be85c5f47b9.jpeg', 'fdfdf', '', 'bb@126.com', 0, 1, 'cvbnmmm', '13399999999', '', '张学友', 'a:4:{s:7:"endtime";s:0:"";s:9:"alipay_id";s:6:"666666";s:4:"bank";s:114:"62223333333333373 张三 中国工商银行北京**支行\n62284444444919 张三 中国农业银行北京***分行";s:7:"pay_pwd";s:1:"3";}', 0, 0, 0, '77.90', '359.00', 'e10adc3949ba59abbe56e057f20f883e', 22, 0, 0, 0, 'a:1:{s:6:"RegMsg";i:1;}', '[]', 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -1132,6 +1187,23 @@ INSERT INTO `qb_module` (`id`, `author`, `author_url`, `type`, `name`, `keywords
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `qb_money`
+--
+
+DROP TABLE IF EXISTS `qb_money`;
+CREATE TABLE IF NOT EXISTS `qb_money` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `uid` int(7) NOT NULL COMMENT '用户UID',
+  `money` int(7) NOT NULL COMMENT '某种类型的虚拟币总值',
+  `type` smallint(4) NOT NULL COMMENT '虚拟币类型',
+  PRIMARY KEY (`id`),
+  KEY `type` (`type`),
+  KEY `uid` (`uid`,`type`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户自定义虚拟币' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `qb_moneylog`
 --
 
@@ -1143,10 +1215,41 @@ CREATE TABLE IF NOT EXISTS `qb_moneylog` (
   `about` varchar(255) NOT NULL DEFAULT '',
   `posttime` int(10) NOT NULL DEFAULT '0',
   `city_id` mediumint(7) NOT NULL DEFAULT '0',
+  `type` smallint(4) NOT NULL COMMENT '虚拟币类型,比如威望、金豆,0是系统积分',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
-  KEY `city_id` (`city_id`)
+  KEY `city_id` (`city_id`),
+  KEY `type` (`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员积分赚取与消费记录' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qb_moneytype`
+--
+
+DROP TABLE IF EXISTS `qb_moneytype`;
+CREATE TABLE IF NOT EXISTS `qb_moneytype` (
+  `id` smallint(4) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL COMMENT '虚拟币名称',
+  `icon` varchar(50) NOT NULL COMMENT '图标',
+  `dw` varchar(10) NOT NULL DEFAULT '个' COMMENT '单位',
+  `group_ratio` varchar(255) NOT NULL COMMENT '每个用户组的兑换指数',
+  `more_ratio` text NOT NULL COMMENT '其它兑换指数比例',
+  `list` int(10) NOT NULL COMMENT '排序值',
+  `auto_change` tinyint(1) NOT NULL COMMENT '是否自动兑换',
+  `change_cfg` text NOT NULL COMMENT '用户设置的是否自动兑换开关',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='虚拟币种类' AUTO_INCREMENT=5 ;
+
+--
+-- 转存表中的数据 `qb_moneytype`
+--
+
+INSERT INTO `qb_moneytype` (`id`, `name`, `icon`, `dw`, `group_ratio`, `more_ratio`, `list`, `auto_change`, `change_cfg`) VALUES(1, '回香豆', 'glyphicon glyphicon-tint', '个', '{"2":"","3":"40","8":"10","11":"10","12":"10","13":"10"}', '{"user":{"weixin_api":"5","wx_attention":"10","email_yz":"1","mob_yz":"20","idcard_yz":"1","regdate":"3|1\\r\\n6|2\\r\\n12|5\\r\\n","addrmb":"500|5\\r\\n1000|10\\r\\n2000|15\\r\\n3000|20","addtopic":"100|5\\r\\n200|10","addreply":"100|5\\r\\n200|10\\r\\n400|15\\r\\n800|20"},"types":{"2":"100|1\\r\\n200|2\\r\\n300|3\\r\\n400|4\\r\\n500|5","3":"10|1\\r\\n20|2\\r\\n30|3\\r\\n40|4\\r\\n50|5\\r\\n60|6\\r\\n70|7\\r\\n80|8\\r\\n90|9\\r\\n100|10","4":""}}', 0, 0, '');
+INSERT INTO `qb_moneytype` (`id`, `name`, `icon`, `dw`, `group_ratio`, `more_ratio`, `list`, `auto_change`, `change_cfg`) VALUES(2, '点赞币', 'fa fa-fw fa-thumbs-o-up', '个', '', '', 0, 0, '');
+INSERT INTO `qb_moneytype` (`id`, `name`, `icon`, `dw`, `group_ratio`, `more_ratio`, `list`, `auto_change`, `change_cfg`) VALUES(3, '签到币', 'fa fa-fw fa-fire', '个', '', '', 0, 0, '');
+INSERT INTO `qb_moneytype` (`id`, `name`, `icon`, `dw`, `group_ratio`, `more_ratio`, `list`, `auto_change`, `change_cfg`) VALUES(4, '活跃度', 'fa fa-fw fa-database', '个', '', '', 0, 0, '');
 
 -- --------------------------------------------------------
 
@@ -1164,9 +1267,12 @@ CREATE TABLE IF NOT EXISTS `qb_msg` (
   `title` varchar(130) NOT NULL DEFAULT '' COMMENT '消息标题',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发送时间',
   `content` text NOT NULL COMMENT '详情',
+  `ext_sys` int(7) NOT NULL COMMENT '系统模型ID',
+  `ext_id` int(7) NOT NULL COMMENT '内容ID',
   PRIMARY KEY (`id`),
   KEY `fromuid` (`uid`),
-  KEY `touid` (`touid`,`ifread`)
+  KEY `touid` (`touid`,`ifread`),
+  KEY `ext_sys` (`ext_sys`,`ext_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='站内短消息' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1235,13 +1341,13 @@ CREATE TABLE IF NOT EXISTS `qb_regnum` (
 DROP TABLE IF EXISTS `qb_rmb_consume`;
 CREATE TABLE IF NOT EXISTS `qb_rmb_consume` (
   `id` mediumint(7) NOT NULL AUTO_INCREMENT,
-  `uid` mediumint(7) NOT NULL DEFAULT '0',
-  `money` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `about` varchar(255) NOT NULL DEFAULT '',
-  `posttime` int(10) NOT NULL DEFAULT '0',
-  `freeze` tinyint(1) NOT NULL DEFAULT '0',
-  `fx` tinyint(2) NOT NULL,
-  `shopid` int(10) NOT NULL,
+  `uid` mediumint(7) NOT NULL DEFAULT '0' COMMENT '用户UID',
+  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'RMB变化金额，有增有减',
+  `about` varchar(255) NOT NULL DEFAULT '' COMMENT '变动说明注释',
+  `posttime` int(10) NOT NULL DEFAULT '0' COMMENT '发生时间',
+  `freeze` tinyint(1) NOT NULL DEFAULT '0' COMMENT '冻结金额，一般是提现时冻结',
+  `fx` tinyint(2) NOT NULL COMMENT '是否为分销金额，暂时没用到',
+  `shopid` int(10) NOT NULL COMMENT '分销商品ID，暂时没用到',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   KEY `fx` (`fx`),
@@ -1257,24 +1363,24 @@ CREATE TABLE IF NOT EXISTS `qb_rmb_consume` (
 DROP TABLE IF EXISTS `qb_rmb_getout`;
 CREATE TABLE IF NOT EXISTS `qb_rmb_getout` (
   `id` mediumint(7) NOT NULL AUTO_INCREMENT,
-  `uid` mediumint(7) NOT NULL DEFAULT '0',
-  `username` varchar(30) NOT NULL DEFAULT '',
-  `money` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `posttime` int(10) NOT NULL DEFAULT '0',
-  `banktype` varchar(20) NOT NULL DEFAULT '',
-  `bankname` varchar(100) NOT NULL DEFAULT '',
-  `ifpay` tinyint(1) NOT NULL DEFAULT '0',
-  `why` varchar(255) NOT NULL DEFAULT '',
-  `truename` varchar(30) NOT NULL DEFAULT '',
-  `tel` varchar(20) NOT NULL DEFAULT '',
-  `quitabout` text NOT NULL,
-  `admin` varchar(30) NOT NULL DEFAULT '',
-  `replytime` int(10) NOT NULL DEFAULT '0',
-  `real_money` decimal(10,2) NOT NULL COMMENT '实际申请提现金额',
+  `uid` mediumint(7) NOT NULL DEFAULT '0' COMMENT '用户UID',
+  `username` varchar(30) NOT NULL DEFAULT '' COMMENT '用户帐号，可不填，将弃用',
+  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '提现金额',
+  `posttime` int(10) NOT NULL DEFAULT '0' COMMENT '提现时间',
+  `banktype` varchar(20) NOT NULL DEFAULT '' COMMENT '申请转入此收款银行',
+  `bankname` varchar(100) NOT NULL DEFAULT '' COMMENT '转入银行帐号',
+  `ifpay` tinyint(1) NOT NULL DEFAULT '0' COMMENT '支付与否',
+  `why` varchar(255) NOT NULL DEFAULT '' COMMENT '提现说明原因',
+  `truename` varchar(30) NOT NULL DEFAULT '' COMMENT '真实姓名',
+  `tel` varchar(20) NOT NULL DEFAULT '' COMMENT '联系电话',
+  `quitabout` text NOT NULL COMMENT '管理员回复信息',
+  `admin` varchar(30) NOT NULL DEFAULT '' COMMENT '管理员帐号',
+  `replytime` int(10) NOT NULL DEFAULT '0' COMMENT '支付时间',
+  `real_money` decimal(10,2) NOT NULL COMMENT '实际申请提现金额，针对扣手续费的情况',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   KEY `ifpay` (`ifpay`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员余额申请提现记录' AUTO_INCREMENT=7 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员余额申请提现记录' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1314,6 +1420,58 @@ CREATE TABLE IF NOT EXISTS `qb_scanlogin` (
   PRIMARY KEY (`id`),
   KEY `sid` (`sid`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8 COMMENT='微信扫码PC登录' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qb_timed_log`
+--
+
+DROP TABLE IF EXISTS `qb_timed_log`;
+CREATE TABLE IF NOT EXISTS `qb_timed_log` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `taskid` smallint(6) NOT NULL COMMENT '对应的任务ID值',
+  `create_time` int(10) NOT NULL COMMENT '执行时间',
+  `times` double(7,4) NOT NULL COMMENT '执行消耗时间多少秒',
+  PRIMARY KEY (`id`),
+  KEY `taskid` (`taskid`),
+  KEY `create_time` (`create_time`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='定时任务执行日志' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qb_timed_task`
+--
+
+DROP TABLE IF EXISTS `qb_timed_task`;
+CREATE TABLE IF NOT EXISTS `qb_timed_task` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `type` varchar(15) NOT NULL COMMENT 't_once仅一次，t_month每月一次，t_week每周一次，t_day每天一次，t_days每几天一次，t_hours每几小时一次，t_minutes每几分钟一次',
+  `title` varchar(255) NOT NULL COMMENT '任务描述',
+  `class_file` varchar(255) NOT NULL COMMENT '运行脚本',
+  `class_method` varchar(15) NOT NULL COMMENT '指定类的方法名',
+  `ext` text NOT NULL COMMENT '相关扩展参数',
+  `create_time` int(10) NOT NULL COMMENT '创建日期',
+  `day` tinyint(2) NOT NULL COMMENT '每月的哪天执行',
+  `week` tinyint(1) NOT NULL COMMENT '每周的星期几执行',
+  `ymd` varchar(10) NOT NULL COMMENT '年月日,比如2018-12-12',
+  `days` tinyint(3) NOT NULL COMMENT '每隔几天就执行一次',
+  `hours` tinyint(2) NOT NULL COMMENT '每隔几小时就执行一次',
+  `minutes` tinyint(2) NOT NULL COMMENT '每隔几分钟就执行一次',
+  `his` varchar(8) NOT NULL COMMENT '具体几时几分执行，比如13:25:00（每隔几小时或几分的这里为空）',
+  `num` int(7) NOT NULL COMMENT '总共被执行过多少次',
+  `list` int(10) NOT NULL COMMENT '排序值',
+  `ifopen` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否启用',
+  `last_time` int(10) NOT NULL COMMENT '上次执行时间',
+  `use_time` double(7,4) NOT NULL COMMENT '上次执行消耗时间',
+  `author` varchar(50) NOT NULL COMMENT '开发者',
+  `version_id` int(7) NOT NULL COMMENT '应用市场ID',
+  `version` varchar(60) NOT NULL COMMENT '版本号',
+  PRIMARY KEY (`id`),
+  KEY `list` (`list`),
+  KEY `type` (`type`,`num`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='定时任务计划表' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1426,211 +1584,3 @@ CREATE TABLE IF NOT EXISTS `qb_weixinword` (
 
 INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(2, '价格', '门户系统价格分别是6800元、9500元，分类系统价格分类别3500元、4500元等', 10, 0);
 INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(3, '产品 商品', '我们的产品有地方门户系统，CMS系统，B2B电子商务系统，分类信息系统等', 11, 0);
-
-
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '模版消息之模板ID', 'weixin_msg_template_id', '', 'text', '', 1, '', '挑选模板的时候,模板代码中必须要包含这两个字段 {{first.DATA}} {{remark.DATA}}', -1, -2);
-ALTER TABLE  `qb_memberdata` ADD  `view` MEDIUMINT( 7 ) NOT NULL COMMENT  '浏览量';
-
-
-ALTER TABLE  `qb_groupcfg` ADD  `allowview` VARCHAR( 255 ) NOT NULL COMMENT  '允许浏览此字段的用户组';
-ALTER TABLE  `qb_groupcfg` ADD  `ifmust` TINYINT( 1 ) NOT NULL COMMENT  '升级此用户组需要的必填字段';
-ALTER TABLE  `qb_groupcfg` ADD  `forbid_edit` TINYINT( 1 ) NOT NULL COMMENT  '是否禁止修改';
-ALTER TABLE  `qb_groupcfg` ADD  `nav` VARCHAR( 30 ) NOT NULL COMMENT  '表单分组名',ADD  `input_width` VARCHAR( 7 ) NOT NULL COMMENT  '表单宽度',ADD  `input_height` VARCHAR( 7 ) NOT NULL COMMENT  '表单高度',ADD  `match` VARCHAR( 255 ) NOT NULL COMMENT  '用户输入时的正则匹配',ADD  `css` VARCHAR( 30 ) NOT NULL COMMENT  '自定义css的类名';
-ALTER TABLE  `qb_memberdata` CHANGE  `bday`  `bday` INT( 10 ) NOT NULL COMMENT  '出生日期';
-
-ALTER TABLE  `qb_group` ADD  `daytime` SMALLINT( 5 ) NOT NULL COMMENT  '用户组有效期';
-
-DROP TABLE IF EXISTS `qb_grouplog`;
-CREATE TABLE IF NOT EXISTS `qb_grouplog` (
-  `id` int(7) NOT NULL AUTO_INCREMENT,
-  `uid` int(7) NOT NULL COMMENT '用户UID',
-  `gid` mediumint(5) NOT NULL COMMENT '用户申请提升的用户组',
-  `status` tinyint(1) NOT NULL COMMENT '审核状态',
-  `create_time` int(10) NOT NULL COMMENT '申请时间',
-  `check_time` int(10) NOT NULL COMMENT '审核时间',
-  `refuse_reason` varchar(255)  NOT NULL COMMENT '被拒绝审核的原因',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='申请升级用户组的申请表' AUTO_INCREMENT=1 ;
-
-
-DELETE FROM  `qb_config` WHERE  `c_key` =  'group_expire_data';
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '用户组升级认证', 'up_group_use_rmb', '', 'radio', '0|使用积分\r\n1|使用金额', 1, '', '', 0, 0);
-
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 8, '是否限制一个微信号只能注册一个帐号', 'weixin_reg_onlyone', '0', 'radio', '0|不限制\r\n1|只能注册一个帐号', 1, '', '需要启用微信公众号获取验证码才有效', 0, 0);
-
-
-ALTER TABLE  `qb_memberdata` ADD  `introducer_num` MEDIUMINT( 5 ) NOT NULL COMMENT  '直接推荐用户数',ADD  `introducer_nums` MEDIUMINT( 5 ) NOT NULL COMMENT  '间接推荐用户数';
-UPDATE `qb_config` SET    `options`='1|启用\r\n0|禁用' WHERE  `c_key` LIKE  'is_waterimg';
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '后台主页显示升级提醒', 'forbid_upgrade', '0', 'radio', '1|不提醒\r\n0|提醒', 1, '', '', 0, 0);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '指定圈子黄页作为网站主页', 'qun_index_id', '', 'number', '', 1, '', '如果你要设置某个圈子黄页作为网站主页的话,就输入其ID值,否则就留空.', 0, 0);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '后台入口文件名', 'admin_filename', 'admin.php', 'text', '', 1, '', '默认是admin.php,为安全起见,你可以改成其它文件名,但必须是.php结尾', 0, 0);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, '32', '是否要求先绑定手机号才能提现', 'getout_need_yzphone', '', 'radio', '0|不强制\r\n1|强制绑定手机号', 0, '', '', 0, '-5');
-
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 8, '是否强制绑定手机号', 'must_yz_phone', '0', 'radio', '0|不强制\r\n1|强制绑定', 1, '', '', 0, 0);
-
-
-DROP TABLE IF EXISTS `qb_moneytype`;
-CREATE TABLE IF NOT EXISTS `qb_moneytype` (
-  `id` smallint(4) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL COMMENT '虚拟币名称',
-  `icon` varchar(50) NOT NULL COMMENT '图标',
-  `dw` varchar(10) NOT NULL DEFAULT '个' COMMENT '单位',
-  `group_ratio` varchar(255) NOT NULL COMMENT '每个用户组的兑换指数',
-  `more_ratio` text NOT NULL COMMENT '其它兑换指数比例',
-  `list` int(10) NOT NULL COMMENT '排序值',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='虚拟币种类' AUTO_INCREMENT=5 ;
-
-ALTER TABLE  `qb_moneytype` ADD  `auto_change` TINYINT( 1 ) NOT NULL COMMENT  '是否自动兑换',ADD  `change_cfg` TEXT NOT NULL COMMENT  '用户设置的是否自动兑换开关';
-
-
-INSERT INTO `qb_moneytype` (`id`, `name`, `icon`, `dw`, `group_ratio`, `more_ratio`, `list`) VALUES(1, '回香豆', 'glyphicon glyphicon-tint', '个', '{"2":"","3":"40","8":"10","11":"10","12":"10","13":"10"}', '{"user":{"weixin_api":"5","wx_attention":"10","email_yz":"1","mob_yz":"20","idcard_yz":"1","regdate":"3|1\\r\\n6|2\\r\\n12|5\\r\\n","addrmb":"500|5\\r\\n1000|10\\r\\n2000|15\\r\\n3000|20","addtopic":"100|5\\r\\n200|10","addreply":"100|5\\r\\n200|10\\r\\n400|15\\r\\n800|20"},"types":{"2":"100|1\\r\\n200|2\\r\\n300|3\\r\\n400|4\\r\\n500|5","3":"10|1\\r\\n20|2\\r\\n30|3\\r\\n40|4\\r\\n50|5\\r\\n60|6\\r\\n70|7\\r\\n80|8\\r\\n90|9\\r\\n100|10","4":""}}', 0);
-INSERT INTO `qb_moneytype` (`id`, `name`, `icon`, `dw`, `group_ratio`, `more_ratio`, `list`) VALUES(2, '点赞币', 'fa fa-fw fa-thumbs-o-up', '个', '', '', 0);
-INSERT INTO `qb_moneytype` (`id`, `name`, `icon`, `dw`, `group_ratio`, `more_ratio`, `list`) VALUES(3, '签到币', 'fa fa-fw fa-fire', '个', '', '', 0);
-INSERT INTO `qb_moneytype` (`id`, `name`, `icon`, `dw`, `group_ratio`, `more_ratio`, `list`) VALUES(4, '活跃度', 'fa fa-fw fa-database', '个', '', '', 0);
-
-
-DROP TABLE IF EXISTS `qb_money`;
-CREATE TABLE IF NOT EXISTS `qb_money` (
-  `id` int(8) NOT NULL AUTO_INCREMENT,
-  `uid` int(7) NOT NULL COMMENT '用户UID',
-  `money` int(7) NOT NULL COMMENT '某种类型的虚拟币总值',
-  `type` smallint(4) NOT NULL COMMENT '虚拟币类型',
-  PRIMARY KEY (`id`),
-  KEY `type` (`type`),
-  KEY `uid` (`uid`,`type`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户自定义虚拟币' AUTO_INCREMENT=1 ;
-
-ALTER TABLE  `qb_moneylog` ADD  `type` smallint( 4 ) NOT NULL COMMENT  '虚拟币类型,比如威望、金豆,0是系统积分';
-ALTER TABLE  `qb_moneylog` ADD INDEX (  `type` );
-
-UPDATE `qb_config` SET `c_value`='积分'  WHERE `c_key`='MoneyName';
-
-ALTER TABLE  `qb_market` ADD  `name` VARCHAR( 255 ) NOT NULL COMMENT  '名称';
-
-
-
-
-
-DROP TABLE IF EXISTS `qb_group`;
-CREATE TABLE IF NOT EXISTS `qb_group` (
-  `id` mediumint(5) NOT NULL AUTO_INCREMENT,
-  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0是会员组,1是系统组',
-  `title` varchar(50) NOT NULL DEFAULT '' COMMENT '用户组名称',
-  `level` mediumint(7) NOT NULL DEFAULT '0' COMMENT '会员组升级所需积分',
-  `powerdb` text NOT NULL COMMENT '前台权限',
-  `allowadmin` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否允许进进后台',
-  `admindb` text COMMENT '后台权限',
-  `logo` varchar(150) NOT NULL COMMENT '图标',
-  `wap_page` varchar(150) NOT NULL COMMENT 'wap个人主页模板',
-  `wap_member` varchar(150) NOT NULL COMMENT 'wap会员中心模板',
-  `pc_page` varchar(150) NOT NULL COMMENT 'pc个人主页模板',
-  `pc_member` varchar(150) NOT NULL COMMENT 'pc会员中心模板',
-  `daytime` smallint(5) NOT NULL COMMENT '用户组有效期',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统会员用户组' AUTO_INCREMENT=13 ;
-
-
-
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(2, 1, '黑名单', 0, 'a:54:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:17:"SearchArticleType";s:1:"1";s:16:"PostArticleYzImg";s:1:"1";s:13:"EditPassPower";s:1:"0";s:12:"SetTileColor";s:1:"0";s:14:"SetSellArticle";s:1:"0";s:17:"SetSpecialArticle";s:1:"0";s:17:"SetArticleKeyword";s:1:"0";s:20:"AddArticleKeywordNum";s:0:"";s:21:"AddArticleCopyfromNum";s:0:"";s:18:"SelectArticleStyle";s:1:"0";s:16:"SelectArticleTpl";s:1:"0";s:13:"SetArticleTpl";s:1:"0";s:18:"SetArticlePosttime";s:1:"0";s:18:"SetArticleViewtime";s:1:"0";s:16:"SetArticleHitNum";s:1:"0";s:18:"SetArticlePassword";s:1:"0";s:19:"SetArticleDownGroup";s:1:"0";s:19:"SetArticleViewGroup";s:1:"0";s:17:"SetArticleJumpurl";s:1:"0";s:19:"SetArticleIframeurl";s:1:"0";s:21:"SetArticleDescription";s:1:"0";s:16:"SetArticleTopCom";s:1:"0";s:13:"SetSmallTitle";s:1:"0";s:19:"CommentArticleYzImg";s:1:"1";s:17:"CollectArticleNum";s:0:"";s:15:"CreatSpecialNum";s:0:"";s:13:"PostNoDelCode";s:1:"0";s:7:"SetVote";s:1:"0";s:11:"SetHtmlName";s:1:"0";s:16:"PassContributeSP";s:1:"0";s:14:"AllowUploadMax";s:1:"0";s:11:"comment_num";s:2:"10";s:10:"comment_yz";s:1:"1";s:11:"comment_img";s:1:"0";s:16:"sell_postauto_yz";s:1:"0";s:15:"buy_postauto_yz";s:1:"0";s:15:"post_pingpai_yz";s:1:"0";s:10:"use2domain";s:1:"0";s:16:"useHomepageStyle";s:1:"0";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:0:"";s:12:"post_buy_num";s:0:"";s:13:"post_news_num";s:0:"";s:14:"post_photo_num";s:0:"";s:11:"post_hr_num";s:0:"";s:17:"post_zhanghui_num";s:0:"";s:12:"post_ZLG_num";s:0:"";s:16:"post_pingpai_num";s:0:"";s:19:"post_baojiadian_num";s:0:"";s:19:"post_xunjiadian_num";s:0:"";s:24:"post_info_collection_num";s:0:"";}', 0, '', '', '', '', '', '', 0);
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(3, 1, '超级管理员', 0, 'a:51:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:13:"EditPassPower";s:1:"0";s:14:"AllowUploadMax";s:1:"1";s:11:"comment_num";s:3:"999";s:10:"comment_yz";s:1:"1";s:11:"comment_img";s:1:"1";s:16:"sell_postauto_yz";s:1:"0";s:15:"buy_postauto_yz";s:1:"0";s:15:"post_pingpai_yz";s:1:"0";s:10:"use2domain";s:1:"1";s:16:"useHomepageStyle";s:1:"1";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:0:"";s:12:"post_buy_num";s:0:"";s:13:"post_news_num";s:3:"999";s:14:"post_photo_num";s:3:"999";s:11:"post_hr_num";s:3:"999";s:17:"post_zhanghui_num";s:0:"";s:12:"post_ZLG_num";s:0:"";s:16:"post_pingpai_num";s:0:"";s:19:"post_baojiadian_num";s:0:"";s:19:"post_xunjiadian_num";s:0:"";s:24:"post_info_collection_num";s:3:"999";s:18:"allow_get_homepage";s:1:"1";s:18:"shoptg_postauto_yz";s:1:"1";s:16:"shop_postauto_yz";s:1:"1";s:14:"tg_postauto_yz";s:1:"1";s:14:"post_coupon_yz";s:1:"1";s:15:"post_shoptg_num";s:3:"999";s:13:"post_shop_num";s:3:"999";s:11:"post_tg_num";s:3:"999";s:15:"post_coupon_num";s:3:"999";s:13:"post_gift_num";s:3:"999";s:13:"postNewsYzImg";s:1:"0";s:13:"postShopYzImg";s:1:"0";s:11:"postTgYzImg";s:1:"0";s:15:"postShopTgYzImg";s:1:"0";s:11:"postHrYzImg";s:1:"0";s:15:"postCouponYzImg";s:1:"0";s:13:"view_hy_money";s:0:"";s:10:"post_hr_yz";s:1:"1";s:14:"consumptionMin";s:1:"1";s:10:"GetCashMin";s:2:"20";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"1";s:13:"AllowUesStyle";s:1:"1";s:18:"AllowUesPicMsgSort";s:1:"1";s:13:"postHyNewsNum";s:4:"5000";}', 1, '{"base-admin-setting\\/index":"1","base-admin-setting\\/clearcache":"1","base-admin-plugin\\/index":"1","base-admin-plugin\\/add":"1","base-admin-plugin\\/market":"1","base-admin-plugin\\/edit":"1","base-admin-plugin\\/delete":"1","base-admin-plugin\\/copy":"1","base-admin-module\\/index":"1","base-admin-module\\/add":"1","base-admin-module\\/market":"1","base-admin-module\\/edit":"1","base-admin-module\\/delete":"1","base-admin-module\\/copy":"1","base-admin-hook\\/index":"1","base-admin-hook\\/add":"1","base-admin-hook\\/edit":"1","base-admin-hook\\/delete":"1","base-admin-hook_plugin\\/market":"1","base-admin-hook_plugin\\/index":"1","base-admin-hook_plugin\\/add":"1","base-admin-hook_plugin\\/edit":"1","base-admin-hook_plugin\\/delete":"1","base-admin-admin_menu\\/index":"1","base-admin-admin_menu\\/add":"1","base-admin-admin_menu\\/edit":"1","base-admin-admin_menu\\/delete":"1","base-admin-member_menu\\/index":"1","base-admin-member_menu\\/add":"1","base-admin-member_menu\\/edit":"1","base-admin-member_menu\\/delete":"1","base-admin-member_menu\\/copy":"1","base-admin-webmenu\\/index":"1","base-admin-webmenu\\/add":"1","base-admin-webmenu\\/edit":"1","base-admin-webmenu\\/delete":"1","base-admin-alonepage\\/index":"1","base-admin-alonepage\\/add":"1","base-admin-alonepage\\/edit":"1","base-admin-alonepage\\/delete":"1","base-admin-style\\/market":"1","base-admin-style\\/add":"1","base-admin-upgrade\\/index":"1","base-admin-upgrade\\/sysup":"1","base-admin-upgrade\\/check_files":"1","base-admin-upgrade\\/view_file":"1","base-admin-mysql\\/index":"1","base-admin-mysql\\/backup":"1","base-admin-mysql\\/showtable":"1","base-admin-mysql\\/into":"1","base-admin-mysql\\/tool":"1","member-admin-member\\/index":"1","member-admin-member\\/add":"1","member-admin-member\\/edit":"1","member-admin-member\\/delete":"1","member-admin-group\\/index":"1","member-admin-group\\/add":"1","member-admin-group\\/edit":"1","member-admin-group\\/delete":"1","member-admin-group\\/admin_power":"1","member-admin-group_cfg\\/index":"1","member-admin-group_cfg\\/edit":"1","member-admin-group_cfg\\/delete":"1","member-admin-group_cfg\\/add":"1","member-admin-group_cfg\\/autoadd":"1","member-admin-group_log\\/index":"1","member-admin-group_log\\/delete":"1","member-admin-group_log\\/pass":"1","module-cms-setting\\/index":"1","module-cms-content\\/postnew":"1","module-cms-content\\/index":"1","module-cms-content\\/add":"1","module-cms-content\\/edit":"1","module-cms-content\\/delete":"1","module-cms-sort\\/index":"1","module-cms-sort\\/add":"1","module-cms-sort\\/edit":"1","module-cms-sort\\/delete":"1","module-cms-module\\/index":"1","module-cms-module\\/add":"1","module-cms-module\\/edit":"1","module-cms-module\\/delete":"1","module-cms-field\\/index":"1","module-cms-field\\/add":"1","module-cms-field\\/edit":"1","module-cms-field\\/delete":"1","module-cms-category\\/index":"1","module-cms-category\\/add":"1","module-cms-category\\/edit":"1","module-cms-category\\/delete":"1","module-cms-info\\/index":"1","module-cms-info\\/add":"1","module-cms-info\\/edit":"1","module-cms-info\\/delete":"1","module-cms-sort_field\\/index":"1","module-cms-sort_field\\/add":"1","module-cms-sort_field\\/edit":"1","module-cms-sort_field\\/delete":"1","plugin-log-action\\/index":"1","plugin-log-action\\/delete":"1","plugin-log-login\\/index":"1","plugin-log-login\\/delete":"1","plugin-weixin-setting\\/index":"1","plugin-weixin-menu\\/config":"1","plugin-weixin-weixin_autoreply\\/index":"1","plugin-weixin-weixin_autoreply\\/add":"1","plugin-weixin-weixin_autoreply\\/edit":"1","plugin-weixin-weixin_autoreply\\/delete":"1","plugin-weixin-weixin_msg\\/index":"1","plugin-config_set-config\\/index":"1","plugin-config_set-config\\/add":"1","plugin-config_set-config\\/edit":"1","plugin-config_set-config\\/delete":"1","plugin-config_set-group\\/index":"1","plugin-config_set-group\\/add":"1","plugin-config_set-group\\/edit":"1","plugin-config_set-group\\/delete":"1","plugin-label-index\\/index":"1","plugin-label-index\\/edit":"1","plugin-label-index\\/delete":"1","plugin-label-index\\/set":"1","plugin-label-applabel\\/index":"1","plugin-label-applabel\\/add":"1","plugin-label-applabel\\/edit":"1","plugin-label-applabel\\/delete":"1","plugin-label-applabel\\/set":"1","plugin-login-setting\\/index":"1","plugin-comment-content\\/index":"1","plugin-comment-content\\/delete":"1","plugin-comment-setting\\/index":"1","plugin-area-province\\/index":"1","plugin-area-province\\/add":"1","plugin-area-province\\/edit":"1","plugin-area-province\\/delete":"1","plugin-area-city\\/index":"1","plugin-area-city\\/add":"1","plugin-area-city\\/edit":"1","plugin-area-city\\/delete":"1","plugin-area-zone\\/index":"1","plugin-area-zone\\/add":"1","plugin-area-zone\\/edit":"1","plugin-area-zone\\/delete":"1","plugin-area-street\\/index":"1","plugin-area-street\\/add":"1","plugin-area-street\\/edit":"1","plugin-area-street\\/delete":"1","plugin-marketing-setting\\/index":"1","plugin-marketing-setting\\/add":"1","plugin-marketing-setting\\/edit":"1","plugin-marketing-setting\\/delete":"1","plugin-marketing-rmb_getout\\/index":"1","plugin-marketing-rmb_getout\\/delete":"1","plugin-marketing-rmb_getout\\/pay":"1","plugin-marketing-rmb_getout\\/log":"1","plugin-marketing-rmb_infull\\/index":"1","plugin-marketing-rmb_infull\\/delete":"1","plugin-marketing-rmb_consume\\/index":"1","plugin-marketing-rmb_consume\\/delete":"1","plugin-marketing-moneylog\\/index":"1","plugin-marketing-moneylog\\/delete":"1","plugin-marketing-member\\/index":"1","plugin-marketing-member\\/add":"1","plugin-marketing-member\\/edit":"1","plugin-marketing-member\\/delete":"1","plugin-marketing-moneytype\\/index":"1","plugin-marketing-moneytype\\/add":"1","plugin-marketing-moneytype\\/edit":"1","plugin-marketing-moneytype\\/delete":"1"}', '', 'index_dev', '', 'pc_index_dev', '', 0);
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(11, 0, 'VIP会员', 5000, 'a:11:{s:14:"AllowUploadMax";s:1:"0";s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"consumptionMin";s:2:"10";s:10:"GetCashMin";s:2:"10";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"0";s:13:"AllowUesStyle";s:1:"0";s:18:"AllowUesPicMsgSort";s:1:"1";s:13:"postHyNewsNum";s:4:"5000";}', 0, NULL, '', '', '', '', '', 0);
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(8, 0, '普通会员', 0, 'a:80:{s:10:"upfileType";s:0:"";s:13:"upfileMaxSize";s:0:"";s:14:"PassContribute";s:1:"1";s:13:"EditPassPower";s:1:"0";s:17:"SearchArticleType";s:1:"1";s:12:"SetTileColor";s:1:"0";s:14:"SetSellArticle";s:1:"0";s:13:"SetSmallTitle";s:1:"0";s:17:"SetSpecialArticle";s:1:"1";s:17:"SetArticleKeyword";s:1:"1";s:20:"AddArticleKeywordNum";s:1:"0";s:16:"PostArticleYzImg";s:1:"0";s:21:"AddArticleCopyfromNum";s:1:"0";s:16:"SelectArticleTpl";s:1:"0";s:13:"SetArticleTpl";s:1:"0";s:18:"SelectArticleStyle";s:1:"0";s:18:"SetArticlePosttime";s:1:"0";s:18:"SetArticleViewtime";s:1:"0";s:16:"SetArticleHitNum";s:1:"0";s:18:"SetArticlePassword";s:1:"0";s:19:"SetArticleDownGroup";s:1:"0";s:19:"SetArticleViewGroup";s:1:"0";s:17:"SetArticleJumpurl";s:1:"0";s:19:"SetArticleIframeurl";s:1:"0";s:21:"SetArticleDescription";s:1:"0";s:16:"SetArticleTopCom";s:1:"0";s:17:"CollectArticleNum";s:2:"30";s:15:"CreatSpecialNum";s:1:"7";s:19:"CommentArticleYzImg";s:1:"1";s:11:"SetHtmlName";s:1:"0";s:7:"SetVote";s:1:"1";s:16:"PassContributeSP";s:1:"0";s:13:"PostNoDelCode";s:1:"0";s:14:"AllowUploadMax";s:1:"0";s:11:"comment_num";s:0:"";s:10:"comment_yz";s:1:"0";s:11:"comment_img";s:1:"0";s:16:"sell_postauto_yz";s:1:"1";s:15:"buy_postauto_yz";s:1:"1";s:15:"post_pingpai_yz";s:1:"1";s:10:"use2domain";s:1:"0";s:16:"useHomepageStyle";s:1:"1";s:21:"view_buy_view_contact";s:1:"0";s:13:"post_sell_num";s:1:"5";s:12:"post_buy_num";s:1:"5";s:13:"post_news_num";s:1:"5";s:14:"post_photo_num";s:2:"10";s:11:"post_hr_num";s:1:"5";s:17:"post_zhanghui_num";s:1:"5";s:12:"post_ZLG_num";s:1:"0";s:16:"post_pingpai_num";s:1:"5";s:19:"post_baojiadian_num";s:1:"5";s:19:"post_xunjiadian_num";s:1:"5";s:24:"post_info_collection_num";s:2:"30";s:18:"allow_get_homepage";s:1:"1";s:16:"shop_postauto_yz";s:1:"1";s:14:"tg_postauto_yz";s:1:"1";s:14:"post_coupon_yz";s:1:"1";s:13:"post_shop_num";s:1:"5";s:11:"post_tg_num";s:1:"3";s:15:"post_coupon_num";s:1:"3";s:13:"post_gift_num";s:1:"0";s:18:"shoptg_postauto_yz";s:1:"0";s:15:"post_shoptg_num";s:0:"";s:13:"postNewsYzImg";s:1:"1";s:13:"view_hy_money";s:0:"";s:13:"postShopYzImg";s:1:"1";s:11:"postTgYzImg";s:1:"1";s:15:"postShopTgYzImg";s:1:"1";s:11:"postHrYzImg";s:1:"1";s:15:"postCouponYzImg";s:1:"1";s:10:"post_hr_yz";s:1:"1";s:14:"consumptionMin";s:2:"10";s:10:"GetCashMin";s:2:"10";s:12:"GetCashScale";s:2:"10";s:11:"AllowMakeHy";s:1:"1";s:15:"AllowMakeMoreHy";s:1:"0";s:13:"AllowUesStyle";s:1:"0";s:13:"postHyNewsNum";s:2:"30";s:18:"AllowUesPicMsgSort";s:1:"1";}', 0, '', '', '', '', '', '', 0);
-INSERT INTO `qb_group` (`id`, `type`, `title`, `level`, `powerdb`, `allowadmin`, `admindb`, `logo`, `wap_page`, `wap_member`, `pc_page`, `pc_member`, `daytime`) VALUES(12, 1, '普通管理员', 0, '', 1, NULL, '', '', '', '', '', 0);
-ALTER TABLE  `qb_memberdata` ADD  `group_endtime` INT( 10 ) NOT NULL COMMENT  '用户组截止日期';
-
-
-
-ALTER TABLE  `qb_attachment` ADD INDEX (  `uid` );
-ALTER TABLE  `qb_attachment` ADD INDEX (  `md5` );
-ALTER TABLE  `qb_memberdata` COMMENT =  '用户数据表';
-
-
-
-DROP TABLE IF EXISTS `qb_rmb_consume`;
-CREATE TABLE IF NOT EXISTS `qb_rmb_consume` (
-  `id` mediumint(7) NOT NULL AUTO_INCREMENT,
-  `uid` mediumint(7) NOT NULL DEFAULT '0' COMMENT '用户UID',
-  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'RMB变化金额，有增有减',
-  `about` varchar(255) NOT NULL DEFAULT '' COMMENT '变动说明注释',
-  `posttime` int(10) NOT NULL DEFAULT '0' COMMENT '发生时间',
-  `freeze` tinyint(1) NOT NULL DEFAULT '0' COMMENT '冻结金额，一般是提现时冻结',
-  `fx` tinyint(2) NOT NULL COMMENT '是否为分销金额，暂时没用到',
-  `shopid` int(10) NOT NULL COMMENT '分销商品ID，暂时没用到',
-  PRIMARY KEY (`id`),
-  KEY `uid` (`uid`),
-  KEY `fx` (`fx`),
-  KEY `shopid` (`shopid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员余额RMB赚取与消费记录' AUTO_INCREMENT=1 ;
-
-
-DROP TABLE IF EXISTS `qb_rmb_getout`;
-CREATE TABLE IF NOT EXISTS `qb_rmb_getout` (
-  `id` mediumint(7) NOT NULL AUTO_INCREMENT,
-  `uid` mediumint(7) NOT NULL DEFAULT '0' COMMENT '用户UID',
-  `username` varchar(30) NOT NULL DEFAULT '' COMMENT '用户帐号，可不填，将弃用',
-  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '提现金额',
-  `posttime` int(10) NOT NULL DEFAULT '0' COMMENT '提现时间',
-  `banktype` varchar(20) NOT NULL DEFAULT '' COMMENT '申请转入此收款银行',
-  `bankname` varchar(100) NOT NULL DEFAULT '' COMMENT '转入银行帐号',
-  `ifpay` tinyint(1) NOT NULL DEFAULT '0' COMMENT '支付与否',
-  `why` varchar(255) NOT NULL DEFAULT '' COMMENT '提现说明原因',
-  `truename` varchar(30) NOT NULL DEFAULT '' COMMENT '真实姓名',
-  `tel` varchar(20) NOT NULL DEFAULT '' COMMENT '联系电话',
-  `quitabout` text NOT NULL COMMENT '管理员回复信息',
-  `admin` varchar(30) NOT NULL DEFAULT '' COMMENT '管理员帐号',
-  `replytime` int(10) NOT NULL DEFAULT '0' COMMENT '支付时间',
-  `real_money` decimal(10,2) NOT NULL COMMENT '实际申请提现金额，针对扣手续费的情况',
-  PRIMARY KEY (`id`),
-  KEY `uid` (`uid`),
-  KEY `ifpay` (`ifpay`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员余额申请提现记录' AUTO_INCREMENT=1;
-
-
-ALTER TABLE  `qb_msg` ADD  `ext_sys` INT( 7 ) NOT NULL COMMENT  '系统模型ID',ADD  `ext_id` INT( 7 ) NOT NULL COMMENT  '内容ID';
-ALTER TABLE  `qb_msg` ADD INDEX (  `ext_sys` ,  `ext_id` );
-
-
-
-DROP TABLE IF EXISTS `qb_timed_log`;
-CREATE TABLE IF NOT EXISTS `qb_timed_log` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `taskid` smallint(6) NOT NULL COMMENT '对应的任务ID值',
-  `create_time` int(10) NOT NULL COMMENT '执行时间',
-  `times` double(7,4) NOT NULL COMMENT '执行消耗时间多少秒',
-  PRIMARY KEY (`id`),
-  KEY `taskid` (`taskid`),
-  KEY `create_time` (`create_time`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='定时任务执行日志' AUTO_INCREMENT=1 ;
-
-DROP TABLE IF EXISTS `qb_timed_task`;
-CREATE TABLE IF NOT EXISTS `qb_timed_task` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `type` varchar(15) NOT NULL COMMENT 't_once仅一次，t_month每月一次，t_week每周一次，t_day每天一次，t_days每几天一次，t_hours每几小时一次，t_minutes每几分钟一次',
-  `title` varchar(255) NOT NULL COMMENT '任务描述',
-  `class_file` varchar(255) NOT NULL COMMENT '运行脚本',
-  `class_method` varchar(15) NOT NULL COMMENT '指定类的方法名',
-  `ext` text NOT NULL COMMENT '相关扩展参数',
-  `create_time` int(10) NOT NULL COMMENT '创建日期',
-  `day` tinyint(2) NOT NULL COMMENT '每月的哪天执行',
-  `week` tinyint(1) NOT NULL COMMENT '每周的星期几执行',
-  `ymd` varchar(10) NOT NULL COMMENT '年月日,比如2018-12-12',
-  `days` tinyint(3) NOT NULL COMMENT '每隔几天就执行一次',
-  `hours` tinyint(2) NOT NULL COMMENT '每隔几小时就执行一次',
-  `minutes` tinyint(2) NOT NULL COMMENT '每隔几分钟就执行一次',
-  `his` varchar(8) NOT NULL COMMENT '具体几时几分执行，比如13:25:00（每隔几小时或几分的这里为空）',
-  `num` int(7) NOT NULL COMMENT '总共被执行过多少次',
-  `list` int(10) NOT NULL COMMENT '排序值',
-  `ifopen` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否启用',
-  `last_time` int(10) NOT NULL COMMENT '上次执行时间',
-  `use_time` double(7,4) NOT NULL COMMENT '上次执行消耗时间',
-  `author` varchar(50) NOT NULL COMMENT '开发者',
-  `version_id` int(7) NOT NULL COMMENT '应用市场ID',
-  `version` varchar(60) NOT NULL COMMENT '版本号',
-  PRIMARY KEY (`id`),
-  KEY `list` (`list`),
-  KEY `type` (`type`,`num`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='定时任务计划表' AUTO_INCREMENT=1 ;
-
-
-INSERT INTO `qb_hook_plugin` (`id`, `hook_key`, `plugin_key`, `hook_class`, `about`, `ifopen`, `list`, `author`, `author_url`, `version`, `version_id`) VALUES(0, 'layout_body_foot', '', 'app\\index\\controller\\Task', '定时任务前台唤醒', 1, 0, '', '', '', 0);
