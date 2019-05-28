@@ -7,6 +7,7 @@ use app\common\model\Hook as HookModel;
 use app\common\model\Hook_plugin as Hook_pluginModel;
 use app\common\model\Plugin;
 use app\common\traits\Market;
+use think\Db;
 
 class HookPlugin extends AdminBase
 {
@@ -16,6 +17,7 @@ class HookPlugin extends AdminBase
     protected $form_items;
     protected $list_items;
     protected $tab_ext;
+    protected static $type = 'hook';
     
     public function index($hook_key='') {
         $map = [];
@@ -69,8 +71,11 @@ class HookPlugin extends AdminBase
             unlink($basepath.ucfirst($keywords).'.php');
             return $this->err_js($result);
         }
-        if(defined('ADD_PACKET')){
+        if(self::$type == 'packet'){
             return $this->ok_js(['url'=>url('market')],'增强包安装成功');
+        }elseif(self::$type == 'task'){
+            \app\admin\controller\Timedtask::make_cfg();
+            return $this->ok_js(['url'=>url('timedtask/index')],'定时任务安装成功,请重新配置参数');
         }
         cache('hook_plugins', NULL);
         return $this->ok_js(['url'=>url('hook_plugin/index')],'钩子安装成功,请在钩子设置那里选择启用');
@@ -101,6 +106,37 @@ class HookPlugin extends AdminBase
         ];
         \app\common\model\Market::create($data);
     }
+    
+    /**
+     * 定时任务入库
+     * @param unknown $keywords
+     * @param number $id
+     * @return string|boolean
+     */
+    protected function into_task($keywords,$id=0){
+        $classname = "app\\common\\task\\".ucfirst($keywords);
+        if(!class_exists($classname)){
+            return '定时任务程序代码不符合规则!'.$classname;
+        }
+        $class = new $classname;
+        $info = $class->info;
+        if(empty($info)){
+            return '定时任务程序代码不完整,缺少配置参数!';
+        }
+        $info['version_id'] = $id;
+        $info['class_file'] = $classname;
+        $info['create_time'] = time();
+        $id = Db::name('timed_task')->insertGetId($info);
+        
+        if( method_exists($classname,'install') ){
+            $class->install($id);
+        }
+        if ($id) {
+            return true;
+        }else{
+            return '定时任务入库失败!';
+        }
+    }
 
     /**
      * 入库处理
@@ -110,11 +146,18 @@ class HookPlugin extends AdminBase
      */
     protected function install($keywords,$id=0){
         $classname = "app\\common\hook\\".ucfirst($keywords);
+        
         if(!class_exists($classname)){
             //return '钩子程序代码不符合规则!'.$classname;
-            $this->add_packet($keywords,$id);   //不是钩子,仅仅是增强包
-            define('ADD_PACKET',true);
-            return true;
+            $classname = "app\\common\\task\\".ucfirst($keywords);
+            if(class_exists($classname)){
+                self::$type = 'task';
+                return $this->into_task($keywords,$id); //定时任务
+            }else{
+                $this->add_packet($keywords,$id);   //不是钩子,仅仅是增强包
+                self::$type = 'packet';
+                return true;
+            }            
         }
         $class = new $classname;
         $info = $class->info;

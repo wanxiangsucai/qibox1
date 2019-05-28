@@ -55,6 +55,16 @@ return array(
                                                         'hook_plugin/delete'=>'删除钩子',
                                                 ],
                                         ),
+                                    array(
+                                        'title'=>'定时任务管理',
+                                        'link'=>'timedtask/index',
+                                        'power'=>[
+                                            'add'=>'添加定时任务',
+                                            'edit'=>'修改定时任务',
+                                            'delete'=>'删除定时任务',
+                                            'log'=>'定时任务日志管理',
+                                        ],
+                                    ),
                                         array(
                                                 'title'=>'后台常用菜单设置',
                                                 'link'=>'admin_menu/index',

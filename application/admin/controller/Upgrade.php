@@ -6,6 +6,7 @@ use app\common\model\Module;
 use app\common\model\Plugin;
 use app\common\model\Hook_plugin;
 use app\common\model\Market as MarketModel;
+use app\common\model\Timedtask AS TaskModel;
 
 class Upgrade extends AdminBase
 {
@@ -57,6 +58,16 @@ class Upgrade extends AdminBase
 	            if($de){
 	                $vs = $de['time']."\t".$de['md5'];
 	                Hook_plugin::update(['id'=>$rs['id'],'version'=>$vs]);
+	            }
+	        }
+	    }
+	    if($data['t']){
+	        $array = cache('timed_task');
+	        foreach ($array AS $rs){
+	            $de = $data['t'][$rs['version_id']];
+	            if($de){
+	                $vs = $de['time']."\t".$de['md5'];
+	                TaskModel::update(['id'=>$rs['id'],'version'=>$vs]);
 	            }
 	        }
 	    }

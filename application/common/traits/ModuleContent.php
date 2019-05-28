@@ -92,6 +92,10 @@ trait ModuleContent
 	 */
 	protected function saveEdit($mid=0,$data=[],$url=''){
 	    
+	    if (empty($data['id'])) {
+	        $this -> error('ID参数值不存在!!');
+	    }
+	    
 	    //主要针对多选项的数组进行处理
 	    $data = $this->format_post_data($data);
 	    

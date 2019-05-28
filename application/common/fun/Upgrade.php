@@ -30,6 +30,11 @@ class Upgrade{
             $data[] = str_replace('\\', '__', $rs['hook_class']) . '-' . $version . '-' . $rs['version_id'] . '-h';
             $_hook[$rs['hook_class']] = true;
         }
+        $array = cache('timed_task');   //这里必须注意,只有当app\index\controller\Task::run_task执行过,才会有缓存出现.否则也不会更新应用
+        foreach ($array AS $rs){
+            list($time,$version) = explode("\t",$rs['version']);
+            $data[] = str_replace('\\', '__', $rs['class_file']) . '-' . $version . '-' . $rs['version_id'] . '-t';
+        }
         $style_array = \app\common\util\Style::get_style('index');
         foreach ($style_array AS $key=>$name){
             $version = $version_id = '';

@@ -50,8 +50,16 @@ jQuery(document).ready(function() {
                 var trigger_item = $(this);
                 var trigger_value   = trigger_item.val();
 				
+				var cks = '';	//获取当前项的所有表单
+				$(content).each(function () {
+					var that = $(this);
+					cks += that[1]+',';
+				});				
+
 				for (var index in field_hide_array) {
-					$('#form_group_'+field_hide_array[index]).hide();
+					if(field_hide_array[index]!='' && $.inArray( field_hide_array[index], cks.split(',') )>-1 ){	//只隐藏当前项,非当前项就不能隐藏
+						$('#form_group_'+field_hide_array[index]).hide();
+					}					
 				}
 
                 $(content).each(function () {

@@ -127,6 +127,13 @@ function search_content(){
 </div>
 </form>
 
+{if $tab_ext.help_msg}
+<div class="MainContainers" id="help_msg">
+	<div class="Header"><span class="tag"><i class="fa fa-question-circle-o" style="font-size:18px;color:red;"></i> 重要提示</span> </div>
+	<div class="Conter">{$tab_ext.help_msg}</div>
+</div>
+{/if}
+
 <script type="text/javascript">
 var quickedit_url = "{:auto_url('quickedit')}"; //快速编辑的地址
 

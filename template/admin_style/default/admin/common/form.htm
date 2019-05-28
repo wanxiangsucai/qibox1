@@ -101,6 +101,13 @@
 </form>
 </div>
 
+{if $tab_ext.help_msg}
+<div class="MainContainers" id="help_msg">
+	<div class="Header"><span class="tag"><i class="fa fa-question-circle-o" style="font-size:18px;color:red;"></i> 重要提示</span> </div>
+	<div class="Conter">{$tab_ext.help_msg}</div>
+</div>
+{/if}
+
 <!-- 某些表单的某些选项触发事件,少用 -->
 {notempty name="$tab_ext.trigger"}
 <script type="text/javascript">
