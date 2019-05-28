@@ -19,7 +19,18 @@ class Setting extends AdminBase
     protected $list_items;
     protected $tab_ext;
     protected $group = 'base';
-    protected $_config = [];    //系统强制要补上的字段
+    //系统强制要补上的字段
+    protected $_config = [
+        [
+            'c_key'=>'sms_type',
+            'title'=>'短信接口标志',
+            'c_descrip'=>'留空则用阿里云短信接口,其它接口请输入短信接口关键字',
+            'form_type'=>'text',
+            'ifsys'=>1,
+            'type'=>1,
+            'list'=>-1,
+        ],
+    ];
     protected $config = null;    //频道或插件强制要补上的字段
 
     protected function _initialize()
@@ -27,7 +38,7 @@ class Setting extends AdminBase
         parent::_initialize();
         $this->model = new ConfigModel();
 //         $this->tab_ext = [ 'help_msg'=>'系统参数配置',];
-        $this->tab_ext['help_msg'] = '系统参数配置';
+        $this->tab_ext['page_title'] = '系统参数配置';
         $this->add_module_config();
     }
     
