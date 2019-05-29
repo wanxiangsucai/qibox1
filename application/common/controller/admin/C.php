@@ -18,18 +18,19 @@ abstract class C extends AdminBase
     protected $list_items;
     protected $tab_ext;
     protected $mid;
-    protected $status_array = [
-            '未审核',
-            '已审核',
-            '1星推荐',
-            '2星推荐',
-            '3星推荐',
-            '4星推荐',
-            '5星推荐',
-            '6星推荐', 
-            '7星推荐', 
-            '8星推荐',
-    ];
+    protected $status_array;
+//     protected $status_array = [
+//             '未审核',
+//             '已审核',
+//             '1星推荐',
+//             '2星推荐',
+//             '3星推荐',
+//             '4星推荐',
+//             '5星推荐',
+//             '6星推荐', 
+//             '7星推荐', 
+//             '8星推荐',
+//     ];
     
     protected function _initialize()
     {
@@ -40,6 +41,7 @@ abstract class C extends AdminBase
         $this->s_model     = get_model_class($dirname,'sort');
         $this->m_model   = get_model_class($dirname,'module');
         $this->f_model     = get_model_class($dirname,'field');
+        $this->status_array = fun('content@status');
     }
     
     /**

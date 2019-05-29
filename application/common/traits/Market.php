@@ -247,19 +247,20 @@ trait Market
         $list = 10;
         $i = 0;
         $sys_id = $type=='m' ? $model_id : -$model_id;
+        $ifsys = $type=='m' ? 0 : intval($info['ifsys']);
         foreach($info['config_group'] AS $title){
             $data = [
-                    'title'=>$title,
-                    'sys_id'=> $sys_id,
-                    'list'=>--$list,
-                    'ifsys'=> $type=='m' ? 0 : intval($info['ifsys']),
-                    'ifshow'=>intval($info['ifshow']),
+                'title'=>$title,
+                'sys_id'=> $sys_id,
+                'list'=>--$list,
+                'ifsys'=> $ifsys,
+                'ifshow'=>intval($info['ifshow']),
             ];
             $i++;
             //创建参数配置分类
             $groupid = Db::name('config_group')->insert($data,false,true);
             //修改入库前还没有进行分类的参数
-            Db::name('config')->where('type',-$i)->update(['type'=>$groupid,'sys_id'=>$sys_id]);
+            Db::name('config')->where('type',-$i)->update(['type'=>$groupid,'sys_id'=>$sys_id,'ifsys'=>$ifsys]);
         }
         $this->run_install($model_id,$type,$keywords,'install');
         

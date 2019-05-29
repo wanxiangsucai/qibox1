@@ -3,7 +3,7 @@ namespace app\common\controller\index\wxapp;
 
 use app\common\controller\IndexBase;
 use app\common\traits\ModuleContent;
-use think\Db;
+//use think\Db;
 
 //小程序或APP调用的列表数据
 abstract class Api extends IndexBase
@@ -54,7 +54,7 @@ abstract class Api extends IndexBase
     public function top($id=0,$time=24){        
         $info = $this->check_getTab($id);        
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }        
 //        $table = $info['table'];
         $list = $time*3600+time();
@@ -80,7 +80,7 @@ abstract class Api extends IndexBase
     public function bottom($id=0,$time=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
 //        $table = $info['table'];        
         if ($time==0) {
@@ -111,7 +111,7 @@ abstract class Api extends IndexBase
     public function recover($id=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
 //        $table = $info['table'];        
         if ($info['update_time']) {
@@ -140,7 +140,7 @@ abstract class Api extends IndexBase
     public function star($id=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
  //       $table = $info['table'];    
         $data = [
@@ -163,7 +163,7 @@ abstract class Api extends IndexBase
     public function unstar($id=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
  //       $table = $info['table'];    
         $data = [
@@ -187,7 +187,7 @@ abstract class Api extends IndexBase
     public function lock($id=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
         $table = $this->model->getTableByMid($info['mid']);
         if (!table_field($table,'lock')) {
@@ -215,7 +215,7 @@ abstract class Api extends IndexBase
     public function unlock($id=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
 //        $table = $info['table'];        
         $data = [
@@ -239,7 +239,7 @@ abstract class Api extends IndexBase
     public function fonttype($id=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
         $table = $this->model->getTableByMid($info['mid']); 
         if (!table_field($table,'font_type')) {
@@ -266,7 +266,7 @@ abstract class Api extends IndexBase
     public function unfonttype($id=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
 //        $table = $info['table'];        
         $data = [
@@ -289,7 +289,7 @@ abstract class Api extends IndexBase
     public function fontcolor($id=0,$type='#ff0000'){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
         $table = $this->model->getTableByMid($info['mid']); 
         if (!table_field($table,'font_color')) {
@@ -317,7 +317,7 @@ abstract class Api extends IndexBase
     public function unfontcolor($id=0){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
-            return $info;
+            return $this->err_js($info);
         }
  //       $table = $info['table'];        
         $data = [

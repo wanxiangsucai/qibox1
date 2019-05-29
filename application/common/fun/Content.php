@@ -8,6 +8,32 @@ use think\Db;
 class Content{
     
     /**
+     * 主题的状态
+     * @return array
+     */
+    public static function status(){
+        $array = [
+            '未审核',
+            '已审核',
+        ];
+        $data = config('webdb.content_status')?str_array(config('webdb.content_status')):null;
+        if(empty($data)){
+            $data = [
+                '1星推荐',
+                '2星推荐',
+                '3星推荐',
+                '4星推荐',
+                '5星推荐',
+                '6星推荐',
+                '7星推荐',
+                '8星推荐',
+            ];
+        }
+        $array = array_merge($array,$data);
+        return $array;
+    }
+    
+    /**
      * 内容里边的 [code] 转义为前台展示
      * @param string $content
      */

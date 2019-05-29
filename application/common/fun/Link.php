@@ -30,6 +30,7 @@ class Link{
 	border-radius:3px;
 	margin:5px 0 15px 0;
 	display:block;
+    text-align:center;
 }			
 </style>
 <a href='javascript:' title='请点击选择相应选项！' onclick=\"layer.tips($(this).next().html(), $(this), {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });\">{$title}</a>
