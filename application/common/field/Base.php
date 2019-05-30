@@ -79,9 +79,10 @@ class Base
                 $show = $detail[$f_value];
             }
             
-        }elseif ($field['type'] == 'checkbox') {    //复选框
+        }elseif ($field['type'] == 'checkbox'||$field['type'] == 'usergroup2') {    //复选框 及用户组多选
             
             $info["_$name"] = $f_value;         //为了保留原始值
+            $field['type'] == 'usergroup2' && $field['options'] = 'app\common\model\Group@getTitleList'; //用户组多选
             
             $detail = [];
             if( preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options']) || preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$field['options']) ){

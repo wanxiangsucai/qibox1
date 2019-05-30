@@ -114,7 +114,7 @@ class Form extends Base
             }
             $show = $_show ;
        
-        }elseif ($field['type'] == 'checkbox') {    // 多选按钮
+        }elseif ($field['type'] == 'checkbox'||$field['type'] == 'usergroup2') {    // 多选按钮  及用户组多选
             
             $_detail = explode(',',$info[$name]);
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
@@ -271,6 +271,9 @@ class Form extends Base
         $field_array = get_field($mid);
         foreach ($field_array AS $rs){
             //$rs['options'] && $rs['options'] = str_array($rs['options']);
+            if($rs['type'] == 'usergroup2'){    //用户组多选
+                $rs['options'] = 'app\common\model\Group@getTitleList';
+            }
             $rs['options'] = static::options_2array($rs['options']);
             if($rs['type']=='hidden'){   //隐藏域比较特别些
                 $rs['title'] = $rs['value'];

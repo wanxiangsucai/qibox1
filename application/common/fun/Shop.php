@@ -151,6 +151,14 @@ class Shop{
         if($value>0){
             return $value;
         }else{
+            if (isset($info['vip_price']) && $info['vip_price']>0) {    //存在VIP价格
+                $webdb = config('webdb');
+                $gid = login_user('groupid');
+                if ($webdb['group_vip_price'] && in_array($gid, $webdb['group_vip_price'])) {
+                    return $info['vip_price'];  //享受VIP价
+                }
+            }
+            
             return $info['price'];
         }
     }

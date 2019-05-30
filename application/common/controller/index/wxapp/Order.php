@@ -53,7 +53,7 @@ class Order extends IndexBase
                 $money += $rs['_price']*$rs['_num'];
             }
             $data['shop'] = implode(',', $_shop);
-            $data['order_sn'] = rands(10);      //订单号
+            $data['order_sn'] = 's'.date('ymdHis').rands(3);      //订单号
             $data['totalmoney'] = $data['pay_money'] = $money;
             $total_money +=$money;
             $data['uid'] = $this -> user['uid'];

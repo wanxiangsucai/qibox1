@@ -207,7 +207,17 @@ class Config extends Model
                 case 'array':
                     $rs['c_value'] = str_array($rs['c_value']);
                     break;
-                case 'checkbox':
+                case 'usergroup':    //之前没转义,避免冲突,所以加多一个变量
+                    $_value = $rs['c_value']?json_decode($rs['c_value'],true):[];
+                    break;
+                case 'usergroup2':
+                    if ($rs['c_value'] != '') {
+                        $rs['c_value'] = explode(',', $rs['c_value']);
+                    } else {
+                        $rs['c_value'] = [];
+                    }
+                    break;
+                case  'checkbox':
                     if ($rs['c_value'] != '') {
                         $rs['c_value'] = explode(',', $rs['c_value']);
                     } else {
@@ -217,16 +227,20 @@ class Config extends Model
             }
             if($sys_id){    //指定了插件或模块
                 $result[$key] = $rs['c_value'];
+                $rs['form_type']=='usergroup' && $result[$key.'_'] = $_value;   //之前没转义,避免冲突,所以加多一个变量
             }else{  //读取所有                
                 if($rs['sys_id']>0){
                     $dirname = modules_config($rs['sys_id'])['keywords'];
                     $dirname && $result['M__'.$dirname][$key] = $rs['c_value'];
+                    $dirname && $rs['form_type']=='usergroup' && $result['M__'.$dirname][$key.'_'] = $_value;   //之前没转义,避免冲突,所以加多一个变量
                 }elseif($rs['sys_id']<0){
                     $dirname = plugins_config(abs($rs['sys_id']))['keywords'];
                     $dirname && $result['P__'.$dirname][$key] = $rs['c_value'];
+                    $dirname && $rs['form_type']=='usergroup' && $result['P__'.$dirname][$key.'_'] = $_value;   //之前没转义,避免冲突,所以加多一个变量
                 }
-                if($rs['ifsys']){
+                if($rs['ifsys']){   //插件有可能定义了为系统变量
                     $result[$key] = $rs['c_value'];
+                    $rs['form_type']=='usergroup' && $result[$key.'_'] = $_value;   //之前没转义,避免冲突,所以加多一个变量
                 }
             }            
         }

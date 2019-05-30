@@ -48,7 +48,7 @@ jQuery(document).ready(function() {
         $.each(trigger_config.triggers, function (trigger, content) {
             trigger_form.delegate('[name='+ trigger +']', 'change', function (event, init) {
                 var trigger_item = $(this);
-                var trigger_value   = trigger_item.val();
+                var trigger_value   = trigger_item.val();	//当前选中的值
 				
 				var cks = '';	//获取当前项的所有表单
 				$(content).each(function () {
@@ -64,9 +64,9 @@ jQuery(document).ready(function() {
 
                 $(content).each(function () {
                     var that = $(this);
-                    var sel_values  = that[0];
+                    var sel_values  = that[0];	//供可选的值 可能是一个 xx 也可能是多个xx,ss,cc
                     var targets_array = that[1].split(',');
-                    if (trigger_value==sel_values) {
+                    if ( (sel_values.indexOf(',')==-1&&trigger_value==sel_values)  || (sel_values.indexOf(',')>-1&&$.inArray( trigger_value, sel_values.split(',') )>-1) ) { //选中其中的值
                         for (var index in targets_array) {
 							$('#form_group_'+targets_array[index]).show();
                         }

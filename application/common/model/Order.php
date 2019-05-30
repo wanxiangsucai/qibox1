@@ -120,7 +120,7 @@ class Order extends Model
             if (empty($info)) {
                 continue;
             }
-            if ($info['pay_status']) {  //已支付
+            if ($info['pay_status']==1) {  //已支付
                 $check++;
                 continue;   //不要再执行下面的
             }

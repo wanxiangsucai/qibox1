@@ -14,9 +14,12 @@ class Cfgfield{
     public static function toForm($list_data=[]){
         $tab_list = [];
         foreach ($list_data as $key => $rs) {
+            if($rs['form_type'] == 'usergroup2'){    //用户组多选
+                $rs['options'] = 'app\common\model\Group@getTitleList';
+            }
             empty($rs['form_type']) && $rs['form_type'] = 'text';
             empty($rs['title']) && $rs['title'] = '未命名的字段：'.$rs['c_key'];
-            if( in_array($rs['form_type'],['radio','select','checkbox','checkboxtree']) && !empty($rs['options']) ){
+            if( in_array($rs['form_type'],['radio','select','checkbox','checkboxtree','usergroup2']) && !empty($rs['options']) ){
                 if(preg_match('/^[a-z]+(\\\[_a-z]+)+@[_a-z]+/i',$rs['options'])){   //执行类
                     list($class_name,$action,$params) = explode('@',$rs['options']);
                     if(class_exists($class_name)&&method_exists($class_name, $action)){

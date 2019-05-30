@@ -88,7 +88,7 @@ abstract class Order extends IndexBase
                     $car_db[] = $rs['_car_'];
                 }
                 $data['shop'] = implode(',', $_shop);
-                $data['order_sn'] = rands(10);      //订单号
+                $data['order_sn'] = 's'.date('ymdHis').rands(3);      //订单号
                 $data['totalmoney'] = $data['pay_money'] = $money; 
                 $total_money +=$money; 
                 if (!empty($this -> validate)) {// 验证表单                    
