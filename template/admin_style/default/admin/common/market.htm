@@ -263,13 +263,19 @@ function showlist(){
 			}else{
 				var str = '';
 				res.data.forEach((rs)=>{
+					var vip_str = '';
+					var vip_join_str = '';
+					if(rs.vip_price>0){
+						vip_str = '<a href="https://x1.php168.com/qun/show-'+rs._qid+'.html" target="_blank" title="点击申请VIP" class="price" style="color:orange;float:right;">vip尊享: '+rs.vip_price+'</a>';
+						vip_join_str = '<a href="https://x1.php168.com/qun/show-'+rs._qid+'.html" target="_blank" title="点击申请VIP" style="color:#3D8EC1;float:right;">申请vip</a>';
+					}
 					str +='<li>'+
 							'<dl>'+
 								'<dt><a href="https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html" target="_blank"><img onerror="this.src=\'__STATIC__/images/nopic.png\'" src="'+rs.picurl+'"></a></dt>'+
 								'<dd>'+
 									'<h3>'+rs.title+'<span>'+(rs.downs>10?'热门':'')+'</span></h3>'+
-										(rs.price>0 ? (rs.jifen>0?'<div><span class="price red">&yen; '+rs.price+' 元</span> <span class="price blue">(积分 '+rs.jifen+' 个)</span></div>':'<div class="price red">&yen; '+rs.price+' 元</div>'):'<div class="price blue">免费</div>')+
-									'<div class="other">开发者主页：<a target="_blank" href="https://x1.php168.com/member.php/member/user/index/uid/'+rs.uid+'.html">'+rs.author+'</a></div>'+
+										(rs.price>0 ? (rs.jifen>0?'<div><span class="price red">&yen; '+rs.price+' 元</span> <span class="price blue">(积分 '+rs.jifen+' 个)</span> '+vip_str+'</div>':'<div class="price red">&yen; '+rs.price+' 元 '+vip_str+'</div>'):'<div class="price blue">免费</div>')+
+									'<div class="other">开发者主页：<a target="_blank" href="https://x1.php168.com/member.php/home/'+rs.uid+'.html">'+rs.author+'</a>'+vip_join_str+'</div>'+
 									(rs._qid>0?('<div class="other">交流点评区：<a target="_blank" href="https://x1.php168.com/qun/show-'+rs._qid+'.html">查看点评</a></div>'):'<div class="other">风险提示：<em style="color:#B39006;">当前应用没有用户点评,请谨慎安装</em></div>')+
 									'<div class="other" title="'+rs.about+'">介绍：'+rs.about+'</div>'+
 									'<div class="other">安装次数：'+rs.downs+' 次</div>'+

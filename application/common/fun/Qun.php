@@ -6,14 +6,40 @@ use app\qun\model\Content AS ContentModel;
 class Qun{
     
     /**
+     * 获取用户所在圈子里边的角色
+     * @param number $id
+     * @param number $uid
+     * @param string $field 获取哪个字段,留空则是所有字段
+     * @return void|array|\think\db\false|PDOStatement|string|\think\Model
+     */
+    public static function get_user_group($id=0,$uid=0,$field='type'){
+        if (empty($id)) {
+            return ;
+        }
+        if (empty($uid)) {
+            $uid = login_user('uid');
+        }
+        if (empty($uid)) {
+            return ;
+        }
+        $info = Db::name('qun_member')->where('uid',$uid)->where('aid',$id)->find();
+        if ($field){
+            return $info[$field];
+        }else{
+            return $info;
+        }
+    }
+    
+    /**
      * 获取群的角色名称
      * @param unknown $groupid
      * @return number|string|unknown|array|number[][]|string[][]|unknown[][]|array[][]
      */
-    function get_group($groupid=null){
+    public static function get_group($groupid=null){
         $array = [];
         $i = 0;
-        $str = explode("\n", str_replace("\r", '', config('webdb.qun_groups')));
+        $webdb = config('webdb.M__qun');
+        $str = explode("\n", str_replace("\r", '', $webdb['qun_groups']));
         foreach($str AS $value){
             if (empty($value)) {
                 continue;
