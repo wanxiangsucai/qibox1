@@ -23,6 +23,9 @@ class Qun{
             return ;
         }
         $info = Db::name('qun_member')->where('uid',$uid)->where('aid',$id)->find();
+        if ($info['end_time'] && $info['end_time']<time()) {  //设置了有效期
+            $info['type'] = $info['type']>1 ? 1 : 0 ;
+        }
         if ($field){
             return $info[$field];
         }else{

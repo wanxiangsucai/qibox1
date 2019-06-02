@@ -131,8 +131,8 @@ class Group extends MemberBase
                     add_jifen($this->user['uid'],-$money,'认证升级用户身份');
                 }                
             }
-            $title = $this->user['groupid'].'申请升级用户组为 '.getGroupByid($gid).'请尽快进后台审核处理！';
-            $content = $title.'<br>申请日期：'.date('Y-m-d H:i');
+            $title = $this->user['username'] . '申请升级用户组为 ' . getGroupByid($gid) . '请尽快进后台审核处理！';
+            $content = $title."\r\n 申请日期：".date('Y-m-d H:i');
             send_admin_msg($title,$content);
             $this->success('信息已提交,请等待管理员审核!',urls('index'));
         }else{
