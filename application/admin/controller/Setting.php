@@ -155,7 +155,7 @@ class Setting extends AdminBase
                         'title'=>'WAP端频道个性风格',
                         'c_descrip'=>'优化级高于系统风格,但低于模板个性设置',
                         'form_type'=>'select',
-                        'options'=>'app\\common\\util\\Style@get_indexstyle_template@["layout","pc"]',
+                        'options'=>'app\\common\\util\\Style@get_indexstyle_template@["layout","wap"]',
                         'ifsys'=>0,
                         'list'=>0,
                 ],
