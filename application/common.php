@@ -1025,6 +1025,8 @@ if (!function_exists('get_user_money')) {
     {
         if ($type==0) {
             return get_user($uid)['money'];
+        }elseif($type==-1){
+            return get_user($uid)['rmb'];
         }
         static $array = null;
         if(empty($array[$uid])){
@@ -2334,11 +2336,17 @@ if (!function_exists('getTemplate')) {
       * @param number $touid 接收消息的用户UID
       * @param string $title 消息标题,可为空
       * @param string $content 消息内容
-      * @param string $sys 是否为系统消息,不显示发送人
+      * @param string $sys 等于true的话,不显示发送人,设置为UID数字,指定发件人
       * @return \app\common\model\Msg
       */
      function send_msg($touid=0,$title='',$content='',$sys=true){
-         $fromuid = $sys===true ? 0 : login_user('uid');
+         if ($sys===true) {
+             $fromuid = 0;
+         }elseif( is_numeric($sys) && $sys>0 ){
+             $fromuid = $sys;
+         }else{
+             $fromuid = login_user('uid');
+         }
          if ($title=='') {
              if($sys===true){
                  $title = '系统消息';
@@ -2350,12 +2358,12 @@ if (!function_exists('getTemplate')) {
              $array = get_user($touid,'username');
              $touid = $array['uid'];
          }
-         $data = [
-                 'touid'=>$touid,
-                 'title'=>$title,
-                 'content'=>$content,
-                 'create_time'=>time(),
-                 'uid'=>$fromuid,
+         $data = [             
+             'touid'=>$touid,
+             'title'=>$title,
+             'content'=>$content,
+             'create_time'=>time(),
+             'uid'=>intval($fromuid),
          ];
          $result = MsgModel::create($data);
          return $result;
@@ -2384,6 +2392,23 @@ if (!function_exists('getTemplate')) {
              }
              return $obj->send($openid,$content,$array);
          }
+     }
+ }
+ 
+ if (!function_exists('task_config')) {
+     /**
+      * 获取定时任务列表
+      * @param string $refresh 设置为true则强制更新缓存配置文件
+      * @return mixed|\think\cache\Driver|boolean
+      */
+     function task_config($refresh=false){
+         $taskdb = cache('timed_task');
+         if (empty($taskdb)||$refresh==true) {
+             $taskdb = \app\common\model\Timedtask::where('ifopen',1)->order('list desc,id desc')->column(true);
+             cache('timed_task',$taskdb);
+             write_file(RUNTIME_PATH.'Task_config.txt', date('Y-m-d H:i:s'));   //生成标志,给后台任务好核对是否变化过.
+         }         
+         return $taskdb;
      }
  }
  

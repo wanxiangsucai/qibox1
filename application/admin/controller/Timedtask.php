@@ -148,7 +148,8 @@ class Timedtask extends AdminBase
      * 生成标志,给后台任务好核对是否变化过.
      */
     public static function make_cfg(){
-        write_file(RUNTIME_PATH.'Task_config.txt', date('Y-m-d H:i:s'));
+        //write_file(RUNTIME_PATH.'Task_config.txt', date('Y-m-d H:i:s'));
+        task_config(true);
     }
     
     /**

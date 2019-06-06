@@ -109,7 +109,7 @@ class Task extends IndexBase
      * @return number
      */
     public function run_task(){
-        $taskdb = cache('timed_task');
+        $taskdb = task_config();
         if (self::$client=='dos'){
             $cache_time = filemtime(self::$task_cfg_file);    //计划任务被调整过
             if (self::$task_cfg_time != $cache_time) {
