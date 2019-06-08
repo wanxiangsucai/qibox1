@@ -13,14 +13,17 @@ class Yz extends MemberBase
      */
     public function getnum($type='',$to=''){
         //邮箱注册码与手机注册码,不建议同时启用,所以这里没分开处理
-        if( time()-get_cookie('send_num') <120 ){
-            return $this->err_js('2分钟后,才能再次获取验证码!');
+        if( time()-get_cookie('send_num') <60 ){
+            return $this->err_js('1分钟后,才能再次获取验证码!');
+        }elseif( time()-cache('send_num'.md5(get_ip()))<60){
+            return $this->err_js('1分钟后,当前IP才能再次获取验证码!');
         }
-        $num = cache(get_cookie('user_sid').'_reg') ?: rand(1000,9999);
-        $send_num = get_md5_num($to.$num,6);
-        $title = '来自《'.config('webdb.webname').'》的注册验证码,请注册查收';
-        $content = '你的注册验证码是:'.$send_num;
-        cache(get_cookie('user_sid').'_reg',$num,600);
+        $num = cache(get_cookie('user_sid').$to) ?: rand(1000,9999);
+        $send_num = $num;
+        //$send_num = get_md5_num($to.$num,6);
+        $title = '来自《'.config('webdb.webname').'》的验证码,请注意查收';
+        $content = '你的验证码是:'.$send_num;
+        cache(get_cookie('user_sid').$to,$num,600);
         if($type=='mobphone'){
             $result = send_sms($to,$send_num);
         }elseif($type=='email'){
@@ -35,17 +38,25 @@ class Yz extends MemberBase
         }
         if($result===true){
             set_cookie('send_num', time());
+            cache('send_num'.md5(get_ip()),time(),100);
             return $this->ok_js();
         }else{
             return $this->err_js($result);
         }
     }
     
+    /**
+     * 验证邮箱
+     * @param string $email
+     * @param string $email_code
+     * @return mixed|string
+     */
     public function index($email='',$email_code='')
     {
         if($this->request->isPost()){
-            $num = cache(get_cookie('user_sid').'_reg');
-            $send_num = get_md5_num($email.$num,6);
+            $num = cache(get_cookie('user_sid').$email);
+            $send_num = $num;
+            //$send_num = get_md5_num($email.$num,6);
             if( $email_code!=$send_num  || empty($num)) {
                 $this->error('验证码不对');
             }
@@ -90,7 +101,10 @@ class Yz extends MemberBase
 //         return $this->fetch();
 //     }
     
-    //身份证验证
+    /**
+     * 证件验证
+     * @return mixed|string
+     */
     public function idcard()
     {
         $data = get_post('post');
@@ -119,11 +133,18 @@ class Yz extends MemberBase
         return $this->fetch();
     }
     
+    /**
+     * 验证手机号
+     * @param string $mobphone
+     * @param string $mobphone_code
+     * @return mixed|string
+     */
     public function mob($mobphone='',$mobphone_code='')
     {
         if($this->request->isPost()){            
-            $num = cache(get_cookie('user_sid').'_reg');
-            $send_num = get_md5_num($mobphone.$num,6);
+            $num = cache(get_cookie('user_sid').$mobphone);
+            $send_num = $num;
+            //$send_num = get_md5_num($mobphone.$num,6);
             if( $mobphone_code!=$send_num  || empty($num)) {
                 $this->error('验证码不对');
             }

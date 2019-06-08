@@ -8,7 +8,10 @@ use plugins\marketing\model\RmbConsume;
 
 class Rmb extends MemberBase
 {
-    //充值、消费记录
+    /**
+     * 充值、消费记录
+     * @return mixed|string
+     */
 	public function index(){
 		$map = [
                 'uid'=>$this->user['uid']
@@ -25,6 +28,7 @@ class Rmb extends MemberBase
 		    $this->assign('listdb',$listdb);
 		return $this->pfetch();
 	}
+	
 	/**
 	 * 删除充值消费记录
 	 */
@@ -37,7 +41,10 @@ class Rmb extends MemberBase
 	    }
 	}
     
-	//充值
+	/**
+	 * 充值
+	 * @return mixed|string
+	 */
 	public function add(){
 	    if(IS_POST){
 	        $data = $this->request->post();
@@ -57,7 +64,10 @@ class Rmb extends MemberBase
 	    return $this->pfetch();
 	}
 	
-	//提现
+	/**
+	 * 提现
+	 * @return unknown
+	 */
 	public function getmoney(){
 	    
 	    if (empty($this->user['rmb_pwd'])) {
@@ -127,7 +137,10 @@ class Rmb extends MemberBase
 	    return $this->pfetch();
 	}
 	
-	//提现记录
+	/**
+	 * 提现记录
+	 * @return mixed|string
+	 */
 	public function log(){
 	    $listdb = RmbGetout::where('uid',$this->user['uid'])->order('id','desc')->paginate(20);
 	    $listdb->each(function($rs,$key){
@@ -141,7 +154,10 @@ class Rmb extends MemberBase
 	    return $this->pfetch();
 	}
 	
-	//收款帐号设置
+	/**
+	 * 收款帐号设置
+	 * @return mixed|string
+	 */
 	public function edit(){
 	    $cfg = unserialize($this->user['config']);
 	    if(IS_POST){	        
@@ -163,11 +179,16 @@ class Rmb extends MemberBase
 	    return $this->pfetch();
 	}
 	
-	//修改余额支付密码
+	/**
+	 * 修改余额支付密码
+	 * @return mixed|string
+	 */
 	public function pwd(){
 	    if(IS_POST){
 	        $data = $this->request->post();
-	        if($data['pay_pwd']!=$data['pay_pwd2']){
+	        if($data['pay_pwd']==''){
+	            $this->error('新密码不能为空');
+	        }elseif($data['pay_pwd']!=$data['pay_pwd2']){
 	            $this->error('两次输入密码不一致');
 	        }elseif($this->user['rmb_pwd'] && $this->user['rmb_pwd']!=md5($data['old_pwd'])){
 	            $this->error('原密码不正确');
@@ -183,5 +204,43 @@ class Rmb extends MemberBase
 	        }
 	    }
 	    return $this->pfetch();
+	}
+	
+	/**
+	 * 重置支付密码
+	 * @param string $type
+	 * @return void|\think\response\Json|void|unknown|\think\response\Json
+	 */
+	public function getpwd($type='phone'){
+	    //邮箱注册码与手机注册码,不建议同时启用,所以这里没分开处理
+	    if( time()-get_cookie('send_num') <60 ){
+	        return $this->err_js('1分钟后,才能再次获取验证码!');
+	    }elseif( time()-cache('send_num'.md5(get_ip()))<60){
+	        return $this->err_js('1分钟后,当前IP才能再次获取验证码!');
+	    }
+	    $num = cache(get_cookie('user_sid').'_pwd') ?: rand(1000,9999);
+	    $send_num = $num;
+	    //$send_num = get_md5_num($to.$num,6);
+	    $title = '来自《'.config('webdb.webname').'》的支付密码,请注意查收';
+	    $content = '你的支付密码是:'.$send_num;
+	    cache(get_cookie('user_sid').'_pwd',$num,600);
+	    if($type=='phone'){
+	        $result = send_sms($this->user['mobphone'],$send_num);
+	    }elseif($type=='email'){
+	        $result = send_mail($this->user['email'],$title,$content);
+	    }else{
+	        $result = '请选择类型!';
+	    }
+	    if($result===true){
+	        edit_user([
+	                'uid'=>$this->user['uid'],
+	                'rmb_pwd'=>md5($send_num),
+	        ]);
+	        set_cookie('send_num', time());
+	        cache('send_num'.md5(get_ip()),time(),100);
+	        return $this->ok_js();
+	    }else{
+	        return $this->err_js($result);
+	    }
 	}
 }
