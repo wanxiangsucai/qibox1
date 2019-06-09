@@ -19,6 +19,7 @@
 			
 			<!-- 组图 -->
 			{volist name="$info.picurls" id="rs"}
+			{php}if(strstr($info['content'],$rs['picurl']))continue;{/php}
 			<br><img src="{$rs.picurl}"><br>
 			{/volist}
 
