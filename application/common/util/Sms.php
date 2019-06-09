@@ -10,15 +10,20 @@ class Sms{
      * @return boolean|string
      */
     public function send($phone='',$msg=''){
+        static $obj = null;
         if (config('webdb.sms_type')!='' && config('webdb.sms_type')!='aliyun') {
             $class_name = "plugins\\".config('webdb.sms_type')."\\Api";
             if ( class_exists($class_name) && method_exists($class_name, 'send') ) {
-                $obj = new $class_name();
+                if($obj===null){
+                    $obj = new $class_name();
+                }
                 return $obj->send($phone,$msg);
             }else{
                 $class_name = "app\\common\\util\\Sms_".config('webdb.sms_type');
                 if ( class_exists($class_name) && method_exists($class_name, 'send') ) {
-                    $obj = new $class_name();
+                    if($obj===null){
+                        $obj = new $class_name();
+                    }                    
                     return $obj->send($phone,$msg);
                 }
             }
