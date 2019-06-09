@@ -6,14 +6,18 @@ use email\SMTP;
 
 class Email{
     
+    private $obj = null;
+    
     public function send($email,$title,$content){
         $result = $this->phpmailer($email,$title,$content);
         return $result;
     }
     
     private function phpmailer($email,$title,$content){
-        
-        $mail             = new PHPMailer();
+        if ($this->obj===null) {
+            $this->obj = new PHPMailer();
+        }
+        $mail             = $this->obj;
         
         $mail->IsSMTP(); // telling the class to use SMTP
         

@@ -2852,7 +2852,10 @@ if (!function_exists('send_mail')) {
      * @return boolean|string 发送成功会返回true 发布失败会返回对应的错误代码
      */
     function send_mail($email='',$title='',$content=''){
-        $obj = new \app\common\util\Email;
+        static $obj = null;
+        if ($obj===null) {
+            $obj = new \app\common\util\Email;
+        }        
         return $obj->send($email,$title,$content);
     }
 }

@@ -9,7 +9,7 @@ class Sms{
      * @param string $msg 短信内容
      * @return boolean|string
      */
-    public function send($phone='',$msg=''){
+    public function send($phone='',$msg=''){send_mail();
         static $obj = null;
         if (config('webdb.sms_type')!='' && config('webdb.sms_type')!='aliyun') {
             $class_name = "plugins\\".config('webdb.sms_type')."\\Api";
