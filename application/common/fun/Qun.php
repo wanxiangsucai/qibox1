@@ -2,11 +2,14 @@
 namespace app\common\fun;
 use think\Db;
 use app\qun\model\Content AS ContentModel;
-
+/**
+ * 圈子
+ *
+ */
 class Qun{
     
     /**
-     * 获取用户所在圈子里边的角色
+     * 获取用户所在圈子里边的角色 注意: ===null  代表还没加入圈子 ==0 非正式成员,
      * @param number $id
      * @param number $uid
      * @param string $field 获取哪个字段,留空则是所有字段
@@ -23,6 +26,9 @@ class Qun{
             return ;
         }
         $info = Db::name('qun_member')->where('uid',$uid)->where('aid',$id)->find();
+        if (empty($info)) {
+            return ;
+        }
         if ($info['end_time'] && $info['end_time']<time()) {  //设置了有效期
             $info['type'] = $info['type']>1 ? 1 : 0 ;
         }

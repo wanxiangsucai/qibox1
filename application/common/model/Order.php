@@ -125,7 +125,7 @@ class Order extends Model
                 continue;   //不要再执行下面的
             }
             $user = UserModel::get_info($info['uid']);
-            if($user['rmb']<$info['pay_money']){    //钱不够扣,终止以下所有操作
+            if($info['pay_money']>0 && $user['rmb']<$info['pay_money']){    //钱不够扣,终止以下所有操作
                 return false;
             }
                         
@@ -151,11 +151,14 @@ class Order extends Model
      * @param array $order_info 订单信息,不是商品信息
      */
     protected static function success_pay($order_info=[]){
-        //客户扣款
-        add_rmb($order_info['uid'],-abs($order_info['pay_money']),0,'购物消费');
-        
-        //商家入帐
-        add_rmb($order_info['shop_uid'],abs($order_info['pay_money']),0,'销售商品');
+        $money = abs($order_info['pay_money']);
+        if ($money>0) {
+            //购买者扣款
+            add_rmb($order_info['uid'],-$money,0,'购物消费');
+            
+            //商家入帐
+            add_rmb($order_info['shop_uid'],$money,0,'销售商品');
+        }        
         
         static::send_msg($order_info);
         
@@ -170,7 +173,7 @@ class Order extends Model
         //preg_match_all('/([_a-z]+)/',get_called_class(),$array);
         //$dirname = $array[0][1];
         $dirname = self::$model_key;
-        $title = '有客户付款了';
+        $title = '恭喜你,成功交易了一笔订单';
         $content = $title.'，<a href="'.get_url( murl($dirname.'/kehu_order/show',['id'=>$order_info['id']]) ).'">点击查看详情</a>';
         $webdb = config('webdb.M__'.$dirname);
         if(!isset($webdb['pay_order_msg_hy']) || $webdb['pay_order_msg_hy']){

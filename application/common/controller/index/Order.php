@@ -109,7 +109,9 @@ abstract class Order extends IndexBase
             
             if (!empty($order_ids)) {
                 $url = murl('order/index');
-                if ($data['ifolpay']==1) {
+                if($total_money<0.01){
+                    $this->order_model->pay(implode(',', $order_ids));
+                }elseif ($data['ifolpay']==1 && $total_money>0) {
                     $order_ids = implode(',', $order_ids);
                     $url = post_olpay([
                                     'money'=>$total_money,
