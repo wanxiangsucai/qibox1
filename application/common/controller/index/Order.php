@@ -143,7 +143,7 @@ abstract class Order extends IndexBase
         foreach($shop AS $rs){
             $shops[] = $rs['title'];
         }
-        $title = '有客户下单了,订购的商品是:'.implode('、',$shops);
+        $title = '有客户 '.$this->user['username'].' 下单了,订购的是:'.implode('、',$shops);
         $content = $title.'，<a href="'.get_url( murl('kehu_order/show',['id'=>$order_id]) ).'">点击查看详情</a>';
         if ( !isset($this->webdb['post_order_msg_hy'])||$this->webdb['post_order_msg_hy'] ) {
             send_msg($shop_uid,$title,$content);
