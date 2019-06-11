@@ -182,6 +182,9 @@ class Order extends Model
         if(!isset($webdb['pay_order_wx_hy']) || $webdb['pay_order_wx_hy']){
             send_wx_msg($order_info['shop_uid'], $content);
         }
+        if($webdb['pay_order_sms_hy']){
+            send_sms($order_info['shop_uid'], $title);
+        }
     }
 	
 }

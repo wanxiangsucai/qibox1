@@ -64,6 +64,9 @@ abstract class Order extends IndexBase
      * @return mixed|string
      */
     public function add() {
+        
+        $listdb = $this->car_model->getList($this->user['uid'],1);  //购物车数据
+        
         if($this -> request -> isPost()){
             $data = $this -> request -> post();
             $result = $this->check_post_filed($data);
@@ -73,24 +76,36 @@ abstract class Order extends IndexBase
             $data = \app\common\field\Post::format_all_field($data,-1); //对一些特殊的自定义字段进行处理,比如多选项,以数组的形式提交的
             $order_ids = [];    //多条订单数据,多个商家就多个订单
             $car_ids = [];        //购买车里的id数据
-            $car_db = [];        //购买车里的详细数据
-            $listdb = $this->car_model->getList($this->user['uid'],1);
+            $car_db = [];        //购买车里的详细数据            
             
             $total_money = 0;   //需要支付的总金额
             foreach ($listdb AS $uid=>$shop_array){     //取每一个商家的数据生成一个订单,不能同家不能混在同一个订单
                 $data['shop_uid'] = $uid;   //店主UID
                 $_shop = [];
-                $money = 0;
+                $money = 0;     //每一个商家的所有货款
                 foreach ($shop_array AS $rs){   //某个商家的多个商品
                     $_shop[] = $rs['_car_']['shopid'] . '-' . $rs['_car_']['num']  . '-' . $rs['_car_']['type1'] . '-' .$rs['_car_']['type2'] . '-' .$rs['_car_']['type3'];
                     $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
                     $car_ids[] = $rs['_car_']['id'];
                     $car_db[] = $rs['_car_'];
                 }
+                $data['totalmoney'] = $money;   //订单金额,实际需要支付的可能会少一点
+                $cid = $data['cid'][$uid];      //代金券ID
+                if ($cid>0) {
+                    $coupon = fun('Coupon@get_list',$this->user['uid'],$money,$uid);
+                    if($coupon[$cid]){
+                        $money -= $coupon[$cid]['quan_money'];    //抵扣券
+                        if ($money<0) {
+                            $money = 0;
+                        }
+                    }else{
+                        $cid = 0;
+                    }
+                }
                 $data['shop'] = implode(',', $_shop);
                 $data['order_sn'] = 's'.date('ymdHis').rands(3);      //订单号
-                $data['totalmoney'] = $data['pay_money'] = $money; 
-                $total_money +=$money; 
+                $data['pay_money'] = $money;    //需要支付的金额
+                $total_money += $money; 
                 if (!empty($this -> validate)) {// 验证表单                    
                     $result = $this -> validate($data, $this -> validate);
                     if (true !== $result) $this -> error($result);
@@ -99,7 +114,12 @@ abstract class Order extends IndexBase
                 $data['create_time'] = time();
                 if ($result = $this->order_model->create($data)) {
                     $order_ids[] = $result->id;
-                    $this->send_msg($uid,$result->id,$shop_array);
+                    $msg = '';
+                    if($cid>0){
+                        fun('coupon@take_off',$cid);    //标志优惠券已用
+                        $msg = '，使用了一张面额 '.$coupon[$cid]['quan_money'].' 元的代金券，';
+                    }
+                    $this->send_msg($uid,$result->id,$shop_array,$msg);
                 }
             }
             
@@ -128,6 +148,21 @@ abstract class Order extends IndexBase
             }
         }
         
+        $money_array = [];  //需要支付给每个商家的金额
+        $total_money = 0;   //需要支付给所有商家的总金额
+        foreach ($listdb AS $uid=>$shop_array){
+            $money = 0;
+            foreach ($shop_array AS $rs){   //某个商家的多个商品
+                $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
+            }
+            $total_money += $money;
+            $money_array[$uid] = $money;
+        }
+        
+        $this->assign('total_money',$total_money);
+        $this->assign('money_array',$money_array);
+        $this->assign('listdb',$listdb);
+        
         $address = AddressModel::where('uid',$this->user['uid'])->order('often desc,id desc')->column(true);
         $this->assign('address',$address);
         return $this ->fetch();
@@ -135,21 +170,26 @@ abstract class Order extends IndexBase
     
     /**
      * 用户下单后,给商家发信息
-     * @param number $shop_uid
-     * @param number $order_id
+     * @param number $shop_uid 商家UID
+     * @param number $order_id 订单ID
+     * @param array $shop 商品信息
+     * @param string $msg 额外消息
      */
-    protected function send_msg($shop_uid=0,$order_id=0,$shop=[]){
+    protected function send_msg($shop_uid=0,$order_id=0,$shop=[],$msg=''){
         $shops = [];
         foreach($shop AS $rs){
             $shops[] = $rs['title'];
         }
-        $title = '有客户 '.$this->user['username'].' 下单了,订购的是:'.implode('、',$shops);
+        $title = '有客户 '.$this->user['username'].' 下单了 '.$msg.' ,订购的是:'.implode('、',$shops);
         $content = $title.'，<a href="'.get_url( murl('kehu_order/show',['id'=>$order_id]) ).'">点击查看详情</a>';
         if ( !isset($this->webdb['post_order_msg_hy'])||$this->webdb['post_order_msg_hy'] ) {
             send_msg($shop_uid,$title,$content);
-        }        
+        }
         if ( !isset($this->webdb['post_order_wx_hy'])||$this->webdb['post_order_wx_hy'] ) {
             send_wx_msg($shop_uid, $content);
+        }
+        if ( $this->webdb['post_order_sms_hy'] ) {
+            send_sms($shop_uid, $title);
         }
     }
     

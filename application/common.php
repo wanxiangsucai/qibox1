@@ -2852,6 +2852,13 @@ if (!function_exists('send_mail')) {
      * @return boolean|string 发送成功会返回true 发布失败会返回对应的错误代码
      */
     function send_mail($email='',$title='',$content=''){
+        if(is_numeric($email)){
+            $array = get_user($email);
+            $email = $array['email'];
+            if (empty($email)) {
+                return '用户邮箱不存在';
+            }
+        }
         static $obj = null;
         if ($obj===null) {
             $obj = new \app\common\util\Email;
@@ -2868,7 +2875,17 @@ if (!function_exists('send_sms')) {
      * @return boolean|string 发送成功会返回true 发布失败会返回对应的错误代码
      */
     function send_sms($phone='',$msg=''){
-        $obj = new \app\common\util\Sms;
+        if($phone<99999999){
+            $array = get_user($phone);
+            $phone = $array['mobphone'];
+            if (empty($phone)) {
+                return '用户手机号不存在';
+            }
+        }
+        static $obj = null;
+        if ($obj===null) {
+            $obj = new \app\common\util\Sms;
+        }
         return $obj->send($phone,$msg);
     }
 }
