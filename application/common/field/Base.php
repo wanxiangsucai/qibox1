@@ -100,9 +100,9 @@ class Base
                 if($v===''){
                     continue ;
                 }
-                $array[] = $detail[$v];
+                $array[] = "<span class='{$name}_val val_box'>{$detail[$v]}</span>";
             }
-            $show = implode('、',$array);
+            $show = implode("<span class='{$name}_exp explode_box'> 、</span>",$array);
             
         }elseif($field['type']=='array' && !in_array($name, ['type1','type2','type3'])){    //商城的三个参数特殊点,这里就不处理了
             
