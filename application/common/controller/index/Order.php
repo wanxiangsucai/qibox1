@@ -59,6 +59,22 @@ abstract class Order extends IndexBase
     }
     
     /**
+     * 创建某个商家的订单前做处理,可以改写 $data 内容
+     * @param array $data 订单入库信息
+     * @param array $shop_array 多个商品信息
+     */
+    protected function add_shoper_begin(&$data=[],$shop_array=[]){        
+    }
+    
+    /**
+     * 成功创建某个商家的订单后做处理
+     * @param number $id 订单ID
+     * @param array $shop_array 多个商品信息
+     */
+    protected function add_shoper_end($id=0,$shop_array=[]){
+    }
+    
+    /**
      * 提交订单,还没进入付款页面
      * 在微信端,就用微信支付,否则就用支付宝支付
      * @return mixed|string
@@ -112,6 +128,7 @@ abstract class Order extends IndexBase
                 }
                 $data['uid'] = $this -> user['uid'];
                 $data['create_time'] = time();
+                $this->add_shoper_begin($data,$shop_array);     //扩展使用
                 if ($result = $this->order_model->create($data)) {
                     $order_ids[] = $result->id;
                     $msg = '';
@@ -120,6 +137,7 @@ abstract class Order extends IndexBase
                         $msg = '，使用了一张面额 '.$coupon[$cid]['quan_money'].' 元的代金券，';
                     }
                     $this->send_msg($uid,$result->id,$shop_array,$msg);
+                    $this->add_shoper_end($result->id,$shop_array);     //扩展使用
                 }
             }
             
