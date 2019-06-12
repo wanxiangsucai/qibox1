@@ -183,7 +183,7 @@ class Upgrade extends AdminBase
 	            return $this->err_js('目录权限不足,文件写入失败');
 	        }	        
 	    }else{
-	        return $this->err_js('获取云端数据失败,请晚点再偿试');
+	        return $this->err_js('获取云端数据失败,请确认服务器DNS是否正常,能否访问外网?');
 	    }
 	}
 	
