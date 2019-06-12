@@ -205,7 +205,7 @@ class Config extends Model
                     $rs['c_value'] = $picdb;
                     break;
                 case 'array':
-                    $rs['c_value'] = str_array($rs['c_value']);
+                    $rs['c_value'] = $rs['c_value']?json_decode($rs['c_value'],true):[];
                     break;
                 case 'usergroup':    //之前没转义,避免冲突,所以加多一个变量
                     $_value = $rs['c_value']?json_decode($rs['c_value'],true):[];
