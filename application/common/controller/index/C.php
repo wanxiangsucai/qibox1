@@ -597,30 +597,41 @@ abstract class C extends IndexBase
         }
         
         if (empty($template)) { //新风格找不到的话,就寻找默认default模板
-            if(config('template.view_base')){
-                if( config('template.default_view_base') ){ //没有使用默认风格
-                    $view_base = config('template.view_base');
-                    $style = config('template.index_style');
-                    config('template.view_base',config('template.default_view_base'));
-                    config('template.index_style','default');   // check_file 此方法要用到
-                    $template = $this->get_auto_tpl($type,$mid);
-                    config('template.view_base',$view_base);
-                    config('template.index_style',$style);
-                }
-            }else{
-                if(config('template.default_view_path')!=''){
-                    $view_path = config('template.view_path');
-                    $style = config('template.index_style');
-                    config('template.view_path',config('template.default_view_path'));
-                    config('template.index_style','default');
-                    $template = $this->get_auto_tpl($type,$mid);
-                    config('template.view_path',$view_path);
-                    config('template.index_style',$style);
-                }
-            }
+            $template = $this->get_default_tpl($type,$mid);
         }
         
          return $template;
+    }
+    
+    /**
+     * 获取default 默认目录的风格文件
+     * @param string $type
+     * @param number $mid
+     * @return string
+     */
+    protected function get_default_tpl($type='show',$mid=0){
+        if(config('template.view_base')){
+            if( config('template.default_view_base') ){ //没有使用默认风格
+                $view_base = config('template.view_base');
+                $style = config('template.index_style');
+                config('template.view_base',config('template.default_view_base'));
+                config('template.index_style','default');   // check_file 此方法要用到
+                $template = $this->get_auto_tpl($type,$mid);
+                config('template.view_base',$view_base);
+                config('template.index_style',$style);
+            }
+        }else{
+            if(config('template.default_view_path')!=''){
+                $view_path = config('template.view_path');
+                $style = config('template.index_style');
+                config('template.view_path',config('template.default_view_path'));
+                config('template.index_style','default');
+                $template = $this->get_auto_tpl($type,$mid);
+                config('template.view_path',$view_path);
+                config('template.index_style',$style);
+            }
+        }
+        return $template;
     }
     
     
