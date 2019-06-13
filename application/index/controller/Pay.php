@@ -31,7 +31,9 @@ class Pay extends IndexBase
     public function index($banktype = '' , $action = '' , $back_post = '')
     {
         if ($banktype == '') {  //没有指定支付方式的话,就让用户自由选择支付方式
-            
+            if (empty($this->user)) {
+                $this->error('请先登录!');
+            }
             $this->assign('weburl',$this->weburl);
             $this->assign('money',input('money'));
             return $this->fetch();
@@ -169,7 +171,11 @@ class Pay extends IndexBase
             add_rmb($rt['uid'],$rt['money'],0,date('y年m月d日H:i ').'在线充值');
             //$this->success("恭喜你充值成功",$fromurl);
             $this->run_callback($rt['callback_class']);
-            hook_listen('pay_end',$rt);   //扩展接口
+			
+			//扩展接口
+			$this->get_hook('pay_end',$data=[],$rt);
+            hook_listen('pay_end',$rt);   
+			
             return 'ok';
         }else{
             return 0;

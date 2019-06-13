@@ -3007,16 +3007,21 @@ if (!function_exists('weixin_login')) {
     /**
      * 强制微信登录
      * @param string $url 登录成功后,返回的地址
+     * @param string $jump 默认是立即跳转,可以设置为false 只获取跳转地址,
      */
-    function weixin_login($url=''){
+    function weixin_login($url='',$jump=true){
         $url = $url=='' ? request()->url(true) : $url;
         if( in_weixin() && config('webdb.weixin_type')==3 ){    //在微信端并且是认证服务号的情况下
             $url = purl('weixin/login/index',[],'index') . '?fromurl=' . urlencode($url);
         }else{            
             $url = iurl('index/login/index').'?fromurl='.urlencode($url);
         }
-        header("location:$url");
-        exit;
+        if ($jump===true) {
+            header("location:$url");
+            exit;
+        }else{
+            return $url;
+        }
     }
 }
 
