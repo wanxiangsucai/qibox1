@@ -70,7 +70,11 @@ class Group extends MemberBase
         }        
         
         $this->form_items = Cfgfield::get_form_items($gid,'upgroup');
-        if (empty($this->form_items)) { //没有需要填写的项目  , 会终止掉下面所有操作          
+        if (empty($this->form_items)) { //特别提醒!!!!!!!!!!!!!没有需要填写的项目  , 会终止掉下面所有操作  
+            $data = [];
+            $data['uid'] = $this->user['uid'];
+            $data['old_groupid'] = $this->user['groupid'];  //记录之前的用户组ID,方便到期后,恢复
+            UserModel::edit_user($data);
             $this->post($gid,$ginfo['level']);
         }
         
@@ -90,6 +94,7 @@ class Group extends MemberBase
                 }
             }
             $data['uid'] = $this->user['uid'];
+            $data['old_groupid'] = $this->user['groupid'];  //记录之前的用户组ID,方便到期后,恢复
             if ( UserModel::edit_user($data) ) {
                 $this->post($gid,$ginfo['level']);
             } else {

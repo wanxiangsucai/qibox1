@@ -31,11 +31,12 @@ body .Notes{margin:0 2px 15px 0;}
         	<div class="img"><a href="{:get_url('user',['uid'=>$userdb['uid']])}" target="_blank"><img onerror="this.src='__STATIC__/index/base/noface.gif'" src="{$user.icon|tempdir}" width="50" /></a></div>
             <div class="info">
             	<div class="base">
-                	<div class="name"><a href="{:get_url('user',['uid'=>$userdb['uid']])}" target="_blank">{$user.username}</a> ID:{$user.uid}</div>
-                    <div class="yzmob"><a href="{:urls('yz/mob')}">立即验证手机</a></div>
+                	<div class="name">
+					<a href="{:get_url('user',['uid'=>$userdb['uid']])}" target="_blank">{$user.username}</a> UID:{$user.uid}
+					</div>
+                    {if $user.mob_yz==0}<div class="yzmob"><a href="{:urls('yz/mob')}">验证手机享受更多权限</a></div>{/if}
                 </div>
-                <div class="list1">
-                	Email地址:{$user.email}  注册时间:{$user.regdate|format_time}
+                <div class="list1" style="word-spacing:2px;">角色：<a href="{:url('member/group/index')}" style="color:orange;font-size:14px;">{:getGroupByid($userdb[groupid])}</a>{$userdb['group_endtime']>time()?date('(Y-m-d H:i到期)',$userdb['group_endtime']):''}  注册时间:{$user.regdate|format_time}
                 </div>
                 <div class="list2">
                 	上次访问时间:{$user.lastvist|date="Y-m-d H:i",###}  上次访问IP:{$user.lastip}

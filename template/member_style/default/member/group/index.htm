@@ -10,7 +10,7 @@
 <div class="MainCont">
 	<div class="head">
     	<div class="tag">
-        	你现在的身份是<span class="b blue">“{$userdb.groupid|getGroupByid}”</span>
+        	你的角色<span class="b blue">“{$userdb.groupid|getGroupByid}”</span>{$userdb['group_endtime']>time()?date('(Y-m-d H:i到期)',$userdb['group_endtime']):''}
         </div>
     </div>
     <div class="cont">
@@ -39,7 +39,7 @@
 {volist name="groupdb" id="rs"}
             
 			<td>
-			<a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge'>{$rs.level?'付费认证':'免费认证'}</a> 
+			<a href="{:urls('buy',['gid'=>$rs['id']])}" class='alert upbtn fa fa-id-badge' data-alert="你确认要付费认证吗?">{$rs.level?'付费认证':'免费认证'}</a> 
 			</td>
 {/volist}
           </tr>

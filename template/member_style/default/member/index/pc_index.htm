@@ -83,7 +83,7 @@ if(($(".MainMenus .MenuContent dl").length)<2){
 		<div class="members">
 			<div class="icon"><a href="{:get_url('user',"uid=$userdb[uid]")}" target="_blank"><span><img src="{$user.icon|tempdir}" onerror="this.src='__STATIC__/index/base/noface.gif'"/></span></a></div>
 			<div class="username"><a href="{:get_url('user',"uid=$userdb[uid]")}" target="_blank">{$user.username}</a></div>
-			<div class="companyer"><span><span>{:getGroupByid($userdb[groupid])}</span></span></div>
+			<div class="companyer" title="{$userdb['group_endtime']>time()?date('Y-m-d H:i到期',$userdb['group_endtime']):''}"><span><span>{:getGroupByid($userdb[groupid])}</span></span></div>
 			<div class="moneys"><div>积分: {$userdb.money} 个 可用余额: {$userdb.rmb} 元</div></div>
 		</div>
 		<dl class="LoginAct">

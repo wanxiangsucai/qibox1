@@ -439,11 +439,11 @@ class User extends Model
 	        static::quit($usr_info['uid']);
 	        return false;
 	    }
-		if ($usr_info['group_endtime'] && $usr_info['groupid'] != 8 && $usr_info['group_endtime']<time()) { //用户 组过期了
-		    $usr_info['groupid'] = 8;
+		if ($usr_info['group_endtime'] && $usr_info['groupid'] != 8 && $usr_info['group_endtime']<time()) { //用户组过期了
+		    $usr_info['groupid'] = ($usr_info['old_groupid']&&getGroupByid($usr_info['old_groupid'])) ? $usr_info['old_groupid'] : 8;     //恢复之前的用户组
 		    edit_user([
 		        'uid'=>$usr_info['uid'],
-		        'groupid'=>8,
+		        'groupid'=>$usr_info['groupid'],
 		    ]);
 		    cache('user_'.$usr_info['uid'],null);
 		}

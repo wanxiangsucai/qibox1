@@ -9,7 +9,7 @@
 </style>
 <div class="MainCont">
   <div class="head">
-    <div class="tag"> 你现在的身份是<span class="b blue">“{$userdb.groupid|getGroupByid}”</span> </div>
+    <div class="tag"> 你现在的身份是<span class="b blue">“{$userdb.groupid|getGroupByid}”</span> {$userdb['group_endtime']>time()?date('(Y-m-d H:i到期)',$userdb['group_endtime']):''}</div>
   </div>
   <div class="cont">
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ListTable">
@@ -38,7 +38,7 @@
           申请失败：{:fun("shengji@status",$userdb['uid'],$rs['id'])['refuse_reason']} <a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge'>{$rs.level?'重新付费认证':'重新免费认证'}</a> {elseif fun("shengji@status",$userdb['uid'],$rs['id'])['status']=='1'}
           成功升级到 {$rs.title}
           {/if}
-          {else/} <a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge'>{$rs.level?'付费认证':'免费认证'}</a> {/if} </td>
+          {else/} <a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge alert' data-alert="你确认要付费认证吗?">{$rs.level?'付费认证':'免费认证'}</a> {/if} </td>
         {/volist} </tr>
     </table>
   </div>

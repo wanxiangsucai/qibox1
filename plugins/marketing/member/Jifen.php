@@ -57,7 +57,7 @@ class Jifen extends MemberBase
             if ( $data['money']<0.01 ) {
                 $this->error('充值金额不能小于0.01元');
             }
-            $numcode = rands(10);
+            $numcode = 'j'.date('ymdHis').rands(3);      //订单号
             //直接跳转支付
             post_olpay([
                     'money'=>$data['money'],

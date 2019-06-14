@@ -106,7 +106,7 @@
 	<ul>
 		<ol><a href="{:get_url('user',$info.uid)}"><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></a></ol>
 		<li>
-			<div>{$info.nickname} (身份:{$info.groupid|getGroupByid} UID:{$info.uid})</div>
+			<div>{$info.nickname} (角色:{$info.groupid|getGroupByid} {$userdb['group_endtime']>time()?date('Y-m-d H:i到期',$userdb['group_endtime']):''} UID:{$info.uid})</div>
 			<p>注册日期 {$info.regdate|format_time}</p>
 		</li>
 	</ul>
@@ -198,6 +198,8 @@
 	<button type="button" onclick="window.location.href='{:iurl('index/login/quit')}'" class="mui-btn mui-btn-warning mui-btn-block">退出登录</button>	 
 </div>
 <script src="__STATIC__/mui/js/mui.min.js"></script>
-{include file="index@footmenu" /}
+{include file="index@footmenu" /}<!--底部菜单-->
+
+{include file="index@weixingz" /}<!--若没有关注微信公众号,就做个提醒-->
 </body>
 </html>
