@@ -30,7 +30,11 @@ abstract class S extends Model
         $this->table = self::$table_pre.self::$model_key.'_sort';
     }
     
-    //获取所有栏目的名称及ID
+    /**
+     * 获取所有栏目的名称及ID
+     * @param array $where
+     * @return unknown
+     */
     public static function getTitleList($where=[])
     {
         return self::where($where)->order('list','desc')->column('id,name');
@@ -41,7 +45,11 @@ abstract class S extends Model
         return self::where($where)->order('list','desc')->column(true);
     }
     
-    //通过ID得到相应的栏目的相关资料
+    /**
+     * 通过ID得到相应的栏目的相关资料
+     * @param unknown $id
+     * @return void|array|NULL[]|unknown
+     */
     public static function getInfoById($id)
     {
         if (empty($id)) {
@@ -50,7 +58,11 @@ abstract class S extends Model
         return getArray(self::get($id));
     }
     
-    //通过ID得到相应的栏目名称
+    /**
+     * 通过ID得到相应的栏目名称
+     * @param unknown $id
+     * @return void|\app\common\model\unknown
+     */
     public static function getNameById($id)
     {
         if (empty($id)) {
@@ -62,7 +74,10 @@ abstract class S extends Model
         }
     }
     
-    //获取一个值值给某些地方没有指定MID的地方默认使用
+    /**
+     * 获取一个值值给某些地方没有指定MID的地方默认使用
+     * @return mixed
+     */
     public static function getId()
     {
         $list = static::getTitleList();
@@ -71,7 +86,14 @@ abstract class S extends Model
         }
     }
     
-    //第一项，指定ID及其子ID不要显示，比如创建栏目的时候容易造成死循环，第二项发布文章的时候，不能选择其它模型的栏目
+    /**
+     * 获取树状的栏目,只含栏目标题及ID
+     * 第一项，指定ID及其子ID不要显示，比如创建栏目的时候容易造成死循环，第二项发布文章的时候，不能选择其它模型的栏目
+     * @param number $id
+     * @param number $mid
+     * @param string $default_title
+     * @return string[]|unknown[]
+     */
     public static function getTreeTitle($id = 0, $mid = 0,$default_title = '请选择...')
     {
         $where = [];
@@ -99,6 +121,12 @@ abstract class S extends Model
         return $result;
     }
     
+    /**
+     * 获取树状的栏目,包含栏目所有的信息
+     * @param number $id
+     * @param number $mid
+     * @return unknown[]
+     */
     public static function getTreeList($id = 0, $mid = 0)
     {
         $where = [];
@@ -119,6 +147,11 @@ abstract class S extends Model
         return $data_list;
     }
     
+    /**
+     * 获取所有子ID
+     * @param number $id
+     * @return array
+     */
     public static function getSonsId($id = 0)
     {
         $array = $id_array = self::where('pid', $id)->column('id');
