@@ -727,10 +727,23 @@ trait ModuleContent
 	        foreach($array AS $rs){
 	            $data[$rs['id']] = $rs['title'];
 	        }
-	        return [
-	                [ 'select','ext_id','所属'.QUN,'',$data],
-	                [ 'hidden','ext_sys',$ext_sys],	                
+	        $form_array = [
+	            [ 'select','ext_id','所属'.QUN,'',$data],
+	            [ 'hidden','ext_sys',$ext_sys],
 	        ];
+	        if (empty($info)) {    //修改就不处理了
+	            $data2 = [];
+	            foreach($array AS $rs){
+	                if ($rs['uid']==$uid) {
+	                    $data2[$rs['id']] = $rs['title'];
+	                }
+	            }
+	            if ($data2) {
+	                $form_array[] = [ 'select','topic_aid','所属专题','',$data2];
+	                $form_array[] = [ 'hidden','topic_sys',config('system_dirname')];
+	            }
+	        }	        
+	        return $form_array;
 	    }else{
 	        return [];
 	    }	    

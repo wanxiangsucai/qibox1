@@ -137,7 +137,7 @@ class Qb extends TagLib{
             return '******标签缺少命名*******'.$content;
         }
         if(empty($tag['type'])){
-            return '******标签type参数不能为空*******'.$content;
+            //return '******标签type参数不能为空*******'.$content;
         }
         $sql = $tag['sql'];   //SQL查询
         $type = $sql?'sql':$tag['type'];
