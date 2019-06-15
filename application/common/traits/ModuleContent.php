@@ -739,8 +739,8 @@ trait ModuleContent
 	                }
 	            }
 	            if ($data2) {
-	                $form_array[] = [ 'select','topic_aid','所属专题','',$data2];
-	                $form_array[] = [ 'hidden','topic_sys',config('system_dirname')];
+	                $form_array[] = [ 'select','topic_aid','归属专题','',$data2];
+	                //$form_array[] = [ 'hidden','topic_sys',config('system_dirname')];
 	            }
 	        }	        
 	        return $form_array;
