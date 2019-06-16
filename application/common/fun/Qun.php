@@ -2,11 +2,44 @@
 namespace app\common\fun;
 use think\Db;
 use app\qun\model\Content AS ContentModel;
+use app\qun\model\Topic AS TopicModel;
+use app\qun\model\Member AS MemberModel;
+
 /**
  * 圈子
  *
  */
 class Qun{
+    
+    /**
+     * 自定义条件查找圈子成员
+     * @param array $map
+     * @return array|unknown
+     */
+    public static function list_member($map=[]){
+        if (!modules_config('qun')) {
+            return [];
+        }
+        return MemberModel::where($map)->column(true);
+    }
+    
+    /**
+     * 查找某个主题被多少个圈子调整用过.
+     * @param number $ext_id 主题ID
+     * @param string $ext_sys 主题所在频道ID或目录
+     * @return array|unknown
+     */
+    public static function get_aids_byid($ext_id=0,$ext_sys=''){
+        if (!modules_config('qun')) {
+            return [];
+        }
+        $sys = is_numeric($ext_sys)?$ext_sys:modules_config($ext_sys)['id'];
+        $map = [
+            'ext_sys'=>$sys,
+            'ext_id'=>$ext_id,
+        ];
+        return TopicModel::where($map)->column('aid');
+    }
     
     /**
      * 获取用户所在圈子里边的角色 注意: ===null  代表还没加入圈子 ==0 非正式成员,
