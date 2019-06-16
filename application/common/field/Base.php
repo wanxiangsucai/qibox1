@@ -63,9 +63,12 @@ class Base
             
             $show = str_replace([' ',"\r\n"], ['&nbsp;','<br>'], $f_value);
             
-        }elseif ($field['type'] == 'select' || $field['type'] == 'radio') {      // 下拉框 或 单选按钮
+        }elseif ($field['type'] == 'select' || $field['type'] == 'radio' || $field['type'] == 'usergroup3') {      // 下拉框 或 单选按钮 及用户组单选
             
             $info["_$name"] = $f_value;         //为了保留原始值
+            
+            $field['type'] == 'usergroup3' && $field['options'] = 'app\common\model\Group@getTitleList'; //用户组单选
+            
             if( preg_match('/^[a-z]+(\\\[\w]+)+@[\w]+/',$field['options']) || preg_match('/^([\w]+)@([\w]+),([\w]+)/i',$field['options']) ){
                 //$show = $f_value;   //对于动态生成的数组,原型输出,不执行类,不读数据库,避免效率降低
                 static $options_array = [];     //避免反复执行

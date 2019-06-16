@@ -1584,3 +1584,5 @@ CREATE TABLE IF NOT EXISTS `qb_weixinword` (
 
 INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(2, '价格', '门户系统价格分别是6800元、9500元，分类系统价格分类别3500元、4500元等', 10, 0);
 INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(3, '产品 商品', '我们的产品有地方门户系统，CMS系统，B2B电子商务系统，分类信息系统等', 11, 0);
+
+INSERT INTO `qb_groupcfg` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `htmlcode`, `c_descrip`, `list`, `allowview`, `ifmust`, `forbid_edit`, `nav`, `input_width`, `input_height`, `match`, `css`) VALUES(0, 11, '到期后降级为哪个用户组', 'old_groupid', '', 'usergroup3', '', '', '', 0, ',3,', 0, 1, '', '', '', '', '');

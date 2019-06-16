@@ -1,0 +1,1 @@
+INSERT INTO `qb_groupcfg` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `htmlcode`, `c_descrip`, `list`, `allowview`, `ifmust`, `forbid_edit`, `nav`, `input_width`, `input_height`, `match`, `css`) VALUES(0, 11, '到期后降级为哪个用户组', 'old_groupid', '', 'usergroup3', '', '', '', 0, ',3,', 0, 1, '', '', '', '', '');

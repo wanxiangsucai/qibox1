@@ -74,7 +74,7 @@ class User extends IndexBase
         if (empty($this->user)){
             $this->error('你还没登录!');
         }
-        $info = $this->model->get_info($this->user['uid']);
+        $info = $this->model->get_info($this->user['uid'],'uid',false);
         
         $this->form_items = [
                 ['hidden', 'uid'],

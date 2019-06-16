@@ -26,6 +26,7 @@ return  array(
   'array' => '数组',
   'usergroup' => '按用户组填数值',
   'usergroup2' => '用户组多选',
+  'usergroup3' => '用户组单选',
   'jftype' => '虚拟币种类',
   'jftype2' => '虚拟币种类(含余额)',
   'password' => '密码',

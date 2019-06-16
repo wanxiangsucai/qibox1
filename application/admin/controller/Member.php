@@ -133,7 +133,7 @@ EOT;
 	        $this->login($id);
 	    }
     	
-	    $info = $this->model->get_info($id);
+	    $info = $this->model->get_info($id,'uid',false);
 	    
 	    $this->form_items = [
 	            ['hidden', 'uid'],

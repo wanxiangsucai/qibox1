@@ -101,7 +101,7 @@ class Form extends Base
             }            
             $show = "<select $ifmust name='{$name}' id='atc_{$name}' lay-filter='{$name}'>$_show</select>";
         
-        }elseif ($field['type'] == 'radio' || $field['type'] == 'jftype' || $field['type'] == 'jftype2' ) {    // 单选按钮 或虚拟币种
+        }elseif ($field['type'] == 'radio' || $field['type'] == 'jftype' || $field['type'] == 'jftype2' || $field['type'] == 'usergroup3' ) {    // 单选按钮 或虚拟币种 及用户组单选
             if($field['type'] == 'jftype'){ //虚拟币种
                 $field['options'] = jf_name();
             }elseif($field['type'] == 'jftype2'){ //虚拟币种包含RMB
@@ -271,7 +271,7 @@ class Form extends Base
         $field_array = get_field($mid);
         foreach ($field_array AS $rs){
             //$rs['options'] && $rs['options'] = str_array($rs['options']);
-            if($rs['type'] == 'usergroup2'){    //用户组多选
+            if($rs['type'] == 'usergroup2'||$rs['type'] == 'usergroup3'){    //用户组多选 及单选
                 $rs['options'] = 'app\common\model\Group@getTitleList';
             }
             $rs['options'] = static::options_2array($rs['options']);
