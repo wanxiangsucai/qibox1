@@ -721,28 +721,35 @@ trait ModuleContent
 	        $uid = $this->user['uid'];
 	    }
 	    $array = fun('qun@myjoin',$uid);
-	    if ($array) {
-	        $ext_sys = $marray['id'];
-	        $data = [];
-	        foreach($array AS $rs){
-	            $data[$rs['id']] = $rs['title'];
-	        }
-	        $form_array = [
-	            [ 'select','ext_id','所属'.QUN,'',$data],
-	            [ 'hidden','ext_sys',$ext_sys],
-	        ];
-	        if (empty($info)) {    //修改就不处理了
-	            $data2 = [];
+	    if ($array) {        
+	        if(!isset($this->webdb['M__qun']['modules_show_select_qun']) || in_array(config('system_dirname'), $this->webdb['M__qun']['modules_show_select_qun']) ){
+	            $ext_sys = $marray['id'];
+	            $data = [];
 	            foreach($array AS $rs){
-	                if ($rs['uid']==$uid) {
-	                    $data2[$rs['id']] = $rs['title'];
+	                $data[$rs['id']] = $rs['title'];
+	            }
+	            $form_array = [
+	                [ 'select','ext_id','所属'.QUN,'',$data],
+	                [ 'hidden','ext_sys',$ext_sys],
+	            ];
+	        }else{
+	            $form_array = [];
+	        }
+	        
+	        if (empty($info)) {    //修改就不处理了	            
+	            if(!isset($this->webdb['M__qun']['modules_show_select_topic']) || in_array(config('system_dirname'), $this->webdb['M__qun']['modules_show_select_topic']) ){
+	                $data2 = [];
+	                foreach($array AS $rs){
+	                    if ($rs['uid']==$uid) {
+	                        $data2[$rs['id']] = $rs['title'];
+	                    }
 	                }
-	            }
-	            if ($data2) {
-	                $form_array[] = [ 'select','topic_aid','归属专题','',$data2];
-	                //$form_array[] = [ 'hidden','topic_sys',config('system_dirname')];
-	            }
-	        }	        
+	                if ($data2) {
+	                    $form_array[] = [ 'select','topic_aid','归属专题','',$data2];
+	                    //$form_array[] = [ 'hidden','topic_sys',config('system_dirname')];
+	                }
+	            }	            
+	        }
 	        return $form_array;
 	    }else{
 	        return [];
