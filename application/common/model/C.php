@@ -203,7 +203,7 @@ abstract class C extends Model
 			get_hook('cms_model_edit_begin',$data,$info=[],['mid'=>$mid],true);
             hook_listen('cms_model_edit_begin',$data,$mid);
             
-            $result = Db::name($table)->update($data);            
+            $result = Db::name($table)->where('id',$data['id'])->update($data);            
        // } catch(\Exception $e) {
         //    return false;
        // }

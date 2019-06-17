@@ -563,7 +563,8 @@ abstract class C extends IndexBase
      */
     protected function get_tpl($type='show',$mid=0,$sort=[],$info=[]){
         $template = '';
-        //栏目自定义模板，优先级最高
+        
+        //栏目若自定义了列表及内容页的模板，优先级是最高的
         if($sort['template']){
             $ar = unserialize($sort['template']);
             if(IN_WAP===true){
@@ -584,23 +585,38 @@ abstract class C extends IndexBase
             }
         }
         
+        
+        //频道特别设置了列表或内容页模板,
+        //重复提醒!!!!!!!!!!!!!一般只推荐只有一个模型的情况做设置
+        //如果有多个模型的话,都会统一用这个模板,会导致不同的模型的自定义字段不好体现,所以多模型的时候,不建议设置
         if (empty($template)) {
-            $template = $this->get_module_tpl($type);   //频道特别设置了列表或内容页模板
+            $template = $this->get_module_tpl($type);
         }
         
+        //某个频道特别选择了某个开发者的整套频道风格 ,这会涉及到头部整体风格都会换掉
+        //重要提醒!!!!!!!!! 这里跟上面这一项容易搞混,这里指的是可以整个频道使用某个开发者的风格,而不必再具体指定列表页或内容页及主页
+        //上面是需要特别指定列表页或内容页或主页,这里就不用一一指定,而是全调用开发者的某套风格的这三种页面
         if (empty($template)) {
-            $template = $this->get_module_layout_tpl($type,$mid);   //频道特别设置了风格布局模板
-        }
-       
-        if (empty($template)) {
-            $template = $this->get_auto_tpl($type,$mid);    //当前风格的模板
+            $template = $this->get_module_layout_tpl($type,$mid);
         }
         
-        if (empty($template)) { //新风格找不到的话,就寻找默认default模板
+        //网站系统的当前风格
+        if (empty($template)) {
+            $template = $this->get_auto_tpl($type,$mid,false);
+        }
+        
+        //新风格找不到的话,就寻找默认default模板,如果系统风格本来就是default默认风格的话,下面的不会执行
+        if (empty($template)) {
             $template = $this->get_default_tpl($type,$mid);
         }
         
-         return $template;
+        //因为上面get_auto_tpl此函数设置了false参数,
+        //如果系统本来就是默认风格的话,会导致上面的get_default_tpl不会执行,会导致  $template 为空,所以这里重新设法获取默模板
+        if (empty($template)) {
+            $template = $this->get_auto_tpl($type,'');
+        }
+        
+        return $template;
     }
     
     /**
@@ -636,7 +652,7 @@ abstract class C extends IndexBase
     
     
     /**
-     * 频道特别设置了布局模板
+     * 频道特别选择了某个开发者的风格,而不必再具体指定列表页或内容页及主页 ,这会涉及到头部整体风格都会换掉
      * 按优先级寻找模板 比如优先级序顺是 wap_show2(pc_show2) 最高,其次是 show2 接着是 wap_show(pc_show) 最后是 show
      * @param string $type 可以为show 或 list
      * @param number $mid 模型ID
@@ -651,6 +667,18 @@ abstract class C extends IndexBase
         }
         if(empty($template)){
             $template = $this->check_module_layout_file($type.$mid);
+        }
+        
+        $model_cfg = model_config($mid);
+        if(empty($template) && $model_cfg['keyword']){  //模型设置了关键字的情况,可以使用指定的模板,但优先级比模型ID的低
+            if(IN_WAP===true){
+                $template = $this->check_module_layout_file('wap_'.$type.'-'.$model_cfg['keyword']);
+            }else{
+                $template = $this->check_module_layout_file('pc_'.$type.'-'.$model_cfg['keyword']);
+            }
+            if(empty($template)){
+                $template = $this->check_module_layout_file($type.'-'.$model_cfg['keyword']);
+            }
         }
         
         //母模板
@@ -668,12 +696,12 @@ abstract class C extends IndexBase
     }
     
     /**
-     * 频道设置了个性风格布局模板
-     * @param unknown $filename
+     * 频道选择了某个开发者的风格,寻找此开发者的对应模板
+     * @param unknown $filename 可以是index list show这三种页面的模板
      * @return string
      */
     protected function check_module_layout_file($filename='show'){
-        $layout = $this->get_module_layout('default');
+        $layout = $this->get_module_layout('default');  //获得某个开发者的风格布局模板详细路径,方便得出其所在的目录给下面使用
         if ($layout){
             $base_path = dirname(dirname($layout)) . '/' . config('system_dirname') . '/content/';
             $tpl_name = $filename . '.' . config('template.view_suffix');
@@ -687,9 +715,10 @@ abstract class C extends IndexBase
      * 按优先级寻找模板 比如优先级序顺是 wap_show2(pc_show2) 最高,其次是 show2 接着是 wap_show(pc_show) 最后是 show
      * @param string $type 可以为show 或 list
      * @param number $mid 模型ID
+     * @param string $use_default 当前风格找不到个性模板时,是否使用默认的, 如果非default风格的话,就设置为false,让他好选择default目录相应的个性模板
      * @return string
      */
-    protected function get_auto_tpl($type='show',$mid=0){
+    protected function get_auto_tpl($type='show',$mid=0,$use_default=true){
         //模型的模板优先级高于母模板
         if(IN_WAP===true){
             $template = $this->check_file('wap_'.$type.$mid);
@@ -700,15 +729,27 @@ abstract class C extends IndexBase
             $template = $this->check_file($type.$mid);
         }
         
+        $model_cfg = model_config($mid);
+        if(empty($template) && $model_cfg['keyword']){  //模型设置了关键字的情况,可以使用指定的模板,但优先级比模型ID的低
+            if(IN_WAP===true){
+                $template = $this->check_file('wap_'.$type.'-'.$model_cfg['keyword']);
+            }else{
+                $template = $this->check_file('pc_'.$type.'-'.$model_cfg['keyword']);
+            }
+            if(empty($template)){
+                $template = $this->check_file($type.'-'.$model_cfg['keyword']);
+            }
+        }
+        
         //母模板
-        if(empty($template)){
+        if(empty($template) && $use_default===true){
             if(IN_WAP===true){
                 $template = $this->check_file('wap_'.$type);
             }else{
                 $template = $this->check_file('pc_'.$type);
             }
-        }        
-        if(empty($template)){
+        }       
+        if(empty($template) && $use_default===true){
             $template = $this->check_file($type);
         }
         return $template;

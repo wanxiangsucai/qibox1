@@ -27,9 +27,10 @@ abstract class M extends AdminBase
     protected function set_config(){
         
         $this->form_items = [
-                ['text', 'title', '模型名称'],
-                ['text', 'layout', '模板路径','一般请留空,否则必须放在/template/index_style/目录下,然后补全路径:比如:“qiboxxx/cms/content/list2.htm”'],     
-                ['text', 'haibao', '海报模板路径',fun('haibao@get_haibao_list').'可留空,多个用逗号隔开,需要补全路径(其中haibao_style不用填):比如:“xxx/show.htm”'],
+            ['text', 'title', '模型名称'],
+            ['text', 'keyword', '关键字(只能字母或数字)','可为空,但确定后,不能随意修改,模板会跟此挂钩'],
+            //['text', 'layout', '模板路径','一般请留空,否则必须放在/template/index_style/目录下,然后补全路径:比如:“qiboxxx/cms/content/list2.htm”'],     
+            ['text', 'haibao', '海报模板路径',fun('haibao@get_haibao_list').'可留空,多个用逗号隔开,需要补全路径(其中haibao_style不用填):比如:“xxx/show.htm”'],
         ];
         
         $this->list_items = [

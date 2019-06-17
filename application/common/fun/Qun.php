@@ -42,9 +42,9 @@ class Qun{
     }
     
     /**
-     * 获取用户所在圈子里边的角色 注意: ===null  代表还没加入圈子 ==0 非正式成员,
-     * @param number $id
-     * @param number $uid
+     * 获取用户所在圈子里边的角色ID值 注意:设置$field='type'时,返回值 ===null  代表还没加入圈子 ==0 非正式成员,
+     * @param number $id 圈子ID
+     * @param number $uid 用户UID
      * @param string $field 获取哪个字段,留空则是所有字段
      * @return void|array|\think\db\false|PDOStatement|string|\think\Model
      */
@@ -73,14 +73,40 @@ class Qun{
     }
     
     /**
+     * 根据关键字获取模型的ID值
+     * @param string $keywrod 关键字比如 qz hy
+     * @return string
+     */
+    public static function getid_bykey($keywrod=''){
+        if(!is_numeric($keywrod)){  //不是模型ID,而是关键字的情况,比如是qz hy之类的
+            foreach(model_config(null,'qun') AS $rs){
+                if($keywrod==$rs['keyword']){
+                    $keywrod = $rs['id'];
+                    break;
+                }
+            }
+        }
+        return intval($keywrod);
+    }
+    
+
+    /**
      * 获取群的角色名称
      * @param unknown $groupid
+     * @param number $aid 可以指定圈子的ID或者是关键字,否则就是系统默认的
      * @return number|string|unknown|array|number[][]|string[][]|unknown[][]|array[][]
      */
-    public static function get_group($groupid=null){
+    public static function get_group($groupid=null,$aid=0){
         $array = [];
         $i = 0;
-        $webdb = config('webdb.M__qun');
+        if($aid){
+            if(!is_numeric($aid)){  //不是模型ID,而是关键字的情况,比如是qz hy之类的
+                $aid = self::getid_bykey($aid);
+            }
+            $webdb = model_config($aid,'qun');
+        }else{
+            $webdb = config('webdb.M__qun');
+        }        
         $str = explode("\n", str_replace("\r", '', $webdb['qun_groups']));
         foreach($str AS $value){
             if (empty($value)) {
@@ -170,10 +196,11 @@ class Qun{
     
     /**
      * 某用户加入过的圈子
-     * @param number $uid
+     * @param number $uid 用户UID
+     * @param number $aid 指模型ID 或关键字
      * @return array|array|mixed
      */
-    public static function myjoin($uid=0){
+    public static function myjoin($uid=0,$aid=0){
         if (!modules_config('qun')) {
             return [];
         }
@@ -185,7 +212,18 @@ class Qun{
 		$array = Db::name('qun_member')->where('uid',$uid)->where('type','>',0)->order('type desc,update_time desc')->column('aid');
 		$listdb = [];
 		foreach($array AS $aid){
-		    $listdb[] = ContentModel::getInfoByid($aid);
+		    $info = ContentModel::getInfoByid($aid);
+		    if($aid){
+		        if(is_numeric($aid) && $info['mid']!=$aid){
+		            continue;
+		        }elseif(!is_numeric($aid)){
+		            $cfg = model_config($info['mid'],'qun');
+		            if($cfg['keyword']!=$aid){
+		                continue;
+		            }
+		        }
+		    }
+		    $listdb[] = $info;
 		}
         return $listdb;
     }
@@ -215,10 +253,10 @@ class Qun{
     /**
      * 某用户所创建的所有圈子
      * @param number $uid
-     * @param number $time
+     * @param number $aid 指模型ID 或关键字
      * @return array|array|mixed
      */
-    public static function getByuid($uid=0,$time=3600){
+    public static function getByuid($uid=0,$aid=0){
         if (!modules_config('qun')) {
             return [];
         }
@@ -228,12 +266,20 @@ class Qun{
         static $array = [];
         $listdb = $array[$uid];
         if (empty($listdb)) {
-            //$listdb = query('qun_content1')->where('uid',$uid)->order('usernum desc')->column(true);
-            //$listdb = array_values($listdb);
-            $array = Db::name('qun_content')->where('uid',$uid)->order('id desc')->column('id');
+            $array = Db::name('qun_content')->where('uid',$uid)->order('id desc')->column(true);
             $listdb = [];
-            foreach($array AS $aid){
-                $listdb[] = ContentModel::getInfoByid($aid);
+            foreach($array AS $rs){
+                if($aid){
+                    if(is_numeric($aid) && $rs['mid']!=$aid){
+                        continue;
+                    }elseif(!is_numeric($aid)){
+                        $cfg = model_config($rs['mid'],'qun');
+                        if($cfg['keyword']!=$aid){
+                            continue;
+                        }
+                    }
+                }
+                $listdb[] = ContentModel::getInfoByid($rs['id']);
             }
             $array[$uid] = $listdb;
         }        
@@ -300,9 +346,10 @@ class Qun{
     /**
      * 列出所有风格
      * @param string $olny_free 设置为true的话,只列出免费风格 否则是所有风格
+     * @param string $type 指定类型
      * @return string[]
      */
-    public static function list_style($olny_free=false){
+    public static function list_style($olny_free=false,$type=''){
         $array = [];
         $template_path = TEMPLATE_PATH."qun_style/";
         $dir=opendir($template_path);
@@ -310,6 +357,9 @@ class Qun{
             if($file!='.' && $file!='..' && $file!='.svn' && is_file($template_path.$file.'/info.php')){
                 $rs = include($template_path.$file.'/info.php');
                 if ($olny_free==true && $rs['money']>0) {
+                    continue;
+                }
+                if($type && $rs['type'] && $rs['type']!=$type){
                     continue;
                 }
                 $rs['keyword'] = $file;
