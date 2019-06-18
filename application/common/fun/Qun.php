@@ -93,18 +93,19 @@ class Qun{
     /**
      * 获取群的角色名称
      * @param unknown $groupid
-     * @param number $aid 可以指定圈子的ID或者是关键字,否则就是系统默认的
+     * @param number $mid 可以指定圈子的模型ID或者是关键字,否则就是系统默认的
      * @return number|string|unknown|array|number[][]|string[][]|unknown[][]|array[][]
      */
-    public static function get_group($groupid=null,$aid=0){
+    public static function get_group($groupid=null,$mid=0){
         $array = [];
         $i = 0;
-        if($aid){
-            if(!is_numeric($aid)){  //不是模型ID,而是关键字的情况,比如是qz hy之类的
-                $aid = self::getid_bykey($aid);
+        if($mid){
+            if(!is_numeric($mid)){  //不是模型ID,而是关键字的情况,比如是qz hy之类的
+                $mid = self::getid_bykey($mid);
             }
-            $webdb = model_config($aid,'qun');
-        }else{
+            $webdb = model_config($mid,'qun');
+        }
+        if(empty($webdb['qun_groups'])){
             $webdb = config('webdb.M__qun');
         }        
         $str = explode("\n", str_replace("\r", '', $webdb['qun_groups']));
