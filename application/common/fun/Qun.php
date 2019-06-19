@@ -198,10 +198,11 @@ class Qun{
     /**
      * 某用户加入过的圈子
      * @param number $uid 用户UID
-     * @param number $aid 指模型ID 或关键字
+     * @param number $mid 指模型ID 或关键字
+     * string $only_title 设置为1或true的话,只取标题
      * @return array|array|mixed
      */
-    public static function myjoin($uid=0,$aid=0){
+    public static function myjoin($uid=0,$mid=0,$only_title=false){
         if (!modules_config('qun')) {
             return [];
         }
@@ -214,17 +215,21 @@ class Qun{
 		$listdb = [];
 		foreach($array AS $aid){
 		    $info = ContentModel::getInfoByid($aid);
-		    if($aid){
-		        if(is_numeric($aid) && $info['mid']!=$aid){
+		    if($mid){
+		        if(is_numeric($mid) && $info['mid']!=$mid){
 		            continue;
-		        }elseif(!is_numeric($aid)){
+		        }elseif(!is_numeric($mid)){
 		            $cfg = model_config($info['mid'],'qun');
-		            if($cfg['keyword']!=$aid){
+		            if($cfg['keyword']!=$mid){
 		                continue;
 		            }
 		        }
 		    }
-		    $listdb[] = $info;
+		    if($only_title){
+		        $listdb[$aid] = $info['title'];
+		    }else{
+		        $listdb[] = $info;
+		    }		    
 		}
         return $listdb;
     }
