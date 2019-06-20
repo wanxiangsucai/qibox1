@@ -266,7 +266,6 @@ CREATE TABLE IF NOT EXISTS `qb_cms_content1` (
   KEY `province_id` (`province_id`),
   KEY `city_id` (`city_id`),
   KEY `ext_id` (`ext_id`,`ext_sys`),
-  KEY `ext_id_2` (`ext_id`,`ext_sys`),
   KEY `myfid` (`myfid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文章模型模型表' AUTO_INCREMENT=36 ;
 
@@ -323,7 +322,6 @@ CREATE TABLE IF NOT EXISTS `qb_cms_content2` (
   KEY `province_id` (`province_id`),
   KEY `city_id` (`city_id`),
   KEY `ext_id` (`ext_id`,`ext_sys`),
-  KEY `ext_id_2` (`ext_id`,`ext_sys`),
   KEY `myfid` (`myfid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='图片模型模型表' AUTO_INCREMENT=43 ;
 
@@ -374,8 +372,7 @@ CREATE TABLE IF NOT EXISTS `qb_cms_content3` (
   KEY `ispic` (`ispic`),
   KEY `province_id` (`province_id`),
   KEY `city_id` (`city_id`),
-  KEY `ext_id` (`ext_id`,`ext_sys`),
-  KEY `ext_id_2` (`ext_id`,`ext_sys`)
+  KEY `ext_id` (`ext_id`,`ext_sys`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='视频模型模型表' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -401,7 +398,7 @@ CREATE TABLE IF NOT EXISTS `qb_cms_field` (
   `param` varchar(32) NOT NULL DEFAULT '' COMMENT '联动下拉框请求参数名',
   `format` varchar(32) NOT NULL DEFAULT '' COMMENT '格式，用于格式文本',
   `table` varchar(32) NOT NULL DEFAULT '' COMMENT '表名，只用于快速联动类型',
-  `level` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT '联动级别，只用于快速联动类型',
+  `level` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '联动级别，只用于快速联动类型',
   `key` varchar(32) NOT NULL DEFAULT '' COMMENT '键字段，只用于快速联动类型',
   `option` varchar(32) NOT NULL DEFAULT '' COMMENT '值字段，只用于快速联动类型',
   `pid` varchar(32) NOT NULL DEFAULT '' COMMENT '父级id字段，只用于快速联动类型',
@@ -417,8 +414,11 @@ CREATE TABLE IF NOT EXISTS `qb_cms_field` (
   `css` varchar(20) NOT NULL COMMENT '表单CSS类名',
   `script` text NOT NULL COMMENT 'JS脚本',
   `trigger` varchar(255) NOT NULL COMMENT '选择某一项后,联动触发显示其它字段',
+  `range_opt` text NOT NULL COMMENT '范围选择,比如价格范围',
+  `group_view` varchar(255) NOT NULL COMMENT '允许哪些用户组查看',
+  `index_hide` tinyint(1) NOT NULL COMMENT '是否前台不显示并不做转义处理',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=59 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='模型字段表' AUTO_INCREMENT=59 ;
 
 --
 -- 转存表中的数据 `qb_cms_field`
@@ -1586,3 +1586,6 @@ INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(2, '�
 INSERT INTO `qb_weixinword` (`id`, `ask`, `answer`, `list`, `type`) VALUES(3, '产品 商品', '我们的产品有地方门户系统，CMS系统，B2B电子商务系统，分类信息系统等', 11, 0);
 
 INSERT INTO `qb_groupcfg` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `htmlcode`, `c_descrip`, `list`, `allowview`, `ifmust`, `forbid_edit`, `nav`, `input_width`, `input_height`, `match`, `css`) VALUES(0, 11, '到期后降级为哪个用户组', 'old_groupid', '', 'usergroup3', '', '', '', 0, ',3,', 0, 1, '', '', '', '', '');
+
+ALTER TABLE  `qb_webmenu` CHANGE  `style`  `style` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  'CSS类名';
+ALTER TABLE  `qb_admin_menu` CHANGE  `style`  `style` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  'CSS类名';
