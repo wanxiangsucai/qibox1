@@ -11,12 +11,16 @@ class Coupon{
     
     /**
      * 获取指定用户的可用代金券
+     * $tag,$both这两项不做设置(即用默认的值),就只获取通用代金券 
+     * 若设置$both为true的话代表同时获取通用及某类券
      * @param number $uid 用户UID
      * @param number $money 当前产品金额
      * @param number $shoper 对应商家的UID
+     * @param string $tag 指定某类商品才能用的优惠券
+     * @param string $both 默认只取某类或者是通用,设置为true的话,就两种一起获取
      * @return array
      */
-    public static function get_list($uid=0,$money=0,$shoper=0){
+    public static function get_list($uid=0,$money=0,$shoper=0,$tag='',$both=false){
         if (empty(modules_config('coupon'))) {
             return ;
         }
@@ -29,6 +33,15 @@ class Coupon{
         ];
         if ($shoper) {
             $map['shop_uid'] = $shoper;
+        }
+        if ($both!=false && $tag!='') {
+            $map['coupon_tag'] = [
+                ['=',$tag],
+                ['=',''],
+                'or'
+            ];
+        }else{
+            $map['coupon_tag'] = $tag;
         }
         $listdb = Db::name('coupon_order')->where($map)->order('quan_money','asc')->column(true);
         return $listdb;

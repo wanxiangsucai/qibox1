@@ -106,22 +106,42 @@ abstract class Order extends IndexBase
                     $car_db[] = $rs['_car_'];
                 }
                 $data['totalmoney'] = $money;   //订单金额,实际需要支付的可能会少一点
+                
+                
+                
                 $cid = $data['cid'][$uid];      //代金券ID
                 if ($cid>0) {
-                    $coupon = fun('Coupon@get_list',$this->user['uid'],$money,$uid);
+                    $coupon = fun('Coupon@get_list',$this->user['uid'],$money,$uid);    //通用券处理
                     if($coupon[$cid]){
                         $money -= $coupon[$cid]['quan_money'];    //抵扣券
                         if ($money<0) {
                             $money = 0;
                         }
                     }else{
-                        $cid = 0;
+                        $check_coupon = false;
+                        foreach ($shop_array AS $rs){  //非通用券处理 , 每一个商品进行判断
+                            if($rs['coupon_tag']){      //存在非通用券标志
+                                $_array = fun('Coupon@get_list',$this->user['uid'],fun('shop@get_price',$rs,$rs['_car_']['type1']-1),$uid,$rs['coupon_tag']);
+                                if($_array[$cid]){
+                                    $money -= $_array[$cid]['quan_money'];    //抵扣券
+                                    if ($money<0) {
+                                        $money = 0;
+                                    }
+                                    $check_coupon = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if($check_coupon==false){
+                            $cid = 0;
+                        }                        
                     }
                 }
+                
                 $data['shop'] = implode(',', $_shop);
                 $data['order_sn'] = 's'.date('ymdHis').rands(3);      //订单号
                 $data['pay_money'] = $money;    //需要支付的金额
-                $total_money += $money; 
+                $total_money += $money;
                 if (!empty($this -> validate)) {// 验证表单                    
                     $result = $this -> validate($data, $this -> validate);
                     if (true !== $result) $this -> error($result);
