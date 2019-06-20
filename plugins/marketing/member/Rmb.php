@@ -133,7 +133,7 @@ class Rmb extends MemberBase
 	        }
 	    }
 	    $this->assign('listdb',$detail);
-	    $this->assign('getout_percent_money',$getout_percent_money);   //提现手续费
+	    $this->assign('getout_percent_money',$getout_percent_money*100);   //提现手续费
 	    return $this->pfetch();
 	}
 	
