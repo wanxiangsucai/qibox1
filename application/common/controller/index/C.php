@@ -602,7 +602,8 @@ abstract class C extends IndexBase
         
         //网站系统的当前风格
         if (empty($template)) {
-            $template = $this->get_auto_tpl($type,$mid,false);
+            //模型2以上的值,如果个性风格比如pc_show2.htm,show2.htm不存在,就取default默认风格的此文件.模型1的话,就仍用个性风格的pc_show.htm show.htm
+            $template = $this->get_auto_tpl($type,$mid,$mid==1?true:false);
         }
         
         //新风格找不到的话,就寻找默认default模板,如果系统风格本来就是default默认风格的话,下面的不会执行
@@ -610,7 +611,7 @@ abstract class C extends IndexBase
             $template = $this->get_default_tpl($type,$mid);
         }
         
-        //因为上面get_auto_tpl此函数设置了false参数,
+        //因为上面get_auto_tpl此函数设置了false参数,主要是针对模型2以上的情况
         //如果系统本来就是默认风格的话,会导致上面的get_default_tpl不会执行,会导致  $template 为空,所以这里重新设法获取默模板
         if (empty($template)) {
             $template = $this->get_auto_tpl($type,'');
