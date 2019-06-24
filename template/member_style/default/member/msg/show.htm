@@ -75,9 +75,19 @@ function postmsg(){
 	$.post(url,{'uid':"{$info.uid}",'content':content,},function(res){		
 		if(res.code==0){
 			layer.msg('发送成功');
+			{if input('isframe')}
+
+				setTimeout(function(){
+					parent.layer.closeAll();
+				},800);
+
+			{else /}
+
 			setTimeout(function(){
 				window.location.href = "{:urls('index')}";
 			},500);
+
+			{/if}
 		    //$(".msglist").html( make_html(res.data) );
 		}else{
 			layer.alert('发送失败:'+res.msg);
