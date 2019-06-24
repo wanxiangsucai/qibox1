@@ -2,6 +2,7 @@
 
 {block name="title"}短消息{/block}
 {block name="content"}
+
 {include file="msg/menu" /}
 <style>
 .ListContainer{
@@ -56,7 +57,7 @@
 {volist name="listdb" id="rs"}
     <div class='CommentList'>
 		<div class='title'>
-			<input type="checkbox" name="ids[]" value="{$rs.id}"> <a href="{:urls('show',['id'=>$rs['id']])}">{$rs.title}</a>
+			<input type="checkbox" name="ids[]" value="{$rs.id}"> <a href="javascript:;" onclick="open_msg('{:urls('show',['id'=>$rs['id']])}?isframe=1')">{$rs.title}</a>
 		</div>
 		<div class='info'>
 			<div class='UserTime'><span class='userL'>
@@ -73,6 +74,17 @@
 {/volist}
 	<div class="Showpage">{$pages}</div>
 </div>
+
+<script type="text/javascript">
+function open_msg(url){
+	layer.open({
+		type: 2,
+		title:'信息详情',
+		area:['95%','95%'],
+		content: url,
+	});
+}
+</script>
 
 <script type="text/javascript">
 //全选

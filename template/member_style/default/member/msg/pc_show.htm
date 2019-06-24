@@ -2,7 +2,15 @@
 
 {block name="title"}短消息{/block}
 {block name="content"}
-{include file="msg/menu" /}
+
+{if empty(input('isframe'))}
+	{include file="msg/menu" /}
+{else /}
+	<style type="text/css">
+	.qb_ui_page_menu{display:none;}
+	</style>
+{/if}
+
 <div class="MainCont mtop10">
 	 
     <div class="cont">
@@ -23,7 +31,7 @@
 
          <div class="layui-form-item" style="overflow: hidden;">
           <div class="layui-input-block layui-input-right">
-            <button class="layui-btn" onclick="postmsg()">发表</button>
+            <button class="layui-btn" onclick="postmsg()">回复</button>
           </div>          
         </div>
       </div>

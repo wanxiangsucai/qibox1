@@ -2,8 +2,14 @@
 
 {block name="title"}短消息{/block}
 {block name="content"}
-{include file="msg/menu" /}
 
+{if empty(input('isframe'))}
+	{include file="msg/menu" /}
+{else /}
+	<style type="text/css">
+	.qb_header{display:none;}
+	</style>
+{/if}
 <link rel="stylesheet" href="__STATIC__/layui/css/template.css" media="all">
 <style type="text/css">
 .layadmin-message-fluid{
@@ -32,7 +38,7 @@
 
          <div class="layui-form-item" style="overflow: hidden;">
           <div class="layui-input-block layui-input-right">
-            <button class="layui-btn" onclick="postmsg()">发表</button>
+            <button class="layui-btn" onclick="postmsg()">回复</button>
           </div>          
         </div>
       </div>

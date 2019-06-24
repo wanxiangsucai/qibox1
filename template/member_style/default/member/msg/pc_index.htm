@@ -47,7 +47,7 @@ function set_readed(){
 {volist name="listdb" id="rs"}
           <tr>
             <td><input type="checkbox" name="ids[]" value="{$rs.id}"></td>
-            <td class="tL"><a href="{:urls('show',['id'=>$rs['id']])}">{$rs.title}</a></td>
+            <td class="tL"><a href="javascript:;" onclick="open_msg('{:urls('show',['id'=>$rs['id']])}?isframe=1')">{$rs.title}</a></td>
             <td><a href="{:get_url('user',['uid'=>$rs['uid']])}" target="_blank">{$rs.from_username}</a></td>
             <td>{$rs.create_time}</td>
             <td>
@@ -66,5 +66,16 @@ function set_readed(){
         <div class="Showpage">{$pages}</div>
     </div>
 </div>
+
+<script type="text/javascript">
+function open_msg(url){
+	layer.open({
+		type: 2,
+		title:'信息详情',
+		area:['95%','95%'],
+		content: url,
+	});
+}
+</script>
 
 {/block}
