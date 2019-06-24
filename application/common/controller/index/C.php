@@ -597,13 +597,16 @@ abstract class C extends IndexBase
         //重要提醒!!!!!!!!! 这里跟上面这一项容易搞混,这里指的是可以整个频道使用某个开发者的风格,而不必再具体指定列表页或内容页及主页
         //上面是需要特别指定列表页或内容页或主页,这里就不用一一指定,而是全调用开发者的某套风格的这三种页面
         if (empty($template)) {
+            //模型2以上的值,如果个性风格比如pc_show2.htm,show2.htm不存在,就取default默认风格的此文件.模型1的话,就仍用个性风格的pc_show.htm show.htm
+            //$template = $this->get_module_layout_tpl($type,$mid,$mid==1?true:false);
             $template = $this->get_module_layout_tpl($type,$mid);
         }
         
         //网站系统的当前风格
         if (empty($template)) {
             //模型2以上的值,如果个性风格比如pc_show2.htm,show2.htm不存在,就取default默认风格的此文件.模型1的话,就仍用个性风格的pc_show.htm show.htm
-            $template = $this->get_auto_tpl($type,$mid,$mid==1?true:false);
+            //$template = $this->get_auto_tpl($type,$mid,$mid==1?true:false);
+            $template = $this->get_auto_tpl($type,$mid);
         }
         
         //新风格找不到的话,就寻找默认default模板,如果系统风格本来就是default默认风格的话,下面的不会执行
@@ -611,8 +614,8 @@ abstract class C extends IndexBase
             $template = $this->get_default_tpl($type,$mid);
         }
         
-        //因为上面get_auto_tpl此函数设置了false参数,主要是针对模型2以上的情况
-        //如果系统本来就是默认风格的话,会导致上面的get_default_tpl不会执行,会导致  $template 为空,所以这里重新设法获取默模板
+        //如果上面get_auto_tpl此函数设置了false参数,主要是针对模型2以上的情况
+        //如果设置了false参数,系统本来就是默认风格的话,会导致上面的get_default_tpl不会执行,会导致  $template 为空,所以这里重新设法获取默模板
         if (empty($template)) {
             $template = $this->get_auto_tpl($type,'');
         }
@@ -657,9 +660,10 @@ abstract class C extends IndexBase
      * 按优先级寻找模板 比如优先级序顺是 wap_show2(pc_show2) 最高,其次是 show2 接着是 wap_show(pc_show) 最后是 show
      * @param string $type 可以为show 或 list
      * @param number $mid 模型ID
+     * @param string $use_default 当前风格找不到模型参数模板时,是否使用不带模型参数的母模板
      * @return string
      */
-    protected function get_module_layout_tpl($type='show',$mid=0){
+    protected function get_module_layout_tpl($type='show',$mid=0,$use_default=true){
         //模型的模板优先级高于母模板
         if(IN_WAP===true){
             $template = $this->check_module_layout_file('wap_'.$type.$mid);
@@ -683,14 +687,14 @@ abstract class C extends IndexBase
         }
         
         //母模板
-        if(empty($template)){
+        if(empty($template) && $use_default==true){
             if(IN_WAP===true){
                 $template = $this->check_module_layout_file('wap_'.$type);
             }else{
                 $template = $this->check_module_layout_file('pc_'.$type);
             }
         }
-        if(empty($template)){
+        if(empty($template) && $use_default==true){
             $template = $this->check_module_layout_file($type);
         }
         return $template;
@@ -716,7 +720,7 @@ abstract class C extends IndexBase
      * 按优先级寻找模板 比如优先级序顺是 wap_show2(pc_show2) 最高,其次是 show2 接着是 wap_show(pc_show) 最后是 show
      * @param string $type 可以为show 或 list
      * @param number $mid 模型ID
-     * @param string $use_default 当前风格找不到个性模板时,是否使用默认的, 如果非default风格的话,就设置为false,让他好选择default目录相应的个性模板
+     * @param string $use_default 当前风格找不到模型参数模板时,是否使用不带模型参数的母模板, 如果非default风格的话,就设置为false,让他好选择default目录相应的带模型参数的模板
      * @return string
      */
     protected function get_auto_tpl($type='show',$mid=0,$use_default=true){
