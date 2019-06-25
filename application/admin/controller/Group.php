@@ -1,17 +1,19 @@
 <?php
 namespace app\admin\controller;
+
 use app\common\controller\AdminBase; 
 use app\common\model\Group AS GroupModel;
-use app\common\util\Tabel;
-use app\common\util\Form;
 use app\common\util\Menu;
+use app\common\traits\AddEditList;
 
 class Group extends AdminBase
 {
+    use AddEditList;
     protected $validate;
-    protected $grouplist;
-    protected $group_nav;
-    protected $money_name='积分';
+    protected $money_name = '积分';
+//     protected $grouplist;
+//     protected $group_nav;
+    
     
     protected function _initialize()
     {
@@ -20,8 +22,26 @@ class Group extends AdminBase
         if($this->webdb['up_group_use_rmb']){
             $this->money_name='金额';
         }
+        
+        $this->form_items = [
+            ['text','title','用户组名称'],
+            ['radio','allowadmin','是否有后台权限','',['没权限','有后台权限'],0],
+            ['radio','type','用户组类型','会员级可以升级,系统组不能升级',['会员组','系统组'],0],
+            ['number','level','升级所需'.$this->money_name],
+            ['text','daytime','有效期(天)','针对会员组而言的，系统组无效，0则是长期有效'],
+        ];
+        
+        $this->tab_ext['trigger'] = [
+            ['type', 0, 'level,daytime'],
+        ];
+        
     }
     
+    /**
+     * 设置后台权限
+     * @param number $id
+     * @return mixed|string
+     */
     public function admin_power($id=0){
         if ($this->request->isPost()) {
             $data = $this->request->post();
@@ -47,36 +67,49 @@ class Group extends AdminBase
         return $this->fetch();
     }
     
+    /**
+     * 用户组管理
+     * @return mixed|string
+     */
     public function index()
     {
-	    $listdb = GroupModel::where([])->order('type desc,level asc,id asc')->column(true);
-
-	    $tab = [
-//         	            ['id', '用户组ID', 'text'],
-        	            ['title', '用户组名称', 'text.edit'],
-        	            ['type', '用户组性质', 'select2',['会员组','系统组']],
-        	            ['allowadmin', '后台权限','callback' ,function($key,$v){
-        	                if($key){
-        	                    $show = '<a title="设置后台权限" icon="fa fa-gear" class="btn btn-xs btn-default" href="'.url('admin_power',['id'=>$v['id']]).'"><i class="fa fa-gear"></i></a>';
-        	                }
-        	                return $key>0?$show:'';
-        	            },'__data__'],
-        	            ['level', '升级'.$this->money_name, 'text.edit'],
-        	            ['daytime', '有效期', 'text.edit'],
-	                   //['right_button', '操作', 'btn'],
-	            ];
+	    $this->list_items = [
+	        ['title', '用户组名称', 'text.edit'],
+	        ['type', '用户组性质', 'select2',['会员组','系统组']],
+	        ['allowadmin', '后台权限','callback' ,function($key,$v){
+	            $show = '';
+	            if($v['type']==1){
+	                $show = "<script type='text/javascript'>$(function(){ $(\"input[name='level[{$v['id']}]']\").hide();$(\"input[name='daytime[{$v['id']}]']\").hide(); });</script>";
+	            }
+	            if($key==1){
+	                $show .= '<a title="设置后台权限" icon="fa fa-gear" class="btn btn-xs btn-default" href="'.url('admin_power',['id'=>$v['id']]).'"><i class="fa fa-gear"></i></a>';
+	            }
+	            return $show;
+	        }],
+	        ['level', '升级'.$this->money_name, 'text.edit'],
+	        ['daytime', '有效期', 'text.edit'],
+	    ];
 	    
-	    $table = Tabel::make($listdb,$tab)
-	    ->addTopButton('add',['title'=>'添加用户组'])
-	    //->addTopButton('delete')
-// 	    ->addRightButton('edit')
-// 	    ->addRightButton('delete')	    
-	    //->addPageTips('省份管理')
-	    ->addPageTitle('用户组管理');
+	    $this->tab_ext['page_title'] = '用户组管理';
+	    
+	    $this->tab_ext['top_button'] = [
+	        [
+	            'type'=>'add',
+	            'title'=>'新增用户组',
+	        ],
+	    ];
+	    
+	    $this->tab_ext['help_msg'] = '会员组才能自由升级，有效期为0则是永久有效，在系统设置那里可以切换升级方式是用积分还是金额';
+	    
+	    $listdb = GroupModel::where([])->order('type desc,level asc,id asc')->column(true);
+	    return $this -> getAdminTable($listdb);
 
-        return $table::fetchs();
 	}
 	
+	/**
+	 * 新增用户组
+	 * @return mixed|string
+	 */
 	public function add(){
 	    if ($this->request->isPost()) {
 	        $data = $this->request->post();
@@ -93,16 +126,10 @@ class Group extends AdminBase
 	            $this->error('创建失败');
 	        }
 	    }
-
-	    $form = Form::make()
-	    ->addText('title','用户组名称')
-	    ->addRadio('type','用户组类型','会员级可以自由升级,系统组不能自由升级',['会员组','系统组'],0)
-	    ->addRadio('allowadmin','是否有后台权限','',['没权限','有后台权限'],0)
-	    ->addNumber('level','升级所需'.$this->money_name)
-	    ->addText('daytime','有效期(天)','针对认证的会员组而言的,系统组无效')
-	    ->addJs('type','0','level')
-	    ->addPageTitle('添加菜单');
-	    return $form::fetchs();
+	    
+	    $this->tab_ext['page_title'] = '新建用户组';
+	    
+	    return $this->addContent();
 	}
 	
 	protected function check_tpl($file=''){
@@ -114,7 +141,12 @@ class Group extends AdminBase
 	        $this->error('文件名不要加.htm后缀:'.$file);
 	    }
 	}
-
+    
+	/**
+	 * 修改用户组
+	 * @param number $id
+	 * @return unknown
+	 */
 	public function edit($id=0){
 	    
 	    if ($this->request->isPost()) {
@@ -133,27 +165,29 @@ class Group extends AdminBase
 	            $this->error('修改失败');
 	        }
 	    }
+	    $array = [
+	        ['text','wap_page','wap个人主页模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/user/目录下，只输入文件名即可，比如“indexppp”，提醒:对于不同的用户组模板文件名如果为index3或index8等即用户组ID结尾的话,这里可以不输入'],
+	        ['text','wap_member','wap会员中心模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/index/目录下，只输入文件名即可，比如“indexppp”'],
+	        ['text','pc_page','pc个人主页模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/user/目录下，只输入文件名即可，比如“indexppp”'],
+	        ['text','pc_member','pc会员中心模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/index/目录下，只输入文件名即可，比如“indexppp”'],
+	    ];
+	    
+	    $this->form_items = array_merge($this->form_items,$array);
+	    
 	    $info = GroupModel::get($id);
-	    $form = Form::make([],$info)
-	    ->addPageTitle('修改用户组')
-	    ->addText('title','用户组名称')
-	    ->addRadio('type','用户组类型','会员级可以自由升级,系统组不能自由升级',['会员组','系统组'])
-	    ->addRadio('allowadmin','是否有后台权限','',['没权限','有后台权限'])
-	    ->addNumber('level','升级所需'.$this->money_name)
-	    ->addText('daytime','有效期(天)','针对认证的会员组而言的,系统组无效')
-	    ->addText('wap_page','wap个人主页模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/user/目录下，只输入文件名即可，比如“indexppp”，提醒:对于不同的用户组模板文件名如果为index3或index8等即用户组ID结尾的话,这里可以不输入')
-	    ->addText('wap_member','wap会员中心模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/index/目录下，只输入文件名即可，比如“indexppp”')
-	    ->addText('pc_page','pc个人主页模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/user/目录下，只输入文件名即可，比如“indexppp”')
-	    ->addText('pc_member','pc会员中心模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/index/目录下，只输入文件名即可，比如“indexppp”')
-	    ->addJs('type','0','level')
-	    ->addHidden('id',$id);
-
-	    return $form::fetchs();
+	    return $this->editContent($info);
 	}
 	
+	/**
+	 * 删除用户组
+	 * @param unknown $ids
+	 */
 	public function delete($ids){
 	    if (empty($ids)) {
 	        $this -> error('ID有误');
+	    }
+	    if ($ids==3||$ids==2||$ids==8) {
+	        $this -> error('内置用户组,不能删除');
 	    }
 	    $ids = is_array($ids)?$ids:[$ids];
 	    if (GroupModel::destroy($ids)) {
