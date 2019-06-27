@@ -109,6 +109,7 @@ abstract class M extends AdminBase
             }
             if ($result = $this->saveAddContent()) {
                 if ($this->model->createTable($result->id,$data['title'])) {
+                    \think\Cache::clear();  //插件要用到清除缓存
                     $this->success('模型创建成功', auto_url('index'));
                 }else{
                     $this->model->where('id','=',$result->id)->delete();
@@ -139,6 +140,7 @@ abstract class M extends AdminBase
         }
         $newid = $this->model->copyTable($name,$mid);
         if ($newid) {
+            \think\Cache::clear();  //插件要用到清除缓存
             $this->success('模型复制成功', auto_url('index'));
         }else{
             $this->error('模型复制失败');
@@ -185,10 +187,10 @@ abstract class M extends AdminBase
         
         //模块表删除记录
         if( $this->deleteContent($ids) ){
-            $this->success('卸载成功', auto_url('index') );
+            $this->success('删除成功', auto_url('index') );
         }else{
             
-            $this->error('卸载失败');
+            $this->error('删除失败');
         }
     }
     

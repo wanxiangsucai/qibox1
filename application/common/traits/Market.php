@@ -13,35 +13,25 @@ trait Market
      */
     protected function getapp($id=0,$type='m'){
         $keywords = input('keywords');
-        $appkey= input('appkey');
-        $domain= input('domain');
-        
-        //	    $price = input('price');
-        //	    $type = input('type');
-        // 	    $url = "http://qb.net/index.php/appstore/wxapp.getapp/down.html?id=$id&type=$type&appkey=$appkey&domain=$domain";
-        // 	    $string  = file_get_contents($url);
-        // 	    if($type=='check'){    //检查是否有权限安装
-        // 	        if(is_numeric($string) ){
-        // 	            if($string>0){
-        // 	                return $this->err_js('需要付费购买!',['money'=>$string],2);
-        // 	            }else{
-        // 	                return $this->ok_js([],'有权限安装');
-        // 	            }
-        // 	        }else{
-        // 	            return $this->err_js('获取云端数据失败!');
-        // 	        }
-        // 	    }
-        
-        //copy_dir(RUNTIME_PATH."model/$keywords",APP_PATH.$keywords);
+        $appkey = input('appkey');
+        $domain = input('domain');
+        $upvip = input('upvip'); //免费或者是破解版升级授权
         
         $basepath = $type=='m' ? APP_PATH : PLUGINS_PATH;
         
         if(!is_writable($basepath)){
             return $this->err_js($basepath.'目录不可写,请先修改目录属性可写');
         }elseif ( is_dir($basepath.$keywords) ){
-            if (($type=='m'&&modules_config($keywords))||($type!='m'&&plugins_config($keywords))) { //如果频道停用的话.原数据库会被清空
+            if ($upvip==1||($type=='m'&&modules_config($keywords))||($type!='m'&&plugins_config($keywords))) { //如果频道停用的话.原数据库会被清空
                 $_array = modules_config($keywords);
-                if ($type=='m' && $_array && $_array['version_id']!=$id) {
+                if($upvip==1){
+                    $this->model->update([
+                        'id'=>$_array['id'],
+                        'version_id'=>$id,
+                    ]);
+                    Cache::clear();
+                    return $this->err_js( '当前应用成功授权为正版应用,请按键盘F5键,刷新网页获取升级文件.' );
+                }elseif ($type=='m' && $_array && $_array['version_id']!=$id) {
                     $this->model->update([
                             'id'=>$_array['id'],
                             'version_id'=>$id,

@@ -1589,3 +1589,5 @@ INSERT INTO `qb_groupcfg` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type
 
 ALTER TABLE  `qb_webmenu` CHANGE  `style`  `style` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  'CSS类名';
 ALTER TABLE  `qb_admin_menu` CHANGE  `style`  `style` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  'CSS类名';
+
+ALTER TABLE  `qb_rmb_consume` ADD INDEX (  `posttime` );

@@ -1,0 +1,1 @@
+ALTER TABLE  `qb_rmb_consume` ADD INDEX (  `posttime` );

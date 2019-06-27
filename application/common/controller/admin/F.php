@@ -98,6 +98,7 @@ abstract class F extends AdminBase
             $result = $this->model->newField($data['mid'],$data);  //新增字段信息
             if ($result===true) {
                 if ( $this->saveAddContent() ) {    //字段表进一步保存字段信息
+                    \think\Cache::clear();  //插件要用到清除缓存
                     $this->success('字段添加成功', auto_url('index',['mid'=>$data['mid']]));
                 }
             }else{
@@ -163,6 +164,7 @@ abstract class F extends AdminBase
             if ($result===true) {
                 if ( $this->saveEditContent() ) {
                     $mid = $this->model->where('id',$id)->value('mid');
+                    \think\Cache::clear();  //插件要用到清除缓存
                     $this->success('字段修改成功', auto_url('index',['mid'=>$mid]) );
                 }
             }
@@ -181,6 +183,7 @@ abstract class F extends AdminBase
         $field_array = $this->getInfoData( $ids );
         $this->model->deleteField($field_array);
         if( $this->deleteContent($ids) ){
+            \think\Cache::clear();  //插件要用到清除缓存
             $this->success('删除成功', auto_url('index',['mid'=>$field_array['mid']]) );
         }else{
             

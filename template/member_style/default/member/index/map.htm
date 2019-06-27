@@ -6,8 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1; maximum-scale=1.0; user-scalable=no;" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black"  />
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>会员操作平台</title>
+<title>会员中心</title>
 <link rel="stylesheet" type="text/css" href="__STATIC__/member/default/base/base.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/icon/icon.css">
+
 <style>
 /**右外边距适当调小***/
 .guide{margin:0 2px 10px 0;}
@@ -17,6 +19,8 @@ body .Notes{margin:0 2px 15px 0;}
 </head>
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/admin/default/jquery-1.2.6.min.js"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/member/default/blue/blue.js"></SCRIPT> 
+<script LANGUAGE="JavaScript" src="__STATIC__/layer/layer.js"></script>
+
 <body>
 
 
@@ -25,7 +29,7 @@ body .Notes{margin:0 2px 15px 0;}
 	<div style="position:relative;"><span>提示： </span>严禁发布违法言论,否则后果自负!! <a href='' style='color:red;display:block;width:180px; position:absolute;top:0;right:5px;'> </a></div>
 </div>
 <div class="MainCont">
-	<div class="head"><div class="tag">帐号信息</div></div>
+	<div class="head"><div class="tag fa fa-user">帐号信息</div></div>
     <div class="cont">
     	<div class="MyInfo">
         	<div class="img"><a href="{:get_url('user',['uid'=>$userdb['uid']])}" target="_blank"><img onerror="this.src='__STATIC__/index/base/noface.gif'" src="{$user.icon|tempdir}" width="50" /></a></div>
@@ -75,7 +79,7 @@ body .Notes{margin:0 2px 15px 0;}
 -->
 {/if}
 <div class="MainCont">
-	<div class="head"><div class="tag">财务信息</div></div>
+	<div class="head"><div class="tag fa fa-cc-visa">财务信息</div></div>
     <div class="cont">
     	<ul class="rmbinfo">
 		<li><div class="tg">虚拟财富:</div>
@@ -88,71 +92,178 @@ body .Notes{margin:0 2px 15px 0;}
 		{/volist}
 		</div>
 		<div class="rmb"><a href="{:purl('marketing/jifen/index')}">明细查询</a></div>
-		<div class="add"><a href="{:purl('marketing/jifen/add')}">充值</a> <a href="{:purl('marketing/money/index')}">兑换</a> </div>
+		<div class="add"><a href="{:purl('marketing/jifen/add')}">充值</a>　<a class="glyphicon glyphicon-retweet" href="{:purl('marketing/money/index')}">兑换</a> </div>
 		</li>
 		
-        	<li><div class="tg">可用余额:</div><div><span>{$userdb.rmb}</span>元</div><div class="rmb"><a href="{:purl('marketing/rmb/index')}">明细查询</a></div><div class="add"><a href="{:purl('marketing/rmb/add')}">充值</a></div><div class="free"><a href="{:purl('marketing/rmb/getmoney')}">提现</a></div></li>
-            <li><div class="tg">冻结余额:</div><div><span>{$userdb.rmb_freeze}</span>元</div></li>
-            <li><div class="tg">提款银行:</div><div><a href="{:purl('marketing/rmb/edit')}">设置银行帐号</a></div></li>
+        	<li><div class="tg">可用余额:</div><div><span>{$userdb.rmb}</span>元　冻结余额:</div><div><span>{$userdb.rmb_freeze}</span>元</div><div class="rmb"><a href="{:purl('marketing/rmb/index')}">明细查询</a></div><div class="add"><a href="{:purl('marketing/rmb/add')}">充值</a></div><div class="free"><a href="{:purl('marketing/rmb/getmoney')}">提现</a></div></li>
+           　
+            <li><div class="tg">财富设置:</div><div><a class="fa fa-cc-discover" href="{:purl('marketing/rmb/edit')}"> 设置银行帐号</a>　　<a class="fa fa-key" href="{:purl('marketing/rmb/pwd')}"> 修改支付密码</a></div></li>
         </ul>
     </div>
 </div>
+
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css" media="all">
+<link rel="stylesheet" href="__STATIC__/css/pcorder.css">
+
+<script src="__STATIC__/layui/layui.js"></script>
+<script src="__STATIC__/libs/g2-chart/chart.min.js"></script>
+<script src="__STATIC__/libs/g2-chart/data-set.min.js"></script>
+
 <div class="MainCont">
-	<div class="head"><div class="tag">安全信息</div></div>
-    <div class="cont">
-    	<ul class="rmbinfo">
-            <li><div class="tg">登录密码:</div><div><a href="{:urls('user/edit')}">修改个人信息</a></div></li>
-            <li><div class="tg">支付密码:</div><div><a href="{:purl('marketing/rmb/pwd')}">修改支付密码</a></div></li>
-        </ul>
-    </div>
-</div>
-<!---->
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-function set_class(){
-	obj=document.body.getElementsByTagName("input");
-	for(var i=0;i< obj.length;i++ ){
-		if(obj[i].type=='submit'||obj[i].type=='button'){
-			obj[i].className='submit';
-		}else if (obj[i].type=='radio'||obj[i].type=='checkbox'){
-			obj[i].style.border='0px;';
-		}else if(obj[i].type=='text'){
-			obj[i].className='input_text';
+	<div class="head"><div class="tag fa fa-list-ul">财务报表</div></div>
+    <div class="cont layui-tab"> 
+				<ul class="layui-tab-title">
+                    <li class="layui-this" id="map2title">综合统计</li>
+					<li onclick="choose_yz('o','mountNode2')">消费及提现统计</li>
+                    <li onclick="choose_yz('i','mountNode3')">充值及收入统计</li><!--
+                    <li>按季度统计</li>
+                    <li>按年份统计</li>
+                     <span class="layui-badge-rim" onclick="tabChart('default')">白色主题</span>
+                    <span class="layui-badge layui-bg-black" onclick="tabChart('dark')">黑色主题</span> -->
+                </ul>                    
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div id="mountNode"></div>
+                    </div>
+                    <div class="layui-tab-item"><div id="mountNode2" onclick="yuanzu()"></div></div>
+                    <div class="layui-tab-item"><div id="mountNode3"></div></div>
+                    <div class="layui-tab-item">待加入4</div>
+                    <div class="layui-tab-item">待加入5</div>
+                </div>
+<script type="text/javascript">
+layui.use('element', function(){
+  var element = layui.element;
+});
+
+var load_yuzu = [];
+function choose_yz(type,obj_id){
+	if(load_yuzu[obj_id]==true){
+		return ;
+	}
+	layer.msg('数据加载中,请稍候...');
+	//month 参数可以换成按天 day 统计或按 week 周 而 nums 是周期参数可以自由设置更多的数值
+	$.get("{:url('wxapp.rmb/index')}?in_out="+type+"&type=month&nums=0,1,2,3,4,5,6,7,8,9,10,11",function(res){
+		if(res.code==0){
+			var listdb = new Array();
+			$.each(res.data,function(i,v){
+				var name;
+				if(i==0){
+					name = '本月';
+				}else if(i==1){
+					name = '上月';
+				}else{
+					name = i+'月前';
+				}
+				listdb.push({ genre: name, sold: Math.abs(v)  });			
+			});
+			yuanzu(listdb,obj_id)
+			load_yuzu[obj_id] = true;
+			//console.log(listdb);
+		}else{
+			layer.msg('获取数据失败!');
 		}
-	}
-	obj=document.body.getElementsByTagName("textarea");
-	for(var i=0;i< obj.length;i++ ){
-		obj[i].className='input_textarea';
-	}
-	if(document.getElementById("top_menu")!=null)
-	{
-		obj2=get_obj('top_menu').getElementsByTagName("td");
-	
-		for(var i=0;i< obj2.length;i++ ){
-			s=obj2[i].innerHTML;
-			s=s.replace(/\[|\]/g, "");
-			obj2[0].innerHTML=s;	
-		}
-	}
-	
-}
-set_class();
-
-
- 
-
-function setbodyheight(){
-	$(document).ready(function(){
-		var height = $(document.body).height();
-		if(height<700)height=700;
-		window.parent.document.getElementById('win').style.height= height+'px';
 	});
 }
-window.setInterval('setbodyheight()',500);
-//-->
-</SCRIPT>
+
+//单柱状
+function yuanzu(data,obj_id){
+	//var data = [{ genre: '本周', sold: 10 },{ genre: '上周', sold: 40 },{ genre: '上2周', sold: 4 },{ genre: '上3周', sold: 0 }]; 
+	//document.getElementById('map1title')='最近积分赚取记录';
+	//下面这个是扩展钩子，可以对 data 重新赋值	
+		// G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
+    // Step 1: 创建 Chart 对象
+    const chart = new G2.Chart({
+        container: obj_id, // 指定图表容器 ID
+        // width : 600, // 指定图表宽度
+        forceFit: true,
+        padding: [ 30, 30, 80, 50],
+        height : 305 // 指定图表高度
+    });
+    const { Global } = G2; // 获取 Global 全局对象
+    Global.setTheme('default'); // 传入值为 'default'、'dark' 的一种，如果不是，那么使用 default 主题
+
+    // Step 2: 载入数据源
+    chart.source(data);
+    // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
+    chart.interval().position('genre*sold').color('genre')
+    // Step 4: 渲染图表
+    chart.render();
+    G2.track(false);
+}
 
 
+//month 参数可以换成按天 day 统计或按 week 周 而 nums 是周期参数可以自由设置更多的数值
+$.get("{:url('wxapp.rmb/index')}?type=month&nums=0,1,2,3,4,5,6,7,8,9,10,11,12",function(res){
+	if(res.code==0){
+		var listdb = new Array();
+		$.each(res.data,function(i,rs){
+			var name;
+			if(i==0){
+				name = '本月';
+			}else if(i==1){
+				name = '上月';
+			}else{
+				name = i+'月前';
+			}
+			listdb.push({ month: name, '入帐': rs[0], '出帐': Math.abs(rs[1])  });			
+		});
+		tabChart(listdb)
+		//console.log(listdb);
+	}else{
+		layer.msg('获取数据失败!');
+	}
+});
+//双曲线
+function tabChart(data){
+    //var data = [{ month: '本周', '收入': 10, '支出': 20  },{ month: '上周', '收入': 20, '支出': 10 } ];
+	  var title_1='入帐',title_2='出帐';
+	  const ds = new DataSet();
+      const dv = ds.createView().source(data);
+      const { Global } = G2; // 获取 Global 全局对象
+      Global.setTheme('default'); // 传入值为 'default'、'dark' 的一种，如果不是，那么使用 default 主题
+      dv.transform({
+        type: 'fold',
+        fields: [ title_1, title_2  ], // 展开字段集
+        key: 'city', // key字段
+        value: 'temperature', // value字段
+      });
+      const chart = new G2.Chart({
+        container: 'mountNode',
+        forceFit: true,
+        padding: [ 30, 30, 80, 50],
+        height: 300
+      });
+      chart.source(dv, {
+        month: {
+          range: [ 0, 1 ]
+        }
+      });
+      chart.tooltip({
+        crosshairs: {
+          type: 'line'
+        }
+      });
+      chart.axis('temperature', {
+        label: {
+          formatter: val => {
+            return val + '';	//单位
+          }
+        }
+      });
+      chart.line().position('month*temperature').color('city').shape('smooth');
+      chart.point().position('month*temperature').color('city').size(4).shape('circle').style({
+        stroke: '#fff',
+        lineWidth: 1
+      });
+      chart.render();
+      G2.track(false);
+}
+
+
+</script>
+
+    </div>
+</div>
 
 </body>
 </html>

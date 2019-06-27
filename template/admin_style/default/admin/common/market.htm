@@ -301,6 +301,7 @@ function showlist(){
 }
 showlist();
 
+var ids_ck_msg = new Array();
 function check_setup(){
 	var array = "{:fun('upgrade@local_edition')}".split(',');
 	var sr = new Array();
@@ -311,9 +312,24 @@ function check_setup(){
 	$(".fa-cloud-download").each(function(){
 		var id = $(this).data("id");
 		if( typeof(sr[id])!="undefined" ){
-			$(this).html('已安装');
-			$(this).css({'color':'yellow',});
-			$(this).removeAttr('onclick');
+			var obj = $(this);
+			$.post('https://x1.php168.com/appstore/upgrade/check_app.html?id='+id,{
+				domain:'{:request()->domain()}',
+				appkey:'{$webdb.mymd5}'
+			},function(res){
+				if(res.code==0){
+					obj.html('已安装');
+					obj.removeAttr('onclick');
+					obj.css({'color':'yellow',});
+				}else{
+					ids_ck_msg[id] = res.msg;
+					obj.html('购买正版授权');
+					obj.attr('title','提醒，当前应用处于：'+res.msg);
+					obj.removeClass('fa fa-cloud-download');
+					obj.addClass('fa fa-key');
+					obj.css({'color':'#FFFFFF',});
+				}
+			});
 		}
 	});
 };
@@ -340,8 +356,13 @@ function setup_app(id,keywords,price,have_open_layer){
 				if(have_open_layer==1){	//没有成功付款购买
 					return '';
 				}
-				layer.confirm('当前模块需要付费,你还要安装吗?', {
-					btn : [ '继续安装', '取消安装' ]
+				var msg = '当前模块需要付费,你还要安装吗?';
+				if( typeof(ids_ck_msg[id])!="undefined" ){
+					msg = "当前应用处于“"+ids_ck_msg[id]+"”状态,你确认要付费授权吗?";
+				}
+				layer.confirm(msg, {
+					title:'特别提醒',
+					btn : [ '继续', '取消' ]
 				}, function(index) {
 					layer.close(index);
 					//此处请求后台程序，下方是成功后的前台处理……
@@ -364,6 +385,9 @@ function setup_app(id,keywords,price,have_open_layer){
 	var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
 	//模块下载安装
 	var url = "{:urls('market')}" + baseurl + "keywords=" + keywords + "&type=down";
+	if( typeof(ids_ck_msg[id])!="undefined" ){
+		url +="&upvip=1"
+	}
 	$.get(url+'&'+Math.random(),function(res){
 		layer.close(index);
 		if(res.code==0){

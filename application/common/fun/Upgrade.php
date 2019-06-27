@@ -30,7 +30,7 @@ class Upgrade{
             $data[] = str_replace('\\', '__', $rs['hook_class']) . '-' . $version . '-' . $rs['version_id'] . '-h';
             $_hook[$rs['hook_class']] = true;
         }
-        $array = task_config();
+        $array = function_exists('task_config') ? task_config() : [];
         foreach ($array AS $rs){
             list($time,$version) = explode("\t",$rs['version']);
             $data[] = str_replace('\\', '__', $rs['class_file']) . '-' . $version . '-' . $rs['version_id'] . '-t';
