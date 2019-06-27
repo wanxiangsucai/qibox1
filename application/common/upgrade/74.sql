@@ -1,0 +1,1 @@
+ALTER TABLE  `qb_moneylog` ADD INDEX (  `money` );

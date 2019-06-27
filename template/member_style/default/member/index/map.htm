@@ -110,14 +110,14 @@ body .Notes{margin:0 2px 15px 0;}
 <script src="__STATIC__/libs/g2-chart/data-set.min.js"></script>
 
 <div class="MainCont">
-	<div class="head"><div class="tag fa fa-list-ul">财务报表</div></div>
+	<div class="head"><div class="tag fa fa-list-ul">财务及积分报表</div></div>
     <div class="cont layui-tab"> 
 				<ul class="layui-tab-title">
                     <li class="layui-this" id="map2title">综合统计</li>
-					<li onclick="choose_yz('o','mountNode2')">消费及提现统计</li>
-                    <li onclick="choose_yz('i','mountNode3')">充值及收入统计</li><!--
-                    <li>按季度统计</li>
-                    <li>按年份统计</li>
+					<li onclick="choose_yz('rmb','o','mountNode2')">消费及提现统计</li>
+                    <li onclick="choose_yz('rmb','i','mountNode3')">充值及收入统计</li>
+                    <li onclick="choose_yz('jifen','i','mountNode4')">积分赚取统计</li>
+                    <li onclick="choose_yz('jifen','o','mountNode5')">积分消费统计</li><!--
                      <span class="layui-badge-rim" onclick="tabChart('default')">白色主题</span>
                     <span class="layui-badge layui-bg-black" onclick="tabChart('dark')">黑色主题</span> -->
                 </ul>                    
@@ -125,10 +125,10 @@ body .Notes{margin:0 2px 15px 0;}
                     <div class="layui-tab-item layui-show">
                         <div id="mountNode"></div>
                     </div>
-                    <div class="layui-tab-item"><div id="mountNode2" onclick="yuanzu()"></div></div>
+                    <div class="layui-tab-item"><div id="mountNode2"></div></div>
                     <div class="layui-tab-item"><div id="mountNode3"></div></div>
-                    <div class="layui-tab-item">待加入4</div>
-                    <div class="layui-tab-item">待加入5</div>
+                    <div class="layui-tab-item"><div id="mountNode4"></div></div>
+                    <div class="layui-tab-item"><div id="mountNode5"></div></div>
                 </div>
 <script type="text/javascript">
 layui.use('element', function(){
@@ -136,13 +136,19 @@ layui.use('element', function(){
 });
 
 var load_yuzu = [];
-function choose_yz(type,obj_id){
+function choose_yz(etype,type,obj_id){
 	if(load_yuzu[obj_id]==true){
 		return ;
 	}
+	var url;
+	if(etype=='rmb'){
+		url = "{:url('wxapp.rmb/index')}?";
+	}else{
+		url = "{:url('wxapp.jifen/index')}?money_type=0&";	//money_type=0是系统积分,可以换其它数字积分类型
+	}
 	layer.msg('数据加载中,请稍候...');
 	//month 参数可以换成按天 day 统计或按 week 周 而 nums 是周期参数可以自由设置更多的数值
-	$.get("{:url('wxapp.rmb/index')}?in_out="+type+"&type=month&nums=0,1,2,3,4,5,6,7,8,9,10,11",function(res){
+	$.get(url+"in_out="+type+"&type=month&nums=1,2,3,4,5,6,7,8,9,10,11,12",function(res){
 		if(res.code==0){
 			var listdb = new Array();
 			$.each(res.data,function(i,v){
@@ -156,7 +162,8 @@ function choose_yz(type,obj_id){
 				}
 				listdb.push({ genre: name, sold: Math.abs(v)  });			
 			});
-			yuanzu(listdb,obj_id)
+			yuanzu(listdb,obj_id);
+			layer.closeAll();
 			load_yuzu[obj_id] = true;
 			//console.log(listdb);
 		}else{
@@ -193,7 +200,7 @@ function yuanzu(data,obj_id){
 
 
 //month 参数可以换成按天 day 统计或按 week 周 而 nums 是周期参数可以自由设置更多的数值
-$.get("{:url('wxapp.rmb/index')}?type=month&nums=0,1,2,3,4,5,6,7,8,9,10,11,12",function(res){
+$.get("{:url('wxapp.rmb/index')}?type=month&nums=1,2,3,4,5,6,7,8,9,10,11,12",function(res){
 	if(res.code==0){
 		var listdb = new Array();
 		$.each(res.data,function(i,rs){
