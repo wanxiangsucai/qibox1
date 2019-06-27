@@ -807,7 +807,7 @@ abstract class C extends IndexBase
             if(in_array($type,['images','files','image','file','jcrop','images2'])){                
                 $value = \app\common\field\Show::format_url($rs,$info);                
             }else{
-                //$value = \app\common\field\Show::get_field($rs,$info);   
+                $value = \app\common\field\Show::get_field($rs,$info)['value'];
             }
             
             $field_array[$name] = [
