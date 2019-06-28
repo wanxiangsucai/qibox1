@@ -18,4 +18,18 @@ return [
     'post_need_sort'=>true,
     //模块关键字，目录名，也是数据表区分符    
      'system_dirname'=>basename(__DIR__),
+    
+    //圈子接口,内容列表与发布页的链接地址
+    'qun_url'=>[
+        ['index','mid=1&id','资讯'],
+        ['index','mid=2&id','图库'],
+        ['index','mid=3&id','视频'],
+        ['index','mid=4&id','音频'],
+    ],
+    'post_url'=>[
+        ['add','mid=1&id','发布资讯'],
+        ['add','mid=2&id','上传图片'],
+        ['add','mid=3&id','上传视频'],
+        ['add','mid=4&id','上传音频'],
+    ],
 ];

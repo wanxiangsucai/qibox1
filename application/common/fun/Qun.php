@@ -12,6 +12,22 @@ use app\qun\model\Member AS MemberModel;
 class Qun{
     
     /**
+     * 获取圈子自定义的菜单
+     * @param number $id 圈子ID
+     * @param number $type 1是底部菜单 2是头部菜单 3是浮动按钮菜单
+     * @return unknown
+     */
+    public function menu($id=0,$type=3){
+        $tag = 'qun_menu_'.$type.'_'.$id;
+        $menu = cache($tag);
+        if (empty($menu)) {
+            $menu = model('qun/menu')->getTreeList(['aid'=>$id,'ifshow'=>1,'type'=>$type]);
+            cache($tag,$menu);
+        }
+        return $menu;
+    }
+    
+    /**
      * 自定义条件查找圈子成员
      * @param array $map
      * @return array|unknown

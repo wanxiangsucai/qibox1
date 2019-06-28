@@ -12,10 +12,10 @@ class Page{
         $hyid = get_cookie('HYID');
         $menu = [];
         if ($hyid) {
-            $menu = cache('hy_foot_menu_'.$hyid);
+            $menu = cache('qun_menu_1_'.$hyid);
             if( empty($menu) ){
                 $menu = model('qun/menu')->getTreeList(['aid'=>$hyid,'ifshow'=>1,'type'=>1]);
-                cache('hy_foot_menu_'.$hyid,$menu);
+                cache('qun_menu_1_'.$hyid,$menu);
             }
         }
         $menu || $menu = $this->get_web_menu('wapfoot');
