@@ -62,18 +62,23 @@ class Api_keyword extends Api
                     $_arr = '';
                     if(is_array($_array)){
                         foreach($_array AS $_r){
-                            $_arr[] = array('title'=>$_r['title'],
-                                    'picurl'=>$_r['pic'],
-                                    'about'=>$_r['desc'],
-                                    'url'=>$_r['link'],
+                            $_arr[] = array(
+                                'title'=>$_r['title'],
+                                'picurl'=>tempdir($_r['pic']),
+                                'about'=>$_r['desc'],
+                                'url'=>$_r['link'],
                             );
                         }
                     }
-                    if($_arr)echo $this->give_news($_arr);
-                    exit;
+                    if($_arr){
+                        echo $this->give_news($_arr);
+                        exit;
+                    }
                 }else{	//纯文本信息
-                    echo $this->give_text( $ts['answer'] );
-                    exit;
+                    if($ts['answer']!=''){
+                        echo $this->give_text( $ts['answer'] );
+                        exit;
+                    }                    
                 }
             }
         }

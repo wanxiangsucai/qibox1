@@ -24,7 +24,9 @@ function SelectType(i){
 	$('#selecttype1').hide();
 	$('#selecttype'+i).show();
 }
-function addType(){	
+function addType(){
+	layer.alert('微信现在限制每次最多只能一条图文信息');return false;
+	
 	var list1=$('.ListType').children().length;
 	var ListType1='<div class="list"><div><span>标题</span> <input name="answers['+list1+'][title]" type="text" size="50"/></div><div><span>描述</span> <textarea name="answers['+list1+'][desc]" cols="50" rows="3"></textarea></div><div><span>图片</span> <input name="answers['+list1+'][pic]" type="text" id="out_url'+list1+'" placeholder="请上传图片" size="50"/><em><iframe frameborder=0  scrolling=no src="{:iurl("index/upfile/index")}?fn=upfile&par=out_url'+list1+'"></iframe></em></div><div><span>链接</span> <input name="answers['+list1+'][link]" type="text" size="50"/> (必填项)</div></div>';
 	$(".ListType").append(ListType1);
@@ -104,7 +106,7 @@ $i++;
             <div> <span>图片</span>
               <input name="answers[0][pic]" type="text" id='out_url0' placeholder="请上传图片"/>
               <em>
-              <iframe frameborder=0  scrolling=no src="{$webdb['www_url']}/do/upfile.php?fn=upfile&dir=weixinautoreply&label=out_url0"></iframe>
+              <iframe frameborder=0  scrolling=no src="{:iurl('index/upfile/index')}?fn=upfile&par=out_url0"></iframe>
               </em> </div>
             <div><span>链接</span>
               <input name="answers[0][link]" type="text"/>
