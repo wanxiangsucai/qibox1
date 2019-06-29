@@ -339,7 +339,7 @@ class Attachment extends IndexBase{
 			$error_msg = false;
 		}
 		$upfile_num = intval( get_cookie( 'upfile_num' ) );
-		if ( ! $this->admin && $upfile_num > 50 ) {
+		if ( empty($this->admin) && $upfile_num > 50 ) {
 			$error_msg = '本次上传超50个了！';
 		} else {
 			$upfile_num ++;

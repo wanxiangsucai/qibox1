@@ -268,6 +268,9 @@ class Setting extends AdminBase
             }elseif(!preg_match('/^([\w]+)\.php$/', $filename)){
                 $this->error('文件名不符合规划!');
             }
+            if(config('admin.filename')==''){
+                config('admin.filename','admin.php');
+            }
             //rename有时候不能改动正在使用的文件
             if(copy(ROOT_PATH.config('admin.filename'),ROOT_PATH.$filename) && unlink(ROOT_PATH.config('admin.filename')) ){
                 $array = config('admin');
