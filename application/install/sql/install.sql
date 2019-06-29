@@ -1592,3 +1592,5 @@ ALTER TABLE  `qb_admin_menu` CHANGE  `style`  `style` VARCHAR( 100 ) CHARACTER S
 
 ALTER TABLE  `qb_rmb_consume` ADD INDEX (  `posttime` );
 ALTER TABLE  `qb_moneylog` ADD INDEX (  `money` );
+
+ALTER TABLE  `qb_rmb_infull` ADD  `s_orderid` VARCHAR( 32 ) NOT NULL COMMENT  '微信或支付宝生成的订单ID';

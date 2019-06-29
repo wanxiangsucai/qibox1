@@ -5,6 +5,10 @@ use app\index\model\Pay AS PayModel;
 
 class Weixin extends Pay{
     
+    /**
+     * 提供给PC页面频繁的刷新是否已支付成功
+     * @return void|unknown|\think\response\Json|void|\think\response\Json
+     */
     public function checkpay(){
         $numcode = input('numcode');
         $info = getArray(PayModel::get(['numcode'=>$numcode]));
@@ -13,6 +17,17 @@ class Weixin extends Pay{
         }elseif(!$info){
             return $this->err_js('订单不存在');
         }else{
+            $array = fun('weixin@check_order',$numcode);
+            if(is_array($array) && $array['ispay']===true && $array['s_orderid']!=''){  //通过订单号来查询,避免丢单
+                $result = $this->have_pay(preg_replace("/^000/", '', $numcode));   //000避免出现订单重复的现象,跟公众号那里有冲突
+                if($result=='ok'){
+                    PayModel::update([
+                            'id'=>$info['id'],
+                            's_orderid'=>$array['s_orderid'],
+                    ]);
+                    return $this->ok_js([],'支付成功');
+                }
+            }
             return $this->err_js('订单未支付'); 
         }
     }
@@ -28,9 +43,12 @@ class Weixin extends Pay{
         $url = post_olpay($data, false);
         $url = get_url($url);
         $qrcode = get_qrcode($url);
+        $return_url = input('return_url');
+        $return_url .= strstr($return_url,'?') ? '&ispay=1' : '?ispay=1';
+        
         $this->assign('qrcode',$qrcode);
         $this->assign('numcode',$array['numcode']);
-        $this->assign('return_url',input('return_url'));
+        $this->assign('return_url',$return_url);
         return $this->fetch('weixin_pay_inpc');
     }
     
@@ -120,7 +138,7 @@ class Weixin extends Pay{
         
         if($pay_end_data['out_trade_no']){  //支付成功，才能得到这个订单号
             //$pay_end_data['attach']
-            $result = $this->have_pay(str_replace('000','',$pay_end_data['out_trade_no']));   //000避免出现订单重复的现象,跟公众号那里有冲突
+            $result = $this->have_pay( preg_replace("/^000/", '', $pay_end_data['out_trade_no']) );   //000避免出现订单重复的现象,跟公众号那里有冲突
             if($result==-1){
                 return '订单不存在';
             }elseif($result==1){

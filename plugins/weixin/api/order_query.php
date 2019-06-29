@@ -11,14 +11,11 @@ include_once(dirname(__FILE__).'/'."lib/WxPayPubHelper.php");
 
 //使用订单查询接口
 
-
-function check_order_query($out_trade_no='0000008787'){
-    
     $orderQuery = new OrderQuery_pub();
     
     if (!$out_trade_no){
         
-        return ('订单号不存在！');
+        return '订单号不存在！';
         
     }else{
         
@@ -37,17 +34,14 @@ function check_order_query($out_trade_no='0000008787'){
         
         //商户根据实际情况设置相应的处理流程,此处仅作举例
         if ($orderQueryResult["return_code"] == "FAIL") {
-            if(WEB_LANG==gb2312){
-                $orderQueryResult['return_msg'] = utf82gbk($orderQueryResult['return_msg']);
-            }
-            $str =  "通信出错：".$orderQueryResult['return_msg']."<br>";
+            return  "通信出错：".$orderQueryResult['return_msg'];
         }
-        elseif($orderQueryResult["result_code"] == "FAIL"){
-            if(WEB_LANG==gb2312){
-                $orderQueryResult['err_code_des'] = utf82gbk($orderQueryResult['err_code_des']);
-            }
+        elseif($orderQueryResult["result_code"] == "FAIL")
+        {
+
             $str = "错误代码：".$orderQueryResult['err_code']."<br>";
             $str .= "错误代码描述：".$orderQueryResult['err_code_des']."<br>";
+            return $str;
             
         }elseif($orderQueryResult["result_code"] == "SUCCESS"){/*
             echo "交易状态：".$orderQueryResult['trade_state']."<br>";
@@ -63,21 +57,18 @@ function check_order_query($out_trade_no='0000008787'){
             echo "商户订单号：".$orderQueryResult['out_trade_no']."<br>";
             echo "商家数据包：".$orderQueryResult['attach']."<br>";
             echo "支付完成时间：".$orderQueryResult['time_end']."<br>";*/
-            if(WEB_LANG==gb2312){
-                $orderQueryResult['trade_state_desc'] = utf82gbk($orderQueryResult['trade_state_desc']);
+            if($orderQueryResult['trade_state']=='SUCCESS'){
+                $orderQueryResult['ispay'] = true;  //付款成功的标志
+                $orderQueryResult['s_orderid'] = $orderQueryResult['transaction_id'];
+            }else{
+                $orderQueryResult['ispay'] = false;
+                $orderQueryResult['s_orderid'] = '';
             }
-            $array = $orderQueryResult;
+            return $orderQueryResult;
         }else{
-            $str='获取数据失败';
+            return '获取数据失败';
         }
     }
-    
-    if( is_array($array) ){
-        return $array;
-    }else{
-        return $str;
-    }
-}
 
 /*
  Array

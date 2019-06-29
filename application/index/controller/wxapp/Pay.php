@@ -31,13 +31,13 @@ class Pay extends IndexBase
             $this->error('系统没有设置好微信支付接口,所以不能使用微信支付');
         }
    
-        $numcode || $numcode = rands(10);
+        $numcode || $numcode = 'w'.date('ymdHis').rands(3);
         $openId = $type=='wxapp' ? $this->user['wxapp_api'] :  $this->user['weixin_api'] ;
         $array = [
                 'title'=>$title?$title:'帐号充值',
                 'other'=>$other?$other:'test',
                 'numcode'=>'000'.$numcode,  //000避免出现订单重复的现象,跟公众号那里有冲突
-                'money'=>$money?$money:'0.01',
+                'money'=>$money>0?$money:'0.01',
                 'wx_notify_url'=>$this->request->domain().url('pay/index',['banktype'=>'weixin','action'=>'back_notice','back_post'=>'wap','client_type'=>$type]),
                 'openId'=>$openId,
         ];
