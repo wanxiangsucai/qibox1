@@ -19,12 +19,12 @@ return array(
 								        array(
 								                'title'=>'人民币充值管理',
 								                'link'=>'rmb_infull/index',
-								                'power'=>['delete'],
+								            'power'=>['delete','pay'=>'手工充值'],
 								        ),
 								        array(
 								                'title'=>'人民币消费/充值记录',
 								                'link'=>'rmb_consume/index',
-								                'power'=>['delete'],
+								            'power'=>['delete'],
 								        ),
 								        array(
 								                'title'=>'积分消费/赚取记录',
