@@ -32,23 +32,28 @@ class Weixin extends Pay{
         }
     }
     
-    protected function weixin_pay_inpc($array){
-        //print_r($array) ;exit;
+    /**
+     * 非微信访问,就展示付款二维码
+     * @param unknown $array
+     * @return mixed|string
+     */
+    protected function weixin_pay_inpc($array=[]){
         $data=[
                 'money'=>$array['money'],
-                'return_url'=>$this->request->domain(),
+                'return_url'=>get_url('home'),      //手机付款完成之后,就跳到主页去算了
                 'banktype'=>'weixin',
                 'numcode'=>$array['numcode'],
         ];
-        $url = post_olpay($data, false);
-        $url = get_url($url);
-        $qrcode = get_qrcode($url);
+        $qrcode = get_qrcode( get_url( post_olpay($data, false) ) );    //生成二维码给微信扫描,直接进入付款那一步
+        
+        //PC页面不停的刷新,判断到支付成功后,进行的页面回跳地址
         $return_url = input('return_url');
         $return_url .= strstr($return_url,'?') ? '&ispay=1' : '?ispay=1';
         
         $this->assign('qrcode',$qrcode);
         $this->assign('numcode',$array['numcode']);
         $this->assign('return_url',$return_url);
+        $this->assign('money',$array['money']);
         return $this->fetch('weixin_pay_inpc');
     }
     
@@ -60,36 +65,72 @@ class Weixin extends Pay{
                 ($this->webdb['wxapp_appid'] && $this->webdb['wxapp_appsecret'] && $this->webdb['wxapp_payid'] && $this->webdb['wxapp_paykey'])
         ){
             if(!$this->user){
-                if( in_weixin() ){
-                    weixin_login($url='');
-                }else{
-                    $this->error('请先登录!');
-                }
+//                 if( in_weixin() ){
+//                     weixin_login($url='');
+//                 }else{
+//                     $this->error('请先登录!');
+//                 }
             }else{
-                //可以进一步改进,强制微信登录,绑定微信
-                //$this->error('你的当前帐号还没有绑定微信，不能使用微信支付');
+                //你当前帐号还没有绑定微信，不能使用微信支付
             }
         }else{
             $this->error('系统没有设置好微信支付接口,所以不能使用微信支付');
         }
         
-        if(!in_weixin()){
+        if(!in_weixin()){   //不在微信端,就展示微信付款二维码
             $array = $this->olpay_send();
-            //$this->error('当前页面只能用手机微信访问！');
             return $this->weixin_pay_inpc($array);
         }else{
-            if (input('client_type')=='') {
+            
+            $weixin_openid = $this->get_openid();    //获取当前微信的真实openid
+            
+            if (input('client_type')=='') { //判断是不是在小程序中
                 return $this->fetch('choose_mp_wxapp');
             }
+            
             $array = $this->olpay_send();
             
-            if (input('client_type')=='wxapp') {
+            if (input('client_type')=='wxapp') {    //在微信小程序中支付
                 $this->assign('array',$array);
                 return $this->fetch('wxapp_pay');
-            }else{                
+            }else{                //公众号支付
                 include(ROOT_PATH.'plugins/weixin/api/jsapi.php');
             }
         }
+    }
+    
+    /**
+     * 获取当前微信的真实openid
+     * 因为登录用户可能没绑定微信,也有可能是绑定了其它微信.所以这里要动态获取当前用户的真实openid
+     */
+    protected function get_openid(){
+        $openid = get_cookie('weixin_openid');
+        if ($openid!='') {
+            return $openid;
+        }
+        $state = input('state');
+        $code = input('code');
+        
+        if($state==1){            
+            if(!$code){
+                $this->error('code 值并不存在！');
+            }            
+            $string = file_get_contents('https://api.weixin.qq.com/sns/oauth2/access_token?appid='.config('webdb.weixin_appid').'&secret='.config('webdb.weixin_appsecret').'&code='.$code.'&grant_type=authorization_code');
+            $array = json_decode($string,true);            
+            $openid = $array['openid'];
+            if($openid){
+                set_cookie('weixin_openid',$openid,3600);
+            }else{
+                if($string == ''){
+                    $this->error('获取微信接口内容失败，请确认你的服务器已打开 extension=php_openssl.dll ');
+                }
+                $this->error('openid 值不存在！错误详情如下：'.$string);
+            }
+        }else{
+            $url = urlencode($this->weburl);
+            header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope=snsapi_base&state=1#wechat_redirect');
+            exit;
+        }        
     }
     
     
@@ -103,7 +144,9 @@ class Weixin extends Pay{
         return $array;
     }
     
-    //付款完毕，跳转回来时执行的动作，用户看得到的操作界面
+    /**
+     * 付款完毕，跳转回来时执行的动作，用户看得到的操作界面
+     */
     public function pay_end_return(){
         $ispay = input('ispay');
         $numcode = input('numcode');
@@ -125,7 +168,10 @@ class Weixin extends Pay{
         }
     }
     
-    //付款成功后，微信后台通知，前台看不到的界面，只能用日志追踪
+    /**
+     * 付款成功后，微信后台通知，前台看不到的界面，只能用日志追踪
+     * @return string
+     */
     public function back_notice(){
         global $pay_end_data;
         $pay_end_data = '';

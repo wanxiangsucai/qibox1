@@ -2,8 +2,10 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>支付宝手机网站支付接口接口</title>
+	<title>支付宝手机端支付</title>
 </head>
+ <center>支付进行中...</center>
+<div style="display:none;">
 <?php
 
 /* *
@@ -89,9 +91,10 @@ $parameter = array(
 
 //建立请求
 $alipaySubmit = new AlipaySubmit($alipay_config);
-$html_text = $alipaySubmit->buildRequestForm($parameter,"get", "确认");
+$html_text = $alipaySubmit->buildRequestForm($parameter,"get", "确认支付");
 echo $html_text;
 
 ?>
+</div>
 </body>
 </html>

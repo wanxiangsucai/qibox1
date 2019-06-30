@@ -8,7 +8,7 @@ class Alipay extends Pay{
     public function gotopay(){
         
         if(!$this->webdb['wap_ali_id'] || !$this->webdb['wap_ali_partner'] || !$this->webdb['wap_ali_public_key']){
-            $this->error('系统没有设置好支付宝接口,所以不能使用支付宝');
+            $this->error('系统没有设置好支付宝wap接口,所以不能使用支付宝');
         }
         $array = $this->olpay_send();
         include(ROOT_PATH.'plugins/alipay/api/alipayapi.php');
@@ -36,7 +36,7 @@ class Alipay extends Pay{
             $return_url .= 'ispay=1';
             $result = $this->have_pay($pay_end_data_numcode);
             if($result===1){
-                $this->success('已经支付过了',$return_url); 
+                $this->success('已支付成功了',$return_url); 
             }elseif($result===-1){
                 $this->success('订单丢失，请联系管理员，请截图保留该订单号'.$pay_end_data_numcode,$return_url);
             }elseif($result==='ok'){

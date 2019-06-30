@@ -34,7 +34,7 @@ function printf_info($data)
 $tools = new JsApiPay();
 //$openId = $tools->GetOpenid();
 //$openId = get_cookie('WeiXin_OpenId');
-$openId = $this->user['weixin_api'];
+$openId = $weixin_openid?:$this->user['weixin_api'];
 if(!$openId){
 	//$openId = set_weixin_openid();
 	$openId = $tools->GetOpenid();
@@ -74,7 +74,7 @@ $ok_url = "{$array['wx_return_url']}?numcode={$array['numcode']}";
 
 <html>
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=gbk"/>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/> 
     <title>微信支付</title>
  <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script> 

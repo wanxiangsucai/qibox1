@@ -12,7 +12,7 @@ class JSSDK {
   public function getSignPackage() {
     $jsapiTicket = $this->getJsApiTicket();
 
-    // ×¢Òâ URL Ò»¶¨Òª¶¯Ì¬»ñÈ¡£¬²»ÄÜ hardcode.
+    // æ³¨æ„ URL ä¸€å®šè¦åŠ¨æ€èŽ·å–ï¼Œä¸èƒ½ hardcode.
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
     //$url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 	
@@ -25,7 +25,7 @@ class JSSDK {
     $timestamp = time();
     $nonceStr = $this->createNonceStr();
 
-    // ÕâÀï²ÎÊýµÄË³ÐòÒª°´ÕÕ key Öµ ASCII ÂëÉýÐòÅÅÐò
+    // è¿™é‡Œå‚æ•°çš„é¡ºåºè¦æŒ‰ç…§ key å€¼ ASCII ç å‡åºæŽ’åº
     $string = "jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$url";
 
     $signature = sha1($string);
@@ -54,11 +54,11 @@ class JSSDK {
 	  global $webdb;
 	$mymd5 = $webdb['WXFmymd5'] ? $webdb['WXFmymd5'] : $webdb[mymd5] ;
 	$path = $webdb['WXFweb_dir'] ? $webdb['WXFweb_dir'] : $webdb[web_dir] ;
-    // jsapi_ticket Ó¦¸ÃÈ«¾Ö´æ´¢Óë¸üÐÂ£¬ÒÔÏÂ´úÂëÒÔÐ´Èëµ½ÎÄ¼þÖÐ×öÊ¾Àý
+    // jsapi_ticket åº”è¯¥å…¨å±€å­˜å‚¨ä¸Žæ›´æ–°ï¼Œä»¥ä¸‹ä»£ç ä»¥å†™å…¥åˆ°æ–‡ä»¶ä¸­åšç¤ºä¾‹
     $data = json_decode(file_get_contents(ROOT_PATH."cache{$path}/jsapi_ticket_{$mymd5}.json"));
     if ($data->expire_time < time()) {
       $accessToken = $this->getAccessToken();
-      // Èç¹ûÊÇÆóÒµºÅÓÃÒÔÏÂ URL »ñÈ¡ ticket
+      // å¦‚æžœæ˜¯ä¼ä¸šå·ç”¨ä»¥ä¸‹ URL èŽ·å– ticket
       // $url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=$accessToken";
       $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
       $res = json_decode($this->httpGet($url));
@@ -78,13 +78,13 @@ class JSSDK {
   }
 
   private function getAccessToken() {
-    // access_token Ó¦¸ÃÈ«¾Ö´æ´¢Óë¸üÐÂ£¬ÒÔÏÂ´úÂëÒÔÐ´Èëµ½ÎÄ¼þÖÐ×öÊ¾Àý
+    // access_token åº”è¯¥å…¨å±€å­˜å‚¨ä¸Žæ›´æ–°ï¼Œä»¥ä¸‹ä»£ç ä»¥å†™å…¥åˆ°æ–‡ä»¶ä¸­åšç¤ºä¾‹
 	global $webdb;
 	$mymd5 = $webdb['WXFmymd5'] ? $webdb['WXFmymd5'] : $webdb[mymd5] ;
 	$path = $webdb['WXFweb_dir'] ? $webdb['WXFweb_dir'] : $webdb[web_dir] ;
     $data = json_decode(file_get_contents(ROOT_PATH."cache{$path}/access_token{$mymd5}.json"));
     if ($data->expire_time < time()) {
-      // Èç¹ûÊÇÆóÒµºÅÓÃÒÔÏÂURL»ñÈ¡access_token
+      // å¦‚æžœæ˜¯ä¼ä¸šå·ç”¨ä»¥ä¸‹URLèŽ·å–access_token
       // $url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=$this->appId&corpsecret=$this->appSecret";
       $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$this->appId&secret=$this->appSecret";
       $res = json_decode($this->httpGet($url));

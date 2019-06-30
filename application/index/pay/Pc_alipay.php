@@ -1,18 +1,38 @@
 <?php
 namespace app\index\pay;
+
 use app\index\controller\Pay;
+use app\index\model\Pay AS PayModel;
 
 class Pc_alipay extends Pay{
     
-    //跳到付款页面,准备付款
+    /**
+     * 跳到付款页面,准备付款
+     * @return mixed|string
+     */
     public function gotopay(){
         
         if(!$this->webdb['alipay_service'] || !$this->webdb['alipay_partner'] || !$this->webdb['alipay_key']){
             $this->error('系统没有设置好支付宝接口,所以不能使用支付宝');
         }
         $array = $this->olpay_send();
-        $this->post_pay($array);
-        
+        return $this->post_pay($array);
+    }
+    
+    /**
+     * 提供给PC页面频繁的刷新是否已支付成功
+     * @return void|unknown|\think\response\Json|void|\think\response\Json
+     */
+    public function checkpay(){
+        $numcode = input('numcode');
+        $info = getArray(PayModel::get(['numcode'=>$numcode]));
+        if($info['ifpay']==1){
+            return $this->ok_js([],'支付成功');
+        }elseif(!$info){
+            return $this->err_js('订单不存在');
+        }else{
+            return $this->err_js('订单未支付');
+        }
     }
     
     
@@ -125,8 +145,33 @@ class Pc_alipay extends Pay{
         
         $sign=md5($_url.config('webdb.alipay_key'));
         $url.="&sign=".$sign."&sign_type=MD5";
-        echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL=$url'>";
-        exit;
+        
+        //没有配置支付宝WAP版的话,就不考虑扫码支付!
+        if(!$this->webdb['wap_ali_id'] || !$this->webdb['wap_ali_partner'] || !$this->webdb['wap_ali_public_key']){
+            echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL=$url'>";
+            exit;
+        }
+
+        $this->assign('payurl',$url);
+        
+        $data=[
+                'money'=>$array['money'],
+                'return_url'=>get_url('home'),   //扫码付款完成之后,就跳到主页去算了
+                'banktype'=>'alipay',
+                'numcode'=>$array['numcode'],
+        ];
+        $qrcode = get_qrcode( get_url( post_olpay($data, false) ) );    //生成二维码给支付宝扫描,直接进入付款那一步
+        $this->assign('qrcode',$qrcode);
+        
+        //PC页面不停的刷新,判断到支付成功后,进行的页面回跳地址
+        $return_url = input('return_url');
+        $return_url .= strstr($return_url,'?') ? '&ispay=1' : '?ispay=1';
+        $this->assign('return_url',$return_url);
+        
+        $this->assign('numcode',$array['numcode']);
+        $this->assign('money',$array['money']);
+        
+        return $this->fetch('alipay');
     }
     
 }

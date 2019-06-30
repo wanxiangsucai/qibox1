@@ -27,23 +27,31 @@ class Pay extends IndexBase
     
 
     
-    //第一个参数，支付类型，第二个对应的方法，第三个指定PC或WAP，对于后台通知，必须要指定
+    /**
+     * 支付入口
+     * @param string $banktype 支付类型 微信支付weixin或支付宝支付alipay,或余额支付rmb
+     * @param string $action 对应的动作行为
+     * @param string $back_post 指定PC或WAP , 对于后台异步通知回调网址，必须要指定
+     * @return mixed|string|unknown|mixed
+     */
     public function index($banktype = '' , $action = '' , $back_post = '')
     {
         if ($banktype == '') {  //没有指定支付方式的话,就让用户自由选择支付方式
             if (empty($this->user)) {
-                $this->error('请先登录!');
+                //$this->error('请先登录!');
             }
             $this->assign('weburl',$this->weburl);
             $this->assign('money',input('money'));
             return $this->fetch();
-            //$this->error('请先选择支付类型!');
             
-        } elseif($banktype == 'rmb') {  //选择余额支付
+        } elseif($banktype == 'rmb') {  //选择了余额支付
             
+            if (empty($this->user)) {
+                $this->error('请先登录!');
+            }
             return $this->rmb_pay();
             
-        } else {    //支付宝或微信支付
+        } else {    //支付宝或微信支付的相关 支付前与支付后的操作
             
             $banktype = strtolower($banktype);
             
@@ -56,7 +64,7 @@ class Pay extends IndexBase
         
         $base = ucfirst($banktype); //微信或支付宝
        
-        if(IN_WAP===true || $back_post=='wap'){
+        if(IN_WAP===true || $back_post=='wap'){  //在手机端,或者是强制指定了手机端
             $auto_name = 'Wap_'.$banktype;
         }else{
             $auto_name = 'Pc_'.$banktype;
@@ -127,7 +135,7 @@ class Pay extends IndexBase
         
         $array['money'] = $money;
         $array['title'] = $title?$title:' 在线充值';
-        $array['numcode'] = mymd5(urldecode($numcode),'DE') ? : rands(10);
+        $array['numcode'] = mymd5(urldecode($numcode),'DE') ?: 'n'.date('ymdHis').rands(3);
         
         $array = array_merge($array,$this->send_config());
 
@@ -140,19 +148,23 @@ class Pay extends IndexBase
                 'banktype'=>$array['bankname'],
                 'callback_class'=>mymd5(urldecode(input('callback_class')),'DE'),     //支付成功后，后台执行的类
         ];
-        //file_put_contents(ROOT_PATH.'AA.txt', $this->weburl,FILE_APPEND);
-        $info = PayModel::get(['numcode'=>$array['numcode']]);
-        if($info==false){
+
+        $info = getArray( PayModel::get(['numcode'=>$array['numcode']]) );
+        if(empty($info)){
             PayModel::create($data);
         }elseif($info['money']!=$array['money']){
             $this->error("金额有误!!!");
         }
         
-        
         return $array;
     }
     
-    //支付成功后执行的，不能定义为public，否则会有漏洞
+    /**
+     * 支付成功后执行的，不能定义为public，否则会有漏洞
+     * @param unknown $numcode 订单号
+     * @param string $havepay 是否执行充值操作.
+     * @return number|string
+     */
     protected function have_pay($numcode,$havepay=true){
         
         $rt = PayModel::get(['numcode'=>$numcode]);
