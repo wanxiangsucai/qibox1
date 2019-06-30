@@ -39,7 +39,7 @@
 {volist name="groupdb" id="rs"}
             
 			<td>
-			<a href="{:urls('buy',['gid'=>$rs['id']])}" class='alert upbtn fa fa-id-badge' data-alert="你确认要付费认证吗?">{$rs.level?'付费认证':'免费认证'}</a> 
+			<a href="{:urls('buy',['gid'=>$rs['id']])}" class='ajax_get upbtn fa fa-id-badge' data-alert="你确认要付费认证吗?">{$rs.level?'付费认证':'免费认证'}</a> 
 			</td>
 {/volist}
           </tr>

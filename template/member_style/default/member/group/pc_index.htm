@@ -26,7 +26,7 @@
       <tr>
         <td>认证有效期</td>
         {volist name="groupdb" id="rs"}
-        <td><span class="b red">{$rs.daytime?:"365"}</span>天</td>
+        <td><span class="b red">{$rs.daytime?:"永久有效"}</span>{$rs.daytime?"天":""}</td>
         {/volist} </tr>
       <tr>
         <td>&nbsp;</td>
@@ -38,7 +38,7 @@
           申请失败：{:fun("shengji@status",$userdb['uid'],$rs['id'])['refuse_reason']} <a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge'>{$rs.level?'重新付费认证':'重新免费认证'}</a> {elseif fun("shengji@status",$userdb['uid'],$rs['id'])['status']=='1'}
           成功升级到 {$rs.title}
           {/if}
-          {else/} <a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge alert' data-alert="你确认要付费认证吗?">{$rs.level?'付费认证':'免费认证'}</a> {/if} </td>
+          {else/} <a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge ajax_get' data-id='9987' data-alert="你确认要付费认证吗?">{$rs.level?'付费认证':'免费认证'}</a> {/if} </td>
         {/volist} </tr>
     </table>
   </div>
@@ -55,4 +55,9 @@
     </ul>
   </div>
 </div>
+<script type="text/javascript">
+function ajax_get(res,id){
+	 //alert(res.url);
+}
+</script>
 {/block}
