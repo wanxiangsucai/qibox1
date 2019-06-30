@@ -56,7 +56,7 @@ class Group extends MemberBase
         $this->webdb['money_ratio']>0 || $this->webdb['money_ratio']=10;
         add_jifen($this->user['uid'],$money*$this->webdb['money_ratio'],'在线充值积分');
         add_rmb($this->user['uid'], -abs($money), 0,'充值积分消费');
-        $this->success('充值成功,请重新选择升级',url('buy',['gid'=>$gid]));
+        $this->success('充值成功,请继续下一步升级',url('buy',['gid'=>$gid]),[],1);
     }
     
     /**
@@ -96,13 +96,16 @@ class Group extends MemberBase
             if($this->user['money']<$ginfo['level']){
                 $money = ($ginfo['level'] - $this->user['money']) / ($this->webdb['money_ratio']?:10);
                 $money = ceil($money*100)/100;
-                $payurl = post_olpay([
-                        'money'=>$money-$this->user['rmb'],     //有部分余额的话,就不用充值那么多
-                        'return_url'=>url('pay',['money'=>$money,'gid'=>$gid]),
-                        'banktype'=>'',
-                        'numcode'=>'g'.date('ymdHis').rands(3),
-                        //'callback_class'=>mymd5('app\\member\\controller\\Group@pay@'.$money),
-                ], false);
+                $payurl = url('pay',['money'=>$money,'gid'=>$gid]);     //提示充值积分
+                if($this->user['rmb']<$money){
+                    $payurl = post_olpay([
+                            'money'=>$money-$this->user['rmb'],     //有部分余额的话,就不用充值那么多
+                            'return_url'=>$payurl,
+                            'banktype'=>'',
+                            'numcode'=>'g'.date('ymdHis').rands(3),
+                            //'callback_class'=>mymd5('app\\member\\controller\\Group@pay@'.$money),
+                    ], false);
+                }          
                 $this->error('你的'.jf_name(0).'不足: '.$ginfo['level'] .'个，你仅有 '.$this->user['money'].' 个，需要先充值 '.$money.' 元，才能认证升级，你确认要充值吗？',$payurl);
             }
         }        
