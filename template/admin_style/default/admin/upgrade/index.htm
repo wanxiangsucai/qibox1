@@ -10,6 +10,11 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 }
 //-->
 </script>
+<style type="text/css">
+.locktr td{
+	color:orange;
+}
+</style>
 <form name="formlist" method="post" action="" class="up_files">
 <div class="MainContainers">
   <div class="Header"><span class="tag">在线升级</span><span class="more">&gt;&gt;</span></div>
@@ -18,7 +23,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 
 <table class="ListTable">
    <tr> 
-        <th width='11%'>选择</th>
+        <th width='11%'>选中升级</th>
         <th width='32%'>文件名称</th>
       <th width='17%'>升级前时间</th>
       <th width='21%'>更新时间</th>
@@ -37,7 +42,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
     <tr bgcolor='#FFFFFF' align="center" class="up_btn" style="display:none;"> 
       <td colspan='5'>
         <div class='submits'>
-          <input type='button' onclick="CheckAll(this.form)" name='Submit' value='全选'>
+          <!--<input type='button' onclick="CheckAll(this.form)" name='Submit' value='全选'>-->
           <input type='button' style="background:red;" onclick="sys_upgrade();" name='Submit' value='立刻升级'>          
         </div>
         </td>
@@ -52,9 +57,9 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
   <div class="Header"><span class="tag">升级说明</span></div>
   <div class="Conter">
     <ul class="notes">
-      <li>1、你可以选择哪些文件不升级,不过你最好是在程序目录,把不想升级的文件,做个标志,比如index.htm不想升级,就在对应的目录创建一个文件index.htm.lock</li>
+      <li>1、你可以选择哪些文件不升级,不过你最好是在程序目录,把不想升级的文件,做个标志,比如“index.htm”不想升级,就在对应的目录创建一个文件“index.htm.lock”，这样每次升级，文件就处于非选中状态，而不会升级。</li>
   <li>2、如果网络故障,一次升级不成功,可反复升级</li>
-  <li>3、如果你二次开发过的文件被替换了,请进目录/runtime/bakfile/找回来</li>
+  <li>3、如果因为升级文件被替换了,请进目录/runtime/bakfile/找回来</li>
   
     </ul>
   </div>
@@ -108,8 +113,10 @@ function down_file_list(){
 		if(res.code==0){
 			var str = '';
 			res.data.forEach(function(rs){
-				str +='<tr>'+
-						  '<td class="b red"> <input type="checkbox" name="filedb[]" value="'+rs.file+','+rs.id+'"checked></td>'+   
+				var ck = rs.islock?" onclick='layer.alert(\"当前文件已锁定,你确认要升级吗?\")' ":' checked ';
+				var style = rs.islock?" class='locktr' ":' ';
+				str +='<tr '+style+'>'+
+						  '<td class="b red"> <input type="checkbox" name="filedb[]" value="'+rs.file+','+rs.id+'" '+ck+'></td>'+   
 						  '<td class="Left">'+rs.showfile+'</td>'+   
 						  '<td><div align="center">'+rs.ctime+'</div></td>'+
 						  '<td>'+rs.time+'</td>'+
@@ -131,8 +138,10 @@ function down_file_list(){
 		if( typeof(parsedJson) == 'object' && parsedJson.code==0){
 			var str = '';
 			parsedJson.data.forEach(function(rs){
-				str +='<tr>'+
-						  '<td class="b red"> <input type="checkbox" name="filedb[]" value="'+rs.file+','+rs.id+'"checked></td>'+   
+				var ck = rs.islock?" onclick='layer.alert(\"当前文件已锁定,你确认要升级吗?\")' ":' checked ';
+				var style = rs.islock?" class='locktr' ":' ';
+				str +='<tr '+style+'>'+
+						  '<td class="b red"> <input type="checkbox" name="filedb[]" value="'+rs.file+','+rs.id+'"  '+ck+'></td>'+   
 						  '<td class="Left">'+rs.showfile+'</td>'+   
 						  '<td><div align="center">'+rs.ctime+'</div></td>'+
 						  '<td>'+rs.time+'</td>'+

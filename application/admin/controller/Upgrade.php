@@ -226,16 +226,17 @@ class Upgrade extends AdminBase
 	    foreach($array AS $rs){
 	        $showfile = $this->format_filename($rs['file']);
 	        $file = ROOT_PATH.$showfile;
-	        if(is_file($file.'.lock')){
-	            continue;          //用户不想升级的文件
-	        }
+// 	        if(is_file($file.'.lock')){
+// 	            continue;          //用户不想升级的文件
+// 	        }
 	        if(!is_file($file) || md5_file($file)!=$rs['md5']){
 	            $data[]=[
-	                    'file'=>$rs['file'],
-	                    'showfile'=>$showfile,
-	                    'id'=>$rs['id'],
-	                    'ctime'=>is_file($file)?date('Y-m-d H:i',filemtime($file)):'缺失的文件',
-	                    'time'=>date('Y-m-d H:i',$rs['time']),
+	                'file'=>$rs['file'],
+	                'showfile'=>$showfile,
+	                'id'=>$rs['id'],
+	                'islock'=>is_file($file.'.lock')?1:0,
+	                'ctime'=>is_file($file)?date('Y-m-d H:i',filemtime($file)):'缺失的文件',
+	                'time'=>date('Y-m-d H:i',$rs['time']),
 	            ];
 	        }
 	    }
