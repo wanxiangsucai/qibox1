@@ -192,7 +192,7 @@ abstract class C extends IndexBase
 //         }
 
         $info['field_array'] = $this->get_field_fullurl($info);     //这行必须放在 format_field 的前面,这里要用到原始数据
-        $info = fun('field@format',$info,'','show');
+        //$info = fun('field@format',$info,'','show');  //get_field_fullurl里边传了转义过的值,这里就不用再转义了
         
         //下面代码主要是避免 format_field 函数里边强行把picurl输出<img 这样的内容,导致无法对图片做个性显示
         if($info['field_array']['pics']['value']){  //CMS图库特别处理
@@ -810,6 +810,7 @@ abstract class C extends IndexBase
             }else{
                 $value = \app\common\field\Show::get_field($rs,$info)['value'];
             }
+            $info[$name] = $value;
             
             $field_array[$name] = [
                     'type'=>$type,
