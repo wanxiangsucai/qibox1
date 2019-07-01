@@ -25,6 +25,15 @@ body .Notes{margin:0 2px 15px 0;}
 {block name="head_layer_js"}<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>{/block}
 {block name="head_ext_js"}<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/member/default/blue/blue.js"></SCRIPT>{/block}
 {block name="js"}{/block}
+
+{block name="jump_iframe"}
+{if empty(input('debug'))}
+<script type="text/javascript">
+if(window.self==window.top)window.location.href="{:url('member/index/index')}?url="+window.location.href;//强制引用框架
+</script>
+{/if}
+{/block}
+
 </head>
 <body>
 

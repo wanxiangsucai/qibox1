@@ -6,6 +6,10 @@ use app\common\util\Menu;
 
 class Index extends MemberBase
 {
+    /**
+     * 会员中心主页
+     * @return mixed|string
+     */
     public function index()
     {
         $menu_array = Menu::make('member');
@@ -39,11 +43,15 @@ class Index extends MemberBase
         $this->assign('info',$this->user);
         $this->assign('user',$this->user);
         $this->assign('menu',$menu_array);
+        $this->assign('url',substr(strstr($this->weburl,'?url='),5)?:url('map'));
         $template = get_group_tpl('member',$this->user['groupid']);
         return $this->fetch($template);
     }
     
- 
+    /**
+     * 电脑版的欢迎页
+     * @return mixed|string
+     */
     public function map()
     {
         $this->assign('user',$this->user);
