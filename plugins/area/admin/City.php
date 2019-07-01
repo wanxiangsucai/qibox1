@@ -43,7 +43,7 @@ class City extends AdminBase
 	    ];
 	    
 	    if($this->cfg_level==1){
-	        unset($tab[2]);
+	        unset($tab[1]);
 	    }
 	    
 	    $table = Tabel::make($listdb,$tab)
