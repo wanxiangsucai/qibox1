@@ -181,6 +181,8 @@ abstract class Reply extends IndexBase
             return '你还没登录';
         }elseif($this->user['groupid']==2){
             return '很抱歉,你已被列入黑名单,没权限发布,请先检讨自己的言行,再联系管理员解封!';
+        }elseif($this->user['yz']==0){
+            return '很抱歉,你的身份还没通过审核验证,没权限发表回复!';
         }
         
         if (!empty($this -> validate)) {   //验证数据

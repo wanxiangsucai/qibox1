@@ -412,6 +412,8 @@ trait ModuleContent
 	        return '请先登录!';
 	    }elseif($this->user['groupid']==2){
 	        return '很抱歉,你已被列入黑名单,没权限发布,请先检讨自己的言行,再联系管理员解封!';
+	    }elseif($this->user['yz']==0){
+	        return '很抱歉,你的身份还没通过审核验证,没权限发布!';
 	    }elseif($mid && !get_field($mid)){
 	        return '模型不存在!';
 	    }elseif(!$this->admin && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
@@ -729,7 +731,7 @@ trait ModuleContent
 	                $data[$rs['id']] = $rs['title'];
 	            }
 	            $form_array = [
-	                [ 'select','ext_id','所属'.QUN,'',$data],
+	                [ 'select','ext_id','所属'.QUN,'',$data,$_COOKIE['choose_qun_id']],
 	                [ 'hidden','ext_sys',$ext_sys],
 	            ];
 	        }else{

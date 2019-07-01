@@ -60,7 +60,9 @@ class Api extends IndexBase
             $data = $this->request->post();
             
             if($this->user['groupid']==2){
-                return $this->err_js('很抱歉,你已被列入黑名单,没权限发布,请先检讨自己的言行,再联系管理员解封!');
+                return $this->err_js('很抱歉,你已被列入黑名单,没权限发布评论,请先检讨自己的言行,再联系管理员解封!');
+            }elseif($this->user['yz']==0){
+                return $this->err_js('很抱歉,你的身份还没通过审核验证,没权限发布评论!');
             }elseif(empty($this->user) && empty($this->webdb['allow_guest_post_comment'])){
                 return $this->err_js('很抱歉,系统禁止游客发表评论!<br>请复制保存好你的内容,登录后,再评论<br>'.$data['content']);
             }elseif( $this->webdb['can_post_comment_group'] && !in_array($this->user['groupid'],$this->webdb['can_post_comment_group'])){
