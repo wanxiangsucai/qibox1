@@ -58,7 +58,10 @@ function save_pic(){
 		function viewpics(url,pic_array){
 			var html = '';
 			pic_array.forEach(function(f){
-				html += '<div><span><img src="/public/'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
+				if(f.indexOf('://')==-1 && f.indexOf('/public/')==-1){
+					f = '/public/'+f;
+				}
+				html += '<div><span><img src="'+f+'"></span><em><i class="fa fa-remove"></i></em></div>';
 			});
 			$(".ListImgs").html(html);
 			addclick();
