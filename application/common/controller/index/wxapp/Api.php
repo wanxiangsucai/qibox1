@@ -32,12 +32,12 @@ abstract class Api extends IndexBase
     }
     
     protected function check_getTab($id=0){
-        if (!$this->admin) {
-            return '你没权限';
-        }
+        
         $info = $this->model->getInfoByid($id);
         if (empty($info)) {
             return '信息内容不存在';
+        }elseif (!$this->admin && fun('admin@sort',$info['fid'])!==true) {
+            return '你没权限';
         }
 //         $table = $this->model->getTableByMid($info['mid']);         
 //         return array_merge($info,['table'=>$table]);

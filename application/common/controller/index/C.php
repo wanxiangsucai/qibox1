@@ -40,7 +40,7 @@ abstract class C extends IndexBase
      */
     protected function view_check(&$info=[]){
         //$info['hook_check'] 钩子可以对这个变量赋值,就可以绕过查看权限检查
-        if(empty($info['status']) && empty($info['hook_check']) && !$this->admin && $this->user['uid']!=$info['uid']){
+        if(empty($info['status']) && empty($info['hook_check']) && !$this->admin && fun('admin@sort',$info['fid'])!==true && $this->user['uid']!=$info['uid']){
             $this->error('内容还没通过审核,你不能查看!');
         }
         $s_info = get_sort($info['fid'],'config');
@@ -221,13 +221,14 @@ abstract class C extends IndexBase
         //$field_db = $this->getEasyFormItems();     //自定义字段
         
         //模板里要用到的变量值
-        $vars = [
-                'info'=>$info,
-                'id'=>$id,
-                'fid'=>$info['fid'],
-                'mid'=>$info['mid'],
-                'listdb'=>$info['picurls'],
-                's_info'=>$s_info,
+        $vars = [            
+            'info'=>$info,
+            'id'=>$id,
+            'fid'=>$info['fid'],
+            'mid'=>$info['mid'],
+            'listdb'=>$info['picurls'],
+            's_info'=>$s_info,
+            'admin'=>$this->admin?:fun('admin@sort',$info['fid']),  //频道或栏目管理员的判断
         ];
         $this->get_module_layout('show');   //重新定义布局模板
         return $this->fetch($template,$vars);

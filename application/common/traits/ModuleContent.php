@@ -416,7 +416,7 @@ trait ModuleContent
 	        return '很抱歉,你的身份还没通过审核验证,没权限发布!';
 	    }elseif($mid && !get_field($mid)){
 	        return '模型不存在!';
-	    }elseif(!$this->admin && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
+	    }elseif(!$this->admin && fun('admin@sort',$fid)!==true && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
 	        return '你所在用户组没权限!';
 	    }
 	    
@@ -438,7 +438,7 @@ trait ModuleContent
 	    
 	    $s_config = $fid ? get_sort($fid,'config') : [];
 	    if($s_config['allowpost']){
-	        if( !$this->admin && !in_array($this->user['groupid'], explode(',',$s_config['allowpost'])) ){
+	        if( !$this->admin && fun('admin@sort',$fid)!==true && !in_array($this->user['groupid'], explode(',',$s_config['allowpost'])) ){
 	            return '你所在用户组,无权在此栏目发布!';
 	        }
 	    }
@@ -560,7 +560,7 @@ trait ModuleContent
 	        return $result;
 	    }
 	    
-	    if($info['uid']!=$this->user['uid']&&empty($this->admin)&&ENTRANCE!=='admin'){
+	    if($info['uid']!=$this->user['uid'] && empty($this->admin) && fun('admin@sort',$info['fid'])!==true && ENTRANCE!=='admin'){
 	        return '你没权限!';
 	    }
 	    if($data){
@@ -616,7 +616,7 @@ trait ModuleContent
 	        return $result;
 	    }
 	    
-	    if( empty($this->admin) ){
+	    if( empty($this->admin) && fun('admin@sort',$info['fid'])!==true ){
 	        if ($info['uid']!=$this->user['uid'] || empty($info['uid'])) {
 	            return '你没权删除ID:' . $id;
 	        }	        

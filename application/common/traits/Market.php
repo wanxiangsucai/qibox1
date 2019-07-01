@@ -27,6 +27,7 @@ trait Market
                 if($upvip==1){
                     $this->model->update([
                         'id'=>$_array['id'],
+                        'version'=>'',
                         'version_id'=>$id,
                     ]);
                     Cache::clear();

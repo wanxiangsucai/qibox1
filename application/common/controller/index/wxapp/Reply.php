@@ -6,8 +6,8 @@ use app\common\controller\IndexBase;
 //小程序 评论
 abstract class Reply extends IndexBase
 {
-    protected $model;                  //评论模型表
-    protected $topic_model;                  //评论模型表
+    protected $model;                        //评论模型表
+    protected $topic_model;                  //评论所属内容主题模型表
 
     protected function _initialize()
     {
@@ -58,7 +58,7 @@ abstract class Reply extends IndexBase
     }
     
     /**
-     * 删除回复 前的处理
+     * 删除评论前的权限检查处理
      * @param array $info
      * @return \app\common\controller\unknown|\app\common\controller\NULL|string|boolean
      */
@@ -69,7 +69,9 @@ abstract class Reply extends IndexBase
             return $result;
         }
         
-        if($info['uid']!=$this->user['uid'] && !$this->admin){
+        $topic = $this->topic_model->getInfoByid($info['aid']);
+        
+        if($info['uid']!=$this->user['uid'] && !$this->admin && fun('admin@sort',$topic['fid'])!==true){
             return '你没权限';
         }
         return true;
