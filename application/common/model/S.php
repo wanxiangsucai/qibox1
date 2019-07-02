@@ -110,15 +110,16 @@ abstract class S extends Model
         if ($mid !== 0) {
             //$where['mid'] = $mid;
         }
-        
+        $ck = false;
         $data_list = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id asc')->column('id,pid,mid,name'));
         foreach ($data_list as $item) {
             if($mid!=0 && $item['mid']!=$mid){
                 continue;
             }
             $result[$item['id']] = $item['title_display'];
+            $ck = true;
         }
-        return $result;
+        return $ck?$result:[];
     }
     
     /**
