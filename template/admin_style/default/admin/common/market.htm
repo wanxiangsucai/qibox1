@@ -1,3 +1,4 @@
+<script src="__STATIC__/js/core/vue.js"></script>
 <script type="text/javascript">
 if (navigator.userAgent.indexOf("MSIE") >= 0) {
 	alert("请使用谷歌或火狐访问.其它浏览器无法操作与使用");
@@ -157,7 +158,86 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 		</div>
 		<div class="category listsort"><span class="title">应用分类： </span><span class="list"></span></div>
 		<div class="goodapp listsort"><span class="title">网友推荐： </span><span class="list"></span></div>
-		<ul class="MarketBox Markercontents"></ul>
+		<ul class="MarketBox Markercontents">
+				<li v-for="rs in listdb" v-bind:key="rs.id">
+					<dl>
+						<dt>
+							<a :href="'https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html'" target="_blank">
+								<img onerror="this.src='__STATIC__/images/nopic.png'" :src="rs.picurl">
+							</a>
+						</dt>
+						<dd>
+							<h3>
+								{{rs.title}}
+								<span>
+									{{rs.downs>50 ?'热门':''}}
+								</span>
+							</h3>
+							<div v-if="rs.price>0 && rs.jifen>0">
+								<span class="price red">
+									¥ {{rs.price}} 元
+								</span>
+								<span class="price blue">
+									(积分 {{rs.jifen}} 个)
+								</span>
+								<a v-if="rs.vip_price>0" :href="'https://x1.php168.com/qun/content/apply/id/'+rs._qid+'.html'" target="_blank"
+								title="点击申请VIP" class="price" style="color:orange;float:right;">
+									vip尊享:{{rs.vip_price}}
+								</a>
+							</div>
+							<div v-else-if="rs.price>0">
+								<span class="price red">
+									¥ {{rs.price}} 元
+								</span>
+								<a v-if="rs.vip_price>0" :href="'https://x1.php168.com/qun/content/apply/id/'+rs._qid+'.html'" target="_blank"
+								title="点击申请VIP" class="price" style="color:orange;float:right;">
+									vip尊享:{{rs.vip_price}}
+								</a>
+							</div>
+							<div v-else class="price blue">免费</div>
+							
+							<div class="other">
+								开发者主页：
+								<a target="_blank" :href="'https://x1.php168.com/member.php/home/'+rs.uid+'.html'">
+									{{rs.author}}
+								</a>
+								<a v-if="rs.vip_price>0" :href="'https://x1.php168.com/qun/content/apply/id/'+rs._qid+'.html'" target="_blank"
+								title="点击申请VIP" style="color:#3D8EC1;float:right;">
+									申请vip
+								</a>
+							</div>
+							<div class="other" v-if="rs._qid>0">
+								交流点评区：
+								<a target="_blank" :href="'https://x1.php168.com/qun/show-'+rs._qid+'.html'">
+									查看点评
+								</a>
+							</div>
+							<div class="other" v-else>
+								风险提示：<em style="color:#B39006;">当前应用没有用户点评,请谨慎安装</em>
+							</div>
+							<div class="other" :title="rs.about">
+								介绍：{{rs.about}}
+							</div>
+							<div class="other">
+								安装次数：{{rs.downs}} 次
+							</div>
+							<div class="other">
+								更新时间：{{rs.time}}
+							</div>
+							<div class="butter">
+								<a @click="setup(rs.id,rs.app_keywords,rs.price)" href="javascript:;" :data-id="rs.id"
+								class="fa fa-cloud-download">
+									在线安装
+								</a>
+								<a :href="'https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html'" target="_blank"
+								class="fa fa-bolt">
+									装前必读
+								</a>
+							</div>
+						</dd>
+					</dl>
+				</li>
+		</ul>
 	</div>
 	<div class="ShowPage ShowMoreInfo" style="margin-bottom:20px:text-align:center;width:100%;"><span style="width:200px;margin:auto;display:block;padding:8px;background:#eee;" onclick="showlist()">显示更多</span></div>
 </div>
@@ -248,6 +328,24 @@ function search_app(){
 	showlist();
 }
 
+
+var vues = new Vue({
+	el: '.Markercontents',
+	data: {
+		listdb: [],
+	},
+	methods: {
+		setup: function (id,keywords,price) {
+			setup_app(id,keywords,price);
+		},
+		add_data:function(array){
+			array.forEach((rs)=>{
+				this.listdb.push(rs);
+			});			
+		}
+	}		  
+});
+
 function showlist(){
 	layer.load(3,{shade: [0.1,'#333']});
 	var url = appUrl + '&order_by='+order_by+'&page='+page+'&keyword='+keyword+'&category='+category;
@@ -261,6 +359,8 @@ function showlist(){
 				$('.ShowMoreInfo span').html('显示完了');
 				$('.ShowMoreInfo span').css({'background':'#CCC'});
 			}else{
+				vues.add_data(res.data);
+				/*
 				var str = '';
 				res.data.forEach((rs)=>{
 					var vip_str = '';
@@ -289,7 +389,8 @@ function showlist(){
 							'</dl>'+
 						'</li>';
 				});
-				$('.Markercontents').append(str);				
+				$('.Markercontents').append(str);	
+				*/
 				check_setup();
 				loading = 1;
 				hide_demo();

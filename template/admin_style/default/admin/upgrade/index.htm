@@ -3,6 +3,9 @@
 {block name="menu"}{/block}
 
 {block name="content"}
+
+<script src="__STATIC__/js/core/vue.js"></script>
+
 <script type="text/javascript">
 <!--
 if (navigator.userAgent.indexOf("MSIE") >= 0) {
@@ -11,7 +14,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 //-->
 </script>
 <style type="text/css">
-.locktr td{
+.locktr td,.locktr td a{
 	color:orange;
 }
 </style>
@@ -21,7 +24,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
   <div class="Conter">
 
 
-<table class="ListTable">
+<table class="ListTable" id="upgradeTR">
    <tr> 
         <th width='11%'>选中升级</th>
         <th width='32%'>文件名称</th>
@@ -30,14 +33,25 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
       <th width='19%'>查看新文件</th>
     </tr>
 
+	  <tr id="contents">
+		<td colspan=5 height=30 style="background:#eee;">
+		  <div align="center" style="color:red;" class="upgrade_msg">正在获取云端数据信息,请稍候...</div>
+		</td>
+	  </tr>
 
-
-
-  <tr id="contents">
-    <td colspan=5 height=30 style="background:#eee;">
-      <div align="center" style="color:red;" class="upgrade_msg">正在获取云端数据信息,请稍候...</div>
-    </td>
-  </tr>
+	 <tr v-for="rs in listdb" :class="rs.islock?'locktr':''">
+		<td class="b red">
+			 <input v-if="rs.islock==1" type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" onclick="if($(this).is(':checked'))layer.alert('当前文件已锁定,你确认要升级吗?')" /> 
+			 <input v-else type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" checked /> 
+		</td>
+		<td class="Left">{{rs.showfile}}</td>
+		<td>
+			<div align="center">{{rs.ctime}}</div>
+		</td>
+		<td>{{rs.time}}</td>
+		<td><a :href="'{:urls('view_file')}?filename='+rs.file+'&id='+rs.id" target="_blank">查看</a>
+		</td>
+	</tr>
  
     <tr bgcolor='#FFFFFF' align="center" class="up_btn" style="display:none;"> 
       <td colspan='5'>
@@ -104,15 +118,38 @@ function check_upgrade(){
 }
 check_upgrade();
 
+
+
+var vues = new Vue({
+	el: '#upgradeTR',
+	data: {
+		listdb: [],
+	},
+	methods: {
+		setup: function (id,keywords,price) {
+			setup_app(id,keywords,price);
+		},
+		add_data:function(array){
+			$("#contents").remove();
+			array.forEach((rs)=>{
+				this.listdb.push(rs);
+			});			
+		}
+	}		  
+});
+
 //下载文件列表,核对需要哪些更新
 function down_file_list(){
 	layer.alert('需要一点时间,请稍候,正在从云端下载升级文件列表');
 	var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
 	$.post("{:urls('check_files')}?upgrade_edition="+upgrade_edition,upgrade_data).success(function(res){
 		layer.closeAll();
-		if(res.code==0){
+		if(res.code==0){			
+			vues.add_data(res.data);
+			/*
 			var str = '';
 			res.data.forEach(function(rs){
+				
 				var ck = rs.islock?" onclick='layer.alert(\"当前文件已锁定,你确认要升级吗?\")' ":' checked ';
 				var style = rs.islock?" class='locktr' ":' ';
 				str +='<tr '+style+'>'+
@@ -122,9 +159,10 @@ function down_file_list(){
 						  '<td>'+rs.time+'</td>'+
 						  '<td><a href="{:urls("view_file")}?filename='+rs.file+'&id='+rs.id+'" target="_blank">查看</a></td>'+
 					  '</tr>';
+					  
 			});
-			//$(".contents").html(str);
 			document.getElementById('contents').outerHTML=str;
+			*/
 			$(".up_btn").show();
 			layer.alert('需要升级的文件列表如下,你可以有选择性的升级');
 		}else{
@@ -136,6 +174,8 @@ function down_file_list(){
 		var parsedJson = $.parseJSON(res.responseText.substr(res.responseText.indexOf('{'))); //用户程序中有UTF8 +BOM文件导致的
 
 		if( typeof(parsedJson) == 'object' && parsedJson.code==0){
+			vues.add_data(parsedJson.data);
+			/*
 			var str = '';
 			parsedJson.data.forEach(function(rs){
 				var ck = rs.islock?" onclick='layer.alert(\"当前文件已锁定,你确认要升级吗?\")' ":' checked ';
@@ -148,8 +188,8 @@ function down_file_list(){
 						  '<td><a href="{:urls("view_file")}?filename='+rs.file+'&id='+rs.id+'" target="_blank">查看</a></td>'+
 					  '</tr>';
 			});
-			//$(".contents").html(str);
 			document.getElementById('contents').outerHTML=str;
+			*/
 			$(".up_btn").show();
 			layer.alert('需要升级的文件列表如下,你可以有选择性的升级<br>特别提醒:你的系统中有错误的UTF8 +BOM 代码文件,一般情况是新装的风格导致的,请仔细排查!');
 			return ;
