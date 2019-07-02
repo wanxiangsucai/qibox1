@@ -805,9 +805,11 @@ abstract class C extends IndexBase
 //                 }
 //             }
 
-            if(in_array($type,['images','files','image','file','jcrop','images2'])){                
+            if(in_array($type,['images','files','image','file','jcrop','images2'])){
+                $info['_'.$name] = $value;
                 $value = \app\common\field\Show::format_url($rs,$info);                
-            }else{
+            }elseif(empty($rs['index_hide'])){
+                $info['_'.$name] = $value;
                 $value = \app\common\field\Show::get_field($rs,$info)['value'];
             }
             $info[$name] = $value;
