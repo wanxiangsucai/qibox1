@@ -84,7 +84,7 @@ class Form extends Base
             $info[$name] = str_replace(['<','>'], ['&lt;','&gt;'], $info[$name]);
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
             $field['input_height'] && $field['input_height']="height:{$field['input_height']};";
-            $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' placeholder='请输入{$field['title']}' class='layui-textarea c_{$name}  {$field['css']}' style='{$field['input_width']}{$field['input_height']}'>{$info[$name]}</textarea>";
+            $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' placeholder='请输入".preg_replace('/<([^>]+)>(.*?)<\/([^>]+)>/i', '', $field['title'])."' class='layui-textarea c_{$name}  {$field['css']}' style='{$field['input_width']}{$field['input_height']}'>{$info[$name]}</textarea>";
             
         }elseif ($field['type'] == 'select') {      // 下拉框
             
@@ -147,7 +147,7 @@ class Form extends Base
             }
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
             $static = config('view_replace_str.__STATIC__');
-            $show = " <input placeholder='点击选择{$field[title]}'  style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
+            $show = " <input placeholder='点击选择时间'  style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
             $show .= fun('field@load_js','laydate')?"<script src='$static/layui/laydate/laydate.js'></script>":'';
             $show .="
                             <script>
@@ -177,7 +177,7 @@ class Form extends Base
             $step = $field['type']=='money' ? " step='0.01' " : '';
             $info[$name] = str_replace(['"',"'"], ['&quot;','&#39;'], $info[$name]);
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
-            $show = " <input $readonly placeholder='请输入{$field[title]}' $step $ifmust $jsck type='$type' name='{$name}' id='atc_{$name}' style='{$field['input_width']}' class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
+            $show = " <input $readonly placeholder='".preg_replace('/<([^>]+)>(.*?)<\/([^>]+)>/i', '', $field['title'])."' $step $ifmust $jsck type='$type' name='{$name}' id='atc_{$name}' style='{$field['input_width']}' class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
 
         }
 

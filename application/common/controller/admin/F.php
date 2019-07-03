@@ -34,6 +34,9 @@ abstract class F extends AdminBase
         if ($this->request->isPost() && !table_field($dirname.'_field','range_opt')) {
             query("ALTER TABLE  `qb_{$dirname}_field` ADD  `range_opt` TEXT NOT NULL COMMENT  '范围选择,比如价格范围',ADD  `group_view` VARCHAR( 255 ) NOT NULL COMMENT  '允许哪些用户组查看',ADD  `index_hide` TINYINT( 1 ) NOT NULL COMMENT  '是否前台不显示并不做转义处理';");
         }
+        if ($this->request->isPost()){
+            query("ALTER TABLE  `qb_{$dirname}_field` CHANGE  `title`  `title` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题'");
+        }
     }
     
     protected function set_config(){

@@ -334,6 +334,14 @@ var vues = new Vue({
 	data: {
 		listdb: [],
 	},
+	watch:{
+      listdb: function() {
+        this.$nextTick(function(){	//数据渲染完毕才执行
+			check_setup();
+			hide_demo();
+        })
+      }
+    },
 	methods: {
 		setup: function (id,keywords,price) {
 			setup_app(id,keywords,price);
@@ -345,6 +353,11 @@ var vues = new Vue({
 		}
 	}		  
 });
+
+//vues.$watch('listdb',function(val){ 
+//	vues.$nextTick(function() {	//渲染完毕
+//	}); 
+//})
 
 function showlist(){
 	layer.load(3,{shade: [0.1,'#333']});
@@ -390,10 +403,11 @@ function showlist(){
 						'</li>';
 				});
 				$('.Markercontents').append(str);	
-				*/
 				check_setup();
-				loading = 1;
 				hide_demo();
+				*/				
+				loading = 1;
+				
 			}
 		}else{
 			layer.msg(res.msg,{time:2500});
@@ -403,6 +417,8 @@ function showlist(){
 showlist();
 
 var ids_ck_msg = new Array();
+var app_have_setup = [];
+//检查安装情况
 function check_setup(){
 	var array = "{:fun('upgrade@local_edition')}".split(',');
 	var sr = new Array();
@@ -420,7 +436,8 @@ function check_setup(){
 			},function(res){
 				if(res.code==0){
 					obj.html('已安装');
-					obj.removeAttr('onclick');
+					app_have_setup[id]= true;
+					//obj.removeAttr('onclick');
 					obj.css({'color':'yellow',});
 				}else{
 					ids_ck_msg[id] = res.msg;
@@ -435,14 +452,19 @@ function check_setup(){
 	});
 };
 
+//演示地址为空的,就隐藏掉
 function hide_demo(){
 	$('.Markercontents a.demo_url').each(function(){
 		if($(this).attr('href')=='')$(this).hide();
 	});
 }
 
-var have_pay = [];
+var have_pay = [];	//是否已购买过可以直接安装.不提示购买
 function setup_app(id,keywords,price,have_open_layer){
+	if(typeof(app_have_setup[id])!='undefined'){
+		layer.alert('当前应用,已经安装过了!');
+		return ;
+	}
 	if(have_pay[id]==undefined){
 		have_pay[id]=0;
 	}
