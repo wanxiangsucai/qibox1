@@ -4,7 +4,7 @@ var Qibo = function () {
 	//超级链接那里加上 class="_pop" 就可以实现弹窗, 设置 data-width="600" data-height="600" 就可以指定弹窗大小 , 设置  data-title="标题XXX" 就可以设置弹窗标题
 	var pop = function(){
 		jQuery(document).delegate('a._pop', 'click', function () {
-			if((navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i))){
+			if((navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i))||$("body").width()<1000){
 				var default_width = "95%";
 				var default_height = "90%";
 			}else{
