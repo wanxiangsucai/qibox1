@@ -88,7 +88,7 @@ class Login extends IndexBase
         if(strstr($this->fromurl,'index/login/quit')){
             $this->fromurl = url('index/index/index');
         }
-        $this->assign('fromurl',urlencode($fromurl?:$this->fromurl));
+        $this->assign('fromurl',urlencode(filtrate($fromurl?:$this->fromurl)));
         $this->assign('type',$type);
         return $this->fetch($type=='iframe'?'iframe':'index');
     }
@@ -176,8 +176,8 @@ class Login extends IndexBase
             $this->error('你已经注册过了!');
         }
 		
-		$this->get_hook('reg_by_hand_begin',$data);
-        hook_listen('reg_by_hand_begin',$data);		
+		$this->get_hook('reg_by_hand_begin',$data=[]);
+		hook_listen('reg_by_hand_begin',$data=[]);		
         
         if(IS_POST){
             

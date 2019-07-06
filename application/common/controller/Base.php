@@ -27,8 +27,8 @@ class Base extends Controller
         
         $this->onlineip = $this->request->ip();
         $this->timestamp =$this->request->time();
-        $this->weburl = $this->request->url(true);
-        $this->fromurl = $_SERVER["HTTP_REFERER"];
+        $this->weburl = filtrate($this->request->url(true));
+        $this->fromurl = filtrate($_SERVER["HTTP_REFERER"]);
         $this->guest = md5($_SERVER['HTTP_USER_AGENT'].$this->onlineip);
 		$GLOBALS['FROMURL'] = $this->fromurl;
         $GLOBALS['WEBURL'] = $this->weburl;        
