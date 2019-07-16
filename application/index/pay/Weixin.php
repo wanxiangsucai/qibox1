@@ -77,7 +77,7 @@ class Weixin extends Pay{
             $this->error('系统没有设置好微信支付接口,所以不能使用微信支付');
         }
         
-        if(!in_weixin()){   //不在微信端,就展示微信付款二维码
+        if(!in_weixin() && input('client_type')==''){   //不在微信端并且没有指定支付类型,就展示微信付款二维码
             $array = $this->olpay_send();
             return $this->weixin_pay_inpc($array);
         }else{
@@ -92,6 +92,7 @@ class Weixin extends Pay{
             
             if (input('client_type')=='wxapp') {    //在微信小程序中支付
                 $this->assign('array',$array);
+                $this->assign('in_app',input('in_app')?1:0);    //是否在APP中访问
                 return $this->fetch('wxapp_pay');
             }else{                //公众号支付
                 include(ROOT_PATH.'plugins/weixin/api/jsapi.php');

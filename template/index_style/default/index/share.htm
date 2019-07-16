@@ -133,3 +133,72 @@ $(function(){
 })
 
 </script>
+
+
+
+<!--在APP里边的分享按钮开始-->
+<div class="share_botton_wrap">
+	<div class="share_btnmenu"><span class="ishare_btn si si-action-redo"></span></div>
+	<!--<div class="ishare_list button1" onclick="window.location.href='{:urls('bbs/content/add','mid=1&ext_id='.$id)}?fromurl={:urls('show/content',['id'=>$id])}'"><span>贴子</span></div>-->
+	 <div class="ishare_list button2" onclick="share_app('user')"><span>好友</span></div> 	
+	 <div class="ishare_list button3" onclick="share_app('quan')"><span>朋友圈</span></div> 
+	<div class="ishare_list button4" onclick="share_app('fav')"><span>收藏夹</span></div>
+</div>
+
+<style type="text/css">
+.share_botton_wrap{width:57px;height:57px;position:fixed;right:0;top:180px;}
+.ishare_btn{
+	width:57px;height:57px;background:#62B3E7;position:absolute;top:-60px;right:2px;z-index:10;cursor:pointer;
+	border-radius:100%;
+	-moz-border-radius:100%;
+	opacity:0.7;
+	font-size:30px;
+	color:#fff;
+	text-align:center;
+	line-height:57px;
+}
+.ishare_list{
+	width:52px;
+	height:52px;
+	background:#62B3E7;
+	border-radius:100%;
+	-moz-border-radius:100%;
+	opacity:0.3;
+	font-size:15px;
+	color:#fff;
+	text-align:center;
+	line-height:52px;
+	z-index:1;position:absolute;bottom:60px;right:0;margin:0 5px 2px 0;cursor:pointer;
+}
+.button1.close, .button2.close, .button3.close, .button4.close{bottom:60px;right:0;}
+.button1.open{bottom:175px;right:0;opacity:0.8;}
+.button2.open{bottom:150px;right:62px;opacity:0.8;}
+.button3.open{bottom:105px;right:112px;opacity:0.8;}
+.button4.open{bottom:48px;right:135px;opacity:0.8;}
+.ishare_list{
+	-webkit-transition:bottom .2s,right .2s;-moz-transition:bottom .2s,right .2s;-o-transition:bottom .2s,right .2s;-ms-transition:bottom .2s,right .2s;transition:bottom .2s,right .2s;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+	$(".share_btnmenu").click(function(){
+		var span = $(this).find("span");
+		if(span.hasClass("open")){
+			span.removeClass("open").addClass("close");
+			$(".ishare_list").removeClass("open").addClass("close");
+		}else{
+			span.removeClass("close").addClass("open");
+			$(".ishare_list").removeClass("close").addClass("open");
+		}
+	});
+
+	if(typeof(window.inApk)!='object'){
+		$(".share_botton_wrap").hide();
+	}
+});
+
+function share_app(type){
+	window.inApk.app_share("{$share.link}","{$share.title}","{$share.about}","{$share.picurl}",type);
+}
+</script>
+<!--在APP里边的分享按钮结束-->

@@ -6,8 +6,9 @@ use plugins\login\model\Qq AS UserModel;
 
 class Qq extends IndexBase
 {
+    
     /**
-     * QQ登录
+     * 网页端 QQ登录
      * @param string $fromurl 返回的地址
      * @param string $type 设置为bind的时候,就是绑定帐号
      */
@@ -34,49 +35,7 @@ class Qq extends IndexBase
                 $this->error('获取openid失败');
             }
             
-            $rs = UserModel::get_info(['qq_api'=>$openid]);
-            
-            if($type=='bind'){  //绑定帐号
-                
-                if($rs){    //解绑以前的帐号
-                    $array = [
-                            'uid'=>$rs['uid'],
-                            'qq_api'=>'',
-                    ];
-                    UserModel::edit_user($array);
-                }
-                
-                $array = [
-                        'uid'=>$this->user['uid'],
-                        'qq_api'=>$openid,
-                ];
-                UserModel::edit_user($array);
-                cache('user_'.$this->user['uid'],null);
-                
-            }else{      //注册与登录
-                
-                $rs && $userdb = UserModel::get_info($rs['uid'],'uid');                
-                
-                //还没有注册，自动注册一个帐号
-                if(empty($rs['username']) || empty($userdb)){
-                    $data = $this->get_user_info($access_token,$openid);
-                    $userdb = UserModel::api_reg($openid,$data);
-                    if(!is_array($userdb)){
-                        $this->error('注册失败,详情如下：'.$userdb);
-                    }
-                }
-                
-                UserModel::login($userdb['username'], '', 3600*24*30,true);
-            }
-
-            $fromurl = $fromurl ? $fromurl : get_cookie('From_url');
-            if( $fromurl ){
-                set_cookie('From_url','');
-                $jumpto = urldecode($fromurl);
-            }else{
-                $jumpto = iurl('index/index/index');
-            }
-            $this->success($type=='bind'?'绑定成功':'登录成功',$jumpto);
+            $this->login_in($openid,$access_token,$type,$fromurl);
             
         }else{
             set_cookie('From_url',$fromurl);
@@ -84,6 +43,68 @@ class Qq extends IndexBase
             header("Location:$url");
             exit;
         }        
+    }
+    
+    /**
+     * app登录
+     * @param string $openid
+     * @param string $access_token
+     * @param string $type
+     */
+    public function app($openid='',$access_token='',$type='',$fromurl=''){
+        if(!$access_token){
+            $this->error('获取access_token失败');
+        }elseif(!$openid){
+            $this->error('获取openid失败');
+        }
+        $this->login_in($openid,$access_token,$type,$fromurl);
+    }
+    
+    protected function login_in($openid='',$access_token='',$type='',$fromurl=''){
+        
+        $rs = UserModel::get_info(['qq_api'=>$openid]);
+        
+        if($type=='bind'){  //绑定帐号
+            
+            if($rs){    //解绑以前的帐号
+                $array = [
+                    'uid'=>$rs['uid'],
+                    'qq_api'=>'',
+                ];
+                UserModel::edit_user($array);
+            }
+            
+            $array = [
+                'uid'=>$this->user['uid'],
+                'qq_api'=>$openid,
+            ];
+            UserModel::edit_user($array);
+            cache('user_'.$this->user['uid'],null);
+            
+        }else{      //注册与登录
+            
+            $rs && $userdb = UserModel::get_info($rs['uid'],'uid');
+            
+            //还没有注册，自动注册一个帐号
+            if(empty($rs['username']) || empty($userdb)){
+                $data = $this->get_user_info($access_token,$openid);
+                $userdb = UserModel::api_reg($openid,$data);
+                if(!is_array($userdb)){
+                    $this->error('注册失败,详情如下：'.$userdb);
+                }
+            }
+            
+            UserModel::login($userdb['username'], '', 3600*24*30,true);
+        }
+        
+        $fromurl = $fromurl ? $fromurl : get_cookie('From_url');
+        if( $fromurl ){
+            set_cookie('From_url','');
+            $jumpto = filtrate(urldecode($fromurl));
+        }else{
+            $jumpto = iurl('index/index/index');
+        }
+        $this->success($type=='bind'?'绑定成功':'登录成功',$jumpto);
     }
     
     private function error_msg($content){

@@ -26,12 +26,19 @@
 	<br>请用微信扫码支付：<font style="color:red;font-weight:bold;">{$money}</font>元</div>
 
 	 
-	<div class="PostBox" style="text-align:center;">		 
+	<div class="PostBox" style="text-align:center;display:none;">		 
 		<img width="250" src="{$qrcode}"/>
 	</div>
 	 
 </div>
 <script type="text/javascript">
+
+if(typeof(window.inApk)=='object'){
+	window.inApk.app_weixin_pay(window.location.href+'&client_type=wxapp&in_app=1');	//在APP中打开
+}else{
+	$(".PostBox").show();
+}
+
 function countSecond(){　
 	$.get("{:urls('/index/pay/index')}?banktype=weixin&action=checkpay&numcode={$numcode}&"+Math.random(), function(result){
 		if(result.code==0){

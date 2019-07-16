@@ -8,7 +8,31 @@ use QCloud_WeApp_SDK\Constants as Constants;
 
 class Login extends IndexBase
 {
-    //小程序检查是否已登录过
+    /**
+     * 框架套壳小程序登录
+     * @param string $type 值为wx的时候,要判断当前是否微信登录,不是的话,就强制退出,再用微信登录
+     * @return mixed|string
+     */
+    public function wxapp($type=''){
+//         if ($type=='wx' && $this->user){
+//             UserModel::quit($this->user['uid']);
+//             weixin_login();
+//         }
+        if (empty($this->user)) {
+            weixin_login();
+        }else{
+            $user = $this->user;
+            $token = md5( $user['uid'] . $user['lastip'] . $user['lastvist'] );
+            cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",60);
+            $this->assign('token',$token);
+            return $this->fetch();
+        }        
+    }
+    
+    /**
+     * 原生小程序检查是否已登录过
+     * @return \think\response\Json
+     */
     public function wxapp_check(){
         $result = LoginService::check();        
         if ($result['loginState'] === Constants::S_AUTH) {
@@ -24,7 +48,10 @@ class Login extends IndexBase
         }
     }
     
-    //小程序登录
+    /**
+     * 原生小程序登录
+     * @return \think\response\Json
+     */
     public function wxapp_login(){
         $result = LoginService::login();        
         if ($result['loginState'] === Constants::S_AUTH) {

@@ -42,14 +42,15 @@ class Jifen extends MemberBase
     public function add($numcode='',$ispay=0)
     {
         if($numcode){
+            $url = purl('index',[],'member');
             if ($ispay==1) {
                 if($this->pay_end($numcode)===true){
-                    $this->success('充值成功','index');
+                    $this->success('充值成功',$url);
                 }else{
-                    $this->error('充值失败','index');
+                    $this->error('充值失败',$url);
                 }
             }else{
-                $this->error('你并没有付款','index');
+                $this->error('你并没有付款',$url);
             }
         }
         if (IS_POST) {

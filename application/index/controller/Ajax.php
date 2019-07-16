@@ -50,4 +50,23 @@ class Ajax extends IndexBase
         }
     }
     
+    /**
+     * 登录接口参数
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function get_token(){
+        if ($this->request->isAjax()) {
+            if (empty($this->user)) {
+                return $this->err_js('你还没登录!');  
+            }else{
+                $token = md5( $this->user['uid'] . $this->user['lastip']  . $this->user['lastvist'] );
+                $user = $this->user;
+                cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",60);
+                return $this->ok_js($token);
+            }            
+        }else{
+            return $this->err_js('无效访问!');   
+        }        
+    }
+    
 }
