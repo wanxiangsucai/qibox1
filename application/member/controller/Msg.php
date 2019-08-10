@@ -69,12 +69,30 @@ class Msg extends MemberBase
 			//$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
             $rs['from_username'] = get_user_name($rs['uid']);
             $rs['from_icon'] = get_user_icon($rs['uid']);
+            $rs['content'] = $this->format_content($rs['content']);
             if($rs['ifread']==0&&$rs['touid']==$this->user['uid']){
                 Model::update(['id'=>$rs['id'],'ifread'=>1]);
             }
             return $rs;
         });
             return $data_list;
+    }
+    
+    /**
+     * 解析网址可以点击打开
+     * @param string $content
+     * @return mixed
+     */
+    private function format_content($content=''){
+//         if( strstr($content,"</")&&strstr($content,">")){    //如果是网页源代码的话，就不解晰了。
+//             return $content;
+//         }
+        $content = preg_replace_callback("/(http|https):\/\/([\w\?&\.\/=]+)/", array($this,'format_url'), $content);
+        return $content;
+    }
+    
+    private function format_url($array=[]){
+        return '<a href="'.$array[0].'" target="_blank">'.$array[0].'</a>';
     }
     
     /**

@@ -1880,6 +1880,11 @@ if(!function_exists('tempdir')){
         if(!preg_match('/^(http|https):/', $path)&&!preg_match('/^\/public\//', $path)){
             $path = $domain . PUBLIC_URL . $path;
         }
+        elseif(strpos($path, 'http://thirdwx') !== false){
+            $path = str_replace("http:","https:",$path);
+        }elseif(strpos($path, 'http://thirdqq') !== false){
+            $path = str_replace("http:","https:",$path);
+        }
         return $path;
 	}
 }
@@ -2544,6 +2549,7 @@ if (!function_exists('getTemplate')) {
  if (!function_exists('jf_name')) {
      /**
       * 获取虚拟币名称
+      * 其中 jf_name(0) 就是系统积分的名称
       * @param unknown $type 非数字的时候,就把所有名称以数组形式列出来
       * @return mixed|array
       */
