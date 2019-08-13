@@ -127,6 +127,7 @@ class Menu{
                 $_array[$key]['sons'][]=[
                         'title'=>$vs['name'],
                         'url'=>$vs['url'],
+                        'icon'=>$vs['icon'],
                         'target'=>$vs['target'],
                 ];
             }             
