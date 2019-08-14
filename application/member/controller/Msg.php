@@ -87,7 +87,7 @@ class Msg extends MemberBase
 //         if( strstr($content,"</")&&strstr($content,">")){    //如果是网页源代码的话，就不解晰了。
 //             return $content;
 //         }
-        $content = preg_replace_callback("/(http|https):\/\/([\w\?&\.\/=]+)/", array($this,'format_url'), $content);
+        $content = preg_replace_callback("/(http|https):\/\/([\w\?&\.\/=-]+)/", array($this,'format_url'), $content);
         return $content;
     }
     
