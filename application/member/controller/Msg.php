@@ -84,9 +84,9 @@ class Msg extends MemberBase
      * @return mixed
      */
     private function format_content($content=''){
-//         if( strstr($content,"</")&&strstr($content,">")){    //如果是网页源代码的话，就不解晰了。
-//             return $content;
-//         }
+        if( strstr($content,"</")&&strstr($content,">") ){    //如果是网页源代码的话，就不解晰了。
+            return $content;
+        }
         $content = preg_replace_callback("/(http|https):\/\/([\w\?&\.\/=-]+)/", array($this,'format_url'), $content);
         return $content;
     }
