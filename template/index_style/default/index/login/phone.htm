@@ -227,9 +227,13 @@ header ul ol{
 					</ul>
 					<ul>
 						<ol><i class="glyphicon glyphicon-question-sign"></i></ol>
-						<li><input type="text" name="phone_code" placeholder="请点击右边文字获取验证码" onBlur="check_num($(this),'mobphone')" required/></li>
+						<li><input type="text" name="phone_code" id="phone_code" placeholder="请输入验证码" onBlur="" required/></li>
 						<li><a href="#" onclick="get_code_num('mobphone')">获取验证码</a></li>
 					</ul>
+
+				<div class="butterBox check_btn">
+					<button type="button" class="mui-btn mui-btn-danger" onclick="check_num($('#phone_code'))">确认登录</button>
+				</div>
 
 					<ul class="atc_username" style="display:none;">
 						<ol><i class="fa fa-fw fa-user-o"></i></ol>
@@ -284,7 +288,8 @@ function check_num(objs){
 			if(res.data.type=='login'){
 				layer.msg('登录成功,欢迎' + res.data.username + '您回来');
 				window.location.href = "{$fromurl}";
-			}else if(res.data.type=='reg'){
+			}else if(res.data.type=='reg'){  //提示注册一个新帐号
+				$(".check_btn").hide();
 				layer.alert('验证成功,请为新帐号设置一个登录名');
 				$(".atc_username").show();				
 				//$(".atc_username input").val(res.data.username);
