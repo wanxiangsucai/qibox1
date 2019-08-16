@@ -45,9 +45,23 @@ class Group extends AdminBase
     public function admin_power($id=0){
         if ($this->request->isPost()) {
             $data = $this->request->post();
+            $powerdb = $data['powerdb'];
+            if(count($powerdb)>900){
+                //避免 php.ini 中的 max_input_vars 默认限制1000个参数,导致后面的被丢弃
+                $str = urldecode(file_get_contents('php://input'));
+                $detail = explode('&',$str);
+                $powerdb = [];
+                foreach($detail AS $value){
+                    list($k,$v) = explode('=',$value);
+                    if(strstr($k,'powerdb[')){
+                        $powerdb[str_replace(['powerdb[',']'],'',$k)] = $v;
+                    }
+                }
+            }
             $array = [
                     'id'=>$id,
-                    'admindb'=>json_encode($data['powerdb']),
+                    'admindb'=>json_encode($powerdb),
+                    
             ];
             if(GroupModel::update($array)){
                 $this->success('更新成功','index');
@@ -55,12 +69,13 @@ class Group extends AdminBase
                 $this->error('数据更新失败');
             }
         }
-        $info = GroupModel::getById($id); 
+        $info = GroupModel::getById($id);
         $info['admindb'] = json_decode($info['admindb'],true);
         
         $array = Menu::get_menu();
         
-        unset($array['often']);        
+        unset($array['often']);
+        
         $this->assign('listdb', $array);
         $this->assign('info', $info);
         
