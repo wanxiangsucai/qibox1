@@ -150,6 +150,19 @@ class Content{
     }
     
     /**
+     * 上一页的网址
+     * @param array $info
+     * @param string $order
+     * @return unknown
+     */
+    public function prev_url($info=[],$order='id'){
+        $str = $this->prev_next($info,'上一页地址','>',$order);
+        if(preg_match("/href='([^']+)'/", $str,$array)){
+            return $array[1];
+        }
+    }
+    
+    /**
      * 下一页与下一页的用法 {:fun('content@next',$info,20)}
      * @param array $info 当前页的内容主题内容,里边必须要包含有id fid mid
      * @param string $title 可以设置下一页也可以设置数字,截取标题数
@@ -157,6 +170,19 @@ class Content{
      */
     public function next($info=[],$title='下一页',$order='id'){
         return $this->prev_next($info,$title,'<',$order);
+    }
+    
+    /**
+     * 下一页的网址
+     * @param array $info
+     * @param string $order
+     * @return unknown
+     */
+    public function next_url($info=[],$order='id'){
+        $str = $this->prev_next($info,'下一页地址','<',$order);
+        if(preg_match("/href='([^']+)'/", $str,$array)){
+            return $array[1];
+        }         
     }
    
     /**
@@ -167,33 +193,39 @@ class Content{
      * @return string
      */
    private function prev_next($info=[],$title=10,$type='<',$order='id'){
-       $sys = config('system_dirname');
-       
-       if ($order=='list'||$order=='create_time'||$order=='update_time') {
-           if (!is_numeric($info[$order])) {
-               $info[$order] = strtotime($info[$order]);
-           }
-           $listdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],$order=>["$type=",$info[$order]],])->order("$order desc,id desc")->column('id,title,uid');
-           $listdb = array_values($listdb);
-           $ckdb = $rsdb = [];
-           foreach($listdb as $key=>$rs){
-               if ($rs['id']==$info['id']) {
-                   if($type=='>'){
-                       $rsdb = $ckdb;
-                   }else{
-                       $rsdb = $listdb[++$key];                       
-                   }
-                   break;
-               }
-               $ckdb = $rs;
-           }
+       static $array = null;
+       $_key = $info['id'].$type.$order;
+       if(isset($array[$_key])){
+           $rsdb = $array[$_key];
        }else{
-           if ($type=='<') {
-               $by='desc';
+           $sys = config('system_dirname');
+           if ($order=='list'||$order=='create_time'||$order=='update_time') {
+               if (!is_numeric($info[$order])) {
+                   $info[$order] = strtotime($info[$order]);
+               }
+               $listdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],$order=>["$type=",$info[$order]],])->order("$order desc,id desc")->column('id,title,uid');
+               $listdb = array_values($listdb);
+               $ckdb = $rsdb = [];
+               foreach($listdb as $key=>$rs){
+                   if ($rs['id']==$info['id']) {
+                       if($type=='>'){
+                           $rsdb = $ckdb;
+                       }else{
+                           $rsdb = $listdb[++$key];
+                       }
+                       break;
+                   }
+                   $ckdb = $rs;
+               }
            }else{
-               $by='asc';
+               if ($type=='<') {
+                   $by='desc';
+               }else{
+                   $by='asc';
+               }
+               $rsdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],'id'=>[$type,$info['id']],])->order('id',$by)->field('id,title')->find();
            }
-           $rsdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],'id'=>[$type,$info['id']],])->order('id',$by)->field('id,title')->find();
+           $array[$_key] = $rsdb;
        }
        
        if (empty($rsdb)) {
@@ -206,6 +238,50 @@ class Content{
        return "<a href='{$url}' title='{$rsdb['title']}'>{$title}</a>";
    }
    
+   /**
+    * 取部分数据
+    * @param array $info
+    * @param number $rows
+    * @param string $order
+    * @param string $type
+    */
+   public static function next_more($info=[],$rows=5,$order='id',$type='<'){
+       $sys = config('system_dirname');       
+       if ($order=='list'||$order=='create_time'||$order=='update_time') {
+           if (!is_numeric($info[$order])) {
+               $info[$order] = strtotime($info[$order]);
+           }
+           $listdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],$order=>["$type=",$info[$order]],])->order("$order desc,id desc")->column(true);
+           $listdb = array_values($listdb);
+           $list1 = $listdb = [];
+           foreach($listdb as $key=>$rs){
+               if ($rs['id']==$info['id']) {
+                   if($type=='>'){
+                       $listdb = $list1;
+                       break;
+                   }else{
+                       $listdb[] = $rs;
+                   }
+               }
+               $list1[] = $rs;
+           }
+       }else{
+           if ($type=='<') {
+               $by='desc';
+           }else{
+               $by='asc';
+           }
+           $listdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],'id'=>[$type,$info['id']],])->order('id',$by)->limit($rows)->column(true);
+       }
+      return $listdb;
+   }
+   
+   /**
+    * 关联的数据有多少条
+    * @param array $info
+    * @param number $time
+    * @return mixed|\think\cache\Driver|boolean|unknown|string|number
+    */
    public function ext_num($info=[],$time=3600){
        return query(config('system_dirname').'_content'.$info['mid'],
                [
