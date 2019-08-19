@@ -228,7 +228,7 @@ EOT;
 
 $show = '';
 foreach(explode(',',$info[$name]) AS $fileurl){
-	$show .= "<li class='list-group-item file-item'><i class='fa fa-remove remove-file' data-id='{$fileurl}'></i> <a href='".tempdir($fileurl)."' target='_blank'>{$fileurl}</a></li>";
+	$fileurl!='' && $show .= "<li class='list-group-item file-item'><i class='fa fa-remove remove-file' data-id='{$fileurl}'></i> <a href='".tempdir($fileurl)."' target='_blank'>{$fileurl}</a></li>";
 }
 
 return <<<EOT
