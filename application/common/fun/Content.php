@@ -251,19 +251,35 @@ class Content{
            if (!is_numeric($info[$order])) {
                $info[$order] = strtotime($info[$order]);
            }
-           $listdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],$order=>["$type=",$info[$order]],])->order("$order desc,id desc")->column(true);
-           $listdb = array_values($listdb);
+           $array = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],$order=>["$type=",$info[$order]],])->order("$order desc,id desc")->column(true);
            $list1 = $listdb = [];
-           foreach($listdb as $key=>$rs){
+           $i=0;
+           foreach($array AS $key=>$rs){
                if ($rs['id']==$info['id']) {
                    if($type=='>'){
                        $listdb = $list1;
                        break;
                    }else{
+                       if ($i>$rows) {
+                           break;
+                       }
+                       $i++;
                        $listdb[] = $rs;
                    }
                }
                $list1[] = $rs;
+           }
+           if($type=='>'&&count($listdb)>$rows){
+               $i=0;
+               krsort($listdb);
+               foreach ($listdb AS $key=>$rs){
+                   $i++;
+                   if ($i>$rows) {
+                       unset($listdb[$key]);
+                   }
+               }
+               ksort($listdb);
+               array_values($listdb);
            }
        }else{
            if ($type=='<') {
