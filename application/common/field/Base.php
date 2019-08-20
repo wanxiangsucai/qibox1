@@ -173,6 +173,14 @@ class Base
                 $value[$k] = $vs;
             }
             $f_value = $value;
+        }elseif($field['type'] == 'files2'){
+            
+            $value = json_decode($f_value,true);
+            foreach($value AS $k=>$vs){
+                $vs['url'] = tempdir($vs['url']);
+                $value[$k] = $vs;
+            }
+            $f_value = $value;
         }
         return $f_value;
     }

@@ -13,6 +13,7 @@ return  array(
     'images' => '多张图片',
 	'images2' => '多张图片附带介绍及网址',
     'files' => '多个文件',
+	'files2' => '多个文件带标题',
     //'jcrop' => '图片裁剪',
 	'money' => '金额',
     'number' => '数字',

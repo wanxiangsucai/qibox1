@@ -219,7 +219,7 @@ abstract class C extends IndexBase
          $template = $this->get_tpl('show',$this->mid,$s_info,$info);
         
         //$field_db = $this->getEasyFormItems();     //自定义字段
-        
+
         //模板里要用到的变量值
         $vars = [            
             'info'=>$info,
@@ -804,8 +804,7 @@ abstract class C extends IndexBase
 //                     $value[$k] = $vs;
 //                 }
 //             }
-
-            if(in_array($type,['images','files','image','file','jcrop','images2'])){
+            if(in_array($type,['images','files2','files','image','file','jcrop','images2'])){
                 $info['_'.$name] = $value;
                 $value = \app\common\field\Show::format_url($rs,$info);                
             }elseif(empty($rs['index_hide'])){
