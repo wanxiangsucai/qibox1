@@ -63,7 +63,7 @@ class Player{
                 		container: '.video{$array_id}', //“#”代表容器的ID，“.”或“”代表容器的class
                 		variable: 'player{$array_id}',  //该属性必需设置，值等于下面的new chplayer()的对象
                 		//poster:'pic/wdm.jpg',//封面图片
-                        loaded: 'loadedHandler', //当播放器加载后执行的函数	
+                        loaded: 'loadedHandler{$array_id}', //当播放器加载后执行的函数	
                 		video:'{$url}'   //视频地址
                 	};
                 	var player{$array_id} = new ckplayer(videoObject);
