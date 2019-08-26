@@ -25,7 +25,7 @@
 
 			{notempty name="$info.mv_url"}
 			<!-- 视频模型 -->
-			<br><center>{:fun('Player@play',$info.mv_url,'100%','250px')}</center>
+			<br><center>{:fun('Player@play',$info['mv_url'][0]['url']?:$info['mv_url'],'100%','250px')}</center>
 			{/notempty}
 
 		</div>
