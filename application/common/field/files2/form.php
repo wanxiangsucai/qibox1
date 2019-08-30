@@ -123,7 +123,7 @@ jQuery(document).ready(function() {
 		var add_puturl = function(){
 			add_url_btn.click(function(){
 				var str = '<li id="addputurl_' + Math.random() + '" class="list-group-item file-item">' +
-                '<i class="fa fa-times-circle remove-file"></i><span class="f_info"> 名称：<input class="f_title" value=""> 地址：<input class="f_url" value=""></span>'+
+                '<i class="fa fa-times-circle remove-file"></i><span class="f_info"> 名称：<input class="f_title" value=""> 地址：<input class="f_url" value=""> 收费：<input class="f_money" style="width:40px;" value=""></span>'+
                 '</li>';
 				f_file_list.append(str);
 				mouseout();
@@ -137,7 +137,7 @@ jQuery(document).ready(function() {
 			f_file_list.find(".list-group-item").each(function(e){
 				var url = $(this).find(".f_url").val();
 				if(url!=""){
-					file_array.push({ 'url':url,'title':$(this).find(".f_title").val()});
+					file_array.push({ 'url':url,'title':$(this).find(".f_title").val(),'money':$(this).find(".f_money").val()});
 				}				
 			});
 			if(file_array.length==0){
@@ -188,7 +188,7 @@ jQuery(document).ready(function() {
                     //    f_input_file.val(response.id);
                     //}
                     f_li.find('.remove-file').attr('data-id', response.id);
-					f_li.find('.f_info').append(' 地址：<input class="f_url" value="'+response.id+'">');
+					f_li.find('.f_info').append(' 地址：<input class="f_url" value="'+response.id+'"> 收费：<input class="f_money" style="width:40px;" value="">');
 					check_value();
 					mouseout();
                 } else {
@@ -278,7 +278,7 @@ $show = '';
 foreach($array AS $rs){
 	$fileurl = $rs['url'];
 	$rs['title'] = str_replace("'",'&#39;',$rs['title']);
-	$fileurl!='' && $show .= "<li class='list-group-item file-item'><i class='fa fa-remove remove-file' data-id='{$fileurl}'></i> <span class='f_info'> 名称：<input class='f_title' value='{$rs['title']}'> 地址：<input class='f_url' value='$fileurl'></span> <a href='".tempdir($fileurl)."' target='_blank'>另存</a></li>";
+	$fileurl!='' && $show .= "<li class='list-group-item file-item'><i title='点击删除' class='fa fa-remove remove-file' data-id='{$fileurl}'></i> <span class='f_info'> 名称：<input class='f_title' value='{$rs['title']}'> 地址：<input class='f_url' value='$fileurl'> 收费：<input class='f_money' style='width:40px;' value='{$rs['money']}'></span> <a href='".tempdir($fileurl)."' target='_blank' title='点击另存下载'><i class='glyphicon glyphicon-save'></i></a></li>";
 }
 
 if(!is_array($array)){
