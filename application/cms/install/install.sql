@@ -216,7 +216,7 @@ DROP TABLE IF EXISTS `qb_cms_field`;
 CREATE TABLE IF NOT EXISTS `qb_cms_field` (
   `id` int(7) unsigned NOT NULL AUTO_INCREMENT COMMENT '字段名称',
   `name` varchar(32) NOT NULL,
-  `title` varchar(60) NOT NULL DEFAULT '' COMMENT '字段标题',
+  `title` varchar(256) NOT NULL DEFAULT '' COMMENT '字段标题',
   `type` varchar(32) NOT NULL DEFAULT '' COMMENT '字段类型',
   `field_type` varchar(128) NOT NULL DEFAULT '' COMMENT '字段定义',
   `value` text COMMENT '默认值',
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `qb_cms_field` (
   `param` varchar(32) NOT NULL DEFAULT '' COMMENT '联动下拉框请求参数名',
   `format` varchar(32) NOT NULL DEFAULT '' COMMENT '格式，用于格式文本',
   `table` varchar(32) NOT NULL DEFAULT '' COMMENT '表名，只用于快速联动类型',
-  `level` tinyint(2) unsigned NOT NULL DEFAULT '2' COMMENT '联动级别，只用于快速联动类型',
+  `level` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '联动级别，只用于快速联动类型',
   `key` varchar(32) NOT NULL DEFAULT '' COMMENT '键字段，只用于快速联动类型',
   `option` varchar(32) NOT NULL DEFAULT '' COMMENT '值字段，只用于快速联动类型',
   `pid` varchar(32) NOT NULL DEFAULT '' COMMENT '父级id字段，只用于快速联动类型',
@@ -243,8 +243,13 @@ CREATE TABLE IF NOT EXISTS `qb_cms_field` (
   `unit` varchar(20) NOT NULL COMMENT '单位名称',
   `match` varchar(150) NOT NULL COMMENT '表单正则匹配',
   `css` varchar(20) NOT NULL COMMENT '表单CSS类名',
+  `script` text NOT NULL COMMENT 'JS脚本',
+  `trigger` varchar(255) NOT NULL COMMENT '选择某一项后,联动触发显示其它字段',
+  `range_opt` text NOT NULL COMMENT '范围选择,比如价格范围',
+  `group_view` varchar(255) NOT NULL COMMENT '允许哪些用户组查看',
+  `index_hide` tinyint(1) NOT NULL COMMENT '是否前台不显示并不做转义处理',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文档字段表' AUTO_INCREMENT=57 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='模型字段表' AUTO_INCREMENT=57 ;
 
 --
 -- 转存表中的数据 `qb_cms_field`
