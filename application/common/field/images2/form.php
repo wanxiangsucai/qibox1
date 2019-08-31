@@ -195,12 +195,23 @@ jQuery(document).ready(function() {
 			});
 			that.find(".ListImgs img").length>0 || that.find(".input_value").val('');
 		};
+
+		$(document).on("keypress", "form", function(event) { 
+			return event.keyCode != 13;	//回车不能提交表单,请点击提交按钮!
+		});
 		
 		//介绍或网址输入结束后的事件
 		var mouseout = function(){
 			that.find(".ListImgs input").blur(function(e){
 				check_value();
 			});
+
+			that.find(".ListImgs input").bind('keyup',function(e){
+				if (event.keyCode == "13") {
+					layer.alert('请点击底部的提交按钮来提交表单!');
+				}
+			});
+
 		}
 
 		that.find('input[type="file"]').change(function(){

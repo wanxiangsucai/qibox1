@@ -116,8 +116,18 @@ jQuery(document).ready(function() {
 			f_file_list.find(".f_info input").blur(function(e){
 				check_value();
 			});
+
+			f_file_list.find(".f_info input").bind('keyup',function(e){
+				if (event.keyCode == "13") {
+					layer.alert('请点击底部的提交按钮来提交表单!');
+				}
+			});
 		}
 		mouseout();
+
+		$(document).on("keypress", "form", function(event) { 
+			return event.keyCode != 13;	//回车不能提交表单,请点击提交按钮!
+		});
 		
 		//添加手工加网址
 		var add_puturl = function(){
