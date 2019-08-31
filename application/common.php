@@ -2632,6 +2632,7 @@ if (!function_exists('getTemplate')) {
          $content = preg_replace("/\[group=([\d,]+)\](.*?)\[\/group]/is",'',$content);  //过滤掉指定用户可见
          $content = preg_replace("/\[password=([^\]]+)\](.*?)\[\/password]/is",'',$content); //过滤掉密码才能看的内容
          $content = preg_replace("/\[paymoney=([\d]+)\](.*?)\[\/paymoney]/is",'',$content); //过滤掉积分购买的内容
+		 $content = preg_replace("/\[qun\](.*?)\[\/qun]/is",'',$content);   //过滤掉仅圈内成员可见的内容
          return $content;
      }
  }
