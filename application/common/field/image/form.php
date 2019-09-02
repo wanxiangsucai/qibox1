@@ -142,6 +142,10 @@ jQuery(document).ready(function() {
 					that.find(".input_value").val('');
 				}
 		};
+
+		$(document).on("keypress", "form", function(event) { 
+			return event.keyCode != 13;	//回车不能提交表单,请点击提交按钮!
+		});
 		
 		//删除图片
 		var delpic = function(){

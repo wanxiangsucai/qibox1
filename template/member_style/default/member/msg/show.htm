@@ -10,6 +10,18 @@
 	.qb_header{display:none;}
 	</style>
 {/if}
+
+<style type="text/css">
+.remind_msg{
+	background:red;
+	color:#FFF;
+	line-height:30px;
+	padding-left:20px;
+	display:none;
+}
+</style>
+<div class="remind_msg">提示：对方正在输入中，请不要离开当前窗口！</div>
+
 <link rel="stylesheet" href="__STATIC__/layui/css/template.css" media="all">
 <style type="text/css">
 .layadmin-message-fluid{
@@ -43,8 +55,8 @@
         </div>
       </div>
     </div>
-    <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content sys_show_msg_list001">
-{qb:tag name="sys_show_msg_list001" class="app\member\controller\Msg@showmore" union="id" rows="5"}
+    <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content sys_wapshow_msg_list001">
+{qb:tag name="sys_wapshow_msg_list001" class="app\member\controller\Msg@showmore" union="id,uid=$info[uid],time,num" rows="5"}
 		<div class="media-body" style="margin-bottom:20px;margin-top:10px;">
           <a href="{:get_url('user',['uid'=>$rs['uid']])}" class="media-left" style="float: left;">
              <img src="{$rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" height="46px" width="46px">
@@ -74,17 +86,18 @@ function postmsg(){
 	}
 	$.post(url,{'uid':"{$info.uid}",'content':content,},function(res){		
 		if(res.code==0){
+			$(".msgcontent").val('');
 			layer.msg('发送成功');
 			{if input('isframe')}
 
 				setTimeout(function(){
-					parent.layer.closeAll();
+					//parent.layer.closeAll();
 				},800);
 
 			{else /}
 
 			setTimeout(function(){
-				window.location.href = "{:urls('index')}";
+				//window.location.href = "{:urls('index')}";
 			},500);
 
 			{/if}
@@ -95,18 +108,36 @@ function postmsg(){
 	});
 }
 
+
+var num = 0;
+setInterval(function(){
+	//console.log(5);
+	$.get(get_msg_url+"1&id=0&time={:time()}&num="+num,function(res){
+		if(res.code==0){
+			num++;
+			if(res.data!="")$('.sys_wapshow_msg_list001').prepend(res.data);
+		}
+		if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
+			$(".remind_msg").show();
+		}else{
+			$(".remind_msg").hide();
+		}
+	});
+},1000);
+
 var msg_page=1;
+var get_msg_url = "{qb:url name='sys_wapshow_msg_list001' /}";
+
 function showMoreMsg(){
-  var url = "{qb:url name='sys_show_msg_list001' /}";
   msg_page++;
-  $.get(url+msg_page,function(res){  
+  $.get(get_msg_url+msg_page,function(res){  
     console.log(res);
     console.log(res.data);
     if(res.code==0){
       if(res.data==''){
         layer.msg("已经显示完了！",{time:500});
       }else{
-        $('.sys_show_msg_list001').append(res.data);
+        $('.sys_wapshow_msg_list001').append(res.data);
         scroll_get = true;
       }
     }else{

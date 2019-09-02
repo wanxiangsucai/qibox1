@@ -23,7 +23,7 @@ class Msg extends Model
             if (cache('pm_msg_'.$data['uid'])) {
                 return ['errmsg'=>'请不要那么频繁的发送消息'];
             }
-            cache('pm_msg_'.$data['uid'],$data['touid'],10);
+            cache('pm_msg_'.$data['uid'],$data['touid'],5);
         }
         $result = parent::create($data);
         if ($result) {

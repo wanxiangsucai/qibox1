@@ -33,23 +33,45 @@ class Msg extends MemberBase
         $cfg = unserialize($config['cfg']);
         $id = $cfg['id'];
         $rows = $cfg['rows'];
-        $info = $this->get_info($id);
-        if(!is_array($info)){
-            return ;
+        $uid = intval($cfg['uid']);
+        $time = $cfg['time'];
+        if($cfg['num']>0){
+            $time = get_cookie('msg_time');
         }
         
+        if($id){
+            $info = $this->get_info($id);
+            if(!is_array($info)){
+                return ;
+            }
+            $uid = $info['uid'];
+        }
+        if (empty($uid) && empty($id)) {
+            return [];
+        }
+        
+        cache('msg_time_'.$this->user['uid'].'-'.$uid,time(),60);  //把自己的操作时间做个标志
+        
+        $from_time = cache('msg_time_'.$uid.'-'.$this->user['uid']); //查看对方给自己的最后操作时间
+        
         $this->map = [
-                'touid'=>$this->user['uid'],
-                'uid'=>$info['uid'],
-                'id'=>['<=',$id],
+            'touid'=>$this->user['uid'],
+            'uid'=>$uid,
+            'id'=>['<=',$id],
         ];
         
         $this->OrMap = [
-                'uid'=>$this->user['uid'],
-                'touid'=>$info['uid'],
-                'id'=>['<=',$id],
+            'uid'=>$this->user['uid'],
+            'touid'=>$uid,
+            'id'=>['<=',$id],
         ];
-        
+        if (empty($id)) {
+            unset($this->map['id'],$this->OrMap['id']);
+        }
+        if($time>0){
+            $this->map['create_time'] = ['>',$time];
+            $this->OrMap['create_time'] = ['>',$time];
+        }
 //         $this->NewMap = [
 //                 'uid'=>$this->user['uid'],
 //                 'touid'=>$info['uid'],
@@ -66,6 +88,10 @@ class Msg extends MemberBase
         })->order("id desc")->paginate($rows);
         
         $data_list->each(function(&$rs,$key){
+            $create_time = strtotime($rs['create_time']);
+            if($create_time>get_cookie('msg_time')){
+                set_cookie('msg_time',$create_time);
+            }            
 			//$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
             $rs['from_username'] = get_user_name($rs['uid']);
             $rs['from_icon'] = get_user_icon($rs['uid']);
@@ -75,7 +101,9 @@ class Msg extends MemberBase
             }
             return $rs;
         });
-            return $data_list;
+            $array = getArray($data_list);
+            $array['lasttime'] = time()-$from_time; //对方最近操作的时间
+            return $array;
     }
     
     /**
@@ -204,6 +232,7 @@ class Msg extends MemberBase
         if($uid){
             $username = get_user($uid)['username'];
         }
+        $this->assign('touid',$uid);
         $this->assign('username',$username);
         $this->assign('linkman',$linkman);
         return $this->fetch();

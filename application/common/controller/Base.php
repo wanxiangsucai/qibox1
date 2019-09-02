@@ -156,11 +156,18 @@ class Base extends Controller
             $hasNext = true;
             $next++;
         }
+        if (is_array($array) && !is_array($data)) { //主要是服务于标签.因为标签中data全是html网页代码字符串,导致不能传递更多的数据
+            $_array = $array;
+            unset($_array['data'],$_array['page'],$_array['pages'],$_array['perPage'],$_array['total'],$_array['prev'],$_array['next'],$_array['hasNext'],$_array['hasPrev'],$_array['per_page'],$_array['current_page'],$_array['last_page']);
+        }else{
+            $_array = [];
+        }        
         $array = [
-                'code'=>0,
-                'msg'=>$msg,
-                'data'=>$data,
-                'paginate'=>[
+            'code'=>0,
+            'msg'=>$msg,
+            'data'=>$data,
+            'ext'=>$_array,
+            'paginate'=>[
                         'page'=> empty($array['data']) ? input('page') : $array['current_page'],         //当前页码, 要特别注意,系统分页函数,当数据不存在的时候,不会显示真实页码
                         'pages' => $array['last_page'],           //总页数
                         'perPage' => $array['per_page'],        //每页几条

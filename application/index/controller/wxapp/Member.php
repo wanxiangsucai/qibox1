@@ -23,4 +23,16 @@ class Member extends IndexBase
 //         $listdata = array_values($listdata);
          return $this->ok_js($data_list);
     }
+    
+    
+    public function get_uid($name=''){
+        $user = get_user($name,'username');
+        if ($user) {
+            return $this->ok_js(['uid'=>$user['uid']]);
+        }else{
+            return $this->err_js('用户不存在');
+        }
+    }
+    
+    
 }

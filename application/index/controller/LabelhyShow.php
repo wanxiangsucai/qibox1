@@ -56,7 +56,7 @@ class LabelhyShow extends LabelShow
             }
         }
         
-        $_cfg = cache('tag_default_'.$tagname);    //主要为的是传递where参数
+        $_cfg = cache($hy_id.'tag_default_'.$tagname);    //主要为的是传递where参数
         $parameter = array_merge($_cfg,$parameter);
         
         $live_cfg = self::union_live_parameter($parameter);
@@ -193,11 +193,14 @@ class LabelhyShow extends LabelShow
             if($type=='member'&&empty($cfg['class'])){
                 $cfg['class'] = "app\\common\\model\\User@labelGet";
             }
-            if(    ($type&&( modules_config($type)||plugins_config($type) ))    ||    $cfg['class']    ){
-                if($tpl_have_edit || empty( cache('tag_default_'.$tag_name) )){   //没入库前,也方便AJAX获取更多分页使用
-                    cache('tag_default_'.$tag_name,$cfg,3600);
-                }
-            }
+//             if(    ($type&&( modules_config($type)||plugins_config($type) ))    ||    $cfg['class']    ){
+//                 if($tpl_have_edit || empty( cache($hy_id.'tag_default_'.$tag_name) )){   //没入库前,也方便AJAX获取更多分页使用
+//                     cache($hy_id.'tag_default_'.$tag_name,$cfg,3600);
+//                 }
+//             }
+        }
+        if($tpl_have_edit || empty( cache($hy_id.'tag_default_'.$tag_name) )){   //方便AJAX使用
+            cache($hy_id.'tag_default_'.$tag_name,$cfg,3600);
         }
         
         self::tag_cfg_parameter($tag_name,$cfg);  //把$cfg存放起来,给get_ajax_url使用
