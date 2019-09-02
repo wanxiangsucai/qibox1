@@ -40,9 +40,9 @@
           </div>
         </div>
 
-         <div class="layui-form-item" style="overflow: hidden;">
+         <div class="layui-form-item">
 		 <div class="layui-input-block layui-input-left" style=" float:left;">
-           <input type="text" value="{$username}"  placeholder="请输入接收者的帐号" name="touser" id="touser" class="layui-input" onblur="get_touid()"> </div><div class="layui-input-block layui-input-left" style=" float:left;margin-left:20px;"> <select name="select" onchange="change_user(this.options[this.selectedIndex].value)">
+           <input type="text" value="{$username}"  placeholder="请输入接收者的帐号" name="touser" id="touser" class="layui-input" onblur="get_touid()"> </div><div class="layui-input-block layui-input-left" style=" float:left;margin-left:20px;"> <select name="select" lay-filter="changeuser" onchange="change_user(this.options[this.selectedIndex].value)">
 <option value="">快速选择常用联系人</option>
 {volist name="linkman" id="tou_id"}
  <option value="{$tou_id|get_user_name}">{$tou_id|get_user_name}</option> 
@@ -87,6 +87,17 @@ function change_user(value){
 		get_touid();
 	}
 }
+
+$(function(){
+	if(typeof(layui)=='object'){
+		layui.use(['form'], function(){
+		  var form = layui.form;	 
+			form.on('select(changeuser)', function(data){
+				change_user(data.value)
+			})
+		});
+	}	
+});
 
 function get_touid(){
 	var name = $("#touser").val();
