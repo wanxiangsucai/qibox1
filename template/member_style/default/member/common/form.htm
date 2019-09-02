@@ -18,7 +18,7 @@
 } 
 </style>
 
-<form name="" method="post" action="{:request()->url(true)}" class="ajax_post {notempty name='$tab_ext.trigger'} form-trigger {else /}  layui-form  {/notempty}">
+<form name="" method="post" action="{:request()->url(true)}" class="ajax_post {notempty name='$tab_ext.trigger'} form-trigger {/notempty}  layui-form ">
 
 <div class="WapFormContainer">	
 	<div class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</div>

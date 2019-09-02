@@ -4,7 +4,7 @@
 }
 </style>
 <div class="MainContainers">
-<form name="" method="post" action="{php}echo preg_replace('/(http|https):\/\/([^\/]+)\/(.*)/i','/\\3',get_url('location'));/*解决有的服务器无法识别https*/{/php}" class="ajax_post {notempty name='$tab_ext.trigger'} form-trigger {else /}  layui-form  {/notempty}">
+<form name="" method="post" action="{php}echo preg_replace('/(http|https):\/\/([^\/]+)\/(.*)/i','/\\3',get_url('location'));/*解决有的服务器无法识别https*/{/php}" class="ajax_post {notempty name='$tab_ext.trigger'} form-trigger {/notempty}  layui-form">
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</span> </div>
   <div class="Conter">	
 	<!-- 功能接口钩子 -->

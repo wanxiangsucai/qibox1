@@ -99,7 +99,20 @@ class Form extends Base
                 }
                 $_show .= "<option value='$key' $cked>$value</option>";
             }            
-            $show = "<select $ifmust name='{$name}' id='atc_{$name}' lay-filter='{$name}'>$_show</select>";
+            $show = "<select $ifmust name='{$name}' id='atc_{$name}' lay-filter='{$name}'>$_show</select>
+<script type='text/javascript'>
+$(function(){
+	if(typeof(layui)=='object'){
+		layui.use(['form'], function(){
+		  var form = layui.form;	 
+		  form.on('select({$name})', function(data){
+		      $(data.elem).selectedIndex=data.elem.selectedIndex;
+		      $(data.elem).trigger('change');
+		  })
+		});
+	}	
+});
+</script>";
         
         }elseif ($field['type'] == 'radio' || $field['type'] == 'jftype' || $field['type'] == 'jftype2' || $field['type'] == 'usergroup3' ) {    // 单选按钮 或虚拟币种 及用户组单选
             if($field['type'] == 'jftype'){ //虚拟币种
@@ -112,7 +125,20 @@ class Form extends Base
                 $cked = $info[$name]==$key?' checked ':'';
                 $_show .= "<input $ifmust type='radio' name='{$name}' id='atc_{$name}{$key}' value='$key' {$cked} title='$value' lay-filter='{$name}'><span class='m_title'> $value </span>";
             }
-            $show = $_show ;
+            $show = $_show ."
+<script type='text/javascript'>
+$(function(){
+	if(typeof(layui)=='object'){
+		layui.use(['form'], function(){
+		  var form = layui.form;	 
+		  form.on('radio({$name})', function(data){
+		      $(data.elem).trigger('change');
+		  })
+		});
+	}	
+});
+</script>
+";
        
         }elseif ($field['type'] == 'checkbox'||$field['type'] == 'usergroup2') {    // 多选按钮  及用户组多选
             
