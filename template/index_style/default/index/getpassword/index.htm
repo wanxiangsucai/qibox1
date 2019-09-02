@@ -206,6 +206,29 @@ header ul ol{
 	border: 1px solid #999;
 	background-color: #AAA
 }
+
+ .choose_type {
+	margin:10px; 0 10px 0;
+ }
+
+.choose_type i{
+	border:1px solid #ccc;
+	line-height:30px;
+	padding:0 10px 0 10px;
+	margin-right:10px;
+	cursor:pointer;
+}
+.choose_type .ck{
+	background:#0099FF;
+	color:#fff;
+}
+.choose_type{
+	text-align:left;
+}
+.LoginBox{
+	width:330px;
+}
+
 </style>
 <header>
 	<ul>
@@ -217,22 +240,25 @@ header ul ol{
 <div class="FormContainer">
 <form class="mui-input-group" action="{:urls('index')}" method="post">
 	<ul><ol><i class="fa fa-fw fa-user-o"></i></ol><li><input type="text" name="username" minlength="3" maxlength="20" placeholder="请输入帐号" onBlur="check_username($(this),'username')" required/></li></ul>
- 
+	
 					
-					{eq name="webdb.getpassword_by_phone" value="1"}
-					<!--这里最好是做个单选按钮给用户选择手机还是邮箱获取验证码-->
-					<ul class="getyznum" style="display:none;">
+					<div class="choose_type" style="display:none;">
+						<i class="ck fa fa-envelope-o" onclick="choose_send_type('email',0)"> 通过邮箱找回</i><i onclick="choose_send_type('mobphone',1)" class="fa fa-mobile-phone"> 通过手机找回</i>
+						<input type="hidden" name="num_type" value="email">
+					</div>
+
+					<ul class="getyznum get_mobphone" style="display:none;">
 						<ol><i class="glyphicon glyphicon-question-sign"></i></ol>
-						<li><input type="text" name="phone_code" placeholder="请点击右边文字获取验证码" onBlur="check_num($(this),'mobphone')" required/></li>
-						<li><a href="#" onclick="get_code_num('mobphone')">获取验证码</a></li>
+						<li><input type="text" name="phone_code" placeholder="请点击右边文字获取验证码" onBlur="check_num($(this),'mobphone')" /></li>
+						<li><a href="#" onclick="get_code_num('mobphone')">手机获取验证码</a></li>
 					</ul>
-					{else /}
-					<ul class="getyznum" style="display:none;">
+
+					<ul class="getyznum get_email" style="display:none;">
 						<ol><i class="glyphicon glyphicon-question-sign"></i></ol>
-						<li><input type="text" name="email_code" placeholder="请点击右边文字获取验证码" onBlur="check_num($(this),'email')" required/></li>
-						<li><a href="#" onclick="get_code_num('email')">获取验证码</a></li>
+						<li><input type="text" name="email_code" placeholder="请点击右边文字获取验证码" onBlur="check_num($(this),'email')" /></li>
+						<li><a href="#" onclick="get_code_num('email')">邮箱获取验证码</a></li>
 					</ul>
-					{/eq}
+
 					
 
 
@@ -256,7 +282,13 @@ header ul ol{
 </form>
 <script type="text/javascript">
 
-
+function choose_send_type(type,i){
+	$(".getyznum").hide();
+	$(".choose_type i").removeClass('ck');
+	$(".choose_type i").eq(i).addClass('ck');
+	$(".get_"+type).show();
+	$("input[name='num_type']").val(type);
+}
 
 function get_code_num(type){
 	var to = type=='email' ? email : mobphone;
@@ -284,6 +316,9 @@ function get_code_num(type){
 
 function check_num(objs,type){
 	var vals=objs.val();
+	if(vals==''){
+		return ;
+	}
 	var field = type=='email' ? email : mobphone;
 	$.get("{:urls('check_num')}?num="+vals+"&type="+type+'&field='+field+'&'+Math.random(),function(res){
 		if(res.code==0){
@@ -305,7 +340,9 @@ function check_username(objs,type){
 		if(res.code==0){
 			email = res.data.email;
 			mobphone = res.data.mobphone;
-			$('.getyznum').show();
+			//$('.getyznum').show();
+			$('.choose_type').show();
+			$('.get_email').show();
 			objs.removeClass('error');
 		}else{
 			layer.msg(res.msg);

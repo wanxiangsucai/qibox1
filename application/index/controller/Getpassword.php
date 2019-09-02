@@ -120,9 +120,9 @@ class Getpassword extends IndexBase
             
             //邮箱注册码与手机注册码,这里只判断只中一种
             $num = cache(get_cookie('user_sid').'_reg');
-            $send_num = get_md5_num((($this->webdb['getpassword_by_phone']&&$info['mobphone'])?$info['mobphone']:$info['email']).$num,6);
+            $send_num = get_md5_num( ($data['num_type']=='mobphone'?$info['mobphone']:$info['email']).$num,6);
             if( ($data['email_code']!=$send_num&&$data['phone_code']!=$send_num) || empty($num)) {
-                $this->error('验证码不对');
+                $this->error(($data['num_type']=='mobphone'?'手机':'邮箱').'验证码不对');
             }
             cache(get_cookie('user_sid').'_reg',null);
 
