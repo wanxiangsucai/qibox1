@@ -68,7 +68,7 @@
 			<span style='color:red;'>未读</span>
 	{else /}
 	已读
-	{/eq}</span> <a href="{:urls('delete',['id'=>$rs['id']])}">删除</a> <a href="{:urls('add',['username'=>$rs['from_username']])}">回复</a></div>                
+	{/eq}</span> <a href="{:urls('delete',['id'=>$rs['id']])}">删除</a> <a href="{:urls('add',['uid'=>$rs['uid']])}">回复</a></div>                
 		</div>
     </div>
 {/volist}

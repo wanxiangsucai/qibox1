@@ -25,10 +25,9 @@ class Player{
         if(is_numeric($height)){
             $height .= 'px';
         }
-        
-        if (preg_match('/^(http)/i', $url)&&!preg_match('/\.([a-z0-9]{3,5})$/i', $url)) {
-        //if (strstr($url,'player.youku.com')) {
-            return "<iframe src='{$url}' height='$height' width='$width' frameborder='0' allowfullscreen></iframe>";
+        $_url = $this->get_iframe($url,$width,$height);
+        if ($_url!='') {
+            return $_url;
         }
         
         if (!preg_match('/^(http|\/public)/i', $url)) {
@@ -41,6 +40,32 @@ class Player{
         
         $content = $this->ckplayer($url,$width,$height);
         return $content;
+    }
+    
+    /**
+     * 站外视频只能用框架处理
+     * @param unknown $url
+     * @param unknown $width
+     * @param unknown $height
+     * @return void|string
+     */
+    public function get_iframe($url,$width,$height){
+        if (!preg_match('/^(http)/i', $url)) {
+            return ;
+        }elseif( preg_match('/(\.qq\.com|\.youku\.com)/i', $url) ){
+            if (!preg_match('/player\./i', $url)) {
+                $array_a = [
+                    "/v\.youku\.com\/v_show\/id_([\w=]+)\.html\?([^\?]+)/",
+                    "/v\.qq\.com\/([\w]+)\/([\w]+)\/([\w]+)\.html/",
+                ];
+                $array_b = [
+                    "player.youku.com/embed/\\1",
+                    "v.qq.com/txp/iframe/player.html?vid=\\3",
+                ];
+                $url = preg_replace($array_a, $array_b, $url);
+            }
+            return "<iframe src='{$url}' height='$height' width='$width' frameborder='0' allowfullscreen></iframe>";
+        }
     }
     
     /**

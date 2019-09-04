@@ -54,7 +54,7 @@
           <div class="layui-input-block layui-input-right" style="float:right;">
             <button class="layui-btn" onclick="postmsg()">发送</button>
           </div>         
-		   <div class="layui-input-block" style="margin-top:0px;"><br><br><select name="select"  lay-filter="changeuser" onchange="change_user(this.options[this.selectedIndex].value)">
+		   <div class="layui-input-block" style="clear:both;padding-top:10px;"><select name="select"  lay-filter="changeuser" onchange="change_user(this.options[this.selectedIndex].value)">
 <option value="">快速选择常用联系人</option>
 {volist name="linkman" id="tou_id"}
  <option value="{$tou_id|get_user_name}">{$tou_id|get_user_name}</option> 
