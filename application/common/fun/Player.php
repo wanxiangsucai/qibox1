@@ -25,7 +25,7 @@ class Player{
         if(is_numeric($height)){
             $height .= 'px';
         }
-        $_url = $this->get_iframe($url,$width,$height);
+        $_url = $this->iframe_player($url,$width,$height);
         if ($_url!='') {
             return $_url;
         }
@@ -49,23 +49,35 @@ class Player{
      * @param unknown $height
      * @return void|string
      */
-    public function get_iframe($url,$width,$height){
+    public function iframe_player($url,$width,$height){
         if (!preg_match('/^(http)/i', $url)) {
             return ;
         }elseif( preg_match('/^(http|https):\/\/([\w\.-]+)(\.qq\.com|\.youku\.com)\//i', $url) ){
             if (!preg_match('/player\./i', $url)) {
-                $array_a = [
-                    "/v\.youku\.com\/v_show\/id_([\w=]+)\.html\?([^\?]+)/",
-                    "/v\.qq\.com\/([\w]+)\/([\w]+)\/([\w]+)\.html/",
-                ];
-                $array_b = [
-                    "player.youku.com/embed/\\1",
-                    "v.qq.com/txp/iframe/player.html?vid=\\3",
-                ];
-                $url = preg_replace($array_a, $array_b, $url);
+                $url = $this->get_iframe_url($url);
             }
-            return "<iframe src='{$url}' height='$height' width='$width' frameborder='0' allowfullscreen></iframe>";
+            static $array_id = 0;
+            $array_id++;
+            return "<iframe class='play_iframe player_{$array_id}' src='{$url}' height='$height' width='$width' frameborder='0' allowfullscreen></iframe>";
         }
+    }
+    
+    /**
+     * 把普通网址转为播放器的框架网址
+     * @param unknown $url
+     * @return mixed
+     */
+    public function get_iframe_url($url){
+        $array_a = [
+            "/v\.youku\.com\/v_show\/id_([\w=]+)\.html\?([^\?]+)/",
+            "/v\.qq\.com\/([\w]+)\/([\w]+)\/([\w]+)\.html/",
+        ];
+        $array_b = [
+            "player.youku.com/embed/\\1",
+            "v.qq.com/txp/iframe/player.html?vid=\\3",
+        ];
+        $url = preg_replace($array_a, $array_b, $url);
+        return $url;
     }
     
     /**
