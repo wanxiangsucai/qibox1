@@ -131,8 +131,8 @@ var get_msg_url = "{qb:url name='sys_wapshow_msg_list001' /}";
 function showMoreMsg(){
   msg_page++;
   $.get(get_msg_url+msg_page,function(res){  
-    console.log(res);
-    console.log(res.data);
+    //console.log(res);
+    //console.log(res.data);
     if(res.code==0){
       if(res.data==''){
         layer.msg("已经显示完了！",{time:500});

@@ -116,7 +116,11 @@ class LabelShow extends IndexBase
         }
         
         $__LIST__ = $tag_array['data'];
-        $array = $tag_array['pages'];       //分页数据
+        if ($tag_array) {
+            $array = $tag_array['pages'];       //分页数据
+            $tag_array['s_data'] && $array['s_data'] = $tag_array['s_data'];  //源数据给页面自定义使用 要单独定义，不能使用data数据，避免一些密码字段也暴露出来。
+        }
+        
         
         $_cfg = cache('tag_default_'.$tagname);
         if(empty($tag_array)){    //未入库前,随便给些演示数据            
@@ -145,7 +149,8 @@ class LabelShow extends IndexBase
             eval('?>'.$view_tpl);
             $content = ob_get_contents();
             ob_end_clean();
-        }        
+        }
+        //$array['s_data'] = $__LIST__; //这里要慎重，避免一些密码字段也暴露出来。
         $array['data'] = $content;
         return $this->ok_js($array);
     }

@@ -124,13 +124,16 @@ class Label extends Model
                 $tag_config['data'] = $tag_data['data'];
             }else{
                 $tag_data = getArray($tag_data);
+                if ($tag_data['s_data']) {
+                    $tag_config['s_data'] = $tag_data['s_data'];    //要单独定义，不能使用data数据，避免一些密码字段也暴露出来。
+                }
                 if(is_array($tag_data['data'])){
                     $tag_config['data'] = $tag_data['data'];
-                    unset($tag_data['data']);
+                    unset($tag_data['data'],$tag_data['s_data']);
                     $tag_config['pages'] = $tag_data;   //分页数据
                 }else{
                     $tag_config['data'] = $tag_data;
-                }               
+                }                
             }
         }
         return $tag_config;

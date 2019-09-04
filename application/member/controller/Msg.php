@@ -3,6 +3,7 @@ namespace app\member\controller;
 
 use app\common\model\Msg AS Model;
 use app\common\controller\MemberBase;
+use think\Db;
 
 class Msg extends MemberBase
 {
@@ -21,6 +22,39 @@ class Msg extends MemberBase
             Model::update(['id'=>$id,'ifread'=>1]);
         }
         return $info;
+    }
+    
+    /**
+     * 标签调用，调用类似微信那样的用户列表。
+     * @param array $config
+     */
+    public function listuser($config=[])
+    {
+        $cfg = unserialize($config['cfg']);
+        $rows = intval($cfg['rows']) ?: 10;
+        $map = [
+            'touid'=>$this->user['uid'],            
+        ];
+
+        $subQuery = Model::where($map)
+        ->field('uid,create_time,title,id,ifread')
+        ->order('id desc')
+        ->limit(3000)   //理论上某个用户的短消息不应该超过三千条。
+        ->buildSql();
+        
+        $listdb = Db::table($subQuery.' a')
+        ->field('uid,create_time,title,id,count(id) AS num,sum(ifread) AS old_num')
+        ->group('uid')
+        ->order('id','desc')
+        ->paginate($rows);
+        
+        $listdb->each(function(&$rs,$key){
+            $rs['new_num'] = $rs['num']-$rs['old_num'];
+            return $rs;
+        });
+        $array = getArray($listdb);
+        $array['s_data'] = $array['data'];
+        return $array;
     }
     
     /**
