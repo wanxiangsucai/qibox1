@@ -53,7 +53,7 @@
 	<ul class="qb_member_ListType1 list_{$rs.id}">
 		<ol><dd class="user_icon"><a href="{:get_url('user',$rs.uid)}"><img src="{$rs.uid|get_user_icon}" onerror="this.src='__STATIC__/images/nobody.gif'"></a></dd>
 			<span class="FL" onclick="open_msg({$rs.id})"><em>{$rs.uid?get_user_name($rs.uid):'系统消息'}</em><br>{$rs.title}</span>
-			<span class="FR"><em class="shownum {$rs.new_num?'ck':''}">{if $rs.new_num} {$rs.new_num} {else /} {$rs.num} {/if}</em></span>
+			<span class="FR"><em class="shownum {$rs.new_num?'ck':''}">{if $rs.new_num} {$rs.new_num} {else /} {$rs.num>999?'99+':$rs.num} {/if}</em></span>
 		</ol>		 
 	</ul>
 {/qb:tag}
@@ -121,7 +121,7 @@ setInterval(function(){
 				}
 				if(rs.new_num<1){
 					$('.sys_waplist_msg_list001 .list_'+rs.id+' .shownum').removeClass('ck');
-					$('.sys_waplist_msg_list001 .list_'+rs.id+' .shownum').html(rs.num);
+					$('.sys_waplist_msg_list001 .list_'+rs.id+' .shownum').html(rs.num>999?'99+':rs.num);
 				}
 				//console.log(rs.uid+'='+rs.id+'='+uid_array[rs.uid]);
 				uid_array[rs.uid] = rs.id;
