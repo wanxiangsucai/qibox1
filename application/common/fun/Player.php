@@ -52,7 +52,7 @@ class Player{
     public function get_iframe($url,$width,$height){
         if (!preg_match('/^(http)/i', $url)) {
             return ;
-        }elseif( preg_match('/(\.qq\.com|\.youku\.com)/i', $url) ){
+        }elseif( preg_match('/^(http|https):\/\/([\w\.-]+)(\.qq\.com|\.youku\.com)\//i', $url) ){
             if (!preg_match('/player\./i', $url)) {
                 $array_a = [
                     "/v\.youku\.com\/v_show\/id_([\w=]+)\.html\?([^\?]+)/",
