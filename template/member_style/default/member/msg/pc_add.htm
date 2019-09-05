@@ -119,7 +119,7 @@ function postmsg(){
 		layer.alert('不知道你要发信息给谁?');
 		return ;
 	}
-	var url = "{:urls('wxapp.msg/add')}";
+	var url = "{:urls('member/wxapp.msg/add')}";
 	var content = $(".msgcontent").val();
 	if(content==''){
 		layer.alert('消息内容不能为空');

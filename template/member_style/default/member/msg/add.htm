@@ -128,7 +128,7 @@ function postmsg(){
 		return ;
 	}
 
-	var url = "{:urls('wxapp.msg/add')}";
+	var url = "{:urls('member/wxapp.msg/add')}";
 	var content = $(".msgcontent").val();
 	if(content==''){
 		layer.alert('消息内容不能为空');
