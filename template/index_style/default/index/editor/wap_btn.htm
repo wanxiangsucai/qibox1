@@ -37,6 +37,17 @@ function hide_nav(node,fullbg){
 		node.stop().animate({'width':'0px','padding':'0px 0px 0 0px'},300);
 	}, 500)
 }
+
+function add_other_mv(){
+	layer.prompt({
+					title: '请输入优酷或腾讯视频网址',
+					formType: 0
+			   }, function(value){
+				 layer.closeAll();
+				 var str = '[iframe_mv]'+value+'[/iframe_mv]';
+				 v_summernote.summernote('insertText',str);
+			});
+}
 </script>
 
 <style type="text/css">

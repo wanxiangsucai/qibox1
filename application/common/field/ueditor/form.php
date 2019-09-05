@@ -28,6 +28,25 @@ jQuery(document).ready(function() {
 <script src="__STATIC__/libs/ueditor/ueditor.config.js"></script>
 <script src="__STATIC__/libs/ueditor/ueditor.all.min.js"></script>
 
+ 
+<script type="text/javascript"> 
+jQuery(document).ready(function() {
+	$('.addMvUrl').each(function(i){	//添加站外视频
+		$(this).click(function(){
+			editor_i = i;
+			layer.prompt({
+					title: '请输入优酷或腾讯视频网址',
+					formType: 0
+			   }, function(value){
+				 layer.closeAll();
+				 var str = '<br>[iframe_mv]'+value+'[/iframe_mv]<br><br>';
+				 editor_a[editor_i].execCommand('insertHtml',str);
+			});
+		});		
+	});
+})
+</script>
+
 <!--pc布局模板开始-->
 <script type="text/javascript"> 
 jQuery(document).ready(function() {
@@ -68,10 +87,12 @@ function hide_nav(node,fullbg){
 </script>
 
 <style type="text/css">
-.slectEditMode{
+.ue_btn{
 	padding:5px 0 5px 0;
+    float:left;
+    margin-right:10px;
 }
-.slectEditMode a{
+.ue_btn a{
 	display:inline-blodk;
 	padding:5px 10px;
 	background:green;
@@ -178,6 +199,26 @@ $jscode_wap = <<<EOT
 					  });
 					});
 				</script>
+
+<script type="text/javascript"> 
+var cache_summernote_code = '';
+jQuery(document).ready(function() {		//加入站外视频
+	$('.addMvUrl').each(function(i){
+		$(this).click(function(){
+			editor_i = i;
+			layer.prompt({
+					title: '请输入优酷或腾讯视频网址',
+					formType: 0
+			   }, function(value){
+				 layer.closeAll();
+				 var str = '[iframe_mv]'+value+'[/iframe_mv]';
+				 editor_a[editor_i].summernote('insertText',str);
+			});
+		});		
+	});
+})
+</script>
+
 <!--wap布局模板开始-->
 <script type="text/javascript"> 
 var cache_summernote_code = '';
@@ -230,10 +271,12 @@ function hide_nav(node,fullbg){
 </script>
 
 <style type="text/css">
-.slectEditMode{
+.ue_btn{
 	padding:5px 0 5px 0;
+    float:left;
+    margin-right:10px;
 }
-.slectEditMode a{
+.ue_btn a{
 	display:inline-blodk;
 	padding:5px 10px;
 	background:green;
@@ -288,7 +331,7 @@ if(IN_WAP===true){
 
 <textarea id="{$name}" name="{$name}" class="summernote" placeholder="请输入内容">{$info[$name]}</textarea>
 $jscode_wap
-<div class="slectEditMode"><a href="javascript:;">内容布局模板</a></div>
+<div class="ue_btn slectEditMode"><a href="javascript:;">布局模板</a></div> <div class="ue_btn addMvUrl"><a href="javascript:;">站外视频</a></div>
 
 EOT;
 ;
@@ -302,7 +345,7 @@ EOT;
 $jscode_pc
 </div>
 
-<div class="slectEditMode"><a href="javascript:;">内容布局模板</a></div>
+<div class="ue_btn slectEditMode"><a href="javascript:;">布局模板</a></div> <div class="ue_btn addMvUrl"><a href="javascript:;">站外视频</a></div>
 
 EOT;
 ;

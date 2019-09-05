@@ -49,12 +49,12 @@ class Player{
      * @param unknown $height
      * @return void|string
      */
-    public function iframe_player($url,$width,$height){
+    public static function iframe_player($url,$width,$height){
         if (!preg_match('/^(http)/i', $url)) {
             return ;
         }elseif( preg_match('/^(http|https):\/\/([\w\.-]+)(\.qq\.com|\.youku\.com)\//i', $url) ){
             if (!preg_match('/player\./i', $url)) {
-                $url = $this->get_iframe_url($url);
+                $url = self::get_iframe_url($url);
             }
             static $array_id = 0;
             $array_id++;
@@ -67,14 +67,16 @@ class Player{
      * @param unknown $url
      * @return mixed
      */
-    public function get_iframe_url($url){
+    public static function get_iframe_url($url){
         $array_a = [
             "/v\.youku\.com\/v_show\/id_([\w=]+)\.html\?([^\?]+)/",
             "/v\.qq\.com\/([\w]+)\/([\w]+)\/([\w]+)\.html/",
+            "/v\.qq\.com\/([\w]+)\/([\w]+)\/([\w]+)\/([\w]+)\.html/",
         ];
         $array_b = [
             "player.youku.com/embed/\\1",
             "v.qq.com/txp/iframe/player.html?vid=\\3",
+            "v.qq.com/txp/iframe/player.html?vid=\\4",
         ];
         $url = preg_replace($array_a, $array_b, $url);
         return $url;

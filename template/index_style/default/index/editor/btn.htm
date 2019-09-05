@@ -26,11 +26,23 @@ function hide_nav(node,fullbg){
 		node.stop().animate({'width':'0px','padding':'0px 0px 0 0px'},300);
 	}, 500)
 }
+
+function add_other_mv(){
+	layer.prompt({
+					title: '请输入优酷或腾讯视频网址',
+					formType: 0
+			   }, function(value){
+				 layer.closeAll();
+				 var str = '<br>[iframe_mv]'+value+'[/iframe_mv]<br><br>';
+				 ueditor.execCommand('insertHtml',str);
+			});
+}
 </script>
 
 <style type="text/css">
 .slectEditMode{
 	padding:5px 0 5px 0;
+	margin-top:5px;
 }
 .slectEditMode a{
 	display:inline-blodk;
