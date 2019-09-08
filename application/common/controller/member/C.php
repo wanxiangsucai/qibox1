@@ -119,7 +119,7 @@ abstract class C extends MemberBase
                     ]);
         }
         
-        $this->tab_ext['right_button'] = [
+        $this->tab_ext['right_button'] || $this->tab_ext['right_button'] = [
                 ['type'=>'delete'],
                 ['type'=>'edit'],
                 [
