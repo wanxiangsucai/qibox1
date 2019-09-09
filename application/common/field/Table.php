@@ -158,16 +158,20 @@ class Table extends Base
     public static function get_rbtn($btns=[],$info=[],$show_title=false){
         $data = [];
         foreach($btns AS $rs){
-            $rs['icon'] || $rs['icon']='glyphicon glyphicon-menu-hamburger';
-            $rs['href'] || $rs['href']=$rs['url'];
-            //$rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
-            $rs['href'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $rs['href']);
-            $alert = $rs['type']=='delete' ? ' class="_dels" onclick="return confirm(\'你确实要删除吗?不可恢复!\')"' : ' ';
-            $target = $rs['target']?" target='{$rs['target']}' ":'';
-            $data[] = [
+            if($rs['type']=='callback'){
+                $data[] = $rs['fun']($info);
+            }else{
+                $rs['icon'] || $rs['icon']='glyphicon glyphicon-menu-hamburger';
+                $rs['href'] || $rs['href']=$rs['url'];
+                //$rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
+                $rs['href'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $rs['href']);
+                $alert = $rs['type']=='delete' ? ' class="_dels" onclick="return confirm(\'你确实要删除吗?不可恢复!\')"' : ' ';
+                $target = $rs['target']?" target='{$rs['target']}' ":'';
+                $data[] = [
                     'title'=>$rs['title'],
                     'value'=>"<a href='{$rs['href']}' title='{$rs['title']}' $alert $target><i class='{$rs['icon']}'></i> ".($show_title?$rs['title']:'')."</a>",
-            ];
+                    ];
+            }            
         }
         return $data;
     }
