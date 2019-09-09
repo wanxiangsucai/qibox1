@@ -159,7 +159,16 @@ class Table extends Base
         $data = [];
         foreach($btns AS $rs){
             if($rs['type']=='callback'){
-                $data[] = $rs['fun']($info);
+                $array = $rs['fun']($info);
+                if (is_array($array)) {
+                    $data[] = $array;
+                }else{
+                    $data[] = [
+                        'title'=>$rs['title'],
+                        'value'=>$array,
+                    ];
+                }
+                
             }else{
                 $rs['icon'] || $rs['icon']='glyphicon glyphicon-menu-hamburger';
                 $rs['href'] || $rs['href']=$rs['url'];
