@@ -102,7 +102,7 @@
 			{volist name=":fun('field@get_rbtn',$tab_ext['right_button'],$rs,true)" id="vs"} <!--自定义菜单-->
 			  {$vs.value}
 			{/volist}
-			{if empty($f_array)}
+			{if !isset($tab_ext.right_button)}
 				<a href="{:urls('delete',['ids'=>$rs['id']])}" onclick="return confirm('你确认要删除吗?不可恢复');" class="dels">删除</a>
 				<a href="{:urls('edit',['id'=>$rs['id']])}" class="edits">修改</a>
 			{/if}
