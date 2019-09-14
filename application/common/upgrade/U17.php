@@ -4,7 +4,7 @@ namespace app\common\upgrade;
 class U17{
 	public static function up(){
 	    set_time_limit(0);
-	    if (!is_dir(ROOT_PATH.'public/static/libs/amazeui')) {
+	    if (!is_dir(ROOT_PATH.'public/static/libs/amazeui/images')) {
 	        mkdir(ROOT_PATH.'public/static/libs/amazeui');
 	        mkdir(ROOT_PATH.'public/static/libs/amazeui/css');
 	        mkdir(ROOT_PATH.'public/static/libs/amazeui/js');

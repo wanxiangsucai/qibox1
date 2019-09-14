@@ -4,24 +4,24 @@ namespace app\common\upgrade;
 class U16{
 	public static function up(){
 	    set_time_limit(0);
-	    if (!is_dir(ROOT_PATH.'public/static/libs/amazeui')) {
+	    if (!is_dir(ROOT_PATH.'public/static/libs/amazeui/images')) {
 	        mkdir(ROOT_PATH.'public/static/libs/amazeui');
 	        mkdir(ROOT_PATH.'public/static/libs/amazeui/css');
 	        mkdir(ROOT_PATH.'public/static/libs/amazeui/js');
 	        mkdir(ROOT_PATH.'public/static/libs/amazeui/images');
 	        mkdir(ROOT_PATH.'public/static/libs/amazeui/images/icon');
 	    }
-		 copy('https://x1.php168.com/public/static/libs/amazeui/css/amazeui.min.css',
-		     ROOT_PATH.'public/static/libs/amazeui/css/amazeui.min.css');
-		 copy('https://x1.php168.com/public/static/libs/amazeui/css/main.css',
-		     ROOT_PATH.'public/static/libs/amazeui/css/main.css');
+// 		 copy('https://x1.php168.com/public/static/libs/amazeui/css/amazeui.min.css',
+// 		     ROOT_PATH.'public/static/libs/amazeui/css/amazeui.min.css');
+// 		 copy('https://x1.php168.com/public/static/libs/amazeui/css/main.css',
+// 		     ROOT_PATH.'public/static/libs/amazeui/css/main.css');
 		 
-		 copy('https://x1.php168.com/public/static/libs/amazeui/js/amazeui.min.js',
-		     ROOT_PATH.'public/static/libs/amazeui/js/amazeui.min.js');
-		 copy('https://x1.php168.com/public/static/libs/amazeui/js/wechat.js',
-		     ROOT_PATH.'public/static/libs/amazeui/js/wechat.js');
-		 copy('https://x1.php168.com/public/static/libs/amazeui/js/zUI.js',
-		     ROOT_PATH.'public/static/libs/amazeui/js/zUI.js');
+// 		 copy('https://x1.php168.com/public/static/libs/amazeui/js/amazeui.min.js',
+// 		     ROOT_PATH.'public/static/libs/amazeui/js/amazeui.min.js');
+// 		 copy('https://x1.php168.com/public/static/libs/amazeui/js/wechat.js',
+// 		     ROOT_PATH.'public/static/libs/amazeui/js/wechat.js');
+// 		 copy('https://x1.php168.com/public/static/libs/amazeui/js/zUI.js',
+// 		     ROOT_PATH.'public/static/libs/amazeui/js/zUI.js');
 		 
 		 copy('https://x1.php168.com/public/static/libs/amazeui/images/bg.jpg',
 		     ROOT_PATH.'public/static/libs/amazeui/images/bg.jpg');
