@@ -1,81 +1,291 @@
-{extend name="$member_style_layout" /}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>站内消息</title>
+<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/amazeui.min.css" />
+<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/main.css" />
+<link rel="stylesheet" href="__STATIC__/icon/icon.css">
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/js/core/jquery.min.js"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/layer/layer.js"></SCRIPT>
+</head>
+<body>
+<div class="box">
+	<div class="wechat">
+		
+		<div class="sidestrip">
+			<div class="am-dropdown" data-am-dropdown>
+				<!--头像插件-->
+				<div class="own_head am-dropdown-toggle" style="background: url({$userdb.icon|tempdir|default='__STATIC__/images/noface.png'});background-size:34px 34px;"></div>
+				<div class="am-dropdown-content">
+					<div class="own_head_top">
+						<div class="own_head_top_text">
+							<p class="own_name">{$userdb.username}<img src="{$userdb.icon|tempdir}" onerror="this.src='__STATIC__/images/noface.png'" /></p>
+							<p class="own_numb">昵称：{$userdb.nickname}</p>
+						</div>
+						<img src="{$userdb.icon|tempdir}" onerror="this.src='__STATIC__/images/noface.png'" />
+					</div>
+					<div class="own_head_bottom">
+						<p><span>级别</span>{$userdb.groupid|getGroupByid}</p>
+						<div class="own_head_bottom_img">
+							<a href="#"><img src="__STATIC__/libs/amazeui/images/icon/head_1.png"/></a>
+							<a href="#"><img src="__STATIC__/libs/amazeui/images/icon/head_2.png"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--功能切换-->
+			<div class="sidestrip_icon">
+				<a id="si_1" style="background: url(__STATIC__/libs/amazeui/images/icon/head_2_1.png) no-repeat;"></a>
+				<a id="si_2"></a>
+				<a id="si_3"><em id="tongji_num">0</em></a>
+			</div>
+			
+			<!--底部扩展键-->
+			<div id="doc-dropdown-justify-js">
+				<div class="am-dropdown" id="doc-dropdown-js" style="position: initial;">
+					<div class="sidestrip_bc am-dropdown-toggle"></div>
+					<ul class="am-dropdown-content" style="">
+						<li>
+							<a href="#" data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0, width: 400, height: 225}">意见反馈</a>
+							<div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
+							  <div class="am-modal-dialog">
+								<div class="am-modal-hd">使用协议
+								  <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+								</div>
+								<div class="am-modal-bd">
+								  文明上网，请注册你的言行。
+								</div>
+							  </div>
+							</div>
+						</li>
+						
+						<li><a href="#">使用说明</a></li>
+						<li><a href="#">个人设置</a></li>
+					</ul>
+				</div>	
+			</div>	
+		</div>
 
-{block name="title"}短消息{/block}
-{block name="content"}
-{include file="msg/menu" /}
- 
-<div class="MainCont mtop10">
-	<div class="head"><div class="tag">短消息管理</div></div>
-    <div class="cont">
-<script type="text/javascript">
-//全选
-function choosebox(that){
-	$("input[name='ids[]']").each(function(){
-		$(this).prop("checked",that.is(':checked')?true:false);
-	});
-}
-//标志为已读
-function set_readed(){
-	if($("input[name='ids[]']:checked").length<1){
-		layer.alert('请至少选择一项');
-		return false;
-	}
-	str = '';
-	$("input[name='ids[]']:checked").each(function(){
-		str += 'ids[]=' + $(this).val() + '&';
-	});
-	var url = "{:url('wxapp.msg/set_read')}?"+str;
-	$.get(url,function(res){
-		if(res.code==0){
-			window.location.reload();
-		}else{
-			layer.alert(res.msg);
-		}
-	});
-}
-</script>
-	<button class="layui-btn layui-btn-normal layui-btn-sm" onclick="set_readed()">标志为已读</button>
-    	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="ListTable">
-          <tr>
-            <th width="5%"><input type="checkbox" onclick="choosebox($(this))"></th>
-            <th>标题</th>
-            <th width="12%">发件人</th>
-            <th width="20%">时间</th>
-            <th width="10%">状态</th>
-            <th width="10%">删除</th>
-          </tr>
-{volist name="listdb" id="rs"}
-          <tr>
-            <td><input type="checkbox" name="ids[]" value="{$rs.id}"></td>
-            <td class="tL"><a href="javascript:;" onclick="open_msg('{:urls('show',['id'=>$rs['id']])}?isframe=1')">{$rs.title}</a></td>
-            <td><a href="{:get_url('user',['uid'=>$rs['uid']])}" target="_blank">{$rs.from_username}</a></td>
-            <td>{$rs.create_time}</td>
-            <td>
-	{eq name="$rs.ifread" value="0"}
-			<span style='color:red;'>未读</span>
-	{else /}
-	已读
-	{/eq}
-			</td>
-            <td>
-            	<a href="{:urls('delete',['id'=>$rs['id']])}" class="qb-del"></a> 
-            </td>
-          </tr>
-{/volist}
-        </table>
-        <div class="Showpage">{$pages}</div>
-    </div>
+		<!--聊天列表-->
+		<div class="middle on">
+			<div class="wx_search">
+				<input type="text" placeholder="搜索"/>
+				<button>+</button>
+			</div>
+			<div class="office_text">
+				<ul class="user_list pc_msg_user_list">
+<!--短消息最近的会话用户列表-->
+{qb:tag name="pc_msg_user_list" js="pc_msg_user_list" class="app\member\controller\Msg@listuser" rows="15"}
+					<li data-uid="{$rs.f_uid}" class="{$key==0?'user_active':''} list_{$rs.id}">
+						<div class="user_head"><img src="{$rs.f_uid|get_user_icon}"/></div>
+						<div class="user_text">
+							<p class="user_name">{$rs.f_uid?get_user_name($rs.f_uid):'系统消息'}</p>
+							<p class="user_message">{$rs.title}</p>
+						</div>
+						<div class="user_time">{$rs.create_time}</div>
+						<em class="shownum {$rs.new_num?'ck':''}">{if $rs.new_num} {$rs.new_num} {else /} {$rs.num>999?'99+':$rs.num} {/if}</em>
+					</li>
+{/qb:tag}
+				</ul>
+			</div>	
+		</div>
+
+<!--好友列表标签用到的,这段隐藏代码可以任意移动位置,不影响页面布局-->
+<div id="friends_tag" class="pc_myfriend" style="display:none">
+{php}$type='1,2';$uid='';{/php}
+{qb:tag name="pc_myfriend" js="pc_myfriend" class="app\common\model\Friend@get_label" where="suid=$userdb.uid&type=$type&uid=$uid" rows="500"}
+					<div class="friends_box" data-uid="{$rs.he_id}">
+							<div class="user_head"><a href="{:get_url('user',$rs.he_id)}" target="_blank"><img src="{$rs.he_id|get_user_icon}" onerror="this.src='__STATIC__/images/noface.png'"/></a></div>
+							<div class="friends_text">
+								<p class="user_name">{$rs.he_id|get_user_name}</p>
+							</div>
+							<i class="add fa fa-plus-circle" title="加好友"></i>
+							<i class="del fa fa-times-circle" title="移除"></i>
+							<i class="bad fa fa-ban" title="加黑名单"></i>
+					</div>
+{/qb:tag}
+</div>
+<!--好友列表标签用到的,这段隐藏代码可以任意移动位置,不影响页面布局-->
+
+
+		<!--好友列表-->
+		<div class="middle">
+			<div class="wx_search">
+				<input type="text" placeholder="搜索"/>
+				<button>+</button>
+			</div>
+			<div class="office_text">
+				<ul class="friends_list">
+					<li id="my_friend">
+						<p>我的好友</p>
+						<div class="friends_box">
+							<div class="user_head"><img src="" onerror="this.src='__STATIC__/images/noface.png'"/></div>
+							<div class="friends_text">
+								<p class="user_name">小明</p>
+							</div>
+						</div>
+					</li>
+					<li id="my_idol">
+						<p>我关注的人</p>
+					</li>
+					<li id="my_fans">
+						<p>关注我的人</p>
+					</li>
+					<li id="my_blacklist">
+						<p>黑名单</p>
+					</li>
+					
+				</ul>
+			</div>	
+		</div>
+
+
+		<!--程序列表-->
+		<div class="middle" id="tongji_menu">
+			<div class="wx_search">
+				<input type="text" placeholder="搜索收藏内容"/>
+				<button>+</button>
+			</div>
+			<div class="office_text">
+				<ul class="icon_list" id="tongji">
+					<li class="icon_active" data-type="comment,reply">
+						<div class="icon"><i class="fa fa-comment"></i></div>
+						<span>收到的评论</span>
+						<em>0</em>
+					</li>
+					<li data-type="topic_agree,reply_agree,comment_agree">
+						<div class="icon"><i class="fa fa-thumbs-up"></i></div>
+						<span>收到的点赞</span>
+						<em>0</em>
+					</li>
+					<li data-type="give_jifen">
+						<div class="icon"><i class="fa fa-database"></i></div>
+						<span>收到的积分打赏</span>
+						<em>0</em>
+					</li>
+					<li data-type="give_rmb">
+						<div class="icon"><i class="glyphicon glyphicon-yen"></i></div>
+						<span>收到的RMB打赏</span>
+						<em>0</em>
+					</li>
+					<li data-type="visit">
+						<div class="icon"><i class="fa fa-paw"></i></div>
+						<span>谁踩了我的主页</span>
+						<em>0</em>
+					</li>
+					<li data-type="fans">
+						<div class="icon"><i class="fa fa-star"></i></div>
+						<span>谁关注了我</span>
+						<em>0</em>
+					</li>
+					 
+				</ul>
+			</div>	
+		</div>
+
+		<!--聊天窗口-->
+		<div class="talk_window">
+			<div class="windows_top">
+				<div class="windows_top_box">
+					<span id="send_user_name"><!--对方用户名--></span>
+					<div id="remind_online">对方正在输入中，请稍候...</div>
+					<ul class="window_icon">
+						<li><a href="javascript:;"><img src="__STATIC__/libs/amazeui/images/icon/icon7.png"/></a></li>
+						<li><a href="javascript:;"><img src="__STATIC__/libs/amazeui/images/icon/icon8.png"/></a></li>
+						<li><a href="javascript:;"><img src="__STATIC__/libs/amazeui/images/icon/icon9.png"/></a></li>
+						<li onclick="window.parent.layer.closeAll();"><a href="javascript:;"><img src="__STATIC__/libs/amazeui/images/icon/icon10.png"/></a></li>
+					</ul>
+					<div class="extend" class="am-btn am-btn-success" data-am-offcanvas="{target: '#doc-oc-demo3'}"></div>
+					<!-- 侧边栏内容 -->
+					<div id="doc-oc-demo3" class="am-offcanvas">
+						<div class="am-offcanvas-bar am-offcanvas-bar-flip">
+							<div class="am-offcanvas-content">
+								<p><a href="#">扩展功能</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!--聊天内容-->
+			<div class="windows_body">
+				<div class="office_text" style="height: 100%;">
+					<ul class="content pc_show_all_msg" id="chatbox" style="display: flex;flex-flow: column-reverse;">
+<!--会员聊天内容-->
+{php}$uid='';{/php}
+{qb:tag name="pc_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,time,num" rows="10"}
+						<li class="{$rs.uid==$userdb.uid?'me':'other'}">
+						<dd class="time">{$rs.create_time}</dd>
+						<a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span>{$rs.content}</span>
+						
+						</li>
+{/qb:tag}
+					</ul>
+				</div>
+			</div>
+
+<!--这段隐藏代码是网站会员动态,可以任意移动位置-->
+<ul class="pc_tongji_member_feed" style="display: none;">
+{qb:tag name="pc_tongji_member_feed" js="pc_tongji_member_feed" class="app\tongji\model\Feed@getList" rows="15" where="uid=$userdb.uid&ifread<2&type=$type"}
+						<li class="other">
+						<dd class="time">{$rs.create_time}</dd>
+						<a href="{:get_url('user',$rs.from_uid)}" target="_blank"><img src="{$rs.from_uid|get_user_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_uid|get_user_name}"></a>
+						
+						<span>
+						{if (!in_array($rs.type,['visit','fans']))}
+						  <i>{:fun('tongji@type',$rs.type)}：</i>{$rs['topic']['title']}
+						  <a href="{$rs['topic']['url']}" target="_blank">详情</a>
+						{elseif($rs.type=='visit') /}
+							 TA {$rs.create_time|format_time=true} 访问了你的空间 
+						{elseif($rs.type=='fans') /}
+							 TA {$rs.create_time|format_time=true} 关注了你 
+						{/if}						
+						</span>
+						
+						</li>
+{/qb:tag}
+</ul>
+<!--这段隐藏代码是网站会员动态,可以任意移动位置-->
+
+			<div class="windows_input" id="talkbox">
+				<div class="input_icon">
+					<a href="javascript:;" title="发送表情"></a>
+					<a href="javascript:;" title="发送文件"></a>
+					<a href="javascript:add_new_user();" title="添加新人会话"></a>
+					<a href="javascript:;"></a>
+					<a href="javascript:;" title="发送视频文件"></a>
+					<a href="javascript:;" title="发送语音文件"></a>
+				</div>
+				<div class="input_box">
+					<textarea name="" rows="" cols="" id="input_box" class="msgcontent"></textarea>
+					<button id="send" onclick="postmsg()">发送（S）</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script type="text/javascript">
-function open_msg(url){
-	layer.open({
-		type: 2,
-		title:'信息详情',
-		area:['95%','95%'],
-		content: url,
-	});
-}
+var ListMsgUserUrl = "{qb:url name='pc_msg_user_list' /}";			//获取分页的消息用户列表
+var getShowMsgUrl = "{qb:url name='pc_show_all_msg' /}";			//获取更多分页的会话记录
+var now_time = "{:time()}";											//当前时间点做个记录,之后的消息就当新消息处理
+var postMsgUrl = "{:urls('wxapp.msg/add')}";						//发送消息提交的地址
+var get_user_info_url = "{:urls('index/wxapp.member/getbyid')}";	//根据UID获取某个用户的相关资料
+var get_uid_by_name_url = "{:urls('index/wxapp.member/get_uid')}";	//根据帐户名获取用户uid,主要是给新用户发消息用
+
+var tongjiMsgUrl = "{qb:url name='pc_tongji_member_feed' /}";		//获取分页的统计数据
+var tongjiCountUrl = "{:iurl('tongji/wxapp.count/index')}";			//获取各种统计的数量
+
+var my_uid = "{$userdb.uid}";										//我的UID,当前用户的UID
+var MyFriendUrl = "{qb:url name='pc_myfriend' /}";					//获取好友列表
+var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
 </script>
 
-{/block}
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?5"></script>
+
+
+</body>
+</html>

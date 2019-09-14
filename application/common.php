@@ -2372,6 +2372,9 @@ if (!function_exists('getTemplate')) {
              'uid'=>intval($fromuid),
          ];
          $result = MsgModel::create($data);
+         if ($fromuid) {
+             \app\common\model\Friend::add($fromuid,$touid);    //给用户发消息,就相当于成为他的粉丝
+         }         
          return $result;
      }
  }

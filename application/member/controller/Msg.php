@@ -32,28 +32,37 @@ class Msg extends MemberBase
     {
         $cfg = unserialize($config['cfg']);
         $rows = intval($cfg['rows']) ?: 10;
-        $map = [
-            'touid'=>$this->user['uid'],            
-        ];
+        $page = input('page')>1?input('page'):1;
+        $min = ($page-1)*$rows;
 
-        $subQuery = Model::where($map)
-        ->field('uid,create_time,title,id,ifread')
+        $subQuery = Model::where('touid',$this->user['uid'])->whereOr('uid',$this->user['uid'])
+        ->field('uid,touid,create_time,title,id,ifread')
         ->order('id desc')
-        ->limit(3000)   //理论上某个用户的短消息不应该超过三千条。
+        ->limit(5000)   //理论上某个用户的短消息不应该超过5千条。
         ->buildSql();
         
         $listdb = Db::table($subQuery.' a')
-        ->field('uid,create_time,title,id,count(id) AS num,sum(ifread) AS old_num')
-        ->group('uid')
+        ->field('uid,touid,create_time,title,id,count(id) AS num,sum(ifread) AS old_num,((uid + touid + ABS( cast(uid AS signed) - cast(touid AS signed) ))/2) AS MX')
+        ->group('MX')
         ->order('id','desc')
-        ->paginate($rows);
+        ->limit($min,$rows)
+        ->select();
         
-        $listdb->each(function(&$rs,$key){
-            $rs['new_num'] = $rs['num']-$rs['old_num'];
-            return $rs;
-        });
-        $array = getArray($listdb);
+        foreach($listdb AS $key=>$rs){
+            $rs['new_num'] = 0;
+            if($rs['uid']==$this->user['uid']){
+                $rs['f_uid'] = $rs['touid'];
+                $rs['title'] = '对方还未回复...';
+            }else{
+                $rs['f_uid'] = $rs['uid'];
+                $rs['new_num'] = $rs['num']-$rs['old_num'];
+            }
+            $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
+            $listdb[$key] = $rs;
+        }
+        $array['data'] = $listdb;
         $array['s_data'] = $array['data'];
+        $array['total'] = '';
         return $array;
     }
     
@@ -78,9 +87,8 @@ class Msg extends MemberBase
             if(!is_array($info)){
                 return ;
             }
-            $uid = $info['uid'];
-        }
-        if (empty($uid) && empty($id)) {
+            $uid = $info['uid'];        }
+        if (empty($uid) && !is_numeric($cfg['uid']) && empty($id)) {
             return [];
         }
         
