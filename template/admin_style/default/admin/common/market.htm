@@ -469,7 +469,7 @@ function setup_app(id,keywords,price,have_open_layer){
 	if(have_pay[id]==undefined){
 		have_pay[id]=0;
 	}
-	var baseurl = "?id=" + id + "&domain={:request()->domain()}&appkey={:config('webdb.mymd5')}&";
+	var baseurl = "?id=" + id + "&domain={:request()->domain()}&appkey={:urlencode(config('webdb.mymd5'))}&";
 	if(price>0 && have_pay[id]<1){	//收费模块,先要做权限判断
 		//安装权限检查
 		$.get("https://x1.php168.com/appstore/getapp/client_check.html"+baseurl+'&'+Math.random(),function(res){
