@@ -347,7 +347,7 @@ class LabelShow extends IndexBase
             $label_tags_tpl = self::get_comment_tpl($cfg['dirname'],$aid,$sysid,$cfg_array);
             $label_tags_tpl['_filemtime_'] = $filemtime;
             //标签模板缓存起来，提高效率
-            cache('tags_comment_tpl_'.$pagename,$label_tags_tpl,3600);
+            cache('tags_comment_tpl_'.$pagename,$label_tags_tpl,36000);
         }
         
         $rows = $tag_array['rows']?$tag_array['rows']:$cfg['rows'];     //分页可能会用到
@@ -419,7 +419,7 @@ class LabelShow extends IndexBase
             $label_tags_tpl = self::get_reply_tpl($cfg['dirname'],$aid,$sysid,$cfg_array);
             $label_tags_tpl['_filemtime_'] = $filemtime;
             //标签模板缓存起来，提高效率
-            cache('tags_reply_tpl_'.$pagename,$label_tags_tpl,3600);
+            cache('tags_reply_tpl_'.$pagename,$label_tags_tpl,36000);
         }
         
         $rows = $tag_array['rows']?$tag_array['rows']:$cfg['rows'];     //分页可能会用到
@@ -482,7 +482,7 @@ class LabelShow extends IndexBase
             $label_tags_tpl = self::get_showpage_tpl($cfg['dirname']);
             $label_tags_tpl['_filemtime_'] = $filemtime;
             //标签模板缓存起来，提高效率
-            cache('tags_showpage_tpl_'.$pagename,$label_tags_tpl,3600);
+            cache('tags_showpage_tpl_'.$pagename,$label_tags_tpl,36000);
         }
 
         
@@ -702,7 +702,7 @@ class LabelShow extends IndexBase
             $label_tags_tpl = self::get_listpage_tpl($cfg['dirname']);
             $label_tags_tpl['_filemtime_'] = $filemtime;
             //标签模板必须要缓存起来，提高效率，同时更为了方便AJAX或者后台调用，没入库前，AJAX必须要使用缓存模板
-            cache('tags_listpage_tpl_'.$pagename,$label_tags_tpl,3600);
+            cache('tags_listpage_tpl_'.$pagename,$label_tags_tpl,36000);
         }
         
         //$rows = $tag_array['rows']?$tag_array['rows']:$cfg['rows'];     //分页可能会用到
@@ -1058,7 +1058,7 @@ class LabelShow extends IndexBase
                 $have_get_tpl = true;
                 $page_demo_tpl_tags = self::get_page_demo_tpl($cfg['dirname']);
                 $page_demo_tpl_tags['_filemtime_'] = $filemtime;
-                cache('tags_page_demo_tpl_'.$pagename,$page_demo_tpl_tags,3600);
+                cache('tags_page_demo_tpl_'.$pagename,$page_demo_tpl_tags,36000);
             }
         }
         
@@ -1084,7 +1084,7 @@ class LabelShow extends IndexBase
         }
 
 		if($tpl_have_edit || empty( cache('tag_default_'.$tag_name) )){   //方便AJAX
-             cache('tag_default_'.$tag_name,$cfg,3600);
+             cache('tag_default_'.$tag_name,$cfg,36000);
         }
         
         self::tag_cfg_parameter($tag_name,$cfg);  //把$cfg存放起来,给get_ajax_url使用

@@ -175,7 +175,7 @@ class LabelhyShow extends LabelShow
                 $have_get_tpl = true;
                 $page_demo_tpl_tags = self::get_page_demo_tpl($cfg['dirname']);
                 $page_demo_tpl_tags['_filemtime_'] = $filemtime;
-                cache('tags_page_demo_tpl_'.$pagename,$page_demo_tpl_tags,3600);
+                cache('tags_page_demo_tpl_'.$pagename,$page_demo_tpl_tags,36000);
             }
         }
         
@@ -200,7 +200,7 @@ class LabelhyShow extends LabelShow
 //             }
         }
         if($tpl_have_edit || empty( cache($hy_id.'tag_default_'.$tag_name) )){   //方便AJAX使用
-            cache($hy_id.'tag_default_'.$tag_name,$cfg,3600);
+            cache($hy_id.'tag_default_'.$tag_name,$cfg,36000);
         }
         
         self::tag_cfg_parameter($tag_name,$cfg);  //把$cfg存放起来,给get_ajax_url使用

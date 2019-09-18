@@ -74,6 +74,8 @@
             return implode(', ', $result);
         }
     }
+    @ob_end_clean();
+    ob_start();
 ?>
 <!DOCTYPE html>
 <html>
@@ -313,7 +315,7 @@
     <div class="echo">
         <?php echo $echo;?>
     </div>
-    <?php if(\think\App::$debug && login_user('uid')) { ?>
+    <?php if(\think\App::$debug && login_user('groupid')==3) { ?>
     <div class="exception">
     <div class="message">
         
@@ -401,7 +403,7 @@
     </div>
     <?php } ?>
 
-    <?php if(!empty($tables)&&login_user('uid')){ ?>
+    <?php if(!empty($tables)&&login_user('groupid')==3){ ?>
     <div class="exception-var">
         <h2>Environment Variables</h2>
         <?php foreach ((array) $tables as $label => $value) { ?>
@@ -414,7 +416,7 @@
             <?php } else { ?>
             <h3 class="subheading"><?php echo $label; ?></h3>
             <div>
-                <?php foreach ((array) $value as $key => $val) { ?>
+                <?php foreach ((array) $value as $key => $val) {if(in_array(htmlentities($key), ['PATH']))continue; ?>
                 <div class="clearfix">
                     <div class="col-md-3"><strong><?php echo htmlentities($key); ?></strong></div>
                     <div class="col-md-9"><small>
@@ -441,7 +443,7 @@
 
     <div class="copyright">
 	
-	<a title="齐博官方网站" href="http://www.php168.com/">Powered by qibosoft Code © 2003-2018</a> 
+	<a title="齐博官方网站" href="http://www.php168.com/">Powered by qibosoft Code © 2003-2019</a> 
 	<br><br>
         <a title="TP官方网站" href="http://www.thinkphp.cn">ThinkPHP</a> 
         <span>V<?php echo THINK_VERSION; ?></span>          
@@ -537,3 +539,11 @@
     <?php } ?>
 </body>
 </html>
+
+<?php 
+$content=ob_get_contents();
+ob_end_clean();
+ob_start();
+$content = str_replace(substr(ROOT_PATH,0,-1), '服务器的路径,保密了!', $content);
+echo $content;
+?>
