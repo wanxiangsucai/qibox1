@@ -374,3 +374,13 @@ ALTER TABLE  `qb_cms_content1` ADD INDEX (  `myfid` );
 
 ALTER TABLE  `qb_cms_content2` ADD  `myfid` MEDIUMINT( 7 ) NOT NULL COMMENT  '我的分类';
 ALTER TABLE  `qb_cms_content2` ADD INDEX (  `myfid` );
+
+ALTER TABLE  `qb_cms_content` ADD  `view` MEDIUMINT( 7 ) NOT NULL COMMENT  '浏览量';
+ALTER TABLE  `qb_cms_content` ADD INDEX (  `view` );
+ALTER TABLE  `qb_cms_content` ADD  `status` TINYINT( 2 ) NOT NULL COMMENT  '状态：0未审 1已审 2推荐';
+ALTER TABLE  `qb_cms_content` ADD INDEX (  `status` );
+UPDATE `qb_cms_content` SET  `status` =1;
+ALTER TABLE  `qb_cms_content` ADD  `list` INT( 10 ) NOT NULL COMMENT  '可控排序';
+ALTER TABLE  `qb_cms_content` ADD INDEX (  `list` );
+ALTER TABLE  `qb_cms_content` ADD  `ext_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '关联其它模型的内容ID',ADD  `ext_sys` SMALLINT( 4 ) NOT NULL COMMENT  '关联其它模型的频道ID';
+ALTER TABLE  `qb_cms_content` ADD INDEX (  `ext_id` ,  `ext_sys` );
