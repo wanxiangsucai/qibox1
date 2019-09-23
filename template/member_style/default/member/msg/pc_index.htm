@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>站内消息</title>
 <link rel="stylesheet" href="__STATIC__/libs/amazeui/css/amazeui.min.css" />
-<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/main.css" />
+<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/main.css?gfe" />
 <link rel="stylesheet" href="__STATIC__/icon/icon.css">
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/js/core/jquery.min.js"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/layer/layer.js"></SCRIPT>
@@ -60,8 +60,8 @@
 							</div>
 						</li>
 						
-						<li><a href="#">使用说明</a></li>
-						<li><a href="#">个人设置</a></li>
+						<li><a href="/" target="_blank">网站主页</a></li>
+						<li><a href="{:murl('member/user/edit')}" target="_blank">个人设置</a></li>
 					</ul>
 				</div>	
 			</div>	
@@ -77,11 +77,17 @@
 				<ul class="user_list pc_msg_user_list">
 <!--短消息最近的会话用户列表-->
 {qb:tag name="pc_msg_user_list" js="pc_msg_user_list" class="app\member\controller\Msg@listuser" rows="15"}
-					<li data-uid="{$rs.f_uid}" class="{$key==0?'user_active':''} list_{$rs.id}">
-						<div class="user_head"><img src="{$rs.f_uid|get_user_icon}"/></div>
+					<li data-uid="{$rs.f_uid}" class="{$key==0?'user_active':''} list_{$rs.f_uid}">
+						<div class="user_head"><a href="{$rs.f_uid>0?get_url('user',$rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['url']}" target="_blank"><img class="ring ring-group" src="{$rs.f_uid>0?get_user_icon($rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['picurl']}" onerror="this.src='__STATIC__/images/noface.png'"></a></div>
 						<div class="user_text">
-							<p class="user_name">{$rs.f_uid?get_user_name($rs.f_uid):'系统消息'}</p>
-							<p class="user_message">{$rs.title}</p>
+							<p class="user_name">{if $rs.f_uid>0} {$rs.f_uid|get_user_name} {elseif $rs.f_uid<0} {:fun('qun@getByid',abs($rs.f_uid))['title']} {else /} 系统消息 {/if}</p>
+							<p class="user_message">
+								{if $rs.qun}
+									{$rs['qun']['uid']|get_user_name} 说: {$rs['qun']['content']|del_html|get_word=30}
+								{else /}
+									{$rs.title}
+								{/if}
+							</p>
 						</div>
 						<div class="user_time">{$rs.create_time}</div>
 						<em class="shownum {$rs.new_num?'ck':''}">{if $rs.new_num} {$rs.new_num} {else /} {$rs.num>999?'99+':$rs.num} {/if}</em>
@@ -117,8 +123,17 @@
 			</div>
 			<div class="office_text">
 				<ul class="friends_list">
+					<li id="hot_qunzi">
+						<p>活跃圈子<i class="fa fa-chevron-down"></i></p>
+					</li>
+					<li id="my_join_qunzi">
+						<p>我加入的圈子<i class="fa fa-chevron-down"></i></p>
+					</li>
+					<li id="my_visit_qunzi">
+						<p>我浏览过的圈子<i class="fa fa-chevron-down"></i></p>
+					</li>
 					<li id="my_friend">
-						<p>我的好友</p>
+						<p>我的好友<i class="fa fa-chevron-down"></i></p>
 						<div class="friends_box">
 							<div class="user_head"><img src="" onerror="this.src='__STATIC__/images/noface.png'"/></div>
 							<div class="friends_text">
@@ -127,13 +142,13 @@
 						</div>
 					</li>
 					<li id="my_idol">
-						<p>我关注的人</p>
+						<p>我关注的人<i class="fa fa-chevron-down"></i></p>
 					</li>
 					<li id="my_fans">
-						<p>关注我的人</p>
+						<p>关注我的人<i class="fa fa-chevron-down"></i></p>
 					</li>
 					<li id="my_blacklist">
-						<p>黑名单</p>
+						<p>黑名单<i class="fa fa-chevron-down"></i></p>
 					</li>
 					
 				</ul>
@@ -201,7 +216,7 @@
 					<div id="doc-oc-demo3" class="am-offcanvas">
 						<div class="am-offcanvas-bar am-offcanvas-bar-flip">
 							<div class="am-offcanvas-content">
-								<p><a href="#">扩展功能</a></p>
+								<p><a href="#">扩展插件</a></p>
 							</div>
 						</div>
 					</div>
@@ -214,11 +229,11 @@
 					<ul class="content pc_show_all_msg" id="chatbox" style="display: flex;flex-flow: column-reverse;">
 <!--会员聊天内容-->
 {php}$uid='';{/php}
-{qb:tag name="pc_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,time,num" rows="10"}
+{qb:tag name="pc_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,maxid,num" rows="10"}
 						<li class="{$rs.uid==$userdb.uid?'me':'other'}">
-						<dd class="time">{$rs.create_time}</dd>
-						<a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span>{$rs.content}</span>
-						
+						<dd class="time" data-time="{$rs.create_time|strtotime}"><a>{$rs.create_time}</a></dd>
+						{if $rs.qun_id&&$rs.uid!=$userdb.uid}<div class="name">{$rs.from_username}</div>{/if}
+						<a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span>{$rs.content}</span>						
 						</li>
 {/qb:tag}
 					</ul>
@@ -229,7 +244,8 @@
 <ul class="pc_tongji_member_feed" style="display: none;">
 {qb:tag name="pc_tongji_member_feed" js="pc_tongji_member_feed" class="app\tongji\model\Feed@getList" rows="15" where="uid=$userdb.uid&ifread<2&type=$type"}
 						<li class="other">
-						<dd class="time">{$rs.create_time}</dd>
+						<dd class="time" data-time="{$rs.create_time|strtotime}"><a>{$rs.create_time}</a></dd>
+						<div class="name">{$rs.from_uid|get_user_name}</div>
 						<a href="{:get_url('user',$rs.from_uid)}" target="_blank"><img src="{$rs.from_uid|get_user_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_uid|get_user_name}"></a>
 						
 						<span>
@@ -259,17 +275,57 @@
 				</div>
 				<div class="input_box">
 					<textarea name="" rows="" cols="" id="input_box" class="msgcontent"></textarea>
-					<button id="send" onclick="postmsg()">发送（S）</button>
+					<button id="send">发送（S）</button>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
+
+<!--活跃圈子-->
+<div class="pc_qun_hot" style="display:none">
+{qb:tag name="pc_qun_hot" js="pc_qun_hot" class="app\member\controller\Msg@listqun" rows="30"}
+					<div class="friends_box" data-uid="-{$rs.qun_id}">
+							<div class="user_head"><a href="{$rs['qun']['url']}" target="_blank"><img src="{$rs['qun']['picurl']}" onerror="this.src='__STATIC__/images/nopic.png'"/></a></div>
+							<div class="friends_text">
+								<p class="user_name">{$rs['qun']['title']}</p>
+							</div>
+					</div>
+{/qb:tag}
+</div>
+<!--活跃圈子-->
+
+<!--我加入的圈子-->
+<div class="pc_qun_myjoin" style="display:none">
+{qb:tag name="pc_qun_myjoin" js="pc_qun_myjoin" union="uid=$userdb.uid" order="update_time" by="desc" class="app\qun\model\Member@label_mygroup" rows="20"}
+					<div class="friends_box" data-uid="-{$rs.id}">
+							<div class="user_head"><a href="{$rs.url}" target="_blank"><img src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a></div>
+							<div class="friends_text">
+								<p class="user_name">{$rs.title}</p>
+							</div>
+					</div>
+{/qb:tag}
+</div>
+<!--我加入的圈子-->
+
+<!--我访问过的圈子-->
+<div class="pc_qun_myvisit" style="display:none">
+{qb:tag name="pc_qun_myvisit" js="pc_qun_myvisit" union="uid=$userdb.uid" class="app\qun\model\Visit@get_label" rows="20"}
+					<div class="friends_box" data-uid="-{$rs.id}">
+							<div class="user_head"><a href="{$rs.url}" target="_blank"><img src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a></div>
+							<div class="friends_text">
+								<p class="user_name">{$rs.title}</p>
+							</div>
+					</div>
+{/qb:tag}
+</div>
+<!--我访问过的圈子-->
+
 <script type="text/javascript">
 var ListMsgUserUrl = "{qb:url name='pc_msg_user_list' /}";			//获取分页的消息用户列表
 var getShowMsgUrl = "{qb:url name='pc_show_all_msg' /}";			//获取更多分页的会话记录
-var now_time = "{:time()}";											//当前时间点做个记录,之后的消息就当新消息处理
+//var now_time = "{:time()}";											//当前时间点做个记录,之后的消息就当新消息处理
 var postMsgUrl = "{:urls('wxapp.msg/add')}";						//发送消息提交的地址
 var get_user_info_url = "{:urls('index/wxapp.member/getbyid')}";	//根据UID获取某个用户的相关资料
 var get_uid_by_name_url = "{:urls('index/wxapp.member/get_uid')}";	//根据帐户名获取用户uid,主要是给新用户发消息用
@@ -284,7 +340,7 @@ var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
 
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
-<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?5"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?wed"></script>
 
 
 </body>

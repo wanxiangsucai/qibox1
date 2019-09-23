@@ -1,134 +1,260 @@
-{extend name="$member_style_layout" /}
+<!DOCTYPE HTML>
+<html>
 
-{block name="title"}短消息{/block}
-{block name="content"}
-
-{include file="msg/menu" /}
-
-<style type="text/css">
-.tongji-msg dd{
-	float:left; 
-	width:50px;height:47px; 
-}
-.tongji-msg dd img{
-	width:47px;height:47px; border-radius:100%;
-}
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <title>短消息</title>
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="__STATIC__/libs/bui/css/bui.css" />
+    <link rel="stylesheet" href="__STATIC__/libs/bui/css/style.css" />
+	<link rel="stylesheet" href="__STATIC__/icon/icon.css">
  
-.qb_member_ListType1 ol span.FL {
-	color:#aaa;
-	width:70%;
-	padding-top:7px;
-}
-.tongji-msg .FL em{
-	font-size:18px;font-weight:bold;color:#333;
-	margin-bottom:8px;
-}
+ 
+</head>
 
-.tongji-msg .FR em{
-	display:block;
-	margin-top:15px;
-	border-radius:100%;
-	text-align:center;
-	line-height:22px;
-	width:22px;
-	height:22px;
-	font-size:12px;
-	background:#ddd;
-	color:#333;
-}
-.tongji-msg .FR em.ck{
-	background:red;
-	color:#fff;
-}
+<body>
+    <!-- 第1步: 开启单页路由 -->
+    <div id="bui-router"></div>
+	<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+	<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 
-.tongji-msg .FR i{
-	margin-top:12px;
-	font-size:25px;
-	color:#eee;
-}
-</style>
+    <!-- <script src="js/zepto.js"></script>-->
+    <script src="__STATIC__/libs/bui/js/bui.js"></script>
+    <!-- 初始化单页 -->
+    <script src="__STATIC__/libs/bui/index.js?0"></script>
 
-<div class="qb_member_Cnt tongji-msg sys_waplist_msg_list001">
-{qb:tag name="sys_waplist_msg_list001" js="sys_waplist_msg_list001" class="app\member\controller\Msg@listuser" rows="10"}
-	<ul class="qb_member_ListType1 list_{$rs.id}">
-		<ol><dd class="user_icon"><a href="{:get_url('user',$rs.uid)}"><img src="{$rs.uid|get_user_icon}" onerror="this.src='__STATIC__/images/nobody.gif'"></a></dd>
-			<span class="FL" onclick="open_msg({$rs.id})"><em>{$rs.uid?get_user_name($rs.uid):'系统消息'}</em><br>{$rs.title}</span>
-			<span class="FR"><em class="shownum {$rs.new_num?'ck':''}">{if $rs.new_num} {$rs.new_num} {else /} {$rs.num>999?'99+':$rs.num} {/if}</em></span>
-		</ol>		 
-	</ul>
+	<script src="__STATIC__/js/core/vue.min.js"></script>
+
+
+
+
+<!--消息最近的会话用户列表-->
+<div class="wap_msg_user_list" style="display:none;">
+{qb:tag name="wap_msg_user_list" js="wap_msg_user_list" class="app\member\controller\Msg@listuser" rows="30"}
+									<li class="list-item list_{$rs.f_uid} {$rs.f_uid<0?'list-qun':''}">
+                                        <div class="bui-btn bui-box">
+                                               <!--<div class="ring ring-group"> <i class="icon"></i></div>-->
+											   <a href="{$rs.f_uid>0?get_url('user',$rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['url']}" target="_blank"><img class="ring ring-group" src="{$rs.f_uid>0?get_user_icon($rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['picurl']}" onerror="this.src='__STATIC__/images/noface.png'"></a>
+                                            <div class="span1 a" href="__STATIC__/libs/bui/pages/chat/chat.html?uid={$rs.f_uid}">
+                                                <h3 class="item-title">
+                                                    {if $rs.f_uid>0} {$rs.f_uid|get_user_name} {elseif $rs.f_uid<0} {:fun('qun@getByid',abs($rs.f_uid))['title']} {else /} 系统消息 {/if}
+													<span class="item-time bui-right">{$rs.create_time}</span>
+                                                </h3>
+                                                <p class="item-text">
+													{if $rs.qun}
+														{$rs['qun']['uid']|get_user_name} 说: {$rs['qun']['content']|del_html|get_word=30}
+													{else /}
+														{$rs.title}
+													{/if}
+													<span class="bui-badges bui-right {$rs.new_num?'badges-ck':''}">
+														{if $rs.new_num} {$rs.new_num} {else /} {$rs.num>999?'99+':$rs.num} {/if}
+													</span>
+												</p>
+                                            </div>
+                                        </div>
+                                    </li> 
 {/qb:tag}
 </div>
+<!--短消息最近的会话用户列表-->
+
+
+<!--会员聊天内容-->
+<div class="wap_show_all_msg" style="display:none">
+{php}$uid='';{/php}
+{qb:tag name="wap_show_all_msg" js="wap_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,maxid,num" rows="15"}			
+			{if $rs.uid!=$userdb.uid}
+            <div class="bui-box-align-top chat-target">
+                <div class="chat-icon"><a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a></div>
+                <div class="span1">
+                    <div class="chat-content bui-arrow-left">{$rs.content}</div>
+                </div>
+            </div>
+			{else /}
+            <div class="bui-box-align-top chat-mine">
+                <div class="span1">
+                    <div class="bui-box-align-right">
+                      <div class="chat-content bui-arrow-right">{$rs.content}</div>
+                    </div>
+                </div>
+                <div class="chat-icon"><a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a></div>
+            </div>
+			{/if}
+			{if $rs.qun_id>0&&$rs.uid!=$userdb.uid}
+			<div style="margin-left:35px;color:#999;">
+                {$rs.from_username}
+            </div>
+			{/if}
+			<div class="bui-box-center">
+                <div class="time">{$rs.create_time}</div>
+            </div>
+			
+{/qb:tag}
+</div>
+<!--会员聊天内容-->
+
+<!--好友列表-->
+<div class="wap_myfriend" style="display:none">
+{php}$type='1,2';$uid='';{/php}
+{qb:tag name="wap_myfriend" js="wap_myfriend" class="app\common\model\Friend@get_label" where="suid=$userdb.uid&type=$type&uid=$uid" rows="500"}
+									 <li class="list-item" data-uid="{$rs.he_id}">
+                                        <div class="bui-btn bui-box">
+											<a href="{:get_url('user',$rs.he_id)}" target="_blank"><img class="ring ring-group" src="{$rs.he_id|get_user_icon}" onerror="this.src='__STATIC__/images/noface.png'"/></a>                                
+                                            <div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid={$rs.he_id}">
+                                                <h3 class="item-title">
+                                                    {$rs.he_id|get_user_name}
+                                                </h3>
+                                                <p class="item-text">[近况] {:format_time(get_user($rs['he_id'])['lastvist'],true)}登录过</p>
+                                            </div>
+                                            <i class="icon- primary">&#xe603;</i>
+                                        </div>
+                                    </li>
+{/qb:tag}
+</div>
+<!--好友列表-->
+
+<!--我加入的圈子-->
+<div class="wap_qun_myjoin" style="display:none">
+{qb:tag name="wap_qun_myjoin" js="wap_qun_myjoin" union="uid=$userdb.uid" order="update_time" by="desc" class="app\qun\model\Member@label_mygroup" rows="20"}
+							<li class="bui-btn bui-box">
+                                    <a href="{$rs.url}" target="_blank"><img class="ring ring-pc" src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
+                                <div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=-{$rs.id}">
+                                    <h3 class="item-title">
+                                        {$rs.title}
+                                    </h3>
+                                    <p class="item-text bui-text-hide">{$rs.content|del_html|get_word=30}</p>
+                                </div>
+                            </li>
+{/qb:tag}
+</div>
+<!--我加入的圈子-->
+
+
+<!--我访问过的圈子-->
+<div class="wap_qun_myvisit" style="display:none">
+{qb:tag name="wap_qun_myvisit" js="wap_qun_myvisit" union="uid=$userdb.uid" class="app\qun\model\Visit@get_label" rows="20"}
+							<li class="bui-btn bui-box">
+                                    <a href="{$rs.url}" target="_blank"><img class="ring ring-pc" src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
+                                <div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=-{$rs.id}">
+                                    <h3 class="item-title">
+                                        {$rs.title}
+                                    </h3>
+                                    <p class="item-text bui-text-hide">{$rs.content|del_html|get_word=30}</p>
+                                </div>
+                            </li>
+{/qb:tag}
+</div>
+<!--我访问过的圈子-->
+
+<!--活跃圈子-->
+<div class="wap_qun_hot" style="display:none">
+{qb:tag name="wap_qun_hot" js="wap_qun_hot" class="app\member\controller\Msg@listqun" rows="30"}
+							<li class="bui-btn bui-box">
+                                    <a href="{$rs['qun']['url']}" target="_blank"><img class="ring ring-pc" src="{$rs['qun']['picurl']}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
+                                <div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=-{$rs.qun_id}">
+                                    <h3 class="item-title">
+                                        {$rs['qun']['title']}
+                                    </h3>
+                                    <p class="item-text bui-text-hide">
+										{:get_word(del_html($rs['qun']['title']),30)}										
+									</p>									
+                                </div>
+								<span class="bui-badges">
+									{$rs.num>999?'99+':$rs.num}
+								</span>
+                            </li>
+{/qb:tag}
+</div>
+<!--活跃圈子-->
+
+<!--会员动态-->
+<div class="wap_tongji_member_feed" style="display: none;">
+{qb:tag name="wap_tongji_member_feed" js="wap_tongji_member_feed" class="app\tongji\model\Feed@getList" rows="15" where="uid=$userdb.uid&ifread<2&type=$type"}
+			<div class="bui-box-center">
+                <div class="time">{if (!in_array($rs.type,['visit','fans']))} {$rs.create_time|format_time=true} {else /} {$rs.create_time|format_time} {/if}</div>
+            </div>
+			<div class="bui-box-align-top chat-target">
+                <div class="chat-icon"><a href="{:get_url('user',$rs.from_uid)}" target="_blank"><img src="{$rs.from_uid|get_user_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_uid|get_user_name}"></a></div>
+                <div class="span1">
+                    <div class="chat-content bui-arrow-left {if (!in_array($rs.type,['visit','fans']))} chat-content-topic {/if}">
+						<span class="name bui-btn">{$rs.from_uid|get_user_name}</span>
+						{if (!in_array($rs.type,['visit','fans']))}
+							 <i>{:fun('tongji@type',$rs.type)}：</i> {$rs['topic']['title']}
+							 <a href="{$rs['topic']['url']}" class="more" target="_blank">详情</a>
+						{elseif($rs.type=='visit') /}
+							{$rs.create_time|format_time=true} 访问了你的空间 
+						{elseif($rs.type=='fans') /}
+							{$rs.create_time|format_time=true} 关注了你 
+						{/if}
+					</div>
+                </div>
+            </div>			
+{/qb:tag}
+</div>
+<!--会员动态-->
 
 <script type="text/javascript">
-var msg_page = 1;
-var get_msg_url = "{qb:url name='sys_waplist_msg_list001' /}";
-var uid_array = [];
-function showMoreMsg(){
-  msg_page++;
-  $.get(get_msg_url+msg_page,function(res){  
-    //console.log(res);
-    //console.log(res.data);
-    if(res.code==0){
-      if(res.data==''){
-        layer.msg("已经显示完了！",{time:500});
-      }else{
-        $('.sys_waplist_msg_list001').append(res.data);
-		sys_waplist_msg_list001(res);
-        scroll_get = true;
-      }
-    }else{
-      layer.msg(res.msg,{time:2500});
-    }
-  });
-}
+var ListMsgUserUrl = "{qb:url name='wap_msg_user_list' /}";			//获取分页的消息用户列表
+var getShowMsgUrl = "{qb:url name='wap_show_all_msg' /}";			//获取更多分页的会话记录
+//var now_time = "{:time()}";											//当前时间点做个记录,之后的消息就当新消息处理
+var postMsgUrl = "{:urls('wxapp.msg/add')}";						//发送消息提交的地址
+var get_user_info_url = "{:urls('index/wxapp.member/getbyid')}";	//根据UID获取某个用户的相关资料
+var get_uid_by_name_url = "{:urls('index/wxapp.member/get_uid')}";	//根据帐户名获取用户uid,主要是给新用户发消息用
 
-//异步加载被调用的函数
-function sys_waplist_msg_list001(res){	
-	$.each(res.ext.s_data,function(i,rs){
-		//console.log(rs.uid);
-		uid_array[rs.uid] = rs.id;
+var tongjiMsgUrl = "{qb:url name='wap_tongji_member_feed' /}";		//获取分页的统计数据
+var tongjiCountUrl = "{:iurl('tongji/wxapp.count/index')}";			//获取各种统计的数量
+var tongjiAllCountUrl = "{:iurl('tongji/wxapp.count/all')}?msg=";	//获取所有的动态统计数量
+
+var checkNewMsgUrl = "{:urls('member/wxapp.msg/checknew')}";		//检查新消息条数
+
+var my_uid = "{$userdb.uid}";										//我的UID,当前用户的UID
+var MyFriendUrl = "{qb:url name='wap_myfriend' /}";					//获取好友列表
+var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
+var uid_array = [];													//用户列表中的所有用户最新消息做标志
+var chat_timer;														//为了消息聊天窗口重复的定时器
+var MsgUserList,myFriendList,myFriendNum,qunObj={};					//框架加载有可能比页面加载快,也有可能更慢
+
+//标签异步加载成功执行的函数
+function wap_msg_user_list(res){
+	MsgUserList = $(".wap_msg_user_list").html();
+	if($("#listview").length>0){	//初次,这里可能还没有获取到元素DOM
+		$("#listview").html(MsgUserList);
+		MsgUserList = '';
+	}
+	$.each(res.ext.s_data,function(i,rs){		
+		//console.log(rs.uid);		
+		uid_array[rs.f_uid] = rs.id;
 	});
 }
 
-//滚动显示更多
-var scroll_get = true;  //做个标志,不要反反复复的加载
-$(document).ready(function () {
-  $(window).scroll(function () {
-    if (scroll_get==true &&  (400 + $(window).scrollTop())>($(document).height() - $(window).height())) {
-      scroll_get = false;     
-      layer.msg('内容加截中,请稍候',{time:1500});
-      showMoreMsg();
-    }
-  });
-});
-
-function open_msg(id){
-	layer.open({
-		type: 2,
-		title:'信息详情',
-		area:['95%','95%'],
-		content: "{:urls('member/msg/show')}?isframe=1&id="+id,
-	});
+//标签异步加载成功执行的函数
+function wap_myfriend(res){
+	myFriendList = $(".wap_myfriend").html();
+	myFriendNum = res.paginate.total;
 }
 
-setInterval(function(){
-	$.get(get_msg_url+"1",function(res){
-		if(res.code==0){
-			
-			$.each(res.ext.s_data,function(i,rs){
-				if(typeof(uid_array[rs.uid])=='undefined'||rs.id>uid_array[rs.uid]){
-					$('.sys_waplist_msg_list001').html(res.data);
-				}
-				if(rs.new_num<1){
-					$('.sys_waplist_msg_list001 .list_'+rs.id+' .shownum').removeClass('ck');
-					$('.sys_waplist_msg_list001 .list_'+rs.id+' .shownum').html(rs.num>999?'99+':rs.num);
-				}
-				//console.log(rs.uid+'='+rs.id+'='+uid_array[rs.uid]);
-				uid_array[rs.uid] = rs.id;
-			});
-		}
-	});
-},2000);
+//标签异步加载成功执行的函数
+function wap_qun_myjoin(res){
+	qunObj.myjoin_val = $(".wap_qun_myjoin").html();
+	qunObj.myjoin_num = res.paginate.total;
+}
+//标签异步加载成功执行的函数
+function wap_qun_myvisit(res){
+	qunObj.myvisit_val = $(".wap_qun_myvisit").html();
+	qunObj.myvisit_num = res.paginate.total;
+}
+//标签异步加载成功执行的函数
+function wap_qun_hot(res){
+	qunObj.hotqun_val = $(".wap_qun_hot").html();
+	qunObj.hotqun_num = res.paginate.total;
+}
 
+var to_uid = {:isset($info['ifread'])?$info.uid:($touid?:'""')};	//$info['ifread']变量存在是短消息的内容页传来的参数,$touid是短消息发布页传来的参数
+var member_menu = {$menu?json_encode($menu,JSON_UNESCAPED_UNICODE):'""'};		//会员中心菜单
 </script>
-{/block}
+
+{include file="index@weixingz" /}<!--若没有关注微信公众号,就做个提醒-->
+
+</body>
+
+</html>

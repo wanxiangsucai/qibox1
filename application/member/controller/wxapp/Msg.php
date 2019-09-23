@@ -105,22 +105,36 @@ class Msg extends MemberBase
     {
         if($this->request->isPost()){
             $data = $this->request->post();
-            $info = $data['uid'] ? get_user($data['uid']) : get_user($data['touser'],'username');
-            if (!$info) {
-                return $this->err_js('该用户不存在!');
-            }elseif (!$data['content']) {
+            if ($data['content']=='') {
                 return $this->err_js('内容不能为空');
             }
-            if (!$data['title']) {
-                $data['title'] = '来自 '.$this->user['username'].' 的私信';
-            }
-            $data['touid'] = $info['uid'];
+            if ($data['uid']<0) {   //圈子群聊
+                $qun_id = abs($data['uid']);
+                $info = fun('qun@getByid',$qun_id);
+                if (!$info) {
+                    return $this->err_js('该'.__QUN__.'不存在!');
+                }
+                $data['qun_id'] = $qun_id;
+                $data['title'] || $data['title'] = '';
+                $data['touid'] = 0;
+                $data['ifread'] = $info['uid']==$this->user['uid']?1:0;
+            }else{
+                $info = $data['uid'] ? get_user($data['uid']) : get_user($data['touser'],'username');
+                if (!$info) {
+                    return $this->err_js('该用户不存在!');
+                }
+                if (!$data['title']) {
+                    $data['title'] = '来自 '.$this->user['username'].' 的私信';
+                }
+                $data['touid'] = $info['uid'];
+            }            
             $data['uid'] = $this->user['uid'];
-            $data['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($data['content']));
+            $data['content'] = fun('Filter@str',$data['content']);            
+            //$data['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($data['content']));
             $result = Model::add($data,$this->admin);
             if(is_numeric($result)){
                 $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
-                send_wx_msg($info['weixin_api'], $content);
+                $info['weixin_api'] && send_wx_msg($info['weixin_api'], $content);
                 return $this->ok_js();
             }elseif($result['errmsg']){
                 return $this->err_js($result['errmsg']);

@@ -408,7 +408,11 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 	line-height: 26px;
 	padding-left: 12px;
 }
-
+.friends_list li > p i{
+	float:right;
+	margin-top:7px;
+	margin-right:10px;
+}
 .friends_box{
 	padding: 12px 0;
 	width: 100%;
@@ -762,9 +766,22 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 	width:100%;
 	height:20px;
 	text-align:center;
-	color:#666;
+	margin-bottom:5px;
+	
+}
+.office_text .time a{
+	background:#ddd;
+	color:#fff;
+	padding:1px 9px 1px 9px;
+	border-radius:3px;
 }
 
+.office_text .name{
+	margin-bottom:3px;
+	padding-left:45px; 
+	color:#666;
+	height:16px;
+}
 
 #remind_online{
 	position: absolute;

@@ -8,6 +8,26 @@ use app\common\model\User;
 class Member extends IndexBase
 {
     /**
+     * 按距离列出用户
+     * @param string $point
+     * @param number $rows
+     * @return \think\Paginator
+     */
+    public function get_near($point='113.224932,23.184547',$rows=10){
+        $listdb = User::getListByMap([],$point,$rows);
+        $array = getArray($listdb);
+        foreach($array['data'] AS $key => $rs){
+            $this->format_field($rs);
+            $rs['picurl'] = $rs['icon'];
+            $rs['id'] = $rs['uid'];
+            $rs['title'] = $rs['username'];
+            $rs['url'] = get_url('user',$rs['uid']);
+            $array['data'][$key] = $rs;
+        }
+        return $this->ok_js($array); 
+    }
+    
+    /**
      * 统计全站用户总数
      * @return void|unknown|\think\response\Json
      */
@@ -17,8 +37,14 @@ class Member extends IndexBase
     }
     
     private function format_field(&$rs=[]){
-        $rs['icon'] = tempdir($rs['icon']);
-        unset($rs['password'],$rs['password_rand'],$rs['qq_api'],$rs['weixin_api'],$rs['wxapp_api'],$rs['lastip'],$rs['regip'],$rs['email'],$rs['address'],$rs['mobphone'],$rs['idcard'],$rs['truename'],$rs['config'],$rs['rmb'],$rs['rmb_pwd']);
+        $rs['icon'] = $rs['icon']?tempdir($rs['icon']):'';
+        $rs['group_name'] = getGroupByid($rs['groupid']);
+        $rs['lastvist'] = format_time($rs['_lastvist']=$rs['lastvist'],true);
+        $rs['regdate'] = date('Y-m-d H:i',$rs['_regdate']=$rs['regdate']);
+        unset($rs['password'],$rs['password_rand'],$rs['qq_api'],$rs['weixin_api'],$rs['wxapp_api'],$rs['config'],$rs['rmb_pwd']);
+        if ($rs['uid']!=$this->user['uid']) {
+            unset($rs['rmb'],$rs['truename'],$rs['lastip'],$rs['regip'],$rs['email'],$rs['address'],$rs['mobphone'],$rs['idcard']);
+        }
     }
     
     /**

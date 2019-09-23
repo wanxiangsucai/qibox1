@@ -27,10 +27,10 @@ class Msg extends Model
             if (cache('pm_msg_'.$data['uid'])) {
                 return ['errmsg'=>'请不要那么频繁的发送消息'];
             }
-            cache('pm_msg_'.$data['uid'],$data['touid'],5);
+            cache('pm_msg_'.$data['uid'],time(),5);
         }
         $result = parent::create($data);
-        if($data['uid']>0){
+        if($data['uid']>0 && $data['touid']>0){
             if (empty($info)) {
                 Friend::add($data['uid'],$data['touid']);    //给用户发消息,就相当于成为他的粉丝
             }else{

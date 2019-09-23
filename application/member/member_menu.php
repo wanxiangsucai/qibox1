@@ -12,6 +12,7 @@ return array(
 				'icon'=>'fa fa-windows',
                 'sons'=>array(
                         array(
+                                'icon'=>'fa fa-windows',
                                 'title'=>'会员基础设置',
                                 'sons'=>array(
                                         array(

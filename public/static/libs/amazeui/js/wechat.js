@@ -40,6 +40,39 @@ $(document).ready(function(){
        $('.windows_input').css('background','');
        $('#input_box').css('background','');
     });
+
+	//发送消息
+	var allowsend = true;
+	function postmsg(){
+		var content = $(".msgcontent").val();
+		if(content==''){
+			layer.alert('消息内容不能为空');
+			return ;
+		}else if(allowsend == false){
+			layer.alert('请不要重复发送信息');
+			return ;
+		}
+		allowsend = false;
+		$.post(postMsgUrl,{'uid':uid,'content':content,},function(res){
+			allowsend = true;
+			if(res.code==0){
+				$(".msgcontent").val('');
+				layer.msg('发送成功');
+			}else{
+				layer.alert('发送失败:'+res.msg);
+			}
+		});
+	}
+	$("#send").click(function(){
+		postmsg();
+	});
+
+	$("#input_box").unbind('keydown').bind('keydown', function(e){
+		console.log(e.ctrlKey +'  '+e.keyCode);
+		if(e.ctrlKey && e.keyCode==13){
+			postmsg();
+		}
+	})
 });
 
 /*
@@ -125,22 +158,7 @@ $(function(){
 });
 
 
-//发送消息
-function postmsg(){
-	var content = $(".msgcontent").val();
-	if(content==''){
-		layer.alert('消息内容不能为空');
-		return ;
-	}
-	$.post(postMsgUrl,{'uid':uid,'content':content,},function(res){		
-		if(res.code==0){
-			$(".msgcontent").val('');
-			layer.msg('发送成功');
-		}else{
-			layer.alert('发送失败:'+res.msg);
-		}
-	});
-}
+
 
 
 
@@ -199,14 +217,21 @@ function showMore_User(){
 
 //设置当前聊天的用户名
 function set_user_name(uid){
-	if(uid==0){
+	if(uid>0){
+		$.get(get_user_info_url+"?uid="+uid,function(res){
+			if(res.code==0){
+				$("#send_user_name").html(res.data.username);
+			}
+		});
+	}else if(uid<0){
+		$.get("/index.php/qun/wxapp.qun/getbyid.html?id="+Math.abs(uid),function(res){
+			if(res.code==0){
+				$("#send_user_name").html(res.data.title);
+			}
+		});
+	}else{
 		$("#send_user_name").html("系统消息");
 	}
-	$.get(get_user_info_url+"?uid="+uid,function(res){
-		if(res.code==0){
-			$("#send_user_name").html(res.data.username);
-		}
-	});
 }
 
 function add_new_user(){
@@ -233,12 +258,18 @@ function add_new_user(){
 
 //加载更多的会话记录
 function showMoreMsg(uid){
-	if(show_msg_page==1)layer.msg("数据加载中,请稍候...");
+	if(show_msg_page==1){
+		maxid = -1;
+		layer.msg("数据加载中,请稍候...");
+	}
 	msg_scroll = false;
 	$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){  
 		//console.log(res);
 		//console.log(res.data);
 		if(res.code==0){
+			if(show_msg_page==1){
+				maxid = res.ext.maxid;
+			}
 			set_main_win_content(res);
 		}else{
 			layer.msg(res.msg,{time:2500});
@@ -249,21 +280,25 @@ function showMoreMsg(uid){
 //往主窗口里边加入显示的数据
 function set_main_win_content(res){
 	layer.closeAll();
+	var that = $('.pc_show_all_msg');
 	if(res.data==''){
 		if(show_msg_page==1){
-			$('.pc_show_all_msg').html("");
+			that.html("");
 			layer.msg("没有任何聊天记录！",{time:1000});
 		}else{
 			layer.msg("已经显示完了！",{time:500});
 		}		
 	}else{
+		
 		if(show_msg_page==1){
-			$('.pc_show_all_msg').html(res.data);
-			$(".pc_show_all_msg").css('top',(453-$(".pc_show_all_msg").height())+'px');
+			that.html(res.data);
+			format_show_time(that);
+			that.css('top',(453-that.height())+'px');			
 		}else{
-			var old_h = $(".pc_show_all_msg").height();
+			var old_h = that.height();
 
-			$('.pc_show_all_msg').append(res.data);
+			that.append(res.data);
+			format_show_time(that);
 
 			var new_h = $(".pc_show_all_msg").height();					
 			$(".pc_show_all_msg").css('top',(old_h-new_h)+'px');
@@ -272,6 +307,18 @@ function set_main_win_content(res){
 		show_msg_page++;
 		msg_scroll = true;
 	}
+}
+
+//隐藏相邻的时间
+function format_show_time(that){
+	that.children('li').each(function(i){
+		var this_time = $(this).find('.time').data('time');
+		var next_time = $(this).next().find('.time').data('time');
+		//console.log(i+" "+this_time+" "+next_time);
+		if(next_time!=undefined && this_time-next_time<60){
+			$(this).find('.time').hide();
+		}
+	})
 }
 
 //加载统计动态的详细内容数据
@@ -301,6 +348,7 @@ var msg_scroll = true;  //做个标志,不要反反复复的加载会话内容
 var user_scroll = true;  //做个标志,不要反反复复的加载用户列表
 var user_div_top = 0;	//当前信息用户列表滚动条坐标top系数
 var show_msg_top = 0;  //当前对话框滚动条坐标top系数
+var maxid = -1;
 
 $(function(){
 	
@@ -332,12 +380,25 @@ $(function(){
 			showMore_User();
 		}
 
-		check_new_showmsg();
+		if(maxid>=0)check_new_showmsg();
 
 		if(num%3==0)check_list_new_msgnum();
 		
 
 	}, 1000);
+
+
+	$(".friends_list li > p").click(function(){
+		if($(this).find('i').is('.fa-chevron-up')){
+			$(this).find('i').removeClass('fa-chevron-up');
+			$(this).find('i').addClass('fa-chevron-down');
+			$(this).parent().children('div').show();
+		}else{
+			$(this).find('i').removeClass('fa-chevron-down');
+			$(this).find('i').addClass('fa-chevron-up');
+			$(this).parent().children('div').hide()
+		}
+	});
 
 
 	//刷新最近的消息用户
@@ -352,8 +413,8 @@ $(function(){
 					}
 					//新消息已读
 					if(rs.new_num<1){
-						$('.pc_msg_user_list .list_'+rs.id+' .shownum').removeClass('ck');
-						$('.pc_msg_user_list .list_'+rs.id+' .shownum').html(rs.num>999?'99+':rs.num);
+						$('.pc_msg_user_list .list_'+rs.f_uid+' .shownum').removeClass('ck');
+						$('.pc_msg_user_list .list_'+rs.f_uid+' .shownum').html(rs.num>999?'99+':rs.num);
 					}
 					//console.log(rs.f_uid+'='+rs.id+'='+uid_array[rs.f_uid]);
 					uid_array[rs.f_uid] = rs.id;
@@ -365,17 +426,20 @@ $(function(){
 
 	//刷新会话用户中有没有新消息
 	function check_new_showmsg(){
-		$.get(getShowMsgUrl+"1&time="+now_time+"&uid="+uid+"&num="+num,function(res){
+		$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){
 			if(res.code==0){
 				num++;
+				var that = $('.pc_show_all_msg');
 				if(res.data!=""){	//有新的聊天内容
-					var vh = $(".pc_show_all_msg").height();
+					var vh = that.height();
 					//console.log( '原来的高度='+vh);
-					$('.pc_show_all_msg').prepend(res.data);
+					that.prepend(res.data);
+					format_show_time(that)	//隐藏相邻的时间
 					goto_bottom(vh);
 				}
 			}
 			//console.log( '='+res.ext.lasttime);
+			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
 				$("#remind_online").show();
 			}else{
@@ -401,7 +465,7 @@ $(function(){
 	goto_bottom(500)
 
 	//统计数据的类型选择
-	var tongji_num = parseInt($("#tongji_num").html());
+	var tongji_num = 0;//parseInt($("#tongji_num").html());
 	$("#tongji li").each(function(){
 		var that = $(this);
 		var type = that.data('type');
@@ -411,6 +475,12 @@ $(function(){
 			that.addClass('icon_active');
 			tj_type = type;
 			show_msg_page = 1;
+			tongji_num = tongji_num-parseInt(that.find('em').html());
+			if(tongji_num<1){
+				$("#tongji_num").hide();
+			}else{
+				$("#tongji_num").html(tongji_num);
+			}
 			that.find('em').hide();
 			get_tongji_msg(type)
 		});
@@ -434,7 +504,18 @@ $(function(){
 
 
 
-
+function pc_qun_hot(){	//异步加载执行的函数
+	$("#hot_qunzi").append( $(".pc_qun_hot").html() );
+	add_friend_click_fun();
+}
+function pc_qun_myjoin(){	//异步加载执行的函数
+	$("#my_join_qunzi").append( $(".pc_qun_myjoin").html() );
+	add_friend_click_fun();
+}
+function pc_qun_myvisit(){	//异步加载执行的函数
+	$("#my_visit_qunzi").append( $(".pc_qun_myvisit").html() );
+	add_friend_click_fun();
+}
 
 function pc_myfriend(){	//异步加载执行的函数
 	$("#my_friend").find('.friends_box').remove();

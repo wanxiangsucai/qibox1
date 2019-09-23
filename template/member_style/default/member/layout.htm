@@ -55,5 +55,11 @@ layui.use(['form','element'], function(){
 </script>
 {/block}
 
+<script type="text/javascript">
+if(window.self!=window.top){
+	$(".qb_header").hide();	//在框架里就不要显示头部返回按钮
+}
+</script>
+
 </body>
 </html>

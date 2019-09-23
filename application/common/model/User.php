@@ -565,4 +565,25 @@ class User extends Model
 	    return $array;
 	}
 	
+	
+	/**
+	 * 按地图位置远近获取数据
+	 * @param array $map    查询条件
+	 * @param string $point    地图点坐标
+	 * @param number $rows
+	 * @param array $pages
+	 * @return \think\Paginator
+	 */
+	public static function getListByMap($map=[],$point='113.224932,23.184547',$rows=0,$pages=[]){
+	    list($x,$y) = explode(',',$point);
+	    $x = (float)$x;
+	    $y = (float)$y;
+	    $data_list = self::where($map)->field("*,(POW( `map_x`-$x,2 )+POW(`map_y`-$y,2)) AS map_point")->order('map_point asc')->paginate(
+	            empty($rows)?null:$rows,    //每页显示几条记录
+	            empty($pages[0])?false:$pages[0],
+	            empty($pages[1])?['query'=>input('get.')]:$pages[1]
+	            );
+	    return $data_list;
+	}
+	
 }

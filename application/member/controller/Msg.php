@@ -24,6 +24,36 @@ class Msg extends MemberBase
         return $info;
     }
     
+    
+    /**
+     * 标签调用活跃圈子
+     * @param array $config
+     */
+    public function listqun($config=[])
+    {
+        $cfg = unserialize($config['cfg']);
+        $rows = intval($cfg['rows']) ?: 10;
+        $page = input('page')>1?input('page'):1;
+        $min = ($page-1)*$rows;
+
+        
+        $listdb = Model::where('qun_id','>',0)
+        ->field('uid,create_time,content,id,qun_id,count(id) AS num')
+        ->group('qun_id')
+        ->order('id','desc')
+        ->paginate($rows);
+        
+        $listdb->each(function(&$rs,$key){
+            $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
+            $rs['qun'] = fun('qun@getByid',$rs['qun_id']);
+            $listdb[$key] = $rs;
+        });
+//         $array['data'] = $listdb;
+//         $array['s_data'] = $array['data'];
+//         $array['total'] = '';
+        return $listdb;
+    }
+    
     /**
      * 标签调用，调用类似微信那样的用户列表。
      * @param array $config
@@ -36,13 +66,13 @@ class Msg extends MemberBase
         $min = ($page-1)*$rows;
 
         $subQuery = Model::where('touid',$this->user['uid'])->whereOr('uid',$this->user['uid'])
-        ->field('uid,touid,create_time,title,id,ifread')
+        ->field('uid,touid,create_time,title,id,ifread,qun_id,visit_time')
         ->order('id desc')
         ->limit(5000)   //理论上某个用户的短消息不应该超过5千条。
         ->buildSql();
         
         $listdb = Db::table($subQuery.' a')
-        ->field('uid,touid,create_time,title,id,count(id) AS num,sum(ifread) AS old_num,((uid + touid + ABS( cast(uid AS signed) - cast(touid AS signed) ))/2) AS MX')
+        ->field('uid,touid,create_time,title,id,qun_id,visit_time,count(id) AS num,sum(ifread) AS old_num,(qun_id*1000000+(uid + touid + ABS( cast(uid AS signed) - cast(touid AS signed) ))/2) AS MX')
         ->group('MX')
         ->order('id','desc')
         ->limit($min,$rows)
@@ -50,13 +80,33 @@ class Msg extends MemberBase
         
         foreach($listdb AS $key=>$rs){
             $rs['new_num'] = 0;
-            if($rs['uid']==$this->user['uid']){
-                $rs['f_uid'] = $rs['touid'];
-                $rs['title'] = '对方还未回复...';
+            if($rs['qun_id']>0){
+                $rs['f_uid'] = -$rs['qun_id'];
+                $rs['title'] = '圈子群聊';
+                $rs['qun'] = [];
+                $rs['new_num'] = Model::where([
+                    'qun_id'=>$rs['qun_id'],
+                    'create_time'=>['>',$rs['visit_time']],
+                ])->count('id');
+                if($rs['new_num']>0){
+                    $qs = Model::where('qun_id',$rs['qun_id'])->order('id desc')->find();
+                    $rs['id'] = $qs['id'];
+                    $rs['qun'] = $qs;
+                }else{
+                    $rs['num'] = Model::where('qun_id',$rs['qun_id'])->count('id');
+                }
             }else{
-                $rs['f_uid'] = $rs['uid'];
-                $rs['new_num'] = $rs['num']-$rs['old_num'];
+                if($rs['uid']==$this->user['uid']){
+                    $rs['f_uid'] = $rs['touid'];
+                    $rs['title'] = '对方还未回复...';
+                }else{
+                    $rs['f_uid'] = $rs['uid'];
+                }
+                if($rs['num']!=$rs['old_num']){ //无法确认是哪一方的未读消息,所以要进一步查询
+                    $rs['new_num'] = Model::where('touid',$this->user['uid'])->where('uid',$rs['f_uid'])->where('ifread',0)->count('id');
+                }
             }
+            
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
             $listdb[$key] = $rs;
         }
@@ -77,10 +127,11 @@ class Msg extends MemberBase
         $id = $cfg['id'];
         $rows = $cfg['rows'];
         $uid = intval($cfg['uid']);
-        $time = $cfg['time'];
-        if($cfg['num']>0){
-            $time = get_cookie('msg_time');
-        }
+        $maxid = intval($cfg['maxid']);
+//         $time = $cfg['time'];
+//         if($cfg['num']>0){
+//             $time = get_cookie('msg_time');
+//         }
         
         if($id){
             $info = $this->get_info($id);
@@ -92,28 +143,52 @@ class Msg extends MemberBase
             return [];
         }
         
-        cache('msg_time_'.$this->user['uid'].'-'.$uid,time(),60);  //把自己的操作时间做个标志
-        
-        $from_time = cache('msg_time_'.$uid.'-'.$this->user['uid']); //查看对方给自己的最后操作时间
-        
-        $this->map = [
-            'touid'=>$this->user['uid'],
-            'uid'=>$uid,
-            'id'=>['<=',$id],
-        ];
-        
-        $this->OrMap = [
-            'uid'=>$this->user['uid'],
-            'touid'=>$uid,
-            'id'=>['<=',$id],
-        ];
-        if (empty($id)) {
-            unset($this->map['id'],$this->OrMap['id']);
+        if($uid>0){
+            cache('msg_time_'.$this->user['uid'].'-'.$uid,time(),60);  //把自己的操作时间做个标志            
+            $from_time = cache('msg_time_'.$uid.'-'.$this->user['uid']); //查看对方给自己的最后操作时间
+        }elseif($uid<0){
+            $from_time = 0;
+            $c_array = cache('msg_time_'.$uid)?:[];
+            unset($c_array[$this->user['uid']]);
+            $from_time = end($c_array);
+            $c_array[$this->user['uid']] = time();
+            cache('msg_time_'.$uid,$c_array,10);
         }
-        if($time>0){
-            $this->map['create_time'] = ['>',$time];
-            $this->OrMap['create_time'] = ['>',$time];
+        
+        if($uid<0){
+            $this->OrMap = [];
+            $this->map = [
+                'qun_id'=>abs($uid),
+            ];
+            if($maxid>0){
+                $this->map['id'] = ['>',$maxid];
+            }
+        }else{
+            $this->map = [
+                'touid'=>$this->user['uid'],
+                'uid'=>$uid,
+                'id'=>['<=',$id],
+            ];
+            
+            $this->OrMap = [
+                'uid'=>$this->user['uid'],
+                'touid'=>$uid,
+                'id'=>['<=',$id],
+            ];
+            if (empty($id)) {
+                unset($this->map['id'],$this->OrMap['id']);
+            }
+            if(isset($cfg['maxid'])){
+                $this->map['id'] = ['>',$maxid];
+                $this->OrMap['id'] = ['>',$maxid];
+            }
+//             elseif($time>0){
+//                 $this->map['create_time'] = ['>',$time];
+//                 $this->OrMap['create_time'] = ['>',$time];
+//             }
         }
+        
+        
 //         $this->NewMap = [
 //                 'uid'=>$this->user['uid'],
 //                 'touid'=>$info['uid'],
@@ -129,23 +204,35 @@ class Msg extends MemberBase
 //             $query->where($this->NewMap);
         })->order("id desc")->paginate($rows);
         
-        $data_list->each(function(&$rs,$key){
-            $create_time = strtotime($rs['create_time']);
-            if($create_time>get_cookie('msg_time')){
-                set_cookie('msg_time',$create_time);
-            }            
-			//$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
+//         $this->cktime = true;
+        $array = getArray($data_list);
+        foreach($array['data'] AS $key=>$rs){
+//             $create_time = strtotime($rs['create_time']);
+//             if($create_time>get_cookie('msg_time')){
+//                 set_cookie('msg_time',$create_time);
+//             }
+            if($rs['id']>$maxid){
+                $maxid = $rs['id'];
+                if($rs['qun_id']>0){
+                    $qs = Model::where(['qun_id'=>$rs['qun_id'],'uid'=>$this->user['uid']])->order('id desc')->find();
+                    if($qs){
+                        Model::update(['id'=>$qs['id'],'visit_time'=>time()]);  //标志最后收到圈子群聊信息的时间
+                    }
+                }
+            }
+            
+            //$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
             $rs['from_username'] = get_user_name($rs['uid']);
             $rs['from_icon'] = get_user_icon($rs['uid']);
             $rs['content'] = $this->format_content($rs['content']);
             if($rs['ifread']==0&&$rs['touid']==$this->user['uid']){
                 Model::update(['id'=>$rs['id'],'ifread'=>1]);
             }
-            return $rs;
-        });
-            $array = getArray($data_list);
-            $array['lasttime'] = time()-$from_time; //对方最近操作的时间
-            return $array;
+            $array['data'][$key] = $rs;
+        }
+        $array['lasttime'] = time()-$from_time; //对方最近操作的时间
+        $array['maxid'] = $maxid;
+        return $array;
     }
     
     /**
@@ -157,6 +244,7 @@ class Msg extends MemberBase
         if( strstr($content,"</")&&strstr($content,">") ){    //如果是网页源代码的话，就不解晰了。
             return $content;
         }
+        $content = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($content));
         $content = preg_replace_callback("/(http|https):\/\/([\w\?&\.\/=-]+)/", array($this,'format_url'), $content);
         return $content;
     }
@@ -293,6 +381,7 @@ class Msg extends MemberBase
         }
 		//$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
         $this->assign('info',$info);
+        $this->assign('touid',$info['uid']);
         $this->assign('id',$id);
         return $this->fetch();
     }
