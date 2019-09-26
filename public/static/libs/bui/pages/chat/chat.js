@@ -54,7 +54,7 @@ loader.define(function(require,exports,module) {
 		//console.log(chat_timer);
 		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
 		chat_timer = setInterval(function() {
-			if(maxid>=0)check_new_showmsg();	//刷新会话用户中有没有新消息
+			if(maxid>=0)check_new_showmsg();	//刷新会话用户中有没有新消息,必须要加载到内容后有maxid值才去刷新
 		}, 1000);
     }
     pageview.bind = function () {
@@ -132,17 +132,25 @@ loader.define(function(require,exports,module) {
         });
     }
 
-	var num = 0;
+	var num = ck_num = 0;
 	//刷新会话用户中有没有新消息
 	function check_new_showmsg(){//console.log(qid+"&uid="+uid);
+		if(ck_num>num){
+			console.log("服务器还没反馈数据过来");
+			//layer.msg("服务器反馈超时",{time:500});
+			return ;
+		}
 		$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){			
-			if(res.code==0){				
-				num++;
-				if(res.data!=""){	//有新的聊天内容
-					layer.closeAll();
-					$('#chat_win').prepend(res.data);
-					$("#chat_win").parent().scrollTop(2000);
-				}
+			if(res.code!=0){				
+				layer.alert('页面加载失败,请刷新当前网页');
+				return ;
+			}
+			num++;
+			ck_num = num;
+			if(res.data!=""){	//有新的聊天内容
+				layer.closeAll();
+				$('#chat_win').prepend(res.data);
+				$("#chat_win").parent().scrollTop(2000);
 			}
 			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
@@ -151,6 +159,7 @@ loader.define(function(require,exports,module) {
 				$("#remind_online").hide();
 			}
 		});
+		ck_num++;
 	}
 
 	//加载更多的会话记录

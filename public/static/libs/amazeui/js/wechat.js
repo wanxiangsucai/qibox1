@@ -352,7 +352,7 @@ var maxid = -1;
 
 $(function(){
 	
-	var num = 0;
+	var num = ck_num = 0;
 
 	setInterval(function() {
 
@@ -426,17 +426,25 @@ $(function(){
 
 	//刷新会话用户中有没有新消息
 	function check_new_showmsg(){
+		if(ck_num>num){
+			console.log("服务器还没反馈数据过来");
+			//layer.msg("服务器反馈超时",{time:500});
+			return ;
+		}
 		$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){
-			if(res.code==0){
-				num++;
-				var that = $('.pc_show_all_msg');
-				if(res.data!=""){	//有新的聊天内容
-					var vh = that.height();
-					//console.log( '原来的高度='+vh);
-					that.prepend(res.data);
-					format_show_time(that)	//隐藏相邻的时间
-					goto_bottom(vh);
-				}
+			if(res.code!=0){
+				layer.alert('页面加载失败,请刷新当前网页');
+				return ;
+			}
+			num++;
+			ck_num = num;
+			var that = $('.pc_show_all_msg');
+			if(res.data!=""){	//有新的聊天内容
+				var vh = that.height();
+				//console.log( '原来的高度='+vh);
+				that.prepend(res.data);
+				format_show_time(that)	//隐藏相邻的时间
+				goto_bottom(vh);
 			}
 			//console.log( '='+res.ext.lasttime);
 			maxid = res.ext.maxid;
@@ -446,6 +454,7 @@ $(function(){
 				$("#remind_online").hide();
 			}
 		});
+		ck_num++;
 	}
 
 	//优先显示底部的内容

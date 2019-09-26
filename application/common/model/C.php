@@ -568,6 +568,7 @@ abstract class C extends Model
         return Db::name(self::getTableByMid($mid))->where($map)->count('id');
     }
     
+    
     /**
      * 通过ID得到对应的数据表名
      * @param number $id 内容ID
@@ -576,7 +577,7 @@ abstract class C extends Model
     public static function getTableById($id=0){
         //static::check_model();
         return self::getTableByMid(self::getMidById($id));
-    }
+    }    
     
     /**
      * 按地图位置远近获取数据
@@ -594,10 +595,43 @@ abstract class C extends Model
         $x = (float)$x;
         $y = (float)$y;
         $data_list = Db::name(self::getTableByMid($mid))->where($map)->field("*,(POW( `map_x`-$x,2 )+POW(`map_y`-$y,2)) AS map_point")->order('map_point asc')->paginate(
-                empty($rows)?null:$rows,    //每页显示几条记录
-                empty($pages[0])?false:$pages[0],
-                empty($pages[1])?['query'=>input('get.')]:$pages[1]
-                );
+            empty($rows)?null:$rows,    //每页显示几条记录
+            empty($pages[0])?false:$pages[0],
+            empty($pages[1])?['query'=>input('get.')]:$pages[1]
+            );
+        
+        if($format){
+            static::$m_name = self::$model_key;  //防止 format_data里边重新实例化其它类 导致 $model_key 发生变化
+            $data_list->each(function($rs,$key){
+                return static::format_data($rs);
+            });
+        }
+        return $data_list;
+    }
+    
+    
+    /**
+     * 按地图位置远近及时间点获取数据
+     * 先把范围之内的按时间先显示完,再显示范围之外的按时间排序
+     * @param number $mid 模型ID
+     * @param array $map    查询条件
+     * @param string $point    地图点坐标
+     * @param number $range  附近的距离系数,数字越大,代表附近的距离越大
+     * @param number $rows
+     * @param array $pages
+     * @param string $format
+     * @return \think\Paginator
+     */
+    public static function getListByMapRange($mid=0,$map=[],$point='100,20',$rows=0,$range=200,$pages=[],$format=true){
+        //static::check_model();
+        list($x,$y) = explode(',',$point);
+        $x = (float)$x;
+        $y = (float)$y;
+        $data_list = Db::name(self::getTableByMid($mid))->where($map)->field("*,SIGN(ROUND((POW( `map_x`-$x,2 )+POW(`map_y`-$y,2))*1000/$range)) AS map_point")->order('map_point asc,id desc')->paginate(
+            empty($rows)?null:$rows,    //每页显示几条记录
+            empty($pages[0])?false:$pages[0],
+            empty($pages[1])?['query'=>input('get.')]:$pages[1]
+            );
         
         if($format){
             static::$m_name = self::$model_key;  //防止 format_data里边重新实例化其它类 导致 $model_key 发生变化

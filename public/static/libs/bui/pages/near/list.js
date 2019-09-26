@@ -127,7 +127,7 @@ loader.define(function(require,exports,module) {
 			if(this.getStatus() == window.BMAP_STATUS_SUCCESS){
 			  map_x = result.point.lng;
 			  map_y = result.point.lat;
-			  $.get("/member.php/member/wxapp.user/edit_map.html?type=1&point="+map_x+","+map_y);
+			  $.get("/member.php/member/wxapp.user/edit_map.html?point="+map_x+","+map_y);
 			  showMapPosition(map_x,map_y);
 				//var geoc = new BMap.Geocoder();
 				//geoc.getLocation(result.point, function(rs){

@@ -60,9 +60,10 @@ class Content{
             return [];
         }
         $data = [];
+        $oss = config('webdb')['P__oss']['oss_point'];
         $type===true || $type = str_replace(',', '|', $type);
         foreach ($array[2] AS $url){
-            if ( preg_match("/^\/public\/uploads\//i", $url) ) {
+            if ( preg_match("/^\/public\/uploads\//i", $url) || ($oss&&strstr($url,$oss)) ) {
                 if ($type===true || preg_match("/($type)$/i", $url)) {
                     $data[] = $url;
                 }

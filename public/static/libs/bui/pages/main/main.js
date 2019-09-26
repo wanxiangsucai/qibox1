@@ -30,9 +30,9 @@ loader.define(function(require,exports,module) {
 
     // 模块初始化定义
     pageview.init = function () {
-        bui.init({
-          id: ".bui-page-index"
-        })
+        //bui.init({
+        //  id: ".bui-page-index"
+        //})
         // 先加载页面
         pageview.navTab();
 
@@ -148,7 +148,7 @@ loader.define(function(require,exports,module) {
             animate: true,
             // 1: 声明是动态加载的tab
             autoload: true,
-			index:typeof(member_menu)=='object'?3:0,
+			index:typeof(member_menu)=='object'?2:0,
         })
 
         // 2: 监听加载后的事件, loader 只加载一次
@@ -165,10 +165,10 @@ loader.define(function(require,exports,module) {
                 loader.require(["/public/static/libs/bui/pages/main/tongji"])
                 break;
 				case 3:
-                loader.require(["/public/static/libs/bui/pages/main/member_menu"])
+                loader.require(["/public/static/libs/bui/pages/bbs/index"])
                 break;
             }
-        }).to(typeof(member_menu)=='object'?3:0)
+        }).to(typeof(member_menu)=='object'?2:0)
     }
 
     // 列表生成模板

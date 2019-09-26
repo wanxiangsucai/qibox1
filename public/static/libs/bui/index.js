@@ -1,5 +1,5 @@
 window.router = bui.router();
-window.loader = bui.loader({cache: true});	//false代表不要缓存
+window.loader = bui.loader({cache: false});	//false代表不要缓存
 
 bui.ready(function(){
 	window.store = bui.store({
@@ -43,7 +43,7 @@ bui.ready(function(){
 			progress: true,
 			hash: true,
 			store: store,
-			cache: true,	//false代表不要缓存
+			cache: false,	//false代表不要缓存
     });
 	
 	//检查新消息的条数

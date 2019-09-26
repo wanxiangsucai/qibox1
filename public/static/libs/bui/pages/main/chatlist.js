@@ -17,6 +17,7 @@ loader.define(function(require,exports,module) {
      */
     pageview.init = function () {
 
+
         mainHeight = $(window).height() - $("#tab-home-header").height()- $("#tabDynamicNav").height();
         var slideHeight = parseInt(mainHeight) - $(".bui-searchbar").height();
 	

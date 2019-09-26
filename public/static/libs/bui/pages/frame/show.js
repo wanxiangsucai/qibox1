@@ -29,9 +29,13 @@ loader.define({
         console.log(this.moduleName + " show ="+e.type)
 
 		var pageview = {};
-
 		// 模块初始化定义
 		pageview.init = function () {
+			router.$(".btn-back").click(function(){
+				if($(".bui-router-item[data-page='/public/static/libs/bui/pages/frame/show']").length>1){
+					bui.back();
+				}				
+			});
 			this.bind();
 		}
 		pageview.bind = function () {
@@ -40,11 +44,18 @@ loader.define({
 		var getParams = bui.getPageParams();
 		getParams.done(function(result){
 			var url = result.url;
-			$("#bui_win").attr("src",url);
-			$("#bui_win").load(function(){
+			router.$("#bui_win").attr("src",url);
+			router.$("#bui_win").load(function(){
 				var that = $(this).contents().find(".qb_wap_header");
 				if(that.length>0){
 					that.hide();
+				}
+				console.log("height="+$(this).height());
+				console.log("DIVnum="+$(this).contents().find("body").height())
+				if($(this).height()<500){
+					router.refresh();
+					layer.msg('err');
+					//window.location.reload();
 				}
 			})
 		})

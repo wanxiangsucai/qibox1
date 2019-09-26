@@ -32,7 +32,7 @@ abstract class Reply extends IndexBase
         }else{
             $orderby = 'id desc';
         }
-        $data = getArray($this->model->getListByAid($id,'',$orderby,10));
+        $data = getArray($this->model->getListByAid($id,'',$orderby,$rows));
         return $this->ok_js($data);
     }
     
@@ -118,7 +118,7 @@ abstract class Reply extends IndexBase
      * @param unknown $pid 引用评论ID
      * @return \think\response\Json
      */
-    public function add($id=0,$pid=0){
+    public function add($id=0,$pid=0,$rows=10){
         if( empty($this->request->isPost()) ){
             return $this->err_js('必须POST方式提交数据');
         }
@@ -148,7 +148,7 @@ abstract class Reply extends IndexBase
         }
 
         if( ($result = $this->model->add($data,$id,$pid))!=false ){
-            $array = getArray($this->model->getListByAid($id,'','id desc',10));
+            $array = getArray($this->model->getListByAid($id,'','id desc',$rows));
             
             $this->end_add($data,$result->id);         
             

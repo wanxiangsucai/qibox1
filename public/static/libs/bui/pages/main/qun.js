@@ -16,7 +16,7 @@ loader.define(function(require,exports,module) {
         
         // 页面动态加载,需要重新初始化
         bui.init({
-            id: "#tab-contact"
+            id: "#tab-qun"
         })
         var mainHeight = $(window).height() - $("#tab-contact-header").height()- $("#tabDynamicNav").height();
 

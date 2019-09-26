@@ -326,3 +326,6 @@ header .bui-dropdown .bui-list i{
 	background:#ccc;
 	position:absolute;
 }
+#tabDynamic main>div{
+	margin-bottom:60px;
+}
