@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/public/static/libs/bui/css/bbs.css?0" />
+<link rel="stylesheet" href="/public/static/libs/bui/css/bbs.css?f0" />
 <div class="bui-page page-comment">
     <header class="bui-bar">
         <div class="bui-bar-left">
@@ -19,8 +19,9 @@
 						<div class="nickname">{{userinfo.username}}</div>
 						<div class="userface"><img :src="userinfo.icon" onerror="this.src='/public/static/libs/bui/face.jpg'"></div>
 					</div>
+					<div class="my_address"><i class="fa fa-street-view"></i> <span>未知位置</span></div>
 				</div>
-        <div class="comment-box">
+        <div class="comment-box" style="display:none">
             <!-- 论坛主题 -->
             <div class="comment-line" v-for="rs in listdb">
                 <div class="bui-box">
@@ -28,7 +29,7 @@
                     <div class="span1">
                         <div class="bui-box">
                             <div class="span1">
-                                <h3 class="item-title">{{rs.user_name}} {{rs.id}}</h3>
+                                <h3 class="item-title">{{rs.user_name}}</h3>
                             </div>
 							<div class="span1 distance" :data-map="rs.map">
                                 距离:未知

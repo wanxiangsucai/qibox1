@@ -7,8 +7,11 @@ loader.define(function(require,exports,module) {
 			mid=0,				//圈子模型筛选
 			uiAccordionFriend;  // 我的好友折叠菜单
     
-	store.compile(".bui-bar");	//重新加载全局变量数据
+	var map_x = 0;
+	var map_y = 0;
+	var page = 1;
 
+	store.compile(".bui-bar");	//重新加载全局变量数据
 
     /**
      * [init 页面初始化]
@@ -32,11 +35,21 @@ loader.define(function(require,exports,module) {
 		//showFirst显示第一个
         //uiAccordionFriend.showFirst();
 
-		window.HOST_TYPE = "2";
-		window.BMap_loadScriptTime = (new Date).getTime();
-		loader.import(["https://api.map.baidu.com/getscript?v=2.0&ak=MGdbmO6pP5Eg1hiPhpYB0IVd&services=&t=20190622163250","/public/static/js/bdmap.js","/public/static/js/map-gps.js"],function(){
-			reload_map();
-		});        
+		loader.import(["/public/static/libs/bui/js/map.js"],function(){
+			get_gps_location(function(x,y){
+				map_x = x;
+				map_y = y;
+				$.get("/member.php/member/wxapp.user/edit_map.html?point="+x+","+y);
+				$.get("/index.php/index/wxapp.map/get_address.html?xy="+x+","+y,function(res){
+					if(res.code==0){
+						router.$(".show_address .span1").html( "当前位置:"+res.data.address );
+					}
+				});
+				page = 1;
+				$("#near_qunzi").html('');
+				showMoreList(x,y);				
+			});
+		});       
     }
 
 	
@@ -47,19 +60,15 @@ loader.define(function(require,exports,module) {
 				scroll_get = false;
 				console.log(h);
 				layer.msg('内容加截中,请稍候',{time:1500});
-				showmorelist();
+				showMoreList(map_x,map_y);
 			}
 	});
 
-	function showmorelist(){
-		showMapPosition(map_x,map_y)
-	}
-
-	var page = 1;
-	var j = 0;
+	
+	//var j = 0;
 
 	//根据当前坐标位置去数据库按位置远近排序读取
-	function showMapPosition(longitude,latitude){
+	function showMoreList(longitude,latitude){
 		var url;
 		if(showtype == 'user'){
 			url = "/index.php/index/wxapp.member/get_near.html?rows=15";
@@ -74,7 +83,7 @@ loader.define(function(require,exports,module) {
 			   }else{
 					page++;
 				    res.data.forEach(function(rs){
-						j++;
+						//j++;
 						var toid;
 						if(showtype == 'user'){
 							toid = rs.uid;
@@ -102,48 +111,11 @@ loader.define(function(require,exports,module) {
 			   }			  
 		   }
 		});
-		
-		//显示当前位置的街道名
-		var gpsPoint = new BMap.Point(longitude, latitude);
-		BMap.Convertor.translate(gpsPoint, 0, function(point){
-		//alert('x:'+point.lng+' y:'+point.lat);
-			var geoc = new BMap.Geocoder();
-			geoc.getLocation(point, function(rs){
-				var addComp = rs.addressComponents;
-				$(".show_address .span1").html(' 当前位置：'+addComp.district + addComp.street + addComp.streetNumber);
-			});
-		});
 	}
 
 
-	var map_x = 0;
-	var map_y = 0;
-	//获取当前坐标位置
-	function reload_map(){
-		page = 1;
-		$("#near_qunzi").html('');
-		var geolocation = new BMap.Geolocation();
-		geolocation.getCurrentPosition(function(result){
-			if(this.getStatus() == window.BMAP_STATUS_SUCCESS){
-			  map_x = result.point.lng;
-			  map_y = result.point.lat;
-			  $.get("/member.php/member/wxapp.user/edit_map.html?point="+map_x+","+map_y);
-			  showMapPosition(map_x,map_y);
-				//var geoc = new BMap.Geocoder();
-				//geoc.getLocation(result.point, function(rs){
-				//	var addComp = rs.addressComponents;
-				//	alert(addComp.district + addComp.street + addComp.streetNumber);
-				//});
+	
 
-				//gg = GPS.bd_decrypt(result.point.lat, result.point.lng);	//百度转谷歌
-				//wgs = GPS.gcj_decrypt(gg.lat, gg.lon); //谷歌转GPS
-				//showMapPosition(wgs.lon,wgs.lat);
-			} else {
-				alert('failed:'+this.getStatus());
-			}        
-		},{enableHighAccuracy: true})
-	}
-	//reload_map();
 
 	//计算距离当前位置的公里数
 	function show_distance(map_lat,map_lon){

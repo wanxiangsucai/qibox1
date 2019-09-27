@@ -7,6 +7,8 @@
 
      var pageview = {};
 	 var uiDropdown,topic_id=0,pid,scroll_s=true,showpage=1,id_array=[];
+	 var map_x = 0;
+	 var map_y = 0;
 	
 	var bs = store.compile(".bui-bar");	//重新加载全局变量数据
 
@@ -24,6 +26,8 @@
 			}
 			//console.log(h);
 		});
+
+		layer.msg('数据加载中,请稍候...',{time:2000});
 		
 		router.$("#post_btn").click(function(){
 			post_reply();
@@ -38,10 +42,19 @@
 		
 		get_list();
 
-		window.HOST_TYPE = "2";
-		window.BMap_loadScriptTime = (new Date).getTime();
-		loader.import(["https://api.map.baidu.com/getscript?v=2.0&ak=MGdbmO6pP5Eg1hiPhpYB0IVd&services=&t=20190622163250","/public/static/js/bdmap.js","/public/static/js/map-gps.js"],function(){
-			reload_map();
+
+		loader.import(["/public/static/libs/bui/js/map.js"],function(){
+			get_gps_location(function(x,y){
+				map_x = x;
+				map_y = y;
+				$.get("/member.php/member/wxapp.user/edit_map.html?point="+x+","+y);
+				$.get("/index.php/index/wxapp.map/get_address.html?xy="+x+","+y,function(res){
+					if(res.code==0){
+						router.$(".my_address span").html( res.data.address );
+					}
+				});
+				show_distance(map_x,map_y); //显示距离					
+			});
 		});
 
          
@@ -95,6 +108,7 @@
 				watch:{
 					listdb: function() {
 						this.$nextTick(function(){	//数据渲染完毕才执行
+							router.$(".comment-box").show(1000);
 							this.userinfo = Object.assign({}, this.userinfo,bs.get().userinfo);
 							//console.log(bs.get().userinfo);
 							$('.comment-box .comment-line .comment-reply').each(function(i){
@@ -160,52 +174,6 @@
 		});
 	}
 
-     
-
-
-	var map_x = 0;
-	var map_y = 0;
-	//获取当前坐标位置
-	function reload_map(){
-		var geolocation = new BMap.Geolocation();
-		geolocation.getCurrentPosition(function(result){
-		
-			if(this.getStatus() == window.BMAP_STATUS_SUCCESS){
-			  map_x = result.point.lng;
-			  map_y = result.point.lat;
-			  $.get("/member.php/member/wxapp.user/edit_map.html?point="+map_x+","+map_y);
-			  showMapPosition(map_x,map_y);
-				//var geoc = new BMap.Geocoder();
-				//geoc.getLocation(result.point, function(rs){
-				//	var addComp = rs.addressComponents;
-				//	alert(addComp.district + addComp.street + addComp.streetNumber);
-				//});
-
-				//gg = GPS.bd_decrypt(result.point.lat, result.point.lng);	//百度转谷歌
-				//wgs = GPS.gcj_decrypt(gg.lat, gg.lon); //谷歌转GPS
-				//showMapPosition(wgs.lon,wgs.lat);
-			} else {
-				alert('failed:'+this.getStatus());
-			}        
-		},{enableHighAccuracy: true});
-		
-	}
-
-	function showMapPosition(longitude,latitude){
-
-		show_distance(longitude,latitude); //显示距离
-
-		//显示当前位置的街道名
-		var gpsPoint = new BMap.Point(longitude, latitude);
-		BMap.Convertor.translate(gpsPoint, 0, function(point){
-		//alert('x:'+point.lng+' y:'+point.lat);
-			var geoc = new BMap.Geocoder();
-			geoc.getLocation(point, function(rs){
-				var addComp = rs.addressComponents;
-				//router.$(".map-position i").html( addComp.district + addComp.street + addComp.streetNumber);
-			});
-		});
-	}
 
 	//计算距离当前位置的公里数
 	function show_distance(map_lat,map_lon){

@@ -13,7 +13,7 @@ class Weixin_share
         $this->appSecret = $appSecret;
     }
 
-    public function getSignPackage ()
+    public function getSignPackage ($url="")
     {
         $jsapiTicket = $this->getJsApiTicket();
         
@@ -25,7 +25,7 @@ class Weixin_share
 //         $_SERVER['QUERY_STRING'] && $PHP_SELF_TEMP .= "?" . $_SERVER['QUERY_STRING'];
 //         $PHP_SELF = $_SERVER['REQUEST_URI'] ? $_SERVER['REQUEST_URI'] : $PHP_SELF_TEMP;
 //         $url = $protocol . $_SERVER['HTTP_HOST'] . $PHP_SELF;
-        $url = get_url('location');
+        $url = $url?:get_url('location');
         
         
         $timestamp = time();

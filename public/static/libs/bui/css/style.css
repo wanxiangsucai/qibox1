@@ -329,3 +329,16 @@ header .bui-dropdown .bui-list i{
 #tabDynamic main>div{
 	margin-bottom:60px;
 }
+.bbs_near_page .user-wrap{
+	margin-bottom:50px;
+}
+.bbs_near_page .userface img,.sidemenu img{
+	border-radius:100%;
+}
+.bbs_near_page .user-wrap .my_address{
+	position:absolute;
+	bottom:-20px;
+	font-size:14px;
+	color:#889dc4;
+	left:10px;
+}
