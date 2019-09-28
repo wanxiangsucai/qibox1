@@ -217,7 +217,7 @@ var MsgUserList,myFriendList,myFriendNum,qunObj={};					//框架加载有可能�
 //标签异步加载成功执行的函数
 function wap_msg_user_list(res){
 	MsgUserList = $(".wap_msg_user_list").html();
-	if($("#listview").length>0){	//初次,这里可能还没有获取到元素DOM
+	if($("#listview").length>0){	//初次,这里可能还没有获取到元素DOM,比如先打开会员中心的情况
 		$("#listview").html(MsgUserList);
 		MsgUserList = '';
 		$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});

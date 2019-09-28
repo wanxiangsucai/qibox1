@@ -181,6 +181,16 @@ function pc_msg_user_list(res){
 
 //信息用户列表添加点击事件
 function add_click_user(){
+
+	//未读群消息排在前面
+	var that = $(".pc_msg_user_list");
+	var obj = $(".pc_msg_user_list .ck");
+	for(var i=(obj.length-1);i>=0;i--){
+		var o = obj.eq(i).parent();
+		that.prepend( o.get(0).outerHTML);
+		o.remove();
+	}
+
 	$(".pc_msg_user_list li").off('click');
 	$(".pc_msg_user_list li").click(function(){
 		$(".pc_msg_user_list li").removeClass('user_active');
@@ -192,6 +202,7 @@ function add_click_user(){
 		showMoreMsg(uid);	//加载相应用户的聊天记录
 		set_user_name(uid); //设置当前会话的用户名
 	});
+	
 }
 
 //显示更多用户列表
@@ -379,6 +390,10 @@ $(function(){
 			user_div_top = user_top;		
 			showMore_User();
 		}
+
+		setInterval(function() {
+			if(user_scroll==true)showMore_User();	//定时把他们全加载出来,方便做搜索使用.其实上面的滚动可删除了
+		}, 4000);
 
 		if(maxid>=0)check_new_showmsg();
 

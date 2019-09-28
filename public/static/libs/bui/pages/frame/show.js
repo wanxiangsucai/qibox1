@@ -50,13 +50,13 @@ loader.define({
 				if(that.length>0){
 					that.hide();
 				}
-				console.log("height="+$(this).height());
-				console.log("DIVnum="+$(this).contents().find("body").height())
-				if($(this).height()<500){
-					router.refresh();
-					layer.msg('err');
+				//console.log("height="+$(this).height());
+				//console.log("DIVnum="+$(this).contents().find("body").height())
+				//if(router.$(this).height()<500){
+					//router.refresh();
+					//layer.msg('err');
 					//window.location.reload();
-				}
+				//}
 			})
 		})
 

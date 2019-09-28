@@ -10,6 +10,17 @@ loader.define(function(require,exports,module) {
 		user_scroll=true,	//滚动条
 		ListMsgUserPage=1,	//用户列表分页
 		uiSlideTabMessage;  // 顶部tab
+	
+	//把未读消息强制排在前面
+	function order_list(){
+		var that = $("#listview");
+		var obj = $("#listview .badges-ck");
+		for(var i=(obj.length-1);i>=0;i--){
+			var o = obj.eq(i).parent().parent().parent().parent();
+			that.prepend( o.get(0).outerHTML);
+			o.remove();
+		}
+	}
 
     /**
      * [init 页面初始化]
@@ -17,10 +28,40 @@ loader.define(function(require,exports,module) {
      */
     pageview.init = function () {
 
+		setTimeout(function(){	//把未读消息强制排在前面
+			order_list();
+		},3000);
 
         mainHeight = $(window).height() - $("#tab-home-header").height()- $("#tabDynamicNav").height();
         var slideHeight = parseInt(mainHeight) - $(".bui-searchbar").height();
-	
+		
+		//初次这里有可能会加载晚一步
+		if(MsgUserList!=''){
+			$("#listview").html(MsgUserList);
+			$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
+		}
+		
+		var btn_chat = $("#tabDynamicNav .bui-box-vertical").eq(0);
+		setInterval(function() {
+			var url = window.location.href;
+			if(url.indexOf('#/')==-1 && btn_chat.hasClass('active')==true ){	//跳转到了其它页面,就不要再执行
+				check_list_new_msgnum(); //刷新有没有新用户发消息 过来
+			}			
+		}, 3000);
+		
+		var that = $("#listview");
+		that.parent().scroll(function () {	//滚动加载更多
+			var h = that.height()-that.parent().height()-that.parent().scrollTop();			
+			if(h<300 && user_scroll==true){
+				console.log(h);
+				layer.msg('数据加载中,请稍候...',{time:3000});
+				showMore_User();	//显示更多用户列表
+			}
+		});
+
+		setInterval(function() {
+			if(user_scroll==true)showMore_User();	//定时把他们全加载出来,方便做搜索使用.其实上面的滚动可删除了
+		}, 5000);
 
 		var load_friend = true;
         //初始化顶部TAB
@@ -109,29 +150,7 @@ loader.define(function(require,exports,module) {
 
 /*------------右上角更多菜单 end --------------*/
 		
-		//初次这里有可能会加载晚一步
-		if(MsgUserList!=''){
-			$("#listview").html(MsgUserList);
-			$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
-		}
-		
-		var btn_chat = $("#tabDynamicNav .bui-box-vertical").eq(0);
-		setInterval(function() {
-			var url = window.location.href;
-			if(url.indexOf('#/')==-1 && btn_chat.hasClass('active')==true ){	//跳转到了其它页面,就不要再执行
-				check_list_new_msgnum(); //刷新有没有新用户发消息 过来
-			}			
-		}, 3000);
-		
-		var that = $("#listview");
-		that.parent().scroll(function () {
-			var h = that.height()-that.parent().height()-that.parent().scrollTop();			
-			if(h<300 && user_scroll==true){
-				console.log(h);
-				layer.msg('数据加载中,请稍候...',{time:3000});
-				showMore_User();	//显示更多用户列表
-			}
-		});
+
 
     }
 
@@ -196,6 +215,7 @@ loader.define(function(require,exports,module) {
 					user_scroll = true;
 					$("#listview").parent().scrollTop($("#listview").parent().scrollTop()-200);
 					$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
+					order_list();	//新消息要排在前面
 				}
 			}else{
 				layer.msg(res.msg,{time:2500});
@@ -203,7 +223,7 @@ loader.define(function(require,exports,module) {
 		});
 	}
 	
-	var uid_array = [];   //每个用户的最新消息ID
+	//var uid_array = [];   //每个用户的最新消息ID
 	//刷新有没有新用户发消息 过来
 	function check_list_new_msgnum(){
 		$.get(ListMsgUserUrl+"1",function(res){
@@ -212,7 +232,9 @@ loader.define(function(require,exports,module) {
 					//出现新的消息新用户，或者是原来新消息的用户又发来了新消息
 					if(typeof(uid_array[rs.f_uid])=='undefined'||rs.id>uid_array[rs.f_uid]){
 						$('#listview').html(res.data);
-						//add_click_user();
+						//上面重新清空了,这里要重新加载
+						user_scroll=true;
+						ListMsgUserPage=1;
 					}
 					//新消息已读
 					if(rs.new_num<1){
