@@ -35,7 +35,7 @@
 									<li class="list-item list_{$rs.f_uid} {$rs.f_uid<0?'list-qun':''}">
                                         <div class="bui-btn bui-box">
                                                <!--<div class="ring ring-group"> <i class="icon"></i></div>-->
-											   <a href="{$rs.f_uid>0?get_url('user',$rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['url']}" target="_blank"><img class="ring ring-group" src="{$rs.f_uid>0?get_user_icon($rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['picurl']}" onerror="this.src='__STATIC__/images/noface.png'"></a>
+											   <a href="{$rs.f_uid>0?get_url('user',$rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['url']}" class="iframe"><img class="ring ring-group" src="{$rs.f_uid>0?get_user_icon($rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['picurl']}" onerror="this.src='__STATIC__/images/noface.png'"></a>
                                             <div class="span1 a" href="__STATIC__/libs/bui/pages/chat/chat.html?uid={$rs.f_uid}">
                                                 <h3 class="item-title">
                                                     {if $rs.f_uid>0} {$rs.f_uid|get_user_name} {elseif $rs.f_uid<0} {:fun('qun@getByid',abs($rs.f_uid))['title']} {else /} 系统消息 {/if}
@@ -65,7 +65,7 @@
 {qb:tag name="wap_show_all_msg" js="wap_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,maxid,num" rows="15"}			
 			{if $rs.uid!=$userdb.uid}
             <div class="bui-box-align-top chat-target">
-                <div class="chat-icon"><a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a></div>
+                <div class="chat-icon"><a href="{:get_url('user',$rs.uid)}" class="iframe"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a></div>
                 <div class="span1">
                     <div class="chat-content bui-arrow-left">{$rs.content}</div>
                 </div>
@@ -77,7 +77,7 @@
                       <div class="chat-content bui-arrow-right">{$rs.content}</div>
                     </div>
                 </div>
-                <div class="chat-icon"><a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a></div>
+                <div class="chat-icon"><a href="{:get_url('user',$rs.uid)}" class="iframe"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a></div>
             </div>
 			{/if}
 			{if $rs.qun_id>0&&$rs.uid!=$userdb.uid}
@@ -99,7 +99,7 @@
 {qb:tag name="wap_myfriend" js="wap_myfriend" class="app\common\model\Friend@get_label" where="suid=$userdb.uid&type=$type&uid=$uid" rows="500"}
 									 <li class="list-item" data-uid="{$rs.he_id}">
                                         <div class="bui-btn bui-box">
-											<a href="{:get_url('user',$rs.he_id)}" target="_blank"><img class="ring ring-group" src="{$rs.he_id|get_user_icon}" onerror="this.src='__STATIC__/images/noface.png'"/></a>                                
+											<a href="{:get_url('user',$rs.he_id)}"  class="iframe"><img class="ring ring-group" src="{$rs.he_id|get_user_icon}" onerror="this.src='__STATIC__/images/noface.png'"/></a>                                
                                             <div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid={$rs.he_id}">
                                                 <h3 class="item-title">
                                                     {$rs.he_id|get_user_name}
@@ -117,7 +117,7 @@
 <div class="wap_qun_myjoin" style="display:none">
 {qb:tag name="wap_qun_myjoin" js="wap_qun_myjoin" union="uid=$userdb.uid" order="update_time" by="desc" class="app\qun\model\Member@label_mygroup" rows="20"}
 							<li class="bui-btn bui-box">
-                                    <a href="{$rs.url}" target="_blank"><img class="ring ring-pc" src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
+                                    <a href="{$rs.url}"  class="iframe"><img class="ring ring-pc" src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
                                 <div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=-{$rs.id}">
                                     <h3 class="item-title">
                                         {$rs.title}
@@ -134,7 +134,7 @@
 <div class="wap_qun_myvisit" style="display:none">
 {qb:tag name="wap_qun_myvisit" js="wap_qun_myvisit" union="uid=$userdb.uid" class="app\qun\model\Visit@get_label" rows="20"}
 							<li class="bui-btn bui-box">
-                                    <a href="{$rs.url}" target="_blank"><img class="ring ring-pc" src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
+                                    <a href="{$rs.url}"  class="iframe"><img class="ring ring-pc" src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
                                 <div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=-{$rs.id}">
                                     <h3 class="item-title">
                                         {$rs.title}
@@ -150,7 +150,7 @@
 <div class="wap_qun_hot" style="display:none">
 {qb:tag name="wap_qun_hot" js="wap_qun_hot" class="app\member\controller\Msg@listqun" rows="30"}
 							<li class="bui-btn bui-box">
-                                    <a href="{$rs['qun']['url']}" target="_blank"><img class="ring ring-pc" src="{$rs['qun']['picurl']}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
+                                    <a href="{$rs['qun']['url']}"  class="iframe"><img class="ring ring-pc" src="{$rs['qun']['picurl']}" onerror="this.src='__STATIC__/images/nopic.png'"/></a>
                                 <div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=-{$rs.qun_id}">
                                     <h3 class="item-title">
                                         {$rs['qun']['title']}
@@ -174,13 +174,13 @@
                 <div class="time">{if (!in_array($rs.type,['visit','fans']))} {$rs.create_time|format_time=true} {else /} {$rs.create_time|format_time} {/if}</div>
             </div>
 			<div class="bui-box-align-top chat-target">
-                <div class="chat-icon"><a href="{:get_url('user',$rs.from_uid)}" target="_blank"><img src="{$rs.from_uid|get_user_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_uid|get_user_name}"></a></div>
+                <div class="chat-icon"><a href="{:get_url('user',$rs.from_uid)}"  class="iframe"><img src="{$rs.from_uid|get_user_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_uid|get_user_name}"></a></div>
                 <div class="span1">
                     <div class="chat-content bui-arrow-left {if (!in_array($rs.type,['visit','fans']))} chat-content-topic {/if}">
-						<span class="name bui-btn">{$rs.from_uid|get_user_name}</span>
+						<span class="name bui-btn" href="/public/static/libs/bui/pages/chat/chat.html?uid={$rs.from_uid}">{$rs.from_uid|get_user_name}</span>
 						{if (!in_array($rs.type,['visit','fans']))}
 							 <i>{:fun('tongji@type',$rs.type)}：</i> {$rs['topic']['title']}
-							 <a href="{$rs['topic']['url']}" class="more" target="_blank">详情</a>
+							 <a href="{$rs['topic']['url']}" class="more iframe">详情</a>
 						{elseif($rs.type=='visit') /}
 							{$rs.create_time|format_time=true} 访问了你的空间 
 						{elseif($rs.type=='fans') /}
@@ -220,6 +220,7 @@ function wap_msg_user_list(res){
 	if($("#listview").length>0){	//初次,这里可能还没有获取到元素DOM
 		$("#listview").html(MsgUserList);
 		MsgUserList = '';
+		$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
 	}
 	$.each(res.ext.s_data,function(i,rs){		
 		//console.log(rs.uid);		

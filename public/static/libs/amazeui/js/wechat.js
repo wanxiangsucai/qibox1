@@ -410,6 +410,17 @@ $(function(){
 					if(typeof(uid_array[rs.f_uid])=='undefined'||rs.id>uid_array[rs.f_uid]){
 						$('.pc_msg_user_list').html(res.data);
 						add_click_user();
+						if(window.Notification){	//消息提醒
+							if(Notification.permission=="granted"){
+								pushNotice();
+							}else{
+								Notification.requestPermission(function(status) {                  
+									if (status === "granted") {
+										pushNotice();
+									}
+								});
+							}
+						}
 					}
 					//新消息已读
 					if(rs.new_num<1){
@@ -445,6 +456,17 @@ $(function(){
 				that.prepend(res.data);
 				format_show_time(that)	//隐藏相邻的时间
 				goto_bottom(vh);
+				if(window.Notification){	//消息提醒
+					if(Notification.permission=="granted"){
+						pushNotice();
+					}else{
+						Notification.requestPermission(function(status) {                  
+							if (status === "granted") {
+								pushNotice();
+							}
+						});
+					}
+				}			
 			}
 			//console.log( '='+res.ext.lasttime);
 			maxid = res.ext.maxid;
@@ -455,6 +477,11 @@ $(function(){
 			}
 		});
 		ck_num++;
+	}
+
+	function pushNotice(){
+		var m = new Notification('新消息提醒', {body: '你收到一条新消息,请注意查收',});
+			m.onclick = function () { window.focus();}
 	}
 
 	//优先显示底部的内容

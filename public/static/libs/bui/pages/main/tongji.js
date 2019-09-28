@@ -27,22 +27,22 @@ loader.define(function(require,exports,module) {
 
 	//统计数据的类型选择
 	var tongji_num = 0;//parseInt($("#tongji_num").html());
-	$(".tongji li").each(function(){
+	router.$(".tongji li").each(function(){
 		var that = $(this);		
 		var type = that.data('type');
 		var obj_num = that.find('i').last();
 
 		that.click(function(){
-			that.attr('href','/public/static/libs/bui/pages/tongji/show.html?type='+type);
-			obj_num.html('');
+			that.attr('href','/public/static/libs/bui/pages/tongji/show.html?type='+type);			
 			obj_num.removeClass('bui-badges');
 			obj_num.addClass('icon-listright');
 			tongji_num = tongji_num-parseInt(obj_num.html()!=''?obj_num.html():0);
+			obj_num.html('');
 			if(tongji_num<1){
-				$("#tongji_num").hide();
+				router.$(".tongji_num").hide();
 			}else{
-				$("#tongji_num").html(tongji_num);
-				$("#tongji_num").show();
+				router.$(".tongji_num").html(tongji_num);
+				router.$(".tongji_num").show();
 			}
 		});
 		

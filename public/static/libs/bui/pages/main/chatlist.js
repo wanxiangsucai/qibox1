@@ -112,6 +112,7 @@ loader.define(function(require,exports,module) {
 		//初次这里有可能会加载晚一步
 		if(MsgUserList!=''){
 			$("#listview").html(MsgUserList);
+			$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
 		}
 		
 		var btn_chat = $("#tabDynamicNav .bui-box-vertical").eq(0);
@@ -194,6 +195,7 @@ loader.define(function(require,exports,module) {
 					});
 					user_scroll = true;
 					$("#listview").parent().scrollTop($("#listview").parent().scrollTop()-200);
+					$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
 				}
 			}else{
 				layer.msg(res.msg,{time:2500});

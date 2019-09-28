@@ -25,11 +25,11 @@
             <!-- 论坛主题 -->
             <div class="comment-line" v-for="rs in listdb">
                 <div class="bui-box">
-                    <div class="thumbnail"><img :src="rs.user_icon" alt="" onerror="this.src='/public/static/images/noface.png'"></div>
+                    <div class="thumbnail iframe" :href="'/member.php/home/'+rs.uid+'.html'"><img :src="rs.user_icon" alt="" onerror="this.src='/public/static/images/noface.png'"></div>
                     <div class="span1">
                         <div class="bui-box">
                             <div class="span1">
-                                <h3 class="item-title">{{rs.user_name}}</h3>
+                                <h3 class="item-title a" :href="'/public/static/libs/bui/pages/chat/chat.html?uid='+rs.uid">{{rs.user_name}}</h3>
                             </div>
 							<div class="span1 distance" :data-map="rs.map">
                                 距离:未知
