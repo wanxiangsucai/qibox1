@@ -3,6 +3,7 @@
  * 默认模块名: main
  * @return {[object]}  [ 返回一个对象 ]
  */
+var from_main = true;	//主要是为微信的wx.config做考虑的
 loader.define(function(require,exports,module) {
 
     var bs = bui.store({

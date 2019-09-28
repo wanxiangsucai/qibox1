@@ -255,6 +255,19 @@ var member_menu = {$menu?json_encode($menu,JSON_UNESCAPED_UNICODE):'""'};		//会
 
 {include file="index@weixingz" /}<!--若没有关注微信公众号,就做个提醒-->
 
+<script src="__STATIC__/js/jweixin.js"></script>
+<script type="text/javascript">
+var goIntoUrl = window.location.href;
+wx.miniProgram.getEnv(function(res) {
+	if( res.miniprogram==true && !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)==false ){	//安卓手机这里要特别处理		
+		if(goIntoUrl.indexOf('#')==-1){
+			//window.location.href = goIntoUrl+"#main"
+			window.location.reload();
+		}
+	}
+});
+
+</script>
 </body>
 
 </html>

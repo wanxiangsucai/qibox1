@@ -162,7 +162,7 @@
 
 
 	function get_list(){		
-		$.get("/index.php/bbs/wxapp.near/index.html?rows=5&range=200&page="+showpage,function(res){
+		$.get("/index.php/bbs/wxapp.near/index.html?rows=10&range=200&page="+showpage,function(res){
 			if(res.code==0 && res.data.length>0){
 				vues.set_data(res.data);
 				layer.closeAll();

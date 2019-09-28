@@ -13,7 +13,7 @@ function get_gps_location(callback){
 		callback(window.map_x,window.map_y);
 		return ;
 	}
-	if(typeof(wx)=="object"){
+	if(typeof(have_load_wx_config)!="undefined"){
 		get_map_location(callback);
 	}else{
 		jQuery.getScript("/public/static/js/jweixin.js").done(function() {
@@ -77,7 +77,11 @@ function get_bd_map_location(callback){
 }
 
 function load_wx_config(callback){
-	$.get("/index.php/index/wxapp.weixin/getconfig.html?url="+encodeURIComponent(window.location.href),function(res){
+	var url = window.location.href;
+	if(typeof(from_main)!="undefined" && !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)==false ){
+		url = url.substring(0,url.indexOf('#'))+'#main';	//安卓手机,这里要特别处理
+	}
+	$.get("/index.php/index/wxapp.weixin/getconfig.html?url="+encodeURIComponent(url),function(res){
 		if(res.code!=0){
 			layer.msg('微信配置文件加载失败');
 			return ;

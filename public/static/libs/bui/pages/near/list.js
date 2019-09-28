@@ -53,7 +53,7 @@ loader.define(function(require,exports,module) {
     }
 
 	
-	var that = $("#contactScroll");
+	var that = router.$("#contactScroll");
 	that.parent().scroll(function () {
 			var h = that.height()-that.parent().height()-that.parent().scrollTop();
 			if( h<300 && scroll_get==true){
@@ -71,9 +71,9 @@ loader.define(function(require,exports,module) {
 	function showMoreList(longitude,latitude){
 		var url;
 		if(showtype == 'user'){
-			url = "/index.php/index/wxapp.member/get_near.html?rows=15";
+			url = "/index.php/index/wxapp.member/get_near.html?rows=30";
 		}else{
-			url = "/index.php/qun/wxapp.near/index.html?rows=15&mid="+mid;
+			url = "/index.php/qun/wxapp.near/index.html?rows=30&mid="+mid;
 		}
 		$.get(url+"&point=" + longitude + ',' + latitude + "&page=" + page + '&' + Math.random(),function(res){
 			var d ='';
