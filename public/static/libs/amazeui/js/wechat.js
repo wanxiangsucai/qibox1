@@ -551,7 +551,27 @@ $(function(){
 	})
 
 
+	jQuery.getScript("/public/static/js/base64uppic.js").done(function() {
+        exif_obj = true;
+    }).fail(function() {
+        layer.msg('/public/static/js/base64uppic.js加载失败',{time:800});
+	});
+
+	
+	//上传图片
+	$('#fileToUpload').change(function(){
+		var pics = [];
+        uploadBtnChange($(this).attr("id"),'compressValue',pics,function(url,pic_array){
+			if(pic_array[0].indexOf('://')==-1 && pic_array[0].indexOf('/public/')==-1){
+				pic_array[0] = '/public/'+pic_array[0];
+			}
+			$("#input_box").val("<img src='"+pic_array[0]+"' />"+$("#input_box").val());			
+		 });
+    });
+
 })
+
+var severUrl = "/index.php/index/attachment/upload/dir/images/from/base64/module/bbs.html";
 
 
 

@@ -56,6 +56,9 @@ loader.define(function(require,exports,module) {
 		chat_timer = setInterval(function() {
 			if(maxid>=0)check_new_showmsg();	//刷新会话用户中有没有新消息,必须要加载到内容后有maxid值才去刷新
 		}, 1000);
+		
+		this.upload();
+		loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
     }
     pageview.bind = function () {
             // 发送的内容
@@ -77,7 +80,7 @@ loader.define(function(require,exports,module) {
             }else{
                 return false;
             }
-        });
+        });		
 
         // 延迟监听输入
         $chatInput.on("input",bui.unit.debounce(function () {
@@ -150,7 +153,10 @@ loader.define(function(require,exports,module) {
 			if(res.data!=""){	//有新的聊天内容
 				layer.closeAll();
 				$('#chat_win').prepend(res.data);
-				$("#chat_win").parent().scrollTop(2000);
+				$("#chat_win").parent().scrollTop(9000);
+				setTimeout(function(){	//兼容发送图片的时候
+					$("#chat_win").parent().scrollTop(9000);
+				},500);
 			}
 			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
@@ -267,6 +273,122 @@ loader.define(function(require,exports,module) {
 			showMoreMsg(uid);	//加载相应用户的聊天记录
 		}
     })
+
+
+	// 上传图片
+	pageview.upload = function() {
+		var uiUpload = bui.upload();		
+		var uiActionsheet = bui.actionsheet({
+					trigger: "#photoBtn",
+					buttons: [{ name: "拍照上传", value: "camera" }, { name: "从相册选取", value: "photo" }],
+					callback: function(e) {
+						var ui = this;
+						var val = $(e.target).attr("value");
+						switch (val) {
+							case "camera":
+								ui.hide();
+								uiUpload.add({
+									"from": "camera",
+									"onSuccess": function(val, data) {
+										// 展示本地图片
+										this.toBase64({
+											onSuccess: function(url) {
+												upload_pic(url)
+											}
+										});
+
+										// 也可以直接调用start上传图片
+									}
+								})
+								break;
+							case "photo":
+								ui.hide();
+								uiUpload.add({
+									"from": "",
+									"onSuccess": function(val, files) {
+										 var Orientation=0
+										 var filefield = document.getElementById($('input[name="uploadFiles"]').attr('id')) 
+											 var file = filefield.files[0];
+											EXIF.getData(file, function(){												 
+												Orientation = EXIF.getTag(this, 'Orientation'); console.log("d "+Orientation);												
+											});										
+										//console.log(val);
+										//console.log(this.data()[0]);
+										//var url = window.URL.createObjectURL(files[0]);
+										//document.querySelector('img').src = window.URL.createObjectURL(url);
+										// 展示本地图片
+										this.toBase64({
+											onSuccess: function(url) {
+												upload_pic(url,Orientation)
+											}
+										});
+										// 也可以直接调用start上传图片
+									}
+								})
+
+								break;
+							case "cancel":
+								ui.hide();
+								break;
+						}
+					}
+				})
+
+				function templatePhoto(url) {
+					return `<img src="${url}" alt="" />`
+				}
+				
+				function upload_pic(base64,Orientation){
+					var image = new Image();
+						image.src = base64;
+						image.onload = function() {
+						var resized = resizeUpImages(image);
+						var severUrl = "/index.php/index/attachment/upload/dir/images/from/base64/module/bbs.html";
+						$.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':''}).done(function (res) {
+							if(res.code==1){
+								//console.log(res);
+								var url = res.path;
+								if(url.indexOf('://')==-1 && url.indexOf('/public/')==-1){
+									url = '/public/'+url;
+								}
+								$("#chatInput").val( templatePhoto(url)+$("#chatInput").val() )
+								if($("#btnSend").hasClass("disabled"))$("#btnSend").removeClass("disabled").addClass("primary");
+							}else{
+								alert(res.info);
+							}
+						}).fail(function () {
+							alert('操作失败，请跟技术联系');
+						});
+					}					
+				}
+
+				function resizeUpImages(img) {
+					//压缩的大小
+					var max_width = 1920; 
+					var max_height = 1080;
+					var canvas = document.createElement('canvas');
+					var width = img.width;
+					var height = img.height;
+					if(width > height) {
+						if(width > max_width) {
+							height = Math.round(height *= max_width / width);
+							width = max_width;
+						}
+					}else{
+						if(height > max_height) {
+							width = Math.round(width *= max_height / height);
+							height = max_height;
+						}
+					}
+					canvas.width = width;
+					canvas.height = height;
+					var ctx = canvas.getContext("2d");
+					ctx.drawImage(img, 0, 0, width, height);
+					//压缩率
+					return canvas.toDataURL("image/jpeg",0.72); 
+				}
+	}
+
 
     // 初始化
     pageview.init();

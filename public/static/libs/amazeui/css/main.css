@@ -579,11 +579,14 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 }
 
 .input_icon a:nth-child(4){
-	background: url(../images/icon/icon16.png) no-repeat center center;
+	font-size:22px;
+	color:#aaa;
+	/*background: url(../images/icon/icon16.png) no-repeat center center;*/
 }
 
 .input_icon a:nth-child(4):hover{
-	background: url(../images/icon/icon16_1.png) no-repeat center center;
+	color:#09BB07;
+	/*background: url(../images/icon/icon16_1.png) no-repeat center center;*/
 }
 
 .input_icon a:nth-child(6){
@@ -667,15 +670,18 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 /*区分聊天*/
 
 .content{
-	width: 100%;
+	max-width: 100%;
 	padding:10px 20px;
 }
 
-.me img{
+.me .user_icon img{
 	float: right;
     width: 34px;
     height: 34px;
     border-radius: 2px; 
+}
+.me .content img{
+	max-width:100%;
 }
 
 .me span { 

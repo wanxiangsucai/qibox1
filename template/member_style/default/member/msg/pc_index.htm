@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>站内消息</title>
 <link rel="stylesheet" href="__STATIC__/libs/amazeui/css/amazeui.min.css" />
-<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/main.css?gfe" />
+<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/main.css?e" />
 <link rel="stylesheet" href="__STATIC__/icon/icon.css">
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/js/core/jquery.min.js"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/layer/layer.js"></SCRIPT>
@@ -233,7 +233,7 @@
 						<li class="{$rs.uid==$userdb.uid?'me':'other'}">
 						<dd class="time" data-time="{$rs.create_time|strtotime}"><a>{$rs.create_time}</a></dd>
 						{if $rs.qun_id&&$rs.uid!=$userdb.uid}<div class="name">{$rs.from_username}</div>{/if}
-						<a href="{:get_url('user',$rs.uid)}" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span>{$rs.content}</span>						
+						<a href="{:get_url('user',$rs.uid)}" class="user_icon" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span class="content">{$rs.content}</span>						
 						</li>
 {/qb:tag}
 					</ul>
@@ -269,7 +269,7 @@
 					<a href="javascript:;" title="发送表情"></a>
 					<a href="javascript:;" title="发送文件"></a>
 					<a href="javascript:add_new_user();" title="添加新人会话"></a>
-					<a href="javascript:;"></a>
+					<a href="javascript:$('#fileToUpload').click();" title="上传图片" id="uploadPhoto" class="fa fa-photo"><input style="display:none;" type="file" name="fileToUpload" id="fileToUpload" accept="image/*" /><input type="text" name="picurl" id="compressValue"  style="display:none;" /></a>
 					<a href="javascript:;" title="发送视频文件"></a>
 					<a href="javascript:;" title="发送语音文件"></a>
 				</div>
@@ -340,7 +340,7 @@ var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
 
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
-<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?8tf"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?8"></script>
 
 
 </body>
