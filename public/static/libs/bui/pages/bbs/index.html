@@ -36,7 +36,7 @@
                             </div>
                         </div>
 												<!-- 内容 -->
-                        <div class="item-text bui-box-text-hide comment-content">{{rs.content}}<a class="more viewinfo" :data-id="rs.id">[详情]</a></div>
+                        <div class="item-text bui-box-text-hide comment-content">{{rs.content}}<a class="more viewinfo" :data-picurl="rs.picurl" :data-title="rs.title" :data-id="rs.id">[详情]</a></div>
                         <div class="bui-btn-toggle">展开</div>
 												<!-- 图片 -->
 												<div class="viewinfo bui-box-space container-full" v-for="arr1 in rs.pics" :data-id="rs.id">

@@ -49,7 +49,14 @@ loader.define(function(require,exports,module) {
 				$("#near_qunzi").html('');
 				showMoreList(x,y);				
 			});
-		});       
+		});   
+		
+		weixin_share({
+				title:'这是分享标题',
+				about:'这是分享介绍',
+				picurl:'https://x1.php168.com/public/static/qibo/logo.png',
+				url:window.location.href,
+			});
     }
 
 	

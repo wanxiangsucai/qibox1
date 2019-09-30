@@ -117,3 +117,56 @@ function bind() {
 		}
     });
 }
+
+
+function weixin_share(info){
+	if(typeof(have_load_wx_config)=="undefined"){
+		return ;
+	}else if(have_load_wx_config==false){
+		return ;
+	}
+
+	if( (info.url).indexOf('://')==-1 ){
+		var urls = window.location.href;
+		var ar = urls.split('/');
+		info.url = ar[0] + '//' + ar[2] + info.url;
+	}
+	if(typeof(info.picurl)!="undefined" && info.picurl!='' && (info.picurl).indexOf('://')==-1 ){
+		var urls = window.location.href;
+		var ar = urls.split('/');
+		info.picurl = ar[0] + '//' + ar[2] + info.picurl;
+	}
+    wx.onMenuShareTimeline({
+      title: info.title+info.about,
+      link: info.url,
+      imgUrl: info.picurl,
+      trigger: function (res) {
+      },
+      success: function (res) {
+        layer.msg('成功分享到朋友圈');
+      },
+      cancel: function (res) {
+        //alert('系统监测到你没有真正分享到朋友圈，请重新分享！');
+      },
+      fail: function (res) {
+        alert(JSON.stringify(res));
+      }
+    });
+
+	wx.onMenuShareAppMessage({
+      title: info.title,
+      desc: info.about,
+      link: info.url,
+      imgUrl: info.picurl,
+      trigger: function (res) {
+      },
+      success: function (res) {
+		  layer.msg('成功分享到好友');
+      },
+      cancel: function (res) {
+      },
+      fail: function (res) {
+        alert(JSON.stringify(res));
+      }
+    });
+}

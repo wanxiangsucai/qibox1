@@ -133,7 +133,14 @@
 							if(map_x!=0)show_distance(map_x,map_y); //显示距离
 							$('.comment-box .viewinfo').click(function(){
 								var url = "/index.php/bbs/show.html?id="+$(this).data("id");
-								bui.load({ url: "/public/static/libs/bui/pages/frame/show.html",param:{url:url}});
+								bui.load({ 
+									url: "/public/static/libs/bui/pages/frame/show.html",
+									param:{
+										url:url,
+										title:$(this).data("title"),
+										picurl:$(this).data("picurl"),
+									}
+								});
 							})
 					   })
 				  }

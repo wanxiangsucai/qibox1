@@ -22,7 +22,7 @@
     <!-- <script src="js/zepto.js"></script>-->
     <script src="__STATIC__/libs/bui/js/bui.js"></script>
     <!-- 初始化单页 -->
-    <script src="__STATIC__/libs/bui/index.js?0"></script>
+    <script src="__STATIC__/libs/bui/index.js?01"></script>
 
 	<script src="__STATIC__/js/core/vue.min.js"></script>
 
@@ -256,6 +256,8 @@ var member_menu = {$menu?json_encode($menu,JSON_UNESCAPED_UNICODE):'""'};		//会
 
 {include file="index@weixingz" /}<!--若没有关注微信公众号,就做个提醒-->
 
+<!--微信接口-->
+{if weixin_share()}
 <script src="__STATIC__/js/jweixin.js"></script>
 <script type="text/javascript">
 var goIntoUrl = window.location.href;
@@ -267,6 +269,32 @@ wx.miniProgram.getEnv(function(res) {
 		}
 	}
 });
+var have_load_wx_config;
+$(function(){
+	have_load_wx_config = true;
+	wx.config({
+		debug: false,
+		appId: '{:weixin_share("appId")}',
+		timestamp: {:weixin_share("timestamp")?:0},
+		nonceStr: '{:weixin_share("nonceStr")}',
+		signature: '{:weixin_share("signature")}',
+		jsApiList: [
+			'checkJsApi',
+			'onMenuShareTimeline',
+			'onMenuShareAppMessage', 
+			'hideMenuItems',
+			'showMenuItems',
+			'openLocation',
+			'getLocation'
+		  ]
+	});
+	//wx.ready(function(){});
+	wx.error(function (res) {
+		have_load_wx_config=false;
+		layer.msg(res.errMsg,{time:300})
+	});
+});
+{/if}
 
 </script>
 </body>

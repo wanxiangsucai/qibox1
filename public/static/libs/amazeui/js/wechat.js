@@ -52,13 +52,14 @@ $(document).ready(function(){
 			layer.alert('请不要重复发送信息');
 			return ;
 		}
+		$(".msgcontent").val('');
 		allowsend = false;
 		$.post(postMsgUrl,{'uid':uid,'content':content,},function(res){
 			allowsend = true;
-			if(res.code==0){
-				$(".msgcontent").val('');
+			if(res.code==0){				
 				layer.msg('发送成功');
 			}else{
+				$(".msgcontent").val(content);
 				layer.alert('发送失败:'+res.msg);
 			}
 		});
@@ -70,6 +71,7 @@ $(document).ready(function(){
 	$("#input_box").unbind('keydown').bind('keydown', function(e){
 		console.log(e.ctrlKey +'  '+e.keyCode);
 		if(e.ctrlKey && e.keyCode==13){
+			layer.msg('正在发送消息');
 			postmsg();
 		}
 	})

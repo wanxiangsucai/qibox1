@@ -44,6 +44,13 @@ loader.define({
 		var getParams = bui.getPageParams();
 		getParams.done(function(result){
 			var url = result.url;
+			var title='',picurl='';
+			if( typeof(result.title)!="undefined" ){
+				title = result.title;
+			}
+			if( typeof(result.picurl)!="undefined" ){
+				picurl = result.picurl;
+			}
 			router.$("#bui_win").attr("src",url);
 			router.$("#bui_win").load(function(){
 				var that = $(this).contents().find(".qb_wap_header");
@@ -52,12 +59,18 @@ loader.define({
 				}
 				//console.log("height="+$(this).height());
 				//console.log("DIVnum="+$(this).contents().find("body").height())
-				//if(router.$(this).height()<500){
+				if(router.$(this).height()<500){
 					//router.refresh();
-					//layer.msg('err');
+					layer.msg('err');
 					//window.location.reload();
-				//}
-			})
+				}
+			});
+			weixin_share({
+				title:title!=''?title:'这是分享标题',
+				about:title!=''?title:'这是分享描述',
+				picurl:picurl!=''?picurl:'',
+				url:url,
+			});
 		})
 
 		// 初始化
