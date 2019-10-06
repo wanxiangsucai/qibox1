@@ -158,6 +158,7 @@ abstract class Reply extends Model
             $rs['username'] = get_user_name($rs['uid']);
             $array[$key] = $rs;
         }
+        $array = array_values($array);
         return $array;
     }
     
