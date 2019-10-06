@@ -127,6 +127,7 @@ abstract class Reply extends Model
         $data_list->each(function(&$rs,$key){
             $rs['username'] = get_user_name($rs['uid']);
             $rs['user_icon'] = get_user_icon($rs['uid']);
+            $rs['time'] = format_time($rs['create_time'],true);
             if($rs['mvurl']){
                 $rs['mvurl'] = tempdir($rs['mvurl']);
             }
@@ -141,6 +142,8 @@ abstract class Reply extends Model
             }
             if($rs['reply']){
                 $rs['sons'] = self::getSons($rs['id']);
+            }else{
+                $rs['sons'] = [];
             }
             return $rs;
         });
@@ -155,6 +158,7 @@ abstract class Reply extends Model
         $array = self::where($map)->order('id asc')->column(true);
         foreach($array AS $key=>$rs){
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
+            $rs['time'] = format_time($rs['create_time'],true);
             $rs['username'] = get_user_name($rs['uid']);
             $array[$key] = $rs;
         }

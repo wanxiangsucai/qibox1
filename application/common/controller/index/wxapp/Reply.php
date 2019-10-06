@@ -29,8 +29,10 @@ abstract class Reply extends IndexBase
     public function index($id=0,$orderby='',$rows='',$page=0){        
         if($orderby=='asc'){
             $orderby = 'id asc';
-        }else{
+        }elseif($orderby=='desc'){
             $orderby = 'id desc';
+        }else{
+            $orderby = '';
         }
         $data = getArray($this->model->getListByAid($id,'',$orderby,$rows));
         return $this->ok_js($data);
@@ -148,7 +150,7 @@ abstract class Reply extends IndexBase
         }
 
         if( ($result = $this->model->add($data,$id,$pid))!=false ){
-            $array = getArray($this->model->getListByAid($id,'','id desc',$rows));
+            $array = getArray($this->model->getListByAid($id,'','',$rows));
             
             $this->end_add($data,$result->id);         
             
