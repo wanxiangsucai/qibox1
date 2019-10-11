@@ -27,7 +27,7 @@
       padding: .15rem;
       }
     .chat-panel .chat-target .chat-content {
-      margin-right: .8rem;
+      margin-right: 10px;
       margin-left: .2rem;
       }
       .chat-panel .chat-target .chat-content.bui-arrow-left:before {
@@ -36,7 +36,7 @@
         top: .1rem;
         margin-top: 0; }
     .chat-panel .chat-mine .chat-content {
-      margin-left: .8rem;
+      margin-left: 10px;
       margin-right: .2rem;
       background: #B3EAFF; }
       .chat-panel .chat-mine .chat-content.bui-arrow-right:before, .chat-panel .chat-mine .chat-content.bui-arrow-right:after {
@@ -108,4 +108,20 @@
 	width:100%;
 	z-index:122;
 	opacity:0.5;
+}
+
+.chat-panel .show_username{
+	margin-left:35px;
+	color:#999;
+}
+
+
+.chat-panel .del{	
+	color:#ddd;
+	font-size:18px;
+	cursor:pointer;
+}
+
+.chat-panel .chat-mine .del{
+	margin-top:8px;
 }

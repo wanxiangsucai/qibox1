@@ -11,6 +11,7 @@ loader.define(function(require,exports,module) {
 	var show_msg_page  = 1;
 	var have_load_data = false;
 	var maxid = -1;
+	var getShowMsgUrl = "/member.php/member/msg/get_more.html?rows=15&page=";
 	
 
     // 模块初始化定义
@@ -26,7 +27,7 @@ loader.define(function(require,exports,module) {
 			}
 		});
 
-		if(to_uid!=""){	//详情页或发送页
+		if(typeof(to_uid)!='undefined' && to_uid!=""){	//详情页或发送页
 			uid = to_uid;
 			set_user_name(uid);	//设置当前会话的用户名
 			showMoreMsg(uid);	//加载相应用户的聊天记录
@@ -61,6 +62,18 @@ loader.define(function(require,exports,module) {
 		loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
     }
     pageview.bind = function () {
+
+		$("#choose_qqface").on("click",function () {
+			if($("#hack_wrap .list_qqface").length>0){
+				$("#hack_wrap").html("");
+			}else{
+				router.loadPart({
+					id: "#hack_wrap",
+					url: "/public/static/libs/bui/pages/chat/qqface.html"
+				})
+			}
+        })
+
             // 发送的内容
         var $chatInput = $("#chatInput"),
             // 发送按钮
@@ -150,13 +163,9 @@ loader.define(function(require,exports,module) {
 			}
 			num++;
 			ck_num = num;
-			if(res.data!=""){	//有新的聊天内容
+			if(res.data.length>0){	//有新的聊天内容
 				layer.closeAll();
-				$('#chat_win').prepend(res.data);
-				$("#chat_win").parent().scrollTop(9000);
-				setTimeout(function(){	//兼容发送图片的时候
-					$("#chat_win").parent().scrollTop(9000);
-				},500);
+				vues.set_data(res.data);
 			}
 			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
@@ -173,18 +182,17 @@ loader.define(function(require,exports,module) {
 		if(show_msg_page==1){
 			maxid = -1;
 			layer.msg("数据加载中,请稍候...");
-		}
+		}		
 		msg_scroll = false;
-		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){
-			
+		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){			
 			//console.log(res);
 			if(res.code==0){
 				if(show_msg_page==1){
 					maxid = res.ext.maxid;
 				}
 				layer.closeAll();
-				var that = $('#chat_win');
-				if(res.data==''){
+				var that = router.$('#chat_win');
+				if(res.data.length<1){
 					if(show_msg_page==1){
 						that.parent().scrollTop(0)
 						layer.msg("没有任何聊天记录！",{time:1000});
@@ -192,19 +200,34 @@ loader.define(function(require,exports,module) {
 						layer.msg("已经显示完了！",{time:500});
 					}		
 				}else{
-					if(show_msg_page==1){
-						that.html(res.data);
-						that.parent().scrollTop(3000)
-					}else{
-						that.append(res.data);
-						that.parent().scrollTop(350);
-					}        
 					show_msg_page++;
 					msg_scroll = true;
+					vues.set_data(res.data);
 				}				
 			}else{
 				layer.msg(res.msg,{time:2500});
 			}
+		});
+	}
+
+	//添加删除信息的功能按钮
+	function add_btn_delmsg(){
+		$(".chat-panel .del").off("click");
+		$(".chat-panel .del").click(function(){
+			var id = $(this).data("id");
+			var that = $(this);
+			$.get("/member.php/member/wxapp.msg/delete.html?id="+id,function(res){
+				if(res.code==0){
+					layer.msg("删除成功");
+					var father = that.parent().parent().parent();
+					father.hide();
+					if(father.prev().hasClass("show_username")||father.prev().hasClass("bui-box-center")){
+						father.prev().hide();
+					}
+				}else{
+					layer.alert(res.msg);
+				}
+			});
 		});
 	}
 	
@@ -212,7 +235,7 @@ loader.define(function(require,exports,module) {
 	//设置当前聊天的用户名
 	function set_user_name(uid){
 		if(uid>0){
-			$.get(get_user_info_url+"?uid="+uid,function(res){
+			$.get("/index.php/index/wxapp.member/getbyid.html?uid="+uid,function(res){
 				if(res.code==0){
 					$("#send_user_name").html(res.data.username);
 				}
@@ -234,9 +257,10 @@ loader.define(function(require,exports,module) {
 			layer.alert('消息内容不能为空');
 			return ;
 		}
-		$.post(postMsgUrl,{'uid':uid,'content':content,},function(res){		
+		$.post("/member.php/member/wxapp.msg/add.html",{'uid':uid,'content':content,},function(res){		
 			if(res.code==0){
-				$("#chatInput").val('');                
+				$("#chatInput").val('');
+				$("#hack_wrap").html('');
 				layer.msg('发送成功');
 			}else{
 				$("#btnSend").removeClass("disabled").addClass("primary");
@@ -246,17 +270,52 @@ loader.define(function(require,exports,module) {
 	}
 
 	var vues = new Vue({
-				el: '.bui-bar',
+				el: '.page-chat',
 				data: {
-						from_id: to_uid,
-						to_id:0,
-						me_id:my_uid,
+					from_id: typeof(to_uid)!='undefined'?to_uid:"",
+					to_id:0,
+					me_id:0,
+					userdb:{},
+					listdb:[],
 				},
 				watch:{
+					listdb: function() {
+						this.$nextTick(function(){	//数据渲染完毕才执行
+							if(show_msg_page==2 || router.$('#chat_win').parent().scrollTop()>300){
+								router.$('#chat_win').parent().scrollTop(20000);
+							}else{
+								router.$('#chat_win').parent().scrollTop(200);
+							}
+							add_btn_delmsg();
+						})
+					},
 				},
 				methods: {
 					set_id:function(id){
 						this.to_id = id;
+					},
+					set_data:function(array){
+						var ar = this.listdb;
+						var userinfo = {};
+						var that = this;
+						var timer = setInterval(function() {							
+							if(typeof(userinfo.uid)=='undefined'){
+								userinfo = window.store.get('userinfo');
+							}
+							if(typeof(userinfo.uid)!='undefined'){								
+								that.me_id = typeof(my_uid)!='undefined'?my_uid:userinfo.uid;
+								that.userdb = Object.assign({}, that.userdb, userinfo);								
+								that.listdb = [];
+								array.forEach((rs)=>{
+									that.listdb.push(rs);
+								});
+								ar.forEach((rs)=>{
+									that.listdb.push(rs);
+								});
+								clearInterval(timer);
+							}
+							console.log('userinfo=',userinfo);
+						},500);
 					},
 				}		  
 			});

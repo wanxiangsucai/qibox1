@@ -9,9 +9,6 @@ bui.ready(function(){
 					userinfo: {username:"我的"},
 				},
 				mounted: function () {
-					//setTimeout(()=>{
-					//		window.store.set("userinfo",{username:"你的的"});
-					//},2000)
 					$.get(get_user_info_url+"?uid="+my_uid,function(res){
 						//console.log(res.data);
 						res.data.face = "<img class='ring userface' onerror=\"this.src='/public/static/images/noface.png'\" src='"+res.data.icon+"'>";

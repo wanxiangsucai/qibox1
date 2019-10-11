@@ -116,35 +116,11 @@ class Msg extends MemberBase
         return $array;
     }
     
-    /**
-     * 标签调用 ,查看往来消息
-     * @param array $config
-     * @return void|\think\response\Json|\app\member\controller\unknown|unknown
-     */
-    public function showmore($config=[])
-    {
-        $cfg = unserialize($config['cfg']);
-        $id = $cfg['id'];
-        $rows = $cfg['rows'];
-        $uid = intval($cfg['uid']);
-        $maxid = intval($cfg['maxid']);
-//         $time = $cfg['time'];
-//         if($cfg['num']>0){
-//             $time = get_cookie('msg_time');
-//         }
-        
-        if($id){
-            $info = $this->get_info($id);
-            if(!is_array($info)){
-                return ;
-            }
-            $uid = $info['uid'];        }
-        if (empty($uid) && !is_numeric($cfg['uid']) && empty($id)) {
-            return [];
-        }
-        
+    
+    protected function get_moremsg($uid=0,$id=0,$rows=10,$maxid=0){
+        $rows<1 && $rows=10;
         if($uid>0){
-            cache('msg_time_'.$this->user['uid'].'-'.$uid,time(),60);  //把自己的操作时间做个标志            
+            cache('msg_time_'.$this->user['uid'].'-'.$uid,time(),60);  //把自己的操作时间做个标志
             $from_time = cache('msg_time_'.$uid.'-'.$this->user['uid']); //查看对方给自己的最后操作时间
         }elseif($uid<0){
             $from_time = 0;
@@ -178,61 +154,98 @@ class Msg extends MemberBase
             if (empty($id)) {
                 unset($this->map['id'],$this->OrMap['id']);
             }
-            if(isset($cfg['maxid'])){
+            if($maxid>0){
                 $this->map['id'] = ['>',$maxid];
                 $this->OrMap['id'] = ['>',$maxid];
             }
-//             elseif($time>0){
-//                 $this->map['create_time'] = ['>',$time];
-//                 $this->OrMap['create_time'] = ['>',$time];
-//             }
+            //             elseif($time>0){
+            //                 $this->map['create_time'] = ['>',$time];
+            //                 $this->OrMap['create_time'] = ['>',$time];
+            //             }
         }
         
         
-//         $this->NewMap = [
-//                 'uid'=>$this->user['uid'],
-//                 'touid'=>$info['uid'],
-//                 'id'=>['>',$id],
-//                 'ifread'=>0,
-//         ];
+        //         $this->NewMap = [
+        //                 'uid'=>$this->user['uid'],
+        //                 'touid'=>$info['uid'],
+        //                 'id'=>['>',$id],
+        //                 'ifread'=>0,
+        //         ];
         
         $data_list = Model::where(function($query){
             $query->where($this->map);
         })->whereOr(function($query){
             $query->where($this->OrMap);
-//         })->whereOr(function($query){
-//             $query->where($this->NewMap);
+            //         })->whereOr(function($query){
+            //             $query->where($this->NewMap);
         })->order("id desc")->paginate($rows);
         
-//         $this->cktime = true;
+        //         $this->cktime = true;
         $array = getArray($data_list);
         foreach($array['data'] AS $key=>$rs){
-//             $create_time = strtotime($rs['create_time']);
-//             if($create_time>get_cookie('msg_time')){
-//                 set_cookie('msg_time',$create_time);
-//             }
-            if($rs['id']>$maxid){
-                $maxid = $rs['id'];
-                if($rs['qun_id']>0){
-                    $qs = Model::where(['qun_id'=>$rs['qun_id'],'uid'=>$this->user['uid']])->order('id desc')->find();
-                    if($qs){
-                        Model::update(['id'=>$qs['id'],'visit_time'=>time()]);  //标志最后收到圈子群聊信息的时间
+            //             $create_time = strtotime($rs['create_time']);
+            //             if($create_time>get_cookie('msg_time')){
+            //                 set_cookie('msg_time',$create_time);
+            //             }
+                if($rs['id']>$maxid){
+                    $maxid = $rs['id'];
+                    if($rs['qun_id']>0){
+                        $qs = Model::where(['qun_id'=>$rs['qun_id'],'uid'=>$this->user['uid']])->order('id desc')->find();
+                        if($qs){
+                            Model::update(['id'=>$qs['id'],'visit_time'=>time()]);  //标志最后收到圈子群聊信息的时间
+                        }
                     }
                 }
-            }
-            
-            //$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
-            $rs['from_username'] = get_user_name($rs['uid']);
-            $rs['from_icon'] = get_user_icon($rs['uid']);
-            $rs['content'] = $this->format_content($rs['content']);
-            if($rs['ifread']==0&&$rs['touid']==$this->user['uid']){
-                Model::update(['id'=>$rs['id'],'ifread'=>1]);
-            }
-            $array['data'][$key] = $rs;
+                
+                //$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
+                $rs['content'] = fun("content@bbscode",$rs['content']);
+                $rs['from_username'] = get_user_name($rs['uid']);
+                $rs['from_icon'] = get_user_icon($rs['uid']);
+                $rs['content'] = $this->format_content($rs['content']);
+                if($rs['ifread']==0&&$rs['touid']==$this->user['uid']){
+                    Model::update(['id'=>$rs['id'],'ifread'=>1]);
+                }
+                $array['data'][$key] = $rs;
         }
         $array['lasttime'] = time()-$from_time; //对方最近操作的时间
         $array['maxid'] = $maxid;
         return $array;
+    }
+    
+    
+    public function get_more($uid=0,$id=0,$rows=5,$maxid=0){
+        $array = $this->get_moremsg($uid,$id,$rows,$maxid);
+        return $this->ok_js($array);
+    }
+    
+    /**
+     * 标签调用 ,查看往来消息
+     * @param array $config
+     * @return void|\think\response\Json|\app\member\controller\unknown|unknown
+     */
+    public function showmore($config=[])
+    {
+        $cfg = unserialize($config['cfg']);
+        $id = $cfg['id'];
+        $rows = $cfg['rows'];
+        $uid = intval($cfg['uid']);
+        $maxid = intval($cfg['maxid']);
+//         $time = $cfg['time'];
+//         if($cfg['num']>0){
+//             $time = get_cookie('msg_time');
+//         }
+        
+        if($id){
+            $info = $this->get_info($id);
+            if(!is_array($info)){
+                return ;
+            }
+            $uid = $info['uid'];        }
+        if (empty($uid) && !is_numeric($cfg['uid']) && empty($id)) {
+            return [];
+        }
+        
+        return $this->get_moremsg($uid,$id,$rows,$maxid);
     }
     
     /**
@@ -312,7 +325,7 @@ class Msg extends MemberBase
             return '内容不存在';
         }elseif($info['uid']!=$this->user['uid']&&$info['touid']!=$this->user['uid']){
             return '你无权删除';
-        }elseif($info['uid']==$this->user['uid']&&$info['ifread']){
+        }elseif($info['uid']==$this->user['uid']&&$info['qun_id']==0&&$info['ifread']){
             return '你无权删除对方已读消息';
         }
         

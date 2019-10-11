@@ -125,21 +125,7 @@ abstract class Reply extends Model
                 );
         
         $data_list->each(function(&$rs,$key){
-            $rs['username'] = get_user_name($rs['uid']);
-            $rs['user_icon'] = get_user_icon($rs['uid']);
-            $rs['time'] = format_time($rs['create_time'],true);
-            if($rs['mvurl']){
-                $rs['mvurl'] = tempdir($rs['mvurl']);
-            }
-            $rs['picurls'] = [];
-            if($rs['picurl']!=''){
-                $detail = explode(',', $rs['picurl']);
-                foreach ($detail AS $k=>$value){
-                    $detail[$k] = tempdir($value);
-                }
-                $rs['picurls'] = $detail;
-                $rs['picurl'] = $detail[0];
-            }
+            $rs = self::format_content($rs);
             if($rs['reply']){
                 $rs['sons'] = self::getSons($rs['id']);
             }else{
@@ -150,16 +136,34 @@ abstract class Reply extends Model
         return $data_list;
     }
     
+    protected static function format_content($rs=[]){
+        $rs['username'] = get_user_name($rs['uid']);
+        $rs['user_icon'] = get_user_icon($rs['uid']);
+        $rs['time'] = format_time($rs['create_time'],true);
+        $rs['content'] = fun('Content@bbscode',$rs['content']);
+        if($rs['mvurl']){
+            $rs['mvurl'] = tempdir($rs['mvurl']);
+        }
+        $rs['picurls'] = [];
+        if($rs['picurl']!=''){
+            $detail = explode(',', $rs['picurl']);
+            foreach ($detail AS $k=>$value){
+                $detail[$k] = tempdir($value);
+            }
+            $rs['picurls'] = $detail;
+            $rs['picurl'] = $detail[0];
+        }
+        return $rs;
+    }
+    
     public static function getSons($pid){
         empty(self::$model_key) && self::InitKey();
         $map = [
-                'pid'=>$pid,
+            'pid'=>$pid,
         ];
         $array = self::where($map)->order('id asc')->column(true);
         foreach($array AS $key=>$rs){
-            $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
-            $rs['time'] = format_time($rs['create_time'],true);
-            $rs['username'] = get_user_name($rs['uid']);
+            $rs = self::format_content($rs);
             $array[$key] = $rs;
         }
         $array = array_values($array);

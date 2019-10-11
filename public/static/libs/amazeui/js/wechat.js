@@ -58,6 +58,7 @@ $(document).ready(function(){
 			allowsend = true;
 			if(res.code==0){				
 				layer.msg('发送成功');
+				$("#hack_wrap").hide(300);
 			}else{
 				$(".msgcontent").val(content);
 				layer.alert('发送失败:'+res.msg);
@@ -74,7 +75,22 @@ $(document).ready(function(){
 			layer.msg('正在发送消息');
 			postmsg();
 		}
-	})
+	});
+
+	$("#show_face").click(function(){
+		if( $("#hack_wrap").is(':hidden') ){
+			$("#hack_wrap").show(100);
+			$("#hack_wrap em").off("click");
+			$("#hack_wrap em").click(function(){
+				$("#hack_wrap em").removeClass('ck');
+				$(this).addClass('ck');
+				$(".msgcontent").val( $(".msgcontent").val() + '[face' + $(this).data('id') + ']' )
+			});			
+		}else{
+			 $("#hack_wrap").hide(500);
+		}
+	});
+
 });
 
 /*
@@ -311,12 +327,12 @@ function set_main_win_content(res){
 			var old_h = that.height();
 
 			that.append(res.data);
-			format_show_time(that);
+			format_show_time(that);			
 
 			var new_h = $(".pc_show_all_msg").height();					
-			$(".pc_show_all_msg").css('top',(old_h-new_h)+'px');
-					
-		}        
+			$(".pc_show_all_msg").css('top',(old_h-new_h)+'px');					
+		}
+		add_btn_delmsg();
 		show_msg_page++;
 		msg_scroll = true;
 	}
@@ -424,10 +440,10 @@ $(function(){
 			if(res.code==0){			
 				$.each(res.ext.s_data,function(i,rs){
 					//出现新的消息新用户，或者是原来新消息的用户又发来了新消息
-					if(typeof(uid_array[rs.f_uid])=='undefined'||rs.id>uid_array[rs.f_uid]){
+					if(typeof(uid_array[rs.f_uid])=='undefined'||rs.id>uid_array[rs.f_uid]){ console.log('有新的消息来了');
 						$('.pc_msg_user_list').html(res.data);
 						add_click_user();
-						if(window.Notification){	//消息提醒
+						if(num>10 && window.Notification){	//消息提醒
 							if(Notification.permission=="granted"){
 								pushNotice();
 							}else{
@@ -473,6 +489,7 @@ $(function(){
 				that.prepend(res.data);
 				format_show_time(that)	//隐藏相邻的时间
 				goto_bottom(vh);
+				add_btn_delmsg();
 				if(window.Notification){	//消息提醒
 					if(Notification.permission=="granted"){
 						pushNotice();
@@ -575,7 +592,21 @@ $(function(){
 
 var severUrl = "/index.php/index/attachment/upload/dir/images/from/base64/module/bbs.html";
 
-
+//添加删除信息的功能按钮
+function add_btn_delmsg(){
+	$(".office_text .del").click(function(){
+		var id = $(this).data("id");
+		var that = $(this);
+		$.get("/member.php/member/wxapp.msg/delete.html?id="+id,function(res){
+			if(res.code==0){
+				layer.msg("删除成功");
+				that.parent().hide();
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	});
+}
 
 function pc_qun_hot(){	//异步加载执行的函数
 	$("#hot_qunzi").append( $(".pc_qun_hot").html() );

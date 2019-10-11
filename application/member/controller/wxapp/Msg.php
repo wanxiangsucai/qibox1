@@ -90,10 +90,21 @@ class Msg extends MemberBase
      */
     public function delete($id)
     {
-        if (Model::where(['id'=>$id,'uid'=>$this->user['uid']])->delete()) {
+        $info = getArray(Model::where(['id'=>$id])->find());
+        if(!$info){
+            return $this->err_js('内容不存在');
+        }elseif($info['uid']!=$this->user['uid'] && $info['touid']!=$this->user['uid']){
+            return $this->err_js('你无权删除');
+        }elseif($info['uid']==$this->user['uid']&&$info['qun_id']==0&&$info['ifread']){
+            if(time()-strtotime($info['create_time'])>60*3){
+                return $this->err_js('该消息发送时间已超过3分钟，并且对方已读，你不能再删除！');
+            }            
+        }
+        
+        if (Model::where(['id'=>$id])->delete()) {
             return $this->ok_js();
         }else{
-            $this->err_js('删除失败');
+            return $this->err_js('删除失败');
         }
     }
     

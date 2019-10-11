@@ -204,7 +204,7 @@
 			<div class="windows_top">
 				<div class="windows_top_box">
 					<span id="send_user_name"><!--对方用户名--></span>
-					<div id="remind_online">对方正在输入中，请稍候...</div>
+					<div id="remind_online">对方正在输入中，请稍候...</div>					
 					<ul class="window_icon">
 						<li><a href="javascript:;"><img src="__STATIC__/libs/amazeui/images/icon/icon7.png"/></a></li>
 						<li><a href="javascript:;"><img src="__STATIC__/libs/amazeui/images/icon/icon8.png"/></a></li>
@@ -225,6 +225,13 @@
 			
 			<!--聊天内容-->
 			<div class="windows_body">
+				<div id="hack_wrap">
+					<script type="text/javascript">
+						for(var i=1;i<23;i++){
+							document.write(`<em data-id="${i}"><img src="/public/static/images/qqface/${i}.gif"></em>`);
+						}
+					</script>
+				</div>
 				<div class="office_text" style="height: 100%;">
 					<ul class="content pc_show_all_msg" id="chatbox" style="display: flex;flex-flow: column-reverse;">
 <!--会员聊天内容-->
@@ -233,7 +240,8 @@
 						<li class="{$rs.uid==$userdb.uid?'me':'other'}">
 						<dd class="time" data-time="{$rs.create_time|strtotime}"><a>{$rs.create_time}</a></dd>
 						{if $rs.qun_id&&$rs.uid!=$userdb.uid}<div class="name">{$rs.from_username}</div>{/if}
-						<a href="{:get_url('user',$rs.uid)}" class="user_icon" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span class="content">{$rs.content}</span>						
+						<a href="{:get_url('user',$rs.uid)}" class="user_icon" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span class="content">{$rs.content}</span>
+						{if $rs.uid==$userdb.uid||$rs.touid==$userdb.uid}<i data-id="{$rs.id}" class="del glyphicon glyphicon-remove-circle"></i>{/if}				
 						</li>
 {/qb:tag}
 					</ul>
@@ -266,10 +274,11 @@
 
 			<div class="windows_input" id="talkbox">
 				<div class="input_icon">
-					<a href="javascript:;" title="发送表情"></a>
+					<a href="javascript:;" id="show_face" title="发送表情"></a>
 					<a href="javascript:;" title="发送文件"></a>
 					<a href="javascript:add_new_user();" title="添加新人会话"></a>
-					<a href="javascript:$('#fileToUpload').click();" title="上传图片" id="uploadPhoto" class="fa fa-photo"><input style="display:none;" type="file" name="fileToUpload" id="fileToUpload" accept="image/*" /><input type="text" name="picurl" id="compressValue"  style="display:none;" /></a>
+					<a href="javascript:" onclick="$('#fileToUpload').click();" title="上传图片" id="uploadPhoto" class="fa fa-photo"></a>
+					<input style="display:none;" type="file" name="fileToUpload" id="fileToUpload" accept="image/*" /><input type="text" name="picurl" id="compressValue"  style="display:none;" />
 					<a href="javascript:;" title="发送视频文件"></a>
 					<a href="javascript:;" title="发送语音文件"></a>
 				</div>

@@ -17,38 +17,49 @@
     <main>
 		<div id="remind_online">对方正在输入中,请不要离开!</div>
         <div class="bui-panel chat-panel" id="chat_win">
-			<!--
-            <div class="bui-box-center">
-                <div class="time">5月11日 08:30</div>
+		<ol v-for="rs in listdb">
+			<div class="bui-box-center">
+                <div class="time">{{rs.create_time}}</div>
             </div>
-            <div class="bui-box-align-top chat-target">
-                <div class="chat-icon"><img src="/public/static/images/noface.png" alt=""></div>
+			<div class="show_username" v-if="rs.qun_id>0&&rs.uid!=userdb.uid">
+                {{rs.from_username}}
+            </div>
+            <div class="bui-box-align-top chat-target" v-if="rs.uid!=userdb.uid">
+                <div class="chat-icon"><a href="#" class="iframe"><img :src="rs.from_icon"  onerror="this.src='__STATIC__/images/noface.png'" :title="rs.from_username"></a></div>
                 <div class="span1">
-                    <div class="chat-content bui-arrow-left">小明你好呀!</div>
+                    <div class="chat-content bui-arrow-left" v-html="rs.content"></div>
+					<i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>
                 </div>
             </div>
-            <div class="bui-box-align-top chat-mine">
+            <div class="bui-box-align-top chat-mine" v-else>
                 <div class="span1">
                     <div class="bui-box-align-right">
-                      <div class="chat-content bui-arrow-right">你好！
-                      </div>
+                      <i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>
+					  <div class="chat-content bui-arrow-right" v-html="rs.content"></div>
                     </div>
                 </div>
-                <div class="chat-icon"><img src="/public/static/images/noface.png" alt=""></div>
+                <div class="chat-icon"><a href="#" class="iframe"><img :src="rs.from_icon"  onerror="this.src='__STATIC__/images/noface.png'" :title="rs.from_username"></a></div>
             </div>
-			-->			 
+		</ol>	 
         </div>
 		<div class="chatbar">
             <div class="bui-input">
-                <i class="fa fa-photo" id="photoBtn"></i><textarea id="chatInput"></textarea><span id="btnSend" class="bui-btn round disabled">发送</span>
+                <i class="fa fa-photo" id="photoBtn"></i>
+				 <textarea id="chatInput"></textarea>
+				 <i class="fa fa-smile-o" id="choose_qqface"></i>
+				<span id="btnSend" class="bui-btn round disabled">发送</span>
             </div>
+			<div id="hack_wrap">
+			</div>
         </div>
-    </main><!--
+    </main>
+	<!--
     <footer>
         <div class="chatbar">
             <div class="bui-input">
                 <textarea id="chatInput"></textarea><span id="btnSend" class="bui-btn round disabled">发送</span>
             </div>
         </div>
-    </footer>-->
+    </footer>
+	-->
 </div>

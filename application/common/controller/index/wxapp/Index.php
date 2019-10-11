@@ -38,11 +38,10 @@ abstract class Index extends IndexBase
      * @param string $type 类型筛选
      * @return \think\response\Json
      */
-    public function index($fid=0,$type=''){
+    public function index($fid=0,$type='',$rows=10){
         $map = [];
         $fid && $map['fid'] = $fid;
         //$map['ispic'] = 1;
-        $rows = 5;
         $order = 'id desc';
         if($type=='star'){
             $map['status'] = 2;

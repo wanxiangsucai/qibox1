@@ -55,9 +55,8 @@
         </div>
       </div>
     </div>
-    <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content sys_addmsg_list001">
-	 
-        {qb:tag name="sys_addmsg_list001" class="app\member\controller\Msg@showmore" union="uid=$touid,time,num" rows="5"}
+    <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content sys_addmsg_list001">	 
+        {qb:tag name="sys_addmsg_list001" class="app\member\controller\Msg@showmore" union="uid=$touid,maxid,num" rows="5"}
                   <div class="media-body">
                       <a href="{:get_url('user',['uid'=>$rs['uid']])}" class="media-left" style="float: left;" target="_blank">
                           <img src="{$rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" height="46px" width="46px">
@@ -151,43 +150,58 @@ function postmsg(){
 	});
 }
 
-var num = 0;
+var num = 0,ck_num = 0,maxid = -1;
 setInterval(function(){
-	//console.log(5);
-	$.get(get_msg_url+"1&time={:time()}&uid="+touid+"&num="+num,function(res){
-		if(res.code==0){
-			num++;
-			if(res.data!="")$('.sys_addmsg_list001').prepend(res.data);
-		}
-		if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
-			$(".remind_msg").show();
-		}else{
-			$(".remind_msg").hide();
-		}
-	});
+	if(ck_num>num){
+		console.log("服务器还没反馈数据过来");
+		//layer.msg("服务器反馈超时",{time:500});
+		return ;
+	}
+	if(maxid>=0){
+		$.get(get_msg_url+"1&maxid="+maxid+"&uid="+touid+"&num="+num,function(res){
+			if(res.code==0){
+				num++;
+				ck_num = num;
+				if(res.data!="")$('.sys_addmsg_list001').prepend(res.data);
+			}
+			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
+				$(".remind_msg").show();
+			}else{
+				$(".remind_msg").hide();
+			}
+			maxid = res.ext.maxid;
+		});
+		ck_num++;
+	}
+
 },1000);
 
 
 
 var msg_page=1;
 var get_msg_url = "{qb:url name='sys_addmsg_list001' /}";
-function showMoreMsg(){
-  msg_page++;
+function showMoreMsg(){  
   $.get(get_msg_url+msg_page,function(res){  
     //console.log(res);
     if(res.code==0){
       if(res.data==''){
         layer.msg("已经显示完了！",{time:500});
       }else{
-        $('.sys_addmsg_list001').append(res.data);
-        scroll_get = true;
+		  if(msg_page==1){
+			  $('.sys_addmsg_list001').html(res.data);
+		  }else{
+			  $('.sys_addmsg_list001').append(res.data);
+		  }        
+		 scroll_get = true;
+		 msg_page++;
       }
+	  maxid = res.ext.maxid;
     }else{
       layer.msg(res.msg,{time:2500});
     }
   });
 }
-
+showMoreMsg();
 
 //滚动显示更多
 var scroll_get = true;  //做个标志,不要反反复复的加载

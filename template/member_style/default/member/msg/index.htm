@@ -59,39 +59,7 @@
 <!--短消息最近的会话用户列表-->
 
 
-<!--会员聊天内容-->
-<div class="wap_show_all_msg" style="display:none">
-{php}$uid='';{/php}
-{qb:tag name="wap_show_all_msg" js="wap_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,maxid,num" rows="15"}			
-			{if $rs.uid!=$userdb.uid}
-            <div class="bui-box-align-top chat-target">
-                <div class="chat-icon"><a href="{:get_url('user',$rs.uid)}" class="iframe"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a></div>
-                <div class="span1">
-                    <div class="chat-content bui-arrow-left">{$rs.content}</div>
-                </div>
-            </div>
-			{else /}
-            <div class="bui-box-align-top chat-mine">
-                <div class="span1">
-                    <div class="bui-box-align-right">
-                      <div class="chat-content bui-arrow-right">{$rs.content}</div>
-                    </div>
-                </div>
-                <div class="chat-icon"><a href="{:get_url('user',$rs.uid)}" class="iframe"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a></div>
-            </div>
-			{/if}
-			{if $rs.qun_id>0&&$rs.uid!=$userdb.uid}
-			<div style="margin-left:35px;color:#999;">
-                {$rs.from_username}
-            </div>
-			{/if}
-			<div class="bui-box-center">
-                <div class="time">{$rs.create_time}</div>
-            </div>
-			
-{/qb:tag}
-</div>
-<!--会员聊天内容-->
+
 
 <!--好友列表-->
 <div class="wap_myfriend" style="display:none">
@@ -195,7 +163,7 @@
 
 <script type="text/javascript">
 var ListMsgUserUrl = "{qb:url name='wap_msg_user_list' /}";			//获取分页的消息用户列表
-var getShowMsgUrl = "{qb:url name='wap_show_all_msg' /}";			//获取更多分页的会话记录
+//var getShowMsgUrl = "{qb:url name='wap_show_all_msg' /}";			//获取更多分页的会话记录
 //var now_time = "{:time()}";											//当前时间点做个记录,之后的消息就当新消息处理
 var postMsgUrl = "{:urls('wxapp.msg/add')}";						//发送消息提交的地址
 var get_user_info_url = "{:urls('index/wxapp.member/getbyid')}";	//根据UID获取某个用户的相关资料
