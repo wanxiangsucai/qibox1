@@ -113,6 +113,8 @@
 {else /}
 		<div class='butter'><button type="submit">提交</button></div>
 {/if}
+		{notempty name=":input('ext_id')"}<input type="hidden" name="ext_id" value="{:input('ext_id')}">{/notempty}
+		{notempty name=":input('ext_sys')"}<input type="hidden" name="ext_sys" value="{:input('ext_sys')}">{/notempty}
 	
 </div>
 

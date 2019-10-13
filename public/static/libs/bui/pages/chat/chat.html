@@ -8,49 +8,53 @@
             <span id="send_user_name">会话记录</span>
         </div>
         <div class="bui-bar-right">
+			<!--
             <a class="bui-btn right-tongji" v-if="from_id!==''"><i class="fa fa-commenting-o"><span class="bui-badges tongji_num">0</span></i></a>
 			<a class="bui-btn" v-else-if="to_id>0"><i :href="'/member.php/home/'+to_id+'.html'" class="iframe fa fa-id-badge"></i></a>
 			<a class="bui-btn" v-else-if="to_id<0"><i :href="'/index.php/qun/show-'+(-to_id)+'.html'" class="iframe fa fa-telegram"></i></a>
 			<a class="bui-btn" v-else><i :href="'/member.php/home/'+me_id+'.html'" class="iframe fa fa-user-circle-o"></i></a>
+			-->
         </div>
     </header>	
     <main>
 		<div id="remind_online">对方正在输入中,请不要离开!</div>
         <div class="bui-panel chat-panel" id="chat_win">
-		<ol v-for="rs in listdb">
-			<div class="bui-box-center">
-                <div class="time">{{rs.create_time}}</div>
-            </div>
-			<div class="show_username" v-if="rs.qun_id>0&&rs.uid!=userdb.uid">
-                {{rs.from_username}}
-            </div>
-            <div class="bui-box-align-top chat-target" v-if="rs.uid!=userdb.uid">
-                <div class="chat-icon"><a href="#" class="iframe"><img :src="rs.from_icon"  onerror="this.src='__STATIC__/images/noface.png'" :title="rs.from_username"></a></div>
-                <div class="span1">
-                    <div class="chat-content bui-arrow-left" v-html="rs.content"></div>
-					<i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>
-                </div>
-            </div>
-            <div class="bui-box-align-top chat-mine" v-else>
-                <div class="span1">
-                    <div class="bui-box-align-right">
-                      <i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>
-					  <div class="chat-content bui-arrow-right" v-html="rs.content"></div>
-                    </div>
-                </div>
-                <div class="chat-icon"><a href="#" class="iframe"><img :src="rs.from_icon"  onerror="this.src='__STATIC__/images/noface.png'" :title="rs.from_username"></a></div>
-            </div>
-		</ol>	 
+				<!--
+				<ol v-for="rs in listdb">
+					<div class="bui-box-center">
+						<div class="time">{{rs.create_time}}</div>
+					</div>
+					<div class="show_username" v-if="rs.qun_id>0&&rs.uid!=userdb.uid">
+						{{rs.from_username}}
+					</div>
+					<div class="bui-box-align-top chat-target" v-if="rs.uid!=userdb.uid">
+						<div class="chat-icon"><a href="#" class="iframe"><img :src="rs.from_icon"  onerror="this.src='__STATIC__/images/noface.png'" :title="rs.from_username"></a></div>
+						<div class="span1">
+							<div class="chat-content bui-arrow-left" v-html="rs.content"></div>
+							<i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>
+						</div>
+					</div>
+					<div class="bui-box-align-top chat-mine" v-else>
+						<div class="span1">
+							<div class="bui-box-align-right">
+							  <i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>
+							  <div class="chat-content bui-arrow-right" v-html="rs.content"></div>
+							</div>
+						</div>
+						<div class="chat-icon"><a href="#" class="iframe"><img :src="rs.from_icon"  onerror="this.src='__STATIC__/images/noface.png'" :title="rs.from_username"></a></div>
+					</div>
+				</ol>
+				-->
         </div>
 		<div class="chatbar">
             <div class="bui-input">
-                <i class="fa fa-photo" id="photoBtn"></i>
+                <i class="glyphicon glyphicon-plus-sign" id="show_hack"></i>
 				 <textarea id="chatInput"></textarea>
-				 <i class="fa fa-smile-o" id="choose_qqface"></i>
+				 <i class="fa fa-smile-o" id="choose_qqface"></i>				 
 				<span id="btnSend" class="bui-btn round disabled">发送</span>
             </div>
-			<div id="hack_wrap">
-			</div>
+			<div id="hack_wrap"></div>
+			<div id="face_wrap"></div>
         </div>
     </main>
 	<!--

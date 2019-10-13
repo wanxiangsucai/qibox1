@@ -6,13 +6,17 @@ bui.ready(function(){
 				scope: "app",
 				isPublic: true,
 				data: {
-					userinfo: {username:"我的"},
+					userinfo: {username:"我的",uid:my_uid},
 				},
 				mounted: function () {
 					$.get(get_user_info_url+"?uid="+my_uid,function(res){
 						//console.log(res.data);
-						res.data.face = "<img class='ring userface' onerror=\"this.src='/public/static/images/noface.png'\" src='"+res.data.icon+"'>";
-						window.store.set("userinfo",res.data);
+						if(res.code==0){
+							res.data.face = "<img class='ring userface' onerror=\"this.src='/public/static/images/noface.png'\" src='"+res.data.icon+"'>";
+							window.store.set("userinfo",res.data);
+						}else{
+							window.store.set("userinfo",{username:"游客",uid:0});
+						}						
 					});
 				}
     });
@@ -45,6 +49,9 @@ bui.ready(function(){
 	
 	//检查新消息的条数
 	function check_newmsg_num(){
+		if(typeof(checkNewMsgUrl)=='undefined'){
+			return ;
+		}
 		$.get(checkNewMsgUrl,function(res){
 			if(res.code==0){
 				$("#chat_num").html(res.data.num);	
@@ -56,6 +63,9 @@ bui.ready(function(){
 	}
 
 	function tongji_new_num(type){
+		if(typeof(tongjiAllCountUrl)=='undefined'){
+			return ;
+		}
 		$.get(tongjiAllCountUrl+type,function(res){
 			if(res.code==0){
 				if(res.data>0){
@@ -67,15 +77,13 @@ bui.ready(function(){
 	}
 	
 	var i=0;
-	setInterval(function() {
-		
-		if(to_uid!=""){		//指定了id , 一般是从公众号进入的情况
-			if(i%4==0)tongji_new_num(1);
-		}else{	//默认进入
-			var url = window.location.href;
-			if(url.indexOf('#/')==-1){	//跳转到其它模块,就不要刷新了
-				if(i%3==0)check_newmsg_num();
-				if(i%5==0)tongji_new_num(0);
+	setInterval(function() {		
+		var url = window.location.href;
+		if(url.indexOf('#/')==-1){	//跳转到其它模块,就不要刷新了
+			if(i%3==0)check_newmsg_num();
+			if(i%5==0)tongji_new_num(0);
+			if(to_uid!=""){		//指定了id , 一般是从公众号进入的情况
+				if(i%4==0)tongji_new_num(1);
 			}
 		}
 		i++;

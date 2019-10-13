@@ -90,6 +90,8 @@
 	<!-- 功能接口钩子 -->
 	{:hook_listen('template_form_foot',$f_array,$info,true)} 
     <div class='submits'>
+		{notempty name=":input('ext_id')"}<input type="hidden" name="ext_id" value="{:input('ext_id')}">{/notempty}
+		{notempty name=":input('ext_sys')"}<input type="hidden" name="ext_sys" value="{:input('ext_sys')}">{/notempty}
 		{notempty name=":input('id')"}<input type="hidden" name="id" value="{:input('id')}">{/notempty}
 		{if $tab_ext.hidebtn!='back'}<input type="button" onclick="window.history.back()" style="color:#555;margin-right:30px;" onmouseout="$(this).css({'background':'#eee'})" onmouseover="$(this).css({'background':'orange'})" value="取消返回">{/if}
 		{$tab_ext.addbtn}

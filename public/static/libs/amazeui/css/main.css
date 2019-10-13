@@ -581,7 +581,9 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 }
 
 .input_icon a:nth-child(2){
-	background: url(../images/icon/icon14.png) no-repeat center center;
+	/*background: url(../images/icon/icon14.png) no-repeat center center;*/
+	font-size:22px;
+	color:#aaa;
 }
 
 .input_icon a:nth-child(2):hover{

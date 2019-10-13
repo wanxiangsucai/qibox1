@@ -2723,12 +2723,15 @@ if (!function_exists('getTemplate')) {
       */
      function get_url($type,$array=[]){
          switch ($type){
+             case 'msg':    //即时聊天
+                 $url = iurl('index/msg/index').'#/public/static/libs/bui/pages/chat/chat?uid='.$array;
+                 break;
              case 'reg':    //通用注册
                  $url = iurl('index/reg/index',$array);
-             break;
+                break;
              case 'login':  //通用登录
                  $url = iurl('index/login/index',$array).'?fromurl='.urlencode(request()->url(true));
-             break;
+                break;
              case 'wx_login':   //微信登录
                  $url = purl('weixin/login/index',$array).'?fromurl='.urlencode(request()->url(true));
                  break;
@@ -2746,7 +2749,7 @@ if (!function_exists('getTemplate')) {
                  break;
              case 'home':   //访问主页
                  $url = request()->domain().'/';
-              break;
+                 break;
              case 'member':  //会员中心
                  $url = request()->domain().'/member.php';
                  break;

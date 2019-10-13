@@ -7,12 +7,12 @@ loader.define(function(require,exports,module) {
 
     var pageview = {};
 	var uid,qid;
-	var msg_scroll = true;
+	var msg_scroll = 1;
 	var show_msg_page  = 1;
-	var have_load_data = false;
 	var maxid = -1;
-	var getShowMsgUrl = "/member.php/member/msg/get_more.html?rows=15&page=";
-	
+	var getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&page=";
+	var userinfo = {};
+	var need_scroll = false;
 
     // 模块初始化定义
     pageview.init = function () {
@@ -21,9 +21,16 @@ loader.define(function(require,exports,module) {
 		$("#chat_win").parent().scroll(function () {
 			var h = $("#chat_win").parent().scrollTop();
 			//console.log(h);
-			if( h<200 && msg_scroll==true){
-				layer.msg("内容加载中！请稍候...",{time:3000});
-				showMoreMsg(uid);
+			if( h<100){
+				if(msg_scroll!=-1){
+					//console.log(h+"--"+msg_scroll);
+					router.$('#chat_win').parent().scrollTop(150);
+				}
+				if(msg_scroll==1){//console.log("++");
+					msg_scroll = 0;					
+					layer.msg("内容加载中！请稍候...",{time:3000});
+					showMoreMsg(uid);
+				}								
 			}
 		});
 
@@ -58,28 +65,61 @@ loader.define(function(require,exports,module) {
 			if(maxid>=0)check_new_showmsg();	//刷新会话用户中有没有新消息,必须要加载到内容后有maxid值才去刷新
 		}, 1000);
 		
-		this.upload();
-		loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
+		//this.upload();
+		//loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
+
+		if(uid<0){
+			$.get("/index.php/qun/wxapp.visit/check_visit/id/"+(-uid)+".html",function(res){});	//更新圈子浏览日志
+		}
     }
+
     pageview.bind = function () {
 
 		$("#choose_qqface").on("click",function () {
-			if($("#hack_wrap .list_qqface").length>0){
-				$("#hack_wrap").html("");
+			$("#hack_wrap").hide();
+			if($("#face_wrap").html()!=""){
+				if($("#face_wrap").is(":hidden")){
+					$("#face_wrap").show();
+				}else{
+					$("#face_wrap").hide();
+				}
 			}else{
+				$("#face_wrap").show();
 				router.loadPart({
-					id: "#hack_wrap",
+					id: "#face_wrap",
 					url: "/public/static/libs/bui/pages/chat/qqface.html"
 				})
 			}
         })
 
+		$("#show_hack").on("click",function () {
+			$("#face_wrap").hide();
+			if($("#hack_wrap").html()!=""){
+				if($("#hack_wrap").is(":hidden")){
+					$("#hack_wrap").show();
+				}else{
+					$("#hack_wrap").hide();
+				}
+			}else{
+				$("#hack_wrap").show();
+				router.loadPart({
+					id: "#hack_wrap",
+					url: "/public/static/libs/bui/pages/chat/hack.html?f",
+				}).then(function (module) {
+					//pageview.upload();
+					loader.require("/public/static/libs/bui/pages/chat/voice",function (voice) {
+						 console.log(voice)
+					 })
+				});
+			}
+        })
+
             // 发送的内容
-        var $chatInput = $("#chatInput"),
+        var $chatInput = router.$("#chatInput"),
             // 发送按钮
-            $btnSend = $("#btnSend"),
+            $btnSend = router.$("#btnSend"),
             // 聊天的容器
-            $chatPanel = $(".chat-panel");
+            $chatPanel = router.$(".chat-panel");
 
         // 绑定发送按钮
         $btnSend.on("click",function (e) {
@@ -93,7 +133,18 @@ loader.define(function(require,exports,module) {
             }else{
                 return false;
             }
-        });		
+        });
+		
+		 $chatInput.click(function(){
+			if(typeof(userinfo.uid)=='undefined'){
+				userinfo = window.store.get('userinfo');
+			}
+			if(userinfo.uid<1){
+				layer.confirm("你还没登录，不能发言，是否立即登录？",{btn:['立即登录','取消'],title:"提示"},function () {
+					window.location.href = '/index.php/index/login/index.html?fromurl='+encodeURIComponent(window.location.href);
+				});
+			}
+		 });
 
         // 延迟监听输入
         $chatInput.on("input",bui.unit.debounce(function () {
@@ -165,7 +216,9 @@ loader.define(function(require,exports,module) {
 			ck_num = num;
 			if(res.data.length>0){	//有新的聊天内容
 				layer.closeAll();
-				vues.set_data(res.data);
+				need_scroll = true;
+				//vues.set_data(res.data);
+				add_msg_data(res,'new');
 			}
 			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
@@ -182,8 +235,7 @@ loader.define(function(require,exports,module) {
 		if(show_msg_page==1){
 			maxid = -1;
 			layer.msg("数据加载中,请稍候...");
-		}		
-		msg_scroll = false;
+		}	
 		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){			
 			//console.log(res);
 			if(res.code==0){
@@ -198,11 +250,13 @@ loader.define(function(require,exports,module) {
 						layer.msg("没有任何聊天记录！",{time:1000});
 					}else{
 						layer.msg("已经显示完了！",{time:500});
-					}		
+					}
+					msg_scroll = -1;	//允许滚动条滚到尽头
 				}else{
 					show_msg_page++;
-					msg_scroll = true;
-					vues.set_data(res.data);
+					//msg_scroll = 1;
+					//vues.set_data(res.data);
+					add_msg_data(res);
 				}				
 			}else{
 				layer.msg(res.msg,{time:2500});
@@ -260,7 +314,8 @@ loader.define(function(require,exports,module) {
 		$.post("/member.php/member/wxapp.msg/add.html",{'uid':uid,'content':content,},function(res){		
 			if(res.code==0){
 				$("#chatInput").val('');
-				$("#hack_wrap").html('');
+				$("#hack_wrap").hide();
+				$("#face_wrap").hide();
 				layer.msg('发送成功');
 			}else{
 				$("#btnSend").removeClass("disabled").addClass("primary");
@@ -268,7 +323,96 @@ loader.define(function(require,exports,module) {
 			}
 		});
 	}
+	
+	function add_msg_data(res,type){
+		var timer = setInterval(function(){
+			if(typeof(userinfo.uid)=='undefined'){
+				userinfo = window.store.get('userinfo');
+			}
+			if(typeof(userinfo.uid)!='undefined'){
+				clearInterval(timer);
+				var myid = typeof(my_uid)!='undefined'?my_uid:userinfo.uid;
+				//console.log(res.data);
+				format_msg_data(res.data , myid , type)
+			}
+			//console.log('userinfo=',userinfo);
+		},500);
+	}
 
+	function format_msg_data(array , myid , type){
+		var str = '';
+		var del_str = '';
+		var user_str = '';
+		var userdb = userinfo;
+		array.forEach((rs)=>{
+			del_str = '';
+			if(userdb.uid>0 && (rs.uid==userdb.uid || rs.touid==userdb.uid) ){
+				del_str = `<i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>`;
+			}
+
+			user_str = `<div class="chat-icon"><a href="#" class="iframe"><img src="${rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" title="${rs.from_username}"></a></div>`;
+			if(rs.uid!=myid){
+				str += `
+					<div class="bui-box-align-top chat-target">
+						${user_str}
+						<div class="span1">
+							<div class="chat-content bui-arrow-left">${rs.content}</div>
+							${del_str}
+						</div>
+					</div>	`;
+			}else{
+				str += `
+					<div class="bui-box-align-top chat-mine">
+					<div class="span1">
+						<div class="bui-box-align-right">
+						  ${del_str}
+						  <div class="chat-content bui-arrow-right">${rs.content}</div>
+						</div>
+					</div>
+					${user_str}
+				</div>`;
+			}
+
+			if(rs.qun_id>0 && rs.uid!=myid){
+				str += `<div class="show_username">${rs.from_username}</div>`;
+			}
+
+			str += `
+					<div class="bui-box-center">
+						<div class="time">${rs.create_time}</div>
+					</div>`;
+		});
+		if(type == 'new'){
+			router.$("#chat_win").prepend(str);
+		}else{
+			router.$("#chat_win").append(str);
+		}
+
+		if(show_msg_page==2 || need_scroll==true){
+			router.$('#chat_win').parent().scrollTop(20000);
+			need_scroll = false;
+		}else{
+			router.$('#chat_win').parent().scrollTop(400);
+		}
+		add_btn_delmsg();
+		msg_scroll = 1;
+	}
+
+	var getParams = bui.getPageParams();
+    getParams.done(function(result){
+		console.log(result.uid);
+		if(result.uid!=undefined){
+			qid = uid = result.uid;
+			//vues.set_id(uid);
+			show_msg_page = 1; //重新恢复第一页
+			msg_scroll = 1; //恢复可以使用滚动条
+			set_user_name(uid);	//设置当前会话的用户名
+			showMoreMsg(uid);	//加载相应用户的聊天记录
+		}
+    })
+
+
+	/*
 	var vues = new Vue({
 				el: '.page-chat',
 				data: {
@@ -319,139 +463,12 @@ loader.define(function(require,exports,module) {
 					},
 				}		  
 			});
-	
-	var getParams = bui.getPageParams();
-    getParams.done(function(result){
-		console.log(result.uid);
-		if(result.uid!=undefined){
-			qid = uid = result.uid;
-			vues.set_id(uid);
-			show_msg_page = 1; //重新恢复第一页
-			msg_scroll = true; //恢复可以使用滚动条
-			set_user_name(uid);	//设置当前会话的用户名
-			showMoreMsg(uid);	//加载相应用户的聊天记录
-		}
-    })
-
-
-	// 上传图片
-	pageview.upload = function() {
-		var uiUpload = bui.upload();		
-		var uiActionsheet = bui.actionsheet({
-					trigger: "#photoBtn",
-					buttons: [{ name: "拍照上传", value: "camera" }, { name: "从相册选取", value: "photo" }],
-					callback: function(e) {
-						var ui = this;
-						var val = $(e.target).attr("value");
-						switch (val) {
-							case "camera":
-								ui.hide();
-								uiUpload.add({
-									"from": "camera",
-									"onSuccess": function(val, data) {
-										// 展示本地图片
-										this.toBase64({
-											onSuccess: function(url) {
-												upload_pic(url)
-											}
-										});
-
-										// 也可以直接调用start上传图片
-									}
-								})
-								break;
-							case "photo":
-								ui.hide();
-								uiUpload.add({
-									"from": "",
-									"onSuccess": function(val, files) {
-										 var Orientation=0
-										 var filefield = document.getElementById($('input[name="uploadFiles"]').attr('id')) 
-											 var file = filefield.files[0];
-											EXIF.getData(file, function(){												 
-												Orientation = EXIF.getTag(this, 'Orientation'); console.log("d "+Orientation);												
-											});										
-										//console.log(val);
-										//console.log(this.data()[0]);
-										//var url = window.URL.createObjectURL(files[0]);
-										//document.querySelector('img').src = window.URL.createObjectURL(url);
-										// 展示本地图片
-										this.toBase64({
-											onSuccess: function(url) {
-												upload_pic(url,Orientation)
-											}
-										});
-										// 也可以直接调用start上传图片
-									}
-								})
-
-								break;
-							case "cancel":
-								ui.hide();
-								break;
-						}
-					}
-				})
-
-				function templatePhoto(url) {
-					return `<img src="${url}" alt="" />`
-				}
-				
-				function upload_pic(base64,Orientation){
-					var image = new Image();
-						image.src = base64;
-						image.onload = function() {
-						var resized = resizeUpImages(image);
-						var severUrl = "/index.php/index/attachment/upload/dir/images/from/base64/module/bbs.html";
-						$.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':''}).done(function (res) {
-							if(res.code==1){
-								//console.log(res);
-								var url = res.path;
-								if(url.indexOf('://')==-1 && url.indexOf('/public/')==-1){
-									url = '/public/'+url;
-								}
-								$("#chatInput").val( templatePhoto(url)+$("#chatInput").val() )
-								if($("#btnSend").hasClass("disabled"))$("#btnSend").removeClass("disabled").addClass("primary");
-							}else{
-								alert(res.info);
-							}
-						}).fail(function () {
-							alert('操作失败，请跟技术联系');
-						});
-					}					
-				}
-
-				function resizeUpImages(img) {
-					//压缩的大小
-					var max_width = 1920; 
-					var max_height = 1080;
-					var canvas = document.createElement('canvas');
-					var width = img.width;
-					var height = img.height;
-					if(width > height) {
-						if(width > max_width) {
-							height = Math.round(height *= max_width / width);
-							width = max_width;
-						}
-					}else{
-						if(height > max_height) {
-							width = Math.round(width *= max_height / height);
-							height = max_height;
-						}
-					}
-					canvas.width = width;
-					canvas.height = height;
-					var ctx = canvas.getContext("2d");
-					ctx.drawImage(img, 0, 0, width, height);
-					//压缩率
-					return canvas.toDataURL("image/jpeg",0.72); 
-				}
-	}
-
+	*/
 
     // 初始化
     pageview.init();
 
     // 输出模块
     return pageview;
+
 })

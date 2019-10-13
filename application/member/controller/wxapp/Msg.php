@@ -5,7 +5,7 @@ use app\common\model\Msg AS Model;
 use app\common\controller\MemberBase;
 
 class Msg extends MemberBase
-{
+{    
     /**
      * 查看最新的信息
      * @param number $id
@@ -109,6 +109,65 @@ class Msg extends MemberBase
     }
     
     /**
+     * 上传方法
+     * @param string $url 服务器网址
+     * @param string $path 本地文件路径
+     * @return mixed
+     */
+    protected function curl_postfile($url='',$path=''){
+        $curl = curl_init();
+        if (class_exists('\CURLFile')) {
+            curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
+            $data = array('file' => new \CURLFile(realpath($path)));//>=5.5
+        } else {
+            if (defined('CURLOPT_SAFE_UPLOAD')) {
+                curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
+            }
+            $data = array('file' => '@' . realpath($path));//<=5.5
+        }
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POST, 1 );
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_USERAGENT,"TEST");
+        $result = curl_exec($curl);
+        $error = curl_error($curl);
+        if (curl_errno($curl)) {
+            echo 'Errno'.curl_error($curl);
+        }
+        curl_close($curl);
+        return $result;
+    }
+    
+    protected function get_voice($sid=''){
+        $access_token = wx_getAccessToken();
+        $wx_api_url="https://api.weixin.qq.com/cgi-bin/media/get?access_token=$access_token&media_id=$sid";
+        $strcode = file_get_contents($wx_api_url);
+        $filename = $this->user['uid'] . '_' . time() . '.amr';
+        $path = config('upload_path') . '/files/' . date('Ymd') . '/' ;
+        makepath($path);
+        write_file($path . $filename,$strcode);
+        if(filesize($path . $filename)>1024){
+            $amr = $path . $filename;
+        }else{
+            return '下载微信语音文件失败!';
+        }
+        $mp3 = str_replace('.amr', '.mp3', $amr);
+        $data = $this->curl_postfile('http://svn.php168.com/mp3.php',$amr);
+        write_file($mp3, $data);
+        if (filesize($mp3)>1024) {
+            $fileurl = 'uploads/files/' . date('Ymd') . '/' . basename($mp3);
+            return  [
+                'url'=>$fileurl,
+                'size'=>filesize($mp3),
+                'content'=>'<audio controls="controls"><source src="'.tempdir($fileurl).'" type="audio/mp3" />你的浏览器不支持</audio>',
+            ];
+        }else{
+            return 'amr转mp3失败';
+        }
+    }
+    
+    /**
      * 发送消息
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
@@ -116,8 +175,16 @@ class Msg extends MemberBase
     {
         if($this->request->isPost()){
             $data = $this->request->post();
-            if ($data['content']=='') {
+            if ($data['content']==''&&empty($data['voiceid'])) {
                 return $this->err_js('内容不能为空');
+            }
+            if ($data['voiceid']!='') {
+                $array = $this->get_voice($data['voiceid']);
+                if (is_array($array)) {
+                    $data['content'] = $array['content'];
+                }else{
+                    return $this->err_js($array);
+                }
             }
             if ($data['uid']<0) {   //圈子群聊
                 $qun_id = abs($data['uid']);
@@ -129,6 +196,10 @@ class Msg extends MemberBase
                 $data['title'] || $data['title'] = '';
                 $data['touid'] = 0;
                 $data['ifread'] = $info['uid']==$this->user['uid']?1:0;
+                \app\qun\model\Content::updates($info['id'],[
+                    'mid'=>$info['mid'],
+                    'list'=>time(),
+                ]);
             }else{
                 $info = $data['uid'] ? get_user($data['uid']) : get_user($data['touser'],'username');
                 if (!$info) {

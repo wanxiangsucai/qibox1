@@ -125,3 +125,12 @@
 .chat-panel .chat-mine .del{
 	margin-top:8px;
 }
+
+.layui-layer-setwin .layui-layer-close2{
+	top:1px;
+	right:1px;
+}
+
+.bui-arrow-left:after, .bui-arrow-right:after, .bui-arrow-up:after, .bui-arrow-down:after{
+	z-index:1;
+}

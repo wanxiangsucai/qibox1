@@ -584,9 +584,24 @@ $(function(){
 			if(pic_array[0].indexOf('://')==-1 && pic_array[0].indexOf('/public/')==-1){
 				pic_array[0] = '/public/'+pic_array[0];
 			}
-			$("#input_box").val("<img src='"+pic_array[0]+"' />"+$("#input_box").val());			
+			$("#input_box").val("<img src='"+pic_array[0]+"' class='big' />"+$("#input_box").val());			
 		 });
     });
+	
+	$('#give_hongbao').click(function(){
+		if(uid>0){
+			layer.alert('只有群聊才能发红包');
+			return ;
+		}
+		layer.open({
+				type: 2,
+				shadeClose: true,
+				shade: 0.3,
+				area: ['800px', '650px'],
+				content: '/member.php/member/plugin/execute/plugin_name/hongbao/plugin_controller/content/plugin_action/add/mid/1.html?ext_id='+(-uid),
+			});
+	});
+	
 
 })
 

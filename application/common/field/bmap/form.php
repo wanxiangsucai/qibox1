@@ -103,6 +103,16 @@ function set_baidu_map(){
             // 创建标注
             create_mark(e.point);
         });
+	
+		//解决部分手机的兼容问题
+		map.addEventListener("touchend", function (e) {
+			map.disableDragging();
+			create_mark(e.point);
+		});
+		map.addEventListener("touchmove", function (e) {
+		   map.enableDragging();
+		});
+
         if (map_point.val() != '') {
             var curr_point = map_point.val().split(',');
             point_lng = curr_point[0];

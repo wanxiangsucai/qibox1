@@ -71,6 +71,9 @@ class Member extends IndexBase
      * @return void|unknown|\think\response\Json|void|\think\response\Json
      */
     public function getbyid($uid=0){
+        if(empty($uid)){
+            return $this->err_js('UID不存在');
+        }
         $user = get_user($uid,'uid');
         if ($user) {
             $this->format_field($user);

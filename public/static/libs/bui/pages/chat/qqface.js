@@ -16,7 +16,9 @@ loader.define(function() {
 		$(".list_qqface em").click(function(){
 			$(".list_qqface em").removeClass('ck');
 			$(this).addClass('ck');
-			$("#chatInput").val( $("#chatInput").val() + '[face' + $(this).data('id') + ']' )
+			$("#chatInput").val( $("#chatInput").val() + '[face' + $(this).data('id') + ']' );
+			router.$("#btnSend").removeClass("disabled");
+			router.$("#btnSend").addClass("primary");
 		});
     }
 
