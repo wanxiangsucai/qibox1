@@ -47,6 +47,7 @@ loader.define({
 			var title='',picurl='';
 			if( typeof(result.title)!="undefined" ){
 				title = result.title;
+				router.$("#title_name").html(title);
 			}
 			if( typeof(result.picurl)!="undefined" ){
 				picurl = result.picurl;

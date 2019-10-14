@@ -621,6 +621,9 @@ function add_btn_delmsg(){
 			}
 		});
 	});
+	$(".office_text .big").click(function(){
+		window.open($(this).attr('src'));
+	});
 }
 
 function pc_qun_hot(){	//异步加载执行的函数

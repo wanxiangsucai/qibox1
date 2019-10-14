@@ -12,11 +12,13 @@ loader.define(function(require,exports,module) {
 	var maxid = -1;
 	var getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&page=";
 	var userinfo = {};
+	var quninfo = {};
 	var need_scroll = false;
 
     // 模块初始化定义
     pageview.init = function () {
         this.bind();
+		this.right_btn();
 
 		$("#chat_win").parent().scroll(function () {
 			var h = $("#chat_win").parent().scrollTop();
@@ -72,6 +74,31 @@ loader.define(function(require,exports,module) {
 			$.get("/index.php/qun/wxapp.visit/check_visit/id/"+(-uid)+".html",function(res){});	//更新圈子浏览日志
 		}
     }
+	pageview.right_btn = function () {
+        // 初始化下拉更多操作
+        uiDropdownMore = bui.dropdown({
+          id: "#right_more",
+          showArrow: true,
+          width: 160
+        });
+        // 下拉菜单有遮罩的情况
+        uiMask = bui.mask({
+          appendTo:"#chat_main",
+          opacity: 0.03,
+          zIndex:9,
+          callback: function (argument) {
+            // 隐藏下拉菜单
+            uiDropdownMore.hide();
+          }
+        });
+        // 通过监听事件绑定
+        uiDropdownMore.on("show",function () {
+          uiMask.show();
+        })
+        uiDropdownMore.on("hide",function () {
+          uiMask.hide();
+        });
+	}
 
     pageview.bind = function () {
 
@@ -398,28 +425,15 @@ loader.define(function(require,exports,module) {
 		msg_scroll = 1;
 	}
 
-	var getParams = bui.getPageParams();
-    getParams.done(function(result){
-		console.log(result.uid);
-		if(result.uid!=undefined){
-			qid = uid = result.uid;
-			//vues.set_id(uid);
-			show_msg_page = 1; //重新恢复第一页
-			msg_scroll = 1; //恢复可以使用滚动条
-			set_user_name(uid);	//设置当前会话的用户名
-			showMoreMsg(uid);	//加载相应用户的聊天记录
-		}
-    })
-
-
-	/*
+	
 	var vues = new Vue({
-				el: '.page-chat',
+				el: '#chat_head',
 				data: {
 					from_id: typeof(to_uid)!='undefined'?to_uid:"",
 					to_id:0,
 					me_id:0,
 					userdb:{},
+					quninfo:{},
 					listdb:[],
 				},
 				watch:{
@@ -438,7 +452,10 @@ loader.define(function(require,exports,module) {
 					set_id:function(id){
 						this.to_id = id;
 					},
-					set_data:function(array){
+					set_quninfo:function(o){
+						this.quninfo = Object.assign({}, this.quninfo, o);
+					},
+					set_data:function(array,type){
 						var ar = this.listdb;
 						var userinfo = {};
 						var that = this;
@@ -448,14 +465,20 @@ loader.define(function(require,exports,module) {
 							}
 							if(typeof(userinfo.uid)!='undefined'){								
 								that.me_id = typeof(my_uid)!='undefined'?my_uid:userinfo.uid;
-								that.userdb = Object.assign({}, that.userdb, userinfo);								
-								that.listdb = [];
-								array.forEach((rs)=>{
-									that.listdb.push(rs);
-								});
-								ar.forEach((rs)=>{
-									that.listdb.push(rs);
-								});
+								that.userdb = Object.assign({}, that.userdb, userinfo);
+								if(type=='new'){	//有新数据进来的话,要重新处理排序
+									that.listdb = [];
+									array.forEach((rs)=>{
+										that.listdb.push(rs);
+									});
+									ar.forEach((rs)=>{
+										that.listdb.push(rs);
+									});
+								}else{	//多页的话,直接追加就好了
+									array.forEach((rs)=>{
+										that.listdb.push(rs);
+									});
+								}								
 								clearInterval(timer);
 							}
 							console.log('userinfo=',userinfo);
@@ -463,7 +486,31 @@ loader.define(function(require,exports,module) {
 					},
 				}		  
 			});
-	*/
+	
+	var getParams = bui.getPageParams();
+    getParams.done(function(result){
+		console.log(result.uid);
+		if(result.uid!=undefined){
+			qid = uid = result.uid;
+			vues.set_id(uid);
+			show_msg_page = 1; //重新恢复第一页
+			msg_scroll = 1; //恢复可以使用滚动条			
+			showMoreMsg(uid);	//加载相应用户的聊天记录
+			if(uid<0){	//群聊,获取群信息
+				$.get("/index.php/qun/wxapp.qun/getbyid.html?id="+(-uid),function(res){
+					if(res.code==0){
+						quninfo = res.data
+						window.store.set("quninfo",quninfo);
+						vues.set_quninfo(quninfo);
+						$("#send_user_name").html(res.data.title);
+						console.log('quninfo=',quninfo);
+					}
+				});
+			}else{	//私聊
+				set_user_name(uid);	//设置当前会话的用户名
+			}
+		}
+    })
 
     // 初始化
     pageview.init();
