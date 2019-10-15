@@ -285,6 +285,23 @@ function add_new_user(){
 	});
 }
 
+function format_chat_msg(array){
+		var str = '';
+		var str_name = '';
+		var str_del = '';
+		array.forEach((rs)=>{
+			str_name = (rs.qun_id && rs.uid!=my_uid)?`<div class="name" onclick="$('#input_box').val('@${rs.from_username} ').focus()">@${rs.from_username}</div>`:'';
+			str_del = (rs.uid==my_uid||rs.touid==my_uid) ? `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>` : '';
+			str += `<li class="` + ( rs.uid==my_uid ? 'me' : 'other' ) + `">
+						<dd class="time" data-time="${rs.full_time}"><a>${rs.create_time}</a></dd>
+						${str_name}
+						<a href="/member.php/home/${rs.uid}.html" class="user_icon" target="_blank"><img src="${rs.from_icon}" onerror="this.src='/public/static/images/noface.png'" title="${rs.from_username}"></a><span class="content">${rs.content}</span>
+						${str_del}		
+						</li>`;
+		});
+		return str;
+}
+
 //加载更多的会话记录
 function showMoreMsg(uid){
 	if(show_msg_page==1){
@@ -310,6 +327,7 @@ function showMoreMsg(uid){
 function set_main_win_content(res){
 	layer.closeAll();
 	var that = $('.pc_show_all_msg');
+	res.data = format_chat_msg(res.data);
 	if(res.data==''){
 		if(show_msg_page==1){
 			that.html("");
@@ -483,6 +501,7 @@ $(function(){
 			num++;
 			ck_num = num;
 			var that = $('.pc_show_all_msg');
+			res.data = format_chat_msg(res.data);
 			if(res.data!=""){	//有新的聊天内容
 				var vh = that.height();
 				//console.log( '原来的高度='+vh);

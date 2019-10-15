@@ -200,6 +200,7 @@ class Msg extends MemberBase
                     'mid'=>$info['mid'],
                     'list'=>time(),
                 ]);
+                Model::where('qun_id',$qun_id)->update(['update_time'=>time()]);    //其它人的群聊消息方便排在前面
             }else{
                 $info = $data['uid'] ? get_user($data['uid']) : get_user($data['touser'],'username');
                 if (!$info) {
@@ -209,14 +210,26 @@ class Msg extends MemberBase
                     $data['title'] = '来自 '.$this->user['username'].' 的私信';
                 }
                 $data['touid'] = $info['uid'];
-            }            
-            $data['uid'] = $this->user['uid'];
+            }      
+            $data['uid'] = $this->user['uid'];  //注意这里 uid值重新恢复到用户的UID
             $data['content'] = fun('Filter@str',$data['content']);            
             //$data['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($data['content']));
             $result = Model::add($data,$this->admin);
             if(is_numeric($result)){
                 $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
-                $info['weixin_api'] && send_wx_msg($info['weixin_api'], $content);
+                if(empty($qun_id)){
+                    $info['weixin_api'] && send_wx_msg($info['weixin_api'], $content);
+                }else{
+                    if( preg_match("/@([^ ]+)/", $data['content'],$array) ){
+                        if(empty($data['send_to'])){
+                            $data['send_to'] = get_user($array[1],'username')['uid'];
+                        }
+                        if($data['send_to']){
+                            $_content = $this->user['username'] . ' 在 '.$info['title'].' 群中@你,请尽快查阅,<a href="'.get_url(get_url('msg',-$qun_id)).'">点击查阅</a>';
+                            send_wx_msg($data['send_to'], $_content);
+                        }                        
+                    }
+                }
                 return $this->ok_js();
             }elseif($result['errmsg']){
                 return $this->err_js($result['errmsg']);

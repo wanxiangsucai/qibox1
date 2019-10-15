@@ -21,7 +21,9 @@ class Friend extends MemberBase
      * @param number $uid 对方UID
      */
     public function add($uid=0){        
-        
+        if ($uid==$this->user['uid']) {
+            return $this->err_js('你不能加自己为好友!');
+        }
         $type = 1;  //默认是单向好友
         $info = getArray(FriendModel::where('suid',$this->user['uid'])->where('uid',$uid)->find());
         $rs = getArray(FriendModel::where('suid',$uid)->where('uid',$this->user['uid'])->find());

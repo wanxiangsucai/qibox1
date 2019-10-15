@@ -31,6 +31,11 @@ loader.define(function() {
 
 		router.$("#photoBtn").click(function(){
 			router.$(".chatbar").hide();
+			setTimeout(function(){
+				$(".bui-mask").click(function(){
+					router.$(".chatbar").show();
+				});
+			},500);
 		})
 		
 		console.log("碎片加载成功");
@@ -45,13 +50,13 @@ loader.define(function() {
 	// 上传图片
 	pageview.upload = function() {
 		//loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
-		var uiUpload = bui.upload();		
+		var uiUpload = bui.upload();
 		var uiActionsheet = bui.actionsheet({
 					trigger: "#photoBtn",
 					opacity:"0.8",
+					//mask:false,
 					buttons: [{ name: "拍照上传", value: "camera" }, { name: "从相册选取", value: "photo" }],
-					callback: function(e) {
-						
+					callback: function(e) {						
 						var ui = this;
 						var val = $(e.target).attr("value");
 						switch (val) {

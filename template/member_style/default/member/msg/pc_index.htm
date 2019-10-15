@@ -234,16 +234,17 @@
 				</div>
 				<div class="office_text" style="height: 100%;">
 					<ul class="content pc_show_all_msg" id="chatbox" style="display: flex;flex-flow: column-reverse;">
-<!--会员聊天内容-->
+<!--会员聊天内容
 {php}$uid='';{/php}
-{qb:tag name="pc_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,maxid,num" rows="10"}
+qb:tag name="pc_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,maxid,num" rows="10"
 						<li class="{$rs.uid==$userdb.uid?'me':'other'}">
 						<dd class="time" data-time="{$rs.create_time|strtotime}"><a>{$rs.create_time}</a></dd>
 						{if $rs.qun_id&&$rs.uid!=$userdb.uid}<div class="name">{$rs.from_username}</div>{/if}
 						<a href="{:get_url('user',$rs.uid)}" class="user_icon" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span class="content">{$rs.content}</span>
 						{if $rs.uid==$userdb.uid||$rs.touid==$userdb.uid}<i data-id="{$rs.id}" class="del glyphicon glyphicon-remove-circle"></i>{/if}				
 						</li>
-{/qb:tag}
+qb:tag
+-->
 					</ul>
 				</div>
 			</div>
@@ -333,7 +334,7 @@
 
 <script type="text/javascript">
 var ListMsgUserUrl = "{qb:url name='pc_msg_user_list' /}";			//获取分页的消息用户列表
-var getShowMsgUrl = "{qb:url name='pc_show_all_msg' /}";			//获取更多分页的会话记录
+var getShowMsgUrl = "{:iurl('index/wxapp.msg/get_more')}?page=";	//"{qb:url name='pc_show_all_msg' /}";			//获取更多分页的会话记录
 //var now_time = "{:time()}";											//当前时间点做个记录,之后的消息就当新消息处理
 var postMsgUrl = "{:urls('wxapp.msg/add')}";						//发送消息提交的地址
 var get_user_info_url = "{:urls('index/wxapp.member/getbyid')}";	//根据UID获取某个用户的相关资料
@@ -349,7 +350,7 @@ var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
 
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
-<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?edg"></script>
 
 
 </body>

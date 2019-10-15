@@ -14,6 +14,7 @@ loader.define(function(require,exports,module) {
 	var userinfo = {};
 	var quninfo = {};
 	var need_scroll = false;
+	var touser = {uid:0};
 
     // 模块初始化定义
     pageview.init = function () {
@@ -76,27 +77,29 @@ loader.define(function(require,exports,module) {
     }
 	pageview.right_btn = function () {
         // 初始化下拉更多操作
-        uiDropdownMore = bui.dropdown({
+        var uiDropdownMore = bui.dropdown({
           id: "#right_more",
           showArrow: true,
           width: 160
         });
+
         // 下拉菜单有遮罩的情况
-        uiMask = bui.mask({
-          appendTo:"#chat_main",
-          opacity: 0.03,
-          zIndex:9,
+        var uiMask = bui.mask({
+          appendTo:"#chat_win",
+          opacity:"0.3",
+          zIndex:1,
           callback: function (argument) {
             // 隐藏下拉菜单
             uiDropdownMore.hide();
           }
         });
+
         // 通过监听事件绑定
         uiDropdownMore.on("show",function () {
-          uiMask.show();
+			uiMask.show();
         })
         uiDropdownMore.on("hide",function () {
-          uiMask.hide();
+			uiMask.hide();
         });
 	}
 
@@ -310,6 +313,66 @@ loader.define(function(require,exports,module) {
 				}
 			});
 		});
+
+		$(".chat-panel .chat-icon").click(function(){
+			router.$(".chatbar").hide();
+			setTimeout(function(){
+				$(".bui-mask").click(function(){
+					router.$(".chatbar").show();
+				});
+			},500);
+			touser.uid = $(this).data('uid');
+			touser.name = $(this).data('name');
+			console.log(touser);
+		});
+
+		bui.actionsheet({
+					trigger: ".chat-icon",
+					opacity:"0.5",
+					buttons: [{ name: "@TA", value: "1" }, { name: "私信TA", value: "2" }, { name: "加TA为好友", value: "3" }, { name: "访问TA的主页", value: "4" }],
+					callback: function(e) {						
+						var ui = this;
+						var val = $(e.target).attr("value");
+						switch (val) {
+							case "1":
+								router.$("#chatInput").val("@"+touser.name+" ").focus();
+								router.$(".chatbar").show();
+								ui.hide();
+								break;
+							case "2":
+								ui.hide();
+								bui.load({url: "/public/static/libs/bui/pages/chat/chat.html",param: {"uid": touser.uid}});
+								break;
+							case "3":
+								ui.hide();
+								router.$(".chatbar").show();
+								add_friend(touser.uid);
+								break;
+							case "4":
+								ui.hide();
+								var url = '/member.php/home/'+touser.uid+'.html';
+								bui.load({url: "/public/static/libs/bui/pages/frame/show.html",param: {"url":url,"title":touser.name+"的主页"}});
+								break;
+							case "cancel":
+								ui.hide();
+								router.$(".chatbar").show();
+								break;
+						}
+					}
+				});
+	}
+
+	function add_friend(uid){
+		if(uid==userinfo.uid){
+			layer.alert('你不能加自己为好友');
+		}
+		$.get("/member.php/member/wxapp.friend/act.html?type=add&uid="+uid,function(res){
+			if(res.code==0){
+				layer.msg(res.msg);
+			}else{
+				layer.alert(res.msg);
+			}
+		});
 	}
 	
 
@@ -318,17 +381,17 @@ loader.define(function(require,exports,module) {
 		if(uid>0){
 			$.get("/index.php/index/wxapp.member/getbyid.html?uid="+uid,function(res){
 				if(res.code==0){
-					$("#send_user_name").html(res.data.username);
+					router.$("#send_user_name").html(res.data.username);
 				}
 			});
 		}else if(uid<0){
 			$.get("/index.php/qun/wxapp.qun/getbyid.html?id="+Math.abs(uid),function(res){
 				if(res.code==0){
-					$("#send_user_name").html(res.data.title);
+					router.$("#send_user_name").html(res.data.title);
 				}
 			});
 		}else{
-			$("#send_user_name").html("系统消息");
+			router.$("#send_user_name").html("系统消息");
 		}		
 	}
 
@@ -338,11 +401,15 @@ loader.define(function(require,exports,module) {
 			layer.alert('消息内容不能为空');
 			return ;
 		}
-		$.post("/member.php/member/wxapp.msg/add.html",{'uid':uid,'content':content,},function(res){		
+		$.post("/member.php/member/wxapp.msg/add.html",{
+			'uid':uid,
+			'content':content,
+			'send_to':touser.uid
+			},function(res){		
 			if(res.code==0){
-				$("#chatInput").val('');
-				$("#hack_wrap").hide();
-				$("#face_wrap").hide();
+				router.$("#chatInput").val('');
+				router.$("#hack_wrap").hide();
+				router.$("#face_wrap").hide();
 				layer.msg('发送成功');
 			}else{
 				$("#btnSend").removeClass("disabled").addClass("primary");
@@ -377,7 +444,7 @@ loader.define(function(require,exports,module) {
 				del_str = `<i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>`;
 			}
 
-			user_str = `<div class="chat-icon"><a href="#" class="iframe"><img src="${rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" title="${rs.from_username}"></a></div>`;
+			user_str = `<div class="chat-icon" data-uid="${rs.uid}" data-name="${rs.from_username}"><img src="${rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" title="${rs.from_username}"></div>`;
 			if(rs.uid!=myid){
 				str += `
 					<div class="bui-box-align-top chat-target">
@@ -489,7 +556,7 @@ loader.define(function(require,exports,module) {
 	
 	var getParams = bui.getPageParams();
     getParams.done(function(result){
-		console.log(result.uid);
+		console.log("当前用户ID-"+result.uid);
 		if(result.uid!=undefined){
 			qid = uid = result.uid;
 			vues.set_id(uid);
@@ -507,6 +574,7 @@ loader.define(function(require,exports,module) {
 					}
 				});
 			}else{	//私聊
+				console.log("当前用户UID-"+uid);
 				set_user_name(uid);	//设置当前会话的用户名
 			}
 		}

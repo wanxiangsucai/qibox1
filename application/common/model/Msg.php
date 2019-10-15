@@ -128,7 +128,9 @@ class Msg extends Model
             $rs['content'] = self::format_content($rs['content']);
             $rs['content'] = fun("content@bbscode",$rs['content']);
             $rs['from_username'] = get_user_name($rs['uid']);
-            $rs['from_icon'] = get_user_icon($rs['uid']);            
+            $rs['from_icon'] = get_user_icon($rs['uid']);
+            $rs['full_time'] = strtotime($rs['create_time']);
+            $rs['time'] = format_time($rs['full_time'],true);
             if($rs['ifread']==0&&$rs['touid']==$myuid){
                 self::update(['id'=>$rs['id'],'ifread'=>1]);
             }
@@ -148,8 +150,9 @@ class Msg extends Model
         if(strstr($content,"<") && strstr($content,">")){    //如果是网页源代码的话，就不解晰了。
             return $content;
         }
-        $content = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($content));
+        $content = filtrate($content);
         $content = preg_replace_callback("/(http|https):\/\/([\w\?&\.\/=-]+)/", array(self,'format_url'), $content);
+        $content = str_replace(["\n"],['<br>'],$content);
         return $content;
     }
     

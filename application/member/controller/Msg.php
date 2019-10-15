@@ -66,15 +66,17 @@ class Msg extends MemberBase
         $min = ($page-1)*$rows;
 
         $subQuery = Model::where('touid',$this->user['uid'])->whereOr('uid',$this->user['uid'])
-        ->field('uid,touid,create_time,title,id,ifread,qun_id,visit_time')
-        ->order('id desc')
+        ->field('uid,touid,create_time,title,id,ifread,qun_id,visit_time,update_time')
+        //->order('id desc')
+        ->order('update_time desc,visit_time desc,id desc')
         ->limit(5000)   //理论上某个用户的短消息不应该超过5千条。
         ->buildSql();
         
         $listdb = Db::table($subQuery.' a')
-        ->field('uid,touid,create_time,title,id,qun_id,visit_time,count(id) AS num,sum(ifread) AS old_num,(qun_id*1000000+(uid + touid + ABS( cast(uid AS signed) - cast(touid AS signed) ))/2) AS MX')
+        ->field('uid,touid,create_time,title,id,qun_id,visit_time,update_time,count(id) AS num,sum(ifread) AS old_num,(qun_id*1000000+(uid + touid + ABS( cast(uid AS signed) - cast(touid AS signed) ))/2) AS MX')
         ->group('MX')
-        ->order('id','desc')
+        //->order('id','desc')
+        ->order('update_time','desc')
         ->limit($min,$rows)
         ->select();
         
