@@ -286,6 +286,9 @@ function add_new_user(){
 }
 
 function format_chat_msg(array){
+	if(typeof(array)=='string'){
+		return array;
+	}
 		var str = '';
 		var str_name = '';
 		var str_del = '';

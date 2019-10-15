@@ -255,7 +255,7 @@ qb:tag
 						<li class="other">
 						<dd class="time" data-time="{$rs.create_time|strtotime}"><a>{$rs.create_time}</a></dd>
 						<div class="name">{$rs.from_uid|get_user_name}</div>
-						<a href="{:get_url('user',$rs.from_uid)}" target="_blank"><img src="{$rs.from_uid|get_user_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_uid|get_user_name}"></a>
+						<a href="{:get_url('user',$rs.from_uid)}" class="user_icon" target="_blank"><img src="{$rs.from_uid|get_user_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_uid|get_user_name}"></a>
 						
 						<span>
 						{if (!in_array($rs.type,['visit','fans']))}
@@ -350,7 +350,7 @@ var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
 
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
-<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?edg"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?ed9g"></script>
 
 
 </body>
