@@ -1,0 +1,17 @@
+<link rel="stylesheet" type="text/css" href="https://www.wxyxpt.com/images/signin/signin.css">
+<div class="signInBox" style="display:;">
+	<div class="BackBox" onclick="$('.signInBox').fadeOut();"></div>
+	<div class="InContBox">
+		<div class="head"><img src="https://www.wxyxpt.com/images/signin/qdh.png" /><span onclick="$('.signInBox').fadeOut();"></span></div>
+		<div class="cont">
+			<div class="note">您已连续签到 <span>{{signday}}</span> 天</div>
+			<ul>
+				<li v-for="rs in listdb" :class="rs.day<=signday?'over':''"><span>第{{rs.day}}天</span><em><img :src="'https://www.wxyxpt.com/images/signin/qb'+rs.money+'.png'" /></em><p>{{rs.money}} 积分</p></li>
+				<!--<li><span>第二天</span><em><img src="https://www.wxyxpt.com/images/signin/qb2.png" /></em><p>2金币</p></li>
+				<li><span>第三天</span><em><img src="https://www.wxyxpt.com/images/signin/qb3.png" /></em><p>3金币</p></li>-->				
+			</ul>
+			<div id="signInBtn" class="butter"><img src="https://www.wxyxpt.com/images/signin/qd.png" /></div>
+			<div class="other">提示：连续签到可获得对应天数的奖励，如果中断签到，则会重新统计</div>
+		</div>		
+	</div>
+</div>

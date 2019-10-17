@@ -11,10 +11,11 @@ loader.define(function(require,exports,module) {
 	var show_msg_page  = 1;
 	var maxid = -1;
 	var getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&page=";
-	var userinfo = {};
-	var quninfo = {};
+	var userinfo = {};	//当前登录用户的基础信息
+	var quninfo = {};	//圈子的信息
 	var need_scroll = false;
-	var touser = {uid:0};
+	var touser = {uid:0};	//@TA
+	var qun_userinfo = '';	//当前用户所在当前圈子的信息
 
     // 模块初始化定义
     pageview.init = function () {
@@ -72,7 +73,9 @@ loader.define(function(require,exports,module) {
 		//loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
 
 		if(uid<0){
-			$.get("/index.php/qun/wxapp.visit/check_visit/id/"+(-uid)+".html",function(res){});	//更新圈子浏览日志
+			setTimeout(function(){
+				$.get("/index.php/qun/wxapp.visit/check_visit/id/"+(-uid)+".html",function(res){});	//更新圈子浏览日志
+			},2000);
 		}
     }
 	pageview.right_btn = function () {
@@ -259,6 +262,36 @@ loader.define(function(require,exports,module) {
 		});
 		ck_num++;
 	}
+	
+	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作
+	function load_first_page(res){
+		maxid = res.ext.maxid;
+
+		quninfo = res.ext.qun_info;	//圈子信息
+		window.store.set("quninfo",quninfo);
+		vues.set_quninfo(quninfo);
+		$("#send_user_name").html(quninfo.title);
+
+		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息
+		userinfo = res.ext.userinfo;	//当前用户登录信息
+
+		setTimeout(function(){
+			$.get("/index.php/p/signin-api-get_cfg/id/"+quninfo.id+".html",function(res){
+				if(res.code==0){
+					if(res.data.today_have_signin==true){
+						console.log('今天已经签到过了');
+					}else{
+						router.loadPart({
+							id: "#hack_signin",
+							url: "/public/static/libs/bui/pages/signin/pop.html?fdd",
+						}).then(function (module) {
+							module.api(quninfo,qun_userinfo,userinfo,res.data);
+						});
+					}					
+				}
+			});
+		},1000);
+	}
 
 	//加载更多的会话记录
 	function showMoreMsg(uid){
@@ -269,8 +302,8 @@ loader.define(function(require,exports,module) {
 		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){			
 			//console.log(res);
 			if(res.code==0){
-				if(show_msg_page==1){
-					maxid = res.ext.maxid;
+				if(show_msg_page==1){					
+					load_first_page(res);					
 				}
 				layer.closeAll();
 				var that = router.$('#chat_win');
@@ -283,6 +316,7 @@ loader.define(function(require,exports,module) {
 					}
 					msg_scroll = -1;	//允许滚动条滚到尽头
 				}else{
+					console.log(res);
 					show_msg_page++;
 					//msg_scroll = 1;
 					//vues.set_data(res.data);
@@ -483,7 +517,9 @@ loader.define(function(require,exports,module) {
 		}
 
 		if(show_msg_page==2 || need_scroll==true){
-			router.$('#chat_win').parent().scrollTop(20000);
+			setTimeout(function(){
+				router.$('#chat_win').parent().scrollTop(20000);
+			},300);
 			need_scroll = false;
 		}else{
 			router.$('#chat_win').parent().scrollTop(400);
@@ -564,6 +600,7 @@ loader.define(function(require,exports,module) {
 			msg_scroll = 1; //恢复可以使用滚动条			
 			showMoreMsg(uid);	//加载相应用户的聊天记录
 			if(uid<0){	//群聊,获取群信息
+				/*
 				$.get("/index.php/qun/wxapp.qun/getbyid.html?id="+(-uid),function(res){
 					if(res.code==0){
 						quninfo = res.data
@@ -573,6 +610,7 @@ loader.define(function(require,exports,module) {
 						console.log('quninfo=',quninfo);
 					}
 				});
+				*/
 			}else{	//私聊
 				console.log("当前用户UID-"+uid);
 				set_user_name(uid);	//设置当前会话的用户名

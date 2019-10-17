@@ -41,6 +41,10 @@
                         <i class="icon-jiahao">&#xe657;</i>
                         <div class="span1">圈子主页二维码</div>
                     </li>
+					<li class="bui-btn bui-box" :href="'/public/static/libs/bui/pages/frame/show.html?url=/index.php/p/signin-index-index/id/'+(-to_id)+'.html&title=签到领积分'">
+                        <i class="icon-jiahao"><dd class="fa fa-calendar"></dd></i>
+                        <div class="span1">签到领积分</div>
+                    </li>
 				   </ol>
 				   <ol v-else>
 					<li class="bui-btn bui-box" :href="'/public/static/libs/bui/pages/frame/show.html?url=/member.php/home/'+to_id+'.html&title=个人主页'">
@@ -98,6 +102,7 @@
 			<div id="hack_wrap"></div>
 			<div id="face_wrap"></div>
         </div>
+		<div id="hack_signin"></div>
     </main>
 	<!--
     <footer>
@@ -107,5 +112,5 @@
             </div>
         </div>
     </footer>
-	-->
+	-->	
 </div>

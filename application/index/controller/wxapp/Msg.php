@@ -23,7 +23,40 @@ class Msg extends IndexBase{
         if (empty($this->user) && ($uid>=0 || $id>0)) {
             return $this->err_js("请先登录");
         }
+        $qun_user = $qun_info = '';
+        if ($uid<0) {
+            if(!modules_config('qun')){
+                return $this->err_js('你没有安装圈子模块!');
+            }
+            if($maxid<1){
+                $qun_info = \app\qun\model\Content::getInfoByid(abs($uid),true);
+                if ($this->user) {
+                    $qun_user = \app\qun\model\Member::where([
+                        'aid'=>abs($uid),
+                        'uid'=>$this->user['uid'],
+                    ])->find();
+                    $qun_user = $qun_user?getArray($qun_user):[];
+                }
+            }
+            isset($qun_info['_viewlimit']) || $qun_info['_viewlimit'] = $qun_info['viewlimit'];
+            if($qun_info['_viewlimit'] && empty($this->admin)){
+                if (empty($qun_info)) {
+                    return $this->err_js('你不是本圈子成员,无权查看聊天内容!');
+                }elseif ($qun_info['type']==0){
+                    return $this->err_js('你还没通过审核,无权查看聊天内容!');
+                }
+            }
+        }
         $array = model::list_moremsg($this->user['uid'],$uid,$id,$rows,$maxid);
+        $array['qun_info'] = $qun_info;
+        $array['qun_userinfo'] = $qun_user;
+        $array['userinfo'] = [
+            'uid'=>$this->user['uid'],
+            'username'=>$this->user['username'],
+            'nickname'=>$this->user['nickname'],
+            'icon'=>tempdir($this->user['icon']),
+            'groupid'=>$this->user['groupid'],
+        ];
         return $this->ok_js($array);
     }
     

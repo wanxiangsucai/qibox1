@@ -115,10 +115,27 @@ loader.define(function() {
 				})
 
 				function templatePhoto(url) {
-					return `<img src="${url}" class="big" />`
+					var str = `<img src="${url}" class="big" />`;					
+					return str;
+				}
+
+				function post_content(str){
+					$.post("/member.php/member/wxapp.msg/add.html",{
+						'uid':uid,
+						'content':str,
+						},function(res){		
+						if(res.code==0){
+							router.$("#hack_wrap").hide();
+							router.$("#face_wrap").hide();
+							bui.hint('发送成功');
+						}else{
+							layer.alert('发送失败:'+res.msg);
+						}
+					});
 				}
 				
 				function upload_pic(base64,Orientation){
+					bui.hint("图片上传中,请稍候...");
 					var image = new Image();
 						image.src = base64;
 						image.onload = function() {
@@ -131,8 +148,9 @@ loader.define(function() {
 								if(url.indexOf('://')==-1 && url.indexOf('/public/')==-1){
 									url = '/public/'+url;
 								}
-								$("#chatInput").val( templatePhoto(url)+$("#chatInput").val() )
-								if($("#btnSend").hasClass("disabled"))$("#btnSend").removeClass("disabled").addClass("primary");
+								post_content( templatePhoto(url) );
+								//$("#chatInput").val( templatePhoto(url)+$("#chatInput").val() )
+								//if($("#btnSend").hasClass("disabled"))$("#btnSend").removeClass("disabled").addClass("primary");
 							}else{
 								alert(res.info);
 							}
