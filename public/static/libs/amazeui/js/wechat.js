@@ -339,19 +339,26 @@ function set_main_win_content(res){
 			layer.msg("已经显示完了！",{time:500});
 		}		
 	}else{
-		
+		//console.log("ddddddddddddddddd-"+show_msg_page);
+		//need_scroll$('.pc_show_all_msg').css('top',(453-that.height())+'px');
 		if(show_msg_page==1){
 			that.html(res.data);
 			format_show_time(that);
-			that.css('top',(453-that.height())+'px');			
+			
+			setTimeout(function(){
+				that.css('top',(453-that.height())+'px');
+			},500);
 		}else{
 			var old_h = that.height();
 
 			that.append(res.data);
-			format_show_time(that);			
+			format_show_time(that);	
+			
+			setTimeout(function(){
+				var new_h = $(".pc_show_all_msg").height();					
+				$(".pc_show_all_msg").css('top',(old_h-new_h)+'px');
+			},500);
 
-			var new_h = $(".pc_show_all_msg").height();					
-			$(".pc_show_all_msg").css('top',(old_h-new_h)+'px');					
 		}
 		add_btn_delmsg();
 		show_msg_page++;
@@ -399,6 +406,7 @@ var user_scroll = true;  //做个标志,不要反反复复的加载用户列表
 var user_div_top = 0;	//当前信息用户列表滚动条坐标top系数
 var show_msg_top = 0;  //当前对话框滚动条坐标top系数
 var maxid = -1;
+var need_scroll = false;
 
 $(function(){
 	
@@ -408,6 +416,7 @@ $(function(){
 
 		//监听会话内容的滚动条
 		var msg_top = $(".pc_show_all_msg").css('top');
+		
 		msg_top = Math.abs(msg_top.replace('px',''));	
 		//console.log("高_"+$(".pc_show_all_msg").height()) 
 		if( msg_top<100 && msg_scroll==true){
@@ -512,6 +521,7 @@ $(function(){
 				format_show_time(that)	//隐藏相邻的时间
 				goto_bottom(vh);
 				add_btn_delmsg();
+				need_scroll = true;
 				if(window.Notification){	//消息提醒
 					if(Notification.permission=="granted"){
 						pushNotice();

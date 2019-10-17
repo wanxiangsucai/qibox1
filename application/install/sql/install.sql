@@ -1261,7 +1261,7 @@ DROP TABLE IF EXISTS `qb_msg`;
 CREATE TABLE IF NOT EXISTS `qb_msg` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sysmsg_id` mediumint(7) NOT NULL COMMENT '系统群发消息的内容ID,系统消息的话,就没必要每个用户重复插入标题与内容',
-  `touid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '接收者的UID',
+  `touid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '接收者的帐户uid',
   `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '发送者的UID',
   `ifread` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已读',
   `title` varchar(130) NOT NULL DEFAULT '' COMMENT '消息标题',
@@ -1269,11 +1269,18 @@ CREATE TABLE IF NOT EXISTS `qb_msg` (
   `content` text NOT NULL COMMENT '详情',
   `ext_sys` int(7) NOT NULL COMMENT '系统模型ID',
   `ext_id` int(7) NOT NULL COMMENT '内容ID',
+  `qun_id` mediumint(7) NOT NULL COMMENT '群聊的圈子ID',
+  `visit_time` int(10) NOT NULL COMMENT '最后访问圈子群聊的时间',
+  `update_time` int(10) NOT NULL COMMENT '排序值',
   PRIMARY KEY (`id`),
   KEY `fromuid` (`uid`),
   KEY `touid` (`touid`,`ifread`),
-  KEY `ext_sys` (`ext_sys`,`ext_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='站内短消息' AUTO_INCREMENT=1 ;
+  KEY `ext_sys` (`ext_sys`,`ext_id`),
+  KEY `create_time` (`create_time`),
+  KEY `qun_id` (`qun_id`),
+  KEY `list` (`update_time`),
+  KEY `visit_time` (`visit_time`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='站内短消息' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1595,7 +1602,7 @@ ALTER TABLE  `qb_moneylog` ADD INDEX (  `money` );
 
 ALTER TABLE  `qb_rmb_infull` ADD  `s_orderid` VARCHAR( 32 ) NOT NULL COMMENT  '微信或支付宝生成的订单ID';
 
-ALTER TABLE  `qb_msg` ADD INDEX (  `create_time` );
+
 
 DROP TABLE IF EXISTS `qb_friend`;
 CREATE TABLE IF NOT EXISTS `qb_friend` (
@@ -1625,6 +1632,4 @@ CREATE TABLE IF NOT EXISTS `qb_shorturl` (
   KEY `type` (`type`,`url`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='短网址' AUTO_INCREMENT=1 ;
 
-ALTER TABLE  `qb_msg` ADD  `update_time` INT( 10 ) NOT NULL COMMENT  '排序值';
-ALTER TABLE  `qb_msg` ADD INDEX (  `update_time` ) COMMENT  '';
-ALTER TABLE  `qb_msg` ADD INDEX (  `visit_time` ) COMMENT  '';
+
