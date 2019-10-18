@@ -606,7 +606,12 @@ loader.define(function(require,exports,module) {
 						</li>`;
 			}
 
-
+			if(_quser!=''){
+				nickname_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/chat/nickname?id=${to_id}">
+                        <i class="icon-jiahao"><i class="fa fa-pencil-square-o"></i></i>
+                        <div class="span1">修改群内昵称</div>
+                    </li>`;
+			}
 
 			str = `${home_str} 
 					${join_str}
@@ -717,7 +722,7 @@ loader.define(function(require,exports,module) {
 		}
 		router.$("#chat_win .show_username").each(function(){
 			var _uid = $(this).data('uid');
-			if(typeof(user_list[_uid]) == 'object' && user_list[_uid].nickname!=''){
+			if(typeof(user_list[_uid]) == 'object' && typeof(user_list[_uid].nickname)!='undefined' && user_list[_uid].nickname!=''){
 				$(this).html(user_list[_uid].nickname);
 			}
 		});
