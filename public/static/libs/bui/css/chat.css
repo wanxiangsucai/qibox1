@@ -134,3 +134,7 @@
 .bui-arrow-left:after, .bui-arrow-right:after, .bui-arrow-up:after, .bui-arrow-down:after{
 	z-index:1;
 }
+
+ .chat-panel .chat-content  audio{
+	width:250px;
+ }

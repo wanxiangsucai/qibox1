@@ -337,11 +337,7 @@ loader.define(function(require,exports,module) {
 			$.get("/member.php/member/wxapp.msg/delete.html?id="+id,function(res){
 				if(res.code==0){
 					layer.msg("删除成功");
-					var father = that.parent().parent().parent();
-					father.hide();
-					if(father.prev().hasClass("show_username")||father.prev().hasClass("bui-box-center")){
-						father.prev().hide();
-					}
+					$(".chat-box-"+id).hide();
 				}else{
 					layer.alert(res.msg);
 				}
@@ -475,13 +471,13 @@ loader.define(function(require,exports,module) {
 		array.forEach((rs)=>{
 			del_str = '';
 			if(userdb.uid>0 && (rs.uid==userdb.uid || rs.touid==userdb.uid) ){
-				del_str = `<i v-if="rs.uid==userdb.uid||rs.touid==userdb.uid" :data-id="rs.id" class="del glyphicon glyphicon-remove-circle"></i>`;
+				del_str = `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>`;
 			}
 
 			user_str = `<div class="chat-icon" data-uid="${rs.uid}" data-name="${rs.from_username}"><img src="${rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" title="${rs.from_username}"></div>`;
 			if(rs.uid!=myid){
 				str += `
-					<div class="bui-box-align-top chat-target">
+					<div class="bui-box-align-top chat-box-${rs.id} chat-target">
 						${user_str}
 						<div class="span1">
 							<div class="chat-content bui-arrow-left">${rs.content}</div>
@@ -490,7 +486,7 @@ loader.define(function(require,exports,module) {
 					</div>	`;
 			}else{
 				str += `
-					<div class="bui-box-align-top chat-mine">
+					<div class="bui-box-align-top chat-box-${rs.id} chat-mine">
 					<div class="span1">
 						<div class="bui-box-align-right">
 						  ${del_str}
@@ -502,11 +498,11 @@ loader.define(function(require,exports,module) {
 			}
 
 			if(rs.qun_id>0 && rs.uid!=myid){
-				str += `<div class="show_username">${rs.from_username}</div>`;
+				str += `<div class="show_username chat-box-${rs.id}">${rs.from_username}</div>`;
 			}
 
 			str += `
-					<div class="bui-box-center">
+					<div class="bui-box-center chat-box-${rs.id}">
 						<div class="time">${rs.create_time}</div>
 					</div>`;
 		});
