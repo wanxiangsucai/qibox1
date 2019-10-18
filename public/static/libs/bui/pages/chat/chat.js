@@ -16,6 +16,8 @@ loader.define(function(require,exports,module) {
 	var need_scroll = false;
 	var touser = {uid:0};	//@TA
 	var qun_userinfo = '';	//当前用户所在当前圈子的信息
+	var user_list = {}; //圈子用户列表
+	var user_num = 0; //圈子成员总数
 
     // 模块初始化定义
     pageview.init = function () {
@@ -83,7 +85,7 @@ loader.define(function(require,exports,module) {
         var uiDropdownMore = bui.dropdown({
           id: "#right_more",
           showArrow: true,
-          width: 160
+          width: 165
         });
 
         // 下拉菜单有遮罩的情况
@@ -255,7 +257,7 @@ loader.define(function(require,exports,module) {
 			}
 			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
-				$("#remind_online").show();
+				if(uid>0)$("#remind_online").show();
 			}else{
 				$("#remind_online").hide();
 			}
@@ -269,11 +271,12 @@ loader.define(function(require,exports,module) {
 
 		quninfo = res.ext.qun_info;	//圈子信息
 		window.store.set("quninfo",quninfo);
-		vues.set_quninfo(quninfo);
+		//vues.set_quninfo(quninfo);
 		$("#send_user_name").html(quninfo.title);
 
-		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息
+		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息 不存的话,就是为空即==''
 		userinfo = res.ext.userinfo;	//当前用户登录信息
+		head_menu(uid,quninfo,qun_userinfo,userinfo);
 
 		setTimeout(function(){
 			$.get("/index.php/p/signin-api-get_cfg/id/"+quninfo.id+".html",function(res){
@@ -356,10 +359,13 @@ loader.define(function(require,exports,module) {
 			console.log(touser);
 		});
 
+		format_nickname();	//设置圈子昵称
+		
+		//设置用户菜单
 		bui.actionsheet({
 					trigger: ".chat-icon",
 					opacity:"0.5",
-					buttons: [{ name: "@TA", value: "1" }, { name: "私信TA", value: "2" }, { name: "加TA为好友", value: "3" }, { name: "访问TA的主页", value: "4" }],
+					buttons: [{ name: "@TA", value: "1" }, { name: "与TA私聊", value: "2" }, { name: "加TA为好友", value: "3" }, { name: "访问TA的主页", value: "4" }],
 					callback: function(e) {						
 						var ui = this;
 						var val = $(e.target).attr("value");
@@ -498,7 +504,7 @@ loader.define(function(require,exports,module) {
 			}
 
 			if(rs.qun_id>0 && rs.uid!=myid){
-				str += `<div class="show_username chat-box-${rs.id}">${rs.from_username}</div>`;
+				str += `<div class="show_username chat-box-${rs.id}" data-uid="${rs.uid}">${rs.from_username}</div>`;
 			}
 
 			str += `
@@ -524,7 +530,112 @@ loader.define(function(require,exports,module) {
 		msg_scroll = 1;
 	}
 
-	
+
+	function head_menu(to_uid,_quninfo,_quser,_user){
+		var str = '';
+		if(to_uid>0){
+			str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/home/${to_uid}.html&title=个人主页">
+                        <i class="icon-jiahao">&#xe660;</i>
+                        <div class="span1">TA的主页</div>
+                    </li>
+					`;
+		}else{
+			to_id = -to_uid;
+			var jifen_str = home_str = listmember_str = more_str = join_str = nickname_str = '';
+			if(_quninfo.uid==_user.uid){
+				jifen_str = `<li class="bui-btn bui-box">
+                        <i class="icon-jiahao"><dd class="fa fa-calendar"></dd></i>
+                        <div class="span1 a"  href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/p/signin-index-index/id/${to_id}.html&title=签到领积分">签到</div>
+						<div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/member/plugin/execute/plugin_name/signin/plugin_controller/manage/plugin_action/set/ext_id/${to_id}.html&title=签到设置">设置</div>
+                    </li>`;
+				
+				home_str = `<li class="bui-btn bui-box">
+                        <i class="icon-jiahao"><i class="si si-support"></i></i>
+                        <div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/show-${to_id}.html&title=圈子主页">主页</div>
+						<div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/qun/content/edit/id/${to_id}.html&title=签到设置">设置</div>
+                    </li>`;
+
+				listmember_str = `<li class="bui-btn bui-box">
+                        <i class="icon-jiahao"><i class="si si-users"></i></i>
+                        <div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/member/index/id/${to_id}.html&title=成员列表">成员</div>
+						<div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/qun/member/index/id/${to_id}.html&title=成员管理">管理</div>
+                    </li>`;
+
+				more_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/qun/msgtask/add/id/${to_id}.html&title=群发消息">
+							<i class="icon-jiahao"><i class="si si-speech"></i></i>
+							<div class="span1">群发消息</div>
+						</li>
+						<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/content/my/type/0.html&title=我加入的圈子">
+							<i class="icon-jiahao"><i class="fa fa-connectdevelop"></i></i>
+							<div class="span1">我加入的圈子</div>
+						</li>
+					`;
+			}else{
+				if(_quser==''){
+					join_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/content/apply/id/${to_id}.html&title=加入圈子">
+                        <i class="icon-jiahao"><i class="fa fa-child"></i></i>
+                        <div class="span1">加入圈子</div>
+                    </li>`;
+				}
+				jifen_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/p/signin-index-index/id/${to_id}.html&title=签到领积分">
+                        <i class="icon-jiahao"><dd class="fa fa-calendar"></dd></i>
+                        <div class="span1">签到领积分</div>
+                    </li>`;
+
+				home_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/show-${to_id}.html&title=圈子主页">
+                        <i class="icon-jiahao"><i class="si si-support"></i></i>
+                        <div class="span1">圈子主页</div>
+                    </li>`;
+
+				listmember_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/member/index/id/${to_id}.html&title=成员列表">
+                        <i class="icon-jiahao"><i class="si si-users"></i></i>
+                        <div class="span1">圈子成员列表</div>
+                    </li>`;
+				listmember_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/member/index/id/${to_id}.html&title=成员列表">
+                        <i class="icon-jiahao"><i class="si si-users"></i></i>
+                        <div class="span1">圈子成员列表</div>
+                    </li>`;
+
+				more_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/chat/chat?uid=${_quninfo.uid}">
+                        <i class="icon-jiahao"><i class="si si-speech"></i></i>
+                        <div class="span1">与群主私聊</div>
+                    </li>
+					<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/content/my/type/1.html&title=我的圈子">
+							<i class="icon-jiahao"><i class="fa fa-connectdevelop"></i></i>
+							<div class="span1">我的圈子(创建)</div>
+						</li>`;
+			}
+
+
+
+			str = `${home_str} 
+					${join_str}
+                    <li class="bui-btn bui-box" href="/public/static/libs/bui/pages/chat/codeimg.html?type=msg&id=${to_id}">
+                        <i class="icon-jiahao">&#xe657;</i>
+                        <div class="span1">直播群聊二维码</div>
+                    </li>
+					<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/chat/codeimg.html?type=home&id=${to_id}">
+                        <i class="icon-jiahao">&#xe657;</i>
+                        <div class="span1">圈子主页二维码</div>
+                    </li>
+					${listmember_str}
+					${jifen_str}
+					${more_str}
+					${nickname_str}
+					`;
+		}
+		if(_user.uid>0){
+			str += `<li class="bui-btn bui-box">
+                        <i class="icon-jiahao"><i class="fa fa-user-circle-o"></i></i>
+                        <div class="span2 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/home/${_user.uid}.html&title=我的主页">我的主页</div>
+						<div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/member/user/edit.html&title=资料修改">设置</div>
+                    </li>`;
+		}
+		
+		router.$("#TopRightBtn").html(str);
+	}
+
+	/*
 	var vues = new Vue({
 				el: '#chat_head',
 				data: {
@@ -585,13 +696,40 @@ loader.define(function(require,exports,module) {
 					},
 				}		  
 			});
+	*/
+	
+	//获取所有成员信息
+	pageview.get_user_list = function(id){
+		$.get("/index.php/qun/wxapp.member/get_member.html?id="+id+"&rows=1000&order=update_time&get_username=0",function(res){
+			if(res.code==0){
+				res.data.forEach((rs)=>{
+					user_list[rs.uid] = rs;
+				});
+				user_num = res.data.length;
+				format_nickname();				
+			}
+		});
+	}
+
+	function format_nickname(){
+		if(uid>0 || user_num<1){
+			return ;
+		}
+		router.$("#chat_win .show_username").each(function(){
+			var _uid = $(this).data('uid');
+			if(typeof(user_list[_uid]) == 'object' && user_list[_uid].nickname!=''){
+				$(this).html(user_list[_uid].nickname);
+			}
+		});
+	}
 	
 	var getParams = bui.getPageParams();
     getParams.done(function(result){
 		console.log("当前用户ID-"+result.uid);
 		if(result.uid!=undefined){
 			qid = uid = result.uid;
-			vues.set_id(uid);
+			//vues.set_id(uid);
+			//head_menu(uid);	//设置菜单
 			show_msg_page = 1; //重新恢复第一页
 			msg_scroll = 1; //恢复可以使用滚动条			
 			showMoreMsg(uid);	//加载相应用户的聊天记录
@@ -607,6 +745,7 @@ loader.define(function(require,exports,module) {
 					}
 				});
 				*/
+				pageview.get_user_list(-uid);
 			}else{	//私聊
 				console.log("当前用户UID-"+uid);
 				set_user_name(uid);	//设置当前会话的用户名

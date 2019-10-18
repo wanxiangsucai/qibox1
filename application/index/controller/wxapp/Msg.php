@@ -50,13 +50,18 @@ class Msg extends IndexBase{
         $array = model::list_moremsg($this->user['uid'],$uid,$id,$rows,$maxid);
         $array['qun_info'] = $qun_info;
         $array['qun_userinfo'] = $qun_user;
-        $array['userinfo'] = [
-            'uid'=>$this->user['uid'],
-            'username'=>$this->user['username'],
-            'nickname'=>$this->user['nickname'],
-            'icon'=>tempdir($this->user['icon']),
-            'groupid'=>$this->user['groupid'],
-        ];
+        if ($this->user) {
+            $array['userinfo'] = [
+                'uid'=>$this->user['uid'],
+                'username'=>$this->user['username'],
+                'nickname'=>$this->user['nickname'],
+                'icon'=>tempdir($this->user['icon']),
+                'groupid'=>$this->user['groupid'],
+            ];
+        }else{
+            $array['userinfo'] = ['uid'=>0,'username'=>'游客','groupid'=>0];
+        }
+        
         return $this->ok_js($array);
     }
     
