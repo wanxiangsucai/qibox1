@@ -1,4 +1,58 @@
 <link rel="stylesheet" href="/public/static/libs/bui/css/chat.css?" />
+<!-- 有侧边栏的结构 -->
+<div id="sidebar" class="bui-sidebar-wrap">
+    <!-- 侧边栏开始 -->
+    <div class="bui-sidebar swiperight">
+        <div class="personal-info">
+            <div class="bui-btn bui-box">
+                <div class="ring userface" b-html="app.userinfo.face"><img src="/public/static/images/noface.png"></div>
+                <div class="span1">
+                    <h3 class="item-title" b-text="app.userinfo.username">齐博</h3>
+                    <p class="item-text"> <dd class="glyphicon glyphicon-user"></dd> <i b-text="app.userinfo.group_name"></i></p>
+					<p class="item-text"> <dd class="fa fa-database"></dd> 积分：<b b-text="app.userinfo.money"></b> 个</p>
+					<p class="item-text"> <dd class="glyphicon glyphicon-yen"></dd> 余额：<b b-text="app.userinfo.rmb"></b> 元</p>
+                </div>
+                <i class="icon-">&#xe657;</i>
+            </div>
+        </div>
+        <ul class="bui-list">
+            <li class="bui-btn bui-box">
+                <i class="icon"><i class="si si-credit-card"></i></i>
+                <div class="span1 iframe" href="/member.php/coupon/order/index.html">我的优惠券</div>
+            </li>
+            <li class="bui-btn bui-box">
+                <i class="icon"><i class="si si-handbag"></i></i>
+                <div class="span1 iframe" href="/member.php/shop/order/index.html">我的订单</div>
+                <span class="bui-badges"></span>
+            </li>
+            <li class="bui-btn bui-box">
+                <i class="icon iframe""><i class="si si-diamond"></i></i>
+                <div class="span1 iframe" href="/member.php/member/plugin/execute/plugin_name/marketing/plugin_controller/jifen/plugin_action/index.html">我的积分</div>
+            </li>
+            <li class="bui-btn bui-box">
+                <i class="icon"><i class="si si-present"></i></i>
+                <div class="span1 iframe" href="/index.php/giftshop/index/index.html">积分换礼品</div>
+            </li>
+            <li class="bui-btn bui-box">
+                <i class="icon">&#xe679;</i>
+                <div class="span1" onclick="window.location.href='/index.php/index/login/quit.html'">退出登录</div>
+            </li><!--
+            <li class="bui-btn bui-box">
+                <i class="icon">&#xe622;</i>
+                <div class="span1">菜单六</div>
+            </li>-->
+        </ul>
+        <div class="sidebar-foot bui-fixed-bottom">
+            <ul class="bui-nav">
+                <li class="bui-btn" href="/public/static/libs/bui/pages/main/member_menu.html">
+                     <i class="icon-setting"></i>
+                    会员中心 
+                </li>                
+            </ul>
+        </div>
+    </div>
+	<!-- 侧边栏结束 -->
+
 <div class="bui-page page-chat">
     <header class="bui-bar" id="chat_head">
         <div class="bui-bar-left">
@@ -116,4 +170,6 @@
         </div>
     </footer>
 	-->	
+</div>
+
 </div>

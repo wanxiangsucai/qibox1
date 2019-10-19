@@ -116,8 +116,9 @@ function bind() {
 	$("#bui-router").on("click",".iframe",function (e) {
         // 框架打开
 		var url = $(this).attr('href');
+		var title = typeof($(this).attr('title'))!='undefined'?$(this).attr('title'):$(this).html();
 		if(url!=undefined){
-			bui.load({ url: "/public/static/libs/bui/pages/frame/show.html",param:{url:url}});
+			bui.load({ url: "/public/static/libs/bui/pages/frame/show.html",param:{url:url,title:title}});
 			return false;
 		}
     });

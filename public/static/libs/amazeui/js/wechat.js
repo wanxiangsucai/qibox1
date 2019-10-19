@@ -293,7 +293,7 @@ function format_chat_msg(array){
 		var str_name = '';
 		var str_del = '';
 		array.forEach((rs)=>{
-			str_name = (rs.qun_id && rs.uid!=my_uid)?`<div class="name" onclick="$('#input_box').val('@${rs.from_username} ').focus()">@${rs.from_username}</div>`:'';
+			str_name = (rs.qun_id && rs.uid!=my_uid)?`<div class="name" data-uid="${rs.uid}" onclick="$('#input_box').val('@${rs.from_username} ').focus()">@${rs.from_username}</div>`:'';
 			str_del = (rs.uid==my_uid||rs.touid==my_uid) ? `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>` : '';
 			str += `<li class="` + ( rs.uid==my_uid ? 'me' : 'other' ) + `">
 						<dd class="time" data-time="${rs.full_time}"><a>${rs.create_time}</a></dd>
@@ -309,6 +309,7 @@ function format_chat_msg(array){
 function showMoreMsg(uid){
 	if(show_msg_page==1){
 		maxid = -1;
+		get_qunuser_list(uid);	//获取圈内成员列表
 		layer.msg("数据加载中,请稍候...");
 	}
 	msg_scroll = false;
@@ -343,8 +344,7 @@ function set_main_win_content(res){
 		//need_scroll$('.pc_show_all_msg').css('top',(453-that.height())+'px');
 		if(show_msg_page==1){
 			that.html(res.data);
-			format_show_time(that);
-			
+			format_show_time(that);			
 			setTimeout(function(){
 				that.css('top',(453-that.height())+'px');
 			},500);
@@ -358,9 +358,10 @@ function set_main_win_content(res){
 				var new_h = $(".pc_show_all_msg").height();					
 				$(".pc_show_all_msg").css('top',(old_h-new_h)+'px');
 			},500);
+		}		
 
-		}
 		add_btn_delmsg();
+		format_nickname();
 		show_msg_page++;
 		msg_scroll = true;
 	}
@@ -407,6 +408,8 @@ var user_div_top = 0;	//当前信息用户列表滚动条坐标top系数
 var show_msg_top = 0;  //当前对话框滚动条坐标top系数
 var maxid = -1;
 var need_scroll = false;
+var user_num = 0;		//圈内成员数
+var user_list = {};	//圈内成员列表
 
 $(function(){
 	
@@ -537,6 +540,11 @@ $(function(){
 			//console.log( '='+res.ext.lasttime);
 			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
+				if(uid>0){
+					$("#remind_online").html("对方正在输入中，请稍候...");
+				}else{
+					$("#remind_online").html("有用户在线");
+				}
 				$("#remind_online").show();
 			}else{
 				$("#remind_online").hide();
@@ -803,9 +811,33 @@ function get_friend_data(ty){
 }
 
 
+function format_nickname(){
+	if(uid>0 || user_num<1){
+		return ;
+	}
+	$('.pc_show_all_msg .name').each(function(){
+		var _uid = $(this).data('uid');
+		if(typeof(user_list[_uid]) == 'object' && typeof(user_list[_uid].nickname)!='undefined' && user_list[_uid].nickname!=''){
+			$(this).html(user_list[_uid].nickname);
+		}
+	});
+}
 
-
-
+//获取圈子所有成员
+function get_qunuser_list(uid){
+	if(uid<0){
+		var id = -uid;
+		$.get("/index.php/qun/wxapp.member/get_member.html?id="+id+"&rows=1000&order=update_time&get_username=0",function(res){
+			if(res.code==0){
+				res.data.forEach((rs)=>{
+					user_list[rs.uid] = rs;
+				});
+				user_num = res.data.length;
+				format_nickname();				
+			}
+		});
+	}		
+}
 
 
 

@@ -18,11 +18,20 @@ loader.define(function(require,exports,module) {
 	var qun_userinfo = '';	//当前用户所在当前圈子的信息
 	var user_list = {}; //圈子用户列表
 	var user_num = 0; //圈子成员总数
+	var uiSidebar;          // 侧边栏
 
     // 模块初始化定义
     pageview.init = function () {
         this.bind();
 		this.right_btn();
+
+		setTimeout(function(){
+			uiSidebar = bui.sidebar({
+				id      : "#sidebar",
+				handle: ".page-chat",
+				width   : 550
+			});
+		},1500);
 
 		$("#chat_win").parent().scroll(function () {
 			var h = $("#chat_win").parent().scrollTop();
@@ -257,7 +266,12 @@ loader.define(function(require,exports,module) {
 			}
 			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
-				if(uid>0)$("#remind_online").show();
+				if(uid>0){
+					$("#remind_online").html("对方正在输入中，请稍候...");
+				}else{
+					$("#remind_online").html("有用户在线");
+				}
+				$("#remind_online").show();
 			}else{
 				$("#remind_online").hide();
 			}
@@ -293,6 +307,7 @@ loader.define(function(require,exports,module) {
 					}					
 				}
 			});
+			pageview.weixin_share();
 		},1000);
 	}
 
@@ -702,6 +717,18 @@ loader.define(function(require,exports,module) {
 				}		  
 			});
 	*/
+	
+	//微信分享
+	pageview.weixin_share = function(){
+		if(typeof(wx)=='object' && have_load_wx_config==true && uid<0){
+			weixin_share({
+				title:quninfo.title!=''?quninfo.title:'欢迎加入圈子群聊',
+				about:quninfo.content!=''?quninfo.content.replace('&nbsp;',''):'欢迎加入圈子群聊,不错过每一个精彩的话题!',
+				picurl:quninfo.picurl!=''?quninfo.picurl:'',
+				url:"/index.php/index/msg/index.html#/public/static/libs/bui/pages/chat/chat?uid="+uid,
+			});
+		}		
+	}
 	
 	//获取所有成员信息
 	pageview.get_user_list = function(id){

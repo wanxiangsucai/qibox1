@@ -44,6 +44,7 @@ loader.define({
 		var getParams = bui.getPageParams();
 		getParams.done(function(result){
 			var url = result.url;
+			console.log("url地址是",url);
 			var title='',picurl='';
 			if( typeof(result.title)!="undefined" ){
 				title = result.title;
