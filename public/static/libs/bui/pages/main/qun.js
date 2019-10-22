@@ -6,9 +6,10 @@ loader.define(function(require,exports,module) {
 		uiAccordionDevice,  // 我的设备折叠菜单
 		uiAccordionFriend;  // 我的好友折叠菜单
 	var urls = {
-			lively:"/index.php/qun/wxapp.qun/index.html?rows=20&type=list&page=",
-			myjoin:"/index.php/qun/wxapp.qun/myjoin.html?rows=20&page=",
-			myvisit:"/index.php/qun/wxapp.qun/myvisit.html?rows=20&page=",
+			//lively:"/index.php/qun/wxapp.qun/index.html?rows=20&type=list&page=",
+			lively:"/index.php/qun/wxapp.qun/lively.html?rows=30&page=",
+			myjoin:"/index.php/qun/wxapp.qun/myjoin.html?rows=30&page=",
+			myvisit:"/index.php/qun/wxapp.qun/myvisit.html?rows=30&page=",
 	};
     
 	store.compile(".bui-bar");	//重新加载全局变量数据
@@ -76,8 +77,14 @@ loader.define(function(require,exports,module) {
 
 	pageview.format_qun_data = function(array){
 		var str = "";
+		var msg_str = "";
 		array.forEach((rs)=>{
-			rs.content = rs.content.substring(0,20);
+			rs.content = rs.content.replace(/<.*?>/g,"").substring(0,20);
+			if(typeof(rs.msgnum)!='undefined'){
+				msg_str = `<span class="bui-badges">${rs.msgnum}</span>`;
+			}else{
+				msg_str = "";
+			}			
 			str +=`
 				<li class="bui-btn bui-box">
 					<a href="${rs.url}"  class="iframe" title="${rs.title}"><img class="ring ring-pc" src="${rs.picurl}" onerror="this.src='/public/static/images/nopic.png'"/></a>
@@ -85,7 +92,7 @@ loader.define(function(require,exports,module) {
 						<h3 class="item-title">${rs.title}</h3>
 						<p class="item-text bui-text-hide">${rs.content}</p>
 					</div>
-					<!--<span class="bui-badges">0</span>-->
+					${msg_str}
 				</li>
 			`;
 		});
