@@ -26,6 +26,10 @@ function get_gps_location(callback){
 
 function get_map_location(callback,type){
 	var is_wxapp = false;
+	if(typeof(wx)=='undefined'){
+		get_bd_map_location(callback);
+		return ;
+	}
 	wx.miniProgram.getEnv(function(res) {
 		if(res.miniprogram==true){
 			is_wxapp = true;

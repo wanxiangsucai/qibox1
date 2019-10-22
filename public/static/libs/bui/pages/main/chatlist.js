@@ -11,60 +11,60 @@ loader.define(function(require,exports,module) {
 		ListMsgUserPage=1,	//用户列表分页
 		uiSlideTabMessage;  // 顶部tab
 	
-	//把未读消息强制排在前面
-	function order_list(){
-		var that = $("#listview");
-		var obj = $("#listview .badges-ck");
-		for(var i=(obj.length-1);i>=0;i--){
-			var o = obj.eq(i).parent().parent().parent().parent();
-			that.prepend( o.get(0).outerHTML);
-			o.remove();
-		}
-	}
+
 
     /**
      * [init 页面初始化]
      * @return {[type]} [description]
      */
     pageview.init = function () {
+		
+		pageview.msg_listuser();	//加载信息用户列表
 
-		setTimeout(function(){	//把未读消息强制排在前面
-			order_list();
-		},3000);
-
-        mainHeight = $(window).height() - $("#tab-home-header").height()- $("#tabDynamicNav").height();
-        var slideHeight = parseInt(mainHeight) - $(".bui-searchbar").height();
-		
-		//初次这里有可能会加载晚一步
-		if(MsgUserList!=''){
-			$("#listview").html(MsgUserList);
-			$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
-		}
-		
-		var btn_chat = $("#tabDynamicNav .bui-box-vertical").eq(0);
-		setInterval(function() {
-			var url = window.location.href;
-			if(url.indexOf('#/')==-1 && btn_chat.hasClass('active')==true ){	//跳转到了其它页面,就不要再执行
-				check_list_new_msgnum(); //刷新有没有新用户发消息 过来
-			}			
-		}, 3000);
-		
+        
 		var that = $("#listview");
-		that.parent().scroll(function () {	//滚动加载更多
+		that.parent().scroll(function () {	//滚动加载更多好友列表示
 			var h = that.height()-that.parent().height()-that.parent().scrollTop();			
 			if(h<300 && user_scroll==true){
 				console.log(h);
 				layer.msg('数据加载中,请稍候...',{time:3000});
-				showMore_User();	//显示更多用户列表
+				pageview.msg_listuser();	//显示更多用户列表
 			}
 		});
 
-		setInterval(function() {
-			if(user_scroll==true)showMore_User();	//定时把他们全加载出来,方便做搜索使用.其实上面的滚动可删除了
-		}, 5000);
+		this.bind();
 
-		var load_friend = true;
-        //初始化顶部TAB
+    }
+
+    pageview.bind = function (argument) {
+
+		mainHeight = $(window).height() - $("#tab-home-header").height()- $("#tabDynamicNav").height();
+        var slideHeight = parseInt(mainHeight) - $(".bui-searchbar").height();
+
+		//setInterval(function() {
+		//	if(user_scroll==true)showMore_User();	//定时把他们全加载出来,方便做搜索使用.其实上面的滚动可删除了
+		//}, 5000);
+
+
+		//setTimeout(function(){order_list();},3000);	//把未读消息强制排在前面
+		
+		//初次这里有可能会加载晚一步
+		//if(MsgUserList!=''){
+		//	$("#listview").html(MsgUserList);
+		//	$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
+		//}
+		
+		//var btn_chat = $("#tabDynamicNav .bui-box-vertical").eq(0);
+		//setInterval(function() {
+		//	var url = window.location.href;
+		//	if(url.indexOf('#/')==-1 && btn_chat.hasClass('active')==true ){	//跳转到了其它页面,就不要再执行
+		//		check_list_new_msgnum(); //刷新有没有新用户发消息 过来
+		//	}			
+		//}, 5);
+		
+		
+        //顶部好友与消息的切换菜单
+		var have_load_friend = false;
         uiSlideTabMessage = bui.tab({
             id       : "#tabMessage",
             menu     : "#tabMessageNav",
@@ -73,19 +73,20 @@ loader.define(function(require,exports,module) {
             swipe    : true,   //不允许通过滑动触发
             animate  : true,    //点击跳转时不要动画
 			onBeforeTo: function(e) {//   目标索引  e.currentIndex e.prevIndex
-               if(load_friend){	//console.log('好友加载成功')
-				   load_friend = false;
-					$("#my_friend").html(myFriendList);
-					$("#my_friend").prev().find("em").html(myFriendNum);     
-					get_friend_data('my_friend');	//这里其实是重复加载了,主要是为了加上侧滑菜单
+				if(have_load_friend==false){
+					console.log("加载好友成功");
+					have_load_friend = true;
+					get_friend_data('my_friend');
 					get_friend_data('my_idol');
 					get_friend_data('my_fans');
 					get_friend_data('my_blacklist');
-			   }
+				}
            }
         });
-        //初始化消息的侧滑菜单
 
+
+        //侧滑菜单
+		/*
         uiListviewMessage = bui.listview({
                 id: "#listview",
                 data: [{ "text": "置顶", "classname":"primary"},{ "text": "删除", "classname":"danger"}],
@@ -110,7 +111,7 @@ loader.define(function(require,exports,module) {
                     this.close();
                 }
             });
-
+		*/
         
 
         // 初始化下拉刷新
@@ -130,10 +131,10 @@ loader.define(function(require,exports,module) {
           showArrow: true,
           width: 160
         });
-        // 下拉菜单有遮罩的情况
+        // 为下拉菜单添加一个遮罩
         uiMask = bui.mask({
           appendTo:"#main",
-          opacity: 0.03,
+          opacity: 0.5,
           zIndex:9,
           callback: function (argument) {
             // 隐藏下拉菜单
@@ -149,20 +150,12 @@ loader.define(function(require,exports,module) {
         });
 
 /*------------右上角更多菜单 end --------------*/
-		
-
-
-    }
-
-    pageview.bind = function (argument) {
-
     }
 
 
 	//获取我的好友或粉丝列表
 	function get_friend_data(ty){
-		var page = 1;
-		var url = MyFriendUrl + page + "&type=";
+		var url = "/index.php/index/wxapp.friend/get_list.html?page=1&row=100&type=";
 		if(ty=='my_idol'){	//我的偶像
 			url += "0&suid=&uid="+my_uid;
 		}else if(ty=='my_fans'){	//我的粉丝
@@ -174,9 +167,8 @@ loader.define(function(require,exports,module) {
 		}
 		$.get(url,function(res){
 			if(res.code==0){
-				//if(page==1)$('#'+ty).find('.friends_box').remove();
-				if(res.data!=''){				
-					$('#'+ty).append(res.data);
+				if(res.data.length>0){				
+					$('#'+ty).append( pageview.format_friend_data(res.data) );
 					if(res.paginate.total>0)$('#'+ty).prev().find("em").html(res.paginate.total); //有几位好友
 					//添加侧滑菜单
 					bui.listview({
@@ -196,32 +188,30 @@ loader.define(function(require,exports,module) {
 				}
 			}
 		})
+	};
+
+	pageview.format_friend_data = function(array){
+		var str = "";
+		array.forEach((rs)=>{
+			str +=`
+			<li class="list-item" data-uid="${rs.he_id}">
+				<div class="bui-btn bui-box">
+					<a href="/member.php/home/${rs.he_id}.html"  class="iframe"><img class="ring ring-group" src="${rs.he_icon}" onerror="this.src='/public/static/images/noface.png'"/></a>                                
+					<div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=${rs.he_id}">
+						<h3 class="item-title">
+							${rs.he_username}
+						</h3>
+						<p class="item-text">[近况] ${rs.he_lastvist}登录过</p>
+					</div>
+					<i class="icon- primary">&#xe603;</i>
+				</div>
+			</li>
+			`;
+		});
+		return str;
 	}
 
-	//显示更多用户列表
-	function showMore_User(){
-		ListMsgUserPage++;
-		user_scroll = false;
-		$.get(ListMsgUserUrl+ListMsgUserPage,function(res){  
-			//console.log(res);
-			if(res.code==0){
-				if(res.data==''){
-					layer.msg("已经显示完了！",{time:500});
-				}else{
-					$('#listview').append(res.data);
-					$.each(res.ext.s_data,function(i,rs){
-						uid_array[rs.f_uid] = rs.id;
-					});
-					user_scroll = true;
-					$("#listview").parent().scrollTop($("#listview").parent().scrollTop()-200);
-					$("#listview .span1").click(function(){$(this).find('.bui-badges').removeClass('badges-ck')});
-					order_list();	//新消息要排在前面
-				}
-			}else{
-				layer.msg(res.msg,{time:2500});
-			}
-		});
-	}
+
 	
 	//var uid_array = [];   //每个用户的最新消息ID
 	//刷新有没有新用户发消息 过来
@@ -248,6 +238,95 @@ loader.define(function(require,exports,module) {
 		});
 	}
 
+
+	pageview.msg_listuser = function(){		
+		user_scroll = false;
+		$.get("/member.php/member/wxapp.msg/get_listuser.html?rows=20&page="+ListMsgUserPage,function(res){
+			if(res.code==0){
+				if(res.data.length<1){
+					if(ListMsgUserPage==1){
+						layer.msg('没有记录');
+					}else{
+						layer.msg('加载完了');
+					}
+				}else{					
+					$('#listview').append( pageview.format_listuser(res.data) );	//加载回来的好友数据显示
+					$.each(res.data,function(i,rs){
+						uid_array[rs.f_uid] = rs.id;
+					});
+					user_scroll = true;
+					if(ListMsgUserPage>1)$("#listview").parent().scrollTop( $("#listview").parent().scrollTop()-200 );
+					$("#listview .span1").click(function(){
+						var th = $(this).find('.bui-badges');
+						if(th.hasClass("badges-ck")){
+							th.removeClass('badges-ck');
+							if( th.parent().parent().parent().parent().hasClass("list-user") ){	//圈子的没统计,就不要处理
+								var num = $("#chat_num").html()-th.html();
+								if(num<1){
+									$("#chat_num").hide();
+								}else{
+									$("#chat_num").html(num);
+								}								
+							}							
+						}
+					});
+					//order_list();	//新消息要排在前面
+					ListMsgUserPage++;
+				}				
+			}else{
+				layer.msg(res.msg,{time:2500});
+			}
+		});
+	}
+
+	pageview.format_listuser = function(array){
+		var str = "";
+		var obj = {};
+		array.forEach((rs)=>{
+			obj = {};
+			obj.c = rs.f_uid<0 ? 'list-qun' : 'list-user';
+			obj.url = rs.f_uid>0 ? '/member.php/home/'+rs.f_uid+'.html' : '/index.php/qun/show-'+(-rs.f_uid)+'.html';
+			obj.content = (typeof(rs.qun)=='object'&&typeof(rs.qun.content)!='undefined' ? rs.qun.username +'说:'+ rs.qun.content : rs.title).substr(0,25);
+			
+			obj.num_icon = rs.new_num>0 ? 'badges-ck' : ''
+			obj.show_num = rs.num>999 ? '99+' : rs.num;
+			if(rs.new_num>0){
+				obj.show_num = rs.new_num;
+			}
+			if( typeof(rs.f_icon)=='undefined'||rs.f_icon==null)rs.f_icon='';
+			str += `
+				<li class="list-item list_${rs.f_uid} ${obj.c}">
+					<div class="bui-btn bui-box">
+						<a href="${obj.url}" class="iframe"><img class="ring ring-group" src="${rs.f_icon}" onerror="this.src='/public/static/images/noface.png'"></a>
+						<div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=${rs.f_uid}">
+							<h3 class="item-title">
+								${rs.f_name}
+								<span class="item-time bui-right">${rs.create_time}</span>
+							</h3>
+							<p class="item-text">
+								${obj.content}
+								<span class="bui-badges bui-right ${obj.num_icon}">
+									${obj.show_num}
+								</span>
+							</p>
+						</div>
+					</div>
+               </li> 
+			`;
+		});
+		return str;
+	};
+
+	//把未读消息强制排在前面
+	function order_list(){
+		var that = $("#listview");
+		var obj = $("#listview .badges-ck");
+		for(var i=(obj.length-1);i>=0;i--){
+			var o = obj.eq(i).parent().parent().parent().parent();
+			that.prepend( o.get(0).outerHTML);
+			o.remove();
+		}
+	}
 
     // 下拉刷新以后执行数据请求
     function getData () {

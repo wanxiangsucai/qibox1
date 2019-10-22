@@ -76,18 +76,23 @@ bui.ready(function(){
 		})
 	}
 	
-	var i=0;
-	setInterval(function() {		
-		var url = window.location.href;
-		if(url.indexOf('#/')==-1){	//跳转到其它模块,就不要刷新了
-			if(i%3==0)check_newmsg_num();
-			if(i%5==0)tongji_new_num(0);
-			if(to_uid!=""){		//指定了id , 一般是从公众号进入的情况
-				if(i%4==0)tongji_new_num(1);
-			}
-		}
-		i++;
-	}, 1000);
+//	var i=0;
+//	setInterval(function() {		
+//		var url = window.location.href;
+//		if(url.indexOf('#/')==-1){	//跳转到其它模块,就不要刷新了
+//			if(i%5==0)check_newmsg_num();
+//			if(i%10==0)tongji_new_num(0);
+//			if(to_uid!=""){		//指定了id , 一般是从公众号进入的情况
+//				if(i%10==0)tongji_new_num(1);
+//			}
+//		}
+//		i++;
+//	}, 1000);
+
+	setTimeout(function(){
+		check_newmsg_num();
+		tongji_new_num(0);
+	},1500)
 		
 
 	//loader.set("main",{
@@ -116,7 +121,7 @@ function bind() {
 	$("#bui-router").on("click",".iframe",function (e) {
         // 框架打开
 		var url = $(this).attr('href');
-		var title = typeof($(this).attr('title'))!='undefined'?$(this).attr('title'):$(this).html();
+		var title = typeof($(this).attr('title'))!='undefined'?$(this).attr('title'):($(this).html().indexOf('<')>-1?'':$(this).html());
 		if(url!=undefined){
 			bui.load({ url: "/public/static/libs/bui/pages/frame/show.html",param:{url:url,title:title}});
 			return false;

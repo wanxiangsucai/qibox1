@@ -2,6 +2,7 @@
 namespace app\common\model;
 
 use think\Model;
+use think\Db;
 
 /**
  * 站内短消息
@@ -139,6 +140,77 @@ class Msg extends Model
         $array['lasttime'] = time()-$from_time; //对方最近操作的时间
         $array['maxid'] = $maxid;
         return $array;
+    }
+    
+    
+    /**
+     * 获取消息用户列表
+     * @param number $uid 当前登录用户的UID
+     * @param number $rows
+     * @param number $page
+     */
+    public static function get_listuser($uid=0,$rows=0,$page=0){
+        $page>0 || $page=1;
+        $min = ($page-1)*$rows;
+        $subQuery = self::where('touid',$uid)->whereOr('uid',$uid)
+        ->field('uid,touid,create_time,title,id,ifread,qun_id,visit_time,update_time')
+        //->order('id desc')
+        ->order('update_time desc,visit_time desc,id desc')
+        ->limit(5000)   //理论上某个用户的短消息不应该超过5千条。
+        ->buildSql();
+        
+        $listdb = Db::table($subQuery.' a')
+        ->field('uid,touid,create_time,title,id,qun_id,visit_time,update_time,count(id) AS num,sum(ifread) AS old_num,(qun_id*1000000 + uid + touid + uid * uid + touid * touid) AS MX')
+        ->group('MX')
+        //->order('id','desc')
+        ->order('update_time','desc')
+        ->limit($min,$rows)
+        ->select();
+        
+        foreach($listdb AS $key=>$rs){
+            $rs['new_num'] = 0;
+            if($rs['qun_id']>0){
+                $rs['f_uid'] = -$rs['qun_id'];
+                $rs['title'] = '圈子群聊';
+                $rs['qun'] = [];
+                $rs['new_num'] = self::where([
+                    'qun_id'=>$rs['qun_id'],
+                    'create_time'=>['>',$rs['visit_time']],
+                ])->count('id');
+                if($rs['new_num']>0){
+                    $qs = getArray(self::where('qun_id',$rs['qun_id'])->order('id desc')->find());
+                    $qs['content'] = get_word(del_html($qs['content']), 100);
+                    $rs['id'] = $qs['id'];
+                    $qs['username'] = get_user_name($qs['uid']);
+                    $rs['qun'] = $qs;
+                }else{
+                    $rs['num'] = self::where('qun_id',$rs['qun_id'])->count('id');
+                }
+                $quninfo = fun('qun@getByid',$rs['qun_id']);
+                $rs['f_name'] = $quninfo['title'];
+                $rs['f_icon'] = $quninfo['picurl'];
+            }else{
+                if($rs['uid']==$uid){
+                    $rs['f_uid'] = $rs['touid'];
+                    $rs['title'] = '对方还未回复...';
+                }else{
+                    $rs['f_uid'] = $rs['uid'];
+                }
+                if($rs['num']!=$rs['old_num']){ //无法确认是哪一方的未读消息,所以要进一步查询
+                    $rs['new_num'] = self::where('touid',$uid)->where('uid',$rs['f_uid'])->where('ifread',0)->count('id');
+                }
+                if ($rs['f_uid']!=0) {
+                    $rs['f_name'] = get_user_name($rs['f_uid']);
+                    $rs['f_icon'] = get_user_icon($rs['f_uid']);
+                }else{
+                    $rs['f_name'] = '系统消息';
+                }      
+            }
+             
+            $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
+            $listdb[$key] = $rs;
+        }
+        return $listdb;
     }
     
     /**

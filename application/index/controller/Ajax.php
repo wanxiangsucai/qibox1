@@ -69,4 +69,33 @@ class Ajax extends IndexBase
         }        
     }
     
+    /**
+     * webapp获取用户登录信息
+     * @param string $pwd
+     * @param string $fun
+     * @return string
+     */
+    public function js_token($pwd='',$fun='get_userinfo')
+    {
+        $str = '';
+        if (!empty($this->user)) {
+            $token = md5( $this->user['uid'] . $this->user['lastip']  . $this->user['lastvist'] );
+            $user = $this->user;
+            cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
+            $array = [
+                'token'=>$token,
+                'uid'=>$this->user['uid'],
+                'username'=>$this->user['username'],
+                'nickname'=>$this->user['nickname'],
+                'money'=>$this->user['money'],
+                'rmb'=>$this->user['rmb'],
+                'icon'=>$this->user['icon']?get_url(tempdir($this->user['icon'])):'',
+                'groupid'=>$this->user['groupid'],
+                'groupname'=>getGroupByid($this->user['groupid']),
+            ];
+            $str = json_encode($array,JSON_UNESCAPED_UNICODE);
+        }        
+        return "{$fun}($str);";
+    }
+    
 }

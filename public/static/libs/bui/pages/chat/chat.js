@@ -495,7 +495,7 @@ loader.define(function(require,exports,module) {
 				del_str = `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>`;
 			}
 
-			user_str = `<div class="chat-icon" data-uid="${rs.uid}" data-name="${rs.from_username}"><img src="${rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" title="${rs.from_username}"></div>`;
+			user_str = `<div class="chat-icon" data-uid="${rs.uid}" data-name="${rs.from_username}"><img src="${rs.from_icon}" onerror="this.src='/public/static/images/noface.png'" title="${rs.from_username}"></div>`;
 			if(rs.uid!=myid){
 				str += `
 					<div class="bui-box-align-top chat-box-${rs.id} chat-target">

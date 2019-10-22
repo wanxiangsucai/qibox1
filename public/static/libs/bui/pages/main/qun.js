@@ -1,9 +1,15 @@
 loader.define(function(require,exports,module) {
     
 	var pageview = {},      // 页面的模块, 包含( init,bind )
+		pages = {},
 		uiPullrefresh,      // 消息,电话公用的下拉刷新控件
 		uiAccordionDevice,  // 我的设备折叠菜单
 		uiAccordionFriend;  // 我的好友折叠菜单
+	var urls = {
+			lively:"/index.php/qun/wxapp.qun/index.html?rows=20&type=list&page=",
+			myjoin:"/index.php/qun/wxapp.qun/myjoin.html?rows=20&page=",
+			myvisit:"/index.php/qun/wxapp.qun/myvisit.html?rows=20&page=",
+	};
     
 	store.compile(".bui-bar");	//重新加载全局变量数据
 
@@ -33,13 +39,9 @@ loader.define(function(require,exports,module) {
        // uiAccordionDevice = bui.accordion({
        //     id:"#device"
        // });
-        
-		$("#myjoin_qunzi").html(qunObj.myjoin_val);
-		$("#myjoin_qunzi").parent().prev().find(".time").html(qunObj.myjoin_num )
-		$("#myvisit_qunzi").html(qunObj.myvisit_val);
-		$("#myvisit_qunzi").parent().prev().find(".time").html(qunObj.myvisit_num);
-		$("#hot_qunzi").html(qunObj.hotqun_val);
-		$("#hot_qunzi").parent().prev().find(".time").html(qunObj.hotqun_num);
+        pageview.get_qunlist('lively');
+		pageview.get_qunlist('myjoin');
+		pageview.get_qunlist('myvisit');
 
 
         // 初始化好友折叠菜单
@@ -54,6 +56,41 @@ loader.define(function(require,exports,module) {
 		
         
     }
+
+	pageview.get_qunlist = function(type){
+		var page = typeof(pages[type])=='undefined' ? 1 : pages[type];
+		$.get(urls[type]+page,function(res){
+			if(res.code==0){
+				if(res.data.length<1){
+					if(page>1){
+						layer.msg('加载完了');
+					}
+				}else{
+					var obj = router.$("#qunzi_"+type);
+					obj.append( pageview.format_qun_data(res.data) );
+					obj.parent().prev().find(".time").html(res.paginate.total);
+				}
+			}
+		});
+	}
+
+	pageview.format_qun_data = function(array){
+		var str = "";
+		array.forEach((rs)=>{
+			rs.content = rs.content.substring(0,20);
+			str +=`
+				<li class="bui-btn bui-box">
+					<a href="${rs.url}"  class="iframe" title="${rs.title}"><img class="ring ring-pc" src="${rs.picurl}" onerror="this.src='/public/static/images/nopic.png'"/></a>
+					<div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=-${rs.id}">
+						<h3 class="item-title">${rs.title}</h3>
+						<p class="item-text bui-text-hide">${rs.content}</p>
+					</div>
+					<!--<span class="bui-badges">0</span>-->
+				</li>
+			`;
+		});
+		return str;
+	}
 
 	
 

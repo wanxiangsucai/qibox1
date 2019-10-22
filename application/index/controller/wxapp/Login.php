@@ -11,6 +11,43 @@ use QCloud_WeApp_SDK\Auth\AuthAPI;
 class Login extends IndexBase
 {
     /**
+     * webapp退出
+     */
+    public function getout(){
+        UserModel::quit($this->user['uid']);
+        return $this->ok_js([],'退出成功');
+    }
+    
+    /**
+     * webapp登录
+     */
+    public function goin(){
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+            if(empty($data['cookietime'])){
+                $data['cookietime'] = $this->webdb['login_time']?:3600*24*30;
+            }
+            $result = UserModel::login($data['username'],$data['password'],$data['cookietime']);
+            if($result==0){
+                return $this->err_js("当前用户不存在,请重新输入");
+            }elseif($result==-1){
+                return $this->err_js("密码不正确,点击重新输入");
+            }else{
+                $user = $result;
+                $token = md5( $user['uid'] . $user['password']  . time() );
+                cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
+                $array = [
+                    'uid'=>$result['uid'],
+                    'token'=>$token,
+                ];
+                return $this->ok_js($array,'登录成功');
+            }
+        }else{
+            return $this->err_js('提交方式有误!');
+        }
+    }
+    
+    /**
      * 网页端AJAX检查登录状态
      */
     public function web_login_check(){
@@ -90,6 +127,7 @@ class Login extends IndexBase
         if($uid&&$username){
             $code = 0;
             $userInfo = UserModel::get_info($uid);
+            unset($userInfo['password_rand'],$userInfo['qq_api'],$userInfo['weixin_api'],$userInfo['wxapp_api']);
             $msg = '调用成功';
         }
         $data = [

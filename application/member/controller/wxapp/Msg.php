@@ -53,6 +53,19 @@ class Msg extends MemberBase
         return $this->ok_js($data_list);
     }
     
+    
+    /**
+     * AJAX调用，调用类似微信那样的用户列表。
+     * @param number $uid 当前登录用户的UID
+     * @param number $rows
+     * @param number $page
+     */
+    public function get_listuser($rows=0,$page=0){
+        $uid = $this->user['uid'];
+        $array = Model::get_listuser($uid,$rows,$page);        
+        return $this->ok_js($array);
+    }
+    
     /**
      * 消息列表
      * @return void|unknown|\think\response\Json

@@ -415,7 +415,7 @@ abstract class C extends Model
      * 获取所有模型的内容
      * @return \think\Paginator|array|\think\db\false|PDOStatement|string|\think\Model
      */
-    public static function getAll($map=[],$order="id desc",$rows=0,$pages=[]){
+    public static function getAll($map=[],$order="id desc",$rows=0,$pages=[],$format=FALSE){
         static::check_model();
         $array = Db::name(self::$base_table)->where($map)->order($order)->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
@@ -426,7 +426,7 @@ abstract class C extends Model
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();
             if ($info) {
-                $array[$key] = $info;
+                $array[$key] = $format?static::format_data($info,$cfg=[],self::$model_key,$sort_array=[]):$info;
             }
         }
         return $array;
@@ -783,6 +783,7 @@ abstract class C extends Model
         $cfg['leng'] && $info['title'] = get_word($info['full_title'] = del_html($info['title']), $cfg['leng']);
         $info['full_content'] = $info['content'];   //原始内容数据
         $info['content'] = preg_replace('/<([^<]*)>/is',"",$info['content']);	//把HTML代码过滤掉
+        $info['content'] = str_replace('&nbsp;', '', $info['content']);
         $cfg['cleng'] && $info['content'] = get_word($info['content'], $cfg['cleng']);
         $info['DIR'] = $dirname;
         $info['url'] = iurl($dirname.'/content/show',['id'=>$info['id']],true,false,$m_or_p[$dirname]);

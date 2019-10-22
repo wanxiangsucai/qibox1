@@ -63,55 +63,10 @@ class Msg extends MemberBase
         $cfg = unserialize($config['cfg']);
         $rows = intval($cfg['rows']) ?: 10;
         $page = input('page')>1?input('page'):1;
-        $min = ($page-1)*$rows;
-
-        $subQuery = Model::where('touid',$this->user['uid'])->whereOr('uid',$this->user['uid'])
-        ->field('uid,touid,create_time,title,id,ifread,qun_id,visit_time,update_time')
-        //->order('id desc')
-        ->order('update_time desc,visit_time desc,id desc')
-        ->limit(5000)   //理论上某个用户的短消息不应该超过5千条。
-        ->buildSql();
+        $uid = $this->user['uid'];
         
-        $listdb = Db::table($subQuery.' a')
-        ->field('uid,touid,create_time,title,id,qun_id,visit_time,update_time,count(id) AS num,sum(ifread) AS old_num,(qun_id*1000000+(uid + touid + ABS( cast(uid AS signed) - cast(touid AS signed) ))/2) AS MX')
-        ->group('MX')
-        //->order('id','desc')
-        ->order('update_time','desc')
-        ->limit($min,$rows)
-        ->select();
+        $listdb =  Model::get_listuser($uid,$rows,$page);
         
-        foreach($listdb AS $key=>$rs){
-            $rs['new_num'] = 0;
-            if($rs['qun_id']>0){
-                $rs['f_uid'] = -$rs['qun_id'];
-                $rs['title'] = '圈子群聊';
-                $rs['qun'] = [];
-                $rs['new_num'] = Model::where([
-                    'qun_id'=>$rs['qun_id'],
-                    'create_time'=>['>',$rs['visit_time']],
-                ])->count('id');
-                if($rs['new_num']>0){
-                    $qs = Model::where('qun_id',$rs['qun_id'])->order('id desc')->find();
-                    $rs['id'] = $qs['id'];
-                    $rs['qun'] = $qs;
-                }else{
-                    $rs['num'] = Model::where('qun_id',$rs['qun_id'])->count('id');
-                }
-            }else{
-                if($rs['uid']==$this->user['uid']){
-                    $rs['f_uid'] = $rs['touid'];
-                    $rs['title'] = '对方还未回复...';
-                }else{
-                    $rs['f_uid'] = $rs['uid'];
-                }
-                if($rs['num']!=$rs['old_num']){ //无法确认是哪一方的未读消息,所以要进一步查询
-                    $rs['new_num'] = Model::where('touid',$this->user['uid'])->where('uid',$rs['f_uid'])->where('ifread',0)->count('id');
-                }
-            }
-            
-            $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
-            $listdb[$key] = $rs;
-        }
         $array['data'] = $listdb;
         $array['s_data'] = $array['data'];
         $array['total'] = '';
@@ -214,7 +169,14 @@ class Msg extends MemberBase
 //         return $array;
 //     }
     
-    
+    /**
+     * ajax调用往来消息
+     * @param number $uid 对方用户的UID
+     * @param number $id
+     * @param number $rows
+     * @param number $maxid
+     * @return void|unknown|\think\response\Json
+     */
     public function get_more($uid=0,$id=0,$rows=5,$maxid=0){
         $array = model::list_moremsg($this->user['uid'],$uid,$id,$rows,$maxid);
         return $this->ok_js($array);

@@ -131,6 +131,8 @@ class Base extends Controller
     }
     
     protected function ok_js($data=[],$msg='操作成功',$page_rows=0){
+        header("Access-Control-Allow-Origin:*");
+        header("Access-Control-Allow-Methods:GET,POST");
         if(is_string($data)||is_numeric($data)){
             if(input('debug')){ //调试,查看原始数据
                 return $data;
@@ -180,11 +182,13 @@ class Base extends Controller
         if(input('debug')){ //调试,查看原始数据
             print_r($array) ;
             return ;            
-        }
+        }		
         return json($array);
     }
     
     protected function err_js($msg='操作失败',$data=[],$code=1){
+        header("Access-Control-Allow-Origin:*");
+        header("Access-Control-Allow-Methods:GET,POST");
         $array = [
                 'code'=>$code,
                 'msg'=>$msg,
@@ -193,7 +197,7 @@ class Base extends Controller
         if(input('debug')){ //调试,查看原始数据
             print_r($array) ;
             return ;
-        }
+        }		
         return json($array);
     }
 
