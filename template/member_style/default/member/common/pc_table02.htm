@@ -142,7 +142,7 @@ function delete_all(that){
 	layer.confirm('你要删除吗,不可恢复?',function(){
 		var url = that.attr('href');
 		$.post(url,{'ids':ids},function(res){
-			if(res.code==1){
+			if(res.code==0){
 				layer.closeAll();
 				layer.msg('删除成功');
 				setTimeout(function(){
@@ -172,7 +172,7 @@ function quick_edit(that){
 		'value':that.val(),
 	},function(res){
 		layer.closeAll();
-		if(res.code==1){			
+		if(res.code==0){			
 			layer.msg('修改成功');
 			setTimeout(function(){
 				//window.location.reload();
@@ -223,7 +223,7 @@ function change_status(){
 			'value':value,
 		},function(res){
 			layer.closeAll();
-			if(res.code==1){				
+			if(res.code==0){				
 				layer.msg('修改成功');
 				if(value==0){
 					that.css("color","#666666");

@@ -14,6 +14,9 @@ class Upfile extends IndexBase
      */
     public function index($fn='upfile',$par='')
     {
+        if (empty($this->user)) {
+            $this->error("你还没登录");
+        }
         if(IS_POST){
             $obj = new Attachment();
             $o = $obj->upload('pop');

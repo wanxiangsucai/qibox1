@@ -46,7 +46,7 @@ var Qibo = function () {
 		var index = layer.msg('请稍候...');
 		$.get(url,function(res){
 			layer.close(index);
-			if(res.code==1){	//成功提示
+			if(res.code==0){	//成功提示
 				layer.msg(res.msg);
 				setTimeout(function(){
 					if(res.url!=''){

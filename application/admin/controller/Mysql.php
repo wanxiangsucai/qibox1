@@ -121,7 +121,7 @@ class Mysql extends AdminBase
 	    
 	    $titledb = table_field($table,'',false);	    
 	    
-	    $data_list = Db::table($table)->where($map)->order($order)->paginate(30);
+	    $data_list = Db::table($table)->where($map)->order($order)->paginate(30,false,['query'=>request()->param()]);
 	    $pages = $data_list->render();
 	    
 	    $listdb = getArray($data_list)['data'];

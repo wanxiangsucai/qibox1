@@ -39,7 +39,7 @@ class Ajax extends IndexBase
                 $file_path = $file_exists['path'];
             }
             return json([
-                    'code'   => 1,
+                    'code'   => 0,
                     'info'   => '上传成功',
                     'class'  => 'success',
                     'id'     => $file_exists['path'],//$file_exists['id'],

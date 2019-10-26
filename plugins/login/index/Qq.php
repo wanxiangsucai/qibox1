@@ -57,6 +57,10 @@ class Qq extends IndexBase
         }elseif(!$openid){
             $this->error('获取openid失败');
         }
+        $array = $this->get_user_info($access_token,$openid);
+        if(!isset($array['nickname'])){
+            $this->error_msg('出错了');
+        }
         $this->login_in($openid,$access_token,$type,$fromurl);
     }
     
@@ -112,6 +116,11 @@ class Qq extends IndexBase
         $this->error("<a href='$url' target='_blank'>出错了,以下是QQ网站返回的错误信息提示，请点击查看具体的错误原因<br>$content</a>");
     }
     
+    /**
+     * web方式获取token
+     * @param unknown $code
+     * @return unknown
+     */
     private function get_access_token($code){
         $url = 'https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id='.config('webdb.qqlogin_appid').'&client_secret='.config('webdb.qqlogin_appsecret').'&code='.$code.'&redirect_uri='.urlencode($this->weburl);
         
@@ -126,6 +135,11 @@ class Qq extends IndexBase
         return $access_token;
     }
     
+    /**
+     * web方式获取用户的openid
+     * @param unknown $access_token
+     * @return unknown
+     */
     private function get_openid($access_token){
         $url = 'https://graph.qq.com/oauth2.0/me?access_token='.$access_token;
         $content = http_curl($url);
@@ -138,6 +152,12 @@ class Qq extends IndexBase
         return $openid;
     }
     
+    /**
+     * 根据TOKEN获取用户详细资料,WEB形式获取
+     * @param unknown $access_token
+     * @param unknown $openid
+     * @return mixed
+     */
     protected function get_user_info($access_token,$openid){
         $str = http_curl('https://graph.qq.com/user/get_user_info?access_token='.$access_token.'&oauth_consumer_key='.config('webdb.qqlogin_appid').'&openid='.$openid);
         $array = json_decode($str,true);

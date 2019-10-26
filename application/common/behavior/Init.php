@@ -38,8 +38,12 @@ class Init{
 		// 获取前台访问网址，是否放在根目录
 		$base_file=request()->baseFile();
 		$web_path=substr($base_file,0,strripos($base_file,'/')+1);
-		define('PUBLIC_URL',$web_path.'public/');                                  //静态文件访问网址,是网址,浏览器访问的路径,不是硬盘路径
+		define('PUBLIC_URL',$web_path.'public/');                          //静态文件访问网址,是浏览器访问的网址,不是硬盘路径
 		define('PUBLIC_PATH',ROOT_PATH.'public'.DS);                       //静态文件硬盘路径,是磁盘路径,不是浏览器的访问路径
+		define('UPLOAD_URL',$web_path.'uploads/');                         //上传的附件访问网址,是浏览器访问的网址,不是硬盘路径
+		define('UPLOAD_PATH',ROOT_PATH.'uploads'.DS);                       //上传的附件硬盘路径,是磁盘路径,不是浏览器的访问路径
+		define('STATIC_URL',$web_path.'static/');                         //图片JS及CSS的访问网址,是浏览器访问的网址,不是硬盘路径
+		define('STATIC_PATH',ROOT_PATH.'static'.DS);                       //图片JS及CSS的硬盘路径,是磁盘路径,不是浏览器的访问路径
 		define('PLUGINS_PATH',ROOT_PATH.'plugins'.DS);                   //插件文件的硬盘路径
 		define('CACHE_DIR',ROOT_PATH.'runtime'.DS);                         //缓存目录的硬盘路径
 		define('QUN',cache('cache_modules_config') ? modules_config('qun')['name'] : '社群');       //圈子名称

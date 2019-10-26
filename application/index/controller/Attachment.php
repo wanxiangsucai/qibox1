@@ -54,12 +54,14 @@ class Attachment extends IndexBase{
 			$path = str_replace( PUBLIC_PATH,'',$new_file );
 			$new_file = $new_file . $name;
 			
+			header("Access-Control-Allow-Origin:*");
+			header("Access-Control-Allow-Methods:GET,POST");
 			//钩子接口,上传前处理
 			$this->get_hook('upload_attachment_begin',$data,[],$sar=[
 				'base64' => true,
 				'from'   => $from,
 				'module' => $module,
-			]);
+			]);			
 			Hook_listen( 'upload_attachment_begin',$data,$sar );  
 			
 
@@ -245,6 +247,8 @@ class Attachment extends IndexBase{
 	}
 
 	protected function succeFile( $from,$file_path,$file_info ) {
+	    header("Access-Control-Allow-Origin:*");
+	    header("Access-Control-Allow-Methods:GET,POST");
 		switch ( $from ) {
 			case 'wangeditor':
 				return $file_path;
@@ -349,6 +353,8 @@ class Attachment extends IndexBase{
 			return $this->errFile( $from,$error_msg );
 		}
 		//钩子接口,上传前处理
+		header("Access-Control-Allow-Origin:*");
+		header("Access-Control-Allow-Methods:GET,POST");
 		$this->get_hook('upload_attachment_begin',$file,$info=[],$sar=[ 'from' => $from,'module' => $module ]);
 		Hook_listen( 'upload_attachment_begin',$file,$sar );
 		

@@ -24,3 +24,6 @@ library\think\Request.php
 \thinkphp\helper.php
 282行 url函数修改过
 
+
+\thinkphp\library\traits\controller\Jump.php
+47行与88行,分别把1与0调换了一下.

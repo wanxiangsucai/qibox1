@@ -26,13 +26,13 @@ loader.define(function() {
 				area: ['370px', '600px'],
 				content: '/index.php/qun/hongbao/add/mid/1/aid/'+(-uid)+'.html'
 			});
-			router.$("#hack_wrap").hide();
+			router.$(".hack_wrap").hide();
 		});
 
 		router.$("#photoBtn").click(function(){
 			router.$(".chatbar").hide();
 			setTimeout(function(){
-				$(".bui-mask").click(function(){
+				router.$(".bui-mask").click(function(){
 					router.$(".chatbar").show();
 				});
 			},500);
@@ -125,8 +125,8 @@ loader.define(function() {
 						'content':str,
 						},function(res){		
 						if(res.code==0){
-							router.$("#hack_wrap").hide();
-							router.$("#face_wrap").hide();
+							router.$(".hack_wrap").hide();
+							router.$(".face_wrap").hide();
 							bui.hint('发送成功');
 						}else{
 							layer.alert('发送失败:'+res.msg);

@@ -33,8 +33,8 @@ loader.define(function(require,exports,module) {
 			});
 		},1500);
 
-		$("#chat_win").parent().scroll(function () {
-			var h = $("#chat_win").parent().scrollTop();
+		router.$("#chat_win").parent().scroll(function () {
+			var h = router.$("#chat_win").parent().scrollTop();
 			//console.log(h);
 			if( h<100){
 				if(msg_scroll!=-1){
@@ -53,13 +53,13 @@ loader.define(function(require,exports,module) {
 			uid = to_uid;
 			set_user_name(uid);	//设置当前会话的用户名
 			showMoreMsg(uid);	//加载相应用户的聊天记录
-			$(".right-tongji").on("click",function(e){
+			router.$(".right-tongji").on("click",function(e){
 			  bui.load({ url: "/member.php/member/msg/index.html" ,reload:true});
 			});
 			router.$(".bui-bar-left a").removeClass('btn-back');
 			router.$(".bui-bar-left i").removeClass('icon-back');
 			router.$(".bui-bar-left i").addClass('fa fa-home');
-			$(".bui-bar-left a").on("click",function(e){
+			router.$(".bui-bar-left a").on("click",function(e){
 			  bui.load({ url: "/",reload:true});
 			});
 		}else{
@@ -119,35 +119,35 @@ loader.define(function(require,exports,module) {
 
     pageview.bind = function () {
 
-		$("#choose_qqface").on("click",function () {
-			$("#hack_wrap").hide();
-			if($("#face_wrap").html()!=""){
-				if($("#face_wrap").is(":hidden")){
-					$("#face_wrap").show();
+		router.$("#choose_qqface").on("click",function () {
+			router.$(".hack_wrap").hide();
+			if(router.$(".face_wrap").html()!=""){
+				if(router.$(".face_wrap").is(":hidden")){
+					router.$(".face_wrap").show();
 				}else{
-					$("#face_wrap").hide();
+					router.$(".face_wrap").hide();
 				}
 			}else{
-				$("#face_wrap").show();
+				router.$(".face_wrap").show();
 				router.loadPart({
-					id: "#face_wrap",
+					id: ".face_wrap",
 					url: "/public/static/libs/bui/pages/chat/qqface.html"
 				})
 			}
         })
 
-		$("#show_hack").on("click",function () {
-			$("#face_wrap").hide();
-			if($("#hack_wrap").html()!=""){
-				if($("#hack_wrap").is(":hidden")){
-					$("#hack_wrap").show();
+		router.$("#show_hack").on("click",function () {
+			router.$(".face_wrap").hide();
+			if(router.$(".hack_wrap").html()!=""){
+				if(router.$(".hack_wrap").is(":hidden")){
+					router.$(".hack_wrap").show();
 				}else{
-					$("#hack_wrap").hide();
+					router.$(".hack_wrap").hide();
 				}
 			}else{
-				$("#hack_wrap").show();
+				router.$(".hack_wrap").show();
 				router.loadPart({
-					id: "#hack_wrap",
+					id: ".hack_wrap",
 					url: "/public/static/libs/bui/pages/chat/hack.html?f",
 				}).then(function (module) {
 					//pageview.upload();
@@ -159,7 +159,7 @@ loader.define(function(require,exports,module) {
         })
 
             // 发送的内容
-        var $chatInput = router.$("#chatInput"),
+        var $chatInput = router.$(".chatInput"),
             // 发送按钮
             $btnSend = router.$("#btnSend"),
             // 聊天的容器
@@ -267,13 +267,13 @@ loader.define(function(require,exports,module) {
 			maxid = res.ext.maxid;
 			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
 				if(uid>0){
-					$("#remind_online").html("对方正在输入中，请稍候...");
+					router.$("#remind_online").html("对方正在输入中，请稍候...");
 				}else{
-					$("#remind_online").html("有用户在线");
+					router.$("#remind_online").html("有用户在线");
 				}
-				$("#remind_online").show();
+				router.$("#remind_online").show();
 			}else{
-				$("#remind_online").hide();
+				router.$("#remind_online").hide();
 			}
 		});
 		ck_num++;
@@ -286,7 +286,7 @@ loader.define(function(require,exports,module) {
 		quninfo = res.ext.qun_info;	//圈子信息
 		window.store.set("quninfo",quninfo);
 		//vues.set_quninfo(quninfo);
-		$("#send_user_name").html(quninfo.title);
+		router.$("#send_user_name").html(quninfo.title);
 
 		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息 不存的话,就是为空即==''
 		userinfo = res.ext.userinfo;	//当前用户登录信息
@@ -348,24 +348,24 @@ loader.define(function(require,exports,module) {
 
 	//添加删除信息的功能按钮
 	function add_btn_delmsg(){
-		$(".chat-panel .del").off("click");
-		$(".chat-panel .del").click(function(){
+		router.$(".chat-panel .del").off("click");
+		router.$(".chat-panel .del").click(function(){
 			var id = $(this).data("id");
 			var that = $(this);
 			$.get("/member.php/member/wxapp.msg/delete.html?id="+id,function(res){
 				if(res.code==0){
 					layer.msg("删除成功");
-					$(".chat-box-"+id).hide();
+					router.$(".chat-box-"+id).hide();
 				}else{
 					layer.alert(res.msg);
 				}
 			});
 		});
 
-		$(".chat-panel .chat-icon").click(function(){
+		router.$(".chat-panel .chat-icon").click(function(){
 			router.$(".chatbar").hide();
 			setTimeout(function(){
-				$(".bui-mask").click(function(){
+				router.$(".bui-mask").click(function(){
 					router.$(".chatbar").show();
 				});
 			},500);
@@ -386,7 +386,7 @@ loader.define(function(require,exports,module) {
 						var val = $(e.target).attr("value");
 						switch (val) {
 							case "1":
-								router.$("#chatInput").val("@"+touser.name+" ").focus();
+								router.$(".chatInput").val("@"+touser.name+" ").focus();
 								router.$(".chatbar").show();
 								ui.hide();
 								break;
@@ -458,12 +458,12 @@ loader.define(function(require,exports,module) {
 			'send_to':touser.uid
 			},function(res){		
 			if(res.code==0){
-				router.$("#chatInput").val('');
-				router.$("#hack_wrap").hide();
-				router.$("#face_wrap").hide();
+				router.$(".chatInput").val('');
+				router.$(".hack_wrap").hide();
+				router.$(".face_wrap").hide();
 				layer.msg('发送成功');
 			}else{
-				$("#btnSend").removeClass("disabled").addClass("primary");
+				router.$("#btnSend").removeClass("disabled").addClass("primary");
 				layer.alert('发送失败:'+res.msg);
 			}
 		});

@@ -87,7 +87,7 @@ loader.define(function(require,exports,module) {
 			}			
 			str +=`
 				<li class="bui-btn bui-box">
-					<a href="${rs.url}"  class="iframe" title="${rs.title}"><img class="ring ring-pc" src="${rs.picurl}" onerror="this.src='/public/static/images/nopic.png'"/></a>
+					<a href="/index.php/qun/show-${rs.id}.html"  class="iframe" title="${rs.title}"><img class="ring ring-pc" src="${rs.picurl}" onerror="this.src='/public/static/images/nopic.png'"/></a>
 					<div class="span1 a" href="/public/static/libs/bui/pages/chat/chat.html?uid=-${rs.id}">
 						<h3 class="item-title">${rs.title}</h3>
 						<p class="item-text bui-text-hide">${rs.content}</p>

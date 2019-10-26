@@ -46,7 +46,7 @@ jQuery(document).ready(function() {
                         timeout: 10000, // 超时的话，只能认为该文件不曾上传过
                         dataType: "json"
                     }).then(function(res, textStatus, jqXHR){
-                        if(res.code){
+                        if(res.code==0){
                             // 已上传，触发上传完成事件，实现秒传
                             deferred.reject();
                             curr_uploader.trigger('uploadSuccess', file, res);

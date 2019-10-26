@@ -57,16 +57,16 @@ loader.define(function() {
 		
 		router.$('#choose_voice_btn').click(function(){
 			console.log("#choose_voice_btn");
-			$(".more_hack .bmenu").hide();
-			$(".bui-input").hide();
-			$(".more_hack .voicemenu").show();			
+			router.$(".more_hack .bmenu").hide();
+			router.$(".bui-input").hide();
+			router.$(".more_hack .voicemenu").show();			
 		});
 
 		router.$('#change_word_btn').click(function(){
-			$(".more_hack .voicemenu").hide();
-			$(".more_hack .bmenu").show();
-			$(".bui-input").show();
-			$("#hack_wrap").hide();
+			router.$(".more_hack .voicemenu").hide();
+			router.$(".more_hack .bmenu").show();
+			router.$(".bui-input").show();
+			router.$(".hack_wrap").hide();
 			
 		})
 

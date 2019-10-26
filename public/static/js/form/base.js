@@ -18,7 +18,7 @@ jQuery(document).ready(function() {
 			havepost = false;
 			$.post(url, form_data).success(function (res) {
 				layer.close(index);
-				if(res.code==1){
+				if(res.code==0){
 					layer.msg(res.msg);
 					setTimeout(function(){
 						window.location.href = res.url;

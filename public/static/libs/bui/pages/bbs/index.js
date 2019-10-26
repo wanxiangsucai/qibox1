@@ -37,8 +37,6 @@
 			router.$(".comment-post").hide();
 			$(".bui-page-index").children('footer').show();
 		});
-
-		close_post
 		
 		get_list();
 
@@ -131,6 +129,7 @@
 							showMore();		//显示更多文字
 							
 							if(map_x!=0)show_distance(map_x,map_y); //显示距离
+							$('.comment-box .viewinfo').off("click");
 							$('.comment-box .viewinfo').click(function(){
 								var url = "/index.php/bbs/show.html?id="+$(this).data("id");
 								bui.load({ 
@@ -168,7 +167,7 @@
 			});
 
 
-	function get_list(){		
+	function get_list(){
 		$.get("/index.php/bbs/wxapp.near/index.html?rows=10&range=200&page="+showpage,function(res){
 			if(res.code==0 && res.data.length>0){
 				vues.set_data(res.data);
