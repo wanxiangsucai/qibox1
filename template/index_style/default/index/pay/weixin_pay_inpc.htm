@@ -32,23 +32,40 @@
 	 
 </div>
 <script type="text/javascript">
-
-if(typeof(window.inApk)=='object'){
-	window.inApk.app_weixin_pay(window.location.href+'&client_type=wxapp&in_app=1');	//在APP中打开
-}else{
-	$(".PostBox").show();
-}
-
 function countSecond(){　
 	$.get("{:urls('/index/pay/index')}?banktype=weixin&action=checkpay&numcode={$numcode}&"+Math.random(), function(result){
 		if(result.code==0){
 			window.location.href="{$return_url}";
 		}else{
-			setTimeout("countSecond()",3000);
+			if(pay_in_pc)setTimeout("countSecond()",3000);
 		}
 	});	
 }
-countSecond()
+var pay_in_pc = false;
+if(typeof(window.inApk)=='object'){	//在套壳APP里
+	window.inApk.app_weixin_pay(window.location.href+'&client_type=wxapp&in_app=1');	//在APP中打开
+}else{
+	pay_in_pc = true;
+	$(".PostBox").show();
+	countSecond();
+}
+
+$(function(){	
+	setTimeout(function(){		
+		if(typeof(api)=='object'){	//在仿原生APP里
+			pay_in_pc = false;
+			$(".PostBox").hide();
+			api.execScript({
+				//frameName: 'iframe',
+				name:"main",
+				script: "app_weixin_pay('{:get_url('location')}&client_type=wxapp&in_app=1')"
+			 });
+		}
+	},500)
+});
+
+
+
 </script>
 </body>
 </html>

@@ -87,14 +87,26 @@ var Qibo = function () {
 			return false;
 		});
 	}
+
+	var check_back = function(url){
+		if(typeof(api)=="object"){	//在APP中打开的情况
+			api.execScript({
+                    //frameName: 'iframe',
+					name:"main",
+                    script: 'app_back()'
+             });
+		}else{
+			window.location.href = url;
+		}		
+	}
 	
 	//直接使用window.history.go(-1) window.history.back() 遇到新开的页面,就导致无法返回, 用这个函数可以给他默认指定一个返回页面
-	var goBack = function(url) {
+	var goBack = function(url) {		
 		if ((navigator.userAgent.indexOf('MSIE') >= 0) && (navigator.userAgent.indexOf('Opera') < 0)) { // IE 
 			if (history.length > 0) {
 				window.history.go(-1);
 			} else {
-				window.location.href = url;
+				check_back(url);
 				//window.opener = null;
 				//window.close();
 			}
@@ -104,7 +116,7 @@ var Qibo = function () {
 				if (window.history.length > 1) {
 					window.history.go(-1);
 				} else {
-					window.location.href = url;
+					check_back(url);
 					//window.opener = null;
 					//window.close();
 				}

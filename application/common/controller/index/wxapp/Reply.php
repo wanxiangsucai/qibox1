@@ -102,10 +102,10 @@ abstract class Reply extends IndexBase
      * @return \think\response\Json
      */
     public function agree($id=0){        
-        if(time()-get_cookie('cReply_'.$id)<3600){
+        if(cache('cReply_'.$id)){
             return $this->err_js('一小时内,只能点赞一次!');
         }
-        set_cookie('cReply_'.$id, time());
+        cache('cReply_'.$id, time(),3600);
         hook_listen( 'reply_agree' , $id , ['module'=>$this->request->module()] );      //监听点赞回复
         if($this->model->agree($id)){
             return $this->ok_js();

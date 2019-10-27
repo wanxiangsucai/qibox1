@@ -198,10 +198,10 @@ abstract class Post extends IndexBase
      */
     public function agree($id=0){
         hook_listen( 'topic_agree' , $id , $this->request->module() );      //监听点赞主题
-        if(time()-get_cookie('TopicReply_'.$id)<3600){
+        if(cache('TopicReply_'.$id)){
             return $this->err_js('一小时内,只能点赞一次!');
         }
-        set_cookie('TopicReply_'.$id, time());
+        cache('TopicReply_'.$id, time(),3600);
         if($this->model->addAgree($id)){
             return $this->ok_js();
         }else{

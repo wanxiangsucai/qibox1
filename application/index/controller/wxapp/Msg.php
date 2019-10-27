@@ -71,7 +71,7 @@ class Msg extends IndexBase{
      */
     public function newmsg(){
         $data = [];
-        $array = model::where('qun_id','>',0)->order('id desc')->limit(10)->column();
+        $array = model::where('qun_id','>',0)->order('id desc')->limit(10)->column(true);
         foreach($array AS $rs){
             $rs['username'] = get_user_name($rs['uid']);
             $rs['time'] = format_time($rs['create_time'],true);

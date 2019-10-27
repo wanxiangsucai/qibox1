@@ -68,7 +68,7 @@ loader.define(function(require,exports,module) {
 				},
 				methods: {
 					add_data:function(obj){ //对加载回来的菜单数据动态塞入到VUE
-						for(let key in obj){
+						for(var key in obj){
 							this.listdb.push({
 										model_type:key,
 										title:obj[key].title,
