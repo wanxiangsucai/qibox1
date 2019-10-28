@@ -206,9 +206,8 @@ $(function(){
             $show = " <input $readonly placeholder='".preg_replace('/<([^>]+)>(.*?)<\/([^>]+)>/i', '', $field['title'])."' $step $ifmust $jsck type='$type' name='{$name}' id='atc_{$name}' style='{$field['input_width']}' class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
 
         }
-
         return [
-                'value'=>$show,
+                'value'=>$show . $field['script'] ,
                 'title'=>$field['title'],
                 'need'=>$mustfill,
                 'about'=>$field['about'],

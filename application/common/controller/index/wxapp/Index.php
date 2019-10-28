@@ -56,11 +56,36 @@ abstract class Index extends IndexBase
         $array = getArray( $this->model->getListByMid($mid,$map,$order,$rows) );
         foreach($array['data'] AS $key => $rs){
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
-            unset($rs['sncode']);
+            unset($rs['_content'],$rs['content'],$rs['sncode']);
             $array['data'][$key] = $rs;
         }
         
         return $this->ok_js($array);        
+    }
+    
+    /**
+     * 根据用户UID获取其相应的数据
+     * @param number $uid
+     * @param number $mid
+     * @param number $rows
+     * @return void|unknown|\think\response\Json
+     */
+    public function listbyuid($uid=0,$mid=0,$rows=20){
+        if (empty($uid)) {
+            $uid = $this->user['uid'];
+        }
+        $map=[
+                'uid'=>$uid,
+        ];
+        if ($mid){
+            $map['mid'] = $mid;
+        }
+        $array = getArray( $this->model->getAll($map,"id desc",$rows,$pages=[],$format=FALSE) );
+        foreach ($array['data'] AS $key=>$rs){
+            unset($rs['_content'],$rs['content'],$rs['sncode']);
+            $array['data'][$key] = $rs;
+        }
+        return $this->ok_js($array);
     }
     
     /**

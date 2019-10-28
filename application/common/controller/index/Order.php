@@ -119,17 +119,20 @@ abstract class Order extends IndexBase
                         }
                     }else{
                         $check_coupon = false;
-                        foreach ($shop_array AS $rs){  //非通用券处理 , 每一个商品进行判断
+                        foreach ($shop_array AS $rs){  //非通用券, 需要单独的对每一个商品进行判断,不能像上面的通用券批量处理
                             if($rs['coupon_tag']){      //存在非通用券标志
-                                $_array = fun('Coupon@get_list',$this->user['uid'],fun('shop@get_price',$rs,$rs['_car_']['type1']-1),$uid,$rs['coupon_tag']);
-                                if($_array[$cid]){
-                                    $money -= $_array[$cid]['quan_money'];    //抵扣券
-                                    if ($money<0) {
-                                        $money = 0;
-                                    }
-                                    $check_coupon = true;
-                                    break;
+                                $c_tag = $rs['coupon_tag'];
+                            }else{
+                                $c_tag = config('system_dirname')."-".$rs['id'];
+                            }
+                            $_array = fun('Coupon@get_list',$this->user['uid'],fun('shop@get_price',$rs,$rs['_car_']['type1']-1),$uid,$c_tag);
+                            if($_array[$cid]){
+                                $money -= $_array[$cid]['quan_money'];    //抵扣券
+                                if ($money<0) {
+                                    $money = 0;
                                 }
+                                $check_coupon = true;
+                                break;
                             }
                         }
                         if($check_coupon==false){
@@ -190,8 +193,12 @@ abstract class Order extends IndexBase
         $total_money = 0;   //需要支付给所有商家的总金额
         foreach ($listdb AS $uid=>$shop_array){
             $money = 0;
-            foreach ($shop_array AS $rs){   //某个商家的多个商品
+            foreach ($shop_array AS $key=>$rs){   //某个商家的多个商品
                 $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
+                if(!$rs['coupon_tag']){ //没有设置代金券标志的情况
+                    $rs['coupon_tag'] = config('system_dirname')."-".$rs['id'];
+                    $listdb[$uid][$key] = $rs;
+                }
             }
             $total_money += $money;
             $money_array[$uid] = $money;
