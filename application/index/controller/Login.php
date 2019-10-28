@@ -124,11 +124,11 @@ class Login extends IndexBase
      * 手机登录或注册
      */
     public function phone(){
-        $url = murl('member/index/index');
-        if($this->fromurl && !strstr($this->fromurl,'index/login')){
-            $url = $this->fromurl;
+        $url = iurl('index/index/index');
+        if($this->fromurl && !strstr($this->fromurl,'index/login') && !strstr($this->fromurl,'index/reg')){
+            $url = filtrate($this->fromurl);
         }
-        $this->assign('fromurl',$url);
+        $this->assign('fromurl',urlencode($url));
         return $this->fetch();
     }
     

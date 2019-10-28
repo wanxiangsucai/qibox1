@@ -7,15 +7,19 @@
     <script type="text/javascript">
 	function callpay()
 	{
-		var url = window.location.href+'&client_type=';
-		wx.miniProgram.getEnv(function(res) {
-			if(res.miniprogram==true){
-				url += 'wxapp';
-			}else{
-				url += 'mp';
-			}
-			window.location.href = url;
-		});
+		if (window.self != window.top){	//微信支付不能在框架中运行
+			window.top.location.href = window.location.href;
+		}else{
+			var url = window.location.href+'&client_type=';
+			wx.miniProgram.getEnv(function(res) {
+				if(res.miniprogram==true){
+					url += 'wxapp';
+				}else{
+					url += 'mp';
+				}
+				window.location.href = url;
+			});
+		}
 	}
 	</script>
 </head>

@@ -248,11 +248,22 @@ header ul ol{
 	<div class="OtherLogin">
 		<div class="h"><span>使用第三方一键注册登录</span></div>
 		<div class="c">
-			{if (!in_wxapp())}<a href="{:purl('login/qq/index')}"><i class="fa fa-fw fa-qq"></i></a>{/if}
-			{if (in_weixin()||in_wxapp())}<a href="{:purl('weixin/login/index')}" class="wx"><i class="fa fa-fw fa-weixin"></i></a>{/if}
+			<a href="#" onclick="qq_login()"><i class="fa fa-fw fa-qq"></i></a>
+			<a href="#" onclick="weixin_login()" class="wx"><i class="fa fa-fw fa-weixin"></i></a>
 		</div>
 	</div>
 </form>
+
+<script type="text/javascript">
+var qq_login_url = "{:purl('login/qq/index')}?fromurl={$fromurl}";
+var wx_login_url  = "{:purl('weixin/login/index')}?fromurl={$fromurl}";
+var ck_qqlogin_url = "{:purl('login/qq/app',[],'index')}?";
+var ck_wxlogin_url = "{:iurl('index/wxapp.login/web_login_check')}?";
+var jump_from_url = "{$fromurl}";
+</script>
+<script type="text/javascript" src="__STATIC__/js/login.js"></script>
+
+
 <script type="text/javascript">
 function get_code_num(type){
 	var to='';

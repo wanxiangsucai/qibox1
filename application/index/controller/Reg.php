@@ -178,6 +178,7 @@ class Reg extends IndexBase
                 $this->error('注册失败！');
             }
         }
+        $this->assign('fromurl',urlencode(iurl('index/index/index')) );
 		return $this->fetch();
     }
 }

@@ -35,7 +35,7 @@ $(function(){
 				}
 		});
 
-		$(document).on("keypress", "form", function(event) { 
+		$(document).on("keypress", "input", function(event) { 
 			return event.keyCode != 13;	//回车不能提交表单,请点击提交按钮!
 		});
 		

@@ -61,7 +61,7 @@ class Qq extends IndexBase
         if(!isset($array['nickname'])){
             $this->error_msg('出错了');
         }
-        $this->login_in($openid,$access_token,$type,$fromurl);
+        return $this->login_in($openid,$access_token,$type,$fromurl);
     }
     
     protected function login_in($openid='',$access_token='',$type='',$fromurl=''){
