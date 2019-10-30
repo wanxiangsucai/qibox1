@@ -199,6 +199,9 @@ class Msg extends MemberBase
                     return $this->err_js($array);
                 }
             }
+            if($data['ext_sys'] && !is_numeric($data['ext_sys'])){
+                $data['ext_sys'] = modules_config($data['ext_sys'])['id'];
+            }
             if ($data['uid']<0) {   //圈子群聊
                 $qun_id = abs($data['uid']);
                 $info = fun('qun@getByid',$qun_id);

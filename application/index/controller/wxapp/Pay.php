@@ -24,7 +24,7 @@ class Pay extends IndexBase
                 ||
                 ($this->webdb['wxapp_appid'] && $this->webdb['wxapp_appsecret'] && $this->webdb['wxapp_payid'] && $this->webdb['wxapp_paykey'])
                 ){
-                    if($this->user['weixin_api']=='' && $this->user['wxapp_api']==''){
+                    if($this->user['weixin_api']=='' && $this->user['wxapp_api']=='' && $this->user['wxopen_api']==''){
                         $this->err_js('你的当前帐号还没有绑定微信，不能使用微信支付');
                     }
         }else{
@@ -32,17 +32,23 @@ class Pay extends IndexBase
         }
    
         $numcode || $numcode = 'w'.date('ymdHis').rands(3);
-        $openId = $type=='wxapp' ? $this->user['wxapp_api'] :  $this->user['weixin_api'] ;
+        if($type=='wxapp'){
+            $openId = $this->user['wxapp_api'];
+        }elseif($type=='wxopen'){
+            $openId = $this->user['wxopen_api'];
+        }else{
+            $openId = $this->user['weixin_api'];
+        }
         $array = [
-                'title'=>$title?$title:'帐号充值',
-                'other'=>$other?$other:'test',
-                'numcode'=>'000'.$numcode,  //000避免出现订单重复的现象,跟公众号那里有冲突
-                'money'=>$money>0?$money:'0.01',
-                'wx_notify_url'=>$this->request->domain().url('pay/index',['banktype'=>'weixin','action'=>'back_notice','back_post'=>'wap','client_type'=>$type]),
-                'openId'=>$openId,
+            'title'=>$title?$title:'帐号充值',
+            'other'=>$other?$other:'test',
+            'numcode'=>$type=='wxapp'?'000'.$numcode:$numcode,  //000为的是多生成一个不重复的订单给小程序支付,同时避免出现订单重复的现象,跟公众号那里有冲突
+            'money'=>$money>0?$money:'0.01',
+            'wx_notify_url'=>$this->request->domain().url('pay/index',['banktype'=>'weixin','action'=>'back_notice','back_post'=>'wap','client_type'=>$type]),
+            'openId'=>$openId,
         ];
-        
-        if ( empty( PayModel::get([ 'numcode'=>$numcode, ]) )) {
+        $result = PayModel::get([ 'numcode'=>$numcode, ]);
+        if ( empty($result) ) {
             $data = [
                     'numcode'=>$numcode,
                     'money'=>$array['money'],
@@ -53,7 +59,8 @@ class Pay extends IndexBase
             ];
             PayModel::create($data);
         }else{
-            PayModel::where('numcode',$numcode)->update(['banktype'=>'weixin_app']);
+            PayModel::where('numcode',$numcode)->update(['banktype'=>$type]);
+            $array['money'] = $result['money'];
         }
         
         
@@ -63,8 +70,16 @@ class Pay extends IndexBase
             config('webdb.weixin_appid', config('webdb.wxapp_appid') );    //小程序的appid要跟支付接口绑定
             config('webdb.weixin_payid', config('webdb.wxapp_payid') );
             config('webdb.weixin_paykey', config('webdb.wxapp_paykey') );
-        }        
+        }elseif($type=='wxopen'){   //APP默认用公众号的支付接口
+            config('webdb.weixin_appid', config('webdb.wxopen_appid') );
+            //config('webdb.weixin_payid', config('webdb.wxapp_payid') );
+            //config('webdb.weixin_paykey', config('webdb.wxapp_paykey') );
+        }
         
-        return include(ROOT_PATH.'plugins/weixin/api/wxapp.php');
+        if($type=='wxopen'){    //app不能用JsApi方式支付
+            return include(ROOT_PATH.'plugins/weixin/api/wxopen.php');
+        }else{
+            return include(ROOT_PATH.'plugins/weixin/api/wxapp.php');
+        }        
     }
 }

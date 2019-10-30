@@ -375,6 +375,7 @@ loader.define(function(require,exports,module) {
 		});
 
 		format_nickname();	//设置圈子昵称
+		format_hack_data();  //处理各频道调用的数据
 		
 		//设置用户菜单
 		bui.actionsheet({
@@ -728,6 +729,32 @@ loader.define(function(require,exports,module) {
 				url:"/index.php/index/msg/index.html#/public/static/libs/bui/pages/chat/chat?uid="+uid,
 			});
 		}		
+	}
+
+
+		//格式化各频道的数据
+	function format_hack_data(){
+		router.$(".chat-panel .model-list").each(function(){
+			var type = $(this).data("type");
+			var imgurl = $(this).data("imgurl");
+			var id = $(this).data("id");			
+			if(imgurl!=""){
+				$(this).find(".model-more").css({"height":"60px"});				
+			}else{
+				$(this).find(".model-content").css({"margin-right":"2px"});
+			}
+			var url = "/index.php/" + type + "/content/show/id/" + id + ".html";
+			var title = $(this).find(".model-title").html().substring(0,14) + "...";
+			$(this).click(function(){
+				bui.load({ 
+					url: "/public/static/libs/bui/pages/frame/show.html",
+					param:{
+						url:url,
+						title:title,
+					}
+				});
+			});
+		});
 	}
 	
 	//获取所有成员信息

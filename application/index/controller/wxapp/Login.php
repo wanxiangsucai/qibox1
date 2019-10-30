@@ -7,6 +7,7 @@ use QCloud_WeApp_SDK\Auth\LoginService;
 use QCloud_WeApp_SDK\Constants as Constants;
 use QCloud_WeApp_SDK\Auth\AuthAPI;
 
+
 //小程序 用户登录与退出
 class Login extends IndexBase
 {
@@ -32,7 +33,7 @@ class Login extends IndexBase
                 return $this->err_js("当前用户不存在,请重新输入");
             }elseif($result==-1){
                 return $this->err_js("密码不正确,点击重新输入");
-            }else{
+            }elseif(is_array($result)){
                 $user = $result;
                 $token = md5( $user['uid'] . $user['password']  . time() );
                 cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
@@ -41,6 +42,8 @@ class Login extends IndexBase
                     'token'=>$token,
                 ];
                 return $this->ok_js($array,'登录成功');
+            }else{
+                return $this->err_js('未知错误!');
             }
         }else{
             return $this->err_js('提交方式有误!');
@@ -56,6 +59,59 @@ class Login extends IndexBase
         }else{
             return $this->err_js('未登录');
         }
+    }
+    
+    /**
+     * 微信开放平台移动应用APP登录
+     * @param string $code
+     */
+    public function wxopen($code=''){
+        if (empty($code)) {
+            return $this->err_js("code值不存在");
+        }
+        $string = file_get_contents('https://api.weixin.qq.com/sns/oauth2/access_token?appid='.$this->webdb['wxopen_appid'].'&secret='.$this->webdb['wxopen_appkey'].'&code='.$code.'&grant_type=authorization_code');
+        $array = json_decode($string,true);
+        if(empty($array['unionid'])){
+            return $this->err_js("unionid获取失败");
+        }elseif(empty($array['openid'])){
+            return $this->err_js("openid获取失败");
+        }
+        
+        $result = UserModel::where('unionid',$array['unionid'])->find();
+        if(empty($result)){ //新用户,自动注册帐号
+            $string2 = file_get_contents('https://api.weixin.qq.com/sns/userinfo?access_token='.$array['access_token'].'&openid='.$array['openid'].'&lang=zh_CN');
+            $data = json_decode($string2,true);
+            if(empty($data['openid'])){
+                return $this->err_js("用户资料获取失败");
+            }
+            $data['nickName'] = $data['nickname'];
+            $data['avatarUrl'] = $data['headimgurl'];
+            $user = UserModel::api_reg($array['openid'],$data);
+            if(is_array($user) && $user['uid']>0){
+                UserModel::edit_user([
+                    'uid'=>$user['uid'],
+                    'wxapp_api'=>'',
+                    'wxopen_api'=>$array['openid'],
+                    'sex'=>intval($data['sex']),
+                ]);                
+            }else{
+                return $this->err_js('注册失败:'.$user);
+            }
+        }elseif(empty($result['wxopen_api'])){
+            UserModel::edit_user([
+                'uid'=>$result['uid'],
+                'wxopen_api'=>$array['openid'],
+            ]);            
+        }
+        $result = UserModel::login($array['unionid'],'',3600*24,true,'unionid');
+        $user = $result;
+        $token = md5( $user['uid'] . $user['password']  . time() );
+        cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
+        $array = [
+            'uid'=>$result['uid'],
+            'token'=>$token,
+        ];
+        return $this->ok_js($array,'登录成功');
     }
     
     /**
@@ -98,7 +154,7 @@ class Login extends IndexBase
         }
         if(empty($user)){
             $user = UserModel::api_reg($openid,$info);
-            if(empty($user['uid'])){
+            if(!is_array($user)||$user['uid']<1){
                 return $this->err_js('注册失败:'.$user);
             }
         }

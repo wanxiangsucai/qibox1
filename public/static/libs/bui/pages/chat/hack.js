@@ -36,6 +36,17 @@ loader.define(function() {
 					router.$(".chatbar").show();
 				});
 			},500);
+		});
+
+		router.$(".more_hack .model-hack").click(function(){
+			bui.load({ 
+				url: "/public/static/libs/bui/pages/hack/index.html",
+				param:{
+					type:$(this).data("type"),
+					uid:uid,
+				}
+			});
+			router.$(".hack_wrap").hide();
 		})
 		
 		console.log("碎片加载成功");

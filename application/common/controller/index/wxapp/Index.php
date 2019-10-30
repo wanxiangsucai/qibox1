@@ -8,7 +8,7 @@ use app\common\traits\ModuleContent;
 //小程序或APP调用的列表数据
 abstract class Index extends IndexBase
 {
-    use ModuleContent;
+    //use ModuleContent;
     protected $model;                  //内容
     protected $mid;                      //模型ID
     
@@ -56,7 +56,9 @@ abstract class Index extends IndexBase
         $array = getArray( $this->model->getListByMid($mid,$map,$order,$rows) );
         foreach($array['data'] AS $key => $rs){
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
-            unset($rs['_content'],$rs['content'],$rs['sncode']);
+            $rs['picurl'] = tempdir($rs['picurl']);
+            $rs['content'] = get_word(del_html($rs['content']), 100);
+            unset($rs['_content'],$rs['sncode']);
             $array['data'][$key] = $rs;
         }
         
@@ -74,15 +76,24 @@ abstract class Index extends IndexBase
         if (empty($uid)) {
             $uid = $this->user['uid'];
         }
+        if (empty($uid)) {
+            return $this->err_js('UID不存在');
+        }
         $map=[
-                'uid'=>$uid,
+            'uid'=>$uid,
         ];
         if ($mid){
             $map['mid'] = $mid;
         }
         $array = getArray( $this->model->getAll($map,"id desc",$rows,$pages=[],$format=FALSE) );
         foreach ($array['data'] AS $key=>$rs){
-            unset($rs['_content'],$rs['content'],$rs['sncode']);
+            $rs['picurl'] = tempdir($rs['picurl']);
+            if(config('system_dirname')=='bbs'){
+                $rs['content'] = fun("bbs@getContents",$rs['id'],100);
+            }else{
+                $rs['content'] = get_word(del_html($rs['content']), 100);
+            }            
+            unset($rs['_content'],$rs['full_content'],$rs['sncode']);
             $array['data'][$key] = $rs;
         }
         return $this->ok_js($array);
@@ -97,6 +108,10 @@ abstract class Index extends IndexBase
         $map['ispic'] = 1;
         $rows = 4;
         $array = getArray( $this->model->getListByMid(1,$map,'id desc',$rows) );
+        foreach($array['data'] AS $key=>$rs){
+            unset($rs['content'],$rs['full_content'],$rs['sncode']);
+            $array['data'][$key] = $rs;
+        }
         return $this->ok_js($array['data']);
     }
 }

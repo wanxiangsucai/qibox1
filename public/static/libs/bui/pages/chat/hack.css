@@ -1,0 +1,60 @@
+#hack_wrap{	
+	padding:2px;
+	width:100%;
+	height:50px;
+}
+.more_hack{
+	border-top:1px solid #eee;
+	padding:5px;
+	background:#fefefe;
+}
+.more_hack .bmenu{
+	width:100%;
+	height:50px;
+}
+.more_hack div{	
+	font-size:12px;
+	float:left;
+	margin-left:8px;
+	margin-right:8px;
+	color:#999;
+}
+.more_hack .voicemenu{
+	display:none;
+}
+.more_hack .voicemenu div{
+	border:1px solid #eee;
+	background:#f8f8f8;
+	border-radius:5px;
+	padding:5px;
+}
+.more_hack .voicemenu #voiceBtn{
+	padding: 6px 80px 6px 80px;
+	font-size:16px;
+}
+.more_hack i{
+	font-size:20px;	
+}
+.more_hack .fa-volume-up{
+	font-size:22px;	
+}
+.re_cord{
+	color:#fff !important;
+	background:orange !important;
+}
+.more_hack #choose_voice_btn{
+	/*margin-top:1px;*/
+}
+
+.more_hack div{
+	margin-top:6px;
+}
+.more_hack #choose_coupon_btn{
+	margin-top:10px;
+}
+.more_hack #choose_booking_btn{
+	margin-top:8px;
+}
+.more_hack #choose_coupon_btn i{
+	font-size:18px;
+}

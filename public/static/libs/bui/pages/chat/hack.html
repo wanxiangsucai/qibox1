@@ -1,54 +1,13 @@
-<style type="text/css">
-#hack_wrap{
-	background:#fff;
-	padding:2px;
-	width:100%;
-	height:50px;
-}
-.more_hack{
-	border-top:1px solid #eee;
-	padding:5px;
-}
-.more_hack .bmenu{
-	width:100%;
-	height:50px;
-}
-.more_hack div{	
-	font-size:12px;
-	float:left;
-	margin-left:8px;
-	margin-right:8px;
-	color:#999;
-}
-.more_hack .voicemenu{
-	display:none;
-}
-.more_hack .voicemenu div{
-	border:1px solid #eee;
-	background:#f8f8f8;
-	border-radius:5px;
-	padding:5px;
-}
-.more_hack .voicemenu #voiceBtn{
-	padding: 6px 80px 6px 80px;
-	font-size:16px;
-}
-.more_hack i{
-	font-size:20px;	
-}
-.more_hack .fa-volume-up{
-	font-size:22px;	
-}
-.re_cord{
-	color:#fff !important;
-	background:orange !important;
-}
-</style>
+<link rel="stylesheet" href="/public/static/libs/bui/pages/chat/hack.css" />
 <div class="more_hack">
 	<ul class="bmenu">
-	<div id="photoBtn"><i class="fa fa-photo"></i><br>图片</div>
-	<div id="hongbaoBtn"><i class="si si-present"></i><br>红包</div>
-	<div id="choose_voice_btn"><i class="fa fa-volume-up"></i><br>语音</div>
+		<div id="photoBtn"><i class="fa fa-photo"></i><br>图片</div>
+		<div id="hongbaoBtn"><i class="si si-present"></i><br>红包</div>
+		<div id="choose_voice_btn"><i class="fa fa-volume-up"></i><br>语音</div>
+		<div id="choose_coupon_btn" class="model-hack" data-type="coupon"><i class="fa fa-cc-discover"></i><br>优惠</div>
+		<div id="choose_shop_btn" class="model-hack" data-type="shop"><i class="glyphicon glyphicon-shopping-cart"></i><br>商城</div>
+		<div id="choose_booking_btn" class="model-hack" data-type="booking"><i class="fa fa-recycle"></i><br>拼团</div>
+		<div id="choose_bbs_btn" class="model-hack" data-type="bbs"><i class="fa fa-comment-o"></i><br>贴子</div>
 	</ul>
 	<ul class="voicemenu">
 		<div id="change_word_btn"><i class="fa fa-list"></i></div>

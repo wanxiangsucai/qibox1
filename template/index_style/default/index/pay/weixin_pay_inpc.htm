@@ -32,6 +32,11 @@
 	 
 </div>
 <script type="text/javascript">
+{if in_wap()}
+	if (window.self != window.top){	//不能在框架中运行apicloud
+		window.top.location.href = window.location.href;
+	}
+{/if}
 function countSecond(){　
 	$.get("{:urls('/index/pay/index')}?banktype=weixin&action=checkpay&numcode={$numcode}&"+Math.random(), function(result){
 		if(result.code==0){
@@ -55,16 +60,107 @@ $(function(){
 		if(typeof(api)=='object'){	//在仿原生APP里
 			pay_in_pc = false;
 			$(".PostBox").hide();
-			api.execScript({
-				//frameName: 'iframe',
-				name:"main",
-				script: "app_weixin_pay('{:get_url('location')}&client_type=wxapp&in_app=1')"
-			 });
+			if("{:config('webdb.wxopen_appkey')}"!=""){	//APP原生支付
+				wxopen_get_cfg();
+			}else{	//APP借助小程序实现支付
+				xcx_pay("{:get_url('location')}&client_type=wxapp&in_app=1");
+				/*
+				api.execScript({					
+					name:"main", //frameName: 'iframe',
+					script: "app_weixin_pay('{:get_url('location')}&client_type=wxapp&in_app=1')"
+				 });
+				 */
+			}
 		}
 	},500)
 });
 
+function xcx_pay(url){
+	var wxPlus = api.require('wxPlus');
+		wxPlus.launchMiniProgram({
+			apiKey: '',
+			miniProgramType: 'release',
+			userName: "{$webdb['P__h5app']['wxapp_ghid']}",
+			path: "pages/wap/iframe/index?url="+encodeURIComponent(url),
+		}, function(ret, err) {	//alert( JSON.stringify(ret) );
+			var url = ret.extMsg;
+			layer.msg("支付结束");
+			//支付结束,给其它窗口的回调
+			api.execScript({
+				name:"main", //frameName: 'iframe',
+				script: "Qibo.app_pay_end('"+url.substring(url.indexOf('ispay=')+6)+"')"
+			});
+			setTimeout(function(){								
+				window.location.href = url;
+			},500);
+		});
+}
 
+
+//APP微信原生支付
+function wxopen_get_cfg(){
+	layer.msg("请稍候,正在拉取支付参数...");
+	$.post("{:iurl('index/wxapp.pay/index')}?type=wxopen",{
+				money:'{$money}',
+				numcode:'{$numcode}',
+				title:'{$title}',
+				callback_class:'',
+			}, function(res){
+				if (res.code==0) {
+					//alert(res.data.prepayid);
+					layer.msg("请稍候,正在拉起微信支付...");
+					wxopen_pay(res.data.appid,res.data.prepayid,res.data.partnerid,res.data.noncestr,res.data.timestamp,res.data.sign);
+					//api.alert({ msg: JSON.stringify(res) });
+				} else {
+					layer.alert(res.msg);
+				}
+			});
+}
+//APP微信原生支付
+function wxopen_pay(apiKey,orderId,mchId,nonceStr,timeStamp,sign){
+	var wxPayPlus = api.require('wxPayPlus');
+	wxPayPlus.payOrder({
+		apiKey: apiKey,
+		orderId: orderId,
+		mchId: mchId,
+		nonceStr: nonceStr,
+		timeStamp: timeStamp,
+		package: 'Sign=WXPay',
+		sign: sign,
+	}, function(ret, err) {
+		if (ret.status) {
+			//支付成功
+			//api.alert({ msg: JSON.stringify(ret) });
+			layer.msg("支付成功");
+
+			//支付结束,给其它窗口的回调
+			api.execScript({
+				name:"main", //frameName: 'iframe',
+				script: "Qibo.app_pay_end('ok')"
+			});
+
+			setTimeout(function(){
+				window.location.href="{$return_url}";
+			},500);
+		} else {
+			//alert(err.code);
+			if(err.code==-2){
+
+				//支付结束,给其它窗口的回调
+				api.execScript({
+					name:"main", //frameName: 'iframe',
+					script: "Qibo.app_pay_end('0')"
+				});
+
+				layer.alert("你放弃了支付,或支付失败",{ icon: 1, closeBtn: 0 },function (index) {	 	
+					window.location.href="{:get_url('member')}";
+				 });
+			}else{
+				layer.alert('可能参数有误,支付故障!');
+			}			
+		}
+	});
+}
 
 </script>
 </body>

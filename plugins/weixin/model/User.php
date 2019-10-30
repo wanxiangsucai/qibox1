@@ -75,6 +75,7 @@ class User extends UserModel
         $email = rands(20).'@123.cn';
         
         $array = array(
+                'unionid'=>$data['unionid']?filtrate($data['unionid']):'',
                 'username'=>$username,
                 'nickname'=>$nickname,
                 'password'=>$password,

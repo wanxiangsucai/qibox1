@@ -50,6 +50,7 @@ class Wxapp extends UserModel
         $bday = $data['year']?$data['year'].'-00-00':'';
         
         $array = array(
+                'unionid'=>$data['unionid']?filtrate($data['unionid']):'',
                 'username'=>$username,
                 'nickname'=>$nickname,
                 'password'=>$password,

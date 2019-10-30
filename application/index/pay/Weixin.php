@@ -54,6 +54,7 @@ class Weixin extends Pay{
         $this->assign('numcode',$array['numcode']);
         $this->assign('return_url',$return_url);
         $this->assign('money',$array['money']);
+        $this->assign('title',$array['title']);
         return $this->fetch('weixin_pay_inpc');
     }
     

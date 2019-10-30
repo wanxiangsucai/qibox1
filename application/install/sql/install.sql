@@ -1633,3 +1633,10 @@ CREATE TABLE IF NOT EXISTS `qb_shorturl` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='短网址' AUTO_INCREMENT=1 ;
 
 
+ALTER TABLE  `qb_memberdata` ADD  `unionid` VARCHAR( 32 ) NOT NULL COMMENT  '微信开放平台统一登录ID' AFTER  `nickname` ;
+ALTER TABLE  `qb_memberdata` ADD INDEX (  `unionid` ) COMMENT  '';
+ALTER TABLE  `qb_memberdata` ADD  `wxopen_api` VARCHAR( 32 ) NOT NULL COMMENT  '微信开放平台移动应用登录openid' AFTER  `wxapp_api` ;
+
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '微信开放平台移动应用AppID', 'wxopen_appid', '', 'text', '', 1, '', '如果需要申请并愿意付费认证,请点击 <a href="https://open.weixin.qq.com/" target="_target">付费申请</a>，未付费认证的话，就留空。', -2, '-2');
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '微信开放平台移动应用AppSecret', 'wxopen_appkey', '', 'text', '', 1, '', '没有付费认证的话,就不要填', -2, '-2');

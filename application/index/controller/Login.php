@@ -101,12 +101,14 @@ class Login extends IndexBase
                 $this->error("当前用户不存在,请重新输入");
             }elseif($result==-1){
                 $this->error("密码不正确,点击重新输入");
-            }else{
+            }elseif(is_array($result)){
                 if($type=='iframe'){
                     return $this->fetch('ok');
                 }
                 $jump = $fromurl ? urldecode($fromurl) : iurl('index/index/index');
                 $this->success('登录成功',$jump);
+            }else{
+                $this->error("未知错误");
             }
         }
         if($type=='iframe'){

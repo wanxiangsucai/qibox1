@@ -39,6 +39,7 @@ class Login extends IndexBase
             $array = json_decode($string,true);
             
             $openid = $array['openid'];
+            $unionid = $array['unionid'];
             if(!$openid){
                 if($string == ''){
                     $this->error('获取微信接口内容失败，请确认你的服务器已打开 extension=php_openssl.dll ');
@@ -47,6 +48,9 @@ class Login extends IndexBase
             }
             
             $rs = UserModel::get_info(['weixin_api'=>$openid]);
+            if (empty($rs) && $unionid) {
+                $rs = UserModel::get_info(['unionid'=>$unionid]);
+            }
             
             if($type=='bind'){  //绑定帐号
                 
@@ -81,6 +85,16 @@ class Login extends IndexBase
                             'uid'=>$rs['uid'],
                             'username'=>'xx-'.$rs['uid'],
                     ]);
+                }elseif( $unionid && empty($rs['unionid']) ){
+                    UserModel::edit_user([
+                        'uid'=>$rs['uid'],
+                        'unionid'=>$unionid,
+                    ]);
+                }elseif( $openid && empty($rs['weixin_api']) ){
+                    UserModel::edit_user([
+                        'uid'=>$rs['uid'],
+                        'weixin_api'=>$openid,
+                    ]);
                 }
                 
                 UserModel::login($rs['username'], '', 3600*24*30,true);
@@ -108,7 +122,14 @@ class Login extends IndexBase
             set_cookie('From_url',input('get.fromurl'));
             //跳转到微信服务器再返回来，将会得到一个有效的code值。
             $url = urlencode($this->weburl);
-            header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope=snsapi_base&state=1#wechat_redirect');
+            if($this->webdb['wxopen_appid'] && $this->webdb['wxopen_appkey']){
+                $type = "snsapi_userinfo";
+            }else{
+                $type = "snsapi_base";
+            }
+            //snsapi_base方式无法获取unionid
+            //header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope=snsapi_base&state=1#wechat_redirect');
+            header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope='.$type.'&state=1#wechat_redirect');
             exit;
         }
         

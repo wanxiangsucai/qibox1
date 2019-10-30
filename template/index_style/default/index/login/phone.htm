@@ -255,13 +255,17 @@ header ul ol{
 </form>
 
 <script type="text/javascript">
+//做风格的时候,这里的代码可以直接复制即可
 var qq_login_url = "{:purl('login/qq/index')}?fromurl={$fromurl}";
 var wx_login_url  = "{:purl('weixin/login/index')}?fromurl={$fromurl}";
 var ck_qqlogin_url = "{:purl('login/qq/app',[],'index')}?";
 var ck_wxlogin_url = "{:iurl('index/wxapp.login/web_login_check')}?";
 var jump_from_url = "{$fromurl}";
+var app_login_type = "{$webdb.weixin_paykey?2:1}";
+var app_login_url = "{:iurl('index/wxapp.login/wxopen')}";
+var xcx_gh_id = "{$webdb['P__h5app']['wxapp_ghid']}";
 </script>
-<script type="text/javascript" src="__STATIC__/js/login.js"></script>
+<script type="text/javascript" src="__STATIC__/js/login.js?s"></script>
 
 
 <script type="text/javascript">

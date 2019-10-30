@@ -81,9 +81,11 @@ class Index extends AdminBase
             }elseif($result==-1){
                 LoginLog::login($data['username'], $data['password']);
                 $this->error("密码不正确,点击重新输入");
-            }else{
+            }elseif(is_array($result)){
                 LoginLog::login($data['username'],md5($data['password'] . get_ip()));
                 $this->success('登录成功','index');
+            }else{
+                $this->error("未知错误");
             }
         }
 		if(SUPER_ADMIN===true){
