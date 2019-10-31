@@ -139,7 +139,7 @@ jQuery(document).ready(function() {
         // 文件上传成功
         uploader.on( 'uploadSuccess', function( file, response ) {
             var f_li = $( '#'+file.id );
-            if (response.code) {
+            if (response.code==0) {
                 if (f_multiple) {
                     if (f_input_file.val()) {
                         f_input_file.val(f_input_file.val() + ',' + response.id);

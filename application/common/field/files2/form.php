@@ -187,7 +187,7 @@ jQuery(document).ready(function() {
         // 文件上传成功
         uploader.on( 'uploadSuccess', function( file, response ) {
             var f_li = $( '#'+file.id );
-            if (response.code) {
+            if (response.code==0) {
                 if (f_multiple) {
 					//file_array.push({'url':response.id,'title':f_li.find('.f_title').val()});
 					//f_input_file.val( JSON.stringify(file_array) );
