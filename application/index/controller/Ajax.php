@@ -39,14 +39,15 @@ class Ajax extends IndexBase
                 $file_path = $file_exists['path'];
             }
             return json([
-                    'code'   => 0,
+                    'code'   => 1,
                     'info'   => '上传成功',
                     'class'  => 'success',
                     'id'     => $file_exists['path'],//$file_exists['id'],
                     'path'   => $file_path
             ]);
         } else {
-            $this->error('文件不存在');
+            //$this->error('文件不存在');
+            return $this->err_js('文件不存在!',[],0);   //这里要用0是因为Attachment.php中的成功返回代码还是1,暂时还没有批量处理
         }
     }
     
@@ -65,7 +66,7 @@ class Ajax extends IndexBase
                 return $this->ok_js($token);
             }            
         }else{
-            return $this->err_js('无效访问!');   
+            return $this->err_js('无效访问!');
         }        
     }
     

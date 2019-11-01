@@ -46,7 +46,7 @@ jQuery(document).ready(function() {
                         timeout: 10000, // 超时的话，只能认为该文件不曾上传过
                         dataType: "json"
                     }).then(function(res, textStatus, jqXHR){
-                        if(res.code==0){
+                        if(res.code==1){	//这里还没有统一改成0,晚点会全部统一改成0
                             // 已上传，触发上传完成事件，实现秒传
                             deferred.reject();
                             curr_uploader.trigger('uploadSuccess', file, res);
@@ -139,7 +139,7 @@ jQuery(document).ready(function() {
         // 文件上传成功
         uploader.on( 'uploadSuccess', function( file, response ) {
             var f_li = $( '#'+file.id );
-            if (response.code==0) {
+            if (response.code==1) {	//暂时还没改为0,后续会改为0
                 if (f_multiple) {
                     if (f_input_file.val()) {
                         f_input_file.val(f_input_file.val() + ',' + response.id);
