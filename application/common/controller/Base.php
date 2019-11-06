@@ -89,6 +89,8 @@ class Base extends Controller
         if (!empty($template)) {
             config('dispatch_success_tmpl',$template);
         }
+        header("Access-Control-Allow-Origin:*");
+        header("Access-Control-Allow-Methods:GET,POST");
         parent::success($msg, $url, $data, $wait, $header);
     }
     
@@ -127,6 +129,8 @@ class Base extends Controller
         }
         $this->assign('userdb', $this->user);
         $this->assign('webdb', $this->webdb);
+        header("Access-Control-Allow-Origin:*");
+        header("Access-Control-Allow-Methods:GET,POST");
         parent::error($msg, $url, $data, $wait, $header);
     }
     

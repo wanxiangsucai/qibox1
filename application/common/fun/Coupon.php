@@ -44,6 +44,12 @@ class Coupon{
             $map['coupon_tag'] = $tag;
         }
         $listdb = Db::name('coupon_order')->where($map)->order('quan_money','asc')->column(true);
+        foreach ($listdb AS $key=>$rs){
+            if($rs['quan_money']>$rs['min_money']){
+                $rs['quan_money'] = $rs['min_money']; //券的值不能大于本次消费金额
+                $listdb[$key] = $rs;
+            }
+        }
         return $listdb;
     }
     

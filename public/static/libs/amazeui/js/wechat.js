@@ -442,16 +442,16 @@ $(function(){
 			showMore_User();
 		}
 
-		setInterval(function() {
-			if(user_scroll==true)showMore_User();	//定时把他们全加载出来,方便做搜索使用.其实上面的滚动可删除了
-		}, 4000);
+		//setInterval(function() {
+		//	if(user_scroll==true)showMore_User();	//定时把他们全加载出来,方便做搜索使用.其实上面的滚动可删除了
+		//}, 4000);
 
 		if(maxid>=0)check_new_showmsg();
 
-		if(num%3==0)check_list_new_msgnum();
+		if(num%5==0)check_list_new_msgnum();
 		
 
-	}, 1000);
+	}, 1500);
 
 
 	$(".friends_list li > p").click(function(){

@@ -302,7 +302,7 @@ function check_num(objs){
 			objs.removeClass('error');
 			if(res.data.type=='login'){
 				layer.msg('登录成功,欢迎' + res.data.username + '您回来');
-				window.location.href = "{$fromurl}";
+				window.location.href = "{:urldecode($fromurl)}";
 			}else if(res.data.type=='reg'){  //提示注册一个新帐号
 				$(".check_btn").hide();
 				layer.alert('验证成功,请为新帐号设置一个登录名');

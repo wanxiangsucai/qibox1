@@ -177,12 +177,14 @@ class Login extends IndexBase
             cache('phone_login'.$num,null);
             $result = UserModel::login($phone_num,'',3600*24*7,true,'mobphone');
             if (is_array($result)) {
-                return $this->ok_js(
-                        [
-                                'type'=>'login',
-                                'uid'=>$result['uid'],
-                                'username'=>$result['username'],
-                        ],'登录成功');
+                $token = md5( $result['uid'] . $result['lastip']  . $result['lastvist'] );
+                cache($token,"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",60);
+                return $this->ok_js([
+                    'token'=>$token,
+                    'type'=>'login',
+                    'uid'=>$result['uid'],
+                    'username'=>$result['username'],
+                    ],'登录成功');
             }else{
                 return $this->err_js('系统故障,登录失败!');
             }
@@ -260,7 +262,9 @@ class Login extends IndexBase
                 if($data['fromurl'] && !strstr($data['fromurl'],'index/login')){
                     $url = $data['fromurl'];
                 }
-                $this->success('注册成功',$url);
+                $token = md5( $result['uid'] . $result['lastip']  . $result['lastvist'] );
+                cache($token,"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",60);
+                $this->success('注册成功',$url,$token);
             }else{
                 $this->error('注册失败！');
             }
