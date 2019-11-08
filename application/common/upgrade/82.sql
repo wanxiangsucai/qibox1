@@ -1,0 +1,1 @@
+UPDATE `qb_config` SET `c_value`='.rar .txt .jpg .jpeg .gif .bmp .png .zip .mp3 .wma .wmv .mpeg .mpg .rm .ram .doc .swf .avi .flv .sql .docx .ppt .xls .chm .pdf .mp4 .pem .psd .7z .mov' WHERE `c_key`='upfileType';

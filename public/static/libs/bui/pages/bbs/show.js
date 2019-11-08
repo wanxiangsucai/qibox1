@@ -54,8 +54,8 @@ loader.define(function(require,exports,module) {
 				},
 				methods: {
 					set_data:function(o){
-						if(o.mvurl!=''){
-							o.full_content += `<br><video src="${o.mvurl}" controls="controls" style="width:100%;" class="video_player">您的浏览器不支持播放该视频！</video>`;
+						if(o.mvurl){
+							o.content += `<br><video src="${o.mvurl}" controls="controls" style="width:100%;" class="video_player">您的浏览器不支持播放该视频！</video>`;
 						}						
 						this.info = Object.assign({}, this.info, o);
 					},
