@@ -583,7 +583,7 @@ class LabelShow extends IndexBase
     protected function get_form_field($info=[],$mid=0,$field='',$mod='',$f_array=[]){
         $filtrate_field = explode(',',$field);  //过滤的字段
         if(is_array($f_array)&&!empty($f_array)){
-            $array = \app\common\field\Format::form_fields($f_array);  //把程序中定义的表单字段 转成跟数据库取出的格式一样
+            $array = isset($f_array[0][0])?\app\common\field\Format::form_fields($f_array):$f_array;  //把程序中定义的表单字段 转成跟数据库取出的格式一样
         }else{
             $array = get_field($mid,$mod);
         }
