@@ -67,8 +67,8 @@ class Order extends AdminBase
         $array = [
                 ['order_sn', '订单号', 'text'],
                 ['pay_status', '支付与否', 'switch'],
-                ['shipping_status', '发货与否', 'yesno'],
-                ['receive_status', '签收与否', 'yesno'],
+                ['shipping_status', '发货与否', 'switch'],
+                ['receive_status', '签收与否', 'switch'],
                 ['totalmoney', '订单总额', 'text'],
                 ['uid', '用户帐号', 'username'],
                 ['create_time', '下单日期', 'text'],

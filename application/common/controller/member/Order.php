@@ -52,7 +52,7 @@ abstract class Order extends MemberBase
      */
     public function receive($id=0){
         $info = $this->model->getInfo($id);
-        if ($info['uid']!=$this->user['uid']) {
+        if ($info['uid']!=$this->user['uid'] && $info['shop_uid']!=$this->user['uid']) {
             $this->error('你没权限');
         }
         $result = $this->model->update([
