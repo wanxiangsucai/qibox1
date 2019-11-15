@@ -11,7 +11,7 @@ class Index extends IndexBase{
         if (empty($this->user)) {
             $this->user = [];
         }else{
-            unset($this->user['password'],$this->user['password_rand'],$this->user['qq_api'],$this->user['weixin_api'],$this->user['wxapp_api'],$this->user['config'],$this->user['rmb_pwd']);
+            unset($this->user['password'],$this->user['password_rand'],$this->user['qq_api'],$this->user['weixin_api'],$this->user['wxapp_api'],$this->user['unionid'],$this->user['config'],$this->user['rmb_pwd']);
         }
         $array = [
             'user'=>$this->user,

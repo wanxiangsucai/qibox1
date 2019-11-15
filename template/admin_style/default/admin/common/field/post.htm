@@ -85,6 +85,16 @@
         (一般为空,如多选框多个的话,用<font color="#FF0000">,</font>逗号隔开) </td>
       <td class='tdR'> 
         <textarea name="value" cols="50" rows="1">{$info.value}</textarea>
+<select name="select" onchange="choose_default(this.options[this.selectedIndex].value)">
+<option value="">同步用户常用字段</option>
+<option value="username">用户帐号</option>
+<option value="nickname">用户昵称</option>
+<option value="truename">用户真实姓名</option>
+<option value="uid">用户UID</option>
+<option value="email">用户邮箱</option>
+<option value="address">用户地址</option>
+<option value="mobphone">手机号</option>
+</select>
       </td>
     </tr>
 
@@ -400,5 +410,34 @@ function form_choose(t){
 	is_rangeopt();
 }
 form_choose('{$info.type}');
+
+
+
+function choose_default(v){	
+	$(window).scrollTop(2000,200);
+	if(v==""){
+		$("textarea[name=script]").val("");
+		return ;
+	}
+	var name = $("input[name='name']").val()
+	var str = `
+			<script type="text/javascript">
+				$(function(){
+					var obj = $("#atc_${name}");
+					if(obj.val()==""){
+						$.get("/index.php/index/wxapp.index/base.html",function(res){
+							if(res.code==0){
+								var v = res.data.user.${v}; //可以把${v}换成其它用户表的字段名
+								if(typeof(v)!='undefined'){
+									obj.val(v);
+								}
+							}
+						});
+					}	
+				})
+			</script>`;
+	$("textarea[name=script]").val(str);
+}
+
 //-->
 </SCRIPT>
