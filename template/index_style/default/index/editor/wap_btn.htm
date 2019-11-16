@@ -48,6 +48,18 @@ function add_other_mv(){
 				 v_summernote.summernote('insertText',str);
 			});
 }
+
+function add_topic(){
+	layer.open({
+		type:2,
+		title: "请选择要插入的数据",
+		area: ['90%', '80%'],
+		content: "/index.php/index/msg/index.html#/public/static/libs/bui/pages/hack/index?type=bbs&uid=0",
+    });
+}
+function insert_topic(content){
+	v_summernote.summernote('insertText',content);
+}
 </script>
 
 <style type="text/css">

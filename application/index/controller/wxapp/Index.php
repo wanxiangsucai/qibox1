@@ -20,4 +20,19 @@ class Index extends IndexBase{
         ];
         return $this->ok_js($array);
     }
+    
+    /**
+     * 获取包含主题的模块
+     * @return void|unknown|\think\response\Json
+     */
+    public function topic_mod(){
+        $array = modules_config();
+        $data = [];
+        foreach ($array AS $rs){
+            if( is_file(APP_PATH.$rs['keywords'].'/model/Content.php')&&!in_array($rs['keywords'],['exam']) ){
+                $data[] = $rs;
+            }
+        }
+        return $this->ok_js($data);
+    }
 }

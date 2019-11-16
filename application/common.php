@@ -2638,6 +2638,7 @@ if (!function_exists('getTemplate')) {
          $content = preg_replace("/\[paymoney=([\d]+)\](.*?)\[\/paymoney]/is",'',$content); //过滤掉积分购买的内容
 		 $content = preg_replace("/\[qun\](.*?)\[\/qun]/is",'',$content);   //过滤掉仅圈内成员可见的内容
 		 $content = preg_replace("/\[iframe_mv\](.*?)\[\/iframe_mv]/is",'',$content);   //过滤掉站外视频
+		 $content = preg_replace("/\[topic ([^\]]+)\](.*?)\[\/topic]/is",'\\2',$content); 
          return $content;
      }
  }

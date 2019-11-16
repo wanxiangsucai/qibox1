@@ -5,7 +5,8 @@
 }
 </style>
 <div class="bui-page">
-    <header id="tab-home-header" class="bui-bar">
+    <header  class="bui-bar">
+	 
        <div class="bui-bar-left">
             <a class="bui-btn btn-back"><i class="icon-back"></i></a>
         </div>
@@ -20,24 +21,18 @@
                 </div>                 
             </div>
         </div>
+	 	
     </header>
-    <main>
-        <div class="bui-scroll">
-            <div class="bui-scroll-head"></div>
-            <div class="bui-scroll-main">
-                <div class="bui-searchbar">
-                    <div class="search"><i class="icon-search"></i>搜索</div>
-                </div>
-                <div class="bui-tab">
-                    <div class="bui-tab-main">
-                        <ul>
-                            <li> 
-                                <ul class="bui-listview message-list list-hack"></ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <main><!--
+		<div class="bui-searchbar">
+           <div class="search"><i class="icon-search"></i>搜索</div>
+        </div>-->
+		<div class="bui-navbar" id="choose_mod">
+			<ul class="bui-nav">
+				<li class="bui-btn active">论坛</li>
+				<li class="bui-btn" >CMS</li>
+			</ul>
+		</div>        
+		<ul class="bui-listview message-list list-hack"></ul>
     </main>
 </div>

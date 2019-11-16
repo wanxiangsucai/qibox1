@@ -4,6 +4,9 @@ loader.define(function(require,exports,module) {
 	var pageview = {};      // 页面的模块, 包含( init,bind )
 	var type = 'bbs';
 	var uid = 0;
+	var mod_array = {};
+	var page = 1;
+	var scroll_get = true;
 	
     /**
      * [init 页面初始化]
@@ -11,22 +14,93 @@ loader.define(function(require,exports,module) {
      */
     pageview.init = function () {
 		get_list_data();
+		get_mod();
+
+		var that = router.$("#choose_mod");
+		that.parent().scroll(function () {
+			
+			var h = $(".bui-listview").height()-that.parent().height()-that.parent().scrollTop();
+			if( h<300 && scroll_get==true){
+				scroll_get = false;
+				//console.log(h);
+				get_list_data();
+			}
+		});
     }
+
+	function get_mod(){
+		var url = "/index.php/index/wxapp.index/topic_mod.html";
+		$.get(url,function(res){
+			if(res.code==0){
+				var str = '';
+				res.data.forEach((rs)=>{
+					mod_array[rs.keywords] = rs;
+					var ck = rs.keywords == type?"active":"";
+					str += `<li class="bui-btn ${ck}" data-type="${rs.keywords}">${rs.name}</li>`;
+				});
+				router.$("#choose_mod .bui-nav").html(str);
+			}
+			router.$("#choose_mod .bui-nav li").click(function(){
+				router.$("#choose_mod .bui-nav li").removeClass("active");
+				$(this).addClass("active");
+				type = $(this).data("type");
+				page = 1;
+				router.$(".bui-bar-main").html(mod_array[type].name);
+				get_list_data();
+			});
+			router.$(".bui-bar-main").html(mod_array[type].name);
+		});
+	}
 
 
 	//获取相应的频道数据列表
 	function get_list_data(){
-		var url = "/index.php/"+type+"/wxapp.index/listbyuid.html?rows=30";
+		layer.msg("加载中,请稍候...");
+		var url = "/index.php/"+type+"/wxapp.index/listbyuid.html?page="+page+"&rows=20";
 		$.get(url,function(res){
+			layer.closeAll();
 			if(res.code==0){
-				if(res.data.length>0){				
-					$('.list-hack').append( pageview.format_friend_data(res.data) );
-					if(res.paginate.total>0)$('.list-hack').prev().find("em").html(res.paginate.total); //有几位好友
+				if(res.data.length>0){
+					if(page==1){
+						$('.list-hack').html( pageview.format_list_data(res.data) );
+					}else{
+						$('.list-hack').append( pageview.format_list_data(res.data) );
+					}					
 					add_action();
+					page++;
+					scroll_get = true;
+				}else{
+					layer.msg("没有了!");
 				}
 			}
 		});		
 	};
+	
+	//群聊直接发送到短消息数据表
+	function send_msg(id,m_title,m_content,m_picurl){
+		var content = `<ul class="model-list model-${type}" data-id="${id}" data-type="${type}" data-imgurl="${m_picurl}"><li class="model-title">${m_title}</li><li class="model-more"><div class="model-content">${m_content}</div><div class="model-picurl"><img src="${m_picurl}" onerror="$(this).parent().hide()"/></div></li></ul>`;
+		$.post("/member.php/member/wxapp.msg/add.html",{
+				'uid':uid,
+				'content':content,
+				'ext_id':id,
+				'ext_sys':type,
+				},function(res){		
+				if(res.code==0){
+					layer.msg('添加成功');
+					bui.back();
+				}else{
+					layer.alert('添加失败:'+res.msg);
+				}
+		});
+	}
+
+	//赋值到表单那里
+	function send_form(id,m_title,m_content,m_picurl){
+		m_title = m_title.replace('"',"'");
+		var content = `[topic type=${type} id=${id} picurl=${m_picurl}]${m_title}##@@##${m_content}[/topic]`;
+		window.parent.layer.closeAll();
+		window.parent.insert_topic(content);
+	}
 	
 	//绑定按钮事件
 	function add_action(){
@@ -39,27 +113,19 @@ loader.define(function(require,exports,module) {
 				}
 			});
 		});
-
+		
+		router.$('.list-hack .add').off("click");
 		router.$('.list-hack .add').click(function(){
 			var id = $(this).data("id");
 			var m_title = $(this).data("title");
 			var m_content = $(this).data("content");
 			var m_picurl = $(this).data("picurl");
 			if(m_picurl==null) m_picurl = '';
-			var content = `<ul class="model-list model-${type}" data-id="${id}" data-type="${type}" data-imgurl="${m_picurl}"><li class="model-title">${m_title}</li><li class="model-more"><div class="model-content">${m_content}</div><div class="model-picurl"><img src="${m_picurl}" onerror="$(this).parent().hide()"/></div></li></ul>`;
-			$.post("/member.php/member/wxapp.msg/add.html",{
-				'uid':uid,
-				'content':content,
-				'ext_id':id,
-				'ext_sys':type,
-				},function(res){		
-				if(res.code==0){
-					layer.msg('添加成功');
-					bui.back();
-				}else{
-					layer.alert('添加失败:'+res.msg);
-				}
-			});
+			if(uid!=0){
+				send_msg(id,m_title,m_content,m_picurl);
+			}else{
+				send_form(id,m_title,m_content,m_picurl);
+			}			
 		});
 
 		//添加侧滑菜单
@@ -79,7 +145,7 @@ loader.define(function(require,exports,module) {
 		});
 	}
 
-	pageview.format_friend_data = function(array){
+	pageview.format_list_data = function(array){
 		var str = "";
 		array.forEach((rs)=>{
 			var content = rs.content.substring(0,20);

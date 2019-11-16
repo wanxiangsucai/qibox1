@@ -1070,3 +1070,45 @@ pre{padding: 10px 15px;border: 1px solid #D1D7DC;position: relative; margin: 10p
 .menu_highlight{
 	color:orange;
 }
+
+
+/*****引用站内主题******/
+.topic-box{
+	border:1px solid #ccc;
+	padding:5px;
+	position: relative;
+}
+
+.topic-box .topic-img img{
+	width:120px;
+	height:90px;
+}
+
+.topic-box .topic-text{
+	position: absolute;
+	left:130px;
+	top:5px;
+}
+.topic-box .topic-title{	
+	font-weight:bold;
+	line-height:120%;
+
+	text-overflow: -o-ellipsis-lastline;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+.topic-box .topic-content{
+	text-indent:20px;
+	color:#888;
+	text-overflow: -o-ellipsis-lastline;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
