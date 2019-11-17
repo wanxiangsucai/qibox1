@@ -1640,3 +1640,6 @@ ALTER TABLE  `qb_memberdata` ADD  `wxopen_api` VARCHAR( 32 ) NOT NULL COMMENT  '
 
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '微信开放平台移动应用AppID', 'wxopen_appid', '', 'text', '', 1, '', '如果需要申请并愿意付费认证,请点击 <a href="https://open.weixin.qq.com/" target="_target">付费申请</a>，未付费认证的话，就留空。', -2, '-2');
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '微信开放平台移动应用AppSecret', 'wxopen_appkey', '', 'text', '', 1, '', '没有付费认证的话,就不要填', -2, '-2');
+
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'layout_member_body_foot', '会员中心模板底部接口', 1, 0);
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'layout_member_body_head', '会员中心模板头部接口', 1, 0);

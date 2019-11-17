@@ -23,6 +23,8 @@
 </head>
 <body>
 
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展  -->
+{:hook_listen('layout_member_body_head',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
 <div class="qb_header">
 	<div class="goback"><a href="#" onclick="Qibo.goBack('/member.php');" class="fa fa-reply"> 返回</a></div>
@@ -60,6 +62,9 @@ if(window.self!=window.top){
 	$(".qb_header").hide();	//在框架里就不要显示头部返回按钮
 }
 </script>
+
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
+{:hook_listen('layout_member_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
 </body>
 </html>

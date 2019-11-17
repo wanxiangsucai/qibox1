@@ -12,6 +12,8 @@
 		<style></style>
 	</head>
 	<body>
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展  -->
+{:hook_listen('layout_member_body_head',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 <div class="bui-page">
     <header>
         <div class="wrap-user-header">
@@ -249,5 +251,9 @@
 <div id="editmodes"></div>
 <div class="fullbg"></div>
 <script src="__STATIC__/member/default/wapindex/index.js"></script>
+
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
+{:hook_listen('layout_member_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
+
 </body>
 </html>

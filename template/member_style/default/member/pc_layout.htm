@@ -29,13 +29,15 @@ body .Notes{margin:0 2px 15px 0;}
 {block name="jump_iframe"}
 {if empty(input('debug'))}
 <script type="text/javascript">
-if(window.self==window.top)window.location.href="{:url('member/index/index')}?url="+window.location.href;//强制引用框架
+if(window.self==window.top && window.location.href.indexOf('/member/yz/mob')==-1)window.location.href="{:url('member/index/index')}?url="+window.location.href;//强制引用框架
 </script>
 {/if}
 {/block}
 
 </head>
 <body>
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展  -->
+{:hook_listen('layout_member_body_head',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
 {block name="content"}内容部分{/block}
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
@@ -49,6 +51,9 @@ layui.use(['form','element'], function(){
 });
 </script>
 {/block}
+
+<!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
+{:hook_listen('layout_member_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
 </body>
 </html>
