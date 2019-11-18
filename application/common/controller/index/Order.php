@@ -189,11 +189,13 @@ abstract class Order extends IndexBase
             }
         }
         
+        $info = [];
         $money_array = [];  //需要支付给每个商家的金额
         $total_money = 0;   //需要支付给所有商家的总金额
         foreach ($listdb AS $uid=>$shop_array){
             $money = 0;
             foreach ($shop_array AS $key=>$rs){   //某个商家的多个商品
+                $info = $rs;
                 $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
                 if(!$rs['coupon_tag']){ //没有设置代金券标志的情况
                     $rs['coupon_tag'] = config('system_dirname')."-".$rs['id'];
@@ -210,6 +212,9 @@ abstract class Order extends IndexBase
         
         $address = AddressModel::where('uid',$this->user['uid'])->order('often desc,id desc')->column(true);
         $this->assign('address',$address);
+        
+        $this->assign('f_array',$this->get_order_field($info)); //用户自定义表单字段,只适合于订单中只有一个商品的情况
+        
         return $this ->fetch();
     }
     
@@ -270,5 +275,41 @@ abstract class Order extends IndexBase
         $this->car_model->destroy($car_ids);    //购买成功后,就把购买车的数据清掉
     }
     
+    /**
+     * 用户提交的表单自定义字段
+     * @param array $info
+     * @return void|string[][]|unknown[][]|mixed[][]
+     */
+    protected function get_order_field($info=[]){
+        if (empty($info)||empty($info['order_filed'])) {
+            return ;
+        }
+        $array = json_decode($info['order_filed'],true);
+        if (empty($array)){
+            return ;
+        }
+        $data = [];
+        foreach($array AS $key=>$rs){
+            if ($rs['type']=='select' || $rs['type']=='checkbox') {
+                $detail = explode("\n",$rs['options']);
+                $opt = [];
+                foreach($detail AS $value){
+                    $opt[$value] = $value;
+                }
+            }else{
+                $opt='';
+            }
+            $data[] = [
+                'type'=>$rs['type'],
+                'name'=>'order_field_'.$key,
+                'title'=>$rs['title'],
+                'about'=>'',
+                'options'=>$opt,
+                'ifmust'=>$rs['must'],
+                'customize'=>'customize',
+            ];
+        }
+        return $data;
+    }
     
 }

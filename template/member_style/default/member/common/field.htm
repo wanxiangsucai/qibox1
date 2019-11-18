@@ -1,0 +1,166 @@
+<style type="text/css">
+.filed_box li{
+	line-height:30px;
+	width:49%;
+	float:left;
+}
+.filed_box{
+	width:100%;
+	height:10px;
+	padding:10px;
+	margin-bottom:18px;
+}
+</style>
+<div id="choose_order_field" style="display:none;">
+	<ul style="" class="filed_b filed_box">
+		<li><input type="radio" name="dd" title="自定义单行文本" data-type="text">自定义单行文本</li>
+		<li><input type="radio" name="dd" title="自定义多行文本" data-type="textarea">自定义多行文本</li>
+		<li><input type="radio" name="dd" title="自定义单选" data-type="select">自定义单选</li>
+		<li><input type="radio" name="dd" title="自定义多选" data-type="checkbox">自定义多选</li>
+		<li><input type="radio" name="dd" title="自定义日期" data-type="datetime">自定义日期</li>
+		<!--<li><input type="radio" name="dd" title="自定义单图" data-type="image">自定义单图</li>
+		<li><input type="radio" name="dd" title="自定义多图" data-type="images">自定义多图</li>
+		<li><input type="radio" name="dd" title="自定义附件" data-type="file">自定义附件</li>-->
+	</ul><hr>
+	<ul style="padding:10px;" class="filed_a filed_box">
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="姓名">姓名 </li>
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="电话">电话 </li>
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="微信号">微信号 </li>
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="公司">公司 </li>
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="职位">职位 </li>
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="姓名">姓名 </li>
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="年龄">年龄 </li>
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="邮箱">邮箱 </li>
+		<li><input type="radio" name="dd" lay-filter='filed_order' title="行业">行业 </li>
+	</ul>	
+</div>
+
+<script type="text/javascript">
+$(function(){
+
+	{if (IN_WAP!==true)}
+		$("#form_group_order_filed").next().remove();
+	{/if}
+
+	$("#form_group_order_filed").parent().prepend('<div><button class="layui-btn layui-btn-normal" id="add_order_field" type="button">新增表单项目</button></div>');
+
+	$("#add_order_field").click(function(){	
+		layer.open({
+			type: 1,
+			title:'表单项目',
+            closeBtn: false,
+            shift: 1,
+			area:["90%","50%"],
+            shadeClose: true,
+            content: $("#choose_order_field"),
+        });
+		set_filed_click();
+	});
+
+	jsonToHtml();
+});
+
+function set_filed_click(){
+	$(".filed_box input").off('click');
+
+	$(".filed_a input").click(function(){
+		var title = $(this).attr("title");
+		make_item_html(title,'text');
+		check_item();
+	});
+
+	$(".filed_b input").click(function(){
+		var title = $(this).attr("title");
+		var filed_type = $(this).data("type");
+		layer.prompt({
+            title: '请设置一个标题名称，比如：姓名、手机号...',
+            formType: 0
+		}, function(value){
+		   make_item_html(value,filed_type);
+		   check_item();
+		});
+	});
+}
+
+function make_item_html(title,filed_type,options_value,must){
+	layer.closeAll();
+	var str2 = '';
+	if(filed_type=='select'||filed_type=='checkbox'){
+		if(options_value==undefined)options_value='';
+		str2 = '<dd><textarea placeholder="请输入选项,每个选项换一行" class="layui-textarea" onblur="check_item()">'+options_value+'</textarea></dd>';
+	}
+	var ck = ['checked',''];
+	if(must==1){
+		ck = ['','checked'];
+	}
+
+	{if (IN_WAP===true)}
+	var str = `<dl class="field_item_box" data-title="${title}" data-type="${filed_type}">
+							<dt><i class="del_item fa fa-times-rectangle"></i> ${title}</dt>
+							<dd>
+								<div>
+									<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="0" title="选填" ${ck[0]} onclick="check_item()">
+									<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="1" title="必填" ${ck[1]} onclick="check_item()">
+								</div>
+							</dd>
+							${str2}
+						</dl>`;
+	{else /}
+	var str = `<tr class="field_item_box" data-title="${title}" data-type="${filed_type}"> 
+		<td class='tdL'><i class="del_item fa fa-times-rectangle"></i> ${title}: </td>
+		<td class="tdR layui-input-block"> 
+			<div>
+				<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="0" title="选填" ${ck[0]} onclick="check_item()">
+				<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="1" title="必填" ${ck[1]} onclick="check_item()">
+			</div>
+			<div>${str2}</div>
+		</td>
+</tr>`;
+	{/if}
+	$("#form_group_order_filed").parent().append(str);
+	del_item();
+	layui.use('form', function() {
+		var form = layui.form; 
+			form.render("radio");
+			form.on('radio(order_must_choose)', function(data){
+		      $(data.elem).trigger('click');
+			});
+	});
+}
+
+function del_item(){
+	$("#form_group_order_filed").parent().find(".del_item").click(function(){
+		$(this).parent().parent().remove();
+		check_item();
+	});
+}
+
+var items = [];
+function check_item(){
+	items = [];
+	$(".field_item_box").each(function(){
+		var options_value = '';
+		var field_type = $(this).data('type');
+		if(field_type=='select'||field_type=='checkbox'){
+			options_value = $(this).find("textarea").val();
+		}
+		items.push({
+			title:$(this).data('title'),
+			type:field_type,
+			options:options_value,
+			must:$(this).find("input[type=radio]:checked").val(),
+		});
+	});
+	$("#atc_order_filed").val( JSON.stringify(items) );
+}
+
+function jsonToHtml(){
+	if($("#atc_order_filed").val()==''){
+		return ;
+	}
+	var array = JSON.parse($("#atc_order_filed").val());
+	array.forEach((rs)=>{
+		make_item_html(rs.title,rs.type,rs.options,rs.must);
+	});
+}
+</script>
