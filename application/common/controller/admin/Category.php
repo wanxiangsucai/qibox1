@@ -127,8 +127,8 @@ abstract class Category extends AdminBase
         }
         
         //联动字段,比如点击哪项就隐藏或者显示哪一项
-        $this->tab_ext['trigger'] = \app\common\field\Form::getTrigger($this->mid);
-        
+        $this->tab_ext['trigger'] = \app\common\field\Form::getTrigger(-3);
+
         $info = $this->getInfoData($id);
         
         return $this->editContent($info);

@@ -38,7 +38,7 @@ class Qq extends IndexBase
             $this->login_in($openid,$access_token,$type,$fromurl);
             
         }else{
-            set_cookie('From_url',$fromurl);
+            set_cookie('From_url',$fromurl?:$this->fromurl);
             $url = 'https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=' . config('webdb.qqlogin_appid') . '&state=1&redirect_uri=' . urlencode($this->weburl);
             header("Location:$url");
             exit;

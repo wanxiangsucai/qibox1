@@ -2629,6 +2629,10 @@ if (!function_exists('getTemplate')) {
       * @return mixed
       */
      function del_html($content=''){
+         $content = str_replace("\r",'',$content);
+         $content = str_replace("\n",'',$content);
+         $content = str_replace('　',' ',$content);  //全角空格换成半角空格
+         $content = str_replace('  ','',$content);      //两个以上的全角空格清掉,一个的话,保留,即最后只有单数的一个,双数话,可能0个
          $content = preg_replace('/<([^<]*)>/is','',$content);	       //把HTML代码过滤掉
          $content = str_replace('&nbsp;','',$content);	       //把空格代码过滤掉
          $content = preg_replace("/\[face(\d+)\]/is",'',$content);  //过滤掉QQ表情 [reply] 请在这括号范围内输入要隐藏的内容 [/reply]
