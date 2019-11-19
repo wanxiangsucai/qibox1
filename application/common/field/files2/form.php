@@ -86,6 +86,12 @@ jQuery(document).ready(function() {
         // 文件列表
         var f_file_list        = $('#file_list_' + f_input_file_name);
 
+		if($(this).is(":visible")==false){
+			$(".layui-tab-title li").click(function(){
+				setTimeout(function(){uploader.refresh();},800);	//修复	WebUploader的BUG,元素不可见的时候.按钮不能点击			
+			});
+		}
+
         // 实例化上传
         var uploader = WebUploader.create({
             // 选完文件后，是否自动上传。
