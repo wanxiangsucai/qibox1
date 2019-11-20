@@ -140,6 +140,19 @@ class Login extends IndexBase
         }
         
         $user = UserModel::check_wxappIdExists($openid);
+        
+        //针对后来开通了微信开放平台就会存在unionid
+        if (empty($user) && $info['unionId']) {
+            $user = UserModel::get(['unionid'=>$info['unionId']]);
+        }
+        if ($user && $info['unionId'] && empty($user['unionid'])) {
+            UserModel::edit_user([
+                'uid'=>$user['uid'],
+                'unionid'=>$info['unionId'],
+            ]);
+        }
+        //write_file(ROOT_PATH.'WXAPP.txt', var_export($info,true).'---'.$user['uid'].'---'.$info['unionId']);
+        
         if(empty($user) && $uids){  //有传递WEB框架用户已登录的标志过来
             list($uid,$time) = explode(',',mymd5($uids,'DE'));
             if (time()-$time<600) {
@@ -153,6 +166,9 @@ class Login extends IndexBase
             }
         }
         if(empty($user)){
+            if($info['unionId']){
+                $info['unionid']=$info['unionId'];  //注意I是大写
+            }
             $user = UserModel::api_reg($openid,$info);
             if(!is_array($user)||$user['uid']<1){
                 return $this->err_js('注册失败:'.$user);
