@@ -5,11 +5,12 @@ function apk_recode_end(url){
 		content:'<audio controls="controls"><source src="'+url+'" type="audio/mp3" />不支持的浏览器</audio>',
 		uid:send_to_uid,
 		},function(res){
-		if(res.code==0){
-			layer.msg('发送成功');
-		}else{
-			layer.alert(res.msg);
-		}
+			refresh_timenum = 1;	//加快刷新时间
+			if(res.code==0){
+				layer.msg('发送成功');
+			}else{
+				layer.alert(res.msg);
+			}
 	});
 }
 var send_to_uid;
@@ -153,6 +154,7 @@ loader.define(function() {
 						success: function (res) {
 							//layer.alert(' 上传语音成功，serverId 为' + res.serverId);
 							$.post("/member.php/member/wxapp.msg/add.html",{voiceid:res.serverId,uid:uid},function(res){
+								refresh_timenum = 1;	//加快刷新时间
 								if(res.code==0){
 									layer.msg('发送成功');
 								}else{

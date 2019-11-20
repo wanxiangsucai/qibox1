@@ -65,7 +65,7 @@
       </div>
     </div>
     <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content sys_wapadd_msg_list001">
-{qb:tag name="sys_wapadd_msg_list001" class="app\member\controller\Msg@showmore" union="uid=$touid,maxid,num" rows="5"}
+{qb:tag name="sys_wapadd_msg_list001" class="app\member\controller\Msg@showmore" union="uid,maxid,num" rows="3"}
 		<div class="media-body" style="margin-bottom:20px;margin-top:10px;">
           <a href="{:get_url('user',['uid'=>$rs['uid']])}" class="media-left" style="float: left;">
              <img src="{$rs.from_icon}" onerror="this.src='__STATIC__/images/noface.png'" height="46px" width="46px">
@@ -134,7 +134,13 @@ function postmsg(){
 		layer.alert('消息内容不能为空');
 		return ;
 	}
-	$.post(url,{'uid':touid,'content':content,},function(res){		
+	$.post(url,{'uid':touid,'content':content,},function(res){
+		
+		//发布信息后,代表存在互动,缩短刷新时间
+		clearInterval(check_new);
+		refresh_time=1500;
+		check_new = refresh_newmsg();
+
 		if(res.code==0){
 			$(".msgcontent").val('');
 			layer.msg('发送成功');
@@ -159,56 +165,63 @@ function postmsg(){
 }
 
 
-var num = 0,ck_num = 0,maxid = -1;
-setInterval(function(){
-	if(ck_num>num){
-		console.log("服务器还没反馈数据过来");
-		//layer.msg("服务器反馈超时",{time:500});
-		return ;
-	}
-	if(maxid>=0){
-		$.get(get_msg_url+"1&time={:time()}&uid="+touid+"&num="+num,function(res){
-			if(res.code==0){
-				num++;
-				ck_num = num;
-				if(res.data!="")$('.sys_wapadd_msg_list001').prepend(res.data);
-			}
-			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
-				$(".remind_msg").show();
-			}else{
-				$(".remind_msg").hide();
-			}
-			maxid = res.ext.maxid;
-		});
-		ck_num++;
-	}
 
-},1000);
+function refresh_newmsg(){
+	return setInterval(function(){
+		if(ck_num>num){
+			console.log("服务器还没反馈数据过来");
+			//layer.msg("服务器反馈超时",{time:500});
+			return ;
+		}
+		if(maxid>=0){
+			$.get(get_msg_url+"1&maxid="+maxid+"&uid="+touid+"&num="+num,function(res){
+				if(res.code==0){
+					num++;
+					ck_num = num;
+					if(res.data!="")$('.sys_wapadd_msg_list001').prepend(res.data);
+				}
+				if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
+					$(".remind_msg").show();
+				}else{
+					$(".remind_msg").hide();
+				}
+				maxid = res.ext.maxid;
+			});
+			ck_num++;
+		}
+
+	},refresh_time);
+}
+
+var num = 0,ck_num = 0,maxid = -1,refresh_time=9000;	//没有发信息之前刷新时间不宜太快,9秒刷新一次
+var check_new = refresh_newmsg();
 
 var msg_page=1;
 var get_msg_url = "{qb:url name='sys_wapadd_msg_list001' /}";
 
 function showMoreMsg(){  
-  $.get(get_msg_url+msg_page,function(res){  
-    //console.log(res);
-    //console.log(res.data);
-    if(res.code==0){
-      if(res.data==''){
-        layer.msg("已经显示完了！",{time:500});
-      }else{
-		  if(msg_page==1){
-			  $('.sys_wapadd_msg_list001').html(res.data);
-		  }else{
-			  $('.sys_wapadd_msg_list001').append(res.data);
-		  }        
-          scroll_get = true;
-		  msg_page++;
-      }
-	  maxid = res.ext.maxid;
-    }else{
-      layer.msg(res.msg,{time:2500});
-    }
-  });
+	$.get(get_msg_url+msg_page+"&uid="+touid,function(res){  
+		//console.log(res);
+		//console.log(res.data);
+		if(res.code==0){
+			if(msg_page==1){
+				maxid = res.ext.maxid;
+			}
+			if(res.data==''){
+				layer.msg("已经显示完了！",{time:500});
+			}else{
+				if(msg_page==1){
+					$('.sys_wapadd_msg_list001').html(res.data);
+				}else{
+					$('.sys_wapadd_msg_list001').append(res.data);
+				}
+				scroll_get = true;
+				msg_page++;
+		  }
+		}else{
+			layer.msg(res.msg,{time:2500});
+		}
+	});
 }
 showMoreMsg();
 

@@ -30,68 +30,7 @@ $(document).ready(function(){
 	});
 });
 
-//input box focus
-$(document).ready(function(){
-  	$("#input_box").focus(function(){
-       $('.windows_input').css('background','#fff');
-       $('#input_box').css('background','#fff');
-   });
-    $("#input_box").blur(function(){
-       $('.windows_input').css('background','');
-       $('#input_box').css('background','');
-    });
 
-	//发送消息
-	var allowsend = true;
-	function postmsg(){
-		var content = $(".msgcontent").val();
-		if(content==''){
-			layer.alert('消息内容不能为空');
-			return ;
-		}else if(allowsend == false){
-			layer.alert('请不要重复发送信息');
-			return ;
-		}
-		$(".msgcontent").val('');
-		allowsend = false;
-		$.post(postMsgUrl,{'uid':uid,'content':content,},function(res){
-			allowsend = true;
-			if(res.code==0){				
-				layer.msg('发送成功');
-				$("#hack_wrap").hide(300);
-			}else{
-				$(".msgcontent").val(content);
-				layer.alert('发送失败:'+res.msg);
-			}
-		});
-	}
-	$("#send").click(function(){
-		postmsg();
-	});
-
-	$("#input_box").unbind('keydown').bind('keydown', function(e){
-		console.log(e.ctrlKey +'  '+e.keyCode);
-		if(e.ctrlKey && e.keyCode==13){
-			layer.msg('正在发送消息');
-			postmsg();
-		}
-	});
-
-	$("#show_face").click(function(){
-		if( $("#hack_wrap").is(':hidden') ){
-			$("#hack_wrap").show(100);
-			$("#hack_wrap em").off("click");
-			$("#hack_wrap em").click(function(){
-				$("#hack_wrap em").removeClass('ck');
-				$(this).addClass('ck');
-				$(".msgcontent").val( $(".msgcontent").val() + '[face' + $(this).data('id') + ']' )
-			});			
-		}else{
-			 $("#hack_wrap").hide(500);
-		}
-	});
-
-});
 
 /*
 window.onload=function b(){
@@ -414,11 +353,13 @@ var user_list = {};	//圈内成员列表
 $(function(){
 	
 	var num = ck_num = 0;
-
+	var pc_show_all_msg_obj = $(".pc_show_all_msg");
+	var pc_msg_user_list_obj = $(".pc_msg_user_list");
+	var list_i=0,list_time=15;	//每隔15秒获取一次列表数据
 	setInterval(function() {
 
 		//监听会话内容的滚动条
-		var msg_top = $(".pc_show_all_msg").css('top');
+		var msg_top = pc_show_all_msg_obj.css('top');
 		
 		msg_top = Math.abs(msg_top.replace('px',''));	
 		//console.log("高_"+$(".pc_show_all_msg").height()) 
@@ -431,10 +372,9 @@ $(function(){
 				}				
 			}			
 		}
-
 		
 		//监听用户列表的滚动条
-		var user_top = $(".pc_msg_user_list").css('top');
+		var user_top = pc_msg_user_list_obj.css('top');
 		user_top = Math.abs(user_top.replace('px',''));	
 		if(user_top-user_div_top>300 && user_scroll==true){
 			//console.log(user_div_top);
@@ -446,12 +386,16 @@ $(function(){
 		//	if(user_scroll==true)showMore_User();	//定时把他们全加载出来,方便做搜索使用.其实上面的滚动可删除了
 		//}, 4000);
 
+		//if(maxid>=0)check_new_showmsg();
+		list_i++;
+		if(list_i%list_time==0)check_list_new_msgnum();	//每隔15秒获取一次列表数据		
+
+	}, 1000);
+
+
+	var check_new = setInterval(function(){
 		if(maxid>=0)check_new_showmsg();
-
-		if(num%5==0)check_list_new_msgnum();
-		
-
-	}, 1500);
+	},9000);	//没有发信息之前刷新时间不宜太快,9秒刷新一次
 
 
 	$(".friends_list li > p").click(function(){
@@ -640,6 +584,77 @@ $(function(){
 				area: ['800px', '650px'],
 				content: '/member.php/member/plugin/execute/plugin_name/hongbao/plugin_controller/content/plugin_action/add/mid/1.html?ext_id='+(-uid),
 			});
+	});
+
+
+	$("#input_box").focus(function(){
+       $('.windows_input').css('background','#fff');
+       $('#input_box').css('background','#fff');
+	});
+
+    $("#input_box").blur(function(){
+       $('.windows_input').css('background','');
+       $('#input_box').css('background','');
+    });
+
+	//发送消息
+	var allowsend = true;
+	function postmsg(){
+		var content = $(".msgcontent").val();
+		if(content==''){
+			layer.alert('消息内容不能为空');
+			return ;
+		}else if(allowsend == false){
+			layer.alert('请不要重复发送信息');
+			return ;
+		}
+		$(".msgcontent").val('');
+		allowsend = false;
+		$.post(postMsgUrl,{'uid':uid,'content':content,},function(res){
+
+			//发布信息后,代表存在互动,缩短刷新时间
+			list_time = 5;
+			clearInterval(check_new);
+			check_new = setInterval(function(){
+				//if(maxid>=0)
+				check_new_showmsg();
+			},1500);
+
+			allowsend = true;
+			if(res.code==0){				
+				layer.msg('发送成功');
+				$("#hack_wrap").hide(300);
+			}else{
+				$(".msgcontent").val(content);
+				layer.alert('发送失败:'+res.msg);
+			}
+		});
+	}
+
+	$("#send").click(function(){
+		postmsg();
+	});
+
+	$("#input_box").unbind('keydown').bind('keydown', function(e){
+		console.log(e.ctrlKey +'  '+e.keyCode);
+		if(e.ctrlKey && e.keyCode==13){
+			layer.msg('正在发送消息');
+			postmsg();
+		}
+	});
+
+	$("#show_face").click(function(){
+		if( $("#hack_wrap").is(':hidden') ){
+			$("#hack_wrap").show(100);
+			$("#hack_wrap em").off("click");
+			$("#hack_wrap em").click(function(){
+				$("#hack_wrap em").removeClass('ck');
+				$(this).addClass('ck');
+				$(".msgcontent").val( $(".msgcontent").val() + '[face' + $(this).data('id') + ']' )
+			});			
+		}else{
+			 $("#hack_wrap").hide(500);
+		}
 	});
 	
 

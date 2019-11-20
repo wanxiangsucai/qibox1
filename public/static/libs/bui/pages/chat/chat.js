@@ -3,6 +3,7 @@
  * 默认模块名: pages/chat/chat
  * @return {[object]}  [ 返回一个对象 ]
  */
+var refresh_i,refresh_timenum;//初始化8秒刷新一次
 loader.define(function(require,exports,module) {
 
     var pageview = {};
@@ -76,9 +77,13 @@ loader.define(function(require,exports,module) {
 
 		//console.log(chat_timer);
 		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
+		refresh_i=0;
+		refresh_timenum = 8;//初始化8秒刷新一次
 		chat_timer = setInterval(function() {
-			if(maxid>=0)check_new_showmsg();	//刷新会话用户中有没有新消息,必须要加载到内容后有maxid值才去刷新
-		}, 1000);
+			refresh_i++;
+			//刷新会话用户中有没有新消息,必须要加载到内容后有maxid值才去刷新 初始化还没互动之前,不要刷新太快
+			if(maxid>=0 && refresh_i%refresh_timenum==0)check_new_showmsg();	
+		}, 1000);	
 		
 		//this.upload();
 		//loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
@@ -457,16 +462,22 @@ loader.define(function(require,exports,module) {
 			'uid':uid,
 			'content':content,
 			'send_to':touser.uid
-			},function(res){		
-			if(res.code==0){
-				router.$(".chatInput").val('');
-				router.$(".hack_wrap").hide();
-				router.$(".face_wrap").hide();
-				layer.msg('发送成功');
-			}else{
-				router.$("#btnSend").removeClass("disabled").addClass("primary");
-				layer.alert('发送失败:'+res.msg);
-			}
+			},function(res){
+
+				clearInterval(chat_timer);
+				chat_timer = setInterval(function() {
+					check_new_showmsg();
+				}, 1500);	//互动之后,加快刷新,重新setInterval是兼容之前任务已死掉
+
+				if(res.code==0){
+					router.$(".chatInput").val('');
+					router.$(".hack_wrap").hide();
+					router.$(".face_wrap").hide();
+					layer.msg('发送成功');
+				}else{
+					router.$("#btnSend").removeClass("disabled").addClass("primary");
+					layer.alert('发送失败:'+res.msg);
+				}
 		});
 	}
 	

@@ -105,6 +105,9 @@ class Msg extends Model
                 self::$map['a']['id'] = ['>',$maxid];
                 self::$map['b']['id'] = ['>',$maxid];
             }
+            if($uid==0){    //系统消息
+                self::$map['b'] = [];
+            }
         }
         
         $data_list = self::where(function($query){

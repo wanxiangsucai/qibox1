@@ -134,14 +134,15 @@ loader.define(function() {
 					$.post("/member.php/member/wxapp.msg/add.html",{
 						'uid':uid,
 						'content':str,
-						},function(res){		
-						if(res.code==0){
-							router.$(".hack_wrap").hide();
-							router.$(".face_wrap").hide();
-							bui.hint('发送成功');
-						}else{
-							layer.alert('发送失败:'+res.msg);
-						}
+						},function(res){
+							refresh_timenum = 1;	//加快刷新时间
+							if(res.code==0){
+								router.$(".hack_wrap").hide();
+								router.$(".face_wrap").hide();
+								bui.hint('发送成功');
+							}else{
+								layer.alert('发送失败:'+res.msg);
+							}
 					});
 				}
 				
