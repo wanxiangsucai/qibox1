@@ -95,9 +95,21 @@ loader.define(function(require,exports,module) {
 	}
 
 	//赋值到表单那里
-	function send_form(id,m_title,m_content,m_picurl){
+	function send_form(id,m_title,m_content,m_picurl,m_url){
 		m_title = m_title.replace('"',"'");
-		var content = `[topic type=${type} id=${id} picurl=${m_picurl}]${m_title}##@@##${m_content}[/topic]`;
+		if(m_content==''||m_content==null){
+			m_content = '暂无介绍';
+		}
+		//var content = `[topic type=${type} id=${id} picurl=${m_picurl}]${m_title}##@@##${m_content}[/topic]`;
+		var content = `
+			   <div class='topic-box topic-type-${type}' data-id="${id}" data-type="${type}">
+                    <div class='topic-img'><a href='${m_url}' target='_blank'><img width='100' src='${m_picurl}' onerror="this.src='/public/static/images/nopic.png';" /></a></div>
+                    <div class='topic-text'>
+                        <div class='topic-title'><a href='${m_url}' target='_blank'>${m_title}</a></div>
+                        <div class='topic-content'><a href='${m_url}' target='_blank'>${m_content}</a></div>
+                    </div>
+                </div>
+		`;
 		window.parent.layer.closeAll();
 		window.parent.insert_topic(content);
 	}
@@ -120,11 +132,12 @@ loader.define(function(require,exports,module) {
 			var m_title = $(this).data("title");
 			var m_content = $(this).data("content");
 			var m_picurl = $(this).data("picurl");
+			var m_url = $(this).data("url");
 			if(m_picurl==null) m_picurl = '';
 			if(uid!=0){
-				send_msg(id,m_title,m_content,m_picurl);
+				send_msg(id,m_title,m_content,m_picurl,m_url);
 			}else{
-				send_form(id,m_title,m_content,m_picurl);
+				send_form(id,m_title,m_content,m_picurl,m_url);
 			}			
 		});
 
@@ -150,6 +163,9 @@ loader.define(function(require,exports,module) {
 		array.forEach((rs)=>{
 			var content = rs.content.substring(0,20);
 			var title = rs.title.substring(0,15);
+			if(rs.url==undefined){
+				rs.url=`/index.php/${type}/content/show/id/${rs.id}.html`;
+			}
 			str +=`
 			<li class="list-item" data-uid="${rs.id}">
 				<div class="bui-btn bui-box">
@@ -160,7 +176,7 @@ loader.define(function(require,exports,module) {
 						</h3>
 						<p class="item-text">${content}</p>
 					</div>
-					<i class="icon- primary add" data-id="${rs.id}" data-title="${rs.title}" data-picurl="${rs.picurl}" data-content="${rs.content}"><i class="fa fa-plus-circle"></i></i>
+					<i class="icon- primary add" data-id="${rs.id}" data-url="${rs.url}" data-title="${rs.title}" data-picurl="${rs.picurl}" data-content="${rs.content}"><i class="fa fa-plus-circle"></i></i>
 				</div>
 			</li>
 			`;

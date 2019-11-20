@@ -7,6 +7,7 @@ $jscode_pc = $jscode_wap = '';
 if(fun('field@load_js',$field['type'])){
 	$serverurl = urls("index/attachment/upload","dir=images&from=ueditor&module=".request()->dispatch()['module'][0]);
 	$editor_tpl = iurl('index/editor/index');
+	$systype = modules_config('bbs')?'bbs':'cms';
 	$jscode_pc = <<<EOT
 <script type="text/javascript">
 var editor_a = [];
@@ -44,7 +45,25 @@ jQuery(document).ready(function() {
 			});
 		});		
 	});
-})
+
+	$('.addTopicLink').each(function(i){	//添加站内引用
+		$(this).click(function(){
+			editor_i = i;
+			layer.open({
+				type:2,
+				title: false,
+				area: ['800px', '600px'],
+				content: "/index.php/index/msg/index.html#/public/static/libs/bui/pages/hack/index?type={$systype}&uid=0",
+			});
+		});		
+	});
+
+});
+
+function insert_topic(content){
+	editor_a[editor_i].execCommand('insertHtml',"<br>"+content+"<br>");
+}
+
 </script>
 
 <!--pc布局模板开始-->
@@ -216,6 +235,23 @@ jQuery(document).ready(function() {		//加入站外视频
 			});
 		});		
 	});
+
+	$('.addTopicLink').each(function(i){	//添加站内引用
+		$(this).click(function(){
+			editor_i = i;
+			if(temp_content==''){
+				layer.open({
+					type:2,
+					title: "请选择要插入的数据",
+					area: ['90%', '80%'],
+					content: "/index.php/index/msg/index.html#/public/static/libs/bui/pages/hack/index?type={$systype}&uid=0",
+				});
+			}else{
+				insert_topic(temp_content)
+			}
+			
+		});		
+	});
 })
 </script>
 
@@ -229,7 +265,22 @@ jQuery(document).ready(function() {
 			showEditMode();
 		});		
 	});
-})
+});
+
+var temp_content = '';
+function insert_topic(content){
+	temp_content = content;
+	editor_a[editor_i].summernote('insertText', ' ');	//焦点获取失败,避免下面的报错
+	editor_a[editor_i].summernote('pasteHTML', '<!--#@#@#@#@#-->');
+	cache_summernote_code = editor_a[editor_i].summernote('code');
+	if(cache_summernote_code.indexOf('<!--#@#@#@#@#-->')==-1){
+		layer.alert("焦点获取失败,请重新点击选择位置,要在哪插入模板!");
+		return false;
+	}
+	temp_content = '';
+	editor_a[editor_i].summernote('code', cache_summernote_code.replace(/<!--#@#@#@#@#-->/, '<br>'+content+'<br>'));
+}
+
 function insertHtml(nums) {
 	var strs=$('.stylemode'+nums).html();
 	//editor_a[editor_i].execCommand('insertHtml',strs);
@@ -331,7 +382,7 @@ if(IN_WAP===true){
 
 <textarea id="{$name}" name="{$name}" class="summernote" placeholder="请输入内容">{$info[$name]}</textarea>
 $jscode_wap
-<div class="ue_btn slectEditMode"><a href="javascript:;">布局模板</a></div> <div class="ue_btn addMvUrl"><a href="javascript:;">站外视频</a></div>
+<div class="ue_btn slectEditMode"><a href="javascript:;">布局模板</a></div> <div class="ue_btn addMvUrl"><a href="javascript:;">站外视频</a></div> <div class="ue_btn addTopicLink"><a href="javascript:;">站内引用</a></div>
 
 EOT;
 ;
@@ -345,7 +396,7 @@ EOT;
 $jscode_pc
 </div>
 
-<div class="ue_btn slectEditMode"><a href="javascript:;">布局模板</a></div> <div class="ue_btn addMvUrl"><a href="javascript:;">站外视频</a></div>
+<div class="ue_btn slectEditMode"><a href="javascript:;">布局模板</a></div> <div class="ue_btn addMvUrl"><a href="javascript:;">站外视频</a></div> <div class="ue_btn addTopicLink"><a href="javascript:;">站内引用</a></div>
 
 EOT;
 ;

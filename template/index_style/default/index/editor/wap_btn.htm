@@ -50,15 +50,31 @@ function add_other_mv(){
 }
 
 function add_topic(){
-	layer.open({
-		type:2,
-		title: "请选择要插入的数据",
-		area: ['90%', '80%'],
-		content: "/index.php/index/msg/index.html#/public/static/libs/bui/pages/hack/index?type=bbs&uid=0",
-    });
+	if(temp_content==''){
+		layer.open({
+			type:2,
+			title: "请选择要插入的数据",
+			area: ['90%', '80%'],
+			content: "/index.php/index/msg/index.html#/public/static/libs/bui/pages/hack/index?type=bbs&uid=0",
+		});
+	}else{
+		insert_topic(temp_content)
+	}
+	
 }
+
+var temp_content = '';
 function insert_topic(content){
-	v_summernote.summernote('insertText',content);
+	temp_content = content;
+	v_summernote.summernote('insertText', ' ');	//焦点获取失败,避免下面的报错
+	v_summernote.summernote('pasteHTML', '<!--#@#@#@#@#-->');
+	cache_summernote_code = v_summernote.summernote('code');
+	if(cache_summernote_code.indexOf('<!--#@#@#@#@#-->')==-1){
+		layer.alert("焦点获取失败,请重新点击选择位置,要在哪插入模板!");
+		return false;
+	}
+	temp_content = '';
+	v_summernote.summernote('code', cache_summernote_code.replace(/<!--#@#@#@#@#-->/, '<br>'+content+'<br>'));
 }
 </script>
 
