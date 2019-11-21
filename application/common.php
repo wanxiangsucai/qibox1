@@ -2628,21 +2628,23 @@ if (!function_exists('getTemplate')) {
       * @param string $content
       * @return mixed
       */
-     function del_html($content=''){
+     function del_html($content=''){         
+         $content = preg_replace("/\[face(\d+)\]/is",'',$content);  //过滤掉QQ表情 [reply] 请在这括号范围内输入要隐藏的内容 [/reply]
+         $content = preg_replace("/\[reply\](.*?)\[\/reply]/is",'',$content);   //过滤掉回复可见的内容
+         $content = preg_replace("/\[group=([\d,]+)\](.*?)\[\/group]/is",'',$content);  //过滤掉指定用户可见
+         $content = preg_replace("/\[password=([^\]]+)\](.*?)\[\/password]/is",'',$content); //过滤掉密码才能看的内容
+         $content = preg_replace("/\[paymoney=([\d]+)\](.*?)\[\/paymoney]/is",'',$content); //过滤掉积分购买的内容
+         $content = preg_replace("/\[qun\](.*?)\[\/qun]/is",'',$content);   //过滤掉仅圈内成员可见的内容
+         $content = preg_replace("/\[iframe_mv\](.*?)\[\/iframe_mv]/is",'',$content);   //过滤掉站外视频
+         $content = preg_replace("/\[topic ([^\]]+)\](.*?)\[\/topic]/is",'\\2',$content); 
+         
          $content = str_replace("\r",'',$content);
          $content = str_replace("\n",'',$content);
          $content = str_replace('　',' ',$content);  //全角空格换成半角空格
          $content = str_replace('  ','',$content);      //两个以上的全角空格清掉,一个的话,保留,即最后只有单数的一个,双数话,可能0个
          $content = preg_replace('/<([^<]*)>/is','',$content);	       //把HTML代码过滤掉
          $content = str_replace('&nbsp;','',$content);	       //把空格代码过滤掉
-         $content = preg_replace("/\[face(\d+)\]/is",'',$content);  //过滤掉QQ表情 [reply] 请在这括号范围内输入要隐藏的内容 [/reply]
-         $content = preg_replace("/\[reply\](.*?)\[\/reply]/is",'',$content);   //过滤掉回复可见的内容
-         $content = preg_replace("/\[group=([\d,]+)\](.*?)\[\/group]/is",'',$content);  //过滤掉指定用户可见
-         $content = preg_replace("/\[password=([^\]]+)\](.*?)\[\/password]/is",'',$content); //过滤掉密码才能看的内容
-         $content = preg_replace("/\[paymoney=([\d]+)\](.*?)\[\/paymoney]/is",'',$content); //过滤掉积分购买的内容
-		 $content = preg_replace("/\[qun\](.*?)\[\/qun]/is",'',$content);   //过滤掉仅圈内成员可见的内容
-		 $content = preg_replace("/\[iframe_mv\](.*?)\[\/iframe_mv]/is",'',$content);   //过滤掉站外视频
-		 $content = preg_replace("/\[topic ([^\]]+)\](.*?)\[\/topic]/is",'\\2',$content); 
+         
          return $content;
      }
  }

@@ -782,8 +782,9 @@ abstract class C extends Model
         
         $cfg['leng'] && $info['title'] = get_word($info['full_title'] = del_html($info['title']), $cfg['leng']);
         $info['full_content'] = $info['content'];   //原始内容数据
-        $info['content'] = preg_replace('/<([^<]*)>/is',"",$info['content']);	//把HTML代码过滤掉
-        $info['content'] = str_replace('&nbsp;', '', $info['content']);
+        //$info['content'] = preg_replace('/<([^<]*)>/is',"",$info['content']);	//把HTML代码过滤掉
+        //$info['content'] = str_replace('&nbsp;', '', $info['content']);        
+        $info['content'] = del_html($info['content']);
         $cfg['cleng'] && $info['content'] = get_word($info['content'], $cfg['cleng']);
         $info['DIR'] = $dirname;
         $info['url'] = iurl($dirname.'/content/show',['id'=>$info['id']],true,false,$m_or_p[$dirname]);
