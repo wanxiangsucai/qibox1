@@ -3,6 +3,25 @@ namespace app\cms\traits;
 
 trait Content
 {
+    
+    protected function add_check($mid=0,$fid=0,&$data=[]){
+        $this->check_limit_view($data);
+        return parent::add_check($mid,$fid,$data);
+    }
+    
+    protected function edit_check($id=0,$info=[],&$data=[]){
+        $this->check_limit_view($data);
+        return parent::edit_check($id,$info,$data);
+    }
+    
+    protected function check_limit_view(&$data){
+        if ($this -> request -> isPost()) {
+            if ($data['price']>0 && !strstr($data['content'],'[/paymoney]')) {
+                //设置访问权限的内容不暴露简介
+                $data['content'] = '<!--[paymoney='.intval($data['price']).']-->'.$data['content'].'<!--[/paymoney]-->';
+            }
+        }
+    }
     /**
      * 同时适用于前台与后台 新增加后做个性拓展
      * @param number $id 内容ID
