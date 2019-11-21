@@ -72,7 +72,7 @@ abstract class Index extends IndexBase
      * @param number $rows
      * @return void|unknown|\think\response\Json
      */
-    public function listbyuid($uid=0,$mid=0,$rows=20){
+    public function listbyuid($uid=0,$mid=0,$rows=20,$keyword=''){
         if (empty($uid)) {
             $uid = $this->user['uid'];
         }
@@ -85,14 +85,26 @@ abstract class Index extends IndexBase
         if ($mid){
             $map['mid'] = $mid;
         }
-        $array = getArray( $this->model->getAll($map,"id desc",$rows,$pages=[],$format=FALSE) );
+        if ($keyword!='') {
+            $mid || $mid=1;
+            if (empty(model_config($mid))) {
+                return $this->err_js('模型不存在');
+            }
+            $map['title'] = ['like','%'.$keyword.'%'];
+            $data = $this->model->getListByMid($mid,$map,"id desc",$rows,$pages=[],$format=FALSE);
+        }else{
+            $data = $this->model->getAll($map,"id desc",$rows,$pages=[],$format=FALSE);
+        }
+        
+        $array = getArray($data);
         foreach ($array['data'] AS $key=>$rs){
             $rs['picurl'] = tempdir($rs['picurl']);
             if(config('system_dirname')=='bbs'){
                 $rs['content'] = fun("bbs@getContents",$rs['id'],100);
             }else{
                 $rs['content'] = get_word(del_html($rs['content']), 100);
-            }            
+            }
+            $rs['url'] = iurl(config('system_dirname').'/content/show',['id'=>$rs['id']]);
             unset($rs['_content'],$rs['full_content'],$rs['sncode']);
             $array['data'][$key] = $rs;
         }

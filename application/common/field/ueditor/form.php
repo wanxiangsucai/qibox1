@@ -51,9 +51,9 @@ jQuery(document).ready(function() {
 			editor_i = i;
 			layer.open({
 				type:2,
-				title: false,
-				area: ['800px', '600px'],
-				content: "/index.php/index/msg/index.html#/public/static/libs/bui/pages/hack/index?type={$systype}&uid=0",
+				title: "站内引用",
+				area: ['850px', '650px'],
+				content: "/member.php/member/quote/index.html?type={$systype}&uid=0",
 			});
 		});		
 	});
