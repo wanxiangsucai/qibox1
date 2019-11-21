@@ -544,6 +544,12 @@ loader.define(function(require,exports,module) {
 		}else{
 			router.$("#chat_win").append(str);
 		}
+		
+		//对聊天中的链接地址做框架访问
+		router.$(".chat-panel .chat-content a").each(function(){
+			$(this).removeClass('iframe');
+			$(this).addClass('iframe');
+		});
 
 		if(show_msg_page==2 || need_scroll==true){
 			setTimeout(function(){

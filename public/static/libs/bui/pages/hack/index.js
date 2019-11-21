@@ -84,13 +84,14 @@ loader.define(function(require,exports,module) {
 				'content':content,
 				'ext_id':id,
 				'ext_sys':type,
-				},function(res){		
-				if(res.code==0){
-					layer.msg('添加成功');
-					bui.back();
-				}else{
-					layer.alert('添加失败:'+res.msg);
-				}
+				},function(res){
+					refresh_timenum = 1;	//加快刷新时间
+					if(res.code==0){
+						layer.msg('添加成功');
+						bui.back();
+					}else{
+						layer.alert('添加失败:'+res.msg);
+					}
 		});
 	}
 
