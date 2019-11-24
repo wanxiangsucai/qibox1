@@ -2634,9 +2634,10 @@ if (!function_exists('getTemplate')) {
          $content = preg_replace("/\[group=([\d,]+)\](.*?)\[\/group]/is",'',$content);  //过滤掉指定用户可见
          $content = preg_replace("/\[password=([^\]]+)\](.*?)\[\/password]/is",'',$content); //过滤掉密码才能看的内容
          $content = preg_replace("/\[paymoney=([\d]+)\](.*?)\[\/paymoney]/is",'',$content); //过滤掉积分购买的内容
+         $content = preg_replace("/\[pay ([^\]]+)\](.*?)\[\/pay]/is",'',$content);  //付费或圈内可看
          $content = preg_replace("/\[qun\](.*?)\[\/qun]/is",'',$content);   //过滤掉仅圈内成员可见的内容
          $content = preg_replace("/\[iframe_mv\](.*?)\[\/iframe_mv]/is",'',$content);   //过滤掉站外视频
-         $content = preg_replace("/\[topic ([^\]]+)\](.*?)\[\/topic]/is",'\\2',$content); 
+         $content = preg_replace("/\[topic ([^\]]+)\](.*?)\[\/topic]/is",'\\2',$content);   //站内引用主题         
          
          $content = str_replace("\r",'',$content);
          $content = str_replace("\n",'',$content);
