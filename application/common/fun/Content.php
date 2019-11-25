@@ -75,11 +75,12 @@ class Content{
     /**
      * 获取内容中的图片
      * @param string $content
-     * @param string $type
+     * @param string $not_use_hide 隐藏的内容,就不要提取他的图片
      * @return array[][]|\app\common\fun\unknown[][][]
      */
-    public static function get_images($content='',$type='jpg,jpeg,png'){
-        $array = self::get_file($content,$type);
+    public static function get_images($content='',$not_use_hide=true){
+        $content = del_html($content,$not_use_hide);
+        $array = self::get_file($content,'jpg,jpeg,png,gif');
         $data = [];
         foreach ($array AS $pic){
             $data[] = [

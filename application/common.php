@@ -2626,9 +2626,10 @@ if (!function_exists('getTemplate')) {
      /**
       * 清除html代码
       * @param string $content
-      * @return mixed
+      * @param string $only_delhide 是否只做清除隐藏代码,比如获取内容图片的时候就用到
+      * @return mixed|unknown
       */
-     function del_html($content=''){         
+     function del_html($content='',$only_delhide=false){         
          $content = preg_replace("/\[face(\d+)\]/is",'',$content);  //过滤掉QQ表情 [reply] 请在这括号范围内输入要隐藏的内容 [/reply]
          $content = preg_replace("/\[reply\](.*?)\[\/reply]/is",'',$content);   //过滤掉回复可见的内容
          $content = preg_replace("/\[group=([\d,]+)\](.*?)\[\/group]/is",'',$content);  //过滤掉指定用户可见
@@ -2638,7 +2639,9 @@ if (!function_exists('getTemplate')) {
          $content = preg_replace("/\[qun\](.*?)\[\/qun]/is",'',$content);   //过滤掉仅圈内成员可见的内容
          $content = preg_replace("/\[iframe_mv\](.*?)\[\/iframe_mv]/is",'',$content);   //过滤掉站外视频
          $content = preg_replace("/\[topic ([^\]]+)\](.*?)\[\/topic]/is",'\\2',$content);   //站内引用主题         
-         
+         if($only_delhide){
+             return $content;
+         }
          $content = str_replace("\r",'',$content);
          $content = str_replace("\n",'',$content);
          $content = str_replace('　',' ',$content);  //全角空格换成半角空格
