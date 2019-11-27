@@ -102,7 +102,7 @@ class Group extends AdminBase
 	            return $show;
 	        }],
 	        ['level', '升级'.$this->money_name, 'text.edit'],
-	        ['daytime', '有效期', 'text.edit'],
+	        ['daytime', '有效期(天)', 'text.edit'],
 	    ];
 	    
 	    $this->tab_ext['page_title'] = '用户组管理';

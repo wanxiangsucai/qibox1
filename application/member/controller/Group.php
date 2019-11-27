@@ -155,6 +155,11 @@ class Group extends MemberBase
         return $this->editContent($info);
     }
     
+    /**
+     * 处理修改用户组
+     * @param number $gid 新的用户组ID
+     * @param number $money 升级所需的RMB或积分
+     */
     protected function post($gid=0,$money=0){
         $array = [
                 'uid'=>$this->user['uid'],
@@ -175,18 +180,61 @@ class Group extends MemberBase
         $result = GrouplogModel::create($array);
         if ($result) {
             if ($money>0) {
-                if($this->webdb['up_group_use_rmb']){
-                    add_rmb($this->user['uid'],-$money,0,'认证升级用户身份');
-                }else{
+                if($this->webdb['up_group_use_rmb']){   //要求RMB升级
+                    add_rmb($this->user['uid'],-$money,0,'认证升级用户身份');                    
+                }else{ //积分升级
                     add_jifen($this->user['uid'],-$money,'认证升级用户身份');
                 }                
             }
+            $this->fx();
             $title = $this->user['username'] . '申请升级用户组为 ' . getGroupByid($gid) . '请尽快进后台审核处理！';
             $content = $title."\r\n 申请日期：".date('Y-m-d H:i');
             send_admin_msg($title,$content);
             $this->success('信息已提交,请等待管理员审核!',urls('index'));
         }else{
             $this->error('数据提交失败');
+        }
+    }
+    
+    /**
+     * 处理推荐人奖励
+     */
+    private function fx(){
+        $tzr_uid = $this->user['introducer_1'];
+        if (empty($tzr_uid) || empty($this->webdb['P__propagandize']) || empty($this->webdb['P__propagandize']['introduce_vip_reward_'])){
+            return ;
+        }
+        $tzr_info = get_user($tzr_uid);
+        $money = $this->webdb['P__propagandize']['introduce_vip_reward_'][$tzr_info['groupid']];
+        if(empty($money)){
+            return ;
+        }
+        if (is_numeric($money)) {
+            $array[1] = $money;            
+        }else{  //这种格式 1=5,10=30,20=50
+            $detail = explode(',',$money);
+            $array = [];
+            foreach($detail AS $value){
+                if($value!=''){
+                    list($num,$_money) = explode('=',$value);
+                    $array[$num] = $_money;
+                }
+            }
+            krsort($array); //由高到低排序
+        }
+
+        $introducer_num = UserModel::where('introducer_1',$tzr_uid)->count('uid');
+        foreach($array AS $num=>$money){
+            if($introducer_num%$num==0){
+                $title = '每推荐 '.$num.' 个用户升级VIP奖励';
+                $content = '感谢你推荐 '.$this->user['username'].' 成为VIP会员，每推荐 '.$num.' 个用户升级VIP可奖励 '.$money.' 元';
+                add_rmb($tzr_uid,$money,0,$title);
+                send_msg($tzr_uid,$title,$content);
+                if ($tzr_info['weixin_api']) {
+                    send_wx_msg($tzr_info['weixin_api'],$content);
+                }
+                break;
+            }
         }
     }
     

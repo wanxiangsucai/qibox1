@@ -270,7 +270,7 @@ INSERT INTO `qb_groupcfg` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type
     {
 		$this->tab_ext = [
 				'nav'=>[ self::nav() , $group],
-				'help_msg'=>'用户组字段管理',
+				'help_msg'=>'暂无介绍!',
 				];
 
 		$this->list_items = [

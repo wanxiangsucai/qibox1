@@ -85,6 +85,7 @@ $(document).ready(function(){
     <input name="nums" type="hidden"/>
     <div class="head">选择菜单链接</div>
     <div class="ListMyShop">
+					<div class="butters" onclick="editurl('{:get_url('msg','-'.input('hy_id'))}','fa fa-comments-o','群聊')">群聊</div>
 					<div class="butters" onclick="editurl('{:urls('qun/content/show',['id'=>input('hy_id')])}','fa fa-home','商铺主页')">商铺主页</div>
 					<div class="butters" onclick="editurl('{:get_url('member')}','fa fa-user-circle-o','会员中心')">会员中心</div>
 					<div class="butters" onclick="editurl('{:urls('qun/map/index',['id'=>input('hy_id')])}','fa fa-flag-checkered','一键导航')">一键导航</div>

@@ -162,7 +162,11 @@ abstract class C extends MemberBase
         //接口
         hook_listen('cms_add_begin',$data);
         if (($result=$this->add_check($mid,$fid,$data))!==true) {
-            $this->error($result);
+            if (strstr($result,'无权')||strstr($result,'没权')) {
+                $this->error($result.'，你可以选择升级用户组',url('member/group/index'));
+            }else{
+                $this->error($result);
+            }            
         }
         
         // 保存数据

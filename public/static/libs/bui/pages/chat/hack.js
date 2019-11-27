@@ -47,8 +47,22 @@ loader.define(function() {
 				}
 			});
 			router.$(".hack_wrap").hide();
-		})
+		});
+
+		router.$(".more_hack #givermb").click(function(){
+			bui.load({ 
+				url: "/public/static/libs/bui/pages/chat/givermb.html",
+				param:{
+					uid:uid,
+				}
+			});
+			router.$(".hack_wrap").hide();
+		});
+		router.$(".more_hack #choose_video_btn").hide();
+		router.$(".more_hack #live_video").hide();
+		router.$(".more_hack #givermb").hide();
 		
+
 		console.log("碎片加载成功");
 		this.upload();
 		loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息

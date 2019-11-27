@@ -57,4 +57,51 @@ class Rmb extends MemberBase
         $map['posttime'] = fun('time@only',$type,$num);
         return Db::name('rmb_consume')->where($map)->sum('money');
     }
+    
+    /**
+     * 打赏圈主
+     * @param number $uid
+     * @param number $money
+     */
+    public function give($uid=0,$money=0){
+        if (empty(modules_config('qun'))) {
+            return $this->err_js('你还没安装圈子');
+        }elseif($money<0.01){
+            return $this->err_js('打赏金额不能小于0.01元');
+        }elseif($money>$this->user['rmb']){
+            return $this->err_js('打赏金额不能大于你的可用余额');
+        }
+        $info = fun('qun@getByid',-$uid);
+        if (empty($info)) {
+            return $this->err_js('圈子信息不存在');
+        }elseif($info['uid']==$this->user['uid']){
+            return $this->err_js('你不能自己给自己打赏');
+        }
+        add_rmb($this->user['uid'],-$money,0,'打赏圈主:'.$info['title']);
+        add_rmb($info['uid'],$money,0,'作为 '.$info['title'].' 的圈主被 '.$this->user['username'].' 打赏');
+        $quner = get_user($info['uid']);
+        $_msg = '帐户余额';
+        if ($money>=0.3 && $quner['weixin_api'] && $this->webdb['wxgive_qun_rmb']) {
+            $array = [
+                'money'=>$money,
+                'title'=>'打赏提现',
+                'id'=>$quner['weixin_api'],
+            ];
+            $res = \app\common\util\Weixin::gave_moeny($array);
+            if($res===true){
+                add_rmb($info['uid'],-$money,0,'打赏提现');
+                $msg = '感谢你的打赏，金额已转到圈主微信钱包';
+                $_msg = '微信钱包';
+            }else{
+                $msg = '感谢你的打赏，金额已转到圈主帐户余额,无法转到圈主微信钱包,原因如下:'.$res;                
+            }
+        }else{
+            $msg = '感谢你的打赏，金额已转到圈主帐户余额';
+        }
+        $title = '有人给你打赏了';
+        $content = '作为 '.$info['title'].' 的圈主被 '.$this->user['username'].' 打赏了 '.$money.' 元，金额已转到你的'.$_msg.'，请注意查收';
+        send_msg($info['uid'],$title,$content);
+        $quner['weixin_api'] && send_wx_msg($quner['weixin_api'], $content);
+        return $this->ok_js([],$msg);
+    }
 }

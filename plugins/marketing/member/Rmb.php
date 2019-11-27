@@ -12,7 +12,7 @@ class Rmb extends MemberBase
      * 充值、消费记录
      * @return mixed|string
      */
-	public function index(){
+    public function index(){	    
 		$map = [
                 'uid'=>$this->user['uid']
         ];
@@ -41,11 +41,13 @@ class Rmb extends MemberBase
 	    }
 	}
     
+
 	/**
 	 * 充值
+	 * @param string $callback_url 指定回调地址
 	 * @return mixed|string
 	 */
-	public function add(){
+	public function add($callback_url=''){
 	    if(IS_POST){
 	        $data = $this->request->post();
 	        if ( $data['money']<0.01 ) {
@@ -54,11 +56,11 @@ class Rmb extends MemberBase
 	        $numcode = 'r'.date('ymdHis').rands(3);      //订单号
 	        //直接跳转支付
 	        post_olpay([
-	                'money' => $data['money'],
-	                'return_url' => purl('index'),
-	                'banktype' => in_weixin() ? 'weixin' : 'alipay',
-	                'numcode' => $numcode,
-	                'callback_class' => '',
+	            'money' => $data['money'],
+	            'return_url' => $callback_url?:purl('index'),
+	            'banktype' => in_weixin() ? 'weixin' : 'alipay',
+	            'numcode' => $numcode,
+	            'callback_class' => '',
 	        ] , true);	
 	    }
 	    return $this->pfetch();

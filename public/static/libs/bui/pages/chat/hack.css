@@ -58,3 +58,10 @@
 .more_hack #choose_coupon_btn i{
 	font-size:18px;
 }
+
+.more_hack #givermb{
+	margin-top:10px;
+}
+.more_hack #choose_video_btn{
+	margin-top:8px;
+}
