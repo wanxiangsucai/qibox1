@@ -4,7 +4,7 @@ namespace app\index\controller\wxapp;
 use app\common\model\Msg AS Model;
 use app\common\controller\IndexBase;
 
-//小程序  
+
 class Msg extends IndexBase{
     
     public function index(){
@@ -13,13 +13,14 @@ class Msg extends IndexBase{
     
     /**
      * 获取某个人跟它人或者是圈子的会话记录
-     * @param number $uid
-     * @param number $id
-     * @param number $rows
-     * @param number $maxid
+     * @param number $uid 正数用户UID,负数圈子ID
+     * @param number $id 某条消息的ID
+     * @param number $rows 取几条
+     * @param number $maxid 消息中最新的那条记录ID
+     * @param number $is_live 是否在视频直播
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
-    public function get_more($uid=0,$id=0,$rows=5,$maxid=0){
+    public function get_more($uid=0,$id=0,$rows=5,$maxid=0,$is_live=0){
         if (empty($this->user) && ($uid>=0 || $id>0)) {
             return $this->err_js("请先登录");
         }
@@ -62,6 +63,26 @@ class Msg extends IndexBase{
             $array['userinfo'] = ['uid'=>0,'username'=>'游客','groupid'=>0];
         }
         
+        if ($is_live) {
+            $live_array = cache('live_qun');
+            $data = $this->request->post();
+            if($live_array['qun'.$uid]['flv_url']!=$data['flv_url']){
+                fun('alilive@add',$this->user['uid'],$uid,'qun',$data);
+            }
+            $live_array['qun'.$uid] = [
+                'flv_url'=>$data['flv_url'],
+                'm3u8_url'=>$data['m3u8_url'],
+                'rtmp_url'=>$data['rtmp_url'],
+                'time'=>time(),
+            ];
+            cache('live_qun',$live_array);
+        }elseif($uid<1){    //代表群聊 其中群主不显示播放器
+            $live_array = cache('live_qun');
+            if($live_array['qun'.$uid]){
+                $live_array['qun'.$uid]['time'] = time() - $live_array['qun'.$uid]['time'];
+                $array['live_video'] = $live_array['qun'.$uid];
+            }
+        }        
         return $this->ok_js($array);
     }
     

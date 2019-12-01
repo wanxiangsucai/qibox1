@@ -245,3 +245,23 @@
 	font-weight:bold;
 	color:yellow;
 }
+
+
+.live-player-warp{
+	display:none;
+	position:fixed;
+	right:2px;
+	top:50px;
+	width:200px;
+	height:150px;
+	background:#ccc;
+	text-align:center;
+	z-index:1;
+	opacity:0.5;
+}
+.live-player-warp span{
+	display:block;
+	margin-top:100px;
+	color:blue;
+	font-weight:bold;
+}

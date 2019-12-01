@@ -322,6 +322,10 @@ class Setting extends AdminBase
         //某分类下的所有参数选项
         $list_data = empty($group) ? [] : $this->model->getListByGroup($group);
         
+        
+        //联动字段
+        $this->tab_ext['trigger'] = $this->getTrigger($list_data);
+        
         //创建表格
         $this->setNav($group);
         $tab_list = [
@@ -339,6 +343,37 @@ class Setting extends AdminBase
         }
         $this->mid = $group;    //纯属为了模板考虑的
 		return $this->editContent($data);
+    }
+    
+    
+    /**
+     * 获得某些字段要关联其它字段
+     * @param array $field_array
+     * @return string[][]|unknown[][]
+     */
+    protected function getTrigger($field_array=[]){
+        $array = [];
+        foreach ($field_array AS $rs){
+            if($rs['form_type']=='select'||$rs['form_type']=='radio'||$rs['form_type']=='checkbox'){
+                $detail = explode("\r\n",$rs['options']);
+                foreach($detail AS $value){
+                    list($v,$b,$otherFields) = explode("|",$value);
+                    if($otherFields){
+                        $_fs = explode(',',$otherFields);
+                        foreach($_fs AS $otherField ){
+                            $array[$rs['c_key']][$otherField][] = $v;
+                        }
+                    }
+                }
+            }
+        }
+        $tri = [];
+        foreach($array as $name=>$ar){
+            foreach($ar AS $otherField=>$rs){
+                $tri[] = [$name,implode(',', $rs),$otherField];
+            }
+        }
+        return $tri;
     }
     
     /**

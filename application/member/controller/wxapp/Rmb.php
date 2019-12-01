@@ -81,7 +81,7 @@ class Rmb extends MemberBase
         add_rmb($info['uid'],$money,0,'作为 '.$info['title'].' 的圈主被 '.$this->user['username'].' 打赏');
         $quner = get_user($info['uid']);
         $_msg = '帐户余额';
-        if ($money>=0.3 && $quner['weixin_api'] && $this->webdb['wxgive_qun_rmb']) {
+        if ($money>=0.3 && $quner['weixin_api'] && $this->webdb['P__alilive']['wxgive_qun_rmb']) {
             $array = [
                 'money'=>$money,
                 'title'=>'打赏提现',

@@ -18,15 +18,21 @@ loader.define(function() {
 				layer.alert("只有群聊才能发红包!");
 				return ;
 			}
-			layer.open({
-				type: 2,
-				title: false,
-				shadeClose: true,
-				shade: 0.3,
-				area: ['370px', '600px'],
-				content: '/index.php/qun/hongbao/add/mid/1/aid/'+(-uid)+'.html'
+			bui.load({ 
+				url: "/public/static/libs/bui/pages/chat/give_hongbao.html",
+				param:{
+					uid:uid,
+				}
 			});
 			router.$(".hack_wrap").hide();
+			//layer.open({
+			//	type: 2,
+			//	title: false,
+			//	shadeClose: true,
+			//	shade: 0.3,
+			//	area: ['370px', '600px'],
+			//	content: '/index.php/qun/hongbao/add/mid/1/aid/'+(-uid)+'.html'
+			//});			
 		});
 
 		router.$("#photoBtn").click(function(){
@@ -60,7 +66,7 @@ loader.define(function() {
 		});
 		router.$(".more_hack #choose_video_btn").hide();
 		router.$(".more_hack #live_video").hide();
-		router.$(".more_hack #givermb").hide();
+		//router.$(".more_hack #givermb").hide();
 		
 
 		console.log("碎片加载成功");

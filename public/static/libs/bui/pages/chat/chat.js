@@ -4,6 +4,8 @@
  * @return {[object]}  [ 返回一个对象 ]
  */
 var refresh_i,refresh_timenum;//初始化8秒刷新一次
+var is_live = 0; //是否在直播
+var live_urls = {flv_url:'',m3u8_url:'',rtmp_url:''}; //直播地址
 loader.define(function(require,exports,module) {
 
     var pageview = {};
@@ -20,6 +22,8 @@ loader.define(function(require,exports,module) {
 	var user_list = {}; //圈子用户列表
 	var user_num = 0; //圈子成员总数
 	var uiSidebar;          // 侧边栏
+	var video_player;
+	var have_load_live_player=false;
 
     // 模块初始化定义
     pageview.init = function () {
@@ -93,6 +97,11 @@ loader.define(function(require,exports,module) {
 				$.get("/index.php/qun/wxapp.visit/check_visit/id/"+(-uid)+".html",function(res){});	//更新圈子浏览日志
 			},2000);
 		}
+
+		loader.require("/public/static/libs/bui/pages/chat/play_video",function (play) {
+			video_player = play;
+		});
+
     }
 	pageview.right_btn = function () {
         // 初始化下拉更多操作
@@ -280,8 +289,43 @@ loader.define(function(require,exports,module) {
 			}else{
 				router.$("#remind_online").hide();
 			}
+			set_live_player(res,'cknew');	//设置视频直播的播放器
 		});
 		ck_num++;
+	}
+
+	//设置视频直播的播放器
+	function set_live_player(res,type){
+		if(quninfo.uid==my_uid){
+			//console.log('自己不需要播放');
+			//return ;//自己就不要显示播放了
+		}
+		if(type=='cknew' && res.data.length>0){
+			res.data.forEach((rs)=>{
+				if(rs.content.indexOf('live_video_start')>0){
+					if(have_load_live_player==true)have_load_live_player = false;	//中断过的 . 重新发起直播
+				}
+			});
+		}
+		//3秒内有活动,都算在直播中,此值要大于上面的refresh_timenum
+		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined' && res.ext.live_video.time<3){
+			router.$(".live-player-warp").show();
+			have_load_live_player = true;
+			var otime = 1;
+			if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
+				otime = 8000;	//8秒
+			}
+
+			setTimeout(function(){
+				video_player.play(res.ext.live_video);	//设置播放器
+				//setTimeout(function(){
+				//	router.$('#chat_win').parent().scrollTop(20000);
+				//},1000);
+			},otime);
+
+		}else if( typeof(res.ext.live_video)!='undefined' && res.ext.live_video.time>5){	//超过5秒就代表直播停止了
+			have_load_live_player = false;
+		}
 	}
 	
 	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作
@@ -296,22 +340,27 @@ loader.define(function(require,exports,module) {
 		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息 不存的话,就是为空即==''
 		userinfo = res.ext.userinfo;	//当前用户登录信息
 		head_menu(uid,quninfo,qun_userinfo,userinfo);
-
+		
 		setTimeout(function(){
-			$.get("/index.php/p/signin-api-get_cfg/id/"+quninfo.id+".html",function(res){
-				if(res.code==0){
-					if(res.data.today_have_signin==true){
-						console.log('今天已经签到过了');
-					}else{
-						router.loadPart({
-							id: "#hack_signin",
-							url: "/public/static/libs/bui/pages/signin/pop.html?fdd",
-						}).then(function (module) {
-							module.api(quninfo,qun_userinfo,userinfo,res.data);
-						});
-					}					
-				}
-			});
+			set_live_player(res);	//设置视频直播的播放器
+
+			if(have_load_live_player==true){	//直播的时候,就不弹出签到了,影响界面布局
+				$.get("/index.php/p/signin-api-get_cfg/id/"+quninfo.id+".html",function(res){
+					if(res.code==0){
+						if(res.data.today_have_signin==true){
+							console.log('今天已经签到过了');
+						}else{
+							router.loadPart({
+								id: "#hack_signin",
+								url: "/public/static/libs/bui/pages/signin/pop.html?fdd",
+							}).then(function (module) {
+								module.api(quninfo,qun_userinfo,userinfo,res.data);
+							});
+						}					
+					}
+				});			
+			}
+
 			pageview.weixin_share();
 		},1000);
 	}

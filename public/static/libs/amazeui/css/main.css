@@ -898,7 +898,25 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 
 
 
-
+.live-player-warp{
+	display:none;
+	position:fixed;
+	right:2px;
+	top:0px;
+	width:400px;
+	height:150px;
+	background:#ccc;
+	text-align:center;
+	z-index:1;
+	opacity:1;
+}
+.live-player-warp span{
+	display:block;
+	margin-top:100px;
+	color:blue;
+	font-weight:bold;
+	font-size:16px;
+}
 
 
 

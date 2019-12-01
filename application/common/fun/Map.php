@@ -29,9 +29,16 @@ class Map{
         $url .= "output=json&tactics=11&origins=$a_y,$a_x&destinations=$b_y,$b_x&ak=MGdbmO6pP5Eg1hiPhpYB0IVd";
         $array = json_decode(file_get_contents($url),true);
         if ($array['status']==0 && $array['result'][0]['distance']) {
+            $km = $array['result'][0]['distance']['text'];
+            if(strstr($km,'公里')){
+                $km = str_replace('公里', '', $km);
+            }else{
+                $km = str_replace('米', '', $km);
+                $km = round($km/1000,2);
+            }
             return [
                 'm'=>$array['result'][0]['distance']['value'],
-                'km'=>str_replace('公里', '', $array['result'][0]['distance']['text']),
+                'km'=>$km,
                 'time'=>$array['result'][0]['duration']['text'],
             ];
         }else{

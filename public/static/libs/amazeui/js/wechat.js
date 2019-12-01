@@ -158,6 +158,10 @@ function add_click_user(){
 		msg_scroll = true; //恢复可以使用滚动条
 		showMoreMsg(uid);	//加载相应用户的聊天记录
 		set_user_name(uid); //设置当前会话的用户名
+
+		$(".live-player-warp").hide();
+		$("#players").html('<span>视频直播即将开始...</span>');
+		have_load_live_player = false;
 	});
 	
 }
@@ -258,6 +262,7 @@ function showMoreMsg(uid){
 		if(res.code==0){
 			if(show_msg_page==1){
 				maxid = res.ext.maxid;
+				set_live_player(res);	//检查是否有视频直播
 			}
 			set_main_win_content(res);
 		}else{
@@ -349,6 +354,8 @@ var maxid = -1;
 var need_scroll = false;
 var user_num = 0;		//圈内成员数
 var user_list = {};	//圈内成员列表
+var have_load_live_player=false;
+
 
 $(function(){
 	
@@ -457,6 +464,7 @@ $(function(){
 				layer.alert('页面加载失败,请刷新当前网页');
 				return ;
 			}
+			set_live_player(res,'cknew');	//检查是否有视频直播
 			num++;
 			ck_num = num;
 			var that = $('.pc_show_all_msg');
@@ -492,7 +500,7 @@ $(function(){
 				$("#remind_online").show();
 			}else{
 				$("#remind_online").hide();
-			}
+			}			
 		});
 		ck_num++;
 	}
@@ -856,8 +864,49 @@ function get_qunuser_list(uid){
 
 
 
+//设置视频直播的播放器
+function set_live_player(res,type){
+	
+		if(type=='cknew' && res.data.length>0){
+			console.log(res.data);
+			res.data.forEach((rs)=>{
+				if(rs.content.indexOf('live_video_start')>0){
+					console.log('中断过的 . 重新发起直播');
+					if(have_load_live_player==true)have_load_live_player = false;	//中断过的 . 重新发起直播
+				}
+			});
+		}//console.log('========='+have_load_live_player+'-------'+typeof(res.ext.live_video)+'--------'+res.ext.live_video.time);
+		//3秒内有活动,都算在直播中,此值要大于上面的refresh_timenum
+		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined' && res.ext.live_video.time<3){
+			$(".live-player-warp").show();
+			have_load_live_player = true;
+			var otime = 1;
+			if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
+				otime = 8000;	//8秒
+			}
 
+			setTimeout(function(){
+				ck_play(res.ext.live_video.flv_url);	//设置播放器
+			},otime);
 
+		}else if( typeof(res.ext.live_video)!='undefined' && res.ext.live_video.time>5){	//超过5秒就代表直播停止了
+			have_load_live_player = false;
+		}
+}
+
+function ck_play(url){
+	var videoObject = {
+                		container: '#players', //“#”代表容器的ID，“.”或“”代表容器的class
+                		variable: 'player1',  //该属性必需设置，值等于下面的new chplayer()的对象
+                		//poster:'pic/wdm.jpg',//封面图片
+                        //loaded: 'loadedHandler1', //当播放器加载后执行的函数	
+                		video:{
+							file:url,   //视频地址
+							type:'video/flv'
+						},
+             };
+             var player1 = new ckplayer(videoObject);
+}
 
 
 
