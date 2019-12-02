@@ -1,3 +1,28 @@
+function apiready() {	//跳转到仿生APP去
+	
+	var str = window.location.href;
+	var url_param = str.substring(str.indexOf('#')+1);
+	if(url_param.indexOf('/')==0){
+		url_param = url_param.substring(1);
+	}
+	//if(url_param=='main'){
+	//	url_param += '?type=chatlist';
+	//}
+	//api.openWin({
+	//	name: 'main',
+	//	url: 'widget://html/jump.html?buiUrl='+encodeURIComponent(url_param),
+	//	reload:true,
+		//pageParam: {name: 'test'}
+	//});
+	//api.closeWin({name: 'main'});
+	
+	api.execScript({
+		name:"main", //frameName: 'iframe',
+		script: "wap_callback_url('"+url_param+"')"
+	});
+	api.closeFrame({ name: 'iframe' });
+}
+
 window.router = bui.router();
 window.loader = bui.loader({cache: false});	//false代表不要缓存
 
