@@ -289,7 +289,7 @@ var wx_login_url  = "{:purl('weixin/login/index')}?fromurl={$fromurl}";
 var ck_qqlogin_url = "{:purl('login/qq/app',[],'index')}?";
 var ck_wxlogin_url = "{:iurl('index/wxapp.login/web_login_check')}?";
 var jump_from_url = "{$fromurl}";
-var app_login_type = "{$webdb.weixin_paykey?2:1}";
+var app_login_type = "{$webdb.wxopen_appkey?2:1}";
 var app_login_url = "{:iurl('index/wxapp.login/wxopen')}";
 var xcx_gh_id = "{$webdb['P__h5app']['wxapp_ghid']}";
 </script>
