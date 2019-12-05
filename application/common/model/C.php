@@ -356,7 +356,8 @@ abstract class C extends Model
     public static function getMidById($id){
         static::check_model();
         static $mids = [];
-        if(empty($mids[$id])){
+        $mkey = self::$model_key.'_'.$id;   //避免不同模型出现同样ID的主题
+        if(empty($mids[$mkey])){
             $info = Db::name(self::$base_table)->where('id','=',$id)->find();
             if ($info) {
                 $table = config('database.prefix') . self::$base_table;
@@ -381,9 +382,9 @@ abstract class C extends Model
                     define('NEED_UPDATE_TABLE', true); //兼容升级的情况,通知要同步数据
                 }
             }
-            $mids[$id] = $info['mid'];
+            $mids[$mkey] = $info['mid'];
         }
-        return $mids[$id];
+        return $mids[$mkey];
     }
     
     /**
