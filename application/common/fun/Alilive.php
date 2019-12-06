@@ -14,13 +14,13 @@ class Alilive{
      */
     public static function add($uid=0,$ext_id=0,$ext_sys='',$data=[]){
         $array = [
-            'uid'=>$uid,
+            'uid'=>$uid?:0,
             'ext_id'=>abs($ext_id),
-            'ext_sys'=>modules_config($ext_sys)['id'],
-            'push_url'=>$data['push_url'],
-            'flv_url'=>$data['flv_url'],
-            'm3u8_url'=>$data['m3u8_url'],
-            'rtmp_url'=>$data['rtmp_url'],
+            'ext_sys'=>modules_config($ext_sys)['id']?:0,
+            'push_url'=>$data['push_url']?:'',
+            'flv_url'=>$data['flv_url']?:'',
+            'm3u8_url'=>$data['m3u8_url']?:'',
+            'rtmp_url'=>$data['rtmp_url']?:'',
             'create_time'=>time(),
         ];
         $result = Db::name('alilive_log')->insert($array);

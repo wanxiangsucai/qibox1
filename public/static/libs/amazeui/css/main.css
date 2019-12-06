@@ -587,7 +587,8 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 }
 
 .input_icon a:nth-child(2):hover{
-	background: url(../images/icon/icon14_1.png) no-repeat center center;
+	/*background: url(../images/icon/icon14_1.png) no-repeat center center;*/
+	color:#09BB07;
 }
 
 .input_icon a:nth-child(3){
@@ -618,13 +619,16 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 	background: url(../images/icon/icon17_1.png) no-repeat center center;
 }
 
-.input_icon a:nth-child(5){
-	background: url(../images/icon/icon18.png) no-repeat center center;
-	float: right;
+.input_icon a:nth-child(5),#live_video{
+	color:#aaa;
+	font-size:22px;
+	/*background: url(../images/icon/icon18.png) no-repeat center center;*/
+	 
 }
 
-.input_icon a:nth-child(5):hover{
-	background: url(../images/icon/icon18_1.png) no-repeat center center;
+.input_icon a:nth-child(5):hover,#live_video:hover{
+	/*background: url(../images/icon/icon18_1.png) no-repeat center center;*/
+	color:#09BB07;
 }
 
 .input_icon a img{
@@ -923,3 +927,20 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 
 
 
+.live_video_warp{
+	padding:20px;
+	line-height:30px;
+}
+.live_video_warp input{
+	width:300px;
+}
+.live_video_warp .codeimg{
+	width:100%;
+	text-align:center;
+	height:150px;
+	line-height:15px;
+	font-weight:bold;
+}
+.live_video_warp .codeimg img{
+	width:130px;
+}

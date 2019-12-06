@@ -64,23 +64,26 @@ class Msg extends IndexBase{
         }
         
         if ($is_live) {
-            $live_array = cache('live_qun');
-            $data = $this->request->post();
-            if($live_array['qun'.$uid]['flv_url']!=$data['flv_url']){
-                fun('alilive@add',$this->user['uid'],$uid,'qun',$data);
-            }
-            $live_array['qun'.$uid] = [
-                'flv_url'=>$data['flv_url'],
-                'm3u8_url'=>$data['m3u8_url'],
-                'rtmp_url'=>$data['rtmp_url'],
-                'time'=>time(),
-            ];
-            cache('live_qun',$live_array);
-        }elseif($uid<1){    //代表群聊 其中群主不显示播放器
+//             $live_array = cache('live_qun');
+//             $data = $this->request->post();
+//             if($live_array['qun'.$uid]['flv_url']!=$data['flv_url']){
+//                 fun('alilive@add',$this->user['uid'],$uid,'qun',$data);
+//             }
+//             $live_array['qun'.$uid] = [
+//                 'flv_url'=>$data['flv_url'],
+//                 'm3u8_url'=>$data['m3u8_url'],
+//                 'rtmp_url'=>$data['rtmp_url'],
+//                 'time'=>time(),
+//             ];
+//             cache('live_qun',$live_array);
+        }elseif($uid<1){    //代表群聊
             $live_array = cache('live_qun');
             if($live_array['qun'.$uid]){
-                $live_array['qun'.$uid]['time'] = time() - $live_array['qun'.$uid]['time'];
+                $live_array['qun'.$uid]['time'] = 0;    //此参数将弃用
+                $live_array['qun'.$uid]['push_url']='';
                 $array['live_video'] = $live_array['qun'.$uid];
+            }else{
+                $live_array['qun'.$uid]['time'] = 100;//此参数将弃用
             }
         }        
         return $this->ok_js($array);

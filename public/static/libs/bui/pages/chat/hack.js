@@ -65,9 +65,35 @@ loader.define(function() {
 			router.$(".hack_wrap").hide();
 		});
 		router.$(".more_hack #choose_video_btn").hide();
-		router.$(".more_hack #live_video").hide();
 		//router.$(".more_hack #givermb").hide();
-		
+		router.$(".more_hack #live_video").click(function(){
+			if(uid>=0){
+				layer.alert('只有群聊才能直播!');
+				return ;
+			}
+			$.get("/index.php/p/alilive-api-url.html?id="+Math.abs(uid),function(res){
+				if(res.code==0){
+					layer.alert("只有在app中才能直播，你点击确定，可以获取推流码或者是推流地址用其它第三方APP推流直播",function(){
+						layer.closeAll();
+						layer.open({
+							type: 1,
+							title:'直播推流与拉流地址',
+							shift: 1,
+							area:['98%','400px'],
+							content: $("#live_video_warp").html(),
+						});
+						$(".live_video_warp").last().find(".codeimg img").attr('src',res.data.push_img);
+						$(".live_video_warp").last().find(".push_url").val(res.data.push_url);
+						$(".live_video_warp").last().find(".m3u8_url").val(res.data.m3u8_url);
+						$(".live_video_warp").last().find(".rtmp_url").val(res.data.rtmp_url);
+						$(".live_video_warp").last().find(".flv_url").val(res.data.flv_url);
+					});
+
+				}else{
+					layer.alert(res.msg);
+				}
+			});
+		});
 
 		console.log("碎片加载成功");
 		this.upload();

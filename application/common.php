@@ -1877,7 +1877,7 @@ if(!function_exists('tempdir')){
         if($domain === null){
             $domain = request()->domain() ;
         }
-        if(!preg_match('/^(http|https):/', $path)&&!preg_match('/^\/public\//', $path)){
+        if(!preg_match('/:\/\//', $path)&&!preg_match('/^\/public\//', $path)){
             $path = $domain . PUBLIC_URL . $path;
         }
         elseif(strpos($path, 'http://thirdwx') !== false){
@@ -2768,7 +2768,7 @@ if (!function_exists('getTemplate')) {
                  $url = murl('member/user/index',is_numeric($array)?['uid'=>$array]:$array);
                  break;
               default:  //把网址加上http域名
-                  $url = preg_match('/^(http:|https:)/', $type)?$type:request()->domain().$type;
+                  $url = preg_match('/:\/\//', $type)?$type:request()->domain().$type;
          }
          return $url;
      }
@@ -2993,7 +2993,7 @@ if (!function_exists('get_qrcode')) {
             $domain = request()->domain();
         }
         if ($url) {
-            $url = preg_match('/^(https:|http:)/', $url) ? $url : $domain.$url;
+            $url = preg_match('/:\/\//', $url) ? $url : $domain.$url;
         }else{
             $url=request()->url(true);
         }

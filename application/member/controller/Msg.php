@@ -204,7 +204,8 @@ class Msg extends MemberBase
             if(!is_array($info)){
                 return ;
             }
-            $uid = $info['uid'];        }
+            $uid = $info['uid'];        
+        }
         if (empty($uid) && !is_numeric($cfg['uid']) && empty($id)) {
             return [];
         }

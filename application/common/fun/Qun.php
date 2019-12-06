@@ -206,6 +206,7 @@ class Qun{
             }
             $info['url'] = iurl("qun/content/show",['id'=>$info['id']]);
             $info['picurl'] = tempdir($info['picurl']);
+            unset($info['sncode']);
             $array[$id] = $info;
         }
         return $info;
@@ -231,6 +232,7 @@ class Qun{
 		$listdb = [];
 		foreach($array AS $aid){
 		    $info = ContentModel::getInfoByid($aid);
+		    unset($info['sncode']);
 		    if($mid){
 		        if(is_numeric($mid) && $info['mid']!=$mid){
 		            continue;
@@ -267,7 +269,9 @@ class Qun{
         $array = Db::name('qun_visit')->where('uid',$uid)->order('visittime desc')->column('aid');
         $listdb = [];
         foreach($array AS $aid){
-            $listdb[] = ContentModel::getInfoByid($aid);
+            $info = ContentModel::getInfoByid($aid);
+            unset($info['sncode']);
+            $listdb[] = $info;
         }
         return $listdb;
     }
@@ -301,7 +305,9 @@ class Qun{
                         }
                     }
                 }
-                $listdb[] = ContentModel::getInfoByid($rs['id']);
+                $info = ContentModel::getInfoByid($rs['id']);
+                unset($info['sncode']);
+                $listdb[] = $info;
             }
             $array[$uid] = $listdb;
         }        

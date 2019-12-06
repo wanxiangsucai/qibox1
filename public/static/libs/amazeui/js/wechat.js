@@ -117,10 +117,6 @@ $(function(){
 
 
 
-
-
-
-
 //异步加载被调用的函数  务必注意,这个函数名必须要跟标签名一样
 function pc_msg_user_list(res){	
 	$.each(res.ext.s_data,function(i,rs){		
@@ -337,12 +333,27 @@ function get_tongji_msg(type){
 	});
 }
 
+var uid = 0;	//当前聊天用户的UID
+
+//URL中指定的用户,同步WAP模板
+var str = window.location.href;
+if (str.indexOf('uid=')>-1) {	//replace(/[^\d|^\-]/g,"");
+    str = str.substring(str.indexOf('uid=')+4);
+	if (/^[-]?[0-9]+$/.test(str)) {
+		uid = str;
+		$(function(){
+			showMoreMsg(uid);
+			set_user_name(uid);
+		});
+	}
+}
+
+
 var chat_type = 'chat';   //主窗口当前应该加载哪类内容,执行哪个函数
 
 var tj_type = '';  //当前选择了哪种统计数据
 
 var uid_array = [];   //每个用户的最新消息ID
-var uid = 0;	//当前聊天用户的UID
 
 var ListMsgUserPage = 1;	//所有信息用户列表
 var show_msg_page = 1;	//会话记录分页
@@ -877,19 +888,19 @@ function set_live_player(res,type){
 			});
 		}//console.log('========='+have_load_live_player+'-------'+typeof(res.ext.live_video)+'--------'+res.ext.live_video.time);
 		//3秒内有活动,都算在直播中,此值要大于上面的refresh_timenum
-		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined' && res.ext.live_video.time<3){
+		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined'){
 			$(".live-player-warp").show();
 			have_load_live_player = true;
 			var otime = 1;
-			if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
-				otime = 8000;	//8秒
-			}
+			//if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
+			//	otime = 2000;	//2秒
+			//}
 
 			setTimeout(function(){
 				ck_play(res.ext.live_video.flv_url);	//设置播放器
 			},otime);
 
-		}else if( typeof(res.ext.live_video)!='undefined' && res.ext.live_video.time>5){	//超过5秒就代表直播停止了
+		}else if( typeof(res.ext.live_video)=='undefined' ){
 			have_load_live_player = false;
 		}
 }
@@ -910,7 +921,32 @@ function ck_play(url){
 
 
 
-
+$(function(){
+	$("#live_video").click(function(){
+		if(uid>=0){
+			layer.alert('只有群聊才能直播!');
+			return ;
+		}
+		$.get("/index.php/p/alilive-api-url.html?id="+Math.abs(uid),function(res){
+			if(res.code==0){				
+				layer.open({
+                    type: 1,
+					title:'直播推流与拉流地址',
+                    shift: 1,
+					area:['600px','400px'],
+                    content: $("#live_video_warp").html(),
+				});
+				$(".live_video_warp").last().find(".codeimg img").attr('src',res.data.push_img);
+				$(".live_video_warp").last().find(".push_url").val(res.data.push_url);
+				$(".live_video_warp").last().find(".m3u8_url").val(res.data.m3u8_url);
+				$(".live_video_warp").last().find(".rtmp_url").val(res.data.rtmp_url);
+				$(".live_video_warp").last().find(".flv_url").val(res.data.flv_url);
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	});
+});
 
 
 

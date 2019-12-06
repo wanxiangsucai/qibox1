@@ -27,6 +27,7 @@ loader.define(function(require,exports,module) {
 
     // 模块初始化定义
     pageview.init = function () {
+
         this.bind();
 		this.right_btn();
 
@@ -307,14 +308,14 @@ loader.define(function(require,exports,module) {
 				}
 			});
 		}
-		//3秒内有活动,都算在直播中,此值要大于上面的refresh_timenum
-		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined' && res.ext.live_video.time<3){
+		//live_video参数存在,代表正在直播中
+		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined'){
 			router.$(".live-player-warp").show();
 			have_load_live_player = true;
 			var otime = 1;
-			if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
-				otime = 8000;	//8秒
-			}
+			//if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
+			//	otime = 8000;	//8秒
+			//}
 
 			setTimeout(function(){
 				video_player.play(res.ext.live_video);	//设置播放器
@@ -323,7 +324,7 @@ loader.define(function(require,exports,module) {
 				//},1000);
 			},otime);
 
-		}else if( typeof(res.ext.live_video)!='undefined' && res.ext.live_video.time>5){	//超过5秒就代表直播停止了
+		}else if( typeof(res.ext.live_video)=='undefined' ){
 			have_load_live_player = false;
 		}
 	}
