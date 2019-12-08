@@ -146,6 +146,7 @@ function add_click_user(){
 
 	$(".pc_msg_user_list li").off('click');
 	$(".pc_msg_user_list li").click(function(){
+		$(this).find(".shownum").removeClass("ck");
 		$(".pc_msg_user_list li").removeClass('user_active');
 		$(this).addClass('user_active');
 		uid = $(this).data('uid');
@@ -244,6 +245,148 @@ function format_chat_msg(array){
 		return str;
 }
 
+
+	//刷新最近的消息用户
+	function check_list_new_msgnum(){
+		$.get(ListMsgUserUrl+"1",function(res){
+			if(res.code==0){
+				var remind = true;
+				$.each(res.ext.s_data,function(i,rs){
+					//出现新的消息新用户，或者是原来新消息的用户又发来了新消息
+					if(typeof(uid_array[rs.f_uid])=='undefined'||rs.id>uid_array[rs.f_uid]){
+						console.log('有新的消息来了');
+						$('.pc_msg_user_list').html(res.data);
+						add_click_user();
+						if(remind && window.Notification){	//消息提醒
+							remind = false;
+							if(Notification.permission=="granted"){
+								pushNotice();
+							}else{
+								Notification.requestPermission(function(status) {                  
+									if (status === "granted") {
+										pushNotice();
+									}
+								});
+							}
+						}
+					}
+					//新消息已读
+					if(rs.new_num<1){
+						$('.pc_msg_user_list .list_'+rs.f_uid+' .shownum').removeClass('ck');
+						$('.pc_msg_user_list .list_'+rs.f_uid+' .shownum').html(rs.num>999?'99+':rs.num);
+					}
+					//console.log(rs.f_uid+'='+rs.id+'='+uid_array[rs.f_uid]);
+					uid_array[rs.f_uid] = rs.id;
+				});
+			}
+		});
+	}
+
+	//右下角弹信息提示,有新消息来了
+	function pushNotice(){
+		var m = new Notification('新消息提醒', {body: '你收到一条新消息,请注意查收',});
+			m.onclick = function () { window.focus();}
+	}
+
+//优先显示底部的内容
+	function goto_bottom(vh){
+		var iCount = setInterval(function() {
+			var obj = $(".pc_show_all_msg");
+			var h = obj.height();
+			//console.log( '实际的高度='+h);
+			if(h>vh){
+				clearInterval(iCount);
+				show_msg_top = h-453;
+				obj.css({top:(-show_msg_top)+"px"});
+				console.log('top='+show_msg_top)
+			}
+		}, 200);
+	}
+
+//建立WebSocket长连接
+var clientId;
+function ws_connect(){
+	if(ws!=null&&ws_stop!=true){
+		$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+clientId,function(res){	//绑定用户
+					if(res.code==0){
+						layer.msg('欢迎到来!',{time:500});
+					}else{
+						layer.alert(res.msg);
+					}
+		});
+		return ;
+	}
+		ws = new WebSocket(ws_url);
+		ws.onmessage = function(e){
+			var obj = {};
+			try {
+				obj = JSON.parse(e.data);
+			}catch(err){
+				console.log(err);
+			}
+			if(obj.type=='newmsg'){
+				//check_new_showmsg(obj);	//非圈子成员的话,就适合推送
+				check_new_showmsg();	//圈子成员或私聊的话,就适合拉数据,因为要同时更新是否已读标志
+				console.log("聊天窗口,有新消息来了!!!!!!!!!!");
+				console.log(obj);
+			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
+				clientId = obj.client_id;
+				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+clientId,function(res){	//绑定用户
+					if(res.code==0){
+						layer.msg('欢迎到来!',{time:500});
+					}else{
+						layer.alert(res.msg);
+					}
+				});
+			}else if(obj.type=='msglist'){	//需要更新列表信息
+				console.log("消息列表,有新消息来了..........");
+				console.log(e.data);
+				//alert("需要更新列表信息");
+				//obj.uid==uid即本圈子提交数据(或者自己正处于跟他人私聊),不用更新列表, obj.uid它人私信自己,就要更新,obj.uid是其它圈子也要更新
+				if( (obj.uid<0 && obj.uid!=uid) || (obj.uid==my_uid && obj.from_uid!=uid ) ){
+					check_list_new_msgnum();
+				}
+			}else{
+				console.log(e.data);
+			}
+		};
+
+		ws.error = function(e){
+			ws_stop = true;
+		};
+		ws.close = function(e){
+			ws_stop = true;
+		};
+		
+		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
+		chat_timer = setInterval(function() {
+			ws.send('{"type":"refresh"}');
+		}, 1000*50);	//50秒发送一次心跳
+}
+
+//初次加载成功
+function load_first_page(res){
+	maxid = res.ext.maxid;
+
+	ws_url = res.ext.ws_url;
+
+	if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
+		check_new = setInterval(function(){
+			if(maxid>=0)check_new_showmsg();
+		},9000);	//没有发信息之前刷新时间不宜太快,9秒刷新一次
+
+		setInterval(function() {
+			//list_i++;
+			//if(list_i%list_time==0)
+			check_list_new_msgnum();	//每隔20秒获取一次列表数据
+		}, 1000*20);
+	}else{
+		ws_connect();	//建立长链接
+	}
+
+	set_live_player(res);	//检查是否有视频直播
+}
+
 //加载更多的会话记录
 function showMoreMsg(uid){
 	if(show_msg_page==1){
@@ -257,14 +400,103 @@ function showMoreMsg(uid){
 		//console.log(res.data);
 		if(res.code==0){
 			if(show_msg_page==1){
-				maxid = res.ext.maxid;
-				set_live_player(res);	//检查是否有视频直播
+				load_first_page(res);				
 			}
 			set_main_win_content(res);
 		}else{
 			layer.msg(res.msg,{time:2500});
 		}
 	});
+}
+
+//刷新会话用户中有没有新消息
+var num = ck_num = 0;
+function check_new_showmsg(obj){
+    if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
+        if(ck_num>num){
+            console.log("服务器还没反馈数据过来");
+            //layer.msg("服务器反馈超时",{time:500});
+            return ;
+        }
+    }
+    
+    if( typeof(obj)=='object' && typeof(obj.data)=='object' && obj.data.length>0 ){		//服务端推数据, 即被动获取数据
+        var res = obj;
+        
+        var that = $('.pc_show_all_msg');
+        res.data = format_chat_msg(res.data);
+        if(res.data!=""){	//有新的聊天内容
+            var vh = that.height();
+            //console.log( '原来的高度='+vh);
+            that.prepend(res.data);
+            format_show_time(that)	//隐藏相邻的时间
+            goto_bottom(vh);
+            add_btn_delmsg();
+            need_scroll = true;
+            if(window.Notification){	//消息提醒
+                if(Notification.permission=="granted"){
+                    pushNotice();
+                }else{
+                    Notification.requestPermission(function(status) {
+                        if (status === "granted") {
+                            pushNotice();
+                        }
+                    });
+                }
+            }
+        }
+        
+        add_msg_data(res,'new');
+        maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
+        set_live_player(res,'cknew');	//设置视频直播的播放器
+        
+    }else{	//客户端拉数据, 主动获取数据
+        
+        $.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){
+            if(res.code!=0){
+                layer.alert('页面加载失败,请刷新当前网页');
+                return ;
+            }
+            set_live_player(res,'cknew');	//检查是否有视频直播
+            num++;
+            ck_num = num;
+            var that = $('.pc_show_all_msg');
+            res.data = format_chat_msg(res.data);
+            if(res.data!=""){	//有新的聊天内容
+                var vh = that.height();
+                //console.log( '原来的高度='+vh);
+                that.prepend(res.data);
+                format_show_time(that)	//隐藏相邻的时间
+                goto_bottom(vh);
+                add_btn_delmsg();
+                need_scroll = true;
+                if(window.Notification){	//消息提醒
+                    if(Notification.permission=="granted"){
+                        pushNotice();
+                    }else{
+                        Notification.requestPermission(function(status) {
+                            if (status === "granted") {
+                                pushNotice();
+                            }
+                        });
+                    }
+                }
+            }
+            //console.log( '='+res.ext.lasttime);
+            maxid = res.ext.maxid;
+            if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
+                if(uid>0){
+                    $("#remind_online").html("对方正在输入中，请稍候...");
+                }else{
+                    $("#remind_online").html("有用户在线");
+                }
+                $("#remind_online").show();
+            }else{
+                $("#remind_online").hide();
+            }
+        });
+            ck_num++;
+    }
 }
 
 //往主窗口里边加入显示的数据
@@ -366,19 +598,52 @@ var need_scroll = false;
 var user_num = 0;		//圈内成员数
 var user_list = {};	//圈内成员列表
 var have_load_live_player=false;
-
+var check_new;
+var ws=null,ws_url,ws_stop = false;
+//var list_i=0,list_time=30;	//每隔30秒获取一次列表数据
 
 $(function(){
 	
-	var num = ck_num = 0;
 	var pc_show_all_msg_obj = $(".pc_show_all_msg");
 	var pc_msg_user_list_obj = $(".pc_msg_user_list");
-	var list_i=0,list_time=15;	//每隔15秒获取一次列表数据
+
+	$(document).on("mousewheel DOMMouseScroll", function (e) {
+			var delta = (e.originalEvent.wheelDelta && (e.originalEvent.wheelDelta > 0 ? 1 : -1)) ||  // chrome & ie
+					(e.originalEvent.detail && (e.originalEvent.detail > 0 ? -1 : 1));              // firefox
+			if (delta > 0) {
+				
+				//监听会话内容的滚动条
+				var msg_top = pc_show_all_msg_obj.css('top');		
+				msg_top = Math.abs(msg_top.replace('px',''));	
+				console.log("向上滚"+msg_top);
+				//console.log("高_"+$(".pc_show_all_msg").height()) 
+				if( msg_top<100 && msg_scroll==true){
+					if(show_msg_top>0||show_msg_page>1){
+						if(chat_type=='tongji'){
+							get_tongji_msg(tj_type);
+						}else{
+							showMoreMsg(uid);
+						}				
+					}			
+				}
+			} else if (delta < 0) {
+				 
+				//监听用户列表的滚动条
+				var user_top = pc_msg_user_list_obj.css('top');
+				user_top = Math.abs(user_top.replace('px',''));	
+				console.log("向下滚"+user_top);
+				if(user_top-user_div_top>300 && user_scroll==true){
+					//console.log(user_div_top);
+					user_div_top = user_top;		
+					showMore_User();
+				}
+			}
+	});
+	
 	setInterval(function() {
 
 		//监听会话内容的滚动条
-		var msg_top = pc_show_all_msg_obj.css('top');
-		
+		var msg_top = pc_show_all_msg_obj.css('top');		
 		msg_top = Math.abs(msg_top.replace('px',''));	
 		//console.log("高_"+$(".pc_show_all_msg").height()) 
 		if( msg_top<100 && msg_scroll==true){
@@ -404,18 +669,12 @@ $(function(){
 		//	if(user_scroll==true)showMore_User();	//定时把他们全加载出来,方便做搜索使用.其实上面的滚动可删除了
 		//}, 4000);
 
-		//if(maxid>=0)check_new_showmsg();
-		list_i++;
-		if(list_i%list_time==0)check_list_new_msgnum();	//每隔15秒获取一次列表数据		
+		//if(maxid>=0)check_new_showmsg();				
 
-	}, 1000);
+	}, 1000*10000);//永远不执行
 
 
-	var check_new = setInterval(function(){
-		if(maxid>=0)check_new_showmsg();
-	},9000);	//没有发信息之前刷新时间不宜太快,9秒刷新一次
-
-
+	
 	$(".friends_list li > p").click(function(){
 		if($(this).find('i').is('.fa-chevron-up')){
 			$(this).find('i').removeClass('fa-chevron-up');
@@ -428,118 +687,11 @@ $(function(){
 		}
 	});
 
-
-	//刷新最近的消息用户
-	function check_list_new_msgnum(){
-		$.get(ListMsgUserUrl+"1",function(res){
-			if(res.code==0){			
-				$.each(res.ext.s_data,function(i,rs){
-					//出现新的消息新用户，或者是原来新消息的用户又发来了新消息
-					if(typeof(uid_array[rs.f_uid])=='undefined'||rs.id>uid_array[rs.f_uid]){ console.log('有新的消息来了');
-						$('.pc_msg_user_list').html(res.data);
-						add_click_user();
-						if(num>10 && window.Notification){	//消息提醒
-							if(Notification.permission=="granted"){
-								pushNotice();
-							}else{
-								Notification.requestPermission(function(status) {                  
-									if (status === "granted") {
-										pushNotice();
-									}
-								});
-							}
-						}
-					}
-					//新消息已读
-					if(rs.new_num<1){
-						$('.pc_msg_user_list .list_'+rs.f_uid+' .shownum').removeClass('ck');
-						$('.pc_msg_user_list .list_'+rs.f_uid+' .shownum').html(rs.num>999?'99+':rs.num);
-					}
-					//console.log(rs.f_uid+'='+rs.id+'='+uid_array[rs.f_uid]);
-					uid_array[rs.f_uid] = rs.id;
-				});
-			}
-		});
-	}
-
-
-	//刷新会话用户中有没有新消息
-	function check_new_showmsg(){
-		if(ck_num>num){
-			console.log("服务器还没反馈数据过来");
-			//layer.msg("服务器反馈超时",{time:500});
-			return ;
-		}
-		$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){
-			if(res.code!=0){
-				layer.alert('页面加载失败,请刷新当前网页');
-				return ;
-			}
-			set_live_player(res,'cknew');	//检查是否有视频直播
-			num++;
-			ck_num = num;
-			var that = $('.pc_show_all_msg');
-			res.data = format_chat_msg(res.data);
-			if(res.data!=""){	//有新的聊天内容
-				var vh = that.height();
-				//console.log( '原来的高度='+vh);
-				that.prepend(res.data);
-				format_show_time(that)	//隐藏相邻的时间
-				goto_bottom(vh);
-				add_btn_delmsg();
-				need_scroll = true;
-				if(window.Notification){	//消息提醒
-					if(Notification.permission=="granted"){
-						pushNotice();
-					}else{
-						Notification.requestPermission(function(status) {                  
-							if (status === "granted") {
-								pushNotice();
-							}
-						});
-					}
-				}			
-			}
-			//console.log( '='+res.ext.lasttime);
-			maxid = res.ext.maxid;
-			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
-				if(uid>0){
-					$("#remind_online").html("对方正在输入中，请稍候...");
-				}else{
-					$("#remind_online").html("有用户在线");
-				}
-				$("#remind_online").show();
-			}else{
-				$("#remind_online").hide();
-			}			
-		});
-		ck_num++;
-	}
-
-	function pushNotice(){
-		var m = new Notification('新消息提醒', {body: '你收到一条新消息,请注意查收',});
-			m.onclick = function () { window.focus();}
-	}
-
-	//优先显示底部的内容
-	function goto_bottom(vh){
-		var iCount = setInterval(function() {
-			var obj = $(".pc_show_all_msg");
-			var h = obj.height();
-			//console.log( '实际的高度='+h);
-			if(h>vh){
-				clearInterval(iCount);
-				show_msg_top = h-453;
-				obj.css({top:(-show_msg_top)+"px"});
-				console.log('top='+show_msg_top)
-			}
-		}, 200);
-	}
 	goto_bottom(500)
 
 	//统计数据的类型选择
 	var tongji_num = 0;//parseInt($("#tongji_num").html());
-	$("#tongji li").each(function(){
+	$("#tongji li").each(function(i){
 		var that = $(this);
 		var type = that.data('type');
 		that.click(function(){
@@ -557,19 +709,20 @@ $(function(){
 			that.find('em').hide();
 			get_tongji_msg(type)
 		});
-		
-		//各种动态的新数据统计		
-		$.get(tongjiCountUrl+'?type='+type,function(res){
-			if(res.code==0 && res.data>0){
-				that.find('em').html(res.data>999?'99+':res.data);
-				that.find('em').addClass('ck');
-				tongji_num = tongji_num+res.data;
-				$("#tongji_num").html(tongji_num>999?'99+':tongji_num);
-				$("#tongji_num").css('display','block');
-			}else{
-				that.find('em').hide();
-			}
-		});
+		setTimeout(function(){
+			//各种动态的新数据统计		
+			$.get(tongjiCountUrl+'?type='+type,function(res){
+				if(res.code==0 && res.data>0){
+					that.find('em').html(res.data>999?'99+':res.data);
+					that.find('em').addClass('ck');
+					tongji_num = tongji_num+res.data;
+					$("#tongji_num").html(tongji_num>999?'99+':tongji_num);
+					$("#tongji_num").css('display','block');
+				}else{
+					that.find('em').hide();
+				}
+			});
+		},2000*i+2000);
 	})
 
 
@@ -631,18 +784,24 @@ $(function(){
 		allowsend = false;
 		$.post(postMsgUrl,{'uid':uid,'content':content,},function(res){
 
-			//发布信息后,代表存在互动,缩短刷新时间
-			list_time = 5;
-			clearInterval(check_new);
-			check_new = setInterval(function(){
-				//if(maxid>=0)
-				check_new_showmsg();
-			},1500);
+			if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
+				//发布信息后,代表存在互动,缩短刷新时间
+				//list_time = 5;
+				clearInterval(check_new);
+				check_new = setInterval(function(){
+					//if(maxid>=0)
+					check_new_showmsg();
+				},1500);
+			}
+
+			if(ws_stop==true){	//如果中断了,就要重连
+				ws_connect();
+			}
 
 			allowsend = true;
 			if(res.code==0){				
-				layer.msg('发送成功');
-				$("#hack_wrap").hide(300);
+				//layer.msg('发送成功',{time:500});
+				$("#hack_wrap").hide(100);
 			}else{
 				$(".msgcontent").val(content);
 				layer.alert('发送失败:'+res.msg);
@@ -657,7 +816,7 @@ $(function(){
 	$("#input_box").unbind('keydown').bind('keydown', function(e){
 		console.log(e.ctrlKey +'  '+e.keyCode);
 		if(e.ctrlKey && e.keyCode==13){
-			layer.msg('正在发送消息');
+			//layer.msg('正在发送消息');
 			postmsg();
 		}
 	});

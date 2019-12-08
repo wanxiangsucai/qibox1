@@ -24,6 +24,100 @@ loader.define(function(require,exports,module) {
 	var uiSidebar;          // 侧边栏
 	var video_player;
 	var have_load_live_player=false;
+	var ws,ws_url,ws_stop = false;
+
+	//建立WebSocket长连接
+	pageview.ws_connect = function(){
+		ws = new WebSocket(ws_url);
+		ws.onmessage = function(e){
+			var obj = {};
+			try {
+				obj = JSON.parse(e.data);
+			}catch(err){
+				console.log(err);
+			}
+			if(obj.type=='newmsg'){
+				//check_new_showmsg(obj);	//非圈子成员的话,就适合推送
+				check_new_showmsg();	//圈子成员或私聊的话,就适合拉数据,因为要同时更新是否已读标志
+				console.log("有新消息来了");
+				console.log(obj);
+			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
+				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+obj.client_id,function(res){	//绑定用户
+					if(res.code==0){
+						layer.msg('欢迎到来!',{time:500});
+					}else{
+						layer.alert(res.msg);
+					}
+				});
+			}else{
+				console.log(e.data);
+			}
+		};
+
+		ws.error = function(e){
+			ws_stop = true;
+		};
+		ws.close = function(e){
+			ws_stop = true;
+		};
+		
+		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
+		chat_timer = setInterval(function() {
+			ws.send('{"type":"refresh"}');
+		}, 1000*50);	//50秒发送一次心跳
+	}
+
+	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作
+	function load_first_page(res){
+		maxid = res.ext.maxid;
+
+		quninfo = res.ext.qun_info;	//圈子信息
+		window.store.set("quninfo",quninfo);
+		//vues.set_quninfo(quninfo);
+		router.$("#send_user_name").html(quninfo.title);
+
+		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息 不存的话,就是为空即==''
+		userinfo = res.ext.userinfo;	//当前用户登录信息
+		head_menu(uid,quninfo,qun_userinfo,userinfo);
+		
+		ws_url = res.ext.ws_url;
+		
+		if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
+			if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
+			refresh_i=0;
+			refresh_timenum = 8;//初始化8秒刷新一次
+			chat_timer = setInterval(function() {
+				refresh_i++;
+				//刷新会话用户中有没有新消息,必须要加载到内容后有maxid值才去刷新 初始化还没互动之前,不要刷新太快
+				if(maxid>=0 && refresh_i%refresh_timenum==0)check_new_showmsg();	
+			}, 1000);
+		}else{
+			pageview.ws_connect();	//建立长链接
+		}
+
+		setTimeout(function(){
+			set_live_player(res);	//设置视频直播的播放器
+
+			if(have_load_live_player==true){	//直播的时候,就不弹出签到了,影响界面布局
+				$.get("/index.php/p/signin-api-get_cfg/id/"+quninfo.id+".html",function(res){
+					if(res.code==0){
+						if(res.data.today_have_signin==true){
+							console.log('今天已经签到过了');
+						}else{
+							router.loadPart({
+								id: "#hack_signin",
+								url: "/public/static/libs/bui/pages/signin/pop.html?fdd",
+							}).then(function (module) {
+								module.api(quninfo,qun_userinfo,userinfo,res.data);
+							});
+						}					
+					}
+				});			
+			}
+
+			pageview.weixin_share();
+		},1000);
+	}
 
     // 模块初始化定义
     pageview.init = function () {
@@ -80,16 +174,6 @@ loader.define(function(require,exports,module) {
 		}
 
 
-		//console.log(chat_timer);
-		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
-		refresh_i=0;
-		refresh_timenum = 8;//初始化8秒刷新一次
-		chat_timer = setInterval(function() {
-			refresh_i++;
-			//刷新会话用户中有没有新消息,必须要加载到内容后有maxid值才去刷新 初始化还没互动之前,不要刷新太快
-			if(maxid>=0 && refresh_i%refresh_timenum==0)check_new_showmsg();	
-		}, 1000);	
-		
 		//this.upload();
 		//loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
 
@@ -260,39 +344,51 @@ loader.define(function(require,exports,module) {
 
 	var num = ck_num = 0;
 	//刷新会话用户中有没有新消息
-	function check_new_showmsg(){//console.log(qid+"&uid="+uid);
-		if(ck_num>num){
-			console.log("服务器还没反馈数据过来");
-			//layer.msg("服务器反馈超时",{time:500});
-			return ;
-		}
-		$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){			
-			if(res.code!=0){				
-				layer.alert('页面加载失败,请刷新当前网页');
+	function check_new_showmsg(obj){
+		if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
+			if(ck_num>num){
+				console.log("服务器还没反馈数据过来");
+				//layer.msg("服务器反馈超时",{time:500});
 				return ;
 			}
-			num++;
-			ck_num = num;
-			if(res.data.length>0){	//有新的聊天内容
-				layer.closeAll();
-				need_scroll = true;
-				//vues.set_data(res.data);
-				add_msg_data(res,'new');
-			}
-			maxid = res.ext.maxid;
-			if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
-				if(uid>0){
-					router.$("#remind_online").html("对方正在输入中，请稍候...");
-				}else{
-					router.$("#remind_online").html("有用户在线");
-				}
-				router.$("#remind_online").show();
-			}else{
-				router.$("#remind_online").hide();
-			}
+		}
+
+		if( typeof(obj)=='object' && typeof(obj.data)=='object' && obj.data.length>0 ){		//服务端推数据, 即被动获取数据
+			var res = obj;
+			layer.closeAll();
+			need_scroll = true;
+			add_msg_data(res,'new');
+			maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
 			set_live_player(res,'cknew');	//设置视频直播的播放器
-		});
-		ck_num++;
+		}else{	//客户端拉数据, 主动获取数据
+			$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){			
+				if(res.code!=0){				
+					layer.alert('页面加载失败,请刷新当前网页');
+					return ;
+				}
+				num++;
+				ck_num = num;
+				if(res.data.length>0){	//有新的聊天内容
+					layer.closeAll();
+					need_scroll = true;
+					//vues.set_data(res.data);
+					add_msg_data(res,'new');
+				}
+				maxid = res.ext.maxid;
+				if(res.ext.lasttime<3){	//3秒内对方还在当前页面的话,就提示当前用户不要关闭当前窗口
+					if(uid>0){
+						router.$("#remind_online").html("对方正在输入中，请稍候...");
+					}else{
+						router.$("#remind_online").html("有用户在线");
+					}
+					router.$("#remind_online").show();
+				}else{
+					router.$("#remind_online").hide();
+				}
+				set_live_player(res,'cknew');	//设置视频直播的播放器
+			});
+			ck_num++;
+		}
 	}
 
 	//设置视频直播的播放器
@@ -329,42 +425,6 @@ loader.define(function(require,exports,module) {
 		}
 	}
 	
-	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作
-	function load_first_page(res){
-		maxid = res.ext.maxid;
-
-		quninfo = res.ext.qun_info;	//圈子信息
-		window.store.set("quninfo",quninfo);
-		//vues.set_quninfo(quninfo);
-		router.$("#send_user_name").html(quninfo.title);
-
-		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息 不存的话,就是为空即==''
-		userinfo = res.ext.userinfo;	//当前用户登录信息
-		head_menu(uid,quninfo,qun_userinfo,userinfo);
-		
-		setTimeout(function(){
-			set_live_player(res);	//设置视频直播的播放器
-
-			if(have_load_live_player==true){	//直播的时候,就不弹出签到了,影响界面布局
-				$.get("/index.php/p/signin-api-get_cfg/id/"+quninfo.id+".html",function(res){
-					if(res.code==0){
-						if(res.data.today_have_signin==true){
-							console.log('今天已经签到过了');
-						}else{
-							router.loadPart({
-								id: "#hack_signin",
-								url: "/public/static/libs/bui/pages/signin/pop.html?fdd",
-							}).then(function (module) {
-								module.api(quninfo,qun_userinfo,userinfo,res.data);
-							});
-						}					
-					}
-				});			
-			}
-
-			pageview.weixin_share();
-		},1000);
-	}
 
 	//加载更多的会话记录
 	function showMoreMsg(uid){
@@ -513,17 +573,24 @@ loader.define(function(require,exports,module) {
 			'content':content,
 			'send_to':touser.uid
 			},function(res){
+				
+				if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
+					clearInterval(chat_timer);
+					chat_timer = setInterval(function() {
+						check_new_showmsg();
+					}, 1500);	//互动之后,加快刷新,重新setInterval是兼容之前任务已死掉
+				}
 
-				clearInterval(chat_timer);
-				chat_timer = setInterval(function() {
-					check_new_showmsg();
-				}, 1500);	//互动之后,加快刷新,重新setInterval是兼容之前任务已死掉
+				if(ws_stop==true){	//如果中断了,就要重连
+					pageview.ws_connect();
+				}
+
 
 				if(res.code==0){
 					router.$(".chatInput").val('');
 					router.$(".hack_wrap").hide();
 					router.$(".face_wrap").hide();
-					layer.msg('发送成功');
+					//layer.msg('发送成功');
 				}else{
 					router.$("#btnSend").removeClass("disabled").addClass("primary");
 					layer.alert('发送失败:'+res.msg);
@@ -877,6 +944,8 @@ loader.define(function(require,exports,module) {
 				set_user_name(uid);	//设置当前会话的用户名
 			}
 		}
+
+
     })
 
     // 初始化

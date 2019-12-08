@@ -65,7 +65,7 @@ class AdminBase extends Base
         if($this->request->isPost() || $this->route[2]=='delete'){
             Action::write(); //操作日志
             //把缓存全清除
-            if($this->user['groupid']==3){
+            if($this->user['groupid']==3 && in_array($this->route[1], ['setting','sort','module','field','plugin','module','hook_plugin','hook','timedtask','admin_menu','member_menu','webmenu','group','sort_field'])){
                 \think\Hook::add('app_end', function(){
                     if (!defined('IN_PLUGIN')&&!defined('FORBID_CLEAR_CACHE')&&empty(cache('forbid_clear_cache'))) {
                         Cache::clear();

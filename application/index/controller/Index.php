@@ -2,7 +2,7 @@
 namespace app\index\controller;
 
 use app\common\controller\IndexBase;
-
+use GatewayClient\Gateway;
 
 class Index extends IndexBase
 {
@@ -29,6 +29,9 @@ class Index extends IndexBase
     }
     
     public function test($page=1){
+        touch(RUNTIME_PATH.'Task.txt', time()-3600);
+        $ck_time = filemtime(RUNTIME_PATH.'Task.txt');
+        ECHO date('Y-m-d H:i:s',$ck_time);
         /*
         set_time_limit(0);
         $ck = 0;

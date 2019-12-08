@@ -12,6 +12,21 @@ class Msg extends IndexBase{
     }
     
     /**
+     * 设置当前用户的群发消息组
+     * @param number $uid 负数是圈子ID,正数是私聊时对方的UID
+     * @param string $client_id WS生成的客户ID
+     */
+    public function bind_group($uid=0,$client_id=''){
+        if (empty($uid)) {
+            return $this->err_js('用户UID或者圈子ID不存在');
+        }elseif (empty($client_id)) {
+            return $this->err_js('客户ID不存在');
+        }
+        fun("Gatewayclient@user_join_group",$this->user['uid'],$uid,$client_id);
+        return $this->ok_js();
+    }
+    
+    /**
      * 获取某个人跟它人或者是圈子的会话记录
      * @param number $uid 正数用户UID,负数圈子ID
      * @param number $id 某条消息的ID
@@ -29,7 +44,7 @@ class Msg extends IndexBase{
             if(!modules_config('qun')){
                 return $this->err_js('你没有安装圈子模块!');
             }
-            if($maxid<1){
+            if($maxid<1){   //首次加载
                 $qun_info = \app\qun\model\Content::getInfoByid(abs($uid),true);
                 if ($this->user) {
                     $qun_user = \app\qun\model\Member::where([
@@ -48,6 +63,7 @@ class Msg extends IndexBase{
                 }
             }
         }
+        
         $array = model::list_moremsg($this->user['uid'],$uid,$id,$rows,$maxid);
         $array['qun_info'] = $qun_info;
         $array['qun_userinfo'] = $qun_user;
@@ -61,6 +77,10 @@ class Msg extends IndexBase{
             ];
         }else{
             $array['userinfo'] = ['uid'=>0,'username'=>'游客','groupid'=>0];
+        }
+        
+        if ($maxid<1) { //首次加载
+            $array['ws_url'] = fun('Gatewayclient@client_url'); //APP要用到
         }
         
         if ($is_live) {
@@ -77,13 +97,11 @@ class Msg extends IndexBase{
 //             ];
 //             cache('live_qun',$live_array);
         }elseif($uid<1){    //代表群聊
-            $live_array = cache('live_qun');
+            $live_array = cache('live_qun');    //这里有个BUG,如果进后台操作过东西,缓存就会被清空,导致这里没数据
             if($live_array['qun'.$uid]){
                 $live_array['qun'.$uid]['time'] = 0;    //此参数将弃用
                 $live_array['qun'.$uid]['push_url']='';
                 $array['live_video'] = $live_array['qun'.$uid];
-            }else{
-                $live_array['qun'.$uid]['time'] = 100;//此参数将弃用
             }
         }        
         return $this->ok_js($array);
