@@ -78,7 +78,7 @@ trait ModuleContent
 			hook_listen('cms_add_end',$id,['data' =>$data, 'module' =>$this->request->module()]);	    
 			$this->end_add($id,$data);
 
-			$this->success('新增成功', $url?:auto_url('index',$fid ? ['fid'=>$fid] : ['mid'=>$mid]) );
+			$this->success('新增成功', $url?:auto_url('index',$fid ? ['fid'=>$fid] : ['mid'=>$mid]),['id'=>$id] );
 	    }else{
 	        $this -> error('新增失败:'.$id);
 	    }

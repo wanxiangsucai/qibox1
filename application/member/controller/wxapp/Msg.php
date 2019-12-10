@@ -232,7 +232,7 @@ class Msg extends MemberBase
             $data['uid'] = $this->user['uid'];  //务必高度注意这里 uid值变成了当前用户自己的ID,不再是对方的ID
             $data['content'] = fun('Filter@str',$data['content']);            
             //$data['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($data['content']));
-            $result = Model::add($data,$this->admin);
+            $result = Model::add($data,$this->admin,true);
             if(is_numeric($result)){    //发送成功
                 $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
                 if(empty($qun_id)){
@@ -249,25 +249,27 @@ class Msg extends MemberBase
                     }
                 }
                 
-                $msginfo = [];
-                //$msginfo = [getArray(Model::get($result))]; //推数据
-                $msg_array = [
-                    'type'=>'newmsg',
-                    'data'=>$msginfo,
-                ];
-                $msg_array['ext']['maxid'] = $result;
-                if ($post_uid<0) {//代表群聊
-                    $live_array = cache('live_qun');    //这里有个BUG,如果进后台操作过东西,缓存就会被清空,导致这里没数据
-                    if($live_array['qun'.$post_uid]){
-                        $live_array['qun'.$post_uid]['time'] = 0;    //此参数将弃用
-                        $live_array['qun'.$post_uid]['push_url']='';
-                        $msg_array['ext']['live_video'] = $live_array['qun'.$post_uid];
-                    }
-                }
+                //推消息要用到
+//                 $msginfo = [
+//                     Model::format_msg(getArray(Model::get($result))),
+//                 ];
+//                 $msg_array = [
+//                     'type'=>'newmsg',
+//                     'data'=>$msginfo,
+//                 ];
+//                 $msg_array['ext']['maxid'] = $result;
+//                 if ($post_uid<0) {//代表群聊 查找是否有直播数据
+//                     $live_array = cache('live_qun');    //这里有个BUG,如果进后台操作过东西,缓存就会被清空,导致这里没数据
+//                     if($live_array['qun'.$post_uid]){
+//                         $live_array['qun'.$post_uid]['time'] = 0;    //此参数将弃用
+//                         $live_array['qun'.$post_uid]['push_url']='';
+//                         $msg_array['ext']['live_video'] = $live_array['qun'.$post_uid];
+//                     }
+//                 }
                 
-                fun("Gatewayclient@send_to_group",$this->user['uid'],$post_uid,$msg_array);     //同时通知其它客户
+//                 fun("Gatewayclient@send_to_group",$this->user['uid'],$post_uid,$msg_array);     //同时通知其它客户, 推数据
                 
-                return $this->ok_js($msg_array);
+                return $this->ok_js();
                 
             }elseif($result['errmsg']){
                 return $this->err_js($result['errmsg']);

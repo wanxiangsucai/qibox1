@@ -1634,7 +1634,7 @@ CREATE TABLE IF NOT EXISTS `qb_shorturl` (
 
 
 ALTER TABLE  `qb_memberdata` ADD  `unionid` VARCHAR( 32 ) NOT NULL COMMENT  '微信开放平台统一登录ID' AFTER  `nickname` ;
-ALTER TABLE  `qb_memberdata` ADD INDEX (  `unionid` ) COMMENT  '';
+ALTER TABLE  `qb_memberdata` ADD INDEX (  `unionid` );
 ALTER TABLE  `qb_memberdata` ADD  `wxopen_api` VARCHAR( 32 ) NOT NULL COMMENT  '微信开放平台移动应用登录openid' AFTER  `wxapp_api` ;
 
 
@@ -1643,3 +1643,15 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 
 INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'layout_member_body_foot', '会员中心模板底部接口', 1, 0);
 INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'layout_member_body_head', '会员中心模板头部接口', 1, 0);
+
+
+DROP TABLE IF EXISTS `qb_msguser`;
+CREATE TABLE IF NOT EXISTS `qb_msguser` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `uid` int(8) NOT NULL COMMENT '当前用户UID',
+  `aid` int(8) NOT NULL COMMENT '正数其它用户UID或负数圈子ID',
+  `list` int(10) NOT NULL COMMENT '排序值,默认是时间,置顶的话,大于时间',
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`,`list`),
+  KEY `aid` (`aid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='类似微信首页的用户聊天记录用户列表' AUTO_INCREMENT=1 ;

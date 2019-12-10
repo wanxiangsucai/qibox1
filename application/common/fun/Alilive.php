@@ -23,8 +23,8 @@ class Alilive{
             'rtmp_url'=>$data['rtmp_url']?:'',
             'create_time'=>time(),
         ];
-        $result = Db::name('alilive_log')->insert($array);
-        return $result;
+        $id = Db::name('alilive_log')->insertGetId($array);
+        return $id;
     }
     
 

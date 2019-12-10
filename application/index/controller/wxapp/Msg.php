@@ -2,12 +2,41 @@
 namespace app\index\controller\wxapp;
 
 use app\common\model\Msg AS Model;
+use app\common\model\Msguser AS MsguserModel;
 use app\common\controller\IndexBase;
 
 
 class Msg extends IndexBase{
     
     public function index(){
+        return $this->ok_js();
+    }
+    
+
+    /**
+     * 更新用户列表及消息是否已读
+     * @param number $uid 正数其它用户UID,负数,圈子ID
+     * @param number $id 消息ID
+     */
+    public function update_user($uid=0,$id=0){
+        if (empty($this->user)) {
+            return $this->err_js('还没登录');
+        }elseif($uid==$this->user['uid']){
+            return $this->err_js('不能自己给自己更新');
+        }elseif(empty($uid)){
+            return $this->err_js('UID不存在');
+        }
+        MsguserModel::add($this->user['uid'],$uid);
+        if($uid>0){ //私聊当中的状态
+            $map = [
+                'id'=>$id,
+                'ifread'=>0,
+                'touid'=>$this->user['uid'],
+            ];
+            Model::where($map)->update([                
+                'ifread'=>1,
+            ]);
+        }
         return $this->ok_js();
     }
     

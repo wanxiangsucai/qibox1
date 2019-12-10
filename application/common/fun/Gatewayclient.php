@@ -11,7 +11,9 @@ class Gatewayclient{
     
     public function __construct(){
         Gateway::$registerAddress = '127.0.0.1:1234';   //服务端通信IP及端口
-        //self::$client_url = 'ws://127.0.0.1:2345';;
+        if (empty(self::$other_server)) {
+            self::$client_url = 'ws://127.0.0.1:2345';
+        }      
     }
     
     public function client_url(){

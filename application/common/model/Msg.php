@@ -20,8 +20,14 @@ class Msg extends Model
     
     protected static $map;
 
-
-    public static function add($data=[],$admin=null){
+    /**
+     * 发送消息
+     * @param array $data 数据内容
+     * @param unknown $admin 是否是管理员身份操作
+     * @param string $push 是否推消息,比如即时聊天的时候要用到
+     * @return string[]|unknown
+     */
+    public static function add($data=[],$admin=null,$push=false){
         $info = Friend::where('uid',$data['touid'])->where('suid',$data['uid'])->find();
         if ($info['type']==-1) {
             return ['errmsg'=>'对方把你列入了黑名单,因此无法给他发消息'];
@@ -51,8 +57,34 @@ class Msg extends Model
             }            
         }
         if ($result) {
+            if ($push) {
+                self::push_msg($result->id);
+            }
             return $result->id;
         }        
+    }
+    
+    /**
+     * 推数据
+     * @param number $id
+     */
+    public static function push_msg($id=0){
+        $info = self::format_msg(getArray(self::get($id)));
+        $msg_array = [
+            'type'=>'newmsg',
+            'data'=>[$info],
+        ];
+        $msg_array['ext']['maxid'] = $id;
+        $qun_id = $info['qun_id'];
+        if ($qun_id) {//代表群聊 查找是否有直播数据
+            $live_array = cache('live_qun');    //这里有个BUG,如果进后台操作过东西,缓存就会被清空,导致这里没数据
+            if($live_array['qun-'.$qun_id]){
+                $live_array['qun-'.$qun_id]['time'] = 0;    //此参数将弃用
+                $live_array['qun-'.$qun_id]['push_url']='';
+                $msg_array['ext']['live_video'] = $live_array['qun-'.$qun_id];
+            }
+        }
+        fun("Gatewayclient@send_to_group",$info['uid'],$qun_id?-$qun_id:$info['touid'],$msg_array);
     }
     
     /**
@@ -120,29 +152,37 @@ class Msg extends Model
         foreach($array['data'] AS $key=>$rs){
             if($rs['id']>$maxid){
                 $maxid = $rs['id'];
-                if($rs['qun_id']>0){
+                if($rs['qun_id']>0){    //使用WS推消息后,下面的其实可以删除了
                     $qs = self::where(['qun_id'=>$rs['qun_id'],'uid'=>$myuid])->order('id desc')->find();
                     if($qs){
                         self::update(['id'=>$qs['id'],'visit_time'=>time()]);  //标志最后收到圈子群聊信息的时间
                     }
                 }
             }
-            
-            //$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
-            $rs['content'] = self::format_content($rs['content']);
-            $rs['content'] = fun("content@bbscode",$rs['content']);
-            $rs['from_username'] = get_user_name($rs['uid']);
-            $rs['from_icon'] = get_user_icon($rs['uid']);
-            $rs['full_time'] = strtotime($rs['create_time']);
-            $rs['time'] = format_time($rs['full_time'],true);
-            if($rs['ifread']==0&&$rs['touid']==$myuid){
+            if($rs['ifread']==0&&$rs['touid']==$myuid){  //标志为信息已读
                 self::update(['id'=>$rs['id'],'ifread'=>1]);
             }
-            $array['data'][$key] = $rs;
+            $array['data'][$key] = self::format_msg($rs);
         }
         $array['lasttime'] = time()-$from_time; //对方最近操作的时间
         $array['maxid'] = $maxid;
         return $array;
+    }
+    
+    /**
+     * 把消息内容做转义处理, 发表信息成功的时候,要推消息也要用到.
+     * @param array $rs
+     * @return unknown
+     */
+    public static function format_msg($rs=[]){
+        //$rs['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($rs['content']));
+        $rs['content'] = self::format_content($rs['content']);
+        $rs['content'] = fun("content@bbscode",$rs['content']);
+        $rs['from_username'] = get_user_name($rs['uid']);
+        $rs['from_icon'] = get_user_icon($rs['uid']);
+        $rs['full_time'] = strtotime($rs['create_time']);
+        $rs['time'] = format_time($rs['full_time'],true);
+        return $rs;
     }
     
     
@@ -159,7 +199,7 @@ class Msg extends Model
         ->field('uid,touid,create_time,title,id,ifread,qun_id,visit_time,update_time')
         //->order('id desc')
         ->order('update_time desc,visit_time desc,id desc')
-        ->limit(5000)   //理论上某个用户的短消息不应该超过5千条。
+        ->limit(5000)   //理论上某个用户收到的私信及发出的私信及发出的圈子群聊(不包含圈子内其它人的聊天)很少有超过5千条。
         ->buildSql();
         
         $listdb = Db::table($subQuery.' a')
@@ -170,15 +210,21 @@ class Msg extends Model
         ->limit($min,$rows)
         ->select();
         
+        $_data = Msguser::where('uid',$uid)->order('id desc')->limit($min,$rows)->column('aid,list');
+        $array  = $_array = [];
         foreach($listdb AS $key=>$rs){
             $rs['new_num'] = 0;
             if($rs['qun_id']>0){
                 $rs['f_uid'] = -$rs['qun_id'];
                 $rs['title'] = '圈子群聊';
                 $rs['qun'] = [];
+                $visit_time = $rs['visit_time'];    //visit_time值,将会弃用
+                if($_data[$rs['f_uid']]>$visit_time){
+                    $visit_time = $_data[$rs['f_uid']];
+                }
                 $rs['new_num'] = self::where([
                     'qun_id'=>$rs['qun_id'],
-                    'create_time'=>['>',$rs['visit_time']],
+                    'create_time'=>['>',$visit_time],
                 ])->count('id');
                 if($rs['new_num']>0){
                     $qs = getArray(self::where('qun_id',$rs['qun_id'])->order('id desc')->find());
@@ -211,9 +257,66 @@ class Msg extends Model
             }
              
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
-            $listdb[$key] = $rs;
+            $list = $rs['new_num']?$key+10000000000:($rs['update_time']?:$rs['visit_time']); //创建排序值,有新消息的固定排在前面
+            $_array[$rs['f_uid']] = $list?:$rs['id'];
+            $array[$rs['f_uid']] = $rs;
         }
-        return $listdb;
+                
+        if ($_data) {
+            $detail = $_array+$_data;
+            arsort($detail);
+            foreach($detail AS $_uid=>$value){
+                if ( empty($array[$_uid]) ) {   //没有聊天记录的情况
+                    $qun = [];
+                    if ($_uid>0) {
+                        $f_name = get_user_name($_uid);
+                        $f_icon = get_user_icon($f_icon);
+                        $title = '';
+                        $qun_id = 0;
+                        $num = $new_num = 0;
+                        $content = '';
+                        $username = '';
+                    }else{
+                        $title = '圈子群聊';
+                        $qun_id = -$_uid;
+                        $qun = fun('qun@getByid',$qun_id);
+                        $f_name = $qun['title'];
+                        $f_icon = $qun['picurl'];
+                        $num = 0;
+                        
+                        $new_num = self::where([
+                            'qun_id'=>$qun_id,
+                            'create_time'=>['>',$value],
+                        ])->count('id');
+                        if($new_num>0){
+                            $qs = getArray(self::where('qun_id',$value)->order('id desc')->find());
+                            $content = get_word(del_html($qs['content']), 100);
+                            //$rs['id'] = $qs['id'];
+                            $username = get_user_name($qs['uid']);
+                            //$rs['qun'] = $qs;
+                        }else{
+                            $num = self::where('qun_id',$rs['qun_id'])->count('id');
+                        }
+                    }
+                    $rs = [
+                        'username'=>$username,
+                        'qun_id'=>$qun_id,
+                        'qun'=>$qun,
+                        'title'=>$title,
+                        'content'=>$content,
+                        'create_time'=>format_time($value),
+                        'f_uid'=>$_uid,
+                        'f_name'=>$f_name,
+                        'f_icon'=>$f_icon,
+                        'num'=>$num,
+                        'new_num'=>$new_num,
+                    ];
+                    $array[$_uid] = $rs;
+                }
+            }
+        }        
+
+        return array_values($array);
     }
     
     /**

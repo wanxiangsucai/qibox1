@@ -156,8 +156,8 @@ function add_click_user(){
 		showMoreMsg(uid);	//加载相应用户的聊天记录
 		set_user_name(uid); //设置当前会话的用户名
 
-		$(".live-player-warp").hide();
-		$("#players").html('<span>视频直播即将开始...</span>');
+		//$(".live-player-warp").hide();
+		//$("#players").html('<span>视频直播即将开始...</span>');
 		have_load_live_player = false;
 	});
 	
@@ -225,7 +225,8 @@ function add_new_user(){
 	});
 }
 
-function format_chat_msg(array){
+//将对话内容的数组转成HTML字符串
+function format_chatmsg_tohtml(array){
 	if(typeof(array)=='string'){
 		return array;
 	}
@@ -325,11 +326,18 @@ function ws_connect(){
 				console.log(err);
 			}
 			if(obj.type=='newmsg'){
-				//check_new_showmsg(obj);	//非圈子成员的话,就适合推送
-				check_new_showmsg();	//圈子成员或私聊的话,就适合拉数据,因为要同时更新是否已读标志
+				if( (obj.data[0].qun_id>0 && uid==-obj.data[0].qun_id) || (obj.data[0].uid==uid||obj.data[0].touid==uid) ){
+					check_new_showmsg(obj);	//推数据
+					$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data[0].id,function(res){//更新记录
+						console.log(res.msg);
+					});	
+				}				
 				console.log("聊天窗口,有新消息来了!!!!!!!!!!");
 				console.log(obj);
 			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
+				if(uid==0){
+					return ;
+				}
 				clientId = obj.client_id;
 				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+clientId,function(res){	//绑定用户
 					if(res.code==0){
@@ -424,13 +432,14 @@ function check_new_showmsg(obj){
         var res = obj;
         
         var that = $('.pc_show_all_msg');
-        res.data = format_chat_msg(res.data);
-        if(res.data!=""){	//有新的聊天内容
+		
+        var str = format_chatmsg_tohtml(res.data);
+        if(str!=""){	//有新的聊天内容
             var vh = that.height();
             //console.log( '原来的高度='+vh);
-            that.prepend(res.data);
+            that.prepend(str);
             format_show_time(that)	//隐藏相邻的时间
-            goto_bottom(vh);
+            goto_bottom(vh);		//消息滚到最底部
             add_btn_delmsg();
             need_scroll = true;
             if(window.Notification){	//消息提醒
@@ -445,10 +454,9 @@ function check_new_showmsg(obj){
                 }
             }
         }
-        
-        add_msg_data(res,'new');
+        set_live_player(res,'cknew');	//设置视频直播的播放器 
+        //add_msg_data(res,'new');
         maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
-        set_live_player(res,'cknew');	//设置视频直播的播放器
         
     }else{	//客户端拉数据, 主动获取数据
         
@@ -461,11 +469,11 @@ function check_new_showmsg(obj){
             num++;
             ck_num = num;
             var that = $('.pc_show_all_msg');
-            res.data = format_chat_msg(res.data);
-            if(res.data!=""){	//有新的聊天内容
+            var str = format_chatmsg_tohtml(res.data);
+            if(str!=""){	//有新的聊天内容
                 var vh = that.height();
                 //console.log( '原来的高度='+vh);
-                that.prepend(res.data);
+                that.prepend(str);
                 format_show_time(that)	//隐藏相邻的时间
                 goto_bottom(vh);
                 add_btn_delmsg();
@@ -501,9 +509,9 @@ function check_new_showmsg(obj){
 
 //往主窗口里边加入显示的数据
 function set_main_win_content(res){
-	layer.closeAll();
+	//layer.closeAll();
 	var that = $('.pc_show_all_msg');
-	res.data = format_chat_msg(res.data);
+	res.data = format_chatmsg_tohtml(res.data);
 	if(res.data==''){
 		if(show_msg_page==1){
 			that.html("");
@@ -754,7 +762,7 @@ $(function(){
 				shadeClose: true,
 				shade: 0.3,
 				area: ['800px', '650px'],
-				content: '/member.php/member/plugin/execute/plugin_name/hongbao/plugin_controller/content/plugin_action/add/mid/1.html?ext_id='+(-uid),
+				content: '/member.php/member/plugin/execute/plugin_name/hongbao/plugin_controller/content/plugin_action/add/mid/1.html?fromtype=msg&ext_id='+(-uid),
 			});
 	});
 
@@ -842,6 +850,7 @@ var severUrl = "/index.php/index/attachment/upload/dir/images/from/base64/module
 
 //添加删除信息的功能按钮
 function add_btn_delmsg(){
+	$(".office_text .del").off('click');
 	$(".office_text .del").click(function(){
 		var id = $(this).data("id");
 		var that = $(this);
@@ -854,8 +863,15 @@ function add_btn_delmsg(){
 			}
 		});
 	});
+	$(".office_text .big").off('click');
 	$(".office_text .big").click(function(){
 		window.open($(this).attr('src'));
+	});
+	$(".office_text .hack-hongbao").each(function(){
+		var id = $(this).data("id");
+		var title = $(this).data("title");
+		var str = `<a href="#" title="${title}" onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['600px', '600px'],content: '/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="/public/static/plugins/voicehb/hongbao.png"></a>`;
+		$(this).html(str);
 	});
 }
 
@@ -1048,7 +1064,7 @@ function set_live_player(res,type){
 		}//console.log('========='+have_load_live_player+'-------'+typeof(res.ext.live_video)+'--------'+res.ext.live_video.time);
 		//3秒内有活动,都算在直播中,此值要大于上面的refresh_timenum
 		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined'){
-			$(".live-player-warp").show();
+			//$(".live-player-warp").show();
 			have_load_live_player = true;
 			var otime = 1;
 			//if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
@@ -1063,19 +1079,35 @@ function set_live_player(res,type){
 			have_load_live_player = false;
 		}
 }
-
+var video_index = null;
 function ck_play(url){
-	var videoObject = {
-                		container: '#players', //“#”代表容器的ID，“.”或“”代表容器的class
-                		variable: 'player1',  //该属性必需设置，值等于下面的new chplayer()的对象
-                		//poster:'pic/wdm.jpg',//封面图片
-                        //loaded: 'loadedHandler1', //当播放器加载后执行的函数	
-                		video:{
-							file:url,   //视频地址
-							type:'video/flv'
-						},
-             };
-             var player1 = new ckplayer(videoObject);
+	if(video_index!=null){
+		$("#video_2").remove();
+		layer.close(video_index);
+	}
+    video_index = layer.open({
+    type: 1,
+    offset: ['10px', '10px'],
+    anim: 5,
+    fixed: false,
+    shade: 0,
+    title: '直播中',
+    area: ['500px', '300px'],
+    content: "<div id=\"video_2\" style=\"width:100%;height:100%;\"></div><script type=\"text/javascript\">var videoObject={container:'#video_2',variable:'player',flashplayer:false,live:true,loaded:'loadedHandler',video:'" + url + "'};var player=new ckplayer(videoObject);function loadedHandler(){player.addListener('loadedmetadata',loadedMetaDataHandler);}function loadedMetaDataHandler(){var metaData=player.getMetaDate();console.log(metaData);var index = parseInt(parent.layer.getFrameIndex(window.name))+1;console.log(index);var width=metaData['streamWidth'];var height=metaData['streamHeight'];if(width/height>=1){layer.style(index,{width:'500px',height:'325px'});return false}else{layer.style(index,{width:'250px',height:'500px'});return false}}<\/script>",
+    btn: ['横屏播放', '竖屏播放'],
+	yes: function(index, layero) {
+		$(".layui-layer-btn0").css({"border-color": "#4898d5","background-color": "#2e8ded","color": "#fff"});
+		$(".layui-layer-btn1").css({"border-color": "#f1f1f1","background-color": "#f1f1f1","color": "#333"});
+		layer.style(index, {width: '500px',height: '300px'});
+		return false
+	},
+	btn2: function(index) {
+		$(".layui-layer-btn1").css({"border-color": "#4898d5","background-color": "#2e8ded","color": "#fff"});
+		$(".layui-layer-btn0").css({"border-color": "#f1f1f1","background-color": "#f1f1f1","color": "#333"});
+		layer.style(index, {width: '300px',height: '500px'});
+		return false
+	}
+	});
 }
 
 

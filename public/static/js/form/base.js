@@ -20,12 +20,20 @@ jQuery(document).ready(function() {
 				layer.close(index);
 				if(res.code==0){
 					layer.msg(res.msg);
-					setTimeout(function(){
-						window.location.href = res.url;
-					},500);
+					if( typeof(post_ok)=='function' ){	//接口回调
+						post_ok(res);
+					}else{
+						setTimeout(function(){
+							window.location.href = res.url;
+						},500);
+					}				
 				}else{
 					havepost = true;
-					layer.open({title: '提交失败',content:res.msg});
+					if( typeof(post_err)=='function' ){	//接口回调
+						post_err(res);
+					}else{
+						layer.open({title: '提交失败',content:res.msg});
+					}					
 				}
 			}).fail(function (res) {
 				havepost = true;

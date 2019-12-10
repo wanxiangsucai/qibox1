@@ -6,6 +6,7 @@
 var refresh_i,refresh_timenum;//初始化8秒刷新一次
 var is_live = 0; //是否在直播
 var live_urls = {flv_url:'',m3u8_url:'',rtmp_url:''}; //直播地址
+var w_s;
 loader.define(function(require,exports,module) {
 
     var pageview = {};
@@ -24,12 +25,15 @@ loader.define(function(require,exports,module) {
 	var uiSidebar;          // 侧边栏
 	var video_player;
 	var have_load_live_player=false;
-	var ws,ws_url,ws_stop = false;
+	var ws_url,ws_stop = false;
 
 	//建立WebSocket长连接
 	pageview.ws_connect = function(){
-		ws = new WebSocket(ws_url);
-		ws.onmessage = function(e){
+		if( typeof(w_s)!='undefined' ){
+			w_s.close();
+		}
+		w_s = new WebSocket(ws_url);
+		w_s.onmessage = function(e){
 			var obj = {};
 			try {
 				obj = JSON.parse(e.data);
@@ -37,11 +41,16 @@ loader.define(function(require,exports,module) {
 				console.log(err);
 			}
 			if(obj.type=='newmsg'){
-				//check_new_showmsg(obj);	//非圈子成员的话,就适合推送
-				check_new_showmsg();	//圈子成员或私聊的话,就适合拉数据,因为要同时更新是否已读标志
+				check_new_showmsg(obj);	//推数据
+				$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data[0].id,function(res){//更新记录
+					console.log(res.msg);
+				});	
 				console.log("有新消息来了");
 				console.log(obj);
 			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
+				if(uid==0){
+					return ;
+				}
 				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+obj.client_id,function(res){	//绑定用户
 					if(res.code==0){
 						layer.msg('欢迎到来!',{time:500});
@@ -54,21 +63,22 @@ loader.define(function(require,exports,module) {
 			}
 		};
 
-		ws.error = function(e){
+		w_s.error = function(e){
 			ws_stop = true;
 		};
-		ws.close = function(e){
+		w_s.close = function(e){
 			ws_stop = true;
 		};
 		
 		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
 		chat_timer = setInterval(function() {
-			ws.send('{"type":"refresh"}');
+			w_s.send('{"type":"refresh"}');
 		}, 1000*50);	//50秒发送一次心跳
 	}
 
 	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作
 	function load_first_page(res){
+		if_load = true;
 		maxid = res.ext.maxid;
 
 		quninfo = res.ext.qun_info;	//圈子信息
@@ -488,6 +498,14 @@ loader.define(function(require,exports,module) {
 			touser.name = $(this).data('name');
 			console.log(touser);
 		});
+		
+		//显示红包
+		router.$(".chat-panel .hack-hongbao").each(function(){
+			var id = $(this).data("id");
+			var title = $(this).data("title");
+			var str = `<div onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['95%', '80%'],content: '/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="/public/static/plugins/voicehb/hongbao.png"></div>`;
+			$(this).html(str);
+		});
 
 		format_nickname();	//设置圈子昵称
 		format_hack_data();  //处理各频道调用的数据
@@ -607,18 +625,22 @@ loader.define(function(require,exports,module) {
 				clearInterval(timer);
 				var myid = typeof(my_uid)!='undefined'?my_uid:userinfo.uid;
 				//console.log(res.data);
-				format_msg_data(res.data , myid , type)
+				format_msgdata_tohtml(res.data , myid , type)
 			}
 			//console.log('userinfo=',userinfo);
-		},500);
+		},200);	//定时器,为了反复刷新用户登录数据
 	}
 
-	function format_msg_data(array , myid , type){
+	function format_msgdata_tohtml(array , myid , type){
 		var str = '';
 		var del_str = '';
 		var user_str = '';
 		var userdb = userinfo;
+		var old_html = router.$("#chat_win").html();
 		array.forEach((rs)=>{
+			if(old_html.indexOf( ' chat-box-'+rs.id )>0){
+				return true;
+			}
 			del_str = '';
 			if(userdb.uid>0 && (rs.uid==userdb.uid || rs.touid==userdb.uid) ){
 				del_str = `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>`;
