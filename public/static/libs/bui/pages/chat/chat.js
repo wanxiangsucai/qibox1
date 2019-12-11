@@ -53,27 +53,87 @@ loader.define(function(require,exports,module) {
 				}
 				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+obj.client_id,function(res){	//绑定用户
 					if(res.code==0){
-						layer.msg('欢迎到来!',{time:500});
+						//layer.msg('欢迎到来!',{time:500});
 					}else{
 						layer.alert(res.msg);
 					}
 				});
+				var my_uid = userinfo.uid;
+				var username = my_uid>0?userinfo.username:'';
+				var icon = my_uid>0?userinfo.icon:'';
+				var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
+				w_s.send('{"type":"connect","url":"'+window.location.href+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
+			}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
+				 show_online(obj,'goin');
+			}else if(obj.type=='leave'){	//某个用户离开了
+				show_online(obj,'getout')
+				console.log(obj);
 			}else{
 				console.log(e.data);
 			}
 		};
-
-		w_s.error = function(e){
+		
+		w_s.onopen = function(e) {};
+		w_s.onerror = function(e){
 			ws_stop = true;
 		};
-		w_s.close = function(e){
+		w_s.onclose = function(e){
 			ws_stop = true;
 		};
 		
 		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
 		chat_timer = setInterval(function() {
-			w_s.send('{"type":"refresh"}');
+			if(ws_stop == true){
+				w_s = new WebSocket(ws_url);
+			}else{
+				w_s.send('{"type":"refresh"}');
+			}
 		}, 1000*50);	//50秒发送一次心跳
+		
+		var show_online = function(obj,type){
+				 var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
+				 var data = obj.data;
+				 var usernum = obj.data.length;  //在线会员人数,已注册的会员
+				 if(total>1){
+					 if(type=='goin'){
+						 bui.hint("有新用户："+data[data.length-1].username+" 进来了");
+					 }else if(type=='getout'){
+						 bui.hint(obj.msg);
+					 }
+					 $("#remind_online").show();
+					 if(uid>0){
+						 $("#remind_online").html('对方在线,请不要离开!');
+					 }else{
+						 $("#remind_online").html('共有 '+total+' 个访客,会员有 '+usernum+' 人! 查看详情');
+						 $("#remind_online").off('click');
+						 $("#remind_online").click(function(){
+							 view_online_user(data);
+						 });
+					 }
+				 }else if( !$("#remind_online").is(':hidden') ){
+					 if(uid>0){
+						 bui.hint('对方已离开!');
+					 }else{
+						 bui.hint('人全走光了!'+obj.msg);
+					 }
+					 $("#remind_online").hide();
+				 }
+		}
+
+		var view_online_user = function(data){
+			var str = '';
+			data.forEach((rs)=>{
+				str += '<a href="/member.php/home/'+rs.uid+'.html" target="_blank">'+rs.username+'</a>、';
+			});
+			layer.open({
+					type: 1,
+					anim: 5,
+					shade: 0,
+					title: '仅列出已注册的会员，不含游客',
+					area: ['90%', '65%'],
+					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',
+			});
+		}
 	}
 
 	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作

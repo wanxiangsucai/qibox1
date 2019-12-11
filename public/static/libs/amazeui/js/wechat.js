@@ -307,18 +307,13 @@ function format_chatmsg_tohtml(array){
 //建立WebSocket长连接
 var clientId;
 function ws_connect(){
-	if(ws!=null&&ws_stop!=true){
-		$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+clientId,function(res){	//绑定用户
-					if(res.code==0){
-						layer.msg('欢迎到来!',{time:500});
-					}else{
-						layer.alert(res.msg);
-					}
-		});
-		return ;
+	if(w_s!=null){
+		$("#remind_online").hide();
+		w_s.close();
+		console.log("#########中断了,重新连接!!!!!!!!!!"+Math.random());
 	}
-		ws = new WebSocket(ws_url);
-		ws.onmessage = function(e){
+		w_s = new WebSocket(ws_url);
+		w_s.onmessage = function(e){
 			var obj = {};
 			try {
 				obj = JSON.parse(e.data);
@@ -332,7 +327,7 @@ function ws_connect(){
 						console.log(res.msg);
 					});	
 				}				
-				console.log("聊天窗口,有新消息来了!!!!!!!!!!");
+				//console.log("聊天窗口,有新消息来了!!!!!!!!!!");
 				console.log(obj);
 			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
 				if(uid==0){
@@ -341,11 +336,20 @@ function ws_connect(){
 				clientId = obj.client_id;
 				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+clientId,function(res){	//绑定用户
 					if(res.code==0){
-						layer.msg('欢迎到来!',{time:500});
+						//layer.msg('欢迎到来!',{time:500});
 					}else{
-						layer.alert(res.msg);
+						layer.msg(res.msg);
 					}
 				});
+				var username = my_uid>0?userinfo.username:'';
+				var icon = my_uid>0?userinfo.icon:'';
+				var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
+				w_s.send('{"type":"connect","url":"'+window.location.href+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
+			}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
+				 show_online(obj,'goin');
+			}else if(obj.type=='leave'){	//某个用户离开了
+				show_online(obj,'getout')
+				console.log(obj);
 			}else if(obj.type=='msglist'){	//需要更新列表信息
 				console.log("消息列表,有新消息来了..........");
 				console.log(e.data);
@@ -353,28 +357,83 @@ function ws_connect(){
 				//obj.uid==uid即本圈子提交数据(或者自己正处于跟他人私聊),不用更新列表, obj.uid它人私信自己,就要更新,obj.uid是其它圈子也要更新
 				if( (obj.uid<0 && obj.uid!=uid) || (obj.uid==my_uid && obj.from_uid!=uid ) ){
 					check_list_new_msgnum();
-				}
+				}			
 			}else{
 				console.log(e.data);
 			}
 		};
-
-		ws.error = function(e){
+		
+		w_s.onopen = function(e) {};
+		w_s.onerror = function(e){
+			w_s.close();
+			console.log("#########连接异常中断了.........."+Math.random());
 			ws_stop = true;
 		};
-		ws.close = function(e){
+		w_s.onclose = function(e){
+			console.log("########连接被关闭了.........."+Math.random());
 			ws_stop = true;
 		};
 		
 		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
 		chat_timer = setInterval(function() {
-			ws.send('{"type":"refresh"}');
+			if(ws_stop == true){
+				w_s = new WebSocket(ws_url);
+			}else{
+				w_s.send('{"type":"refresh"}');
+			}			
 		}, 1000*50);	//50秒发送一次心跳
+
+		var show_online = function(obj,type){
+				 var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
+				 var data = obj.data;
+				 var usernum = obj.data.length;  //在线会员人数,已注册的会员
+				 if(total>1){
+					 if(type=='goin'){
+						 layer.msg("有新用户："+data[data.length-1].username+" 进来了");
+					 }else if(type=='getout'){
+						 layer.msg(obj.msg);
+					 }
+					 $("#remind_online").show();
+					 if(uid>0){
+						 $("#remind_online").html('对方在线,请不要离开!');
+					 }else{
+						 $("#remind_online").html('共有 '+total+' 个访客,会员有 '+usernum+' 人! 查看详情');
+						 $("#remind_online").off('click');
+						 $("#remind_online").click(function(){
+							 view_online_user(data);
+						 });
+					 }
+				 }else if( !$("#remind_online").is(':hidden') ){
+					 if(uid>0){
+						 layer.msg('对方已离开!');
+					 }else{
+						 layer.msg('人全走光了!'+obj.msg);
+					 }
+					 $("#remind_online").hide();
+				 }
+		}
+
+		var view_online_user = function(data){
+			var str = '';
+			data.forEach((rs)=>{
+						str += '<a href="/member.php/home/'+rs.uid+'.html" target="_blank">'+rs.username+'</a>、';
+					});
+			layer.open({
+					type: 1,
+					anim: 5,
+					shade: 0,
+					title: '仅列出已注册的在线会员数，不含游客',
+					area: ['400px', '300px'],
+					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',
+			});
+		}
 }
 
 //初次加载成功
 function load_first_page(res){
 	maxid = res.ext.maxid;
+
+	quninfo = res.ext.qun_info;	//圈子信息
 
 	ws_url = res.ext.ws_url;
 
@@ -595,6 +654,7 @@ var tj_type = '';  //当前选择了哪种统计数据
 
 var uid_array = [];   //每个用户的最新消息ID
 
+var quninfo = [];   //圈子信息
 var ListMsgUserPage = 1;	//所有信息用户列表
 var show_msg_page = 1;	//会话记录分页
 var msg_scroll = true;  //做个标志,不要反反复复的加载会话内容
@@ -607,7 +667,7 @@ var user_num = 0;		//圈内成员数
 var user_list = {};	//圈内成员列表
 var have_load_live_player=false;
 var check_new;
-var ws=null,ws_url,ws_stop = false;
+var w_s=null,ws_url,ws_stop = false;
 //var list_i=0,list_time=30;	//每隔30秒获取一次列表数据
 
 $(function(){

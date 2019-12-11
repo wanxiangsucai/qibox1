@@ -357,13 +357,14 @@ var tongjiMsgUrl = "{qb:url name='pc_tongji_member_feed' /}";		//获取分页的
 var tongjiCountUrl = "{:iurl('tongji/wxapp.count/index')}";			//获取各种统计的数量
 
 var my_uid = "{$userdb.uid}";										//我的UID,当前用户的UID
+var userinfo = {$userdb.uid?json_encode(fun('member@format',$userdb,$userdb.uid)):''}; //用户详细资料
 var MyFriendUrl = "{qb:url name='pc_myfriend' /}";					//获取好友列表
 var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
 </script>
 
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
-<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?90"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?995"></script>
 <script type="text/javascript" src="__STATIC__/libs/ckplayer/ckplayer.js"></script>
 
 </body>

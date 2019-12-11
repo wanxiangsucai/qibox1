@@ -37,14 +37,8 @@ class Member extends IndexBase
     }
     
     private function format_field(&$rs=[]){
-        $rs['icon'] = $rs['icon']?tempdir($rs['icon']):'';
-        $rs['group_name'] = getGroupByid($rs['groupid']);
-        $rs['lastvist'] = format_time($rs['_lastvist']=$rs['lastvist'],true);
-        $rs['regdate'] = date('Y-m-d H:i',$rs['_regdate']=$rs['regdate']);
-        unset($rs['password'],$rs['password_rand'],$rs['qq_api'],$rs['weixin_api'],$rs['wxapp_api'],$rs['config'],$rs['rmb_pwd']);
-        if ($rs['uid']!=$this->user['uid']) {
-            unset($rs['rmb'],$rs['truename'],$rs['lastip'],$rs['regip'],$rs['email'],$rs['address'],$rs['mobphone'],$rs['idcard']);
-        }
+        $rs = \app\common\fun\Member::format($rs,$this->user['uid']);
+        return $rs;
     }
     
     /**
@@ -80,6 +74,35 @@ class Member extends IndexBase
             return $this->ok_js($user);
         }else{
             return $this->err_js('用户不存在');
+        }
+    }
+    
+    /**
+     * 根据一串UID获取多个用户资料
+     * @param string $uid
+     * @return void|unknown|\think\response\Json|void|\think\response\Json
+     */
+    public function getbyids($uids='',$rows=500){
+        $detail = explode(',', $uids);
+        $uid_array = [];
+        foreach($detail AS $uid){
+            if (empty($uid)) {
+                continue;
+            }
+            $uid_array[] = intval($uid);
+        }
+        if(empty($uid_array)){
+            return $this->err_js('uids不存在');
+        }
+        $listdb = User::where('uid','in',$uid_array)->paginate($rows);
+        $listdb = getArray($listdb);
+        foreach($listdb['data'] AS $key=>$rs){
+            $listdb['data'][$key] = $this->format_field($rs);
+        }
+        if ($listdb) {
+            return $this->ok_js($listdb);
+        }else{
+            return $this->err_js('数据不存在');
         }
     }
     
