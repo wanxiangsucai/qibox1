@@ -619,14 +619,15 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 	background: url(../images/icon/icon17_1.png) no-repeat center center;
 }
 
-.input_icon a:nth-child(5),#live_video{
+.input_icon a:nth-child(5),#live_video,#vod_voice{
 	color:#aaa;
 	font-size:22px;
 	/*background: url(../images/icon/icon18.png) no-repeat center center;*/
-	 
 }
-
-.input_icon a:nth-child(5):hover,#live_video:hover{
+#vod_voice{
+font-size:18px;
+}
+.input_icon a:nth-child(5):hover,#live_video:hover,#vod_voice:hover{
 	/*background: url(../images/icon/icon18_1.png) no-repeat center center;*/
 	color:#09BB07;
 }

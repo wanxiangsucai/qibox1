@@ -66,6 +66,19 @@ loader.define(function() {
 		});
 		router.$(".more_hack #choose_video_btn").hide();
 		//router.$(".more_hack #givermb").hide();
+		router.$(".more_hack #vod_voice").click(function(){
+			if(uid>=0){
+				layer.alert('只有群聊才能直播!');
+				return ;
+			}
+			layer.open({  
+			  type: 2,    
+			  title: '音频点播转直播',  
+			  area: ['95%','80%'],  
+			  content: "/member.php/member/vod/index.html?type=voice&aid="+Math.abs(uid),
+			});
+		});
+
 		router.$(".more_hack #live_video").click(function(){
 			if(uid>=0){
 				layer.alert('只有群聊才能直播!');

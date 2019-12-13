@@ -146,6 +146,7 @@ function add_click_user(){
 
 	$(".pc_msg_user_list li").off('click');
 	$(".pc_msg_user_list li").click(function(){
+		w_s.close();
 		$(this).find(".shownum").removeClass("ck");
 		$(".pc_msg_user_list li").removeClass('user_active');
 		$(this).addClass('user_active');
@@ -233,10 +234,15 @@ function format_chatmsg_tohtml(array){
 		var str = '';
 		var str_name = '';
 		var str_del = '';
+		var old_html = $(".pc_show_all_msg").html();
 		array.forEach((rs)=>{
+			if(old_html.indexOf( '<li data-id="'+rs.id )>-1){
+				console.log('有重复的消息'+rs.id);
+				return true;
+			}
 			str_name = (rs.qun_id && rs.uid!=my_uid)?`<div class="name" data-uid="${rs.uid}" onclick="$('#input_box').val('@${rs.from_username} ').focus()">@${rs.from_username}</div>`:'';
 			str_del = (rs.uid==my_uid||rs.touid==my_uid) ? `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>` : '';
-			str += `<li class="` + ( rs.uid==my_uid ? 'me' : 'other' ) + `">
+			str += `<li data-id="${rs.id}" class="` + ( rs.uid==my_uid ? 'me' : 'other' ) + `">
 						<dd class="time" data-time="${rs.full_time}"><a>${rs.create_time}</a></dd>
 						${str_name}
 						<a href="/member.php/home/${rs.uid}.html" class="user_icon" target="_blank"><img src="${rs.from_icon}" onerror="this.src='/public/static/images/noface.png'" title="${rs.from_username}"></a><span class="content">${rs.content}</span>
@@ -304,14 +310,25 @@ function format_chatmsg_tohtml(array){
 		}, 200);
 	}
 
+
 //建立WebSocket长连接
-var clientId;
+var chat_timer,clientId = '';
+var pushIdArray = [];
 function ws_connect(){
-	if(w_s!=null){
+	if(typeof(w_s)=='object'){
 		$("#remind_online").hide();
 		w_s.close();
 		console.log("#########中断了,重新连接!!!!!!!!!!"+Math.random());
+		setTimeout(function(){	//避免还没有完全关闭连接
+			ws_link();
+		},3000);
+	}else{
+		ws_link();
 	}
+}
+
+function ws_link(){
+		ws_have_link = true;
 		w_s = new WebSocket(ws_url);
 		w_s.onmessage = function(e){
 			var obj = {};
@@ -320,15 +337,20 @@ function ws_connect(){
 			}catch(err){
 				console.log(err);
 			}
-			if(obj.type=='newmsg'){
+			if(obj.type=='newmsg'){	//其它地方推送消息过来
 				if( (obj.data[0].qun_id>0 && uid==-obj.data[0].qun_id) || (obj.data[0].uid==uid||obj.data[0].touid==uid) ){
 					check_new_showmsg(obj);	//推数据
 					$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data[0].id,function(res){//更新记录
 						console.log(res.msg);
 					});	
-				}				
-				//console.log("聊天窗口,有新消息来了!!!!!!!!!!");
-				console.log(obj);
+				}
+			}else if(obj.type=='new_msg_id'){	//圈子直播文字最后得到的真实ID
+				pushIdArray[obj.data.push_id] = obj.data.id; //删除内容的时候要用到
+				$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data.id,function(res){//更新记录
+					console.log(res.msg);
+				});
+			}else if(obj.type=='qun_sync_msg'){	//圈子直播文字  
+				check_new_showmsg(obj);
 			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
 				if(uid==0){
 					return ;
@@ -349,15 +371,34 @@ function ws_connect(){
 				 show_online(obj,'goin');
 			}else if(obj.type=='leave'){	//某个用户离开了
 				show_online(obj,'getout')
-				console.log(obj);
+				//console.log(obj);
 			}else if(obj.type=='msglist'){	//需要更新列表信息
-				console.log("消息列表,有新消息来了..........");
-				console.log(e.data);
-				//alert("需要更新列表信息");
+				//console.log("消息列表,有新消息来了..........");
+				//console.log(e.data);
 				//obj.uid==uid即本圈子提交数据(或者自己正处于跟他人私聊),不用更新列表, obj.uid它人私信自己,就要更新,obj.uid是其它圈子也要更新
 				if( (obj.uid<0 && obj.uid!=uid) || (obj.uid==my_uid && obj.from_uid!=uid ) ){
 					check_list_new_msgnum();
-				}			
+				}
+			}else if(obj.type=='give_vod_voice_state'){	//CMS音频 成功获取到直播信息,访客得到音频的播放状态
+				voice_urls = obj.data.play_urls;	//首次点播要用
+				vod_voice_play(obj.data,'ok');
+			}else if(obj.type=='error#ask_vod_voice_state'){	//CMS音频 圈主首次进入或者圈主不在,按默认的播放
+				vod_voice_play({play_urls:voice_urls},'err');
+			}else if(obj.type=='ask_vod_voice_state'||obj.type=='ask_vod_voice_sync'){	//CMS音频 访客请求圈主的音频播放状态,圈主进行反馈,圈主如有多个窗口最后一次登录窗口才收到,第一次窗口不会收到.
+				var arr ={};
+				if(typeof(voice_iframeWin)=='object'){
+					arr = {
+						play_index:voice_iframeWin.get_now_state()[0],
+						play_time:voice_iframeWin.get_now_state()[1],		
+					};
+				}
+				arr.play_urls = voice_urls;
+				var tag = obj.type=='ask_vod_voice_sync'?'give_vod_voice_sync':'give_vod_voice_state';
+				w_s.send('{"type":"quner_to_user","tag":"'+tag+'","data":' + JSON.stringify( arr ) + ',"user_cid":"' + obj.user_cid + '"}');
+			}else if(obj.type=='vod_voice_sync_play'){  //CMS音频 同步播放
+				voice_iframeWin.control(obj.data);
+			}else if(obj.type=='give_vod_voice_sync'){  //CMS音频 获取到同步信息
+				voice_iframeWin.vod.sync_play({index:obj.data.play_index,time:obj.data.play_time});
 			}else{
 				console.log(e.data);
 			}
@@ -365,18 +406,19 @@ function ws_connect(){
 		
 		w_s.onopen = function(e) {};
 		w_s.onerror = function(e){
-			w_s.close();
-			console.log("#########连接异常中断了.........."+Math.random());
-			ws_stop = true;
+			console.log("#########连接异常中断了.........."+Math.random(),e);
+			w_s.close();			
+			ws_have_link = false;
 		};
 		w_s.onclose = function(e){
+			w_s.close();
 			console.log("########连接被关闭了.........."+Math.random());
-			ws_stop = true;
+			ws_have_link = false;
 		};
 		
 		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
 		chat_timer = setInterval(function() {
-			if(ws_stop == true){
+			if(ws_have_link != true){
 				w_s = new WebSocket(ws_url);
 			}else{
 				w_s.send('{"type":"refresh"}');
@@ -515,7 +557,7 @@ function check_new_showmsg(obj){
         }
         set_live_player(res,'cknew');	//设置视频直播的播放器 
         //add_msg_data(res,'new');
-        maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
+        if(typeof(res.ext)!='undefined')maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
         
     }else{	//客户端拉数据, 主动获取数据
         
@@ -636,8 +678,8 @@ var uid = 0;	//当前聊天用户的UID
 
 //URL中指定的用户,同步WAP模板
 var str = window.location.href;
-if (str.indexOf('uid=')>-1) {	//replace(/[^\d|^\-]/g,"");
-    str = str.substring(str.indexOf('uid=')+4);
+if (str.indexOf('uid=')>-1) {	//;
+    str = str.substring(str.indexOf('uid=')+4).replace(/[^\d|^\-]/g,"");
 	if (/^[-]?[0-9]+$/.test(str)) {
 		uid = str;
 		$(function(){
@@ -667,7 +709,7 @@ var user_num = 0;		//圈内成员数
 var user_list = {};	//圈内成员列表
 var have_load_live_player=false;
 var check_new;
-var w_s=null,ws_url,ws_stop = false;
+var w_s,ws_url,ws_have_link;
 //var list_i=0,list_time=30;	//每隔30秒获取一次列表数据
 
 $(function(){
@@ -683,7 +725,7 @@ $(function(){
 				//监听会话内容的滚动条
 				var msg_top = pc_show_all_msg_obj.css('top');		
 				msg_top = Math.abs(msg_top.replace('px',''));	
-				console.log("向上滚"+msg_top);
+				//console.log("向上滚"+msg_top);
 				//console.log("高_"+$(".pc_show_all_msg").height()) 
 				if( msg_top<100 && msg_scroll==true){
 					if(show_msg_top>0||show_msg_page>1){
@@ -699,7 +741,7 @@ $(function(){
 				//监听用户列表的滚动条
 				var user_top = pc_msg_user_list_obj.css('top');
 				user_top = Math.abs(user_top.replace('px',''));	
-				console.log("向下滚"+user_top);
+				//console.log("向下滚"+user_top);
 				if(user_top-user_div_top>300 && user_scroll==true){
 					//console.log(user_div_top);
 					user_div_top = user_top;		
@@ -850,7 +892,22 @@ $(function(){
 		}
 		$(".msgcontent").val('');
 		allowsend = false;
-		$.post(postMsgUrl,{'uid':uid,'content':content,},function(res){
+		var push_id = 0;
+		if(ws_url!=''){
+			push_id = (Math.random()+'').substring(2);
+			//if(ws_have_link!=true){	//如果中断了,就要重连
+			//	ws_connect();
+			//}
+			var time = 0;
+			if(ws_have_link!=true){	//上面链接需要时间
+				layer.msg("请稍候,正在建立连接...");
+				time = 3000;
+			}
+			setTimeout(function(){
+				w_s.send('{"type":"qun_sync_msg","data":' + JSON.stringify( {'content':content,'push_id':push_id} ) + '}');
+			},time);			
+		}
+		$.post(postMsgUrl,{'uid':uid,'content':content,'push_id':push_id},function(res){
 
 			if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
 				//发布信息后,代表存在互动,缩短刷新时间
@@ -862,17 +919,13 @@ $(function(){
 				},1500);
 			}
 
-			if(ws_stop==true){	//如果中断了,就要重连
-				ws_connect();
-			}
-
 			allowsend = true;
 			if(res.code==0){				
 				//layer.msg('发送成功',{time:500});
 				$("#hack_wrap").hide(100);
 			}else{
-				$(".msgcontent").val(content);
-				layer.alert('发送失败:'+res.msg);
+				//$(".msgcontent").val(content);
+				layer.alert('本条信息已发出,但并没有入库,原因:'+res.msg);
 			}
 		});
 	}
@@ -914,6 +967,9 @@ function add_btn_delmsg(){
 	$(".office_text .del").click(function(){
 		var id = $(this).data("id");
 		var that = $(this);
+		if(pushIdArray[id]!=undefined){
+			id = pushIdArray[id];
+		}
 		$.get("/member.php/member/wxapp.msg/delete.html?id="+id,function(res){
 			if(res.code==0){
 				layer.msg("删除成功");
@@ -1114,28 +1170,22 @@ function get_qunuser_list(uid){
 function set_live_player(res,type){
 	
 		if(type=='cknew' && res.data.length>0){
-			console.log(res.data);
 			res.data.forEach((rs)=>{
 				if(rs.content.indexOf('live_video_start')>0){
 					console.log('中断过的 . 重新发起直播');
 					if(have_load_live_player==true)have_load_live_player = false;	//中断过的 . 重新发起直播
 				}
 			});
-		}//console.log('========='+have_load_live_player+'-------'+typeof(res.ext.live_video)+'--------'+res.ext.live_video.time);
-		//3秒内有活动,都算在直播中,此值要大于上面的refresh_timenum
-		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined'){
-			//$(".live-player-warp").show();
+		}
+
+		if(have_load_live_player!=true && typeof(res.ext)!='undefined' && (typeof(res.ext.live_video)!='undefined'||typeof(res.ext.vod_voice)!='undefined') ){
 			have_load_live_player = true;
-			var otime = 1;
-			//if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
-			//	otime = 2000;	//2秒
-			//}
-
-			setTimeout(function(){
-				ck_play(res.ext.live_video.flv_url);	//设置播放器
-			},otime);
-
-		}else if( typeof(res.ext.live_video)=='undefined' ){
+			if(typeof(res.ext.vod_voice)!='undefined'){
+				vod_voice_play(res.ext.vod_voice);	//设置点播转直播音频播放器
+			}else{
+				ck_play(res.ext.live_video.flv_url);	//设置直播视频播放器
+			}			
+		}else if(typeof(res.ext)!='undefined' && typeof(res.ext.live_video)=='undefined' && typeof(res.ext.vod_voice)=='undefined' ){
 			have_load_live_player = false;
 		}
 }
@@ -1170,9 +1220,78 @@ function ck_play(url){
 	});
 }
 
+var voice_iframeWin,voice_urls;
 
+function vod_voice_play(obj,etype){
+	var oo;
+	if(etype=='ok'||etype=='err'){	//请求完成
+		var url_array = obj.play_urls;
+		if(etype=='ok'){
+			oo = {index:obj.play_index,time:obj.play_time}
+		}
+	}else{	//请求直播信息
+		voice_urls = obj.urls;
+		var url_array = obj.urls;
+		var timer = setInterval(function() {
+			if(clientId!=''){
+				clearInterval(timer);
+				w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_state","user_cid":"'+clientId+'"}');	//向圈主请求当前播放信息
+			}	
+		}, 1000);
+		return ;
+	}	
+	
+	layer.open({  
+		  type: 2,    
+		  title: '直播开始了...',  
+		  fix: false,  
+		  shadeClose: false,  
+		  offset: ['10px', '10px'],
+		  shade: 0,
+		  maxmin: true,
+		  scrollbar: false,
+		  closeBtn:2,  
+		  area: ['450px', my_uid==quninfo.uid?'390px':'345px'],  
+		  content: "/public/static/libs/bui/pages/chat/vod_player.html?aid="+Math.abs(uid)+"&cid="+clientId,
+		  success: function(layero, index){  
+			var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
+			voice_iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();  
+			voice_iframeWin.voice_player(url_array,oo);
+			//$('.layui-layer-min').trigger("click");
+			setTimeout(function(){
+				//$('.layui-layer-max').trigger("click");
+				//body.find(".player-button").hide();
+			},3000);	
+			if(my_uid==quninfo.uid){
+				setTimeout(function(){
+					body.find('.syscn').show();
+					body.find('.jp-previous').show();
+					body.find('.jp-next').show();
+					body.find('.jp-play').off('click');
+				},2000);
+			}
+		  }
+    });
+}
+//用户请求同步播放 给框架窗口使用
+//function user_ask_sync_vod_voice(){
+//	w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_sync","user_cid":"'+clientId+'"}');
+//}
 
 $(function(){
+	$("#vod_voice").click(function(){
+		if(uid>=0){
+			layer.alert('只有群聊才能直播!');
+			return ;
+		}
+		layer.open({  
+		  type: 2,    
+		  title: '音频点播转直播',  
+		  area: ['650px','600px'],  
+		  content: "/member.php/member/vod/index.html?type=voice&aid="+Math.abs(uid),
+		});
+	});
+
 	$("#live_video").click(function(){
 		if(uid>=0){
 			layer.alert('只有群聊才能直播!');

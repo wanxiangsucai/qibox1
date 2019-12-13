@@ -6,7 +6,13 @@
 var refresh_i,refresh_timenum;//初始化8秒刷新一次
 var is_live = 0; //是否在直播
 var live_urls = {flv_url:'',m3u8_url:'',rtmp_url:''}; //直播地址
-var w_s;
+var w_s,clientId;
+
+//CMS音频 用户请求同步播放 给框架窗口使用
+function user_ask_sync_vod_voice(){
+	w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_sync","user_cid":"'+clientId+'"}');
+}
+
 loader.define(function(require,exports,module) {
 
     var pageview = {};
@@ -25,13 +31,25 @@ loader.define(function(require,exports,module) {
 	var uiSidebar;          // 侧边栏
 	var video_player;
 	var have_load_live_player=false;
-	var ws_url,ws_stop = false;
+	var ws_url,ws_have_link;
+	var voice_iframeWin,voice_urls;
+	var pushIdArray = [];
 
 	//建立WebSocket长连接
 	pageview.ws_connect = function(){
-		if( typeof(w_s)!='undefined' ){
+		if( typeof(w_s)=='object' ){
 			w_s.close();
+			console.log("#########中断了,重新连接!!!!!!!!!!"+Math.random());
+			setTimeout(function(){	//避免还没有完全关闭连接
+				pageview.ws_link();
+			},3000);
+		}else{
+			pageview.ws_link();
 		}
+	}
+	pageview.ws_link = function(){
+		
+		ws_have_link = true;
 		w_s = new WebSocket(ws_url);
 		w_s.onmessage = function(e){
 			var obj = {};
@@ -47,10 +65,18 @@ loader.define(function(require,exports,module) {
 				});	
 				console.log("有新消息来了");
 				console.log(obj);
+			}else if(obj.type=='new_msg_id'){	//圈子直播文字最后得到的真实ID
+				pushIdArray[obj.data.push_id] = obj.data.id; //删除内容的时候要用到
+				$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data.id,function(res){//更新记录
+					console.log(res.msg);
+				});
+			}else if(obj.type=='qun_sync_msg'){	//圈子直播文字  
+				check_new_showmsg(obj);
 			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
 				if(uid==0){
 					return ;
 				}
+				clientId = obj.client_id;
 				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+obj.client_id,function(res){	//绑定用户
 					if(res.code==0){
 						//layer.msg('欢迎到来!',{time:500});
@@ -68,6 +94,26 @@ loader.define(function(require,exports,module) {
 			}else if(obj.type=='leave'){	//某个用户离开了
 				show_online(obj,'getout')
 				console.log(obj);
+			}else if(obj.type=='give_vod_voice_state'){	//CMS音频 成功获取到直播信息,访客得到音频的播放状态
+				voice_urls = obj.data.play_urls;	//首次点播要用
+				vod_voice_play(obj.data,'ok');
+			}else if(obj.type=='error#ask_vod_voice_state'){	//CMS音频 圈主首次进入或者圈主不在,按默认的播放
+				vod_voice_play({play_urls:voice_urls},'err');
+			}else if(obj.type=='ask_vod_voice_state'||obj.type=='ask_vod_voice_sync'){	//CMS音频 访客请求圈主的音频播放状态,圈主进行反馈,圈主如有多个窗口最后一次登录窗口才收到,第一次窗口不会收到.
+				var arr ={};
+				if(typeof(voice_iframeWin)=='object'){
+					arr = {
+						play_index:voice_iframeWin.get_now_state()[0],
+						play_time:voice_iframeWin.get_now_state()[1],		
+					};
+				}
+				arr.play_urls = voice_urls;
+				var tag = obj.type=='ask_vod_voice_sync'?'give_vod_voice_sync':'give_vod_voice_state';
+				w_s.send('{"type":"quner_to_user","tag":"'+tag+'","data":' + JSON.stringify( arr ) + ',"user_cid":"' + obj.user_cid + '"}');
+			}else if(obj.type=='vod_voice_sync_play'){  //CMS音频 同步播放
+				voice_iframeWin.control(obj.data);
+			}else if(obj.type=='give_vod_voice_sync'){  //CMS音频 获取到同步信息
+				voice_iframeWin.vod.sync_play({index:obj.data.play_index,time:obj.data.play_time});
 			}else{
 				console.log(e.data);
 			}
@@ -75,15 +121,15 @@ loader.define(function(require,exports,module) {
 		
 		w_s.onopen = function(e) {};
 		w_s.onerror = function(e){
-			ws_stop = true;
+			ws_have_link = false;
 		};
 		w_s.onclose = function(e){
-			ws_stop = true;
+			ws_have_link = false;
 		};
 		
 		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
 		chat_timer = setInterval(function() {
-			if(ws_stop == true){
+			if(ws_have_link != true){
 				w_s = new WebSocket(ws_url);
 			}else{
 				w_s.send('{"type":"refresh"}');
@@ -425,10 +471,10 @@ loader.define(function(require,exports,module) {
 
 		if( typeof(obj)=='object' && typeof(obj.data)=='object' && obj.data.length>0 ){		//服务端推数据, 即被动获取数据
 			var res = obj;
-			layer.closeAll();
+			//layer.closeAll();
 			need_scroll = true;
 			add_msg_data(res,'new');
-			maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
+			if(typeof(res.ext)!='undefined')maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
 			set_live_player(res,'cknew');	//设置视频直播的播放器
 		}else{	//客户端拉数据, 主动获取数据
 			$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){			
@@ -439,7 +485,7 @@ loader.define(function(require,exports,module) {
 				num++;
 				ck_num = num;
 				if(res.data.length>0){	//有新的聊天内容
-					layer.closeAll();
+					//layer.closeAll();
 					need_scroll = true;
 					//vues.set_data(res.data);
 					add_msg_data(res,'new');
@@ -475,22 +521,18 @@ loader.define(function(require,exports,module) {
 			});
 		}
 		//live_video参数存在,代表正在直播中
-		if(have_load_live_player!=true && typeof(res.ext.live_video)!='undefined'){
-			router.$(".live-player-warp").show();
+		if(have_load_live_player!=true && typeof(res.ext)!='undefined' && (typeof(res.ext.live_video)!='undefined'||typeof(res.ext.vod_voice)!='undefined') ){
+			
 			have_load_live_player = true;
-			var otime = 1;
-			//if(type=='cknew'){	//聊天过程中,中途刷出来的直播,不要马上加载播放器,因为阿里云那边的直播网址没那么快有数据出来
-			//	otime = 8000;	//8秒
-			//}
 
-			setTimeout(function(){
-				video_player.play(res.ext.live_video);	//设置播放器
-				//setTimeout(function(){
-				//	router.$('#chat_win').parent().scrollTop(20000);
-				//},1000);
-			},otime);
-
-		}else if( typeof(res.ext.live_video)=='undefined' ){
+			if(typeof(res.ext.vod_voice)!='undefined'){
+				vod_voice_play(res.ext.vod_voice);	//设置点播转直播音频播放器
+			}else{
+				router.$(".live-player-warp").show();
+				video_player.play(res.ext.live_video);	//设置视频直播的播放器
+			}
+		
+		}else if(typeof(res.ext)!='undefined' && typeof(res.ext.live_video)=='undefined' && typeof(res.ext.vod_voice)=='undefined' ){
 			have_load_live_player = false;
 		}
 	}
@@ -508,7 +550,7 @@ loader.define(function(require,exports,module) {
 				if(show_msg_page==1){					
 					load_first_page(res);					
 				}
-				layer.closeAll();
+				//layer.closeAll();
 				var that = router.$('#chat_win');
 				if(res.data.length<1){
 					if(show_msg_page==1){
@@ -537,6 +579,9 @@ loader.define(function(require,exports,module) {
 		router.$(".chat-panel .del").click(function(){
 			var id = $(this).data("id");
 			var that = $(this);
+			if(pushIdArray[id]!=undefined){
+				id = pushIdArray[id];
+			}
 			$.get("/member.php/member/wxapp.msg/delete.html?id="+id,function(res){
 				if(res.code==0){
 					layer.msg("删除成功");
@@ -646,10 +691,31 @@ loader.define(function(require,exports,module) {
 			layer.alert('消息内容不能为空');
 			return ;
 		}
+
+		var push_id = 0;
+		if(ws_url!=''){
+			push_id = (Math.random()+'').substring(2);
+			//if(ws_have_link!=true){	//如果中断了,就要重连
+			//	pageview.ws_connect();
+			//}
+			router.$(".chatInput").val('');
+			router.$(".hack_wrap").hide();
+			router.$(".face_wrap").hide();
+			var time = 0;
+			if(ws_have_link!=true){	//上面链接需要时间
+				layer.msg("请稍候,正在建立连接...");
+				time = 3000;
+			}
+			setTimeout(function(){
+				w_s.send('{"type":"qun_sync_msg","data":' + JSON.stringify( {'content':content,'push_id':push_id} ) + '}');
+			},time);			
+		}
+
 		$.post("/member.php/member/wxapp.msg/add.html",{
 			'uid':uid,
 			'content':content,
-			'send_to':touser.uid
+			'send_to':touser.uid,
+			'push_id':push_id
 			},function(res){
 				
 				if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
@@ -659,19 +725,14 @@ loader.define(function(require,exports,module) {
 					}, 1500);	//互动之后,加快刷新,重新setInterval是兼容之前任务已死掉
 				}
 
-				if(ws_stop==true){	//如果中断了,就要重连
-					pageview.ws_connect();
-				}
-
-
 				if(res.code==0){
 					router.$(".chatInput").val('');
 					router.$(".hack_wrap").hide();
 					router.$(".face_wrap").hide();
 					//layer.msg('发送成功');
 				}else{
-					router.$("#btnSend").removeClass("disabled").addClass("primary");
-					layer.alert('发送失败:'+res.msg);
+					//router.$("#btnSend").removeClass("disabled").addClass("primary");
+					layer.alert('本条信息已发出,但并没有入库,原因:'+res.msg);
 				}
 		});
 	}
@@ -699,6 +760,7 @@ loader.define(function(require,exports,module) {
 		var old_html = router.$("#chat_win").html();
 		array.forEach((rs)=>{
 			if(old_html.indexOf( ' chat-box-'+rs.id )>0){
+				console.log('有重复的消息'+rs.id);
 				return true;
 			}
 			del_str = '';
@@ -995,6 +1057,59 @@ loader.define(function(require,exports,module) {
 			if(typeof(user_list[_uid]) == 'object' && typeof(user_list[_uid].nickname)!='undefined' && user_list[_uid].nickname!=''){
 				$(this).html(user_list[_uid].nickname);
 			}
+		});
+	}
+	
+	//CMS音频直播
+	function vod_voice_play(obj,etype){
+		var oo;
+		if(etype=='ok'||etype=='err'){	//请求完成
+			var url_array = obj.play_urls;
+			if(etype=='ok'){
+				oo = {index:obj.play_index,time:obj.play_time}
+			}
+		}else{	//请求直播信息
+			voice_urls = obj.urls;
+			var url_array = obj.urls;
+			var timer = setInterval(function() {
+				if(clientId!=''){
+					clearInterval(timer);
+					w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_state","user_cid":"'+clientId+'"}');	//向圈主请求当前播放信息
+				}	
+			}, 1000);
+			return ;
+		}	
+		
+		layer.open({  
+			  type: 2,    
+			  title: false,  
+			  fix: false,  
+			  shadeClose: false,  
+			  offset: ['73px', '0'],
+			  shade: 0,
+			  maxmin: true,
+			  scrollbar: false,
+			  closeBtn:2,  
+			  area: ['100%', my_uid==quninfo.uid?'100px':'50px'],  
+			  content: "/public/static/libs/bui/pages/chat/vod_player.html?aid="+Math.abs(uid)+"&cid="+clientId,
+			  success: function(layero, index){  
+				var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
+				voice_iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();  
+				voice_iframeWin.voice_player(url_array,oo);
+				//$('.layui-layer-min').trigger("click");
+				setTimeout(function(){
+					//$('.layui-layer-max').trigger("click");
+					//body.find(".player-button").hide();
+				},3000);	
+				if(my_uid==quninfo.uid){
+					setTimeout(function(){
+						body.find('.syscn').show();
+						body.find('.jp-previous').show();
+						body.find('.jp-next').show();
+						body.find('.jp-play').off('click');
+					},2000);
+				}
+			  }
 		});
 	}
 	

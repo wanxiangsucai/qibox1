@@ -131,6 +131,8 @@ class Msg extends IndexBase{
                 $live_array['qun'.$uid]['time'] = 0;    //此参数将弃用
                 $live_array['qun'.$uid]['push_url']='';
                 $array['live_video'] = $live_array['qun'.$uid];
+            }elseif ($live_array['vod_voice'.$uid]){
+                $array['vod_voice'] = $live_array['vod_voice'.$uid];
             }
         }        
         return $this->ok_js($array);
