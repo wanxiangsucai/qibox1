@@ -1691,3 +1691,4 @@ INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`) VALUES(0, 0, 0, 0, '表情(手机版已固定图标)', '', '', 1, 'qqface', '/public/static/libs/bui/pages/hack/qqface.js', '', '', 1, 0);
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`) VALUES(0, 0, 0, 0, 'wap右上角菜单', '', '', 1, 'wap_top_right_menu', '/public/static/libs/bui/pages/hack/wap_top_right_menu.js', '', '', 1, 0);
 
+ALTER TABLE  `qb_chatmod` ADD  `allowgroup` VARCHAR( 256 ) NOT NULL COMMENT  '允许使用此模块的用户组,多个用逗号隔开';
