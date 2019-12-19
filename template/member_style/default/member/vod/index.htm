@@ -154,6 +154,7 @@ function add_action(){
 					play_urls:res.data,
 				}
 				layer.msg("提交成功");
+				//通知所有用户打开播放器,或者同步音乐信息
 				window.parent.w_s.send('{"type":"qun_to_alluser","tag":"give_vod_voice_state","data":' + JSON.stringify( arr ) + '}');
 				setTimeout(function(){					
 					parent.layer.close(parent.layer.getFrameIndex(window.name));

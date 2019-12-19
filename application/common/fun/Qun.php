@@ -12,12 +12,50 @@ use app\qun\model\Member AS MemberModel;
 class Qun{
     
     /**
+     * 圈子的一些活跃信息,比如直播信息
+     * @param number $aid
+     * @param string $tag
+     * @param array $array
+     * @return unknown|array|string|unknown
+     */
+    public static function live($aid=0,$tag='',$array=[]){
+        static $data = null;
+        if ($data===null) {
+            $data = json_decode(substr(file_get_contents(UPLOAD_PATH.'qun_live.php'),14),true)?:[];
+        }        
+        $need_write = false;
+        if($array===''){
+            unset($data[$aid][$tag]);
+            if (empty($data[$aid])) {
+                unset($data[$aid]);
+            }
+            $need_write = true;
+        }elseif(is_array($tag)){
+            $data[$aid] = $tag;
+            $need_write = true;
+        }elseif($array){
+            $data[$aid][$tag] = $array;
+            $data[$aid][$tag]['time'] = time();
+            $need_write = true;
+        }
+        if ($need_write) {
+            file_put_contents(UPLOAD_PATH.'qun_live.php', '<?php die();?>'.json_encode($data));
+        }elseif($tag){
+            return $data[$aid][$tag];
+        }elseif($aid){
+            return $data[$aid];
+        }else{
+            return $data;
+        }
+    }
+    
+    /**
      * 获取圈子自定义的菜单
      * @param number $id 圈子ID
      * @param number $type 1是底部菜单 2是头部菜单 3是浮动按钮菜单
      * @return unknown
      */
-    public function menu($id=0,$type=3){
+    public static function menu($id=0,$type=3){
         $tag = 'qun_menu_'.$type.'_'.$id;
         $menu = cache($tag);
         if (empty($menu)) {

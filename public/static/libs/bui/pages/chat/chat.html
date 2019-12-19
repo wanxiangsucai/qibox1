@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/public/static/libs/bui/css/chat.css?d" />
+<link rel="stylesheet" href="/public/static/libs/bui/css/chat.css?dhh" />
 <!-- 有侧边栏的结构 -->
 <div id="sidebar" class="bui-sidebar-wrap">
     <!-- 侧边栏开始 -->
@@ -54,125 +54,48 @@
 	<!-- 侧边栏结束 -->
 
 <div class="bui-page page-chat">
-    <header class="bui-bar" id="chat_head">
-        <div class="bui-bar-left">
-            <a class="bui-btn btn-back"><i class="icon-back"></i></a>
-        </div>
-        <div class="bui-bar-main">
-            <span id="send_user_name">会话记录</span>
-        </div>
-		<!-- 有下拉菜单时,需要修改bui-bar-right的overflow属性为可视 -->
-        <div class="bui-bar-right" style="overflow:visible;">
-			<!-- 不修改文本值 -->
-			<div id="right_more" class="bui-dropdown" change="false">
-                <div class="bui-btn bui-box-center">
-                    <i class="icon-plus"></i>
-                </div>
-                <ul class="bui-list round" id="TopRightBtn">
-                    <!--
-                    <li class="bui-btn bui-box" href="/public/static/libs/bui/pages/near/list.html?type=user">
-                        <i class="icon-jiahao">&#xe660;</i>
-                        <div class="span1">附近的人</div>
-                    </li>
-					<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/near/list.html?mid=1">
-                        <i class="icon-jiahao"><i class="glyphicon glyphicon-map-marker"></i></i>
-                        <div class="span1">附近的圈子</div>
-                    </li>
-					<li class="bui-btn bui-box">
-                        <i class="icon-jiahao">&#xe61d;</i>
-                        <div class="span1 iframe" href="/member.php/qun/content/postnew.html">创建群聊</div>
-                    </li>-->
-					
-					<!--
-					<ol v-if="to_id<0">
-					<li class="bui-btn bui-box" :href="'/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/show-'+(-to_id)+'.html&title=圈子主页'">
-                        <i class="icon-jiahao"><i class="si si-support"></i></i>
-                        <div class="span1">圈子主页</div>
-                    </li>
-                    <li class="bui-btn bui-box" :href="'/public/static/libs/bui/pages/chat/codeimg.html?type=msg&id='+(-to_id)">
-                        <i class="icon-jiahao">&#xe657;</i>
-                        <div class="span1">直播群聊二维码</div>
-                    </li>
-					<li class="bui-btn bui-box" :href="'/public/static/libs/bui/pages/chat/codeimg.html?type=home&id='+(-to_id)">
-                        <i class="icon-jiahao">&#xe657;</i>
-                        <div class="span1">圈子主页二维码</div>
-                    </li>
-					<li class="bui-btn bui-box" :href="'/public/static/libs/bui/pages/frame/show.html?url=/index.php/p/signin-index-index/id/'+(-to_id)+'.html&title=签到领积分'">
-                        <i class="icon-jiahao"><dd class="fa fa-calendar"></dd></i>
-                        <div class="span1">签到领积分</div>
-                    </li>
-				   </ol>
-				   <ol v-else>
-					<li class="bui-btn bui-box" :href="'/public/static/libs/bui/pages/frame/show.html?url=/member.php/home/'+to_id+'.html&title=个人主页'">
-                        <i class="icon-jiahao">&#xe660;</i>
-                        <div class="span1">个人主页</div>
-                    </li>
-				   </ol>
-				   -->
-                </ul>
-            </div>
-			<!--
-            <a class="bui-btn right-tongji" v-if="from_id!==''"><i class="fa fa-commenting-o"><span class="bui-badges tongji_num">0</span></i></a>
-			<a class="bui-btn" v-else-if="to_id>0"><i :href="'/member.php/home/'+to_id+'.html'" class="iframe fa fa-id-badge"></i></a>
-			<a class="bui-btn" v-else-if="to_id<0"><i :href="'/index.php/qun/show-'+(-to_id)+'.html'" class="iframe fa fa-telegram"></i></a>
-			<a class="bui-btn" v-else><i :href="'/member.php/home/'+me_id+'.html'" class="iframe fa fa-user-circle-o"></i></a>
-			-->
-        </div>
-    </header>	
-    <main id="chat_main">
-		<div id="remind_online">对方正在输入中,请不要离开!</div>
-        <div class="bui-panel chat-panel" id="chat_win"></div>
-		<div class="chatbar">
+    <header id="chat_head">
+		<div class="bui-bar">
+			<div class="bui-bar-left">
+				<a class="bui-btn btn-back"><i class="icon-back"></i></a>
+			</div>
+			<div class="bui-bar-main">
+				<span id="send_user_name">会话记录</span>
+			</div>
+			<!-- 有下拉菜单时,需要修改bui-bar-right的overflow属性为可视 -->
+			<div class="bui-bar-right" style="overflow:visible;">
+				<!-- 不修改文本值 -->
+				<div id="right_more" class="bui-dropdown" change="false">
+					<div class="bui-btn bui-box-center">
+						<i class="icon-plus"></i>
+					</div>
+					<ul class="bui-list round" id="TopRightBtn">                    
+					</ul>
+				</div>			
+			</div>
+		</div>
+		<div class="header_content" style="display:none;">
+			<div id="remind_online">对方正在输入中,请不要离开!</div>
+			<div class="chat_iframe_div" style="display:none;" id="chat_iframe_div"><iframe name="iframe_chat" class="iframe_chat" id="iframe_chat" src="about:blank"  width="100%" height="50" scrolling="no" frameborder="0" allowfullscreen="true"></iframe></div>
+		</div>
+    </header>
+
+    <main id="chat_main">		
+        <div class="bui-panel chat-panel" id="chat_win"><!--聊天内容--></div>				
+    </main>
+	 
+    <footer>
+        <div class="chatbar">
             <div class="bui-input">
                 <i class="glyphicon glyphicon-plus-sign" id="show_hack"></i>
 				 <textarea class="chatInput"></textarea>
 				 <i class="fa fa-smile-o" id="choose_qqface"></i>				 
 				<span id="btnSend" class="bui-btn round disabled">发送</span>
             </div>
-			<div class="hack_wrap"></div>
 			<div class="face_wrap"></div>
-        </div>
-		<div id="hack_signin"></div>
-		<div class="live-player-warp"><span>视频直播即将开始...</span></div>
-    </main>
-	<!--
-    <footer>
-        <div class="chatbar">
-            <div class="bui-input">
-                <textarea id="chatInput"></textarea><span id="btnSend" class="bui-btn round disabled">发送</span>
-            </div>
+			<div class="chat_mod_btn"></div>
         </div>
     </footer>
-	-->
+	 
 </div>
-</div>
-
-<style type="text/css">
-.live_video_warp{
-	padding:20px;
-	line-height:30px;
-}
-.live_video_warp input{
-	width:100%;
-}
-.live_video_warp .codeimg{
-	width:100%;
-	text-align:center;
-	height:150px;
-	line-height:15px;
-	font-weight:bold;
-}
-.live_video_warp .codeimg img{
-	width:130px;
-}
-</style>
-<!--分享直播-->
-<div style="display:none;" id="live_video_warp">
-	<div class="live_video_warp">
-	<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>其它手机扫码推流</div>
-	推流地址：<input class="push_url" type="text"><br>
-	播流地址：<input class="m3u8_url" type="text"><br>
-	<!--播流地址FLV(只能PC播放)：<input class="flv_url" type="text"><br>	
-	播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>-->
-	</div>
 </div>

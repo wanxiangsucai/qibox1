@@ -225,28 +225,9 @@
 			
 			<!--聊天内容-->
 			<div class="windows_body">
-				<!--<div class="live-player-warp"><div id="players"><span>视频直播即将开始...</span></div></div>-->
-				<div id="hack_wrap">
-					<script type="text/javascript">
-						for(var i=1;i<23;i++){
-							document.write(`<em data-id="${i}"><img src="/public/static/images/qqface/${i}.gif"></em>`);
-						}
-					</script>
-				</div>
+				<div id="hack_wrap"><!--表情等插件--></div>
 				<div class="office_text" style="height: 100%;">
-					<ul class="content pc_show_all_msg" id="chatbox" style="display: flex;flex-flow: column-reverse;">
-<!--会员聊天内容
-{php}$uid='';{/php}
-qb:tag name="pc_show_all_msg" class="app\member\controller\Msg@showmore" union="uid,maxid,num" rows="10"
-						<li class="{$rs.uid==$userdb.uid?'me':'other'}">
-						<dd class="time" data-time="{$rs.create_time|strtotime}"><a>{$rs.create_time}</a></dd>
-						{if $rs.qun_id&&$rs.uid!=$userdb.uid}<div class="name">{$rs.from_username}</div>{/if}
-						<a href="{:get_url('user',$rs.uid)}" class="user_icon" target="_blank"><img src="{$rs.from_icon}"  onerror="this.src='__STATIC__/images/noface.png'" title="{$rs.from_username}"></a><span class="content">{$rs.content}</span>
-						{if $rs.uid==$userdb.uid||$rs.touid==$userdb.uid}<i data-id="{$rs.id}" class="del glyphicon glyphicon-remove-circle"></i>{/if}				
-						</li>
-qb:tag
--->
-					</ul>
+					<ul class="content pc_show_all_msg" id="chatbox" style="display: flex;flex-flow: column-reverse;"><!--会话内容--></ul>
 				</div>
 			</div>
 
@@ -275,14 +256,13 @@ qb:tag
 <!--这段隐藏代码是网站会员动态,可以任意移动位置-->
 
 			<div class="windows_input" id="talkbox">
-				<div class="input_icon">
-					<a href="javascript:;" id="show_face" title="发送表情"></a>
-					<a href="javascript:;" title="发红包" class="si si-present" id="give_hongbao"></a>
-					<a href="javascript:add_new_user();" title="添加新人会话"></a>
-					<a href="javascript:" onclick="$('#fileToUpload').click();" title="上传图片" id="uploadPhoto" class="fa fa-photo"></a>
-					<input style="display:none;" type="file" name="fileToUpload" id="fileToUpload" accept="image/*" /><input type="text" name="picurl" id="compressValue"  style="display:none;" />
-					<a href="javascript:;" title="圈主视频直播" id="live_video" class="fa fa-video-camera"></a>
-					<a href="javascript:;" title="圈主音频点播转直播" id="vod_voice" class="glyphicon glyphicon-headphones"></a>
+				<div class="input_icon" id="chat_model_btn">
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
 				</div>
 				<div class="input_box">
 					<textarea name="" rows="" cols="" id="input_box" class="msgcontent"></textarea>
@@ -333,17 +313,6 @@ qb:tag
 </div>
 <!--我访问过的圈子-->
 
-<!--分享直播-->
-<div style="display:none;" id="live_video_warp">
-	<div class="live_video_warp">
-	<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>手机扫码推流</div>
-	推流地址：<input class="push_url" type="text"><br>
-	播流地址m3u8(PC/WAP/APP都能播放)：<input class="m3u8_url" type="text"><br>
-	播流地址FLV(只能PC播放)：<input class="flv_url" type="text"><br>	
-	播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>
-	</div>
-</div>
-
 
 <script type="text/javascript">
 var ListMsgUserUrl = "{qb:url name='pc_msg_user_list' /}";			//获取分页的消息用户列表
@@ -364,7 +333,7 @@ var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
 
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
-<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?wfff"></script>
-<script type="text/javascript" src="__STATIC__/libs/ckplayer/ckplayer.js"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?"></script>
+
 </body>
 </html>

@@ -126,15 +126,17 @@ class Msg extends IndexBase{
 //             ];
 //             cache('live_qun',$live_array);
         }elseif($uid<1){    //代表群聊
-            $live_array = cache('live_qun');    //这里有个BUG,如果进后台操作过东西,缓存就会被清空,导致这里没数据
-            if($live_array['qun'.$uid]){
-                $live_array['qun'.$uid]['time'] = 0;    //此参数将弃用
-                $live_array['qun'.$uid]['push_url']='';
-                $array['live_video'] = $live_array['qun'.$uid];
-            }elseif ($live_array['vod_voice'.$uid]){
-                $array['vod_voice'] = $live_array['vod_voice'.$uid];
-            }
-        }        
+//             $live_array = cache('live_qun');    //这里有个BUG,如果进后台操作过东西,缓存就会被清空,导致这里没数据
+//             if($live_array['qun'.$uid]){
+//                 $live_array['qun'.$uid]['time'] = 0;    //此参数将弃用
+//                 $live_array['qun'.$uid]['push_url']='';
+//                 $array['live_video'] = $live_array['qun'.$uid];
+//             }elseif ($live_array['vod_voice'.$uid]){
+//                 $array['vod_voice'] = $live_array['vod_voice'.$uid];
+//             }
+            $array['live'] = fun('Qun@live',abs($uid))?:''; //圈子的活跃信息,比如直播之类的
+        }
+        $array['chatmod'] = fun('chatmod@get',in_wap()?1:2,$uid<1?1:0,$uid<0?abs($uid):0);  //群聊模块
         return $this->ok_js($array);
     }
     

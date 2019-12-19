@@ -27,13 +27,12 @@ class Vod extends MemberBase
             $array[$key] = $rs;
         }
         
-        $live_array = cache('live_qun')?:[];
-        $live_array['vod_voice-'.$aid] = [
+        $data = [
             'id'=>$id,
             'time'=>time(),
             'urls'=>$array,
         ];
-        cache('live_qun',$live_array);
+        fun('Qun@live',$aid,'vod_voice',$data);
         return $this->ok_js($array);
     }
     
@@ -49,9 +48,7 @@ class Vod extends MemberBase
         }elseif($qun['uid']!=$this->user['uid']){
             return $this->err_js('你不是圈主');
         }
-        $live_array = cache('live_qun')?:[];
-        unset($live_array['vod_voice-'.$aid]);
-        cache('live_qun',$live_array);
+        fun('Qun@live',$aid,'vod_voice','');
         return $this->ok_js();
     }
     

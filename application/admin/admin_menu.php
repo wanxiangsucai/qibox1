@@ -79,6 +79,10 @@ return array(
                                                 'link'=>'webmenu/index',
                                         ),
                                         array(
+                                            'title'=>'群聊菜单设置',
+                                            'link'=>'chatmod/index',
+                                        ),
+                                        array(
                                                 'title'=>'独立页管理',
                                                 'link'=>'alonepage/index',
                                         ),

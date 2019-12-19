@@ -3,54 +3,96 @@
  * 默认模块名: pages/chat/chat
  * @return {[object]}  [ 返回一个对象 ]
  */
-var refresh_i,refresh_timenum;//初始化8秒刷新一次
-var is_live = 0; //是否在直播
-var live_urls = {flv_url:'',m3u8_url:'',rtmp_url:''}; //直播地址
-var w_s,clientId;
 
-//CMS音频 用户请求同步播放 给框架窗口使用
-function user_ask_sync_vod_voice(){
-	w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_sync","user_cid":"'+clientId+'"}');
+var refresh_i,refresh_timenum;//初始化8秒刷新一次
+var w_s,ws_url,clientId='';
+
+//WebSocket下发消息的回调接口,当前页面可以这样使用 ws_onmsg.xxxx=function(o){} 子窗口可以这样使用 parent.ws_onmsg.xxxx=function(o){}
+var ws_onmsg = {};
+var load_data = {};	//接口
+var first_page_data;	//初始数据,给后加载的框架使用
+var in_pc = false;
+var format_content ={}; //接口
+
+//加载聊天窗口框架
+function load_chat_iframe(url,callback){
+	
+	//这里绕个弯是解决JQ的BUG.不然重复执行的话,下面的load方法会执行多次.
+	var obj = $("#iframe_chat").parent();
+	var str = $("#iframe_chat")[0].outerHTML;
+	$("#iframe_chat").remove();	
+	obj.append(str);
+
+	$("#iframe_chat").attr("src",url);
+	$(".header_content").show();
+	$(".chat_iframe_div").show();
+	$("#iframe_chat").show();
+	$("#iframe_chat").load(function(){
+		var body = $(this).contents();	//body.find("body").html(); 获取页面元素
+		var win = $("#iframe_chat")[0].contentWindow;	//win.test() 执行页面方法		
+		if(typeof(callback)=='function'){
+			callback(win,body);
+		}
+		$("#iframe_chat").height( body.find("body").height() );
+		bui.init();
+	});
 }
 
-loader.define(function(require,exports,module) {
 
-    var pageview = {};
-	var uid,qid;
-	var msg_scroll = 1;
-	var show_msg_page  = 1;
-	var maxid = -1;
-	var getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&page=";
-	var userinfo = {};	//当前登录用户的基础信息
-	var quninfo = {};	//圈子的信息
-	var need_scroll = false;
-	var touser = {uid:0};	//@TA
-	var qun_userinfo = '';	//当前用户所在当前圈子的信息
-	var user_list = {}; //圈子用户列表
-	var user_num = 0; //圈子成员总数
-	var uiSidebar;          // 侧边栏
-	var video_player;
-	var have_load_live_player=false;
-	var ws_url,ws_have_link;
-	var voice_iframeWin,voice_urls;
-	var pushIdArray = [];
+var chat_timer,connect_handle,qun_link_handle;
 
-	//建立WebSocket长连接
-	pageview.ws_connect = function(){
-		if( typeof(w_s)=='object' ){
+function ws_connect(){
+	if(typeof(w_s)=='object'){	//强制重新建立新的连接
+		console.log("#########被强制断开了,重新发起连接!!!!!!!!!!"+Math.random());
+		$("#remind_online").hide();
+		if(w_s.readyState==1||w_s.readyState==0){	//0是连接中,1是已连接上
 			w_s.close();
-			console.log("#########中断了,重新连接!!!!!!!!!!"+Math.random());
-			setTimeout(function(){	//避免还没有完全关闭连接
-				pageview.ws_link();
-			},3000);
-		}else{
-			pageview.ws_link();
+		}
+		if(typeof(connect_handle)!='undefined'){
+			clearInterval(connect_handle); //避免重复发起定时器,而导致重复连接,把之前的连接任务全清掉
+		}
+		connect_handle = setInterval(function(){	//w_s.close()执行后,并不能马上关闭链接的
+			if(w_s.readyState==3){	//0是连接中,1是已连接上,2是断开中,3是已完全断开
+				clearInterval(connect_handle);
+				ws_link();
+			}
+		}, 2000 );
+	}else{
+		ws_link();
+	}
+}
+
+//发送WebSocket信息
+function ws_send(o,getcid){
+
+	if(typeof(w_s)=='undefined'){ //解决还没开始连接就请求发送的情况.
+		wait_connect(o,getcid);
+	}else if(w_s.readyState==1){		
+		w_s.send( get_msg(o,getcid) );
+	}else{
+		ws_connect(); //已断开,重新发起一次链接
+		var index = layer.msg('连接已断开,正在重新发起链接,请稍候...');
+		wait_connect(o,getcid);
+	}
+	function wait_connect(o,getcid){
+		ws_onmsg.require_senmsg = function(obj){	//收到消息时候的回调
+			ws_onmsg.require_senmsg = null;		//这一行不能缺少,不然会进入死循环
+			setTimeout(function(){	//避免跟注册信息同时发送
+				w_s.send( get_msg(o,getcid) );
+			},200);
 		}
 	}
-	pageview.ws_link = function(){
-		
-		ws_have_link = true;
+	function get_msg(o,getcid){
+		if(typeof(getcid)=='string' && typeof(o)=='object'){
+			o[getcid] = clientId;
+		}
+		return typeof(o)=='object' ? JSON.stringify( o ) : o;
+	}
+}
+
+function ws_link(){
 		w_s = new WebSocket(ws_url);
+
 		w_s.onmessage = function(e){
 			var obj = {};
 			try {
@@ -58,6 +100,155 @@ loader.define(function(require,exports,module) {
 			}catch(err){
 				console.log(err);
 			}
+			
+			//当前页面可以这样使用 ws_onmsg.xxxx=function(o){} 子窗口可以这样使用 parent.ws_onmsg.xxxx=function(o){}
+			for(var index in ws_onmsg){
+				if(typeof(ws_onmsg[index])=='function'){
+					ws_onmsg[index](obj);
+				}				
+			}
+
+			//console.log(e);
+		};
+		
+		w_s.onopen = function(e) {	//w_s.readyState CONNECTING: 0 OPEN: 1 CLOSING: 2 CLOSED: 3
+			console.log('WebSocket刚刚连接上');
+		};
+		w_s.onerror = function(e){
+			console.log("#########连接异常中断了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
+		};
+		w_s.onclose = function(e){
+			console.log("########连接被关闭了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
+		};
+		
+		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
+		chat_timer = setInterval(function() {
+			if(w_s.readyState!=1){
+				ws_connect();
+			}else{
+				w_s.send('{"type":"refresh"}');
+			}			
+		}, 1000*50);	//50秒发送一次心跳
+}
+
+
+//发送消息
+function postmsg(content,callback){
+		if(typeof(content)!='object' && content==''){
+			layer.alert('消息内容不能为空');
+			return ;
+		}
+
+		var push_id = (Math.random()+'').substring(2);
+
+		var content_obj = {};
+		if(typeof(content)=='object'){
+			content_obj = content;
+			content_obj.push_id = push_id;
+		}else{
+			content_obj = {
+				'content':content,
+				'push_id':push_id,
+			}
+		}
+
+		$(".chatInput").val('');
+		$(".chat_mod_btn").hide();
+		$(".face_wrap").hide();
+		
+		//同步即时消息,不入库同步
+		ws_send({
+			type:'qun_sync_msg',
+			data:content_obj
+		});
+		
+		content_obj.uid = uid;
+		content_obj.send_to = typeof(touser)=='object'?touser.uid:0;
+		
+		//入库处理
+		$.post("/member.php/member/wxapp.msg/add.html",content_obj,function(res){
+			if(res.code==0){
+				//router.$(".chatInput").val('');
+				//router.$(".chat_mod_btn").hide();
+				//router.$(".face_wrap").hide();
+				//layer.msg('发送成功');
+			}else{
+				//router.$("#btnSend").removeClass("disabled").addClass("primary");
+				layer.alert('本条信息已发出,但并没有入库,原因:'+res.msg);
+			}
+			if(typeof(callback)=='function'){
+				callback(res);
+			}
+		});
+}
+
+var uid,my_uid,quninfo = {};
+var qun_userinfo = '';	//当前用户所在当前圈子的信息
+
+var mod_class={},iframe_body_class={};
+var is_repeat = 0;
+var userinfo = {};	//当前登录用户的基础信息
+
+loader.define(function(require,exports,module) {
+
+    var pageview = {};
+	var qid;
+	var msg_scroll = 1;
+	var show_msg_page  = 1;
+	var maxid = -1;
+	var getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&page=";	
+	var need_scroll = false;
+	var touser = {uid:0};	//@TA	
+	var user_list = {}; //圈子用户列表
+	var user_num = 0; //圈子成员总数
+	var uiSidebar;          // 侧边栏
+	var pushIdArray = [];
+
+	ws_onmsg.chat = function(obj){
+		var show_online = function(obj,type){
+			var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
+			var data = obj.data;
+			var usernum = obj.data.length;  //在线会员人数,已注册的会员
+			if(total>1){
+				if(type=='goin'){
+					bui.hint ( {content:"有新用户："+data[data.length-1].username+" 进来了",position:'top'} );
+				}else if(type=='getout'){
+					bui.hint ( {content:obj.msg,position:'top'} );
+				}
+				router.$(".header_content").show();$("#remind_online").show();bui.init();
+				if(uid>0){
+					$("#remind_online").html('对方在线,请不要离开!');
+				}else{
+					$("#remind_online").html('共有 '+total+' 个访客,会员有 '+usernum+' 人! 查看详情');
+					$("#remind_online").off('click');
+					$("#remind_online").click(function(){
+						view_online_user(data);
+					});
+				}
+			}else if( !$("#remind_online").is(':hidden') ){
+				if(uid>0){
+					bui.hint ( {content:'对方已离开!',position:'top'} );
+				}else{
+					bui.hint ( {content:'人全走光了!'+obj.msg,position:'top'} );
+				}
+				$("#remind_online").hide();bui.init();
+			}
+		}
+
+		var view_online_user = function(data){
+			var str = '';
+			data.forEach((rs)=>{
+				str += '<a href="/member.php/home/'+rs.uid+'.html" target="_blank">'+rs.username+'</a>、';
+			});
+			layer.open({
+					type: 1,
+					anim: 5,
+					shade: 0,
+					title: '仅列出已注册的会员，不含游客',
+					area: ['90%', '65%'],
+					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',
+			});
+		}
 			if(obj.type=='newmsg'){
 				check_new_showmsg(obj);	//推数据
 				$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data[0].id,function(res){//更新记录
@@ -84,7 +275,6 @@ loader.define(function(require,exports,module) {
 						layer.alert(res.msg);
 					}
 				});
-				var my_uid = userinfo.uid;
 				var username = my_uid>0?userinfo.username:'';
 				var icon = my_uid>0?userinfo.icon:'';
 				var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
@@ -94,92 +284,7 @@ loader.define(function(require,exports,module) {
 			}else if(obj.type=='leave'){	//某个用户离开了
 				show_online(obj,'getout')
 				console.log(obj);
-			}else if(obj.type=='give_vod_voice_state'){	//CMS音频 成功获取到直播信息,访客得到音频的播放状态
-				voice_urls = obj.data.play_urls;	//首次点播要用
-				vod_voice_play(obj.data,'ok');
-			}else if(obj.type=='error#ask_vod_voice_state'){	//CMS音频 圈主首次进入或者圈主不在,按默认的播放
-				vod_voice_play({play_urls:voice_urls},'err');
-			}else if(obj.type=='ask_vod_voice_state'||obj.type=='ask_vod_voice_sync'){	//CMS音频 访客请求圈主的音频播放状态,圈主进行反馈,圈主如有多个窗口最后一次登录窗口才收到,第一次窗口不会收到.
-				var arr ={};
-				if(typeof(voice_iframeWin)=='object'){
-					arr = {
-						play_index:voice_iframeWin.get_now_state()[0],
-						play_time:voice_iframeWin.get_now_state()[1],		
-					};
-				}
-				arr.play_urls = voice_urls;
-				var tag = obj.type=='ask_vod_voice_sync'?'give_vod_voice_sync':'give_vod_voice_state';
-				w_s.send('{"type":"quner_to_user","tag":"'+tag+'","data":' + JSON.stringify( arr ) + ',"user_cid":"' + obj.user_cid + '"}');
-			}else if(obj.type=='vod_voice_sync_play'){  //CMS音频 同步播放
-				voice_iframeWin.control(obj.data);
-			}else if(obj.type=='give_vod_voice_sync'){  //CMS音频 获取到同步信息
-				voice_iframeWin.vod.sync_play({index:obj.data.play_index,time:obj.data.play_time});
-			}else{
-				console.log(e.data);
-			}
-		};
-		
-		w_s.onopen = function(e) {};
-		w_s.onerror = function(e){
-			ws_have_link = false;
-		};
-		w_s.onclose = function(e){
-			ws_have_link = false;
-		};
-		
-		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
-		chat_timer = setInterval(function() {
-			if(ws_have_link != true){
-				w_s = new WebSocket(ws_url);
-			}else{
-				w_s.send('{"type":"refresh"}');
-			}
-		}, 1000*50);	//50秒发送一次心跳
-		
-		var show_online = function(obj,type){
-				 var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
-				 var data = obj.data;
-				 var usernum = obj.data.length;  //在线会员人数,已注册的会员
-				 if(total>1){
-					 if(type=='goin'){
-						 bui.hint("有新用户："+data[data.length-1].username+" 进来了");
-					 }else if(type=='getout'){
-						 bui.hint(obj.msg);
-					 }
-					 $("#remind_online").show();
-					 if(uid>0){
-						 $("#remind_online").html('对方在线,请不要离开!');
-					 }else{
-						 $("#remind_online").html('共有 '+total+' 个访客,会员有 '+usernum+' 人! 查看详情');
-						 $("#remind_online").off('click');
-						 $("#remind_online").click(function(){
-							 view_online_user(data);
-						 });
-					 }
-				 }else if( !$("#remind_online").is(':hidden') ){
-					 if(uid>0){
-						 bui.hint('对方已离开!');
-					 }else{
-						 bui.hint('人全走光了!'+obj.msg);
-					 }
-					 $("#remind_online").hide();
-				 }
-		}
-
-		var view_online_user = function(data){
-			var str = '';
-			data.forEach((rs)=>{
-				str += '<a href="/member.php/home/'+rs.uid+'.html" target="_blank">'+rs.username+'</a>、';
-			});
-			layer.open({
-					type: 1,
-					anim: 5,
-					shade: 0,
-					title: '仅列出已注册的会员，不含游客',
-					area: ['90%', '65%'],
-					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',
-			});
-		}
+			}			
 	}
 
 	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作
@@ -194,7 +299,9 @@ loader.define(function(require,exports,module) {
 
 		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息 不存的话,就是为空即==''
 		userinfo = res.ext.userinfo;	//当前用户登录信息
-		head_menu(uid,quninfo,qun_userinfo,userinfo);
+		//head_menu(uid,quninfo,qun_userinfo,userinfo);
+
+		my_uid = typeof(userinfo)=='object'?userinfo.uid:0;
 		
 		ws_url = res.ext.ws_url;
 		
@@ -208,35 +315,147 @@ loader.define(function(require,exports,module) {
 				if(maxid>=0 && refresh_i%refresh_timenum==0)check_new_showmsg();	
 			}, 1000);
 		}else{
-			pageview.ws_connect();	//建立长链接
+			//建立链接 延时执行,避免用户反复切换圈子
+			if(typeof(qun_link_handle)!='undefined'){
+				clearTimeout(qun_link_handle);
+			}
+			qun_link_handle = setTimeout(function(){
+				ws_connect();
+			},typeof(w_s)=='object'?5000:0);
+		}
+		
+		pageview.weixin_share();
+
+		
+		//first_page_data = res; //这个要放在load_data下面
+		
+		set_chatmod_btn(res);
+		if(!is_repeat){
+			set_chatmod_file(res);	//只允许执行一次 , 更换加载不同的圈子,不会重复再执行
+		}else{	//页面初次加载的时候,mod_class还没有全部加载完毕,所以这里不执行,放在set_chatmod执行
+			for(var index in mod_class){
+				if(typeof(mod_class[index].init)!='undefined'){
+					mod_class[index].init(res);			//SPA单页模式,需要重新渲染界面与绑定元素事件 ,PC端多页的话,就不要执行
+				}
+				if(typeof(mod_class[index].logic_init)!='undefined'){
+					mod_class[index].logic_init(res);	//logic_init()方法或函数,每次加载不同的圈子,都会执行
+				}
+			}
+			//初次加载不能批量执行,JS文件模块可以这样使用 load_data.xxxx=function(o){} 框架网页可以这样使用 parent.load_data.xxxx=function(o){}
+			for(var index in load_data){
+				load_data[index](res);
+			}
+		}
+		is_repeat++;
+	}
+
+
+	//设置模块的功能菜单,SPA单页模式的话,换不同的圈子又会重新加载的，这里是会多次重复加载的。
+	function set_chatmod_btn(res){
+		var arr = res.ext.chatmod;
+		var btn_str = '',btnStr = '';
+		var j=0;
+		arr.forEach((rs)=>{
+			if(rs.icon!=''){
+				btn_str += `<li class="span1"><span id="btn_${rs.keywords}" class="set-chatmod-btn"><i class="${rs.icon}"></i>${rs.name}</span></li>`;
+				j++;
+				if(j%5==0){
+					btnStr = `<ul class="bui-box bui-box-align-center">${btn_str}</ul>`;
+					btn_str = '';
+				}
+			}
+		});
+		while (btn_str!='' && j%5!=0){
+			btn_str += '<li class="span1"></li>';
+			j++;
+		}
+		if(btn_str!=''){
+			btnStr += `<ul class="bui-box bui-box-align-center">${btn_str}</ul>`;
+		}
+		$(".chat_mod_btn").html(btnStr);		
+	}
+	
+	//当前页面不刷新的话,只执行一次,禁止更换不同的圈子又重新执行加载JS文件
+	function set_chatmod_file(res){
+		var arr = res.ext.chatmod;
+		var total_need_load = 0,total_have_load = 0,iframe_str = '';
+		arr.forEach((rs)=>{			
+			if(rs.init_iframe!=''){
+				total_need_load++;
+				iframe_str += `<iframe style="display:none;" class="chat_iframe_hack" data-keyword="${rs.keywords}" name="iframe_${rs.keywords}" id="iframe_${rs.keywords}" src="${rs.init_iframe}"></iframe>`;
+			}
+			if(rs.init_jsfile!=''){
+				total_need_load++;
+				jQuery.getScript(rs.init_jsfile).done(function() {
+					fisrt_load(res,rs.keywords);	//首次加载的时候,单独执行
+					total_have_load++;					
+					if(total_have_load>=total_need_load){
+						run_mod_finsih(res)
+					}
+				}).fail(function(e) {
+					total_have_load++;
+					console.log("此文件加载失败或者是代码有错误!",rs.init_jsfile);
+				});
+			}
+			if(rs.init_jscode!=''){
+				eval(rs.init_jscode);
+			}
+		});
+
+		$("body").append(iframe_str);
+
+		//框架插件接口
+		$(".chat_iframe_hack").each(function(){
+			var k = $(this).data('keyword');
+			$(this).load(function(){			
+				iframe_body_class[k] = $(this).contents();	//body.find("body").html(); 获取页面元素
+				mod_class[k] = $(this)[0].contentWindow;	//win.test() 执行页面方法
+				//mod_class[k].init(res);
+				fisrt_load(res,k);	//首次加载的时候,单独执行
+				total_have_load++;
+				if(total_have_load>=total_need_load){
+					run_mod_finsih(res)
+				}
+			});
+		});
+		
+		//首次加载的时候,单独执行
+		function fisrt_load(res,keywords){
+			if(typeof(mod_class[keywords])=='object'){
+				if( typeof(mod_class[keywords].init)=='function' ){
+					mod_class[keywords].init(res);
+				}
+				if( typeof(mod_class[keywords].logic_init)=='function' ){
+					mod_class[keywords].logic_init(res);
+				}
+				if( typeof(mod_class[keywords].once)=='function' ){
+					mod_class[keywords].once(res);
+				}				
+			}
+			if( typeof(load_data[keywords])=='function' ){
+				load_data[keywords](res);
+			}
+			if(typeof(format_content[keywords])=='function'){
+				format_content[keywords](res);
+			}
 		}
 
-		setTimeout(function(){
-			set_live_player(res);	//设置视频直播的播放器
-
-			if(have_load_live_player==true){	//直播的时候,就不弹出签到了,影响界面布局
-				$.get("/index.php/p/signin-api-get_cfg/id/"+quninfo.id+".html",function(res){
-					if(res.code==0){
-						if(res.data.today_have_signin==true){
-							console.log('今天已经签到过了');
-						}else{
-							router.loadPart({
-								id: "#hack_signin",
-								url: "/public/static/libs/bui/pages/signin/pop.html?fdd",
-							}).then(function (module) {
-								module.api(quninfo,qun_userinfo,userinfo,res.data);
-							});
-						}					
-					}
-				});			
+		//所有模块加载完毕后,检查有没有需要执行的回调方法
+		function run_mod_finsih(res){
+			for(var index in mod_class){
+				if(typeof(mod_class[index].finish)!='undefined'){
+					mod_class[index].finish(res);
+				}
 			}
-
-			pageview.weixin_share();
-		},1000);
+		}
 	}
+
+
 
     // 模块初始化定义
     pageview.init = function () {
+
+		router.$("#headbody").css({'top':router.$("#chat_head").height()+'px;',});
 
         this.bind();
 		this.right_btn();
@@ -289,21 +508,14 @@ loader.define(function(require,exports,module) {
 			});			
 		}
 
-
-		//this.upload();
-		//loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
-
 		if(uid<0){
 			setTimeout(function(){
 				$.get("/index.php/qun/wxapp.visit/check_visit/id/"+(-uid)+".html",function(res){});	//更新圈子浏览日志
 			},2000);
 		}
 
-		loader.require("/public/static/libs/bui/pages/chat/play_video",function (play) {
-			video_player = play;
-		});
-
     }
+
 	pageview.right_btn = function () {
         // 初始化下拉更多操作
         var uiDropdownMore = bui.dropdown({
@@ -334,42 +546,12 @@ loader.define(function(require,exports,module) {
 
     pageview.bind = function () {
 
-		router.$("#choose_qqface").on("click",function () {
-			router.$(".hack_wrap").hide();
-			if(router.$(".face_wrap").html()!=""){
-				if(router.$(".face_wrap").is(":hidden")){
-					router.$(".face_wrap").show();
-				}else{
-					router.$(".face_wrap").hide();
-				}
-			}else{
-				router.$(".face_wrap").show();
-				router.loadPart({
-					id: ".face_wrap",
-					url: "/public/static/libs/bui/pages/chat/qqface.html"
-				})
-			}
-        })
-
 		router.$("#show_hack").on("click",function () {
 			router.$(".face_wrap").hide();
-			if(router.$(".hack_wrap").html()!=""){
-				if(router.$(".hack_wrap").is(":hidden")){
-					router.$(".hack_wrap").show();
-				}else{
-					router.$(".hack_wrap").hide();
-				}
+			if(router.$(".chat_mod_btn").is(":hidden")){
+				router.$(".chat_mod_btn").show();
 			}else{
-				router.$(".hack_wrap").show();
-				router.loadPart({
-					id: ".hack_wrap",
-					url: "/public/static/libs/bui/pages/chat/hack.html?f",
-				}).then(function (module) {
-					//pageview.upload();
-					loader.require("/public/static/libs/bui/pages/chat/voice",function (voice) {
-						 console.log(voice)
-					 })
-				});
+				router.$(".chat_mod_btn").hide();
 			}
         })
 
@@ -475,7 +657,12 @@ loader.define(function(require,exports,module) {
 			need_scroll = true;
 			add_msg_data(res,'new');
 			if(typeof(res.ext)!='undefined')maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
-			set_live_player(res,'cknew');	//设置视频直播的播放器
+			
+			//当前页面可以这样使用 load_data.xxxx=function(o){} 子窗口可以这样使用 parent.load_data.xxxx=function(o){}
+			for(var index in load_data){
+				load_data[index](res,'cknew');
+			}
+
 		}else{	//客户端拉数据, 主动获取数据
 			$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){			
 				if(res.code!=0){				
@@ -497,43 +684,17 @@ loader.define(function(require,exports,module) {
 					}else{
 						router.$("#remind_online").html("有用户在线");
 					}
-					router.$("#remind_online").show();
+					router.$(".header_content").show();router.$("#remind_online").show();bui.init();
 				}else{
-					router.$("#remind_online").hide();
+					router.$("#remind_online").hide();bui.init();
 				}
-				set_live_player(res,'cknew');	//设置视频直播的播放器
+
+				//当前页面可以这样使用 load_data.xxxx=function(o){} 子窗口可以这样使用 parent.load_data.xxxx=function(o){}
+				for(var index in load_data){
+					load_data[index](res,'cknew');
+				}
 			});
 			ck_num++;
-		}
-	}
-
-	//设置视频直播的播放器
-	function set_live_player(res,type){
-		if(quninfo.uid==my_uid){
-			//console.log('自己不需要播放');
-			//return ;//自己就不要显示播放了
-		}
-		if(type=='cknew' && res.data.length>0){
-			res.data.forEach((rs)=>{
-				if(rs.content.indexOf('live_video_start')>0){
-					if(have_load_live_player==true)have_load_live_player = false;	//中断过的 . 重新发起直播
-				}
-			});
-		}
-		//live_video参数存在,代表正在直播中
-		if(have_load_live_player!=true && typeof(res.ext)!='undefined' && (typeof(res.ext.live_video)!='undefined'||typeof(res.ext.vod_voice)!='undefined') ){
-			
-			have_load_live_player = true;
-
-			if(typeof(res.ext.vod_voice)!='undefined'){
-				vod_voice_play(res.ext.vod_voice);	//设置点播转直播音频播放器
-			}else{
-				router.$(".live-player-warp").show();
-				video_player.play(res.ext.live_video);	//设置视频直播的播放器
-			}
-		
-		}else if(typeof(res.ext)!='undefined' && typeof(res.ext.live_video)=='undefined' && typeof(res.ext.vod_voice)=='undefined' ){
-			have_load_live_player = false;
 		}
 	}
 	
@@ -574,7 +735,7 @@ loader.define(function(require,exports,module) {
 	}
 
 	//添加删除信息的功能按钮
-	function add_btn_delmsg(){
+	function content_add_btn(res,type){
 		router.$(".chat-panel .del").off("click");
 		router.$(".chat-panel .del").click(function(){
 			var id = $(this).data("id");
@@ -604,16 +765,18 @@ loader.define(function(require,exports,module) {
 			console.log(touser);
 		});
 		
-		//显示红包
-		router.$(".chat-panel .hack-hongbao").each(function(){
-			var id = $(this).data("id");
-			var title = $(this).data("title");
-			var str = `<div onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['95%', '80%'],content: '/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="/public/static/plugins/voicehb/hongbao.png"></div>`;
-			$(this).html(str);
-		});
+		
 
 		format_nickname();	//设置圈子昵称
-		format_hack_data();  //处理各频道调用的数据
+		//format_hack_data();  //处理各频道调用的数据
+
+		if(show_msg_page>1 || is_repeat>1 || type=='cknew'){	//第一页不一定能执行得到,所以就放在加载脚本那里单独处理
+			for(var index in format_content){
+				if(typeof(format_content[index])=='function'){
+					format_content[index](res,type);
+				}
+			}
+		}
 		
 		//设置用户菜单
 		bui.actionsheet({
@@ -684,58 +847,7 @@ loader.define(function(require,exports,module) {
 			router.$("#send_user_name").html("系统消息");
 		}		
 	}
-
-	//发送消息
-	function postmsg(content){
-		if(content==''){
-			layer.alert('消息内容不能为空');
-			return ;
-		}
-
-		var push_id = 0;
-		if(ws_url!=''){
-			push_id = (Math.random()+'').substring(2);
-			//if(ws_have_link!=true){	//如果中断了,就要重连
-			//	pageview.ws_connect();
-			//}
-			router.$(".chatInput").val('');
-			router.$(".hack_wrap").hide();
-			router.$(".face_wrap").hide();
-			var time = 0;
-			if(ws_have_link!=true){	//上面链接需要时间
-				layer.msg("请稍候,正在建立连接...");
-				time = 3000;
-			}
-			setTimeout(function(){
-				w_s.send('{"type":"qun_sync_msg","data":' + JSON.stringify( {'content':content,'push_id':push_id} ) + '}');
-			},time);			
-		}
-
-		$.post("/member.php/member/wxapp.msg/add.html",{
-			'uid':uid,
-			'content':content,
-			'send_to':touser.uid,
-			'push_id':push_id
-			},function(res){
-				
-				if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
-					clearInterval(chat_timer);
-					chat_timer = setInterval(function() {
-						check_new_showmsg();
-					}, 1500);	//互动之后,加快刷新,重新setInterval是兼容之前任务已死掉
-				}
-
-				if(res.code==0){
-					router.$(".chatInput").val('');
-					router.$(".hack_wrap").hide();
-					router.$(".face_wrap").hide();
-					//layer.msg('发送成功');
-				}else{
-					//router.$("#btnSend").removeClass("disabled").addClass("primary");
-					layer.alert('本条信息已发出,但并没有入库,原因:'+res.msg);
-				}
-		});
-	}
+	
 	
 	function add_msg_data(res,type){
 		var timer = setInterval(function(){
@@ -746,10 +858,11 @@ loader.define(function(require,exports,module) {
 				clearInterval(timer);
 				var myid = typeof(my_uid)!='undefined'?my_uid:userinfo.uid;
 				//console.log(res.data);
-				format_msgdata_tohtml(res.data , myid , type)
+				format_msgdata_tohtml(res.data , myid , type);
+				content_add_btn(res,type);
 			}
 			//console.log('userinfo=',userinfo);
-		},200);	//定时器,为了反复刷新用户登录数据
+		},500);	//定时器,为了反复刷新用户登录数据
 	}
 
 	function format_msgdata_tohtml(array , myid , type){
@@ -819,183 +932,10 @@ loader.define(function(require,exports,module) {
 			need_scroll = false;
 		}else{
 			router.$('#chat_win').parent().scrollTop(400);
-		}
-		add_btn_delmsg();
+		}		
 		msg_scroll = 1;
 	}
 
-
-	function head_menu(to_uid,_quninfo,_quser,_user){
-		var str = '';
-		if(to_uid>0){
-			str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/home/${to_uid}.html&title=个人主页">
-                        <i class="icon-jiahao">&#xe660;</i>
-                        <div class="span1">TA的主页</div>
-                    </li>
-					`;
-		}else{
-			to_id = -to_uid;
-			var jifen_str = home_str = listmember_str = more_str = join_str = nickname_str = '';
-			if(_quninfo.uid==_user.uid){
-				jifen_str = `<li class="bui-btn bui-box">
-                        <i class="icon-jiahao"><dd class="fa fa-calendar"></dd></i>
-                        <div class="span1 a"  href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/p/signin-index-index/id/${to_id}.html&title=签到领积分">签到</div>
-						<div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/member/plugin/execute/plugin_name/signin/plugin_controller/manage/plugin_action/set/ext_id/${to_id}.html&title=签到设置">设置</div>
-                    </li>`;
-				
-				home_str = `<li class="bui-btn bui-box">
-                        <i class="icon-jiahao"><i class="si si-support"></i></i>
-                        <div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/show-${to_id}.html&title=圈子主页">主页</div>
-						<div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/qun/content/edit/id/${to_id}.html&title=签到设置">设置</div>
-                    </li>`;
-
-				listmember_str = `<li class="bui-btn bui-box">
-                        <i class="icon-jiahao"><i class="si si-users"></i></i>
-                        <div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/member/index/id/${to_id}.html&title=成员列表">成员</div>
-						<div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/qun/member/index/id/${to_id}.html&title=成员管理">管理</div>
-                    </li>`;
-
-				more_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/qun/msgtask/add/id/${to_id}.html&title=群发消息">
-							<i class="icon-jiahao"><i class="si si-speech"></i></i>
-							<div class="span1">群发消息</div>
-						</li>
-						<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/content/my/type/0.html&title=我加入的圈子">
-							<i class="icon-jiahao"><i class="fa fa-connectdevelop"></i></i>
-							<div class="span1">我加入的圈子</div>
-						</li>
-					`;
-			}else{
-				if(_quser==''){
-					join_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/content/apply/id/${to_id}.html&title=加入圈子">
-                        <i class="icon-jiahao"><i class="fa fa-child"></i></i>
-                        <div class="span1">加入圈子</div>
-                    </li>`;
-				}
-				jifen_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/p/signin-index-index/id/${to_id}.html&title=签到领积分">
-                        <i class="icon-jiahao"><dd class="fa fa-calendar"></dd></i>
-                        <div class="span1">签到领积分</div>
-                    </li>`;
-
-				home_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/show-${to_id}.html&title=圈子主页">
-                        <i class="icon-jiahao"><i class="si si-support"></i></i>
-                        <div class="span1">圈子主页</div>
-                    </li>`;
-
-				listmember_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/member/index/id/${to_id}.html&title=成员列表">
-                        <i class="icon-jiahao"><i class="si si-users"></i></i>
-                        <div class="span1">圈子成员列表</div>
-                    </li>`;
-				listmember_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/member/index/id/${to_id}.html&title=成员列表">
-                        <i class="icon-jiahao"><i class="si si-users"></i></i>
-                        <div class="span1">圈子成员列表</div>
-                    </li>`;
-
-				more_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/chat/chat?uid=${_quninfo.uid}">
-                        <i class="icon-jiahao"><i class="si si-speech"></i></i>
-                        <div class="span1">与群主私聊</div>
-                    </li>
-					<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/frame/show.html?url=/index.php/qun/content/my/type/1.html&title=我的圈子">
-							<i class="icon-jiahao"><i class="fa fa-connectdevelop"></i></i>
-							<div class="span1">我的圈子(创建)</div>
-						</li>`;
-			}
-
-			if(_quser!=''){
-				nickname_str = `<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/chat/nickname?id=${to_id}">
-                        <i class="icon-jiahao"><i class="fa fa-pencil-square-o"></i></i>
-                        <div class="span1">修改群内昵称</div>
-                    </li>`;
-			}
-
-			str = `${home_str} 
-					${join_str}
-                    <li class="bui-btn bui-box" href="/public/static/libs/bui/pages/chat/codeimg.html?type=msg&id=${to_id}">
-                        <i class="icon-jiahao">&#xe657;</i>
-                        <div class="span1">直播群聊二维码</div>
-                    </li>
-					<li class="bui-btn bui-box" href="/public/static/libs/bui/pages/chat/codeimg.html?type=home&id=${to_id}">
-                        <i class="icon-jiahao">&#xe657;</i>
-                        <div class="span1">圈子主页二维码</div>
-                    </li>
-					${listmember_str}
-					${jifen_str}
-					${more_str}
-					${nickname_str}
-					`;
-		}
-		if(_user.uid>0){
-			str += `<li class="bui-btn bui-box">
-                        <i class="icon-jiahao"><i class="fa fa-user-circle-o"></i></i>
-                        <div class="span2 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/home/${_user.uid}.html&title=我的主页">我的主页</div>
-						<div class="span1 a" href="/public/static/libs/bui/pages/frame/show.html?url=/member.php/member/user/edit.html&title=资料修改">设置</div>
-                    </li>`;
-		}
-		
-		router.$("#TopRightBtn").html(str);
-	}
-
-	/*
-	var vues = new Vue({
-				el: '#chat_head',
-				data: {
-					from_id: typeof(to_uid)!='undefined'?to_uid:"",
-					to_id:0,
-					me_id:0,
-					userdb:{},
-					quninfo:{},
-					listdb:[],
-				},
-				watch:{
-					listdb: function() {
-						this.$nextTick(function(){	//数据渲染完毕才执行
-							if(show_msg_page==2 || router.$('#chat_win').parent().scrollTop()>300){
-								router.$('#chat_win').parent().scrollTop(20000);
-							}else{
-								router.$('#chat_win').parent().scrollTop(200);
-							}
-							add_btn_delmsg();
-						})
-					},
-				},
-				methods: {
-					set_id:function(id){
-						this.to_id = id;
-					},
-					set_quninfo:function(o){
-						this.quninfo = Object.assign({}, this.quninfo, o);
-					},
-					set_data:function(array,type){
-						var ar = this.listdb;
-						var userinfo = {};
-						var that = this;
-						var timer = setInterval(function() {							
-							if(typeof(userinfo.uid)=='undefined'){
-								userinfo = window.store.get('userinfo');
-							}
-							if(typeof(userinfo.uid)!='undefined'){								
-								that.me_id = typeof(my_uid)!='undefined'?my_uid:userinfo.uid;
-								that.userdb = Object.assign({}, that.userdb, userinfo);
-								if(type=='new'){	//有新数据进来的话,要重新处理排序
-									that.listdb = [];
-									array.forEach((rs)=>{
-										that.listdb.push(rs);
-									});
-									ar.forEach((rs)=>{
-										that.listdb.push(rs);
-									});
-								}else{	//多页的话,直接追加就好了
-									array.forEach((rs)=>{
-										that.listdb.push(rs);
-									});
-								}								
-								clearInterval(timer);
-							}
-							console.log('userinfo=',userinfo);
-						},500);
-					},
-				}		  
-			});
-	*/
 	
 	//微信分享
 	pageview.weixin_share = function(){
@@ -1010,7 +950,8 @@ loader.define(function(require,exports,module) {
 	}
 
 
-		//格式化各频道的数据
+	//格式化各频道的数据
+	/*
 	function format_hack_data(){
 		router.$(".chat-panel .model-list").each(function(){
 			var type = $(this).data("type");
@@ -1033,7 +974,7 @@ loader.define(function(require,exports,module) {
 				});
 			});
 		});
-	}
+	}*/
 	
 	//获取所有成员信息
 	pageview.get_user_list = function(id){
@@ -1060,58 +1001,7 @@ loader.define(function(require,exports,module) {
 		});
 	}
 	
-	//CMS音频直播
-	function vod_voice_play(obj,etype){
-		var oo;
-		if(etype=='ok'||etype=='err'){	//请求完成
-			var url_array = obj.play_urls;
-			if(etype=='ok'){
-				oo = {index:obj.play_index,time:obj.play_time}
-			}
-		}else{	//请求直播信息
-			voice_urls = obj.urls;
-			var url_array = obj.urls;
-			var timer = setInterval(function() {
-				if(clientId!=''){
-					clearInterval(timer);
-					w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_state","user_cid":"'+clientId+'"}');	//向圈主请求当前播放信息
-				}	
-			}, 1000);
-			return ;
-		}	
-		
-		layer.open({  
-			  type: 2,    
-			  title: false,  
-			  fix: false,  
-			  shadeClose: false,  
-			  offset: ['73px', '0'],
-			  shade: 0,
-			  maxmin: true,
-			  scrollbar: false,
-			  closeBtn:2,  
-			  area: ['100%', my_uid==quninfo.uid?'100px':'50px'],  
-			  content: "/public/static/libs/bui/pages/chat/vod_player.html?aid="+Math.abs(uid)+"&cid="+clientId,
-			  success: function(layero, index){  
-				var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
-				voice_iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();  
-				voice_iframeWin.voice_player(url_array,oo);
-				//$('.layui-layer-min').trigger("click");
-				setTimeout(function(){
-					//$('.layui-layer-max').trigger("click");
-					//body.find(".player-button").hide();
-				},3000);	
-				if(my_uid==quninfo.uid){
-					setTimeout(function(){
-						body.find('.syscn').show();
-						body.find('.jp-previous').show();
-						body.find('.jp-next').show();
-						body.find('.jp-play').off('click');
-					},2000);
-				}
-			  }
-		});
-	}
+
 	
 	var getParams = bui.getPageParams();
     getParams.done(function(result){
@@ -1152,3 +1042,17 @@ loader.define(function(require,exports,module) {
     return pageview;
 
 })
+
+
+
+/*
+document.addEventListener('visibilitychange',function() {
+	  var hiddenTime=0;
+        if(document.visibilityState=='hidden') {
+			  hiddenTime = new Date().getTime()	//记录页面隐藏时间
+        }else{
+           var visibleTime = new Date().getTime();
+			alert('隐藏时间'+(visibleTime-hiddenTime)/1000)
+        }
+ })
+ */

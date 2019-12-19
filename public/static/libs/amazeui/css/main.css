@@ -624,6 +624,15 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 	font-size:22px;
 	/*background: url(../images/icon/icon18.png) no-repeat center center;*/
 }
+
+.input_icon .set-chatmod-btn{
+	color:#aaa;
+	font-size:20px;
+}
+.input_icon .set-chatmod-btn:hover{
+	color:#09BB07;
+}
+
 #vod_voice{
 font-size:18px;
 }
