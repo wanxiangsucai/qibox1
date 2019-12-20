@@ -48,7 +48,7 @@ loader.define(function() {
 			if(total>userdb.rmb){
 				//layer.alert("你的可用余额只有"+userdb.rmb+"元,请先充值");
 			}
-			$.post('/index.php/p/hongbao-wxapp.post-add.html?ext_id='+(-uid),$('.hongbao_warp').serialize(),function(res){
+			Qibo.post('/index.php/p/hongbao-wxapp.post-add.html?ext_id='+(-uid),$('.hongbao_warp').serialize(),function(res){
 				if(res.code==0){
 							if(typeof(refresh_timenum)!='undefined')refresh_timenum = 1;	//加快刷新时间
 							if(res.code==0){

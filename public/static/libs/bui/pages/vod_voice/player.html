@@ -6,12 +6,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="stylesheet" href="/public/static/css/base.css">
-<script type="text/javascript" src="/public/static/js/core/jquery.min.js"></script>
-<SCRIPT LANGUAGE="JavaScript" src="/public/static/layer/layer.js"></SCRIPT>
 </head>
 <body>
-<link rel="stylesheet" href="/public/static/libs/jplayer/css/style.css"/>
+<script type="text/javascript">
+var weburl = window.location.href;	//var weburl = window.location.href.indexOf("http")==0 ? '' : '../../../../../..';
+weburl = weburl.substring(0,weburl.indexOf('/public/static/')); //方便手机获取真实路径
+document.write('<link rel="stylesheet" href="'+weburl+'/public/static/css/base.css">');
+document.write('<link rel="stylesheet" href="'+weburl+'/public/static/libs/jplayer/css/style.css"/>');
+document.write('<script type="text/javascript" src="'+weburl+'/public/static/js/core/jquery.min.js"><\/script>');
+document.write('<script type="text/javascript" src="'+weburl+'/public/static/layer/layer.js"><\/script>');
+document.write('<script type="text/javascript" src="'+weburl+'/public/static/libs/jplayer/ttw-clarity-player.js"><\/script>');
+document.write('<script type="text/javascript" src="'+weburl+'/public/static/libs/jplayer/yepnope.js"><\/script>');
+</script>
 <style type="text/css">
 #voice{
     height:50px;
@@ -20,20 +26,18 @@
 }
  </style>
 <div id="voice"></div>
-<script src="/public/static/libs/jplayer/ttw-clarity-player.js"></script>
-<script src="/public/static/libs/jplayer/yepnope.js"></script>
+
 <script type="text/javascript">
 var in_pc = false;
 if (!(navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i))){
 	in_pc = true;
 	$("#voice").css('height','300px');
 }
+/*
 var str = window.location.href;
 var ar = str.substring(str.indexOf('aid=')+4).split('&cid=');
 var aid = ar[0] , clientId = ar[1];
-if (/^[-]?[0-9]+$/.test(str)) {
-	bui.load({url: "/public/static/libs/bui/pages/chat/chat.html",param: {"uid":str}});
-}
+*/
 
 var is_in_weixin = false;
 var clarity;
@@ -46,7 +50,7 @@ function voice_player(urls,obj) {
 		myPlaylist.push({
 				mp3:rs.url,
                 duration:'2:21',
-                cover:'/public/static/libs/jplayer/css/images/bg.jpg',
+                cover:weburl+'/public/static/libs/jplayer/css/images/bg.jpg',
                 title:rs.title,
                 artist:'',
                 background:'',
@@ -121,7 +125,8 @@ function voice_player(urls,obj) {
 						$(".jp-next").hide();
 						$(".jp-play").click(function(){
 							//window.parent.user_ask_sync_vod_voice();
-							window.parent.w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_sync","user_cid":"'+clientId+'"}');
+							//window.parent.w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_sync","user_cid":"'+clientId+'"}');
+							window.parent.mod_class.vod_voice.play_status();
 						});
 					},
 					error:function(event){
@@ -280,13 +285,15 @@ var vod = {
 				type:'finish',
 			};
 			ws_send(o);
+			window.parent.mod_class.vod_voice.stop();
+			/*
 			$.get("/member.php/member/vod/stop_voice.html?aid="+aid,function(res){
 				if(res.code==0){
 					layer.msg('成功结束');
 				}else{
 					layer.alert(res.msg);
 				}
-			});
+			});*/
 		}	
 	},
 }

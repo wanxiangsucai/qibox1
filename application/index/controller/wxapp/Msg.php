@@ -136,8 +136,25 @@ class Msg extends IndexBase{
 //             }
             $array['live'] = fun('Qun@live',abs($uid))?:''; //圈子的活跃信息,比如直播之类的
         }
-        $array['chatmod'] = fun('chatmod@get',in_wap()?1:2,$uid<1?1:0,$uid<0?abs($uid):0);  //群聊模块
+        $array['chatmod'] = $this->get_chat_mod($uid);  //群聊模块
         return $this->ok_js($array);
+    }
+    
+    /**
+     * 获取群聊模块
+     * @param number $uid 用户是正数,圈子是负数
+     * @return array
+     */
+    public function get_chat_mod($uid=0){
+        if(input('inapp')){
+            $pcwap = 3;
+        }elseif(in_wap()){
+            $pcwap = 1;
+        }else{
+            $pcwap = 2;
+        }
+        $array = fun('chatmod@get',$pcwap,$uid<1?1:0,$uid<0?abs($uid):0);  //群聊模块
+        return $array;
     }
     
     /**

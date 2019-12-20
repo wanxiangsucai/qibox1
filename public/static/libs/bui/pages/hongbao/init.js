@@ -55,7 +55,7 @@ format_content.hongbao = function(res,type){
 		router.$(".chat-panel .hack-hongbao").each(function(){
 			var id = $(this).data("id");
 			var title = $(this).data("title");
-			var str = `<div onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['95%', '80%'],content: '/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="/public/static/plugins/voicehb/hongbao.png"></div>`;
+			var str = `<div onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['95%', '80%'],content: '${web_url}/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="/public/static/plugins/voicehb/hongbao.png"></div>`;
 			$(this).html(str);
 		});
 	}

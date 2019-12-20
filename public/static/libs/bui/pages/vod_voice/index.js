@@ -2,8 +2,10 @@ loader.define(function(require,exports,module) {
 
 
 	var pageview = {};      // 页面的模块, 包含( init,bind )
-	var type = 'bbs';
+	var type = 'cms';
 	var uid = 0;
+	var mid = 1;
+	var aid = 0;
 	var mod_array = {};
 	var page = 1;
 	var scroll_get = true;
@@ -14,7 +16,7 @@ loader.define(function(require,exports,module) {
      */
     pageview.init = function () {
 		get_list_data();
-		get_mod();
+		//get_mod();
 
 		var that = router.$("#choose_mod");
 		that.parent().scroll(function () {
@@ -27,10 +29,10 @@ loader.define(function(require,exports,module) {
 			}
 		});
     }
-
+	
 	function get_mod(){
 		var url = "/index.php/index/wxapp.index/topic_mod.html";
-		$.get(url,function(res){
+		Qibo.get(url,function(res){
 			if(res.code==0){
 				var str = '';
 				res.data.forEach((rs)=>{
@@ -52,12 +54,11 @@ loader.define(function(require,exports,module) {
 		});
 	}
 
-
 	//获取相应的频道数据列表
 	function get_list_data(){
 		layer.msg("加载中,请稍候...");
-		var url = "/index.php/"+type+"/wxapp.index/listbyuid.html?page="+page+"&rows=20";
-		$.get(url,function(res){
+		var url = "/index.php/"+type+"/wxapp.index/listbyuid.html?mid="+mid+"&page="+page+"&rows=20";
+		Qibo.get(url,function(res){
 			layer.closeAll();
 			if(res.code==0){
 				if(res.data.length>0){
@@ -76,69 +77,34 @@ loader.define(function(require,exports,module) {
 		});		
 	};
 	
-	//群聊直接发送到短消息数据表
-	function send_msg(id,m_title,m_content,m_picurl){
-		var content = `<ul class="model-list model-${type}" data-id="${id}" data-type="${type}" data-imgurl="${m_picurl}"><li class="model-title">${m_title}</li><li class="model-more"><div class="model-content">${m_content}</div><div class="model-picurl"><img src="${m_picurl}" onerror="$(this).parent().hide()"/></div></li></ul>`;
-		bui.back();	//这一步很关键,要先返回,不然的话,自己看不到自己的内容
-		postmsg({
-				'uid':uid,
-				'content':content,
-				'ext_id':id,
-				'ext_sys':type,
-				},function(res){
-					if(res.code==0){
-						layer.msg('添加成功');						
-					}else{
-						layer.alert('添加失败:'+res.msg);
-					}				
-				});
-	}
-
-	//赋值到表单那里
-	function send_form(id,m_title,m_content,m_picurl,m_url){
-		m_title = m_title.replace('"',"'");
-		if(m_content==''||m_content==null){
-			m_content = '暂无介绍';
-		}
-		//var content = `[topic type=${type} id=${id} picurl=${m_picurl}]${m_title}##@@##${m_content}[/topic]`;
-		var content = `
-			   <div class='topic-box topic-type-${type}' data-id="${id}" data-type="${type}">
-                    <div class='topic-img'><a href='${m_url}' target='_blank'><img width='100' src='${m_picurl}' onerror="this.src='/public/static/images/nopic.png';" /></a></div>
-                    <div class='topic-text'>
-                        <div class='topic-title'><a href='${m_url}' target='_blank'>${m_title}</a></div>
-                        <div class='topic-content'><a href='${m_url}' target='_blank'>${m_content}</a></div>
-                    </div>
-                </div>
-		`;
-		window.parent.layer.closeAll();
-		window.parent.insert_topic(content);
-	}
-	
 	//绑定按钮事件
 	function add_action(){
 
 		router.$("#add_model").click(function(){
-			bui.load({ 
-				url: "/public/static/libs/bui/pages/frame/show.html",
-				param:{
-					url:"/member.php/"+type+"/content/postnew.html?job=bui",
-				}
-			});
+			Qibo.open(web_url + "/member.php/"+type+"/content/postnew.html?job=api");
 		});
-		
-		router.$('.list-hack .add').off("click");
+
 		router.$('.list-hack .add').click(function(){
 			var id = $(this).data("id");
-			var m_title = $(this).data("title");
-			var m_content = $(this).data("content");
-			var m_picurl = $(this).data("picurl");
-			var m_url = $(this).data("url");
-			if(m_picurl==null) m_picurl = '';
-			if(uid!=0){
-				send_msg(id,m_title,m_content,m_picurl,m_url);
-			}else{
-				send_form(id,m_title,m_content,m_picurl,m_url);
-			}			
+			$(".chat_mod_btn").hide();
+			$.get("/member.php/member/vod/post_voice.html?aid="+aid+"&id="+id,function(res){
+				if(res.code==0){
+					console.log('音频信息',res.data);
+					var arr = {
+						play_index:0,
+						play_time:0,
+						play_urls:res.data,
+					}
+					layer.msg("操作成功");
+					//通知所有用户打开播放器,或者同步音乐信息					
+					setTimeout(function(){
+						ws_send({type:"qun_to_alluser",tag:"give_vod_voice_state",data: arr,});
+						bui.back();
+					},100);
+				}else{
+					layer.alert(res.msg);
+				}
+			});
 		});
 
 		//添加侧滑菜单
@@ -163,13 +129,10 @@ loader.define(function(require,exports,module) {
 		array.forEach((rs)=>{
 			var content = rs.content.substring(0,20);
 			var title = rs.title.substring(0,15);
-			if(rs.url==undefined){
-				rs.url=`/index.php/${type}/content/show/id/${rs.id}.html`;
-			}
 			str +=`
 			<li class="list-item" data-uid="${rs.id}">
 				<div class="bui-btn bui-box">
-					<a href="/index.php/${type}/content/show/id/${rs.id}.html" class="iframe"><img class="ring ring-group" src="${rs.picurl}" onerror="this.src='/public/static/images/nopic.png'"/></a>                                
+					<a href="/index.php/${type}/content/show/id/${rs.id}.html" class="iframe"><img class="ring ring-group" src="${rs.picurl}" onerror="this.src='public/static/images/nopic.png'"/></a>                                
 					<div class="span1">
 						<h3 class="item-title">
 							${title}
@@ -186,13 +149,9 @@ loader.define(function(require,exports,module) {
 
 	var getParams = bui.getPageParams();
 		getParams.done(function(result){
-			if(result.uid==undefined){
-				layer.alert('uid参数不存在');
-			}else if(result.type==undefined){
-				layer.alert('type参数不存在');
-			}
-			uid = result.uid;
+			aid = result.aid;
 			if(result.type!=undefined)type = result.type;
+			if(result.mid!=undefined)mid = result.mid;
 		})
 
 

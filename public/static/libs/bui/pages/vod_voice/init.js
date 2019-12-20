@@ -7,12 +7,23 @@ mod_class.vod_voice = {
 				layer.alert('只有群聊才能直播!');
 				return ;
 			}
-			layer.open({  
+			if( !in_pc ){
+				bui.load({ 
+					url: "public/static/libs/bui/pages/vod_voice/index.html",
+					param:{
+						aid:Math.abs(uid),
+						type:'cms',
+						mid:4,
+					}
+				});
+			}else{
+				layer.open({  
 				  type: 2,    
 				  title: '音频点播转直播',  
 				  area: in_pc?['650px','600px']:['95%','80%'],  
 				  content: "/member.php/member/vod/index.html?type=voice&aid="+Math.abs(uid),
-			});
+				});
+			}			
 		});		
 	},
 	finish:function(res){  //所有模块加载完才执行
@@ -42,6 +53,9 @@ mod_class.vod_voice = {
 		var oo;		//圈主的当前播放状态信息
 		if(etype=='ok'||etype=='err'){	//请求完成
 			var url_array = obj.play_urls;	//obj.play_urls有可能是新地址,也有可能还是老地址 this.vurls
+			if(url_array==undefined || url_array.length<1){
+				url_array = this.vurls;
+			}
 			if(etype=='ok'){	//请求成功
 				oo = {index:obj.play_index,time:obj.play_time}
 			}
@@ -57,6 +71,18 @@ mod_class.vod_voice = {
 			this.wap_player(url_array,oo);
 		}
 
+	},
+	stop:function(){	//给播放器框架窗口调用的
+		$.get("/member.php/member/vod/stop_voice.html?aid="+Math.abs(uid),function(res){
+			if(res.code==0){
+				layer.msg('成功结束');
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	},
+	play_status:function(){	//主要是给播放器框架窗口调用的,暂时后,重新播放,同步圈主的当前播放信息
+		ws_send({type:"user_ask_quner",tag:"ask_vod_voice_sync",user_cid:clientId,});
 	},
 	win_player:'',	//播放器所在的框架对象,通过这个来操作播放器里的函数
 	wap_player:function(url_array,oo){	//WAP播放器

@@ -29,7 +29,7 @@ loader.define(function() {
 			}
 			$.get("/member.php/member/wxapp.rmb/give.html?uid="+uid+"&money="+rmb,function(res){
 				if(res.code==0){
-					$.post("/member.php/member/wxapp.msg/add.html",{
+					Qibo.post("/member.php/member/wxapp.msg/add.html",{
 						content:'<div class="give_qun_money"><img src="/public/static/libs/bui/givemoney.jpg" /><span>打赏圈主 <b>'+rmb+'</b> 元</span></div>',
 						uid:uid,
 						},function(res){

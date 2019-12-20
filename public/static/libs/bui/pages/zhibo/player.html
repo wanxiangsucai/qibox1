@@ -19,8 +19,8 @@ body{
 <div class="prism-player" id="player-con"></div>
 <script type="text/javascript">
 var player;
-function palyer(video_url,height){
-	if(typeof(height)=='undefined'){
+function palyer(video_url,height,only_sound){
+	if(typeof(height)=='undefined' || height==''){
 		height = '200px';
 	}else{
 		height = parseFloat(height).toString()+'px';
@@ -31,7 +31,7 @@ function palyer(video_url,height){
 			  "width": "100%",
 			  "height": height,
 			  "autoplay": true,
-			  "isLive": false,
+			  "isLive": true,	//直播与点播的开关
 			  "rePlay": false,
 			  "playsinline": true,
 			  "preload": true,

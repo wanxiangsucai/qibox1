@@ -2,7 +2,6 @@
 mod_class.uploadpic = {
 
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
-		
 		this.upload();
 		router.$("#btn_uploadpic").click(function(){
 			router.$(".chatbar").hide();	//把输入框架隐藏,不然会挡住上传控件的
@@ -110,12 +109,12 @@ mod_class.uploadpic = {
 						image.onload = function() {
 						var resized = resizeUpImages(image);
 						var severUrl = "/index.php/index/attachment/upload/dir/images/from/base64/module/bbs.html";
-						$.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':''}).done(function (res) {
+						Qibo.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':''},function (res) {
 							if(res.code==1){
 								//console.log(res);
 								var url = res.path;
 								if(url.indexOf('://')==-1 && url.indexOf('/public/')==-1){
-									url = '/public/'+url;
+									url = (typeof(web_url)!='undefined'?web_url:'')+'/public/'+url;
 								}
 								postmsg( templatePhoto(url) );
 								//$("#chatInput").val( templatePhoto(url)+$("#chatInput").val() )
@@ -123,8 +122,6 @@ mod_class.uploadpic = {
 							}else{
 								alert(res.info);
 							}
-						}).fail(function () {
-							alert('操作失败，请跟技术联系');
 						});
 					}					
 				}

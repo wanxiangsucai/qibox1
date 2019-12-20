@@ -1,10 +1,5 @@
-/**
- * 聊天对话模板
- * 默认模块名: pages/chat/chat
- * @return {[object]}  [ 返回一个对象 ]
- */
 
-var refresh_i,refresh_timenum;//初始化8秒刷新一次
+var refresh_i,refresh_timenum;//这几个已弃用
 var w_s,ws_url,clientId='';
 
 //WebSocket下发消息的回调接口,当前页面可以这样使用 ws_onmsg.xxxx=function(o){} 子窗口可以这样使用 parent.ws_onmsg.xxxx=function(o){}
@@ -22,6 +17,10 @@ function load_chat_iframe(url,callback){
 	var str = $("#iframe_chat")[0].outerHTML;
 	$("#iframe_chat").remove();	
 	obj.append(str);
+
+	if(typeof(api)=='object' && url.indexOf('/public/static/')==0 ){
+		url = url.substring(1);		
+	}
 
 	$("#iframe_chat").attr("src",url);
 	$(".header_content").show();
@@ -64,10 +63,13 @@ function ws_connect(){
 
 //发送WebSocket信息
 function ws_send(o,getcid){
-
-	if(typeof(w_s)=='undefined'){ //解决还没开始连接就请求发送的情况.
+	//if(getcid=='user_cid'){
+		//console.log('uuid========='+w_s.readyState);
+	//}
+	if(typeof(w_s)=='undefined' || w_s.readyState==0){ //解决还没开始连接就请求发送的情况. 0正处于连接状态,还没连接成功 2断开中, 3完全断开了
 		wait_connect(o,getcid);
-	}else if(w_s.readyState==1){		
+	}else if(w_s.readyState==1){	//处于正常通信中	
+		//console.log('uuid----发出+++++-'+get_msg(o,getcid));
 		w_s.send( get_msg(o,getcid) );
 	}else{
 		ws_connect(); //已断开,重新发起一次链接
@@ -75,11 +77,22 @@ function ws_send(o,getcid){
 		wait_connect(o,getcid);
 	}
 	function wait_connect(o,getcid){
-		ws_onmsg.require_senmsg = function(obj){	//收到消息时候的回调
-			ws_onmsg.require_senmsg = null;		//这一行不能缺少,不然会进入死循环
+		var name = 'require_senmsg';
+		if(typeof(o)=='object'){	//尽量避免出现雷同冲突
+			if(typeof(o.tag)=='string' && typeof(o.type)=='string'){
+				name = o.type + '__' + o.tag;
+			}else if(typeof(o.tag)=='string'){
+				name = o.tag;
+			}else if(typeof(o.type)=='string'){
+				name = o.type;
+			}
+		}
+		ws_onmsg[name] = function(obj){	//收到消息时候的回调
+			ws_onmsg[name] = null;		//这一行不能缺少,不然会进入死循环			
 			setTimeout(function(){	//避免跟注册信息同时发送
+				//console.log('uuid----收到+++++-'+get_msg(o,getcid));
 				w_s.send( get_msg(o,getcid) );
-			},200);
+			}, 100*Math.ceil(Math.random()*10) );
 		}
 	}
 	function get_msg(o,getcid){
@@ -100,19 +113,18 @@ function ws_link(){
 			}catch(err){
 				console.log(err);
 			}
-			
+			//console.log('收到消息'+obj.type);
 			//当前页面可以这样使用 ws_onmsg.xxxx=function(o){} 子窗口可以这样使用 parent.ws_onmsg.xxxx=function(o){}
-			for(var index in ws_onmsg){
+			for(var index in ws_onmsg){				
 				if(typeof(ws_onmsg[index])=='function'){
+					//console.log('uuid----方法名'+index+'*******---'+e.data);
 					ws_onmsg[index](obj);
 				}				
 			}
-
-			//console.log(e);
 		};
 		
 		w_s.onopen = function(e) {	//w_s.readyState CONNECTING: 0 OPEN: 1 CLOSING: 2 CLOSED: 3
-			console.log('WebSocket刚刚连接上');
+			console.log('WebSocket刚刚连接上');			
 		};
 		w_s.onerror = function(e){
 			console.log("#########连接异常中断了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
@@ -168,9 +180,6 @@ function postmsg(content,callback){
 		//入库处理
 		$.post("/member.php/member/wxapp.msg/add.html",content_obj,function(res){
 			if(res.code==0){
-				//router.$(".chatInput").val('');
-				//router.$(".chat_mod_btn").hide();
-				//router.$(".face_wrap").hide();
 				//layer.msg('发送成功');
 			}else{
 				//router.$("#btnSend").removeClass("disabled").addClass("primary");
@@ -278,7 +287,7 @@ loader.define(function(require,exports,module) {
 				var username = my_uid>0?userinfo.username:'';
 				var icon = my_uid>0?userinfo.icon:'';
 				var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
-				w_s.send('{"type":"connect","url":"'+window.location.href+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
+				w_s.send('{"type":"connect","url":"'+(typeof(web_url)!='undefined'?web_url:window.location.href)+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
 			}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
 				 show_online(obj,'goin');
 			}else if(obj.type=='leave'){	//某个用户离开了
@@ -305,24 +314,15 @@ loader.define(function(require,exports,module) {
 		
 		ws_url = res.ext.ws_url;
 		
-		if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
-			if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
-			refresh_i=0;
-			refresh_timenum = 8;//初始化8秒刷新一次
-			chat_timer = setInterval(function() {
-				refresh_i++;
-				//刷新会话用户中有没有新消息,必须要加载到内容后有maxid值才去刷新 初始化还没互动之前,不要刷新太快
-				if(maxid>=0 && refresh_i%refresh_timenum==0)check_new_showmsg();	
-			}, 1000);
-		}else{
-			//建立链接 延时执行,避免用户反复切换圈子
-			if(typeof(qun_link_handle)!='undefined'){
-				clearTimeout(qun_link_handle);
-			}
-			qun_link_handle = setTimeout(function(){
-				ws_connect();
-			},typeof(w_s)=='object'?5000:0);
+
+		//建立链接 延时执行,避免用户反复切换圈子
+		if(typeof(qun_link_handle)!='undefined'){
+			clearTimeout(qun_link_handle);
 		}
+		qun_link_handle = setTimeout(function(){
+			ws_connect();
+		},typeof(w_s)=='object'?5000:0);
+
 		
 		pageview.weixin_share();
 
@@ -385,7 +385,18 @@ loader.define(function(require,exports,module) {
 				iframe_str += `<iframe style="display:none;" class="chat_iframe_hack" data-keyword="${rs.keywords}" name="iframe_${rs.keywords}" id="iframe_${rs.keywords}" src="${rs.init_iframe}"></iframe>`;
 			}
 			if(rs.init_jsfile!=''){
+				if(typeof(api)=='object'){
+					rs.init_jsfile = rs.init_jsfile.substring(1);
+				}
 				total_need_load++;
+				loader.require(rs.init_jsfile,function (o) {
+					fisrt_load(res,rs.keywords);	//首次加载的时候,单独执行
+					total_have_load++;					
+					if(total_have_load>=total_need_load){
+						run_mod_finsih(res)
+					}
+				});
+				/*
 				jQuery.getScript(rs.init_jsfile).done(function() {
 					fisrt_load(res,rs.keywords);	//首次加载的时候,单独执行
 					total_have_load++;					
@@ -394,8 +405,8 @@ loader.define(function(require,exports,module) {
 					}
 				}).fail(function(e) {
 					total_have_load++;
-					console.log("此文件加载失败或者是代码有错误!",rs.init_jsfile);
-				});
+					console.log("此文件加载失败或者是代码有错误!"+rs.init_jsfile);
+				});*/
 			}
 			if(rs.init_jscode!=''){
 				eval(rs.init_jscode);
@@ -643,13 +654,6 @@ loader.define(function(require,exports,module) {
 	var num = ck_num = 0;
 	//刷新会话用户中有没有新消息
 	function check_new_showmsg(obj){
-		if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
-			if(ck_num>num){
-				console.log("服务器还没反馈数据过来");
-				//layer.msg("服务器反馈超时",{time:500});
-				return ;
-			}
-		}
 
 		if( typeof(obj)=='object' && typeof(obj.data)=='object' && obj.data.length>0 ){		//服务端推数据, 即被动获取数据
 			var res = obj;
@@ -768,7 +772,7 @@ loader.define(function(require,exports,module) {
 		
 
 		format_nickname();	//设置圈子昵称
-		//format_hack_data();  //处理各频道调用的数据
+
 
 		if(show_msg_page>1 || is_repeat>1 || type=='cknew'){	//第一页不一定能执行得到,所以就放在加载脚本那里单独处理
 			for(var index in format_content){
@@ -937,44 +941,18 @@ loader.define(function(require,exports,module) {
 	}
 
 	
-	//微信分享
+	//微信分享 只能在微信上访问才有效
 	pageview.weixin_share = function(){
 		if(typeof(wx)=='object' && have_load_wx_config==true && uid<0){
 			weixin_share({
 				title:quninfo.title!=''?quninfo.title:'欢迎加入圈子群聊',
 				about:quninfo.content!=''?quninfo.content.replace('&nbsp;',''):'欢迎加入圈子群聊,不错过每一个精彩的话题!',
 				picurl:quninfo.picurl!=''?quninfo.picurl:'',
-				url:"/index.php/index/msg/index.html#/public/static/libs/bui/pages/chat/chat?uid="+uid,
+				url:"index.php/index/msg/index.html?uid=="+uid,
 			});
 		}		
 	}
 
-
-	//格式化各频道的数据
-	/*
-	function format_hack_data(){
-		router.$(".chat-panel .model-list").each(function(){
-			var type = $(this).data("type");
-			var imgurl = $(this).data("imgurl");
-			var id = $(this).data("id");			
-			if(imgurl!=""){
-				$(this).find(".model-more").css({"height":"60px"});				
-			}else{
-				$(this).find(".model-content").css({"margin-right":"2px"});
-			}
-			var url = "/index.php/" + type + "/content/show/id/" + id + ".html";
-			var title = $(this).find(".model-title").html().substring(0,14) + "...";
-			$(this).click(function(){
-				bui.load({ 
-					url: "/public/static/libs/bui/pages/frame/show.html",
-					param:{
-						url:url,
-						title:title,
-					}
-				});
-			});
-		});
-	}*/
 	
 	//获取所有成员信息
 	pageview.get_user_list = function(id){
@@ -1014,25 +992,12 @@ loader.define(function(require,exports,module) {
 			msg_scroll = 1; //恢复可以使用滚动条			
 			showMoreMsg(uid);	//加载相应用户的聊天记录
 			if(uid<0){	//群聊,获取群信息
-				/*
-				$.get("/index.php/qun/wxapp.qun/getbyid.html?id="+(-uid),function(res){
-					if(res.code==0){
-						quninfo = res.data
-						window.store.set("quninfo",quninfo);
-						vues.set_quninfo(quninfo);
-						$("#send_user_name").html(res.data.title);
-						console.log('quninfo=',quninfo);
-					}
-				});
-				*/
 				pageview.get_user_list(-uid);
 			}else{	//私聊
 				console.log("当前用户UID-"+uid);
 				set_user_name(uid);	//设置当前会话的用户名
 			}
 		}
-
-
     })
 
     // 初始化

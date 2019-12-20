@@ -3,8 +3,9 @@ mod_class.qqface = {
 
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
 		var str = '';
+		var url = typeof(api)=='object'?web_url:'';
 		for(var i=1;i<23;i++){
-			str += `<em data-id="${i}"><img src="/public/static/images/qqface/${i}.gif"></em>`;
+			str += `<em data-id="${i}"><img src="${url}/public/static/images/qqface/${i}.gif"></em>`;
 		}
 		if(in_pc==true){
 			pc_show(str);
@@ -71,4 +72,16 @@ mod_class.qqface = {
 	logic_init:function(res){  //init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
 	},
 
+}
+
+
+//类接口,加载到聊天会话数据时执行的  刷新数据的时候也会有到.不仅仅是初次加载
+format_content.qqface = function(res,type){
+	$("#chat_win").find("img").each(function(){
+		var url = $(this).attr('src');
+		console.log(url);
+		if(url.indexOf('/public/static/')==0){
+			$(this).attr('src',url.substring(1));
+		}
+	});
 }
