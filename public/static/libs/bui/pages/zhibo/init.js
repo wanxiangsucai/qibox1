@@ -149,14 +149,13 @@ mod_class.zhibo = {
 			});
 		}
 		if(this.haveLoadPlayer!=true && typeof(res.ext)=='object' && typeof(res.ext.live)=='object' && typeof(res.ext.live.live_video)=='object'){
-			if(this.play_status!=true){	//首次
-				this.urls = res.ext.live.live_video;
-				//请求圈主当前播放状态是不是纯音频 请求成功后,再播放,要保证WS服务器正常连上.否则永远不播放.
-				ws_send({type:"user_ask_quner",tag:"ask_live_state"},'user_cid');
-			}else{
+			//if(this.play_status!=true){	//首次 请求圈主当前播放状态是不是纯音频 请求成功后,再播放,要保证WS服务器正常连上.否则永远不播放.
+			//	this.urls = res.ext.live.live_video; 		
+			//	ws_send({type:"user_ask_quner",tag:"ask_live_state"},'user_cid');
+			//}else{
 				this.haveLoadPlayer = true;
 				this.player(res.ext.live.live_video);	//设置播放器	
-			}			
+			//}			
 		}
 	},
 	sync_play:function(urls,only_sound){  //收到打开播放器的请求指令

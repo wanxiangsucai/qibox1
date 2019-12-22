@@ -109,7 +109,7 @@ mod_class.uploadpic = {
 						image.onload = function() {
 						var resized = resizeUpImages(image);
 						var severUrl = "/index.php/index/attachment/upload/dir/images/from/base64/module/bbs.html";
-						Qibo.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':''},function (res) {
+						$.post(severUrl, {'imgBase64':resized,'Orientation':Orientation,'tags':''},function (res) {
 							if(res.code==1){
 								//console.log(res);
 								var url = res.path;
