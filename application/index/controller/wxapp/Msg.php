@@ -135,6 +135,8 @@ class Msg extends IndexBase{
 //                 $array['vod_voice'] = $live_array['vod_voice'.$uid];
 //             }
             $array['live'] = fun('Qun@live',abs($uid))?:''; //圈子的活跃信息,比如直播之类的
+            unset($array['live']['service_video']);
+            //unset($array['live']['service_video']['push_url']);
         }
         $array['chatmod'] = $this->get_chat_mod($uid);  //群聊模块
         return $this->ok_js($array);

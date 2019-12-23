@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>圈子在线直播</title>
+<meta name="viewport"   content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+<!--<link rel="stylesheet" href="/public/static/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">-->
+<style type="text/css">
+body {
+    padding: 0;
+    margin: 0;
+}
+.dplayer-full-in-icon {
+    display: none!important
+}
+</style>
+<!--<script src="https://cdn.jsdelivr.net/npm/flv.js/dist/flv.min.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/hls.js/dist/hls.min.js"></script> -->
+<script type="text/javascript" src="./dplayer/flv.min.js"></script> 
+<script type="text/javascript" src="./dplayer/hls.min.js"></script>
+<script type="text/javascript" src="./dplayer/DPlayer.min.js?v=f32"></script>
+</head>
+<body>
+<script type="text/javascript">
+var weburl = window.location.href;	//var weburl = window.location.href.indexOf("http")==0 ? '' : '../../../../../..';
+weburl = weburl.substring(0,weburl.indexOf('/public/static/')); //方便手机获取真实路径
+document.write('<link rel="stylesheet" href="'+weburl+'/public/static/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">');
+</script>
+
+
+<div id="dplayer"  style="width:100%;"></div>
+<script type="text/javascript">
+function palyer(video_url, height, only_sound, in_pc) {
+     
+    if (typeof(height) == 'undefined' || height == '') {
+        height = '200px';
+    } else {
+        height = parseFloat(height).toString() + 'px';
+    }
+    var div = document.getElementById('dplayer');
+    div.style.setProperty('height', height);
+     
+    if (in_pc == 'pc') {
+        const dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            live: true,
+            volume: 1,
+            autoplay: true,
+            video: {
+                url: video_url,
+                type: 'flv',
+                pic: './timg.jpg',
+            },
+        });
+        
+    } else {
+        const dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            live: true,
+            volume: 1,
+            autoplay: true,
+            video: {
+                url: video_url,
+                type: 'hls',
+                pic: './timg.jpg',
+            },
+        });
+    }
+}   
+</script>
+</body>
+</html>

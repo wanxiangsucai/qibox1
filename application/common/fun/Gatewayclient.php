@@ -6,7 +6,7 @@ use GatewayClient\Gateway;
 class Gatewayclient{
     
     private static $other_server = true;    //是否使用其它服务端做中转
-    private static $server_url = 'https://x1.soyixia.net/ws_server.php';
+    private static $server_url = 'http://sock2.soyixia.net/ws_server.php';
     private static $client_url = 'wss://sock.soyixia.net'; //客户端请求端口
     
     public function __construct(){

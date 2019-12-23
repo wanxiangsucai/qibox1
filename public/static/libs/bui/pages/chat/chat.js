@@ -1,4 +1,5 @@
 
+
 var refresh_i,refresh_timenum;//这几个已弃用
 var w_s,ws_url,clientId='';
 
@@ -11,6 +12,15 @@ var format_content ={}; //接口
 
 //加载聊天窗口框架
 function load_chat_iframe(url,callback){
+
+	if(url==''){	//关闭窗口
+		router.$("#iframe_chat").attr("src","about:blank");
+		router.$(".iframe_chat").hide(500);
+		setTimeout(function(){
+			bui.init();
+		},2000);
+		return ;
+	}
 	
 	//这里绕个弯是解决JQ的BUG.不然重复执行的话,下面的load方法会执行多次.
 	var obj = $("#iframe_chat").parent();
@@ -780,6 +790,15 @@ loader.define(function(require,exports,module) {
 					format_content[index](res,type);
 				}
 			}
+		}
+
+		if( typeof(api)=='object' ){	//APP中,把附件加上网址			
+			$("#chat_win").find("img").each(function(){
+				var url = $(this).attr('src');
+				if(url.indexOf('/public/uploads/')==0){
+					$(this).attr('src',web_url+url);
+				}
+			});
 		}
 		
 		//设置用户菜单

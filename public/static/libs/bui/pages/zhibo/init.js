@@ -1,8 +1,8 @@
-//init() logic_init() once() finish() 的使用教程网址 http://help.php168.com/1435153
+//init() logic_init() once() finish() 的使用教程网址 http://help.php168.com/1435153 
 mod_class.zhibo = {
-	zhibo_obj:null,
+	zhibo_obj:null,	
 	urls:{},
-	zhibo_status:false,		//是否在直播
+	zhibo_status:false,		//是否在直播进行中
 	finish:function(res){  //所有模块加载完才执行
 	},
 	logic_init:function(res){
@@ -10,11 +10,37 @@ mod_class.zhibo = {
 	},
 	once:function(){
 	},
+	connect_timer:null,
+	repeat_connect:function(){	//掉线重连
+		if(this.connect_timer!=null){
+			clearInterval( this.connect_timer );
+		}
+		//this.zhibo_obj.destroy_push();
+		var that = this;
+		this.connect_timer = setInterval(function() {
+			layer.msg('偿试重连');
+			that.zhibo_obj.destroy_push();
+			setTimeout(function(){
+				that.zhibo_obj.start_push();
+			},2000)
+		},15000);	//掉线断流后,每15秒刷新一次重连
+	},
 	only_sound:function(){	//是否仅为音频推送
 		if(this.zhibo_obj!==null){
 			return this.zhibo_obj.only_sound;
 		}else{
 			return false;
+		}
+	},
+	success_push:function(){	//成功推流直播
+		this.zhibo_status = true;
+		layer.msg('直播推流开始了!!');
+		postmsg('<div class="live_video_start">APP端开始直播了...</div>');	//发送数据到服务器		
+		this.zhibo_obj.showbtn();  //推流成功,才显示菜单
+		if(this.zhibo_obj.only_sound==true){
+			router.$(".post_btn_wrap .btn3").hide(); //没有切换摄像头的功能
+		}else{
+			router.$(".btnmenu .btn3").show(); //恢复只推音频没有切换摄像头的功能	
 		}
 	},
 	add_btn:function(){
@@ -63,8 +89,7 @@ mod_class.zhibo = {
 			}else if(quninfo.uid!=my_uid){
 				layer.alert('只有圈主才能直播，你如果没有圈子的话，可以创建一个！');
 				return ;
-			}else if(typeof(api)=='object'){
-				that.zhibo_status = true;
+			}else if(typeof(api)=='object'){				
 				that.app_start_zhibo();
 				return ;
 			}
@@ -111,9 +136,12 @@ mod_class.zhibo = {
 			layer.msg('自己就不播放了,避免出现回音');		//刷新数据的时候,有可能会出现的
 			return ;
 		}
+		this.haveLoadPlayer = true;
+
 		var m3u8_url = urls.m3u8_url;
 		var rtmp_url = urls.rtmp_url;
 		var flv_url = urls.flv_url;
+		var that = this;
 		if(in_pc==true){
 			layer.open({  
 				  type: 2,    
@@ -128,41 +156,56 @@ mod_class.zhibo = {
 				  area: ['520px', only_sound==true?'170px':'370px'],  
 				  content: "/public/static/libs/bui/pages/zhibo/player.html",
 				  success: function(layero, index){  
-					//var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
-					win_player = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：win.method();  
-					win_player.palyer(flv_url, only_sound==true?'100px':'300px',only_sound);			
+						//var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
+						that.win_player = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：win.method();  
+						that.win_player.palyer(flv_url, only_sound==true?'100px':'300px',only_sound);			
 				  }
 			});
 		}else{			
-			window.parent.load_chat_iframe("/public/static/libs/bui/pages/zhibo/player.html",function(win,body){
-				win.palyer(m3u8_url,only_sound==true?'30px':'200px',only_sound);
+			load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html",function(win,body){
+				win.palyer(m3u8_url,only_sound==true?'40px':'200px',only_sound);
 			});
 		}
+	},
+	stop:function(){	//结束直播
+		if(this.zhibo_obj!=null){
+			this.zhibo_obj.stop();
+		}		
+		this.zhibo_status = false;
+		this.haveLoadPlayer = false;
+		if(in_pc==true){
+			layer.closeAll();			
+		}else{
+			load_chat_iframe('');
+		}
+		layer.msg('直播结束了!');
 	},
 	haveLoadPlayer:false,
-	check_play:function(res,type){ //检查聊天记录中,是否包含直播信息
-		if(type=='cknew' && res.data.length>0){
-			res.data.forEach((rs)=>{
-				if(rs.content.indexOf('live_video_start')>0){	//收到新的直播消息提醒
-					if(this.haveLoadPlayer==true)this.haveLoadPlayer = false;	//中断过的 . 重新发起直播
-				}
-			});
+	waitTime:null,
+	check_play:function(res,type){ //用户刚进来时,检查聊天记录中,是否包含直播信息
+		if(type=='cknew'){	//刷新到数据就不需要了,因为WS有另外传数据过来
+			return ;
 		}
-		if(this.haveLoadPlayer!=true && typeof(res.ext)=='object' && typeof(res.ext.live)=='object' && typeof(res.ext.live.live_video)=='object'){
-			//if(this.play_status!=true){	//首次 请求圈主当前播放状态是不是纯音频 请求成功后,再播放,要保证WS服务器正常连上.否则永远不播放.
-			//	this.urls = res.ext.live.live_video; 		
-			//	ws_send({type:"user_ask_quner",tag:"ask_live_state"},'user_cid');
-			//}else{
-				this.haveLoadPlayer = true;
-				this.player(res.ext.live.live_video);	//设置播放器	
-			//}			
+		if( typeof(res.ext)=='object' && typeof(res.ext.live)=='object' && typeof(res.ext.live.live_video)=='object' ){
+			this.prepare_play( res.ext.live.live_video );
 		}
 	},
+	prepare_play:function(urls){
+		this.urls = urls;
+		//请求圈主当前播放状态是不是纯音频 请求成功后,再播放,要保证WS服务器正常连上.否则3秒后自动播放
+		ws_send({type:"user_ask_quner",tag:"ask_live_state"},'user_cid');
+		var that = this;
+		this.waitTime = setTimeout(function(){
+			layer.msg('圈主没反馈!');			
+			that.player(urls);	//设置播放器	
+		},3000);	//3秒内没收到圈主的反馈信息,就自动开始播放
+	},
 	sync_play:function(urls,only_sound){  //收到打开播放器的请求指令
-		this.play_status = true;
+		if(this.waitTime!=null){			
+			clearTimeout(this.waitTime);	//清除上面设置的
+			this.waitTime = null;
+		}
 		if(this.haveLoadPlayer == false){
-			this.haveLoadPlayer = true;
-			console.log('地址',urls.length==0?this.urls:urls);
 			this.player(urls.length==0?this.urls:urls,only_sound);
 		}		
 	},
@@ -187,6 +230,19 @@ ws_onmsg.zhibo = function(obj){
 		mod_class.zhibo.sync_play(obj.data.urls,obj.data.only_sound);
 	}else if(obj.type=='error#give_live_state'){  //圈主不在,或者是圈主首次访问 就 直播播放 , 用第三方推流工具的时候,才用到的.
 		mod_class.zhibo.sync_play(mod_class.zhibo.urls);
+	}else if(obj.type=='zhibo_server_stop'){	//推流断开了,就自动关闭,推流断开有可能是网络的问题,所以不一定是圈主 人为主动关闭直播
+		mod_class.zhibo.stop();
+		if(mod_class.zhibo.zhibo_status==true){	//可能是网络故障掉线的.偿试重连接
+			mod_class.zhibo.repeat_connect();
+		}
+	}else if(obj.type=='zhibo_server_start'){  //聊天过程中,圈主中途打开直播
+		if(mod_class.zhibo.connect_timer!=null){
+			layer.msg('重连成功');
+			clearInterval( mod_class.zhibo.connect_timer );
+			mod_class.zhibo.connect_timer = null;
+		}
+		mod_class.zhibo.urls = obj.data;
+		mod_class.zhibo.prepare_play(obj.data);
 	}
 }
 
