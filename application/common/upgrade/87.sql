@@ -1,0 +1,1 @@
+INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 0, 'wap右上角菜单', '', '', 3, 'wap_top_right_menu', '/public/static/libs/bui/pages/hack/wap_top_right_menu.js', '', '', 1, 0, '');
