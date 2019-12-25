@@ -32,7 +32,7 @@ loader.define(function(require,exports,module) {
 	
 	function get_mod(){
 		var url = "/index.php/index/wxapp.index/topic_mod.html";
-		Qibo.get(url,function(res){
+		$.get(url,function(res){
 			if(res.code==0){
 				var str = '';
 				res.data.forEach((rs)=>{
@@ -58,7 +58,7 @@ loader.define(function(require,exports,module) {
 	function get_list_data(){
 		layer.msg("加载中,请稍候...");
 		var url = "/index.php/"+type+"/wxapp.index/listbyuid.html?mid="+mid+"&page="+page+"&rows=20";
-		Qibo.get(url,function(res){
+		$.get(url,function(res){
 			layer.closeAll();
 			if(res.code==0){
 				if(res.data.length>0){
@@ -126,13 +126,14 @@ loader.define(function(require,exports,module) {
 
 	pageview.format_list_data = function(array){
 		var str = "";
+		var d_url = typeof(web_url)!='undefined'?'':'/';
 		array.forEach((rs)=>{
 			var content = rs.content.substring(0,20);
 			var title = rs.title.substring(0,15);
 			str +=`
 			<li class="list-item" data-uid="${rs.id}">
 				<div class="bui-btn bui-box">
-					<a href="/index.php/${type}/content/show/id/${rs.id}.html" class="iframe"><img class="ring ring-group" src="${rs.picurl}" onerror="this.src='public/static/images/nopic.png'"/></a>                                
+					<a href="/index.php/${type}/content/show/id/${rs.id}.html" class="iframe"><img class="ring ring-group" src="${rs.picurl}" onerror="this.src='${d_url}public/static/images/nopic.png'"/></a>                                
 					<div class="span1">
 						<h3 class="item-title">
 							${title}

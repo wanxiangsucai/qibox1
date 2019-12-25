@@ -7,9 +7,10 @@ mod_class.vod_voice = {
 				layer.alert('只有群聊才能直播!');
 				return ;
 			}
+			var d_url = typeof(web_url)!='undefined'?'':'/';
 			if( !in_pc ){
 				bui.load({ 
-					url: "public/static/libs/bui/pages/vod_voice/index.html",
+					url: d_url+"public/static/libs/bui/pages/vod_voice/index.html",
 					param:{
 						aid:Math.abs(uid),
 						type:'cms',
