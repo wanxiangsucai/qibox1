@@ -207,6 +207,7 @@ var qun_userinfo = '';	//当前用户所在当前圈子的信息
 var mod_class={},iframe_body_class={};
 var is_repeat = 0;
 var userinfo = {};	//当前登录用户的基础信息
+var online_members = []; //所有在线用户
 
 loader.define(function(require,exports,module) {
 
@@ -227,6 +228,7 @@ loader.define(function(require,exports,module) {
 		var show_online = function(obj,type){
 			var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
 			var data = obj.data;
+			online_members = data;
 			var usernum = obj.data.length;  //在线会员人数,已注册的会员
 			if(total>1){
 				if(type=='goin'){
@@ -370,7 +372,7 @@ loader.define(function(require,exports,module) {
 				btn_str += `<li class="span1"><span id="btn_${rs.keywords}" class="set-chatmod-btn"><i class="${rs.icon}"></i>${rs.name}</span></li>`;
 				j++;
 				if(j%5==0){
-					btnStr = `<ul class="bui-box bui-box-align-center">${btn_str}</ul>`;
+					btnStr += `<ul class="bui-box bui-box-align-center">${btn_str}</ul>`;
 					btn_str = '';
 				}
 			}

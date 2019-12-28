@@ -269,6 +269,7 @@ function format_chatmsg_tohtml(array){
 		}, 200);
 	}
 
+var online_members = []; //所有在线用户
 
 //建立WebSocket长连接
 var chat_timer,clientId = '';
@@ -415,6 +416,7 @@ function ws_link(){
 		var show_online = function(obj,type){
 				 var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
 				 var data = obj.data;
+				 online_members = data;
 				 var usernum = obj.data.length;  //在线会员人数,已注册的会员
 				 if(total>1){
 					 if(type=='goin'){

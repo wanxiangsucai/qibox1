@@ -1703,3 +1703,7 @@ INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 0, '表情(手机版已固定图标)', '', '', 3, 'qqface', '/public/static/libs/bui/pages/hack/qqface.js', '', '', 1, 0, '');
 
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 0, 'wap右上角菜单', '', '', 3, 'wap_top_right_menu', '/public/static/libs/bui/pages/hack/wap_top_right_menu.js', '', '', 1, 0, '');
+
+INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, '视频电话', '', 'fa fa-fw fa-tty', 0, 'p2pvideo', '/public/static/libs/bui/pages/p2pvideo/init.js', '', '', 1, 0, '');
+INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, 'QQ截图', '', 'fa fa-crop', 2, 'paseimg', '/public/static/libs/bui/pages/paseimg/init.js', '', '', 1, 0, '');
+
