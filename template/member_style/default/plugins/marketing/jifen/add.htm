@@ -105,6 +105,7 @@
 			<ol>金额(元)</ol> 
 			<li><input type="text" name="money" placeholder="输入金额"/></li>
 		</ul>
+        <input type="hidden" name="fromurl" value="{$fromurl}">
 	    <div class="yuMoney">你目前已有积分数是 <span class="B red">{$userdb.money}</span> 个，请输入您要充值的金额</div>
 	    <div class="payBut"><button type="submit">充值</button><input type="hidden" name="paytype" value="weixin"></div>
 	</form>

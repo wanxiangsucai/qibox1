@@ -53,10 +53,11 @@ class Jifen extends MemberBase
      * @param number $ispay 在线付款成功或失败
      * @return mixed|string
      */
-    public function add($numcode='',$ispay=0){
+    public function add($numcode='',$ispay=0,$fromurl=''){
         if($numcode){   //在线付款返回
-            $url = purl('index',[],'member');
+            $url = mymd5(get_cookie('add_fromurl'),'DE') ? urldecode(mymd5(get_cookie('add_fromurl'),'DE')) : purl('index',[],'member');
             if ($ispay==1) {
+                set_cookie('add_fromurl',null);
                 $result = $this->pay_end($numcode);
                 if($result===true){
                     $this->success('充值成功',$url);
@@ -64,6 +65,7 @@ class Jifen extends MemberBase
                     $this->error('充值失败,'.$result,$url);
                 }
             }else{
+                set_cookie('add_fromurl',null);
                 $this->error('你并没有付款',$url);
             }
         }
@@ -74,15 +76,18 @@ class Jifen extends MemberBase
             }
             
             if($data['paytype']=='yu_er'){    //选择余额充值
+                  
                 $result = $this->rmb_to_jifen($data['money']);
+                $url = $fromurl ? urldecode($fromurl) : purl('marketing/jifen/index','','member');
                 if ($result===true){
-                    $this->success('充值成功','index');
+                    $this->success('充值成功',$url);
                 }else{
                     $this->error('充值失败：'.$result);
                 }
             }else{             //选择在线充值      
                 $numcode = 'j'.date('ymdHis').rands(3);      //订单号
                 set_cookie('add_jifen',$numcode);
+                set_cookie('add_fromurl',mymd5($fromurl,'EN'));
                 //直接跳转支付
                 post_olpay([
                     'money'=>$data['money'],
@@ -93,6 +98,8 @@ class Jifen extends MemberBase
                 ] , true);
             }
         }
+        
+        $this->assign('fromurl',urlencode(filtrate($fromurl)));
         return $this->fetch();
     }
     

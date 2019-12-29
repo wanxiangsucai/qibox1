@@ -38,6 +38,7 @@ class Gatewayclient{
                 'my_uid'=>$my_uid,
                 'group_key'=>$group_key,
                 'json_msg'=>$json_msg,
+                'url'=>request()->domain(),
             ];
             $result = http_curl(self::$server_url,$data);
         }else{
@@ -64,6 +65,7 @@ class Gatewayclient{
                 'type'=>'joinGroup',
                 'group_key'=>$group_key,
                 'client_id'=>$client_id,
+                'url'=>request()->domain(),
             ];
             $result = http_curl(self::$server_url,$data);
         }else{

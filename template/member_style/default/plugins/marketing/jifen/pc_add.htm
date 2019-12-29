@@ -56,6 +56,7 @@
 	            <input type="text" name="money" value="1" size="6"/> 元（RMB） 
 	            <input type="submit" name="Submit" value="在线充值"/>
 	            <input type="hidden" name="paytype" value="alipay"/>
+                <input type="hidden" name="fromurl" value="{$fromurl}">
 	        </form>
 	        <p>
 	        	<i class="fa fa-warning"></i>注意：每支付 <span class="B red">1</span> 元，将可获得 <span class="B red">{$webdb.money_ratio|default=10}</span> 个积分，充值金额只能是整数<br> 

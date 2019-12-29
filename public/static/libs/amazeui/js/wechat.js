@@ -377,7 +377,8 @@ function ws_link(){
 				//console.log("消息列表,有新消息来了..........");
 				//console.log(e.data);
 				//obj.uid==uid即本圈子提交数据(或者自己正处于跟他人私聊),不用更新列表, obj.uid它人私信自己,就要更新,obj.uid是其它圈子也要更新
-				if( (obj.uid<0 && obj.uid!=uid) || (obj.uid==my_uid && obj.from_uid!=uid ) ){
+				//if( (obj.uid<0 && obj.uid!=uid) || (obj.uid==my_uid && obj.from_uid!=uid ) ){
+				if( obj.uid==my_uid && obj.from_uid!=uid ){
 					check_list_new_msgnum();
 				}
 			}else{
@@ -474,25 +475,14 @@ function load_first_page(res){
 
 	ws_url = res.ext.ws_url;
 
-	if(ws_url==''){	//没有设置WS的话,就用AJAX轮询
-		check_new = setInterval(function(){
-			if(maxid>=0)check_new_showmsg();
-		},9000);	//没有发信息之前刷新时间不宜太快,9秒刷新一次
 
-		setInterval(function() {
-			//list_i++;
-			//if(list_i%list_time==0)
-			check_list_new_msgnum();	//每隔20秒获取一次列表数据
-		}, 1000*20);
-	}else{
-		//建立链接 延时执行,避免用户反复切换圈子
-		if(typeof(qun_link_handle)!='undefined'){
-			clearTimeout(qun_link_handle);
-		}
-		qun_link_handle = setTimeout(function(){
-			ws_connect();
-		},typeof(w_s)=='object'?5000:0);			
+	//建立链接 延时执行,避免用户反复切换圈子
+	if(typeof(qun_link_handle)!='undefined'){
+		clearTimeout(qun_link_handle);
 	}
+	qun_link_handle = setTimeout(function(){
+		ws_connect();
+	},typeof(w_s)=='object'?5000:0);			
 
 	//set_live_player(res);	//检查是否有视频直播
 

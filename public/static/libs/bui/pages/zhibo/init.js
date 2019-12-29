@@ -5,6 +5,7 @@ mod_class.zhibo = {
 	zhibo_status:false,		//是否在直播进行中
 	finish:function(res){  //所有模块加载完才执行
 	},
+	limit_time:'forever',	//圈主直播可用流量
 	logic_init:function(res){
 		//this.check_play(res);
 	},
@@ -56,32 +57,13 @@ mod_class.zhibo = {
 	},
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
 		var that = this; //参数引用
-		if(this.zhibo_status==true && my_uid==quninfo.uid){	//解决用户切换到了其它圈子,再回来就没有菜单的情况
+		this.haveLoadPlayer = false; //用户重新进来的时候,不能缺少这个处理,不然无法弹出播放器
+		if(this.zhibo_status==true && my_uid==quninfo.uid){	//解决用户切换到了其它圈子,再回来就没有菜单的情况 ,这里只在APP中执行
 			this.add_btn();
 			this.zhibo_obj.add_btn_fun();
 			this.zhibo_obj.showbtn();
 		}
-		var show_str  = `
-			<div class="live_video_warp">
-			<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>手机扫码推流</div>
-			推流地址：<input class="push_url" type="text"><br>
-			播流地址m3u8(PC/WAP/APP都能播放)：<input class="m3u8_url" type="text"><br>
-			播流地址FLV(只能PC播放)：<input class="flv_url" type="text"><br>	
-			播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>
-			</div>
-		`;
 
-		if(!in_pc){
-			show_str  = `
-			<div class="live_video_warp">
-			<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>其它手机扫码推流</div>
-			推流地址：<input class="push_url" type="text"><br>
-			播流地址：<input class="m3u8_url" type="text"><br>
-			<!--播流地址FLV(只能PC播放)：<input class="flv_url" type="text"><br>	
-			播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>-->
-			</div>
-		`;
-		}
 		$("#btn_zhibo").click(function(){
 			if(uid>=0){
 				layer.alert('只有群聊才能直播!');
@@ -89,12 +71,37 @@ mod_class.zhibo = {
 			}else if(quninfo.uid!=my_uid){
 				layer.alert('只有圈主才能直播，你如果没有圈子的话，可以创建一个！');
 				return ;
-			}else if(typeof(api)=='object'){				
+			}else if(typeof(api)=='object'){	//在APP中执行,打开直播			
 				that.app_start_zhibo();
 				return ;
 			}
 			$.get("/index.php/p/alilive-api-url.html?id="+Math.abs(uid),function(res){
 					if(res.code==0){
+						var play_url = '';
+						if( typeof(res.data.limit_time)!='number' ){	//需要购买直播流量的圈主,就不要显示播流地址,避免拿到站外去播放
+							play_url = `播流地址m3u8(PC/WAP/APP都能播放)：<input class="m3u8_url" type="text"><br>
+							播流地址FLV(只能PC播放)：<input class="flv_url" type="text"><br>	
+							播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>`;
+						}
+						var show_str  = `
+							<div class="live_video_warp">
+							<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>手机扫码推流</div>
+							推流地址：<input class="push_url" type="text"><br>
+							${play_url}
+							</div>
+						`;
+
+						if(!in_pc){	//手机端
+							show_str  = `
+							<div class="live_video_warp">
+							<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>其它手机扫码推流</div>
+							推流地址：<input class="push_url" type="text"><br>
+							<!--播流地址：<input class="m3u8_url" type="text"><br>
+							播流地址FLV(只能PC播放)：<input class="flv_url" type="text"><br>	
+							播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>-->
+							</div>
+							`;
+						}
 						layer.alert("只有在app中才能直播，请点击确定，可以获取推流码或者是推流地址用其它第三方APP推流直播",function(){
 							layer.closeAll();
 							layer.open({
@@ -136,6 +143,9 @@ mod_class.zhibo = {
 			layer.msg('自己就不播放了,避免出现回音');		//刷新数据的时候,有可能会出现的
 			return ;
 		}
+
+		ws_send({type:'count_zhibo_viewtime_satrt'});	//打开播放器就要通知服务器更新当前用户的观看时间
+
 		this.haveLoadPlayer = true;
 
 		var m3u8_url = urls.m3u8_url;
@@ -168,7 +178,10 @@ mod_class.zhibo = {
 		}
 	},
 	stop:function(){	//结束直播
-		if(this.zhibo_obj!=null){
+
+		ws_send({type:'count_zhibo_viewtime_stop'});	//通知服务器更新当前用户的观看时间
+
+		if(this.zhibo_obj!=null){	//圈主关闭直播功能
 			this.zhibo_obj.stop();
 		}		
 		this.zhibo_status = false;
@@ -187,6 +200,7 @@ mod_class.zhibo = {
 			return ;
 		}
 		if( typeof(res.ext)=='object' && typeof(res.ext.live)=='object' && typeof(res.ext.live.live_video)=='object' ){
+			this.limit_time = res.ext.live.live_video.limit_time;	//圈主直播可用流量统计
 			this.prepare_play( res.ext.live.live_video );
 		}
 	},
@@ -196,8 +210,12 @@ mod_class.zhibo = {
 		ws_send({type:"user_ask_quner",tag:"ask_live_state"},'user_cid');
 		var that = this;
 		this.waitTime = setTimeout(function(){
-			layer.msg('圈主没反馈!');			
-			that.player(urls);	//设置播放器	
+			if( my_uid!=quninfo.uid && typeof(that.limit_time)=='number' ){
+				layer.alert('提示:圈主可能掉线了,直播暂停!');
+			}else{
+				layer.msg('圈主没反馈!');
+				that.player(urls);	//自动开启播放器	
+			}			
 		},3000);	//3秒内没收到圈主的反馈信息,就自动开始播放
 	},
 	sync_play:function(urls,only_sound){  //收到打开播放器的请求指令
@@ -215,34 +233,60 @@ mod_class.zhibo = {
 //类接口,WebSocket下发消息的回调接口
 ws_onmsg.zhibo = function(obj){
 	if(obj.type=='ask_live_state'){	//访客请求播放状态 ,圈主进行上传回馈.
+
 		var msgarray = {
-			type: "quner_to_user",		//群主发给指定会员的指令
+			type: "quner_to_user",		//群主发给指定会员的指令 这个是固定标志
 			user_cid: obj.user_cid,		//某个会员的ID标志			
-			tag: 'give_live_state' ,	//访客接收标志
+			tag: 'give_live_state' ,	//访客接收标志 ,不同插件,这个标志不能雷同,避免冲突
 			data: {
 				urls:mod_class.zhibo.urls,	//这个值有可能不存在,因为圈主发起推流的时候没设置
 				only_sound:mod_class.zhibo.only_sound(),
 			},
 		}
 		ws_send(msgarray); //通知服务器,将上面的信息发给指定会员		
-	}else if(obj.type=='give_live_state'){  //访问收到的播放信息 , 由上面圈主发出的指令
+
+	}else if(obj.type=='give_live_state'){  //访客收到的播放信息 , 由上面圈主发出的指令, 不同插件,这个标志不能雷同,避免冲突
+
 	    //这里重新给网址是考虑可以更换网址
 		mod_class.zhibo.sync_play(obj.data.urls,obj.data.only_sound);
-	}else if(obj.type=='error#give_live_state'){  //圈主不在,或者是圈主首次访问 就 直播播放 , 用第三方推流工具的时候,才用到的.
-		mod_class.zhibo.sync_play(mod_class.zhibo.urls);
-	}else if(obj.type=='zhibo_server_stop'){	//推流断开了,就自动关闭,推流断开有可能是网络的问题,所以不一定是圈主 人为主动关闭直播
+
+	}else if(obj.type=='error#give_live_state'){  //圈主不在,或者是圈主首次访问 就 直接播放 , 用第三方推流工具的时候,才用到的.
+
+		if( my_uid!=quninfo.uid && typeof(mod_class.zhibo.limit_time)=='number' ){
+			layer.alert('圈主掉线,直播暂停了!');
+		}else{
+			mod_class.zhibo.sync_play(mod_class.zhibo.urls);
+		}
+		
+	}else if(obj.type=='zhibo_server_stop'){	//推流服务器发过来的通知,推流断开了,就自动关闭,推流断开有可能是网络的问题,所以不一定是圈主 人为主动关闭直播
+		
 		mod_class.zhibo.stop();
-		if(mod_class.zhibo.zhibo_status==true){	//可能是网络故障掉线的.偿试重连接
+		if(mod_class.zhibo.zhibo_status==true){	//可能是网络故障掉线的.偿试重连接 ,圈主才执行这里的
 			mod_class.zhibo.repeat_connect();
 		}
-	}else if(obj.type=='zhibo_server_start'){  //聊天过程中,圈主中途打开直播
-		if(mod_class.zhibo.connect_timer!=null){
+		
+	}else if(obj.type=='zhibo_server_start'){  //聊天过程中,圈主中途打开直播,通知所有用户打开直播
+
+		if(mod_class.zhibo.connect_timer!=null){	//这里处理圈主直播断线重连,这里是圈主才执行的
 			layer.msg('重连成功');
 			clearInterval( mod_class.zhibo.connect_timer );
 			mod_class.zhibo.connect_timer = null;
 		}
 		mod_class.zhibo.urls = obj.data;
 		mod_class.zhibo.prepare_play(obj.data);
+
+	}else if(obj.type=='count' || obj.type=='leave'){	//用户进来或者离开
+
+		var total_valid_time = obj.total_valid_time;
+		if( typeof(mod_class.zhibo.limit_time)=='number' && total_valid_time>=mod_class.zhibo.limit_time ){	//直播流量已用完
+			mod_class.zhibo.stop();	//强制关闭
+			if( my_uid==quninfo.uid ){
+				layer.alert('你的直播流量用完了,被强制关闭');
+			}else{
+				layer.msg('圈主的直播流量用完了,被强制关闭');
+			}
+		}
+
 	}
 }
 
