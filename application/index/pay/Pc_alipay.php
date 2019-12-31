@@ -109,9 +109,9 @@ class Pc_alipay extends Pay{
         $url  = "https://mapi.alipay.com/gateway.do?";
         
         //支付宝的一些小BUG,要特别处理订单号
-        if(preg_match("/^0/",$array['numcode'])){
+        //if(preg_match("/^0/",$array['numcode'])){
             //$array[numcode]="$array[numcode]code";
-        }
+        //}
         
         $para = array(
                 //'extra_common_param'=>$this->user['uid'],
@@ -147,18 +147,18 @@ class Pc_alipay extends Pay{
         $url.="&sign=".$sign."&sign_type=MD5";
         
         //没有配置支付宝WAP版的话,就不考虑扫码支付!
-        if(!$this->webdb['wap_ali_id'] || !$this->webdb['wap_ali_partner'] || !$this->webdb['wap_ali_public_key']){
-            echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL=$url'>";
-            exit;
-        }
+       // if(!$this->webdb['wap_ali_id'] || !$this->webdb['wap_ali_partner'] || !$this->webdb['wap_ali_public_key']){
+       //     echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL=$url'>";
+       //     exit;
+        //}
 
         $this->assign('payurl',$url);
         
         $data=[
-                'money'=>$array['money'],
-                'return_url'=>get_url('home'),   //扫码付款完成之后,就跳到主页去算了
-                'banktype'=>'alipay',
-                'numcode'=>$array['numcode'],
+            'money'=>$array['money'],
+            'return_url'=>get_url('home'),   //手机扫码付款完成之后,手机端就跳到主页去算了
+            'banktype'=>'alipay',
+            'numcode'=>$array['numcode'],
         ];
         $qrcode = get_qrcode( get_url( post_olpay($data, false) ) );    //生成二维码给支付宝扫描,直接进入付款那一步
         $this->assign('qrcode',$qrcode);

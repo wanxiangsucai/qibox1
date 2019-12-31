@@ -21,11 +21,11 @@ class Rmb extends MemberBase
 		    $rs['title'] = del_html($rs['about']);
 		    return $rs;
 		});
-		    $pages = $data_list->render();
-		    $listdb = getArray($data_list)['data'];
-		    //给模板赋值变量
-		    $this->assign('pages',$pages);
-		    $this->assign('listdb',$listdb);
+		$pages = $data_list->render();
+		$listdb = getArray($data_list)['data'];
+		//给模板赋值变量
+		$this->assign('pages',$pages);
+		$this->assign('listdb',$listdb);		
 		return $this->pfetch();
 	}
 	
@@ -45,9 +45,10 @@ class Rmb extends MemberBase
 	/**
 	 * 充值
 	 * @param string $callback_url 指定回调地址
+	 * @param string $type 指定充值方式, weixin alipay
 	 * @return mixed|string
 	 */
-	public function add($callback_url=''){
+	public function add($callback_url='',$type='',$rmb=0){
 	    if(IS_POST){
 	        $data = $this->request->post();
 	        if ( $data['money']<0.01 ) {
@@ -58,11 +59,12 @@ class Rmb extends MemberBase
 	        post_olpay([
 	            'money' => $data['money'],
 	            'return_url' => $callback_url?:purl('index'),
-	            'banktype' => in_weixin() ? 'weixin' : 'alipay',
+	            'banktype' => $type,//in_weixin() ? 'weixin' : 'alipay',
 	            'numcode' => $numcode,
 	            'callback_class' => '',
 	        ] , true);	
 	    }
+	    $this->assign('rmb',$rmb);
 	    return $this->pfetch();
 	}
 	

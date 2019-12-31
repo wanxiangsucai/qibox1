@@ -27,10 +27,10 @@
 	 
 	<div class="PostBox" style="text-align:center;">		 
 		<img width="250" src="{$qrcode}"/>
+		<br><a href="{$payurl}" target="_blank"><b>继续使用电脑支付</b></a>
 	</div>
 </div>
 <script type="text/javascript">
-
 if(window.top==window.self){
 	window.location.href="{$payurl}";	
 }else{
@@ -41,7 +41,12 @@ if(window.top==window.self){
 function countSecond(){　
 	$.get("{:urls('/index/pay/index')}?banktype=alipay&action=checkpay&numcode={$numcode}&"+Math.random(), function(result){
 		if(result.code==0){
-			window.location.href="{$return_url}";
+			if(window.top!=window.self && typeof(parent.Pay)=='object' && parent.Pay.pc_callback()==true){
+				parent.Pay.pc_callback('ok');
+				parent.layer.close(parent.layer.getFrameIndex(window.name));
+			}else{
+				window.location.href="{$return_url}";
+			}			
 		}else{
 			setTimeout("countSecond()",3000);
 		}

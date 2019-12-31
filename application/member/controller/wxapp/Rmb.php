@@ -69,7 +69,10 @@ class Rmb extends MemberBase
         }elseif($money<0.01){
             return $this->err_js('打赏金额不能小于0.01元');
         }elseif($money>$this->user['rmb']){
-            return $this->err_js('打赏金额不能大于你的可用余额');
+            return $this->err_js('打赏金额不能大于你的可用余额',[
+                'have_rmb'=>$this->user['rmb'],
+                'pay_rmb'=>$money,
+            ],2);
         }
         $info = fun('qun@getByid',-$uid);
         if (empty($info)) {

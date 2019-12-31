@@ -42,7 +42,7 @@ class Pay extends IndexBase
             }
             $this->assign('weburl',$this->weburl);
             $this->assign('money',input('money'));
-            return $this->fetch();
+            return $this->fetch(input('iframe')?'pc_iframe_choose':'index');
             
         } elseif($banktype == 'rmb') {  //选择了余额支付
             

@@ -48,6 +48,33 @@ class Jifen extends MemberBase
     }
     
     /**
+     * 用RMB兑换积分 给接口使用
+     * @param number $rmb
+     */
+    public function exchange($rmb=0){
+        $result = $this->rmb_to_jifen($rmb);
+        if ($result!==true){
+            return $this->err_js($result);
+        }else{
+            return $this->ok_js();
+        }
+    }
+    
+    /**
+     * 根据积分个数,需要支付多少RMB 给接口使用
+     * @param number $jifen
+     * @return void|\think\response\Json|unknown
+     */
+    public function count_rmb($jifen=0){
+        if($jifen<1){
+            return $this->err_js('积分个数不能小于1');
+        }
+        $this->webdb['money_ratio']>0 || $this->webdb['money_ratio']=10;
+        $rmb = ceil(100*$jifen/$this->webdb['money_ratio'])/100;
+        return $this->ok_js($rmb);
+    }
+    
+    /**
      * 充值积分
      * @param string $numcode 在线付款后返回的订单号
      * @param number $ispay 在线付款成功或失败

@@ -164,7 +164,7 @@ mod_class.zhibo = {
 				  scrollbar: false,
 				  closeBtn:2,  
 				  area: ['520px', only_sound==true?'170px':'370px'],  
-				  content: "/public/static/libs/bui/pages/zhibo/player.html",
+				  content: uid==-158?"/public/static/libs/bui/pages/zhibo/ckplayer.html":"/public/static/libs/bui/pages/zhibo/player.html",
 				  success: function(layero, index){  
 						//var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
 						that.win_player = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：win.method();  

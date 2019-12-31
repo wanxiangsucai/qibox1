@@ -5,6 +5,8 @@ loader.define(function() {
 
 	pageview.init = function () {
 
+		loader.require( (typeof(web_url)=='undefined'?'/':'')+'public/static/js/pay.js',function (o) {});
+
 		if(userdb.rmb==undefined){	//充值刷新过网页的情况
 			setTimeout(function(){				
 				userdb = window.store.get('userinfo');
@@ -21,7 +23,7 @@ loader.define(function() {
 		
 		router.$("#user_rmb").html(userdb.rmb);
 		
-		//确认打赏
+		//确认提交
 		router.$("#giveBtn").click(function(){			
 			if( router.$(".hongbao_warp input[name='money']").val()<0.01 ){
 				layer.alert("单个最小红包不能小于0.01元");
@@ -48,26 +50,40 @@ loader.define(function() {
 			if(total>userdb.rmb){
 				//layer.alert("你的可用余额只有"+userdb.rmb+"元,请先充值");
 			}
-			Qibo.post('/index.php/p/hongbao-wxapp.post-add.html?ext_id='+(-uid),$('.hongbao_warp').serialize(),function(res){
+			$.post('/index.php/p/hongbao-wxapp.post-add.html?ext_id='+(-uid),$('.hongbao_warp').serialize(),function(res){
 				if(res.code==0){
-							if(typeof(refresh_timenum)!='undefined')refresh_timenum = 1;	//加快刷新时间
-							if(res.code==0){
-								layer.msg(res.msg);
-								if( typeof(refresh_timenum)=='undefined' ){ //可能是充值过来时刷新过网页
-									bui.load({ 
-										url: "/public/static/libs/bui/pages/chat/chat.html",
-										param:{
-											uid:uid,
-										}
-									});
-								}else{
-									bui.back();
+					//if(typeof(refresh_timenum)!='undefined')refresh_timenum = 1;	//加快刷新时间
+					if(res.code==0){
+						layer.msg(res.msg);
+						if( typeof(refresh_timenum)=='undefined' ){ //可能是充值过来时刷新过网页
+							bui.load({ 
+								url: "/public/static/libs/bui/pages/chat/chat.html",
+								param:{
+									uid:uid,
 								}
-							}else{
-								layer.alert(res.msg);
-							}
+							});
+						}else{
+							bui.back();
+						}
+					}else{
+						layer.alert(res.msg);
+					}
 				}else{
-					layer.alert(res.msg);
+					var str = res.msg;
+					var msgindex = layer.alert(res.msg);
+					if( str.indexOf('余额不足')>0 ){
+						var money = str.replace(/[^\d|^\.]/g,"");
+						Pay.mobpay( money ,'红包充值',function(type,index){
+							layer.close(index);
+							layer.close(msgindex);
+							if(type=='ok'){
+								router.$("#user_rmb").html( router.$("#user_rmb").html()+value );
+								layer.msg('充值成功,你可以继续发红包了');
+							}else{
+								layer.alert('充值失败');
+							}
+						});
+					}				
 				}
 			});
 		});
@@ -78,11 +94,26 @@ loader.define(function() {
 		
 		//充值
 		router.$("#addrmb").click(function(){
-			bui.load({ 
-				url: "/public/static/libs/bui/pages/frame/show.html",
-				param:{
-					url:"/member.php/member/plugin/execute/plugin_name/marketing/plugin_controller/rmb/plugin_action/add.html?callback_url="+encodeURIComponent(window.location.href),
+			layer.prompt({
+				formType: 0,
+				value: '3',
+				title: '请输入要充值的金额数,单位元',
+				//area: ['100px', '20px'] //formType:2 自定义文本域宽高
+			}, function(value, index, elem){
+				if(value<0.01){
+					layer.alert('充值金额不能小于0.01元');
+					return ;
 				}
+				layer.close(index);
+				Pay.mobpay( value,'红包充值',function(type,index){
+					layer.close(index);
+					if(type=='ok'){
+						router.$("#user_rmb").html( router.$("#user_rmb").html()+value );
+						layer.msg('充值成功,你可以发红包了');
+					}else{
+						layer.alert('充值失败');
+					}
+				});
 			});
 		});
 	}
