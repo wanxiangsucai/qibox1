@@ -139,21 +139,29 @@ class Login extends IndexBase
             return $this->err_js('登录失败,openid获取不到');
         }
         
-        $user = UserModel::check_wxappIdExists($openid);
-        
-        //针对后来开通了微信开放平台就会存在unionid
-        if (empty($user) && $info['unionId']) {
-            $user = UserModel::get(['unionid'=>$info['unionId']]);
-        }
-        if ($user && $info['unionId'] && empty($user['unionid'])) {
+        $user = UserModel::check_wxappIdExists($openid);  //根据小程序ID获取用户信息,优先级最高
+ 
+        if ( $user && $info['unionId'] && empty($user['unionid']) ) {   //后来开通了认证微信开放平台的老用户处理
             UserModel::edit_user([
                 'uid'=>$user['uid'],
                 'unionid'=>$info['unionId'],
             ]);
         }
+        
+        if (empty($user) && $info['unionId']) {     //绑定了微信认证开放平台
+            $user = UserModel::get(['unionid'=>$info['unionId']]);
+
+            if ( $user && empty($user['wxapp_api']) ) { //开通了微信认证开放平台正常情况新用户都是这种
+                UserModel::edit_user([
+                    'uid'=>$user['uid'],
+                    'wxapp_api'=>$openid,
+                ]);
+            }
+        }
+        
         //write_file(ROOT_PATH.'WXAPP.txt', var_export($info,true).'---'.$user['uid'].'---'.$info['unionId']);
         
-        if(empty($user) && $uids){  //有传递WEB框架用户已登录的标志过来
+        if(empty($user) && $uids){  //有传递WEB框架用户已登录的标志过来 , 这个是针对没有绑定认证开放平台处理的,已认证的话,用不到这里
             list($uid,$time) = explode(',',mymd5($uids,'DE'));
             if (time()-$time<600) {
                 $user = UserModel::getById($uid);
