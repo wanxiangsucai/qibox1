@@ -27,12 +27,24 @@ class Index extends IndexBase{
      */
     public function topic_mod(){
         $array = modules_config();
+        $plugins = plugins_config();
+        
         $data = [];
+        $p_data = [];
         foreach ($array AS $rs){
             if( is_file(APP_PATH.$rs['keywords'].'/model/Content.php')&&!in_array($rs['keywords'],['exam']) ){
+                $rs['module'] = 'module';
                 $data[] = $rs;
             }
         }
+        foreach ($plugins AS $rs){
+            if( is_file(PLUGINS_PATH.$rs['keywords'].'/model/Quote.php')){
+                $rs['module'] = 'plugin';
+                $p_data[] = $rs;
+            }
+        }
+        $data=array_merge($data,$p_data);
+         
         return $this->ok_js($data);
     }
 }

@@ -159,6 +159,7 @@
 
 <script type="text/javascript">
 var type = 'bbs';
+var module = 'module';
 var uid = 0;
 var mod_array = {};
 var page = 1;
@@ -204,8 +205,13 @@ function add_action(){
 	});
 }
 function get_list_data(){
-		layer.msg("加载中,请稍候...");
-		var url = "/index.php/"+type+"/wxapp.index/listbyuid.html?page="+page+"&keyword="+keyword+"&rows=10";
+     layer.msg("加载中,请稍候...");
+    if(module=='plugin'){
+       var url = "/index.php/index/plugin/execute/plugin_name/"+type+"/plugin_controller/quote/plugin_action/listbyuid.html?page="+page+"&keyword="+keyword+"&rows=10";
+       }else{
+       var url = "/index.php/"+type+"/wxapp.index/listbyuid.html?page="+page+"&keyword="+keyword+"&rows=10";
+       }
+		
 		$.get(url,function(res){
 			layer.closeAll();
 			if(res.code==0){
@@ -263,7 +269,7 @@ function get_mod(){
 				res.data.forEach((rs)=>{
 					mod_array[rs.keywords] = rs;
 					var ck = rs.keywords == type?"choose":"";
-					str += `<span class='swiper-slide ${ck}' data-type="${rs.keywords}"><a href="#">${rs.name}</a></span>`;
+					str += `<span class='swiper-slide ${ck}' data-type="${rs.keywords}" data-module="${rs.module}"><a href="#">${rs.name}</a></span>`;
 				});
 				$("#choose_mod").html(str);
 				var swiper = new Swiper('.swiper-container', {
@@ -276,6 +282,7 @@ function get_mod(){
 				$("#choose_mod .swiper-slide").removeClass("choose");
 				$(this).addClass("choose");
 				type = $(this).data("type");
+                module = $(this).data("module");
 				page = 1;
 				keyword = '';
 				$("#tagname").html(mod_array[type].name);

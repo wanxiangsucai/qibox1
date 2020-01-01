@@ -1707,3 +1707,4 @@ INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, '视频电话', '', 'fa fa-fw fa-tty', 0, 'p2pvideo', '/public/static/libs/bui/pages/p2pvideo/init.js', '', '', 1, 0, '');
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, 'QQ截图', '', 'fa fa-crop', 2, 'paseimg', '/public/static/libs/bui/pages/paseimg/init.js', '', '', 1, 0, '');
 
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'user_leave', '用户离开,比如用户离开群聊', 1, 0);

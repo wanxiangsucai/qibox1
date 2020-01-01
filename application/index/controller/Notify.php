@@ -10,6 +10,11 @@ class Notify extends IndexBase
     public function index($type='')
     {
         $data = input();
+        
+        //钩子扩展
+        $this->get_hook('user_leave',$data);
+        hook_listen('user_leave',$data);
+        
         if($type=='leave_qun' && $data['valid_time'] && $data['aid']){	//暂时还没做权限检验
             $array = [
                 'uid'=>intval($data['uid']),

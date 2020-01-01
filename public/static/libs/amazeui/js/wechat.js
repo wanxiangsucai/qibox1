@@ -1,4 +1,4 @@
-
+layer.closeAll = function(){console.log('不允许使用把全部层一次关闭,不然会影响到其它插件');};
 
 //底部扩展键
 $(function() {
@@ -958,9 +958,11 @@ $(function(){
 
 	$("#input_box").unbind('keydown').bind('keydown', function(e){
 		//console.log(e.ctrlKey +'  '+e.keyCode);
-		if(e.ctrlKey && e.keyCode==13){
+		//if(e.ctrlKey && e.keyCode==13){
+		if( e.keyCode==13 && e.shiftKey==false ){
 			//layer.msg('正在发送消息');
 			postmsg();
+			return false;
 		}
 	});	
 })

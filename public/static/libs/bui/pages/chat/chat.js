@@ -1,4 +1,4 @@
-
+layer.closeAll = function(){console.log('不允许使用把全部层一次关闭,不然会影响到其它插件');};
 
 var refresh_i,refresh_timenum;//这几个已弃用
 var w_s,ws_url,clientId='';
