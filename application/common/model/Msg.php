@@ -159,6 +159,7 @@ class Msg extends Model
                     }
                 }
             }
+            //下面的其实可以删除了,因为在app\index\controller\wxapp\Msg中117行批量处理了
             if($rs['ifread']==0&&$rs['touid']==$myuid){  //标志为信息已读
                 self::update(['id'=>$rs['id'],'ifread'=>1]);
             }

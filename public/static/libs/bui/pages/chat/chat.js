@@ -501,7 +501,7 @@ loader.define(function(require,exports,module) {
 				}
 				if(msg_scroll==1){//console.log("++");
 					msg_scroll = 0;					
-					layer.msg("内容加载中！请稍候...",{time:3000});
+					layer.msg("内容加载中！请稍候...",{time:2000});
 					showMoreMsg(uid);
 				}								
 			}
@@ -719,7 +719,7 @@ loader.define(function(require,exports,module) {
 	function showMoreMsg(uid){
 		if(show_msg_page==1){
 			maxid = -1;
-			layer.msg("数据加载中,请稍候...");
+			var index = layer.msg("数据加载中,请稍候...");
 		}	
 		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){			
 			//console.log(res);
@@ -727,7 +727,7 @@ loader.define(function(require,exports,module) {
 				if(show_msg_page==1){					
 					load_first_page(res);					
 				}
-				//layer.closeAll();
+				layer.close(index);
 				var that = router.$('#chat_win');
 				if(res.data.length<1){
 					if(show_msg_page==1){
@@ -896,6 +896,7 @@ loader.define(function(require,exports,module) {
 		var user_str = '';
 		var userdb = userinfo;
 		var old_html = router.$("#chat_win").html();
+		var d_url = typeof(api)=='undefined'?'/':'';
 		array.forEach((rs)=>{
 			if(old_html.indexOf( ' chat-box-'+rs.id )>0){
 				console.log('有重复的消息'+rs.id);
@@ -906,7 +907,7 @@ loader.define(function(require,exports,module) {
 				del_str = `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>`;
 			}
 
-			user_str = `<div class="chat-icon" data-uid="${rs.uid}" data-name="${rs.from_username}"><img src="${rs.from_icon}" onerror="this.src='/public/static/images/noface.png'" title="${rs.from_username}"></div>`;
+			user_str = `<div class="chat-icon" data-uid="${rs.uid}" data-name="${rs.from_username}"><img src="${rs.from_icon}" onerror="this.src='${d_url}public/static/images/noface.png'" title="${rs.from_username}"></div>`;
 			if(rs.uid!=myid){
 				str += `
 					<div class="bui-box-align-top chat-box-${rs.id} chat-target">

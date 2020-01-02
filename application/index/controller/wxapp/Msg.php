@@ -110,6 +110,13 @@ class Msg extends IndexBase{
         
         if ($maxid<1) { //首次加载
             $array['ws_url'] = fun('Gatewayclient@client_url'); //APP要用到
+            if ($this->user) {
+                //更新最后的访问时间,也即把历史消息标为已读
+                MsguserModel::where('uid',$this->user['uid'])->where('aid',$uid)->update(['list'=>time()]);
+                if($uid>=0){ //干脆点,把第二页第三页未读的也一起标注为已读了
+                    model::where('touid',$this->user['uid'])->where('uid',$uid)->where('ifread',0)->update(['ifread'=>1]);
+                }
+            }            
         }
         
         if ($is_live) {
