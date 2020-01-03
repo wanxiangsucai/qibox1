@@ -36,10 +36,12 @@ function div_toimg(div, img) {
 
 
 function app_page(id, func) { 
-	var demo = (location.href).substring(0,14);
+	var domain = (location.href).substring(0,14);
 	$("#"+id).find("img").each(function(){
 		var imgurl = $(this).attr('src');
-		if((imgurl.indexOf('http://')==0||imgurl.indexOf('https://')==0) && imgurl.indexOf(demo)==-1){
+		//if((imgurl.indexOf('http://')==0||imgurl.indexOf('https://')==0) && imgurl.indexOf(domain)==-1){
+		if( imgurl.search(/(\.jpg|\.jpeg|\.png|\.gif)$/i)>0 ){
+			console.log('图片url',imgurl);
 			$(this).attr('src',"/index.php/index/image/headers.html?url="+ imgurl);	//处理图片跨域问题
 		}
 	}); 

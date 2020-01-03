@@ -4,6 +4,7 @@ loader.define(function() {
     var pageview = {};
 	var id = 0;
 	var imgs = {};
+	var type = 'msg';
 
 	var vues = new Vue({
 				el: '.codeimg-page',
@@ -35,8 +36,8 @@ loader.define(function() {
 							_url = '/index.php/qun/show-'+id+'.html';
 							_wxurl = '/index.php/qun/show-'+id+'.html';
 						}
-						imgs.url = '/index.php/index/qrcode/index.html?url='+encodeURIComponent(_url);
-						imgs.wxapp = '/index.php/index/wxapp/img.html?url='+encodeURIComponent(_wxurl);
+						imgs.url = (typeof(web_url)!='undefined'?web_url:'')+'/index.php/index/qrcode/index.html?url='+encodeURIComponent(_url);
+						imgs.wxapp = (typeof(web_url)!='undefined'?web_url:'')+'/index.php/index/wxapp/img.html?url='+encodeURIComponent(_wxurl);
 						this.url_img = imgs.url;
 						this.wxapp_img = imgs.wxapp;
 					},
@@ -57,11 +58,13 @@ loader.define(function() {
 		tab.on("to", function(index) {
 			switch (index) {
 				case 2:
-					load_haibao(imgs.url)
+					load_iframe('wap');
+					//load_haibao(imgs.url)
 					//loader.require(["pages/ui_controls/bui.tab_dynamic_page1"])
 					break;
 				case 3:
-					load_haibao(imgs.wxapp)
+					load_iframe('wxapp')
+					//load_haibao(imgs.wxapp)
 					//loader.require(["pages/ui_controls/bui.tab_dynamic_page1"])
 					break;
 				default:
@@ -69,7 +72,18 @@ loader.define(function() {
 			}
 		}).to(0)
     };
-	
+
+	function load_iframe(imgtype){
+		if(router.$("#imgcode_"+imgtype).attr("src")!='about:blank'){
+			return ;
+		}
+		var url = (typeof(web_url)!='undefined'?web_url:'')+'/index.php/qun/content/haibaoiframe/id/'+id+'.html?imgtype='+imgtype+'&pagetype='+type;
+		router.$("#imgcode_"+imgtype).attr("src",url);
+		router.$("#imgcode_"+imgtype).load(function(){
+			var that = $(this).contents().find("body");
+		});
+	}
+	/*
 	function load_haibao(url){
 		$("#showhaibao").show();
 		router.loadPart({
@@ -80,7 +94,7 @@ loader.define(function() {
 						module.setImg(url);
 					//loader.require("/public/static/libs/bui/pages/haibao/default",function (voice) {})
 				});
-	}
+	}*/
 
 
 
@@ -93,8 +107,7 @@ loader.define(function() {
     getParams.done(function(result){
 		console.log(result);
 		if(result.id!=undefined){
-			id = result.id;
-			var type = 'msg';
+			id = result.id;			
 			if(typeof(result.type)!='undefined'&& result.type=='home'){
 				type = 'home'
 			}

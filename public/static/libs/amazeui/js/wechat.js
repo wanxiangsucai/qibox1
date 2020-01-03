@@ -985,6 +985,7 @@ function postmsg(cnt,callback){
 	
 	if(allowsend == false){
 		layer.alert('请不要重复发送信息');
+		allowsend = true;
 		return ;
 	}
 	$(".msgcontent").val('');

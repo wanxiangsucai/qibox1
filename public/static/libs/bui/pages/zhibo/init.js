@@ -254,21 +254,25 @@ mod_class.zhibo = {
 					if(res.data.time_type==2){
 						layer.msg('提示：本直播课堂内容属于收费内容，你是VIP以上级别会员，享受不限量，请尽情收看!');
 						that.ask_play(urls);
-					}else if(res.data.time_type==1 || that.user_time<7200){
-						var msg = "";
+					}else if(res.data.time_type==1 || that.user_time<3600){
+						var money = parseFloat(quninfo.minute_money*100).toFixed(2).replace(/\.00/,"").replace(/\.([1-9])0/,".$1");
+						var msg = "本直播课堂属于收费内容<br>价格是每100分钟 "+money+" 元RMB，";
 						if(res.data.time_type==1){
-							msg = "本直播课堂属于收费内容，你可以试看 "+parseInt(that.user_time/60)+" 分钟，但建议你先充值，不然影响到正常观看!";
+							msg += "你可以试看 "+parseInt(that.user_time/60)+" 分钟，但建议你先充值，不然影响到正常观看!";
 						}else if(that.user_time>0){
-							msg = "本直播课堂属于收费内容，你所剩余的时间不足两小时，仅有 "+parseInt(that.user_time/60)+" 分钟，建议你先充值，不然影响到正常观看!";
+							msg += "你所剩余的时间不足1小时，仅有 "+parseInt(that.user_time/60)+"分"+parseInt(that.user_time%60)+"秒钟，建议你先充值，不然影响到正常观看!";
 						}else{
-							msg = "本直播课堂属于收费内容，你没有可观看的时长，请先充值才能观看!";
+							msg += "你没有可观看的时长，请先充值才能观看!";
 						}
 						layer.alert(msg,{
+							title:'友情提醒',
 							btn:['马上充值','以后再说'],
 							yes: function(index) {
+								layer.close(index);
 								buy_time();
 							},
 							btn2:function(index) {
+								layer.close(index);
 								if(that.user_time>0){
 									that.ask_play(urls);
 								}
@@ -289,7 +293,7 @@ mod_class.zhibo = {
 			layer.prompt({
 					formType: 0,
 					value: '100',
-					title: '请输入要充值多少分钟,单位分钟',
+					title: '请输入要充值多少分钟，单位分钟(每分钟 ' + quninfo.minute_money + ' 元)',
 					//area: ['100px', '20px'] //formType:2 自定义文本域宽高
 				}, function(value, index, elem){
 					value = parseInt(value);
@@ -305,17 +309,19 @@ mod_class.zhibo = {
 		//偿试购买流量,金额不一定够
 		function goto_buy(time){
 			$.get("/index.php/qun/wxapp.viewtime/buy_time.html?aid="+Math.abs(uid)+"&time="+time,function(res){
-				if(res.code==0){
-					layer.msg('购买成功,请尽情收看吧!');
-					that.user_time += time;
+				if(res.code==0){					
+					that.user_time += time*60;
+					layer.msg('购买成功，你充值后的总时间是 '+parseInt(that.user_time/60)+' 分钟。请尽情收看吧!');
 					that.ask_play(urls);
 				}else if(res.code==2){
 					layer.alert(res.msg,{
 						btn:['马上充值','以后再说'],
 						yes: function(index) {
+							layer.close(index);
 							goto_pay(res.data.money,time);
 						},
 						btn2:function(index) {
+							layer.close(index);
 							if(that.user_time>0){
 								that.ask_play(urls);
 							}

@@ -62,7 +62,7 @@ wx.miniProgram.getEnv(function(res) {
 	}
 });
 var have_load_wx_config;
-$(function(){
+window.onload = function(){
 	have_load_wx_config = true;
 	wx.config({
 		debug: false,
@@ -92,12 +92,12 @@ $(function(){
 
 		  ]
 	});
-	//wx.ready(function(){});
+
 	wx.error(function (res) {
 		have_load_wx_config=false;
 		layer.msg(res.errMsg,{time:300})
 	});
-});
+};
 </script>
 {/if}
 

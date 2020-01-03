@@ -317,6 +317,7 @@ loader.define(function(require,exports,module) {
 		window.store.set("quninfo",quninfo);
 		//vues.set_quninfo(quninfo);
 		router.$("#send_user_name").html(quninfo.title);
+		if(uid<0)$('title').html(quninfo.title);	//设置圈子名称为title
 
 		qun_userinfo = res.ext.qun_userinfo;	//当前圈子用户信息 不存的话,就是为空即==''
 		userinfo = res.ext.userinfo;	//当前用户登录信息
@@ -334,9 +335,6 @@ loader.define(function(require,exports,module) {
 		qun_link_handle = setTimeout(function(){
 			ws_connect();
 		},typeof(w_s)=='object'?5000:0);
-
-		
-		pageview.weixin_share();
 
 		
 		//first_page_data = res; //这个要放在load_data下面
@@ -963,17 +961,7 @@ loader.define(function(require,exports,module) {
 	}
 
 	
-	//微信分享 只能在微信上访问才有效
-	pageview.weixin_share = function(){
-		if(typeof(wx)=='object' && have_load_wx_config==true && uid<0){
-			weixin_share({
-				title:quninfo.title!=''?quninfo.title:'欢迎加入圈子群聊',
-				about:quninfo.content!=''?quninfo.content.replace('&nbsp;',''):'欢迎加入圈子群聊,不错过每一个精彩的话题!',
-				picurl:quninfo.picurl!=''?quninfo.picurl:'',
-				url:"index.php/index/msg/index.html?uid=="+uid,
-			});
-		}		
-	}
+
 
 	
 	//获取所有成员信息

@@ -29,6 +29,10 @@ class Image extends IndexBase
 		if($img==''){
 			return ;
 		}
+		if(strstr($img,'<title>302')){	//设置了302跳转
+			preg_match('/href="([^"]+)"/',$img,$array);
+			$img = http_curl($array[1]);
+		}
 		header("Content-Type: image/jpeg;text/html; charset=utf-8");
 		echo $img;
 		exit;

@@ -19,11 +19,11 @@ loader.define(function(require,exports,module) {
      */
     pageview.init = function () {
 
-		try {
+		try {	//地址栏目中有UID就会自动跳转
 			if ((navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i))){
 				var str = window.location.href;
 				if (str.indexOf('uid=')>-1) {	//replace(/[^\d|^\-]/g,"");
-					str = str.substring(str.indexOf('uid=')+4).replace(/[^\d|^\-]/g,"");
+					str = parseInt(str.substring(str.indexOf('uid=')+4));
 					if (/^[-]?[0-9]+$/.test(str)) {
 						bui.load({url: "/public/static/libs/bui/pages/chat/chat.html",param: {"uid":str}});
 					}

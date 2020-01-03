@@ -2,13 +2,13 @@
 mod_class.imgzoom = {
 	isLoadZoom:false,
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
-	},
-	once:function(res){	//只加载一次
 		var d_url = typeof(api)=='object'?'':'/';
 		loader.import(d_url+"public/static/libs/bui/pages/imgzoom/style.css",function(src){});
 		loader.import(d_url+"public/static/libs/bui/pages/imgzoom/zoom.html",function(res){
 			router.$("#chat_main").append(res);
 		});
+	},
+	once:function(res){	//只加载一次
 	},
 	finish:function(res){  //所有模块加载完才执行
 	},

@@ -90,8 +90,8 @@ class Wxapp{
      */
     public static function wxapp_codeimg($url='',$uid=0){
         if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
-            if (!is_file(PUBLIC_PATH."static/images/nowxapp.jpg")&&is_writable(PUBLIC_PATH."static/images/")) {
-                copy('http://x1.php168.com/public/static/qibo/nowxapp.jpg',PUBLIC_PATH."static/images/nowxapp.jpg");                
+            if (!is_file(PUBLIC_PATH."static/images/nowxapp.jpg")&&is_writable(PUBLIC_PATH."static/images/")) {                
+                file_put_contents(PUBLIC_PATH."static/images/nowxapp.jpg",http_curl('http://x1.php168.com/public/static/qibo/nowxapp.jpg'));                
             }
             if(is_file(PUBLIC_PATH."static/images/nowxapp.jpg")){
                 return PUBLIC_URL.'/static/qibo/nowxapp.jpg';

@@ -237,6 +237,10 @@ class Msg extends Model
                     $rs['num'] = self::where('qun_id',$rs['qun_id'])->count('id');
                 }
                 $quninfo = fun('qun@getByid',$rs['qun_id']);
+                if (empty($quninfo)) {
+                    self::where('qun_id',$rs['qun_id'])->delete();
+                    continue;
+                }
                 $rs['f_name'] = $quninfo['title'];
                 $rs['f_icon'] = $quninfo['picurl'];
             }else{
@@ -281,6 +285,10 @@ class Msg extends Model
                         $title = '圈子群聊';
                         $qun_id = -$_uid;
                         $qun = fun('qun@getByid',$qun_id);
+                        if (empty($qun)) {
+                            Msguser::where('uid',$uid)->where('aid',$_uid)->delete();
+                            continue;
+                        }
                         $f_name = $qun['title'];
                         $f_icon = $qun['picurl'];
                         $num = 0;

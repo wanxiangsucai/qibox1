@@ -1711,3 +1711,6 @@ INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'user_
 
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 0, '移动端图片缩放', '', '', 1, 'imgzoom', '/public/static/libs/bui/pages/imgzoom/init.js', '', '', 1, 0, '');
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 0, '移动端图片缩放', '', '', 3, 'imgzoom', '/public/static/libs/bui/pages/imgzoom/init.js', '', '', 1, 0, '');
+
+INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, '微信分享', '', '', 1, 'wx_share', '/public/static/libs/bui/pages/wx_share/init.js', '', '', 1, 0, '');
+INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, '微信分享', '', 'fa fa-share-square-o', 3, 'wx_share', '/public/static/libs/bui/pages/wx_share/init.js', '', '', 1, 0, '');
