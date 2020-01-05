@@ -189,7 +189,7 @@ loader.define(function(require,exports,module) {
 			if(result.uid==undefined){
 				layer.alert('uid参数不存在');
 			}else if(result.type==undefined){
-				layer.alert('type参数不存在');
+				//layer.alert('type参数不存在');
 			}
 			uid = result.uid;
 			if(result.type!=undefined)type = result.type;

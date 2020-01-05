@@ -2,15 +2,21 @@
 mod_class.wx_share = {
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
 		
+		if(uid>=0){	//只有圈子才有分享功能
+			return ;
+		}
+
 		var title = quninfo.title!=''?quninfo.title:'欢迎加入圈子群聊';
+		var about = quninfo.content!=''?quninfo.content.replace('&nbsp;',''):'欢迎加入圈子群聊,不错过每一个精彩的直播!';
 		if( typeof(res.ext)=='object' && typeof(res.ext.live)=='object' && typeof(res.ext.live.live_video)=='object' ){
-			title += ' 欢迎你过来看直播！';
+			title = res.ext.live.live_video.title;
+			about = res.ext.live.live_video.about;
 		}
 		var info = {
 				url:(typeof(web_url)!='undefined'?web_url:'')+"/index.php/index/msg/index.html?uid="+uid,
 				picurl:quninfo.picurl!=''?quninfo.picurl:'',
 				title:title,
-				about:quninfo.content!=''?quninfo.content.replace('&nbsp;',''):'欢迎加入圈子群聊,不错过每一个精彩的直播!',
+				about:about,
 		}
 		if(typeof(web_url)!='undefined'){	//APP中使用的
 			var dialog;			

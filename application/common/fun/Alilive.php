@@ -21,6 +21,9 @@ class Alilive{
             'flv_url'=>$data['flv_url']?:'',
             'm3u8_url'=>$data['m3u8_url']?:'',
             'rtmp_url'=>$data['rtmp_url']?:'',
+            'picurl'=>$data['picurl']?:'',
+            'title'=>$data['title']?:'',
+            'about'=>$data['about']?:'',
             'create_time'=>time(),
         ];
         $id = Db::name('alilive_log')->insertGetId($array);

@@ -2,6 +2,7 @@
 namespace app\common\fun;
 
 use GatewayClient\Gateway;
+use WebSocket\Client;
 
 class Gatewayclient{
     
@@ -21,7 +22,27 @@ class Gatewayclient{
     }
     
     /**
-     * 给当前用户群群发信息
+     * 模拟浏览器请求websocket服务器
+     * @param array $array
+     */
+    public function ask_ws($array=[]){
+        if (is_array($array)) {
+            $array['url'] = $array['url']?:request()->domain();
+            $array['my_uid'] = $array['my_uid']?:login_user('uid');
+            $array = json_encode($array);
+        }
+        $client = new Client($this->client_url());
+        $string = $client->receive();
+        //$info = json_decode($string,true);
+        //$client_id = $info['client_id'];
+        $client->send($array);
+        $string = $client->receive();die($string);
+        $info = json_decode($string,true);
+        return is_array($info)?$info:$string;
+    }
+    
+    /**
+     * 给当前圈子群发信息
      * @param number $my_uid 当前用户自己的ID
      * @param number $uid 负数是圈子ID,正数是私人聊天对方的UID
      * @param string $json_msg 消息内容,必须是json格式的数据

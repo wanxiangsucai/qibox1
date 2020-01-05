@@ -47,6 +47,8 @@
 			for(var len=imgList.length,i=0; i<len; i++){
 				if(imgList[i].onclick){
 					continue ;//有点击事件的图片,就不处理
+				}else if(imgList[i].parentNode.onclick||imgList[i].parentNode.href){
+					continue ;//父节点有点击事件的图片,就不处理
 				}
 				imgList[i].addEventListener("click", function(){
 					imgSrc = this.getAttribute("src");

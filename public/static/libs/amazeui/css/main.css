@@ -721,6 +721,7 @@ font-size:18px;
 .me span { 
     float: right;
     background: #9eea6a;
+	word-break: break-all; white-space: normal;
 }
 
 .me{
@@ -780,6 +781,7 @@ font-size:18px;
 }
 
 .other span { 
+	word-break: break-all; white-space: normal;
     float: right;
 	width: auto;
     background: #9eea6a;

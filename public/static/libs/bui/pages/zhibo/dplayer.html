@@ -19,12 +19,15 @@ body {
 <script type="text/javascript" src="./dplayer/flv.min.js"></script> 
 <script type="text/javascript" src="./dplayer/hls.min.js"></script>
 <script type="text/javascript" src="./dplayer/DPlayer.min.js?v=f32"></script>
+<link rel="stylesheet" href="./dplayer/DPlayer.min.css">
 </head>
 <body>
 <script type="text/javascript">
 var weburl = window.location.href;	//var weburl = window.location.href.indexOf("http")==0 ? '' : '../../../../../..';
 weburl = weburl.substring(0,weburl.indexOf('/public/static/')); //方便手机获取真实路径
-document.write('<link rel="stylesheet" href="'+weburl+'/public/static/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">');
+document.write('<link rel="stylesheet" href="'+weburl+'/public/static/icon/icon.css">');
+document.write('<script type="text/javascript" src="'+weburl+'/public/static/js/core/jquery.min.js"><\/script>');
+//document.write('<script type="text/javascript" src="'+weburl+'/public/static/layer/layer.js"><\/script>');
 </script>
 
 
@@ -67,6 +70,38 @@ function palyer(video_url, height, only_sound, in_pc) {
         });
     }
 }   
+</script>
+<style type="text/css">
+.about{
+	padding:5px;
+	font-size:14px;
+	color:#888;
+}
+.tt{
+	color:orange;
+}
+.more{
+	color:blue;
+}
+
+</style>
+<div class="about"><span class="tt fa fa-bullhorn">直播介绍：</span><span class="cnt">传奇 夫代工夫工地会要地仍城大规模地魂牵梦萦城魂牵梦萦城魂牵梦萦地魂牵梦萦地械左夺 </span><span class="more">[详情]</span></div>
+<script type="text/javascript">
+$(function(){
+	$(".about .cnt").html(parent.mod_class.zhibo.dataUrls.title);
+	$(".about .more").click(function(){
+		var about = parent.mod_class.zhibo.dataUrls.about;
+		about = about.replace(/\r\n/g,"<br>");
+		//about = about.replace(/ /g,"&nbsp;");
+		parent.layer.open({
+			type: 1,
+			title:false,
+			shift: 1,
+			area:['98%','300px'],
+			content: '<style type="text/css">.layui-layer-setwin{ top:250px !important;}</style><div style="padding:10px;">' + about + '</content>',
+		});
+	});
+});
 </script>
 </body>
 </html>

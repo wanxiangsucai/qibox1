@@ -9,7 +9,11 @@ class Notify extends IndexBase
 {
     public function index($type='')
     {
-        $data = input();
+        $data = $this->request->post();
+        if (empty($data['type'])&&$type) {
+            $this->request->post(['type'=>$type]);
+			$data['type'] = $type;
+        }
         
         //钩子扩展
         $this->get_hook('user_leave',$data);

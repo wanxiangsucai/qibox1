@@ -11,8 +11,10 @@ mod_class.p2pvideo = {
 		layer.open({
 						type: 2,
 						title:'视频电话',
-						shadeClose: true,
-						shade: 0.3,
+						//shadeClose: true,
+						shade: 0,
+						maxmin: true,
+						shadeClose: false,  
 						area: (in_pc?['500px', '350px']:['90%', '60%']),
 						content: d_url+'public/static/libs/bui/pages/p2pvideo/index.html',
 						success: function(layero, index){  

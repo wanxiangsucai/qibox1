@@ -1714,3 +1714,7 @@ INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `
 
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, '微信分享', '', '', 1, 'wx_share', '/public/static/libs/bui/pages/wx_share/init.js', '', '', 1, 0, '');
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, '微信分享', '', 'fa fa-share-square-o', 3, 'wx_share', '/public/static/libs/bui/pages/wx_share/init.js', '', '', 1, 0, '');
+
+
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'add_msg_begin', '短消息(群聊)发布接口(入库前)', 1, 0);
+INSERT INTO `qb_hook` (`id`, `name`, `about`, `ifopen`, `list`) VALUES(0, 'add_msg_end', '短消息(群聊)发布接口(入库后)', 1, 0);

@@ -77,6 +77,8 @@ mod_class.qqface = {
 
 //类接口,加载到聊天会话数据时执行的  刷新数据的时候也会有到.不仅仅是初次加载
 format_content.qqface = function(res,type){
+	//rs.content = (rs.content).replace(/ src=('|")\/public\/static\//g," src=$1"+web_url+"/public/static/");
+	/*
 	if( typeof(api)=='object' ){
 		$("#chat_win").find("img").each(function(){
 			var url = $(this).attr('src');
@@ -86,4 +88,5 @@ format_content.qqface = function(res,type){
 			}
 		});
 	}
+	*/
 }

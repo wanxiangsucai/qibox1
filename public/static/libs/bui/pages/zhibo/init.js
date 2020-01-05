@@ -1,7 +1,7 @@
 //init() logic_init() once() finish() 的使用教程网址 http://help.php168.com/1435153 
 mod_class.zhibo = {
 	zhibo_obj:null,	
-	urls:{},
+	dataUrls:{},			//这个变量里边包含了直播地址与直播介绍等信息
 	zhibo_status:false,		//是否在直播进行中
 	finish:function(res){  //所有模块加载完才执行
 	},
@@ -88,11 +88,36 @@ mod_class.zhibo = {
 			}else if(quninfo.uid!=my_uid){
 				layer.alert('只有圈主才能直播，你如果没有圈子的话，可以创建一个！');
 				return ;
-			}else if(typeof(api)=='object'){	//在APP中执行,打开直播			
-				that.app_start_zhibo();
+			}
+			
+			var show_str = `<div class="live_video_warp">
+							分享标题：<input class="zhibo_share_title" type="text" style="width:80%;" value="${quninfo.title}"><br>
+							分享描述：<textarea class="zhibo_share_about"  style="width:80%;height:100px;" value="${quninfo.content}"></textarea><br>
+							</div>`;
+			layer.open({
+					type: 1,
+					title:'请输入本次直播介绍,有利于微信转发推广',
+					shift: 1,
+					btn:["确认","取消"],
+					area:in_pc?['500px','250px']:['98%','300px'],
+					content: show_str,
+					btn1:function(index){
+						layer.close(index);
+						var postdata = {
+							title:$(".live_video_warp").last().find(".zhibo_share_title").val(),
+							about:$(".live_video_warp").last().find(".zhibo_share_about").val(),
+						};
+						zhibo_choose(postdata);
+					}
+			});
+		});
+
+		function zhibo_choose(postdata){
+			if(typeof(api)=='object'){	//在APP中执行,打开直播			
+				that.app_start_zhibo(postdata);
 				return ;
 			}
-			$.get("/index.php/p/alilive-api-url.html?id="+Math.abs(uid),function(res){
+			$.post("/index.php/p/alilive-api-url.html?id="+Math.abs(uid),postdata,function(res){
 					if(res.code==0){
 						that.notify_selfsever(res.data.self_server_api);	//自建服务器的话要做通知开播处理
 						var play_url = '';
@@ -139,17 +164,17 @@ mod_class.zhibo = {
 						layer.alert(res.msg);
 					}
 			});
-		});
+		}
 	},
-	app_start_zhibo:function(){	//在APP中直播		
+	app_start_zhibo:function(postdata){	//在APP中直播		
 		if(this.zhibo_obj!=null){
-			this.zhibo_obj.start();
+			this.zhibo_obj.start(postdata);
 		}else{
 			this.add_btn();		//添加菜单元素
 			var that = this; //变量引用			
 			loader.require("public/static/libs/bui/pages/zhibo/bo",function (o) {
 				that.zhibo_obj = o;				
-				that.zhibo_obj.start();
+				that.zhibo_obj.start(postdata);
 				that.zhibo_obj.add_btn_fun();			//直播菜单加点击事件
 				//that.zhibo_obj.showbtn();
 			});
@@ -212,7 +237,7 @@ mod_class.zhibo = {
 				  }
 			});
 		}else{			
-			load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html",function(win,body){
+			load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html?gf",function(win,body){
 				win.palyer(m3u8_url,only_sound==true?'40px':'200px',only_sound);
 			});
 		}
@@ -349,7 +374,7 @@ mod_class.zhibo = {
 		}
 	},
 	ask_play:function(urls){
-		this.urls = urls;
+		this.dataUrls = urls;
 		//请求圈主当前播放状态是不是纯音频 请求成功后,再播放,要保证WS服务器正常连上.否则3秒后自动播放
 		ws_send({type:"user_ask_quner",tag:"ask_live_state"},'user_cid');
 		var that = this;
@@ -368,7 +393,8 @@ mod_class.zhibo = {
 			this.waitTime = null;
 		}
 		if(this.haveLoadPlayer == false){
-			this.player(urls.length==0?this.urls:urls,only_sound);
+			this.player(urls.length==0?this.dataUrls:urls,	//urls就是圈主提供的最新播放信息
+				only_sound);
 		}		
 	},
 }
@@ -376,14 +402,14 @@ mod_class.zhibo = {
 
 //类接口,WebSocket下发消息的回调接口
 ws_onmsg.zhibo = function(obj){
-	if(obj.type=='ask_live_state'){	//访客请求播放状态 ,圈主进行上传回馈.
+	if(obj.type=='ask_live_state'){		//访客请求播放状态 ,圈主进行上传回馈.  特别要注意, 这里只是圈主才会执行
 
 		var msgarray = {
 			type: "quner_to_user",		//群主发给指定会员的指令 这个是固定标志
 			user_cid: obj.user_cid,		//某个会员的ID标志			
 			tag: 'give_live_state' ,	//访客接收标志 ,不同插件,这个标志不能雷同,避免冲突
 			data: {
-				urls:mod_class.zhibo.urls,	//这个值有可能不存在,因为圈主发起推流的时候没设置
+				urls:mod_class.zhibo.dataUrls,
 				only_sound:mod_class.zhibo.only_sound(),
 			},
 		}
@@ -396,10 +422,10 @@ ws_onmsg.zhibo = function(obj){
 
 	}else if(obj.type=='error#give_live_state'){  //圈主不在,或者是圈主首次访问 就 直接播放 , 用第三方推流工具的时候,才用到的.
 
-		if( my_uid!=quninfo.uid && typeof(mod_class.zhibo.limit_time)=='number' ){
+		if( my_uid!=quninfo.uid && typeof(mod_class.zhibo.limit_time)=='number' ){  //收费课堂,圈主必须要在线才行.
 			layer.alert('圈主掉线,直播暂停了!');
 		}else{
-			mod_class.zhibo.sync_play(mod_class.zhibo.urls);
+			mod_class.zhibo.sync_play(mod_class.zhibo.dataUrls);
 		}
 		
 	}else if(obj.type=='zhibo_server_stop'){	//推流服务器发过来的通知,推流断开了,就自动关闭,推流断开有可能是网络的问题,所以不一定是圈主 人为主动关闭直播
@@ -415,14 +441,14 @@ ws_onmsg.zhibo = function(obj){
 			mod_class.zhibo.notify_selfsever('reconnect');
 		}
 		
-	}else if(obj.type=='zhibo_server_start'){  //聊天过程中,圈主中途打开直播,通知所有用户打开直播
+	}else if(obj.type=='zhibo_server_start'){  //聊天过程中,圈主中途打开直播,通知所有用户打开直播 , 重要提醒,这条信息是服务器发过来的
 
 		if(mod_class.zhibo.connect_timer!=null){	//这里处理圈主直播断线重连,这里是圈主才执行的
 			layer.msg('重连成功');
 			clearInterval( mod_class.zhibo.connect_timer );
 			mod_class.zhibo.connect_timer = null;
 		}
-		mod_class.zhibo.urls = obj.data;
+		mod_class.zhibo.dataUrls = obj.data;	//这个赋值给圈主使用的,其实可以删除,因为prepare_play函数里同样赋值了
 		mod_class.zhibo.prepare_play(obj.data);
 
 	}else if(obj.type=='count' || obj.type=='leave'){	//用户进来或者离开

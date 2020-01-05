@@ -36,8 +36,13 @@ class Msg extends Model
             if (cache('pm_msg_'.$data['uid'])) {
                 return ['errmsg'=>'请不要那么频繁的发送消息'];
             }
-            cache('pm_msg_'.$data['uid'],time(),5);
+            cache('pm_msg_'.$data['uid'],time(),3);
         }
+        
+        //钩子接口
+        get_hook('add_msg_begin',$data,[],['admin'=>$admin,'push'=>$push],true);
+        hook_listen('add_msg_begin',$data,['admin'=>$admin,'push'=>$push]);
+        
         $result = parent::create($data);
         if($data['uid']>0 && $data['touid']>0){
             if (empty($info)) {
@@ -57,6 +62,11 @@ class Msg extends Model
             }            
         }
         if ($result) {
+            
+            //钩子接口
+            get_hook('add_msg_end',$data,[],['admin'=>$admin,'push'=>$push,'id'=>$result->id],true);
+            hook_listen('add_msg_end',$data,['admin'=>$admin,'push'=>$push,'id'=>$result->id]);
+            
             if ($push) {
                 self::push_msg($result->id);
             }

@@ -1003,7 +1003,7 @@ function postmsg(cnt,callback){
 			$("#hack_wrap").hide(100);
 		}else{
 			//$(".msgcontent").val(content);
-			layer.alert('本条信息已发出,但并没有入库,原因:'+res.msg);
+			layer.msg('本条信息已发出，在线会员都能看，但后面来的人看不到，因为没有入库，原因:'+res.msg);
 		}
 		if(typeof(callback)=='function'){
 			callback(res);

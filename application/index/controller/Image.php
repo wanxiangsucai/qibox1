@@ -25,6 +25,9 @@ class Image extends IndexBase
 		if($url==''){
 			return ;
 		}
+		if(preg_match("/^\//",$url)){
+			$url = get_url(tempdir($url));
+		}
 		$img = http_curl($url);
 		if($img==''){
 			return ;

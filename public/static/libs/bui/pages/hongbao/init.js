@@ -43,11 +43,12 @@ mod_class.hongbao = {
 
 //对聊天内容进行重新转义显示
 format_content.hongbao = function(res,type){
+	var w_url = typeof(api) == 'object' ? '' : '/';
 	if(in_pc==true){
 		$(".office_text .hack-hongbao").each(function(){
 			var id = $(this).data("id");
 			var title = $(this).data("title");
-			var str = `<a href="#" title="${title}" onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['600px', '600px'],content: '/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="/public/static/plugins/voicehb/hongbao.png"></a>`;
+			var str = `<a href="#" title="${title}" onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['600px', '600px'],content: '/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="${w_url}public/static/plugins/hongbao/bongbao.png"></a>`;
 			$(this).html(str);
 		});
 	}else{
@@ -56,8 +57,23 @@ format_content.hongbao = function(res,type){
 		router.$(".chat-panel .hack-hongbao").each(function(){
 			var id = $(this).data("id");
 			var title = $(this).data("title");
-			var str = `<div onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['95%', '80%'],content: '${d_url}/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="/public/static/plugins/voicehb/hongbao.png"></div>`;
+			var str = `<div onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['95%', '80%'],content: '${d_url}/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="${w_url}public/static/plugins/hongbao/bongbao.png"></div>`;
 			$(this).html(str);
 		});
 	}
+}
+
+
+ws_onmsg.hongbao = function(obj) {
+    var d_url = typeof(api) == 'object' ? '' : '/';
+    if (obj.type == 'rob_hongbao') {
+		var str = "<div class='new-gift-msg'><div> <img style='width:20px' src='"+d_url+"public/static/plugins/hongbao/bongbao.png' style='margin:0;'> <span>" + obj.data.username + "  </span> 抢了 <span class='buyname'>" + obj.data.from_username + "</span> 的红包 <span class='buyname'>" + obj.data.money + "</span> 元 </div></div>";
+        if (in_pc == true) {
+            $(".pc_show_all_msg").prepend(str);
+            goto_bottom(500)
+        } else {
+            $("#chat_win").prepend(str);
+            $('#chat_win').parent().scrollTop(20000);
+        }
+    }
 }

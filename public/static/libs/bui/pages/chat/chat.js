@@ -1,3 +1,55 @@
+/**
+ * 聊天对话模板
+ */
+
+/*****这个IF语句里边的代码是APP专用***/
+if(typeof(web_url)!='undefined'){
+var ReWrite={};	//重写JQ与BUI的一些方法
+
+ReWrite.get = $.get;
+$.get = function(url,callback){
+	url = Qibo.check_url(url);
+	return  ReWrite.get(url,callback);//$.post(url,{},callback);	
+}
+
+ReWrite.post = $.post;
+$.post = function(url,obj,callback){
+	url = Qibo.check_url(url);
+	return  ReWrite.post(url,obj,callback);
+}
+
+ReWrite.buiload = bui.load;
+bui.load = function(obj){
+	if(typeof(obj.url)!='undefined' && (obj.url).indexOf('/public/static/')==0 ){
+		obj.url = obj.url.substring(1);		
+	}
+	ReWrite.buiload(obj);
+}
+
+ReWrite.loader = loader.import;
+loader.import = function(arr,callback){
+	var o = typeof(arr)=='string' ? [arr] : arr;
+	console.log(o);
+	o.forEach((url,i)=>{
+		if( url.indexOf('/public/static/')==0 ){
+			o[i] = url.substring(1);
+		}
+	});
+	console.log(o);
+	ReWrite.loader(o,callback);
+}
+
+ReWrite.layeropen = layer.open;
+layer.open = function(obj){
+	if(obj.type==2){
+		obj.content = Qibo.check_url(obj.content);
+	}
+	ReWrite.layeropen(obj);
+}
+
+}
+/*****上面的IF语句代码是APP专用***/
+
 layer.closeAll = function(){console.log('不允许使用把全部层一次关闭,不然会影响到其它插件');};
 
 var refresh_i,refresh_timenum;//这几个已弃用
@@ -9,6 +61,7 @@ var load_data = {};	//接口
 var first_page_data;	//初始数据,给后加载的框架使用
 var in_pc = false;
 var format_content ={}; //接口
+var format_content_have_run ={};
 
 //加载聊天窗口框架
 function load_chat_iframe(url,callback){
@@ -456,7 +509,7 @@ loader.define(function(require,exports,module) {
 			if( typeof(load_data[keywords])=='function' ){
 				load_data[keywords](res);
 			}
-			if(typeof(format_content[keywords])=='function'){
+			if(typeof(format_content[keywords])=='function' && format_content_have_run[keywords]!=true){
 				format_content[keywords](res);
 			}
 		}
@@ -784,11 +837,10 @@ loader.define(function(require,exports,module) {
 		format_nickname();	//设置圈子昵称
 
 
-		if(show_msg_page>1 || is_repeat>1 || type=='cknew'){	//第一页不一定能执行得到,所以就放在加载脚本那里单独处理
-			for(var index in format_content){
-				if(typeof(format_content[index])=='function'){
-					format_content[index](res,type);
-				}
+		for(var index in format_content){
+			if(typeof(format_content[index])=='function'){
+				format_content[index](res,type);
+				format_content_have_run[index] = true;
 			}
 		}
 
@@ -885,7 +937,7 @@ loader.define(function(require,exports,module) {
 				content_add_btn(res,type);
 			}
 			//console.log('userinfo=',userinfo);
-		},500);	//定时器,为了反复刷新用户登录数据
+		},500);	//定时器,为了反复刷新用户登录数据 ,用户数据登录数据如果加载不了, 可能会白屏
 	}
 
 	function format_msgdata_tohtml(array , myid , type){
@@ -904,6 +956,11 @@ loader.define(function(require,exports,module) {
 			if(userdb.uid>0 && (rs.uid==userdb.uid || rs.touid==userdb.uid) ){
 				del_str = `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>`;
 			}
+			
+			if(typeof(web_url)!='undefined'){
+				rs.content = (rs.content).replace(/ src=('|")\/public\/static\//g," src=$1public/static/");
+				rs.content = (rs.content).replace(/ src=('|")\/public\/uploads\//g," src=$1"+web_url+"/public/uploads/");
+			}			
 
 			user_str = `<div class="chat-icon" data-uid="${rs.uid}" data-name="${rs.from_username}"><img src="${rs.from_icon}" onerror="this.src='${d_url}public/static/images/noface.png'" title="${rs.from_username}"></div>`;
 			if(rs.uid!=myid){

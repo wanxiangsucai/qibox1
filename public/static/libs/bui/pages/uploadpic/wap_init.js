@@ -19,6 +19,7 @@ mod_class.uploadpic = {
 		//}).fail(function() {
 		//	console.log('/public/static/js/base64uppic.js加载失败');
 		//});
+		loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
 	},
 	finish:function(res){  //所有模块加载完才执行
 		//jQuery.getScript("/public/static/js/exif.js").done(function() {
@@ -26,7 +27,6 @@ mod_class.uploadpic = {
 		//}).fail(function() {
 		//	console.log('/public/static/js/exif.js加载失败');
 		//});
-		loader.import(["/public/static/js/exif.js"],function(){});	//上传图片要获取图片信息
 	},
 	logic_init:function(res){  //init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
 	},
