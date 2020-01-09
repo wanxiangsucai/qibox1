@@ -2,11 +2,7 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8">
-  <meta name="Generator" content="EditPlus®">
-  <meta name="Author" content="">
-  <meta name="Keywords" content="">
-  <meta name="Description" content="">
-  <title>Document</title>
+  <title>视频点播</title>
  </head>
  <style type="text/css">
 *{
@@ -35,7 +31,7 @@ function mv_player(urls,ext_info,height) {
 	if(ext_info.index>0){
 		play_index = ext_info.index;
 	}
-	if(ext_info.time>0){
+	if(ext_info.time>0 && window.parent.in_pc==true){ //手机端不能自动播放
 		sync_time = ext_info.time;
 	}
 	$('.video1').css('height',height);
@@ -55,6 +51,12 @@ function mv_player(urls,ext_info,height) {
 	player1 = new ckplayer(videoObject);
 
 	$('.page').html(play_index+1);
+
+	if(typeof(window.parent.api)=='object'){	//在app中因为是file://开头的网址,所以这里要特别处理一下才能播放
+		setTimeout(function(){
+			change_play(play_index);
+		},500);
+	}
 }
 
 function get_now_state(){	//当前播放状态,让圈主发送给会员同步用的
@@ -305,7 +307,7 @@ $(function(){
 </style>
 <div class="syscn">
 <a><b class="page">1</b>/<i class="total_page">1</i></a>
-<a href="#" class="quner_power" onclick="vod.sync_play();">同步</a><a href="#" class="quner_power" onclick="vod.finish();">结束</a><a href="#" onclick="vod.prev();">上一集</a><a href="#" onclick="vod.next();">下一集</a><a href="#" id="sync_pause">暂停</a><a href="#" id="sync_quiet">静音</a> 
+<a href="#" class="quner_power" onclick="vod.sync_play();">同步</a><a href="#" class="quner_power" onclick="vod.finish();">结束</a><a href="#" onclick="vod.prev();">上一集</a><a href="#" onclick="vod.next();">下一集</a><a href="#" id="sync_pause" class="quner_power">暂停</a><a href="#" id="sync_quiet" class="quner_power">静音</a> 
 </div>
  </body>
 </html>

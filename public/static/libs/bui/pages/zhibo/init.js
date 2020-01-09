@@ -92,7 +92,7 @@ mod_class.zhibo = {
 			
 			var show_str = `<div class="live_video_warp">
 							直播选项：<input type="radio" checked name="zhibo_status" onclick="$('.zhibo_begintime_warp').hide();" value="2">正式开播  <input type="radio" name="zhibo_status" value="1" onclick="$('.zhibo_begintime_warp').show();">预告<br>
-							<div class="zhibo_begintime_warp" style="display:none;">开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20' ><script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script></div>
+							<div class="zhibo_begintime_warp" style="display:none;">开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20'><script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script></div>
 							分享标题：<input class="zhibo_share_title" type="text" style="width:80%;" value="${quninfo.title}"><br>
 							分享描述：<textarea class="zhibo_share_about"  style="width:80%;height:100px;" value="${quninfo.content}"></textarea><br>
 							</div>`;

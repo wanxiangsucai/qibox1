@@ -56,7 +56,7 @@ mod_class.paseimg = {
                 });
             });
         }else{
-			alert('此功能只能在PC端使用!');
+			console.log('QQ截图只能在PC端使用!');
 		}
     },
 }

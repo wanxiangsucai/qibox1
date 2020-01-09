@@ -213,3 +213,5 @@ function weixin_share(info){
 	});
 
 }
+
+document.write('<script type="text/javascript" src="/public/static/layui/laydate/laydate.js"><\/script>');
