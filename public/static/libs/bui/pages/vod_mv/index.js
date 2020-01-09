@@ -98,7 +98,7 @@ loader.define(function(require,exports,module) {
 					layer.msg("操作成功");
 					//通知所有用户打开播放器,或者同步音乐信息					
 					setTimeout(function(){
-						ws_send({type:"qun_to_alluser",tag:"give_vod_voice_state",data: arr,});
+						ws_send({type:"qun_to_alluser",tag:"give_vod_mv_state",data: arr,});
 						bui.back();
 					},100);
 				}else{

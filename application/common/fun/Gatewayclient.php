@@ -74,6 +74,27 @@ class Gatewayclient{
     }
     
     /**
+     * 发信息给指定用户
+     * @param number $uid 用户UID
+     * @param string $json_msg
+     */
+    public function send_to_user($uid=0,$json_msg=''){
+        if (is_array($json_msg)) {
+            $json_msg = json_encode($json_msg);
+        }
+        if (self::$other_server) {
+            $data = [
+                'type'=>'sendToUser',
+                'uid'=>$uid,
+                'json_msg'=>$json_msg,
+                'url'=>request()->domain(),
+            ];
+            $result = http_curl(self::$server_url,$data);
+        }else{           
+        }
+    }
+    
+    /**
      * 把当前用户加入群发组
      * @param number $my_uid 当前用户自己的ID
      * @param number $uid 负数是圈子ID,正数是私人聊天对方的UID

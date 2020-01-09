@@ -56,7 +56,7 @@ mod_class.zhibo = {
 				</div>`;
 		$(".chatbar").after(str);
 	},
-	//自建服务器的话要做通知开播处理
+	//自建服务器的话要做通知开播处理 注意,这仅只是兼容自建公用服务器，设置过回调地址的自建服务器，可忽略不使用
 	selfsever_url:'',
 	notify_selfsever:function(url){
 		if(typeof(url)=='string' && url!=''){
@@ -80,7 +80,7 @@ mod_class.zhibo = {
 			this.zhibo_obj.add_btn_fun();
 			this.zhibo_obj.showbtn();
 		}
-
+ 
 		$("#btn_zhibo").click(function(){
 			if(uid>=0){
 				layer.alert('只有群聊才能直播!');
@@ -91,6 +91,8 @@ mod_class.zhibo = {
 			}
 			
 			var show_str = `<div class="live_video_warp">
+							直播选项：<input type="radio" checked name="zhibo_status" onclick="$('.zhibo_begintime_warp').hide();" value="2">正式开播  <input type="radio" name="zhibo_status" value="1" onclick="$('.zhibo_begintime_warp').show();">预告<br>
+							<div class="zhibo_begintime_warp" style="display:none;">开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20' ><script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script></div>
 							分享标题：<input class="zhibo_share_title" type="text" style="width:80%;" value="${quninfo.title}"><br>
 							分享描述：<textarea class="zhibo_share_about"  style="width:80%;height:100px;" value="${quninfo.content}"></textarea><br>
 							</div>`;
@@ -99,34 +101,60 @@ mod_class.zhibo = {
 					title:'请输入本次直播介绍,有利于微信转发推广',
 					shift: 1,
 					btn:["确认","取消"],
-					area:in_pc?['500px','250px']:['98%','300px'],
+					area:in_pc?['500px','350px']:['98%','350px'],
 					content: show_str,
-					btn1:function(index){
-						layer.close(index);
+					btn1:function(index){						
 						var postdata = {
 							title:$(".live_video_warp").last().find(".zhibo_share_title").val(),
 							about:$(".live_video_warp").last().find(".zhibo_share_about").val(),
+							start_time:$(".live_video_warp").last().find(".zhibo_begintime").val(),
+							zhibo_status:$(".live_video_warp").last().find("input[name='zhibo_status']:checked").val(),
 						};
-						zhibo_choose(postdata);
+						if(postdata.zhibo_status==1){
+							if(postdata.start_time==''){
+								layer.msg('预告直播，开播时间不能为空');
+								return ;
+							}else if(postdata.title==''){
+								layer.msg('预告直播，标题不能为空');
+								return ;
+							}else if(postdata.about==''){
+								layer.msg('预告直播，描述内容不能为空');
+								return ;
+							}							
+						}
+						layer.close(index);
+						zhibo_choose(postdata);						
 					}
 			});
+			$.get("/index.php/p/alilive-api-get_cms_video_info.html",function(res){
+				if(res.code==0){
+					$(".live_video_warp").last().find(".zhibo_share_title").val(res.data.title);
+					$(".live_video_warp").last().find(".zhibo_share_about").val(res.data.content)
+						$(".live_video_warp").last().find(".zhibo_begintime").val(res.data.start_time)
+				}
+			});			
 		});
 
-		function zhibo_choose(postdata){
-			if(typeof(api)=='object'){	//在APP中执行,打开直播			
-				that.app_start_zhibo(postdata);
-				return ;
-			}
+		function zhibo_choose(postdata){			
 			$.post("/index.php/p/alilive-api-url.html?id="+Math.abs(uid),postdata,function(res){
-					if(res.code==0){
-						that.notify_selfsever(res.data.self_server_api);	//自建服务器的话要做通知开播处理
-						var play_url = '';
-						if( typeof(res.data.limit_time)!='number' ){	//需要购买直播流量的圈主,就不要显示播流地址,避免拿到站外去播放
-							play_url = `播流地址m3u8(PC/WAP/APP都能播放)：<input class="m3u8_url" type="text"><br>
+				if(res.code==0){
+					if(postdata.zhibo_status!=2){
+						layer.msg('预告登记成功!');
+						return ;
+					}
+					that.notify_selfsever(res.data.self_server_api);//自建服务器做通知开播处理 , 注意,这仅只是兼容自建公用服务器，设置过回调地址的自建服务器，这一行可删除
+					if(typeof(api)=='object'){	//在APP中执行,打开直播	
+						mod_class.zhibo.dataUrls = res.data; //这个是用来给圈主响应用户请求使用
+						that.app_start_zhibo(res.data);
+						return ;	//在APP中 不执行下面的
+					}
+					var play_url = '';
+					if( typeof(res.data.limit_time)!='number' ){	//需要购买直播流量的圈主,就不要显示播流地址,避免拿到站外去播放
+						play_url = `播流地址m3u8(PC/WAP/APP都能播放)：<input class="m3u8_url" type="text"><br>
 							播流地址FLV(只能PC播放)：<input class="flv_url" type="text"><br>	
 							播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>`;
-						}
-						var show_str  = `
+					}
+					var show_str  = `
 							<div class="live_video_warp">
 							<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>手机扫码推流</div>
 							推流地址：<input class="push_url" type="text"><br>
@@ -134,8 +162,8 @@ mod_class.zhibo = {
 							</div>
 						`;
 
-						if(!in_pc){	//手机端
-							show_str  = `
+					if(!in_pc){	//手机端
+						show_str  = `
 							<div class="live_video_warp">
 							<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>其它手机扫码推流</div>
 							推流地址：<input class="push_url" type="text"><br>
@@ -144,25 +172,86 @@ mod_class.zhibo = {
 							播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>-->
 							</div>
 							`;
-						}
-						layer.alert("只有在app中才能直播，请点击确定，可以获取推流码或者是推流地址用其它第三方APP推流直播",function(index){
-							layer.close(index);
-							layer.open({
+					}
+					layer.alert("只有在app中才能直播，请点击确定，可以获取推流码或者是推流地址用其它第三方APP推流直播",function(index){
+						layer.close(index);
+						layer.open({
 								type: 1,
 								title:'直播推流与拉流地址',
 								shift: 1,
 								area:in_pc?['600px','400px']:['98%','400px'],
 								content: show_str,
-							});
-							$(".live_video_warp").last().find(".codeimg img").attr('src',res.data.push_img);
-							$(".live_video_warp").last().find(".push_url").val(res.data.push_url);
-							$(".live_video_warp").last().find(".m3u8_url").val(res.data.m3u8_url);
-							$(".live_video_warp").last().find(".rtmp_url").val(res.data.rtmp_url);
-							$(".live_video_warp").last().find(".flv_url").val(res.data.flv_url);
 						});
-					}else{
-						layer.alert(res.msg);
+						$(".live_video_warp").last().find(".codeimg img").attr('src',res.data.push_img);
+						$(".live_video_warp").last().find(".push_url").val(res.data.push_url);
+						$(".live_video_warp").last().find(".m3u8_url").val(res.data.m3u8_url);
+						$(".live_video_warp").last().find(".rtmp_url").val(res.data.rtmp_url);
+						$(".live_video_warp").last().find(".flv_url").val(res.data.flv_url);
+					});
+				}else if(res.code==2){
+					layer.alert(res.msg,{
+						title:false,
+						btn:['立即购买','取消'],
+						btn1:function(index){
+							layer.close(index);
+							buy_push_time(res.data.moneytime,postdata);
+						}
+					});
+				}else{
+					layer.alert(res.msg);
+				}
+			});
+		}
+		function buy_push_time(moneytime,postdata){
+			jQuery.getScript( (typeof(web_url)=='undefined'?'/':'')+'public/static/js/pay.js' ).done(function() {});
+			layer.prompt({
+					formType: 0,
+					value: '10',
+					title: '单位(元)，每1元可得 ' + moneytime + ' 分钟流量',
+					//area: ['100px', '20px'] //formType:2 自定义文本域宽高
+				}, function(value, index, elem){
+					value = parseInt(value);
+					if(value<0.01){
+						layer.alert('充值不能小于0.01元');
+						return ;
 					}
+					layer.close(index);
+					go_buy_push_time(value,postdata);
+			});
+		}
+		//偿试购买流量,金额不一定够
+		function go_buy_push_time(money,postdata){
+			$.post("/member.php/member/plugin/execute/plugin_name/alilive/plugin_controller/log/plugin_action/add.html?_ajax=1",{
+				money:money,
+				aid:Math.abs(uid),
+			},function(res){
+				if(res.code==0){
+					layer.msg('购买直播观众流量成功!');
+					that.limit_time = res.data.time;
+					zhibo_choose(postdata);
+				}else if(res.data!=null && typeof(res.data.havemoney)!='undefined'){
+					layer.alert(res.msg,{
+						btn:['马上充值','以后再说'],
+						yes: function(index) {
+							layer.close(index);
+							push_go_to_pay(money,postdata);
+						}
+					});
+				}else{
+					layer.alert(JSON.stringify(res));
+				}
+			});
+		}
+		//在线充值
+		function push_go_to_pay(money,postdata){
+			var fun = in_pc==true ? Pay.pcpay : Pay.mobpay;
+			fun(money,'购买直播观众流量',function(type,index){
+				if(type=='ok'){
+					layer.msg('充值成功,系统正在帮你购买观众流量');
+					go_buy_push_time(money,postdata);
+				}else{
+					layer.alert('充值失败');
+				}
 			});
 		}
 	},
@@ -442,6 +531,31 @@ ws_onmsg.zhibo = function(obj){
 		}
 		
 	}else if(obj.type=='zhibo_server_start'){  //聊天过程中,圈主中途打开直播,通知所有用户打开直播 , 重要提醒,这条信息是服务器发过来的
+		
+		if(typeof(mod_class.vod_mv)=='object' && mod_class.vod_mv.win_player!=null){	//先关闭视频点播窗口
+			try{
+				if( my_uid==quninfo.uid ){
+					mod_class.vod_mv.stop();
+					mod_class.vod_mv.win_player.vod.finish();
+				}else{
+					mod_class.vod_mv.win_player.vod.finish({});
+				}				
+			}catch(err){
+				console.log('close mv',err);
+			}			
+		}
+		if(typeof(mod_class.vod_voice)=='object' && mod_class.vod_voice.win_player!=null){	//先关音频闭点播窗口
+			try{
+				if( my_uid==quninfo.uid ){
+					mod_class.vod_voice.stop();
+					mod_class.vod_voice.win_player.vod.finish();
+				}else{
+					mod_class.vod_voice.win_player.vod.finish({});
+				}				
+			}catch(err){
+				console.log('close voice',err);
+			}
+		}
 
 		if(mod_class.zhibo.connect_timer!=null){	//这里处理圈主直播断线重连,这里是圈主才执行的
 			layer.msg('重连成功');

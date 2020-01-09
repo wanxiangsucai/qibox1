@@ -262,7 +262,7 @@
 	padding:20px;
 	line-height:30px;
 }
-.live_video_warp input{
+.live_video_warp input[type="text"]{
 	width:100%;
 }
 .live_video_warp .codeimg{

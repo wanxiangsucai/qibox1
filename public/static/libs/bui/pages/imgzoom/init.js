@@ -1,6 +1,5 @@
 //init() logic_init() once() finish() 的使用教程网址 http://help.php168.com/1435153
 mod_class.imgzoom = {
-	isLoadZoom:false,
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
 		var d_url = typeof(api)=='object'?'':'/';
 		loader.import(d_url+"public/static/libs/bui/pages/imgzoom/style.css",function(src){});
@@ -19,16 +18,17 @@ mod_class.imgzoom = {
 
 //页面数据渲染完毕后执行的接口
 format_content.imgzoom = function(res,type){
-	if(mod_class.imgzoom.isLoadZoom){
+	if(typeof(ImagesZoom)=='object'){
 		ImagesZoom.init({
 			"elem": "#chat_win .chat-content"
 		});
 	}else{
-		loader.require((typeof(api)=='object'?'':'/')+"public/static/libs/bui/pages/imgzoom/zoom.js",function (o) {
-			mod_class.imgzoom.isLoadZoom = true;
+		jQuery.getScript( (typeof(api)=='object'?'':'/')+"public/static/libs/bui/pages/imgzoom/zoom.js" ).done(function() {
 			ImagesZoom.init({
 				"elem": "#chat_win .chat-content"
 			});
+		}).fail(function() {
+			layer.msg('public/static/libs/bui/pages/imgzoom/zoom.jss加载失败',{time:800});
 		});
 	}	
 }

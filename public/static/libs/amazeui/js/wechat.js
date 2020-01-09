@@ -592,7 +592,7 @@ function showMoreMsg(uid){
 	if(show_msg_page==1){
 		maxid = -1;
 		get_qunuser_list(uid);	//获取圈内成员列表
-		layer.msg("数据加载中,请稍候...");
+		layer.msg("数据加载中,请稍候...",{time:1000});
 	}
 	msg_scroll = false;
 	$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){  

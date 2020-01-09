@@ -84,10 +84,10 @@ class Msg extends IndexBase{
                 }
             }
             isset($qun_info['_viewlimit']) || $qun_info['_viewlimit'] = $qun_info['viewlimit'];
-            if($qun_info['_viewlimit'] && empty($this->admin)){
-                if (empty($qun_info)) {
+            if($qun_info['_viewlimit'] && empty($this->admin) && $qun_info['uid']!=$this->user['uid']){
+                if (empty($qun_user)) {
                     return $this->err_js('你不是本圈子成员,无权查看聊天内容!');
-                }elseif ($qun_info['type']==0){
+                }elseif ($qun_user['type']==0){
                     return $this->err_js('你还没通过审核,无权查看聊天内容!');
                 }
             }

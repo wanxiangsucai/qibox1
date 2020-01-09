@@ -158,14 +158,14 @@ function voice_player(urls,obj) {
 
 
 <script type='text/javascript'>
-var play_index = 0;	//当前播放哪一首
+var play_index = 0;	//当前播放哪一集
 var play_time = 0; //当前播放到第几秒
 
-function now_play_voice(index){	//当前正在播放第几首
+function now_play_voice(index){	//当前正在播放第几集
 	play_index = index;
 }
 
-function get_now_state(){	//当前播放状态
+function get_now_state(){	//当前播放状态,让圈主发送给会员同步用的
 	return [play_index,play_time];
 }
 
@@ -200,7 +200,7 @@ var vod = {
 			ws_send(o);
 		}	
 	},
-	prev:function(obj){	//上一首
+	prev:function(obj){	//上一集
 		if(typeof(obj)=='object'){
 			clarity.paythis(obj.index);
 			clarity.play(0);
@@ -216,7 +216,7 @@ var vod = {
 			ws_send(o);
 		}	
 	},
-	next:function(obj){	//下一首
+	next:function(obj){	//下一集
 		if(typeof(obj)=='object'){
 			clarity.paythis(obj.index);
 			clarity.play(0);
@@ -281,11 +281,11 @@ var vod = {
 				window.parent.$(".iframe_chat").hide();
 			}			
 		}else{
+			window.parent.mod_class.vod_voice.stop();
 			var o = {
 				type:'finish',
 			};
-			ws_send(o);
-			window.parent.mod_class.vod_voice.stop();
+			ws_send(o);			
 			/*
 			$.get("/member.php/member/vod/stop_voice.html?aid="+aid,function(res){
 				if(res.code==0){
@@ -336,6 +336,12 @@ function ws_send(arr){	//圈主发送指令
 	});
 }
 
+
+$(function(){
+	if(window.parent.my_uid==window.parent.quninfo.uid){
+		$('.syscn').show();
+	}
+});
 </script>
 <style type="text/css">
 .syscn{
@@ -353,7 +359,7 @@ function ws_send(arr){	//圈主发送指令
 }
 </style>
 <div class="syscn">
-<a href="#" onclick="vod.sync_play();">同步</a><a href="#" onclick="vod.prev();">上一首</a><a href="#" onclick="vod.next();">下一首</a><a href="#" id="sync_pause">暂停</a><a href="#" id="sync_quiet">静音</a><a href="#" onclick="vod.finish();">停播</a>
+<a href="#" onclick="vod.sync_play();">同步</a><a href="#" onclick="vod.prev();">上一集</a><a href="#" onclick="vod.next();">下一集</a><a href="#" id="sync_pause">暂停</a><a href="#" id="sync_quiet">静音</a><a href="#" onclick="vod.finish();">结束</a>
 </div>
 </body>
 </html>
