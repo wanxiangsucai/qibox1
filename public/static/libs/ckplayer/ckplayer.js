@@ -653,7 +653,7 @@ function ckplayerConfig() {
 				}
 				var html = '';
 				if(!this.isM3u8) {
-					html = '<video id="' + vid + '"' + src + ' width="100%" height="100%"' + autoplay + poster + loop + preload + controls + ' x5-playsinline="" playsinline="" webkit-playsinline="true">' + source + track + '</video>';
+					html = '<video id="' + vid + '"' + src + ' width="100%" height="100%"' + autoplay + poster + loop + preload + controls + ' webkit-playsinline="true" x5-video-player-type="h5-page" webkit-playsinline="" playsinline="">' + source + track + '</video>';
 				} else {
 					html = '<video id="' + vid + '" width="100%" height="100%"' + poster + loop + preload + controls + ' x5-playsinline="" playsinline="" webkit-playsinline="true">' + track + '</video>';
 				}

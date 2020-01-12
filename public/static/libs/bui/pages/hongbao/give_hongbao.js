@@ -55,7 +55,7 @@ loader.define(function() {
 					//if(typeof(refresh_timenum)!='undefined')refresh_timenum = 1;	//加快刷新时间
 					if(res.code==0){
 						layer.msg(res.msg);
-						if( typeof(refresh_timenum)=='undefined' ){ //可能是充值过来时刷新过网页
+						if( typeof(mod_class)=='undefined' ){ //充值过来时刷新过网页,所以这个变量是不存在的
 							bui.load({ 
 								url: "/public/static/libs/bui/pages/chat/chat.html",
 								param:{

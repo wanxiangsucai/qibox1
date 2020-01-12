@@ -33,7 +33,8 @@ document.write('<script type="text/javascript" src="'+weburl+'/public/static/js/
 
 <div id="dplayer"  style="width:100%;"></div>
 <script type="text/javascript">
-function palyer(video_url, height, only_sound, in_pc) {
+var dp;
+function player(video_url, height, only_sound, in_pc) {
      
     if (typeof(height) == 'undefined' || height == '') {
         height = '200px';
@@ -44,7 +45,7 @@ function palyer(video_url, height, only_sound, in_pc) {
     div.style.setProperty('height', height);
      
     if (in_pc == 'pc') {
-        const dp = new DPlayer({
+        dp = new DPlayer({
             container: document.getElementById('dplayer'),
             live: true,
             volume: 1,
@@ -52,12 +53,12 @@ function palyer(video_url, height, only_sound, in_pc) {
             video: {
                 url: video_url,
                 type: 'flv',
-                pic: './timg.jpg',
+                pic: './timg.jpg?d',
             },
         });
         
     } else {
-        const dp = new DPlayer({
+        dp = new DPlayer({
             container: document.getElementById('dplayer'),
             live: true,
             volume: 1,
@@ -65,10 +66,15 @@ function palyer(video_url, height, only_sound, in_pc) {
             video: {
                 url: video_url,
                 type: 'hls',
-                pic: './timg.jpg',
+                pic: './timg.jpg?d',
             },
         });
     }
+
+	$('.dplayer-video-wrap').click(function(){
+		dp.play();
+		$(this).off('click');
+	});
 }   
 </script>
 <style type="text/css">
@@ -85,7 +91,7 @@ function palyer(video_url, height, only_sound, in_pc) {
 }
 
 </style>
-<div class="about"><span class="tt fa fa-bullhorn">直播介绍：</span><span class="cnt">传奇 夫代工夫工地会要地仍城大规模地魂牵梦萦城魂牵梦萦城魂牵梦萦地魂牵梦萦地械左夺 </span><span class="more">[详情]</span></div>
+<div class="about"><span class="tt fa fa-bullhorn">直播介绍：</span><span class="cnt"> </span><span class="more">[详情]</span></div>
 <script type="text/javascript">
 $(function(){
 	$(".about .cnt").html(parent.mod_class.zhibo.dataUrls.title);

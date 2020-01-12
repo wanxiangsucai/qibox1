@@ -35,7 +35,7 @@ mod_class.zhibo = {
 		}
 	},
 	success_push:function(){	//成功推流直播
-		this.zhibo_status = true;
+		//this.zhibo_status = true;
 		layer.msg('直播推流开始了!!');
 		postmsg('<div class="live_video_start">APP端开始直播了...</div>');	//发送数据到服务器		
 		this.zhibo_obj.showbtn();  //推流成功,才显示菜单
@@ -91,7 +91,7 @@ mod_class.zhibo = {
 			}
 			
 			var show_str = `<div class="live_video_warp">
-							直播选项：<input type="radio" checked name="zhibo_status" onclick="$('.zhibo_begintime_warp').hide();" value="2">正式开播  <input type="radio" name="zhibo_status" value="1" onclick="$('.zhibo_begintime_warp').show();">预告<br>
+							直播选项：<input type="radio" checked name="zhiboStatus" onclick="$('.zhibo_begintime_warp').hide();" value="2">正式开播  <input type="radio" name="zhibo_status" value="1" onclick="$('.zhibo_begintime_warp').show();">预告<br>
 							<div class="zhibo_begintime_warp" style="display:none;">开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20'><script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script></div>
 							分享标题：<input class="zhibo_share_title" type="text" style="width:80%;" value="${quninfo.title}"><br>
 							分享描述：<textarea class="zhibo_share_about"  style="width:80%;height:100px;" value="${quninfo.content}"></textarea><br>
@@ -108,7 +108,7 @@ mod_class.zhibo = {
 							title:$(".live_video_warp").last().find(".zhibo_share_title").val(),
 							about:$(".live_video_warp").last().find(".zhibo_share_about").val(),
 							start_time:$(".live_video_warp").last().find(".zhibo_begintime").val(),
-							zhibo_status:$(".live_video_warp").last().find("input[name='zhibo_status']:checked").val(),
+							zhibo_status:$(".live_video_warp").last().find("input[name='zhiboStatus']:checked").val(),
 						};
 						if(postdata.zhibo_status==1){
 							if(postdata.start_time==''){
@@ -318,16 +318,16 @@ mod_class.zhibo = {
 				  scrollbar: false,
 				  closeBtn:2,  
 				  area: ['520px', only_sound==true?'170px':'370px'],  
-				  content: "/public/static/libs/bui/pages/zhibo/player.html?w",
+				  content: "/public/static/libs/bui/pages/zhibo/player.html?wf",
 				  success: function(layero, index){  
 						//var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
 						that.win_player = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：win.method();  
-						that.win_player.palyer(flv_url, only_sound==true?'100px':'300px',only_sound);			
+						that.win_player.player(flv_url, only_sound==true?'100px':'300px',only_sound);			
 				  }
 			});
 		}else{			
-			load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html?gf",function(win,body){
-				win.palyer(m3u8_url,only_sound==true?'40px':'200px',only_sound);
+			load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html?gdf",function(win,body){
+				win.player(m3u8_url,only_sound==true?'40px':'200px',only_sound);
 			});
 		}
 	},
@@ -557,11 +557,11 @@ ws_onmsg.zhibo = function(obj){
 			}
 		}
 
-		if(mod_class.zhibo.connect_timer!=null){	//这里处理圈主直播断线重连,这里是圈主才执行的
-			layer.msg('重连成功');
-			clearInterval( mod_class.zhibo.connect_timer );
-			mod_class.zhibo.connect_timer = null;
-		}
+		//if(mod_class.zhibo.connect_timer!=null){	//这里处理圈主直播断线重连,这里是圈主才执行的
+		//	layer.msg('重连成功');
+		//	clearInterval( mod_class.zhibo.connect_timer );
+		//	mod_class.zhibo.connect_timer = null;
+		//}
 		mod_class.zhibo.dataUrls = obj.data;	//这个赋值给圈主使用的,其实可以删除,因为prepare_play函数里同样赋值了
 		mod_class.zhibo.prepare_play(obj.data);
 

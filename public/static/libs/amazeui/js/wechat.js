@@ -453,7 +453,8 @@ function ws_link(){
 			layer.open({
 					type: 1,
 					anim: 5,
-					shade: 0,
+					shade: 0.1,
+					shadeClose: true,
 					title: '仅列出已注册的在线会员数，不含游客',
 					area: ['400px', '300px'],
 					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',

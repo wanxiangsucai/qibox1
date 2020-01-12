@@ -18,14 +18,14 @@ body{
 <body>
 <div class="prism-player" id="player-con"></div>
 <script type="text/javascript">
-var player;
-function palyer(video_url,height,only_sound){
+var ali_player;
+function player(video_url,height,only_sound){
 	if(typeof(height)=='undefined' || height==''){
 		height = '200px';
 	}else{
 		height = parseFloat(height).toString()+'px';
 	}
-	player = new Aliplayer({
+	ali_player = new Aliplayer({
 			  "id": "player-con",
 			  "source": video_url,
 			  "width": "100%",

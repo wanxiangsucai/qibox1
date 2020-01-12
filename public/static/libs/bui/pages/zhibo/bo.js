@@ -8,6 +8,8 @@ loader.define(function() {
 	var new_alivcLivePusher = null; //阿里云新接口
 	var live_urls;
 	var chat_timer;
+
+	var reconnect_start_num = 0;
 	
 	pageview.type = 1;  //1是竖屏自拍, 2 是横屏拍景 3 是只播声音
 
@@ -187,20 +189,21 @@ loader.define(function() {
 		}	
 		new_alivcLivePusher.startPreview(params,function(ret){
 			if(ret.status==true){
-				new_alivcLivePusher.startPush({
-					url: live_urls.push_url ,
-				},function(ret){
-					if(ret.status==true){	//成功推流
-						success();
-						if(pageview.type==2){
-							api.setScreenOrientation({
-								orientation: 'landscape_left',	//landscape_left auto
-							});
+				mod_class.zhibo.zhibo_status = true;	//为的是标志这个不要打开直播窗口
+				var index = layer.msg('初始化预览成功，正在启动推流，请稍候....',{time:800});
+				setTimeout(function(){
+					//live_urls.push_url='rtmp://qqpush.soyixia.net/live/id315?txSecret=e7bfe8af01d931497ae15b17dc8a77c6&txTime=5DFD4525'
+					new_alivcLivePusher.startPush({
+						url: live_urls.push_url ,
+					},function(ret){
+						if(ret.status==true){	//成功启动推流，是否真正推流成功，还不确定的。
+							listener(index);														
+						}else{
+							alert("推流启动失败,"+JSON.stringify(ret));
+							pageview.destroy_push();
 						}
-					}else{
-						alert("推流失败,"+JSON.stringify(ret));
-					}
-				});
+					});
+				},500);
 			}else{
 				alert("预览失败,"+JSON.stringify(ret));
 			}
@@ -229,7 +232,7 @@ loader.define(function() {
 
 	
 	//老接口,兼容性好
-	function old_mk_live(){
+	function old_mk_live(){/*
 		api.setKeepScreenOn({
 			keepOn: true
 		})
@@ -279,7 +282,7 @@ loader.define(function() {
 			fixed: true,
 			//fixedOn:'videoview',
 		},function(ret) {
-			if(ret.status==true){
+			if(ret.status==true){				
 				setTimeout(function(){
 					old_aliyunLive.startStream(function(ret){
 						if(ret.status==true){
@@ -294,20 +297,62 @@ loader.define(function() {
 				alert("初始化失败,"+JSON.stringify(ret));
 			}
 		});
+		*/
+	}
+	
+	//监听推流状态
+	function listener(index){
+		new_alivcLivePusher.addEventListener(function(ret){
+			if(ret.eventType=='reconnectFail'){	//只有真正成功过推流，才会执行的, 一开始就推流不成功，这里不会执行
+				layer.alert("推流中断了",{time:9000,offset:'b'});
+				mod_class.zhibo.repeat_connect();
+			}else if(ret.eventType=='reconnectStart'){
+				reconnect_start_num++;
+			}
+			console.log("推流状态码:"+JSON.stringify(ret));
+		});
+
+		new_alivcLivePusher.getLiveStatus(function(ret){								
+			layer.close(index);
+			//alert("确认开始？"+(ret.livePushStatus==4?'':ret.livePushStatus));
+			if(ret.livePushStatus==4){	//推流连接中	，是否真正推流成功，还不确定的
+				index = layer.msg('正努力连接推流服务器，请稍候....');
+				setTimeout(function(){
+					layer.close(index);
+					if(reconnect_start_num>1){
+						layer.alert('推流异常，请检查网络或推流地址是否正常！',{time:9000,offset:'b'});						
+						pageview.destroy_push();
+						reconnect_start_num = 0;
+					}else{
+						layer.msg('直播推流成功了!'+reconnect_start_num);
+						success();
+						if(pageview.type==2){	//拍景横屏的话，要扭转屏幕
+							api.setScreenOrientation({
+									orientation: 'landscape_left',	//landscape_left auto
+							});
+						}
+						if(mod_class.zhibo.connect_timer!=null){	//这里处理圈主直播断线重连, 只有真正成功过推流，才会执行的
+							layer.msg('重连成功');
+							clearInterval( mod_class.zhibo.connect_timer );
+							mod_class.zhibo.connect_timer = null;
+						}
+					}					
+				},4000);				
+			}else if(ret.livePushStatus==11){
+				layer.alert("推流失败",{time:9000,offset:'b'});
+				pageview.destroy_push();
+			}else{
+				layer.alert("推流状态码："+JSON.stringify(ret),{time:9000,offset:'b'});
+				pageview.destroy_push();
+			}							
+		});
 	}
 
 	function success(){
-		mod_class.zhibo.success_push();
+		mod_class.zhibo.success_push();		
 		if(ali_type=='old'){
 			return ;
-		}
-		new_alivcLivePusher.addEventListener(function(ret){
-			if(ret.eventType=='reconnectFail'){
-				layer.msg("推流中断了");
-				mod_class.zhibo.repeat_connect();
-			}
-			//console.log("状态码:"+JSON.stringify(ret));
-		});
+		}		
 	}
 	
 	//切换前后摄像头

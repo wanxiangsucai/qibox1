@@ -67,7 +67,7 @@ format_content.hongbao = function(res,type){
 ws_onmsg.hongbao = function(obj) {
     var d_url = typeof(api) == 'object' ? '' : '/';
     if (obj.type == 'rob_hongbao') {
-		var str = "<div class='new-gift-msg'><div> <img style='width:20px' src='"+d_url+"public/static/plugins/hongbao/bongbao.png' style='margin:0;'> <span>" + obj.data.username + "  </span> 抢了 <span class='buyname'>" + obj.data.from_username + "</span> 的红包 <span class='buyname'>" + obj.data.money + "</span> 元 </div></div>";
+		var str = "<div class='new-gift-msg'><div> <img style='width:20px' src='"+d_url+"public/static/plugins/hongbao/bongbao.png' style='margin:0;'> <span>" + obj.data.username + "  </span> 抢了 <span class='buyname'>" + obj.data.from_username + "</span> 的红包 <span class='buyname'>" + parseFloat(obj.data.money).toFixed(2) + "</span> 元 </div></div>";
         if (in_pc == true) {
             $(".pc_show_all_msg").prepend(str);
             goto_bottom(500)

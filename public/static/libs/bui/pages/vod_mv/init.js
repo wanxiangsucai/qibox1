@@ -88,9 +88,10 @@ mod_class.vod_mv = {
 	win_player:null,	//播放器所在的框架对象,通过这个来操作播放器里的函数
 	wap_player:function(url_array,ext_info){	//WAP播放器
 		var that = this;	//引用传递
-		load_chat_iframe("/public/static/libs/bui/pages/vod_mv/player.html?aid="+Math.abs(uid)+"&cid="+clientId+"&"+Math.random(),function(win,body){
+		load_chat_iframe("/public/static/libs/bui/pages/vod_mv/dplayer.html",function(win,body){
 			that.win_player = win;	//得到iframe页的窗口对象，执行iframe页的方法：win.method();  
-			win.mv_player(url_array,ext_info);		//播放器在上面那个框架网址那里
+			//win.mv_player(url_array,ext_info);		//播放器在上面那个框架网址那里
+			win.player(url_array,{});		//播放器在上面那个框架网址那里
 			if(my_uid==quninfo.uid){
 				setTimeout(function(){	//等待播放器加载成功才有页面元素
 					body.find('.syscn').show();
@@ -127,6 +128,9 @@ mod_class.vod_mv = {
 			  },
 			  cancel:function(){
 				that.win_player = null;
+			  },
+			  full: function() {
+				  that.win_player.full_screen();
 			  }
 		});
 	}

@@ -342,3 +342,18 @@ header .bui-dropdown .bui-list i{
 	color:#889dc4;
 	left:10px;
 }
+
+
+
+
+.layui-layer-setwin .layui-layer-close1{
+	background-position:-145px  -32px !important;;
+}
+
+.layui-layer-setwin a {
+	width:35px !important;;
+	height:35px !important;;
+}
+.layui-layer-setwin{
+	top:7px !important;;
+}

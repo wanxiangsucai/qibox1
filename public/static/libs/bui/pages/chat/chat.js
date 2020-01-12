@@ -317,9 +317,11 @@ loader.define(function(require,exports,module) {
 			layer.open({
 					type: 1,
 					anim: 5,
-					shade: 0,
+					shade: 0.1,
 					title: '仅列出已注册的会员，不含游客',
-					area: ['90%', '65%'],
+					shadeClose: true,
+					offset:"b",
+					area: ['100%', '45%'],
 					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',
 			});
 		}
@@ -530,6 +532,13 @@ loader.define(function(require,exports,module) {
     pageview.init = function () {
 
 		router.$("#headbody").css({'top':router.$("#chat_head").height()+'px;',});
+
+		//处理软键盘破坏了界面布局，进行修复处理
+		router.$(".chatInput").blur(function(){
+			setTimeout(function(){
+				bui.init();
+			},600);
+		});
 
         this.bind();
 		this.right_btn();

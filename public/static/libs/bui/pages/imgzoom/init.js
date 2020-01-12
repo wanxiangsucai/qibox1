@@ -24,9 +24,11 @@ format_content.imgzoom = function(res,type){
 		});
 	}else{
 		jQuery.getScript( (typeof(api)=='object'?'':'/')+"public/static/libs/bui/pages/imgzoom/zoom.js" ).done(function() {
-			ImagesZoom.init({
-				"elem": "#chat_win .chat-content"
-			});
+			if(typeof(ImagesZoom)=='object'){
+				ImagesZoom.init({
+					"elem": "#chat_win .chat-content"
+				});
+			}
 		}).fail(function() {
 			layer.msg('public/static/libs/bui/pages/imgzoom/zoom.jss加载失败',{time:800});
 		});

@@ -1,93 +1,87 @@
-<!doctype html>
-<html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <title>视频点播</title>
- </head>
- <style type="text/css">
-*{
-	padding:0px;
-	margin:0px;
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>视频点播</title>
+<meta name="viewport"   content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+<!--<link rel="stylesheet" href="/public/static/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">-->
+<style type="text/css">
+body {
+    padding: 0;
+    margin: 0;
+}
+.dplayer-full-in-icon {
+    display: none!important
 }
 </style>
- <body>
-<div class='video1' style='width: 100%;height: 200px'></div>
-
+<!--<script src="https://cdn.jsdelivr.net/npm/flv.js/dist/flv.min.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/hls.js/dist/hls.min.js"></script> -->
+<script type="text/javascript" src="../zhibo/dplayer/flv.min.js"></script> 
+<script type="text/javascript" src="../zhibo/dplayer/hls.min.js"></script>
+<script type="text/javascript" src="../zhibo/dplayer/DPlayer.min.js?v=f32"></script>
+<link rel="stylesheet" href="../zhibo/dplayer/DPlayer.min.css">
+</head>
+<body>
 <script type="text/javascript">
 var weburl = window.location.href;	//var weburl = window.location.href.indexOf("http")==0 ? '' : '../../../../../..';
 weburl = weburl.substring(0,weburl.indexOf('/public/static/')); //方便手机获取真实路径
 document.write('<link rel="stylesheet" href="'+weburl+'/public/static/css/base.css">');
 document.write('<script type="text/javascript" src="'+weburl+'/public/static/js/core/jquery.min.js"><\/script>');
-document.write('<script type="text/javascript" src="'+weburl+'/public/static/libs/ckplayer/ckplayer.js"><\/script>');
 </script>
 
-<script type='text/javascript'>
+
+<div id="dplayer"  style="width:100%;height:200px;"></div>
+<script type="text/javascript">
 var url_array = [];
 var player1;
 var play_index = 0;	//当前播放第几集
 var play_time = 0; //当前播放的时间,为了给圈主使用的.
 var sync_time = 0; //同步圈主的时间
-function mv_player(urls,ext_info,height) {
+
+var dp;
+function player(urls , ext_info, height, only_sound, in_pc) {
 	if(ext_info.index>0){
 		play_index = ext_info.index;
 	}
 	if(ext_info.time>0 && window.parent.in_pc==true){ //手机端不能自动播放
 		sync_time = ext_info.time;
 	}
-	$('.video1').css('height',height);
 	urls.forEach((rs)=>{
 		url_array.push(rs.url);
 	})
 	$('.total_page').html(url_array.length);
-
-	var videoObject = {
-		container: '.video1', //“#”代表容器的ID，“.”或“”代表容器的class
-		variable: 'player1',  //该属性必需设置，值等于下面的new chplayer()的对象
-		//poster:'pic/wdm.jpg',//封面图片
-		loaded: 'loadedHandler1', //当播放器加载后执行的函数	
-		autoplay:true,			  //自动播放
-		video: url_array[play_index], //视频地址
-	};
-	player1 = new ckplayer(videoObject);
-
 	$('.page').html(play_index+1);
 
-	if(typeof(window.parent.api)=='object'){	//在app中因为是file://开头的网址,所以这里要特别处理一下才能播放
-		setTimeout(function(){
-			change_play(play_index);
-		},500);
-	}
-}
+    if (typeof(height) == 'undefined' || height == '') {
+        height = '200px';
+    } else {
+        height = parseFloat(height).toString() + 'px';
+    }
 
-function get_now_state(){	//当前播放状态,让圈主发送给会员同步用的
-	return [play_index,play_time];
-}
+    var div = document.getElementById('dplayer');
+    div.style.setProperty('height', height);
+     
+    dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            live: false,
+            volume: 1,
+			preload:true,
+            autoplay: true,
+            video: {
+                url: url_array[play_index],
+                type: 'auto',
+                pic: './player_bg.jpg',
+				thumbnails: '/public/static/index/default/logo.png',
+            },
+    });
 
-//监听播放器状态
-function loadedHandler1(){
-	player1.addListener('loadedmetadata', function(){	//视频加载成功,特别要注意,每换一个视频,都会执行一次
-		player1.videoPlay();	//自动播放
-		if(sync_time>0){
-			player1.videoSeek(sync_time);
-			sync_time = 0;
-		}
+	dp.on('error', function() {
+		console.log('player error');
 	});
-
-	player1.addListener('error', function(time){
+	dp.on('loadeddata', function() {
+		console.log('player loadeddata');
 	});
-
-	player1.addListener('play', function(time){
-	});
-
-	player1.addListener('pause', function(time){
-	});
-
-	player1.addListener('time', function(time){		//视频已播放多少时间
-		play_time = parseInt(time);
-		//console.log('time:'+play_time);
-	});
-
-	player1.addListener('ended', function(){	//当前播放完毕,播放下一个
+	dp.on('ended', function() {
 		play_index++;
 		if(typeof(url_array[play_index])!='undefined'){
 			change_play( play_index );
@@ -95,32 +89,47 @@ function loadedHandler1(){
 			parent.layer.msg('全部播放完了!');
 		}
 	});
+	$('.dplayer-video-wrap').click(function(){
+		dp.play();
+		$(this).off('click');
+	});
+}
+
+function get_now_state(){	//当前播放状态,让圈主发送给会员同步用的
+	return [play_index,dp.video.currentTime];
 }
 
 function change_play(index){
 	play_index = index;
 	$('.page').html(play_index+1);
-	//parent.layer.msg("请稍候,视频加载中...");
-	player1.newVideo({autoplay:true,video:url_array[index]});
+
+	dp.switchVideo({
+		url: url_array[index],
+		//pic: 'http://qb.net/public/uploads/images/20191222/1_201912220815434e1a4.jpeg',
+		//thumbnails: 'https://x1.php168.com/public/uploads/images/20180419/14371cf45a6028e868288bd81c216c6c.jpeg',
+	});
+	dp.play();
 }
 
-function player_stop(){
-	player1.videoPause();
+function player_stop(){	//dp.toggle(): 切换播放和暂停
+	dp.pause();
 }
-
+function player_seek(time){
+	dp.seek(time)
+}
 function player_start(){
-	player1.videoPlay();
+	dp.play();
 }
 function player_quiet(is_quiet){
 	if(is_quiet==true){
-		player1.videoMute();
+		dp.volume(0);
 	}else{
-		player1.videoEscMute();
+		dp.volume(1);
 	}
 }
 
 function full_screen(){
-	player1.fullScreen();
+	dp.fullScreen.request('web');	//dp.fullScreen.cancel('web');
 }
 
 function control(obj){ //接受圈主的指令 此函数主要是给父窗口调用的.
@@ -139,7 +148,7 @@ var vod = {
 				change_play(obj.index);
 			}
 			if(sync_time>0){
-				player1.videoSeek(sync_time);
+				player_seek(sync_time);
 				sync_time = 0;
 			}
 		}else{
@@ -286,11 +295,45 @@ $(function(){
 	}
 	window.parent.$(".layui-layer-iframe").removeClass('layer-anim');//解决视频不能全屏的问题
 });
+
 </script>
+<style type="text/css">
+.about{
+	padding:5px;
+	font-size:14px;
+	color:#888;
+}
+.tt{
+	color:orange;
+}
+.more{
+	color:blue;
+}
+
+</style>
+<!--<div class="about"><span class="tt fa fa-bullhorn">介绍：</span><span class="cnt"></span><span class="more">[详情]</span></div>-->
+<script type="text/javascript">
+$(function(){
+	$(".about .cnt").html(parent.mod_class.zhibo.dataUrls.title);
+	$(".about .more").click(function(){
+		var about = parent.mod_class.zhibo.dataUrls.about;
+		about = about.replace(/\r\n/g,"<br>");
+		//about = about.replace(/ /g,"&nbsp;");
+		parent.layer.open({
+			type: 1,
+			title:false,
+			shift: 1,
+			area:['98%','300px'],
+			content: '<style type="text/css">.layui-layer-setwin{ top:250px !important;}</style><div style="padding:10px;">' + about + '</content>',
+		});
+	});
+});
+</script>
+
 
 <style type="text/css">
 .syscn{
-	margin-top:10px;
+	margin-top:7px;
 }
 .quner_power{
 	display:none;
@@ -310,7 +353,9 @@ $(function(){
 </style>
 <div class="syscn">
 <a><b class="page">1</b>/<i class="total_page">1</i></a>
-<a href="#" class="quner_power" onclick="vod.sync_play();">同步</a><a href="#" class="quner_power" onclick="vod.finish();">结束</a><a href="#" onclick="vod.prev();">上一集</a><a href="#" onclick="vod.next();">下一集</a><a href="#" id="sync_pause" class="quner_power">暂停</a><a href="#" id="sync_quiet" class="quner_power">静音</a> 
+<!--<a href="#" class="quner_power" onclick="vod.sync_play();">同步</a>--><a href="#" class="quner_power" onclick="vod.finish();">结束</a><a href="#" onclick="vod.prev();">上一集</a><a href="#" onclick="vod.next();">下一集</a><a href="#" id="sync_pause" class="quner_power">暂停</a><!--<a href="#" id="sync_quiet" class="quner_power">静音</a>-->
 </div>
- </body>
-</html>
+
+
+</body>
+</html> 
