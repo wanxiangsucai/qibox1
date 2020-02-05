@@ -148,18 +148,18 @@ class Cache2{
 class Mysql_redis{
     private $data = null;
     public function set($k='',$v=''){
-        Db::execute("REPLACE INTO  `".config('database.prefix')."radis_index` (  `k` ,  `v` ) VALUES ('{$k}',  '{$v}')");
+        Db::execute("REPLACE INTO  `".config('database.prefix')."redis_index` (  `k` ,  `v` ) VALUES ('{$k}',  '{$v}')");
     }
     
     public function setex($k='',$t=0,$v=''){
         $t = time()+$t;
-        Db::execute("REPLACE INTO  `".config('database.prefix')."radis_index` (  `k` ,  `v`  ,  `t` ) VALUES ('{$k}',  '{$v}',  '{$t}')");
+        Db::execute("REPLACE INTO  `".config('database.prefix')."redis_index` (  `k` ,  `v`  ,  `t` ) VALUES ('{$k}',  '{$v}',  '{$t}')");
     }
     
     public function get($k=''){
-        $info = Db::name('radis_index')->where('k',$k)->find();
+        $info = Db::name('redis_index')->where('k',$k)->find();
         if ($info['t'] && $info['t']<time()) {
-            Db::name('radis_index')->where('k',$k)->delete();
+            Db::name('redis_index')->where('k',$k)->delete();
             return ;
         }
         if ($info) {
@@ -168,14 +168,14 @@ class Mysql_redis{
     }
     
     public function delete($k=''){
-        Db::name('radis_index')->where('k',$k)->delete();
+        Db::name('redis_index')->where('k',$k)->delete();
     }
     
     public function keys($key=''){
         if ($key=='') {
-            return Db::name('radis_index')->column('k');
+            return Db::name('redis_index')->column('k');
         }else{
-            return Db::name('radis_index')->where('k','like',str_replace('*', '%', $key))->column('k');
+            return Db::name('redis_index')->where('k','like',str_replace('*', '%', $key))->column('k');
         }
     }
     
@@ -187,17 +187,17 @@ class Mysql_redis{
     }
     
     public function rpop($k=''){
-        $info = Db::name('radis_list')->where('k',$k)->order('id asc')->find();
+        $info = Db::name('redis_list')->where('k',$k)->order('id asc')->find();
         if ($info){
-            Db::name('radis_list')->where('id',$info['id'])->delete();
+            Db::name('redis_list')->where('id',$info['id'])->delete();
             return $info['v'];
         }
     }
     
     public function lpop($k=''){
-        $info = Db::name('radis_list')->where('k',$k)->order('id desc')->find();
+        $info = Db::name('redis_list')->where('k',$k)->order('id desc')->find();
         if ($info){
-            Db::name('radis_list')->where('id',$info['id'])->delete();
+            Db::name('redis_list')->where('id',$info['id'])->delete();
             return $info['v'];
         }
     }
@@ -207,7 +207,7 @@ class Mysql_redis{
     }
     public function exec(){
         if ($this->data){
-            Db::name('radis_list')->insertAll($this->data);
+            Db::name('redis_list')->insertAll($this->data);
         }
     }
     
