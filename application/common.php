@@ -18,6 +18,7 @@ use app\common\model\Msg AS MsgModel;
 use think\Db;
 use think\Request;
 use app\common\controller\Base;
+use app\common\util\Cache2;
 
 error_reporting(E_ERROR | E_PARSE );
 
@@ -3209,6 +3210,78 @@ if (!function_exists('logs')) {
         is_array($code) && $code = var_export($code,true);
         $code .= $type==true ? "\r\n" : '';
         write_file(ROOT_PATH.$filename,$code ,$type==true?'a':'rb+');
+    }
+}
+
+if(!function_exists('fork_set')){
+    /**
+     * 设置分支进程，linux才支持
+     */
+    function fork_set(){
+        if(!function_exists('pcntl_fork')){
+            define('FORK',-1);
+        }else{
+            $pid = pcntl_fork();
+            define('FORK',$pid);
+        }        
+    }
+}
+
+if(!function_exists('fork_main')){
+    /**
+     * 主进程 不执行耗时任务
+     * @return boolean
+     */
+    function fork_main(){
+        if(!defined('FORK')|| FORK==-1 || FORK>0){
+            return true;
+        }
+    }
+}
+
+if(!function_exists('fork_son')){
+    /**
+     * 子进程 执行耗时任务
+     * @return boolean
+     */
+    function fork_son(){
+        if(!defined('FORK') || FORK==-1 || FORK==0){
+            return true;
+        }
+    }
+}
+
+if(!function_exists('cache2')){
+    /**
+     * 增强版的cache函数,用法跟cache函数类似
+     * 但有几点要注意的是
+     * 1、cache2(['a','b','c'],'x') 这种格式代表批量插入一个Redis 列表(List)记录 key就是 x ;这个列可以有几万甚至几十万条记录
+     * 2、$value的值为 lpop 或 rpop 的时候,第一项就必须是键名,配合上面的列表使用,代表获取列表记录的其中一个值,lpop正序获取,rpop倒序获取,获取后,那一项记录也会自动踢除 
+     * 3、另外$key为db的时候,就直接返回Redis的类 ,此时可以直接使用原生 Redis类
+     * 4、cache2('ab*',null) 代表把所有ab开头的key那些项目删除,cache2('ab*') 代表列出所有包含ab开头的key,只列出key,不列出值
+     * 5、cache2()全部参数为空的话,就可以直接操作Redis的方法,比如 cache2()->get('aa'); cache2()->set('aa',88);
+     * 这三个关键点要特别注意，也就是增强功能的体现
+     * 更详细的教程 http://help.php168.com/1477144
+     * @param string $key
+     * @param string $value
+     * @param number $time
+     */
+    function cache2($key='',$value='',$time=0){
+        if (is_array($key)) {
+            Cache2::set($key,$value,$time);
+        }elseif ($value===null) {
+            Cache2::set($key,null);
+        }elseif($value===''){
+            if ($key==='') {
+                return Cache2::db();
+            }else{
+                return Cache2::get($key);
+            }            
+        }elseif($value==='lpop'||$value==='rpop'){
+            return Cache2::get($key,$value);
+        }else{
+            Cache2::set($key,$value,$time);
+        }
     }
 }
 

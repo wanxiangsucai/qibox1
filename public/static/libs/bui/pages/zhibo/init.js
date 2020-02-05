@@ -91,7 +91,7 @@ mod_class.zhibo = {
 			}
 			
 			var show_str = `<div class="live_video_warp">
-							直播选项：<input type="radio" checked name="zhiboStatus" onclick="$('.zhibo_begintime_warp').hide();" value="2">正式开播  <input type="radio" name="zhibo_status" value="1" onclick="$('.zhibo_begintime_warp').show();">预告<br>
+							直播选项：<input type="radio" checked name="zhiboStatus" onclick="$('.zhibo_begintime_warp').hide();" value="2">正式开播  <input type="radio" name="zhiboStatus" value="1" onclick="$('.zhibo_begintime_warp').show();">预告<br>
 							<div class="zhibo_begintime_warp" style="display:none;">开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20'><script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script></div>
 							分享标题：<input class="zhibo_share_title" type="text" style="width:80%;" value="${quninfo.title}"><br>
 							分享描述：<textarea class="zhibo_share_about"  style="width:80%;height:100px;" value="${quninfo.content}"></textarea><br>
@@ -100,10 +100,10 @@ mod_class.zhibo = {
 					type: 1,
 					title:'请输入本次直播介绍,有利于微信转发推广',
 					shift: 1,
-					btn:["确认","取消"],
+					btn:["确认","更多设置","取消"],
 					area:in_pc?['500px','350px']:['98%','350px'],
 					content: show_str,
-					btn1:function(index){						
+					btn1:function(index){
 						var postdata = {
 							title:$(".live_video_warp").last().find(".zhibo_share_title").val(),
 							about:$(".live_video_warp").last().find(".zhibo_share_about").val(),
@@ -124,13 +124,33 @@ mod_class.zhibo = {
 						}
 						layer.close(index);
 						zhibo_choose(postdata);						
+					},
+					btn2:function(index){
+						var url = vid>0 ? '/member.php/cms/content/edit/id/'+vid+'.html' : '/member.php/cms/content/add/mid/3.html' ;
+						if(in_pc==true){
+							layer.open({
+								type: 2,
+								area:['95%','95%'],
+								content:url,
+							});
+						}else{
+							bui.load({ 
+								url: "/public/static/libs/bui/pages/frame/show.html",
+								param:{
+									url:url,
+								}
+							});
+						}
 					}
 			});
+			var vid = 0;
+			//获取之前设置的预告数据
 			$.get("/index.php/p/alilive-api-get_cms_video_info.html",function(res){
 				if(res.code==0){
+					vid = res.data.id;
 					$(".live_video_warp").last().find(".zhibo_share_title").val(res.data.title);
 					$(".live_video_warp").last().find(".zhibo_share_about").val(res.data.content)
-						$(".live_video_warp").last().find(".zhibo_begintime").val(res.data.start_time)
+					$(".live_video_warp").last().find(".zhibo_begintime").val(res.data.start_time)
 				}
 			});			
 		});
@@ -307,7 +327,12 @@ mod_class.zhibo = {
 		var flv_url = urls.flv_url;
 		var that = this;
 		if(in_pc==true){
-			this.player_index = layer.open({  
+			if( typeof(in_pc_qun)=='boolean' && in_pc_qun==true ){	//在PC圈子里
+				load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html",function(win,body){
+					win.player(m3u8_url,only_sound==true?'200px':'650px',only_sound);
+				});
+			}else{	//在PC聊天界面里
+				this.player_index = layer.open({  
 				  type: 2,    
 				  title: '直播开始了...',  
 				  fix: false,  
@@ -318,15 +343,16 @@ mod_class.zhibo = {
 				  scrollbar: false,
 				  closeBtn:2,  
 				  area: ['520px', only_sound==true?'170px':'370px'],  
-				  content: "/public/static/libs/bui/pages/zhibo/player.html?wf",
+				  content: "/public/static/libs/bui/pages/zhibo/player.html",
 				  success: function(layero, index){  
 						//var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
 						that.win_player = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：win.method();  
 						that.win_player.player(flv_url, only_sound==true?'100px':'300px',only_sound);			
 				  }
-			});
+				});
+			}				
 		}else{			
-			load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html?gdf",function(win,body){
+			load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html",function(win,body){
 				win.player(m3u8_url,only_sound==true?'40px':'200px',only_sound);
 			});
 		}
@@ -341,7 +367,11 @@ mod_class.zhibo = {
 		this.zhibo_status = false;
 		this.haveLoadPlayer = false;
 		if(in_pc==true){
-			layer.close(this.player_index);			
+			if( typeof(in_pc_qun)=='boolean' && in_pc_qun==true ){	//在PC圈子里
+				load_chat_iframe('');
+			}else{
+				layer.close(this.player_index);
+			}			
 		}else{
 			load_chat_iframe('');
 		}

@@ -17,6 +17,14 @@ document.write('<script type="text/javascript" src="'+weburl+'/public/static/js/
 document.write('<script type="text/javascript" src="'+weburl+'/public/static/layer/layer.js"><\/script>');
 document.write('<script type="text/javascript" src="'+weburl+'/public/static/libs/jplayer/ttw-clarity-player.js"><\/script>');
 document.write('<script type="text/javascript" src="'+weburl+'/public/static/libs/jplayer/yepnope.js"><\/script>');
+
+var parents;
+if(window.parent.frames['iframe_msg']!=undefined){	//在PC圈子界面里
+	parents = window.parent.frames['iframe_msg'];
+}else{
+	parents = window.parent;
+}
+
 </script>
 <style type="text/css">
 #voice{
@@ -124,9 +132,9 @@ function voice_player(urls,obj) {
 						$(".jp-previous").hide();
 						$(".jp-next").hide();
 						$(".jp-play").click(function(){
-							//window.parent.user_ask_sync_vod_voice();
-							//window.parent.w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_sync","user_cid":"'+clientId+'"}');
-							window.parent.mod_class.vod_voice.play_status();
+							//parents.user_ask_sync_vod_voice();
+							//parents.w_s.send('{"type":"user_ask_quner","tag":"ask_vod_voice_sync","user_cid":"'+clientId+'"}');
+							parents.mod_class.vod_voice.play_status();
 						});
 					},
 					error:function(event){
@@ -274,14 +282,19 @@ var vod = {
 	finish:function(obj){	//结束直播
 		if(typeof(obj)=='object'){
 			if(in_pc==true){
-				var index1 = parent.layer.getFrameIndex(window.name);
-				parent.layer.close(index1);
+				if( typeof(parents.in_pc_qun)=='boolean' && parents.in_pc_qun==true ){	//在PC圈子风格里
+					window.parent.$("#iframe_play").attr("src","about:blank");
+					window.parent.$("#iframe_play").hide();
+				}else{	//单独的PC聊天界面里
+					var index1 = parent.layer.getFrameIndex(window.name);
+					parent.layer.close(index1);
+				}				
 			}else{
-				window.parent.$(".iframe_chat").attr("src","about:blank");
-				window.parent.$(".iframe_chat").hide();
+				parents.$(".iframe_chat").attr("src","about:blank");
+				parents.$(".iframe_chat").hide();
 			}			
 		}else{
-			window.parent.mod_class.vod_voice.stop();
+			parents.mod_class.vod_voice.stop();
 			var o = {
 				type:'finish',
 			};
@@ -329,7 +342,7 @@ $(function(){
 
 
 function ws_send(arr){	//圈主发送指令
-	window.parent.ws_send({
+	parents.ws_send({
 		type:"qun_to_alluser",      //告诉WS服务器,群发给所有圈子成员
 		tag:"vod_voice_sync_play",	//返回的自定义标志,自己做处理
 		data:arr
@@ -338,7 +351,7 @@ function ws_send(arr){	//圈主发送指令
 
 
 $(function(){
-	if(window.parent.my_uid==window.parent.quninfo.uid){
+	if(parents.my_uid==parents.quninfo.uid){
 		$('.syscn').show();
 	}
 });

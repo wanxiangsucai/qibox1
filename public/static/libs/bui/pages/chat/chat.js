@@ -95,7 +95,10 @@ function load_chat_iframe(url,callback){
 		if(typeof(callback)=='function'){
 			callback(win,body);
 		}
-		$("#iframe_chat").height( body.find("body").height() );
+		var b_height = body.find("body").height();
+		if(b_height>0){
+			$("#iframe_chat").height( body.find("body").height() );
+		}		
 		bui.init();
 	});
 }
@@ -531,7 +534,7 @@ loader.define(function(require,exports,module) {
     // 模块初始化定义
     pageview.init = function () {
 
-		router.$("#headbody").css({'top':router.$("#chat_head").height()+'px;',});
+		//router.$("#headbody").css({'top':router.$("#chat_head").height()+'px;',});
 
 		//处理软键盘破坏了界面布局，进行修复处理
 		router.$(".chatInput").blur(function(){
@@ -542,24 +545,26 @@ loader.define(function(require,exports,module) {
 
         this.bind();
 		this.right_btn();
-
+		
+		/*
 		setTimeout(function(){
 			uiSidebar = bui.sidebar({
 				id      : "#sidebar",
 				handle: ".page-chat",
 				width   : 550
 			});
-		},1500);
+		},1500);*/
 
 		router.$("#chat_win").parent().scroll(function () {
-			var h = router.$("#chat_win").parent().scrollTop();
-			//console.log(h);
+			if(window.in_chat!==true){
+				return ;
+			}
+			var h = router.$("#chat_win").parent().scrollTop();			
 			if( h<100){
 				if(msg_scroll!=-1){
-					//console.log(h+"--"+msg_scroll);
 					router.$('#chat_win').parent().scrollTop(150);
 				}
-				if(msg_scroll==1){//console.log("++");
+				if(msg_scroll==1){
 					msg_scroll = 0;					
 					layer.msg("内容加载中！请稍候...",{time:2000});
 					showMoreMsg(uid);

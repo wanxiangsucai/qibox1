@@ -106,7 +106,23 @@ mod_class.vod_voice = {
 	},
 	pc_player:function(url_array,oo){	//PC播放器
 		var that = this;	//引用传递
-		layer.open({  
+		if( typeof(in_pc_qun)=='boolean' && in_pc_qun==true ){
+			load_chat_iframe("/public/static/libs/bui/pages/vod_voice/player.html?aid="+Math.abs(uid)+"&cid="+clientId+"&"+Math.random(),function(win,body){
+				that.win_player = win;	//得到iframe页的窗口对象，执行iframe页的方法：win.method();  
+				win.voice_player(url_array,oo);		//播放器在上面那个框架网址那里
+				if(my_uid==quninfo.uid){
+					setTimeout(function(){	//等待播放器加载成功才有页面元素
+						body.find('.syscn').show();
+						body.find('.jp-previous').show();
+						body.find('.jp-next').show();
+						body.find('.jp-play').off('click');
+						var h = body.find("body").height();
+						window.parent.$("#iframe_play").height( my_uid==quninfo.uid?h+10:h );
+					},2000);
+				}		
+			});
+		}else{
+			layer.open({  
 			  type: 2,    
 			  title: '直播开始了...',  
 			  fix: false,  
@@ -139,7 +155,8 @@ mod_class.vod_voice = {
 			  cancel:function(){
 				that.win_player = null;
 			  }
-		});
+			});
+		}
 	}
 }
 

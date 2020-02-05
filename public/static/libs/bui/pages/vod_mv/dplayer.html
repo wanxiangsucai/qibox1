@@ -27,6 +27,13 @@ var weburl = window.location.href;	//var weburl = window.location.href.indexOf("
 weburl = weburl.substring(0,weburl.indexOf('/public/static/')); //方便手机获取真实路径
 document.write('<link rel="stylesheet" href="'+weburl+'/public/static/css/base.css">');
 document.write('<script type="text/javascript" src="'+weburl+'/public/static/js/core/jquery.min.js"><\/script>');
+
+var parents;
+if(window.parent.frames['iframe_msg']!=undefined){
+	parents = window.parent.frames['iframe_msg'];
+}else{
+	parents = window.parent;
+}
 </script>
 
 
@@ -43,7 +50,7 @@ function player(urls , ext_info, height, only_sound, in_pc) {
 	if(ext_info.index>0){
 		play_index = ext_info.index;
 	}
-	if(ext_info.time>0 && window.parent.in_pc==true){ //手机端不能自动播放
+	if(ext_info.time>0 && parents.in_pc==true){ //手机端不能自动播放
 		sync_time = ext_info.time;
 	}
 	urls.forEach((rs)=>{
@@ -86,7 +93,7 @@ function player(urls , ext_info, height, only_sound, in_pc) {
 		if(typeof(url_array[play_index])!='undefined'){
 			change_play( play_index );
 		}else{
-			parent.layer.msg('全部播放完了!');
+			parents.layer.msg('全部播放完了!');
 		}
 	});
 	$('.dplayer-video-wrap').click(function(){
@@ -229,20 +236,25 @@ var vod = {
 	},
 	finish:function(obj){	//结束直播
 		if(typeof(obj)=='object'){
-			window.parent.mod_class.vod_mv.win_player = null;
-			if(window.parent.in_pc==true){
-				var index1 = parent.layer.getFrameIndex(window.name);
-				parent.layer.close(index1);
+			parents.mod_class.vod_mv.win_player = null;
+			if(parents.in_pc==true){
+				if( typeof(parents.in_pc_qun)=='boolean' && parents.in_pc_qun==true ){	//在PC圈子风格里
+					window.parent.$("#iframe_play").attr("src","about:blank");
+					window.parent.$("#iframe_play").hide();
+				}else{	//单独的PC聊天界面里
+					var index1 = window.parent.layer.getFrameIndex(window.name);
+					window.parent.layer.close(index1);
+				}			
 			}else{
-				window.parent.$(".iframe_chat").attr("src","about:blank");
-				window.parent.$(".iframe_chat").hide();
+				parents.$(".iframe_chat").attr("src","about:blank");
+				parents.$(".iframe_chat").hide();
 			}			
 		}else{
 			var o = {
 				type:'finish',
 			};
 			ws_send(o);
-			window.parent.mod_class.vod_mv.stop();
+			parents.mod_class.vod_mv.stop();
 		}	
 	},
 }
@@ -278,8 +290,8 @@ $(function(){
 
 
 function ws_send(arr){
-	if(window.parent.my_uid==window.parent.quninfo.uid){	//圈主发送指令
-		window.parent.ws_send({
+	if(parents.my_uid==parents.quninfo.uid){	//圈主发送指令
+		parents.ws_send({
 			type:"qun_to_alluser",      //告诉WS服务器,群发给所有圈子成员
 			tag:"vod_mv_sync_play",		//返回的自定义标志,自己做处理
 			data:arr
@@ -290,10 +302,10 @@ function ws_send(arr){
 }
 
 $(function(){
-	if(window.parent.my_uid==window.parent.quninfo.uid){
+	if(parents.my_uid==parents.quninfo.uid){
 		$('.quner_power').show();
 	}
-	window.parent.$(".layui-layer-iframe").removeClass('layer-anim');//解决视频不能全屏的问题
+	parents.$(".layui-layer-iframe").removeClass('layer-anim');//解决视频不能全屏的问题
 });
 
 </script>
@@ -314,12 +326,12 @@ $(function(){
 <!--<div class="about"><span class="tt fa fa-bullhorn">介绍：</span><span class="cnt"></span><span class="more">[详情]</span></div>-->
 <script type="text/javascript">
 $(function(){
-	$(".about .cnt").html(parent.mod_class.zhibo.dataUrls.title);
+	$(".about .cnt").html(parents.mod_class.zhibo.dataUrls.title);
 	$(".about .more").click(function(){
-		var about = parent.mod_class.zhibo.dataUrls.about;
+		var about = parents.mod_class.zhibo.dataUrls.about;
 		about = about.replace(/\r\n/g,"<br>");
 		//about = about.replace(/ /g,"&nbsp;");
-		parent.layer.open({
+		parents.layer.open({
 			type: 1,
 			title:false,
 			shift: 1,

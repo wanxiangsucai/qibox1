@@ -71,29 +71,59 @@ window.onload=function(){
 			};
 		};
 	};
-	a();
+	//a();
 	//b(); 
 };
 
 //检查框架宽度与高度是否足够
 $(function(){
 	var obj = window.parent.$("iframe");
-	for(var i=0;i<obj.length;i++){		
+	for(var i=0;i<obj.length;i++){	 
 		var url = obj.eq(i).attr('src');
-		if(url.indexOf('member/msg/index')){
-			if(obj.eq(i).css('height').replace('px','')<750){
+		if(url!=undefined && url.indexOf('member/msg/index')>-1){
+			if(obj.eq(i).css('height').replace('px','')<680){
 				obj.eq(i).parent().parent().css({height:'750px'});
 				obj.eq(i).css({height:'707px'});
 			}
 
 			if(obj.eq(i).parent().parent().hasClass('layui-layer-iframe') && obj.eq(i).parent().parent().css('width').replace('px','')<950){
 				obj.eq(i).parent().parent().css({width:'950px',top:'0px'});
-			}
+			} 
 		}
 	}	
 });
 
-
+//PC圈子风格里边框架聊天界面时使用的
+function load_chat_iframe(url,callback){
+	if( window.parent.$("#iframe_play").length==0 ){
+		return ;
+	}
+	if(url==''){	//关闭窗口
+		window.parent.$("#iframe_play").attr("src","about:blank");
+		window.parent.$(".iframe_play").hide(500);
+		return ;
+	}
+	
+	//这里绕个弯是解决JQ的BUG.不然重复执行的话,下面的load方法会执行多次.
+	var obj = window.parent.$("#iframe_play").parent();
+	var str = window.parent.$("#iframe_play")[0].outerHTML;
+	window.parent.$("#iframe_play").remove();	
+	obj.append(str);
+	
+	window.parent.$("#iframe_play").show();
+	window.parent.$("#iframe_play").attr("src",url);	
+	window.parent.$("#iframe_play").load(function(){
+		var body = $(this).contents();	//body.find("body").html(); 获取页面元素
+		var win = window.parent.$("#iframe_play")[0].contentWindow;	//win.test() 执行页面方法		
+		if(typeof(callback)=='function'){
+			callback(win,body);
+		}
+		var b_height = body.find("body").height();
+		if(b_height>0){
+			window.parent.$("#iframe_play").height( body.find("body").height() );
+		}
+	});
+}
 
 
 //异步加载被调用的函数  务必注意,这个函数名必须要跟标签名一样
@@ -944,8 +974,14 @@ $(function(){
 
 
 	$("#input_box").focus(function(){
-       $('.windows_input').css('background','#fff');
-       $('#input_box').css('background','#fff');
+		if(my_uid==""){
+			layer.alert("请先登录!!");
+			return false;
+		}
+      // $('.windows_input').css('background','#fff');
+       $('#input_box').css('border','1px solid #ececec');
+	   $('#input_box').css('background','#F9F7F7');
+	   
 	});
 
     $("#input_box").blur(function(){
@@ -972,6 +1008,10 @@ $(function(){
 //发送消息
 var allowsend = true;
 function postmsg(cnt,callback){
+	if(my_uid==""){
+		layer.alert("请先登录!!");
+		return false;
+	}
 	var content_obj = {};
 	if(typeof(cnt)=='object'){
 		content_obj = cnt;

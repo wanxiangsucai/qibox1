@@ -145,7 +145,7 @@ abstract class C extends Model
 			//删除信息后的钩子,可以做一些记录,或者做附件删除处理
 			get_hook('cms_model_delete_end',$array=[],$info,['id'=>$id],true);
             hook_listen('cms_model_delete_end',$info,$id);
-            
+            cache2('qbTagCacheKey__*',null);    //清空前台所有标签内容
             return true;
         }
     }
@@ -211,7 +211,8 @@ abstract class C extends Model
         if ($result) {
 			//成功修改信息后的钩子
 			get_hook('cms_model_edit_end',$data,$info=[],['mid'=>$mid],true);
-            hook_listen('cms_model_edit_end',$data,$mid);            
+            hook_listen('cms_model_edit_end',$data,$mid);
+            cache2('qbTagCacheKey__*',null);    //清空前台所有标签内容
             return true;
         }
     }
@@ -259,6 +260,7 @@ abstract class C extends Model
 			//成功发表信息后的钩子
 			get_hook('cms_model_add_end',$data,$info=[],['id'=>$data['id']],true);
             hook_listen('cms_model_add_end',$data,$data['id']);
+            cache2('qbTagCacheKey__*',null);    //清空前台所有标签内容
             return $data['id'];
         } else {
             return false;

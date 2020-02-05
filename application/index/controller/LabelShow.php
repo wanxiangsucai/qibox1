@@ -679,7 +679,8 @@ class LabelShow extends IndexBase
         $tag_array = cache('qb_tag_'.$tag_name);    //数据库参数配置文件，不包含有列表数据
         if(empty($tag_array) || $filemtime!=$label_tags_tpl['_filemtime_']){
             $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename);
-            $tag_array['cache_time']>0 && cache('qb_tag_'.$tag_name,$tag_array,$tag_array['cache_time']);
+            $tag_array['cache_time'] = $this->get_cache_time($tag_array['cache_time']);
+            $tag_array['cache_time'] && cache('qb_tag_'.$tag_name,$tag_array,$tag_array['cache_time']);
         }
         
         if(!empty($tag_array)){
@@ -692,10 +693,12 @@ class LabelShow extends IndexBase
         //列表页,给AJAX传输数据用
         self::$list_page_cfg = [$tag_name=> $listpage_filtrate?array_merge($cfg_array,$listpage_filtrate):$cfg_array];    //列表页标签也可以存在多个的
         
-        $tag_data = cache('qb_tag_data_'.$tag_name);    //首页列表数据缓存
-        if($listpage_filtrate || $cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存或者存在列表筛选
+        $tag_cache_key = $this->get_cache_key(array_merge($cfg_array,[$tag_name]));
+        $tag_data = cache2($tag_cache_key);    //首页列表数据缓存
+        //if($listpage_filtrate || $cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存或者存在列表筛选
+        if(empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){
             $tag_data = controller('content','index')->label_list_data($cfg_array);
-            $tag_array['cache_time']>0 && cache('qb_tag_data_'.$tag_name,$tag_array,$tag_array['cache_time']);
+            $tag_array['cache_time'] && cache2($tag_cache_key,$tag_data,$tag_array['cache_time']);
         }
         
         if($filemtime!=$label_tags_tpl['_filemtime_']){
@@ -1040,10 +1043,14 @@ class LabelShow extends IndexBase
             $tpl_have_edit = true;
         }
         
-        $tag_array = cache('qb_tag_'.$tag_name);        //取得具体某个标签的数据库配置参数，对于取文章列表的，也会同时得到相应的数据
+        $tag_key = $this->get_cache_key( array_merge(self::union_live_parameter($cfg),[$tag_name]) );
+        $tag_array = cache2($tag_key);  //取得具体某个标签的数据库配置参数，对于文章或贴子类的，也会同时得到相应的列表数据
         if(empty($tag_array)||$tpl_have_edit){
             $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) );
-            $tag_array['cache_time']>0 && cache('qb_tag_'.$tag_name,$tag_array,$tag_array['cache_time']);
+            if($tag_array){
+                $tag_array['cache_time'] = $this->get_cache_time($tag_array['cache_time']);
+                $tag_array['cache_time'] && cache2($tag_key,$tag_array,$tag_array['cache_time']);
+            }
         }
         
         if(!empty($tag_array) && !empty($tag_array['type'])){
@@ -1132,7 +1139,14 @@ EOT;
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
             if( ($type&&( modules_config($type)||plugins_config($type) ))  ||  $cfg['class']){
-                $default_data = self::get_default_data($type,$cfg);
+                $tag_key = $this->get_cache_key( array_merge($cfg,[$type,$tag_name]) );
+                $cfg['cache_time'] = $this->get_cache_time($cfg['cache_time']);
+                $default_data = $cfg['cache_time'] ? cache2($tag_key) : null;
+                if (empty($default_data)) {                    
+                    $default_data = self::get_default_data($type,$cfg);                    
+                    $cfg['cache_time'] && cache2($tag_key,$default_data,$cfg['cache_time']);
+                }
+                
                 if(!empty($val)){
                     $$val = $default_data;
                 }else{
@@ -1199,6 +1213,30 @@ EOT;
             }
             eval('?>'.$tpl);            
             return unserialize($tag_array['cfg']);   //显示更多分页可能会用到,比如可以判断数据少于rows的话,是否有需要显示更多按钮
+        }
+    }
+    
+    /**
+     * 获取标签的缓存KEY
+     * @param array $array
+     * @return string
+     */
+    protected function get_cache_key($array=[]){
+        ksort($array);
+        return 'qbTagCacheKey__'.md5( http_build_query( $array ) );
+    }
+    
+    /**
+     * 获取缓存时间
+     * @param number $time
+     */
+    protected function get_cache_time($time=0){
+        if( empty($time) ){ //强制使用缓存,只有设置负数的时候,才不使用缓存
+            $time = 600;
+        }
+        if ($time>0) {
+            $time += rand(0,60);   //避免同时生成缓存,加大服务器压力
+            return $time;
         }
     }
     

@@ -197,11 +197,12 @@ abstract class Post extends IndexBase
      * @return \think\response\Json
      */
     public function agree($id=0){
+        $k = $id.'-'.($this->user['uid']?:$this->onlineip);
         hook_listen( 'topic_agree' , $id , $this->request->module() );      //监听点赞主题
-        if(cache('TopicReply_'.$id)){
+        if(cache('TopicReply_'.$k)){
             return $this->err_js('一小时内,只能点赞一次!');
         }
-        cache('TopicReply_'.$id, time(),3600);
+        cache('TopicReply_'.$k, time(),3600);
         if($this->model->addAgree($id)){
             return $this->ok_js();
         }else{

@@ -104,6 +104,7 @@ abstract class Index extends IndexBase
             }else{
                 $rs['content'] = get_word(del_html($rs['content']), 100);
             }
+            $rs['time'] = date('Y-m-d H:i',$rs['create_time']);
             $rs['url'] = iurl(config('system_dirname').'/content/show',['id'=>$rs['id']]);
             unset($rs['_content'],$rs['full_content'],$rs['sncode']);
             $array['data'][$key] = $rs;

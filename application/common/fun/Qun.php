@@ -21,7 +21,7 @@ class Qun{
     public static function live($aid=0,$tag='',$array=[]){
         static $data = null;
         if ($data===null) {
-            $data = json_decode(substr(file_get_contents(UPLOAD_PATH.'qun_live.php'),14),true)?:[];
+            $data = json_decode(substr(file_get_contents(RUNTIME_PATH.'qun_live.php'),14),true)?:[];
         }        
         $need_write = false;
         if($array===''){
@@ -39,7 +39,7 @@ class Qun{
             $need_write = true;
         }
         if ($need_write) {
-            file_put_contents(UPLOAD_PATH.'qun_live.php', '<?php die();?>'.json_encode($data));
+            file_put_contents(RUNTIME_PATH.'qun_live.php', '<?php die();?>'.json_encode($data));
         }elseif($tag){
             return $data[$aid][$tag];
         }elseif($aid){

@@ -8,6 +8,7 @@ abstract class Reply extends IndexBase
 {
     protected $model;                        //评论模型表
     protected $topic_model;                  //评论所属内容主题模型表
+    protected $msg='';                           //评论后提示的信息
 
     protected function _initialize()
     {
@@ -101,11 +102,12 @@ abstract class Reply extends IndexBase
      * @param number $rid 回复评论ID
      * @return \think\response\Json
      */
-    public function agree($id=0){        
-        if(cache('cReply_'.$id)){
+    public function agree($id=0){  
+        $k = $id.'-'.($this->user['uid']?:$this->onlineip);
+        if(cache('cReply_'.$k)){
             return $this->err_js('一小时内,只能点赞一次!');
         }
-        cache('cReply_'.$id, time(),3600);
+        cache('cReply_'.$k, time(),3600);
         hook_listen( 'reply_agree' , $id , ['module'=>$this->request->module()] );      //监听点赞回复
         if($this->model->agree($id)){
             return $this->ok_js();
@@ -147,14 +149,18 @@ abstract class Reply extends IndexBase
         $result = $this->add_check($data,$id,$pid);
         if($result!==true){
             return $this->err_js($result);
-        }
-
+        }        
+        
         if( ($result = $this->model->add($data,$id,$pid))!=false ){
+            fork_set(); //设置分支进程
+            if (fork_son() && method_exists($this->model, 'update_web_info')) {
+                $this->model->update_web_info($data);
+            }
             $array = getArray($this->model->getListByAid($id,'','',$rows));
             
             $this->end_add($data,$result->id);         
             
-            return $this->ok_js($array);
+            return $this->ok_js($array,$this->msg);
         }else{
             return $this->err_js('系统原因,评论失败');
         }
@@ -234,31 +240,33 @@ abstract class Reply extends IndexBase
     protected function end_add($data=[],$id=0){
         $topic = $this->topic_model->getInfoByid($data['aid']);
         
-        hook_listen('reply_add_end',$data,$id);
-        
-        //齐博首创 钩子文件扩展接口
-        $result = $this->get_hook('reply_end_add',$data,$topic,['id'=>$id]);
-        if($result!==null){
-            return $result;
-        }
-        
         $this->add_reply_money($topic);     //评论奖励
         
-        $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
-        if( $this->webdb['reply_send_wxmsg'] ){
-            $content = '主题: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了回复,<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
-            if($topic['uid']!=$this->user['uid']){
-                if($this->forbid_remind($topic['uid'])!==true){
-                    send_wx_msg($topic['uid'], '你发表的'.$content);
-                }                
+        if( fork_son() ){  //子线程才能执行
+            hook_listen('reply_add_end',$data,$id);
+            
+            //齐博首创 钩子文件扩展接口
+            $result = $this->get_hook('reply_end_add',$data,$topic,['id'=>$id]);
+            if($result!==null){
+                return $result;
             }
             
-            if($pinfo && $topic['uid']!=$pinfo['uid']){
-                if($pinfo['uid']!=$this->user['uid']){
-                    if($this->forbid_remind($pinfo['uid'])!==true){
-                        send_wx_msg($pinfo['uid'], '你参与讨论的'.$content);
-                    }                    
-                }                
+            $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
+            if( $this->webdb['reply_send_wxmsg'] ){
+                $content = '主题: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了回复,<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
+                if($topic['uid']!=$this->user['uid']){
+                    if($this->forbid_remind($topic['uid'])!==true){
+                        send_wx_msg($topic['uid'], '你发表的'.$content);
+                    }
+                }
+                
+                if($pinfo && $topic['uid']!=$pinfo['uid']){
+                    if($pinfo['uid']!=$this->user['uid']){
+                        if($this->forbid_remind($pinfo['uid'])!==true){
+                            send_wx_msg($pinfo['uid'], '你参与讨论的'.$content);
+                        }
+                    }
+                }
             }
         }
     }
@@ -278,7 +286,10 @@ abstract class Reply extends IndexBase
 //         }else{
             $msg = M('name') . '回复奖励:'.$info['title'];
  //       }
-        add_jifen($this->user['uid'], $group_array[$groupid],$msg,$this->webdb['group_reply_jftype']);
+        $this->msg = '感谢你回复贴子,系统奖励你 '.jf_name($this->webdb['group_reply_jftype']).$group_array[$groupid] .'个<br>特别提醒：回复越多，奖励越多哦！';
+        if (fork_son()) {
+            add_jifen($this->user['uid'], $group_array[$groupid],$msg,$this->webdb['group_reply_jftype']);
+        }
     }
     
     /**

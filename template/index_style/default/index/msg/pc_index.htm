@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>互动群聊</title>
+<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/amazeui.min.css" />
+<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/main.css" />
+<link rel="stylesheet" href="__STATIC__/icon/icon.css">
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/js/core/jquery.min.js"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/layer/layer.js"></SCRIPT>
+<style type="text/css">
+.sidestrip,.middle,.window_icon,.extend{display:none;}
+.wechat,.talk_window{width:100%;}
+</style>
+<script type="text/javascript">
+var in_pc_qun = true;// typeof(in_pc_qun)=='boolean' && in_pc_qun==true 
+</script>
+</head>
+<body>
+<div class="box">
+	<div class="wechat">
+		<!--聊天窗口-->
+		<div class="talk_window">
+			<div class="windows_top">
+				<div class="windows_top_box">
+					<span id="send_user_name"><!--对方用户名--></span>
+					<div id="remind_online">对方正在输入中，请稍候...</div>
+				</div>
+			</div>			
+			<!--聊天内容-->
+			<div class="windows_body">
+				<div id="hack_wrap"><!--表情等插件--></div>
+				<div class="office_text" style="height: 100%;">
+					<ul class="content pc_show_all_msg" id="chatbox" style="display: flex;flex-flow: column-reverse;"><!--会话内容--></ul>
+				</div>
+			</div>
+			<div class="windows_input">
+				<div class="input_icon" id="chat_model_btn">
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+					<a style="display:none;"></a>
+				</div>
+				<div class="input_box">
+					<textarea id="input_box" class="msgcontent"></textarea>
+					<button id="send">发送（S）</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+var ListMsgUserUrl = "";			//获取分页的消息用户列表
+var getShowMsgUrl = "{:iurl('index/wxapp.msg/get_more')}?rows=10&page=";	//"{qb:url name='pc_show_all_msg' /}";			//获取更多分页的会话记录
+//var now_time = "{:time()}";											//当前时间点做个记录,之后的消息就当新消息处理
+var postMsgUrl = "{:murl('member/wxapp.msg/add')}";						//发送消息提交的地址
+var get_user_info_url = "{:urls('index/wxapp.member/getbyid')}";	//根据UID获取某个用户的相关资料
+var get_uid_by_name_url = "{:urls('index/wxapp.member/get_uid')}";	//根据帐户名获取用户uid,主要是给新用户发消息用
+
+var tongjiMsgUrl = "";		//获取分页的统计数据
+var tongjiCountUrl = "";			//获取各种统计的数量
+
+var my_uid = "{$userdb.uid}";										//我的UID,当前用户的UID
+var userinfo = {$userdb?json_encode(fun('member@format',$userdb,$userdb.uid)):'""'}; //用户详细资料
+var MyFriendUrl = "";					//获取好友列表
+var FriendActUrl = "";			//添加,删除好友
+</script>
+
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?l"></script>
+<script type="text/javascript" src="__STATIC__/layui/laydate/laydate.js"></script> 
+</body>
+</html>

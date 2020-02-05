@@ -28,6 +28,14 @@ weburl = weburl.substring(0,weburl.indexOf('/public/static/')); //方便手机�
 document.write('<link rel="stylesheet" href="'+weburl+'/public/static/icon/icon.css">');
 document.write('<script type="text/javascript" src="'+weburl+'/public/static/js/core/jquery.min.js"><\/script>');
 //document.write('<script type="text/javascript" src="'+weburl+'/public/static/layer/layer.js"><\/script>');
+
+var parents;
+if(window.parent.frames['iframe_msg']!=undefined){	//在PC圈子界面里
+	parents = window.parent.frames['iframe_msg'];
+}else{
+	parents = window.parent;
+}
+
 </script>
 
 
@@ -94,12 +102,12 @@ function player(video_url, height, only_sound, in_pc) {
 <div class="about"><span class="tt fa fa-bullhorn">直播介绍：</span><span class="cnt"> </span><span class="more">[详情]</span></div>
 <script type="text/javascript">
 $(function(){
-	$(".about .cnt").html(parent.mod_class.zhibo.dataUrls.title);
+	$(".about .cnt").html(parents.mod_class.zhibo.dataUrls.title);
 	$(".about .more").click(function(){
-		var about = parent.mod_class.zhibo.dataUrls.about;
+		var about = parents.mod_class.zhibo.dataUrls.about;
 		about = about.replace(/\r\n/g,"<br>");
 		//about = about.replace(/ /g,"&nbsp;");
-		parent.layer.open({
+		parents.layer.open({
 			type: 1,
 			title:false,
 			shift: 1,

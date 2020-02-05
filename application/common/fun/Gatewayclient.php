@@ -7,8 +7,8 @@ use WebSocket\Client;
 class Gatewayclient{
     
     private static $other_server = true;    //是否使用其它服务端做中转
-    private static $server_url = 'http://sock2.soyixia.net/ws_server.php';
-    private static $client_url = 'wss://sock.soyixia.net'; //客户端请求端口
+    private static $server_url = 'http://x1.soyixia.net:8383/ws_server.php';
+    private static $client_url = 'wss://x1.soyixia.net:8282'; //客户端请求端口
     
     public function __construct(){
         Gateway::$registerAddress = '127.0.0.1:1234';   //服务端通信IP及端口
