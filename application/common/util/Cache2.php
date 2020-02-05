@@ -148,11 +148,13 @@ class Cache2{
 class Mysql_redis{
     private $data = null;
     public function set($k='',$v=''){
+        $v = addslashes($v);
         Db::execute("REPLACE INTO  `".config('database.prefix')."redis_index` (  `k` ,  `v` ) VALUES ('{$k}',  '{$v}')");
     }
     
     public function setex($k='',$t=0,$v=''){
         $t = time()+$t;
+        $v = addslashes($v);
         Db::execute("REPLACE INTO  `".config('database.prefix')."redis_index` (  `k` ,  `v`  ,  `t` ) VALUES ('{$k}',  '{$v}',  '{$t}')");
     }
     
@@ -180,6 +182,7 @@ class Mysql_redis{
     }
     
     public function lpush($k='',$v=''){
+        $v = addslashes($v);
         $this->data[] = [
             'k'=>$k,
             'v'=>$v,
