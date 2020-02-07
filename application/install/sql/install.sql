@@ -1727,7 +1727,7 @@ INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `
 
 
 DROP TABLE IF EXISTS `qb_redis_index`;
-CREATE TABLE IF NOT EXISTS `qb_radis_index` (
+CREATE TABLE IF NOT EXISTS `qb_redis_index` (
   `k` varchar(255) NOT NULL COMMENT 'key值',
   `v` text NOT NULL COMMENT 'value值',
   `t` int(10) NOT NULL COMMENT '有效期',
@@ -1737,7 +1737,7 @@ CREATE TABLE IF NOT EXISTS `qb_radis_index` (
 
 
 DROP TABLE IF EXISTS `qb_redis_list`;
-CREATE TABLE IF NOT EXISTS `qb_radis_list` (
+CREATE TABLE IF NOT EXISTS `qb_redis_list` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `k` varchar(256) NOT NULL COMMENT 'key值',
   `v` text NOT NULL COMMENT 'value值',

@@ -56,8 +56,18 @@ trait Market
         if($result!==true){
             return $this->err_js($result);
         }
-        
+        $this->clean_cache();
         return $this->ok_js(['url'=>url('group/admin_power',['id'=>$this->user['groupid']])],'模块安装成功,请设置一下后台权限');
+    }
+    
+    /**
+     * 清除相关缓存
+     */
+    protected function clean_cache(){
+        cache('timed_task',null);
+        cache('cache_modules_config',null);
+        cache('cache_plugins_config',null);
+        cache('hook_plugins',null);
     }
     
     /**
@@ -203,8 +213,8 @@ trait Market
         }
         if ($array_m || $array_p) {
             $show = '';
-            $array_m && $show.= '请先安装  “'.implode(',', $array_m).'” 频道，';
-            $array_p && $show.= '请先安装  “'.implode(',', $array_p).'” 插件，';
+            $array_m && $show.= '请在频道应用市场，先安装  “'.implode(',', $array_m).'” 频道，';
+            $array_p && $show.= '请在插件应用市场，先安装  “'.implode(',', $array_p).'” 插件，';
             return $show.'如果已安装的话,请把关闭状态改为启用。';
         }
         return true;

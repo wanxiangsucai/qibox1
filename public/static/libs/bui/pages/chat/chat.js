@@ -534,6 +534,10 @@ loader.define(function(require,exports,module) {
     // 模块初始化定义
     pageview.init = function () {
 
+		if(window.self!=window.top){
+			window.parent.location.href = window.location.href;	//不允许被框架
+		}
+
 		//router.$("#headbody").css({'top':router.$("#chat_head").height()+'px;',});
 
 		//处理软键盘破坏了界面布局，进行修复处理
