@@ -19,9 +19,20 @@ class Upgrade extends AdminBase
 	
 	public function index()
     {
+        $this->clean_cache();
         $array = @include(config('client_upgrade_edition'));
         $this->assign('upgrade',$array);
 		return $this->fetch('index');
+	}
+	
+	/**
+	 * 清除相关缓存
+	 */
+	protected function clean_cache(){
+	    cache('timed_task',null);
+	    cache('cache_modules_config',null);
+	    cache('cache_plugins_config',null);
+	    cache('hook_plugins',null);
 	}
 	
 	/**
