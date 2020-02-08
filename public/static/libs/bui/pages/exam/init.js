@@ -87,8 +87,8 @@ mod_class.exam = {
 	logic_init:function(res){  //init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
 		this.check_data(res);
 	},
-	winer:null,	//播放器所在的框架对象,通过这个来操作播放器里的函数
-	openwin:function(info,ext_info){	//PC播放器
+	winer:null,	//框架对象,通过这个来操作播放器里的函数
+	openwin:function(info,ext_info){	//打开试卷
 		var that = this;	//引用传递
 		layer.open({  
 			  type: 2,    
@@ -101,7 +101,7 @@ mod_class.exam = {
 			  scrollbar: false,
 			  closeBtn:2,  
 			  area: (in_pc?['500px','600px']:['95%','85%']),  
-			  content: "/index.php/exam/category/index/fid/" + info.id + ".html?aid="+Math.abs(uid)+"&cid="+clientId,
+			  content: "/index.php/exam/category/index/fid/" + info.id + ".html?aid="+Math.abs(uid),
 			  success: function(layero, index){  
 					var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
 					that.winer = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();  
@@ -119,7 +119,6 @@ mod_class.exam = {
 				}
 			  },
 			  full: function() {
-				  that.winer.full_screen();
 			  }
 		});
 		function ifstop(){
@@ -136,6 +135,26 @@ mod_class.exam = {
 		}
 	},
 	pid:0,//试卷ID
+	open_question:function(info){	//打开试题
+		var that = this;	//引用传递
+		layer.open({  
+			  type: 2,    
+			  title: '答题开始了...',  
+			  fix: false,  
+			  shadeClose: false,  
+			  //offset: ['10px', '10px'],
+			  shade: 0,
+			  maxmin: false,
+			  scrollbar: false,
+			  closeBtn:2,  
+			  area: (in_pc?['500px','600px']:['95%','85%']),  
+			  content: "/index.php/exam/content/show/id/" + info.id + ".html?type=live&aid="+Math.abs(uid),
+			  success: function(layero, index){  
+					var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
+					that.winer = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+			  },
+		});
+	},
 }
 
 
@@ -200,7 +219,22 @@ ws_onmsg.exam = function(obj){
 		if(mod_class.exam.pid==0){
 			mod_class.exam.pid = obj.data.info.id;
 		}
-	
+
+	}else if(obj.type=='give_question_state'){	//通知打开试题 
+
+		mod_class.exam.open_question(obj.data.info);
+
+	}else if(obj.type=='give_question_result'){	//用户答题 , 来自此文件提交的数据\template\index_style\default\exam\content\show.htm
+		
+		var str = obj.data;
+		if (in_pc == true) {
+            $(".pc_show_all_msg").prepend(str);
+            goto_bottom(500)
+        } else {
+            $("#chat_win").prepend(str);
+            $('#chat_win').parent().scrollTop(20000);
+        }
+
 	}else if(obj.type=='give_exam_sync'){  //收到上面发送的同步指令,播放同步信息
 		//mod_class.exam.winer.vod.sync_play({index:obj.data.play_index,time:obj.data.play_time});
 	
@@ -208,6 +242,6 @@ ws_onmsg.exam = function(obj){
 		mod_class.exam.goplay({play_urls:mod_class.exam.infos},'err');
 	
 	}else if(obj.type=='exam_sync_play'){  //框架对象那里发过来的同步指令
-		mod_class.exam.winer.control(obj.data);
+		//mod_class.exam.winer.control(obj.data);
 	}
 }

@@ -2,11 +2,11 @@ loader.define(function(require,exports,module) {
 
 
 	var pageview = {};      // 页面的模块, 包含( init,bind )
-	var type = 'exam';
+	var type = 'paper';  //paper question
 	var uid = 0; //圈主UID
 	var mid = 1;
 	var aid = 0; //圈子ID
-	var mod_array = {};
+	var mod_array = {paper:'试卷',question:'试题'};
 	var page = 1;
 	var scroll_get = true;
 	
@@ -17,6 +17,14 @@ loader.define(function(require,exports,module) {
     pageview.init = function () {
 		get_list_data();
 		//get_mod();
+		router.$("#choose_mod .bui-nav li").click(function(){
+				router.$("#choose_mod .bui-nav li").removeClass("active");
+				$(this).addClass("active");
+				type = $(this).data("type");
+				page = 1;
+				router.$(".bui-bar-main").html(mod_array[type]);
+				get_list_data();
+		});
 
 		var that = router.$("#choose_mod");
 		that.parent().scroll(function () {
@@ -57,7 +65,10 @@ loader.define(function(require,exports,module) {
 	//获取相应的频道数据列表
 	function get_list_data(){
 		layer.msg("加载中,请稍候...");
-		var url = "/index.php/exam/wxapp.paper/index.html?uid="+uid+"&page="+page+"&rows=15";
+		var url = "/index.php/exam/wxapp.paper/index.html?uid="+uid+"&page="+page+"&rows=10";	//列出试卷
+		if(type=='question'){
+			url = "/index.php/exam/wxapp.index/listbyuid.html?uid="+uid+"&page="+page+"&rows=10";  //列出试题
+		}		
 		$.get(url,function(res){
 			layer.closeAll();
 			if(res.code==0){
@@ -93,16 +104,24 @@ loader.define(function(require,exports,module) {
 		router.$('.list-hack .add').click(function(){
 			var id = $(this).data("id");
 			$(".chat_mod_btn").hide();
-			$.get("/index.php/exam/wxapp.paper/setlive.html?type=add&aid="+aid+"&id="+id,function(res){
+			var url = "/index.php/exam/wxapp.paper/setlive.html?type=add&aid="+aid+"&id="+id; //获取试卷信息
+			if(type=='question'){
+				url = "/index.php/exam/wxapp.show/index.html?aid="+aid+"&id="+id;  //获取试题信息
+			}
+			$.get(url,function(res){
 				if(res.code==0){
-					console.log('试卷信息',res.data);
+					console.log('信息',res.data);
 					var arr = {
 						info:res.data,
 					}
 					layer.msg("操作成功");
 					//通知所有用户打开播放器,或者同步音乐信息					
 					setTimeout(function(){
-						ws_send({type:"qun_to_alluser",tag:"give_exam_state",data: arr,});
+						ws_send({
+							type:"qun_to_alluser",
+							tag:type=='question'?"give_question_state":"give_exam_state",
+							data: arr,
+						});
 						bui.back();
 					},100);
 				}else{
@@ -134,10 +153,23 @@ loader.define(function(require,exports,module) {
 		var str = "";
 		var d_url = typeof(web_url)!='undefined'?'':'/';
 		array.forEach((rs)=>{
-			//var content = rs.content.substring(0,20);
-			rs.content = '';
-			var title = rs.name.substring(0,15);
-			rs.picurl = '';
+			var about = '';
+			if(rs.content == undefined){	//试卷
+				rs.content = '';
+				about = '暂无介绍';
+			}else{
+				about = '暂无介绍';
+			}
+			var content = rs.content.substring(0,20);
+			
+			if(rs.title == undefined){
+				rs.title = rs.name;
+			}
+			var title = rs.title.substring(0,15);
+			if(rs.picurl == undefined){
+				rs.picurl = '';
+			}
+			
 			str +=`
 			<li class="list-item" data-uid="${rs.id}">
 				<div class="bui-btn bui-box">
@@ -146,7 +178,7 @@ loader.define(function(require,exports,module) {
 						<h3 class="item-title">
 							${title}
 						</h3>
-						<p class="item-text">暂无介绍</p>
+						<p class="item-text">${about}</p>
 					</div>
 					<i class="icon- primary add" data-id="${rs.id}" data-url="${rs.url}" data-title="${rs.title}" data-picurl="${rs.picurl}" data-content="${rs.content}"><i class="fa fa-plus-circle"></i></i>
 				</div>
