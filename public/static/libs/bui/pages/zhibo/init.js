@@ -328,8 +328,8 @@ mod_class.zhibo = {
 		var that = this;
 		if(in_pc==true){
 			if( typeof(in_pc_qun)=='boolean' && in_pc_qun==true ){	//在PC圈子里
-				load_chat_iframe("/public/static/libs/bui/pages/zhibo/dplayer.html",function(win,body){
-					win.player(m3u8_url,only_sound==true?'200px':'650px',only_sound);
+				load_chat_iframe("/public/static/libs/bui/pages/zhibo/player.html",function(win,body){
+					win.player(flv_url,only_sound==true?'200px':'650px',only_sound);
 				});
 			}else{	//在PC聊天界面里
 				this.player_index = layer.open({  

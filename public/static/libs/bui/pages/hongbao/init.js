@@ -13,7 +13,7 @@ mod_class.hongbao = {
 						type: 2,
 						shadeClose: true,
 						shade: 0.3,
-						area: ['800px', '650px'],
+						area: $('body').width()<800 ? ['95%', '80%'] : ['800px', '650px'],
 						content: '/member.php/member/plugin/execute/plugin_name/hongbao/plugin_controller/content/plugin_action/add/mid/1.html?fromtype=msg&ext_id='+(-uid),
 					});
 			});

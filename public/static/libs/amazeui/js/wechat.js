@@ -101,6 +101,9 @@ function load_chat_iframe(url,callback){
 	if(url==''){	//关闭窗口
 		window.parent.$("#iframe_play").attr("src","about:blank");
 		window.parent.$(".iframe_play").hide(500);
+		if(typeof(window.parent.close_play)=='function'){
+			window.parent.close_play();
+		}
 		return ;
 	}
 	
@@ -121,6 +124,9 @@ function load_chat_iframe(url,callback){
 		var b_height = body.find("body").height();
 		if(b_height>0){
 			window.parent.$("#iframe_play").height( body.find("body").height() );
+		}
+		if(typeof(window.parent.open_play)=='function'){
+			window.parent.open_play(url);
 		}
 	});
 }
@@ -339,8 +345,17 @@ function ws_send(o,getcid){
 		wait_connect(o,getcid);
 	}
 	function wait_connect(o,getcid){
-		ws_onmsg.require_senmsg = function(obj){	//收到消息时候的回调
-			ws_onmsg.require_senmsg = null;		//这一行不能缺少,不然会进入死循环
+		var k = 'require_senmsg';
+		if(typeof(o)=='object'){
+			if(o.type!=undefined){
+				k+=o.type;
+			}
+			if(o.tag!=undefined){
+				k+=o.tag;
+			}
+		}
+		ws_onmsg[k] = function(obj){	//收到消息时候的回调
+			ws_onmsg[k] = null;		//这一行不能缺少,不然会进入死循环
 			setTimeout(function(){	//避免跟注册信息同时发送
 				w_s.send( get_msg(o,getcid) );
 			},200);

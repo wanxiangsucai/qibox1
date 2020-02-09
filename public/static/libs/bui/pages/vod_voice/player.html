@@ -285,6 +285,9 @@ var vod = {
 				if( typeof(parents.in_pc_qun)=='boolean' && parents.in_pc_qun==true ){	//在PC圈子风格里
 					window.parent.$("#iframe_play").attr("src","about:blank");
 					window.parent.$("#iframe_play").hide();
+					if(typeof(window.parent.close_play)=='function'){
+						window.parent.close_play();
+					}
 				}else{	//单独的PC聊天界面里
 					var index1 = parent.layer.getFrameIndex(window.name);
 					parent.layer.close(index1);

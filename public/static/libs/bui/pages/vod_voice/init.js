@@ -21,7 +21,7 @@ mod_class.vod_voice = {
 				layer.open({  
 				  type: 2,    
 				  title: '音频点播转直播',  
-				  area: in_pc?['650px','600px']:['95%','80%'],  
+				  area: $('body').width()>800?['650px','600px']:['95%','80%'],  
 				  content: "/index.php/cms/vod/index.html?type=voice&aid="+Math.abs(uid),
 				});
 			}			

@@ -11,13 +11,19 @@ mod_class.exam = {
 					layer.alert('圈主才能使用');
 					return ;
 				}
-				layer.open({
+				var s = {
 						type: 2,
 						shadeClose: true,
 						shade: 0.3,
 						area: ['800px', '650px'],
 						content: '/index.php/exam/vod/index.html?aid='+Math.abs(uid),
-					});
+				};
+				if(window.parent.frames['iframe_msg']!=undefined){	//在圈子页打开
+					window.parent.layer.open(s);
+				}else{
+					layer.open(s);
+				}
+				
 			});
 		}else{
 			router.$("#btn_exam").click(function(){
@@ -72,7 +78,7 @@ mod_class.exam = {
 				info = this.infos;
 			}
 			if(etype=='ok'){	//请求成功
-				ext_info = {index:obj.play_index,time:obj.play_time}
+				ext_info = {}
 			}
 		}else{	//请求播放信息
 			this.infos = obj;	//存放起来,后来要用到
@@ -90,7 +96,7 @@ mod_class.exam = {
 	winer:null,	//框架对象,通过这个来操作播放器里的函数
 	openwin:function(info,ext_info){	//打开试卷
 		var that = this;	//引用传递
-		layer.open({  
+		var s = {  
 			  type: 2,    
 			  title: '考试开始了...',  
 			  fix: false,  
@@ -120,7 +126,15 @@ mod_class.exam = {
 			  },
 			  full: function() {
 			  }
-		});
+		};
+		if(window.parent.frames['iframe_msg']!=undefined){	//在圈子页打开
+			if(window.parent.exam_index!=undefined){	//避免重复打开
+				window.parent.layer.close(window.parent.exam_index);
+			}
+			window.parent.exam_index = window.parent.layer.open(s);
+		}else{
+			layer.open(s);
+		}
 		function ifstop(){
 			layer.confirm('是否将试卷撤消',{btn:['撤消','不撤消']},function(index){
 				layer.close(index);
@@ -137,7 +151,7 @@ mod_class.exam = {
 	pid:0,//试卷ID
 	open_question:function(info){	//打开试题
 		var that = this;	//引用传递
-		layer.open({  
+		var s = {  
 			  type: 2,    
 			  title: '答题开始了...',  
 			  fix: false,  
@@ -153,7 +167,12 @@ mod_class.exam = {
 					var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    
 					that.winer = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
 			  },
-		});
+		};		
+		if(window.parent.frames['iframe_msg']!=undefined){	//在圈子页打开
+			window.parent.layer.open(s);
+		}else{
+			layer.open(s);
+		}
 	},
 }
 

@@ -36,8 +36,9 @@ if(window.parent.frames['iframe_msg']!=undefined){
 }
 </script>
 
-
-<div id="dplayer"  style="width:100%;height:200px;"></div>
+<div id="warp" style="width:100%;height:200px;">
+	<div id="dplayer" style="width:100%;height:100%;"></div>
+</div>
 <script type="text/javascript">
 var url_array = [];
 var player1;
@@ -65,8 +66,7 @@ function player(urls , ext_info, height, only_sound, in_pc) {
         height = parseFloat(height).toString() + 'px';
     }
 
-    var div = document.getElementById('dplayer');
-    div.style.setProperty('height', height);
+    document.getElementById('warp').style.setProperty('height', height);
      
     dp = new DPlayer({
             container: document.getElementById('dplayer'),
@@ -241,6 +241,9 @@ var vod = {
 				if( typeof(parents.in_pc_qun)=='boolean' && parents.in_pc_qun==true ){	//在PC圈子风格里
 					window.parent.$("#iframe_play").attr("src","about:blank");
 					window.parent.$("#iframe_play").hide();
+					if(typeof(window.parent.close_play)=='function'){
+						window.parent.close_play();
+					}
 				}else{	//单独的PC聊天界面里
 					var index1 = window.parent.layer.getFrameIndex(window.name);
 					window.parent.layer.close(index1);

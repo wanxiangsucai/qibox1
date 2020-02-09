@@ -204,7 +204,10 @@ class Mysql_redis{
             return $info['v'];
         }
     }
-    
+    //返回集合中存储值的数量 为空返回0
+    public function ssize($k=''){
+        return Db::name('redis_list')->where('k',$k)->order('id desc')->count('id');
+    }
     public function multi(){
         $this->data = null;
     }

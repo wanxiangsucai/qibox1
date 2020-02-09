@@ -38,8 +38,9 @@ if(window.parent.frames['iframe_msg']!=undefined){	//在PC圈子界面里
 
 </script>
 
-
-<div id="dplayer"  style="width:100%;"></div>
+<div id="warp" style="width:100%;height:200px;">
+	<div id="dplayer" style="width:100%;height:100%;"></div>
+</div>
 <script type="text/javascript">
 var dp;
 function player(video_url, height, only_sound, in_pc) {
@@ -49,8 +50,7 @@ function player(video_url, height, only_sound, in_pc) {
     } else {
         height = parseFloat(height).toString() + 'px';
     }
-    var div = document.getElementById('dplayer');
-    div.style.setProperty('height', height);
+    document.getElementById('warp').style.setProperty('height', height);
      
     if (in_pc == 'pc') {
         dp = new DPlayer({
@@ -61,7 +61,7 @@ function player(video_url, height, only_sound, in_pc) {
             video: {
                 url: video_url,
                 type: 'flv',
-                pic: './timg.jpg?d',
+                pic: './timg.jpg',
             },
         });
         
@@ -74,7 +74,7 @@ function player(video_url, height, only_sound, in_pc) {
             video: {
                 url: video_url,
                 type: 'hls',
-                pic: './timg.jpg?d',
+                pic: './timg.jpg',
             },
         });
     }

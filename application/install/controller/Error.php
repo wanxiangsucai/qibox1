@@ -189,7 +189,7 @@ class Error extends Controller
         //站点密匙
         $auth = substr(md5(time().get_ip()),0,rand(25,32));
         Db::name("config")->where(['c_key'=>'mymd5'])->update(['c_value'=>$auth]);
-        write_file(APP_PATH.'install/install.lock', date('Y-m-d H:i:s'));
+        write_file(APP_PATH.'install/install.lock', date('Y-m-d H:i:s')."\r\n".request()->domain());
         // 获取站点根目录
         $root_dir = request()->baseFile();
         $root_dir  = preg_replace(['/index.php$/'], [''], $root_dir);

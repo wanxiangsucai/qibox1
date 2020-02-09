@@ -21,7 +21,7 @@ mod_class.vod_mv = {
 				layer.open({  
 				  type: 2,    
 				  title: '视频点播',  
-				  area: in_pc?['650px','600px']:['95%','80%'],  
+				  area: $('body').width()>800?['650px','600px']:['95%','80%'],  
 				  content: "/index.php/cms/vod/index.html?type=mv&aid="+Math.abs(uid),
 				});
 			}			
