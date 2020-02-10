@@ -11,9 +11,77 @@
 <style type="text/css">
 .sidestrip,.middle,.window_icon,.extend{display:none;}
 .wechat,.talk_window{width:100%;}
+#remind_online {
+    position: static;
+	margin:auto;
+    left: 0;
+	width:100%;
+	text-align:center;
+	color:#d6450d;
+	background-color:transparent;
+}
+#send_user_name{
+	display:none;
+}
+#bigwin{
+	position: absolute;
+	right:0px;
+	top:10px;
+	font-size:18px;
+	display:block;
+	width:25px;
+	padding-top:5px;
+	height:27px;
+	text-align:center;
+	background:orange;
+	color:#fff;
+	border-radius:3px;
+	cursor:pointer;
+	display:none;
+}
+@media (max-width: 600px){
+	#bigwin{
+		display:inline;
+	}
+	.input_icon .set-chatmod-btn{
+		font-size: 18px;
+	}
+	.input_icon {
+		padding:0 6px;
+	}
+	.input_icon a {
+		height: 12px;
+		width: 18px;
+		margin-top: 11px;
+		margin-right: 7px;
+	}
+	.input_box textarea {
+		margin-left:10px;
+		width: calc(100% - 15px);
+	}
+	#send{
+	    margin-right:15px;
+	}
+}
 </style>
 <script type="text/javascript">
 var in_pc_qun = true;// typeof(in_pc_qun)=='boolean' && in_pc_qun==true 
+$(function(){
+	var now_status = false;
+	$("#bigwin").click(function(){
+		now_status = now_status?false:true;
+		$("#bigwin").removeClass("glyphicon-resize-full");
+		$("#bigwin").removeClass("glyphicon-resize-small");
+		if(now_status){
+			$("#bigwin").addClass("glyphicon-resize-small");
+		}else{
+			$("#bigwin").addClass("glyphicon-resize-full");			
+		}
+		if(typeof(window.parent.change_win)=='function'){
+			window.parent.change_win(now_status);
+		}
+	});
+});
 </script>
 </head>
 <body>
@@ -26,6 +94,7 @@ var in_pc_qun = true;// typeof(in_pc_qun)=='boolean' && in_pc_qun==true
 					<span id="send_user_name"><!--对方用户名--></span>
 					<div id="remind_online">对方正在输入中，请稍候...</div>
 				</div>
+				<i id="bigwin" title="点击进行缩放" class="glyphicon glyphicon-resize-full"></i>
 			</div>			
 			<!--聊天内容-->
 			<div class="windows_body">

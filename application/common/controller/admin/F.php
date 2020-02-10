@@ -45,6 +45,7 @@ abstract class F extends AdminBase
                 ['title', '字段名称', 'text'],
                 ['name', '字段变量名', 'text'],
                 ['type', '表单类型', 'select',config('form')],
+                ['name', '字段变量名', 'text'],
                 ['list', '排序值', 'text.edit'],
         ];
         

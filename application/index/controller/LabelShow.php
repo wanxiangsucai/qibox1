@@ -692,8 +692,8 @@ class LabelShow extends IndexBase
         $listpage_filtrate = $this->listpage_filter_field($cfg['mid']); //比如分类的列表筛选
         //列表页,给AJAX传输数据用
         self::$list_page_cfg = [$tag_name=> $listpage_filtrate?array_merge($cfg_array,$listpage_filtrate):$cfg_array];    //列表页标签也可以存在多个的
-        
-        $tag_cache_key = $this->get_cache_key(array_merge($cfg_array,[$tag_name]));
+
+        $tag_cache_key = $this->get_cache_key(array_merge($cfg_array,[$tag_name],['page'=>$cfg['page']]));
         $tag_data = cache2($tag_cache_key);    //首页列表数据缓存
         //if($listpage_filtrate || $cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存或者存在列表筛选
         if(empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){

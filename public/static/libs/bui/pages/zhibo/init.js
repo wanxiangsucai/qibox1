@@ -89,12 +89,16 @@ mod_class.zhibo = {
 				layer.alert('只有圈主才能直播，你如果没有圈子的话，可以创建一个！');
 				return ;
 			}
-			
+			var disabled = ' disabled ';
+			if(quninfo.live_api_url!=undefined && quninfo.live_api_url!=''){	//圈子自定义了直播接口,才允许手工设置开播与停播
+				disabled = '';
+			}
 			var show_str = `<div class="live_video_warp">
-							直播选项：<input type="radio" checked name="zhiboStatus" onclick="$('.zhibo_begintime_warp').hide();" value="2">正式开播  <input type="radio" name="zhiboStatus" value="1" onclick="$('.zhibo_begintime_warp').show();">预告<br>
+							直播选项：<input type="radio" checked name="zhiboStatus" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').show();" value="2">正式开播  <input type="radio" name="zhiboStatus" value="1" onclick="$('.zhibo_begintime_warp').show();$('.zhibo-btn').hide();">预告  <input type="radio" name="zhiboStatus" value="3" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').hide();" ${disabled}>停播<br>
 							<div class="zhibo_begintime_warp" style="display:none;">开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20'><script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script></div>
 							分享标题：<input class="zhibo_share_title" type="text" style="width:80%;" value="${quninfo.title}"><br>
 							分享描述：<textarea class="zhibo_share_about"  style="width:80%;height:100px;" value="${quninfo.content}"></textarea><br>
+							<span class="zhibo-btn">马上开播：<input type="radio" checked name="zhiboBtn"  value="0">自动处理(常用)  <input type="radio" name="zhiboBtn" value="1" ${disabled}>强制开播(手工)</span>
 							</div>`;
 			layer.open({
 					type: 1,
@@ -109,6 +113,7 @@ mod_class.zhibo = {
 							about:$(".live_video_warp").last().find(".zhibo_share_about").val(),
 							start_time:$(".live_video_warp").last().find(".zhibo_begintime").val(),
 							zhibo_status:$(".live_video_warp").last().find("input[name='zhiboStatus']:checked").val(),
+							force_start:$(".live_video_warp").last().find("input[name='zhiboBtn']:checked").val(),
 						};
 						if(postdata.zhibo_status==1){
 							if(postdata.start_time==''){
@@ -158,8 +163,11 @@ mod_class.zhibo = {
 		function zhibo_choose(postdata){			
 			$.post("/index.php/p/alilive-api-url.html?id="+Math.abs(uid),postdata,function(res){
 				if(res.code==0){
-					if(postdata.zhibo_status!=2){
+					if(postdata.zhibo_status==1){
 						layer.msg('预告登记成功!');
+						return ;
+					}else if(postdata.zhibo_status==3){
+						layer.msg('已成功停播!');
 						return ;
 					}
 					that.notify_selfsever(res.data.self_server_api);//自建服务器做通知开播处理 , 注意,这仅只是兼容自建公用服务器，设置过回调地址的自建服务器，这一行可删除

@@ -232,6 +232,10 @@ class Upgrade extends AdminBase
 	    set_time_limit(0); //防止超时
 	    $array = $this->getfile();
 	    if(empty($array)){
+	        $str = http_curl("https://x1.php168.com/appstore/upgrade/get_version.html?id=46");
+	        if (!strstr($str,'md5')) {
+	            return $this->err_js('你的服务器无法访问齐博官网,请检查你的服务器DNS是否配置正确，或者是否设置了防火墙不能访问外网');
+	        }
 	        return $this->err_js('获取云端文件列表数据失败,请晚点再偿试');
 	    }
 	    $data = [];

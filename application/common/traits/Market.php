@@ -239,6 +239,14 @@ trait Market
         $sql = read_file($basepath."$keywords/install/install.sql");
         strlen($sql)>10 && into_sql($sql);
         $info['version_id'] = intval($version_id);
+        
+        $string = http_curl("https://x1.php168.com/appstore/upgrade/get_version.html?id=".$version_id);
+        if ($string!='') {
+            $detail = json_decode($string,true);
+            if ($detail['md5']) {
+                $info['version'] = $detail['time']."\t".$detail['md5'];
+            }
+        }
         $result = $this->model->create($info);
         if(empty($result)){
             return '数据库安装执行失败!';

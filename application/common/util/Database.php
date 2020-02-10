@@ -88,6 +88,14 @@ class Database {
     
     function bak_table($table,$start=0,$row=3000){
         global $db;
+        $haystack = [
+            config('database.prefix').'redis_index',
+            config('database.prefix').'redis_list',
+            config('database.prefix').'timed_log',
+        ];
+        if(in_array($table, $haystack)){
+            return ;
+        }
         $limit=" limit $start,$row ";
         //$field=show_field($table);
         $query = Db::query(" SELECT * FROM $table $limit ");
@@ -95,6 +103,7 @@ class Database {
         //$num = count( table_field($table,'',false) );
         //$field_array = table_field($table,'',false);
         //while ($array=mysql_fetch_row($query)){
+        $link = function_exists('mysql_escape_string')?:mysqli_connect(config('database.hostname'), config('database.username'), config('database.password'), config('database.database'), config('database.hostport'));
         foreach($query AS $array){
             $rows='';
             
@@ -103,8 +112,7 @@ class Database {
             //    $rows.=(is_null($array[$i])?'NULL':"'".$code."'").",";
             // }
             foreach($array AS $field=>$value){
-                
-                $rows .= ( is_null($value) ? 'NULL' : "'".( function_exists('mysql_escape_string') ? mysql_escape_string($value) : addslashes($value) )."'" ).",";
+                $rows .= ( is_null($value) ? 'NULL' : "'".( function_exists('mysql_escape_string') ? mysql_escape_string($value) : mysqli_real_escape_string($link,$value) )."'" ).",";
                 
             }
             

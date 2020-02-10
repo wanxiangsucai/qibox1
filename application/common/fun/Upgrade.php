@@ -1,5 +1,6 @@
 <?php
 namespace app\common\fun;
+use app\common\model\Hook_plugin as HookPluginModel;
 
 /**
  * 系统升级要用到的函数
@@ -23,7 +24,7 @@ class Upgrade{
             $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-p';
         }
         $_hook = [];
-        $hook_plugins = cache('hook_plugins');
+        $hook_plugins = cache('hook_plugins')?:HookPluginModel::where('ifopen', 1)->order('list desc,id asc')->column(true);
         foreach ($hook_plugins AS $rs){
             if($_hook[$rs['hook_class']] )continue;
             list($time,$version) = explode("\t",$rs['version']);

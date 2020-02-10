@@ -181,6 +181,14 @@ class HookPlugin extends AdminBase
             }
         }
         
+        $string = http_curl("https://x1.php168.com/appstore/upgrade/get_version.html?id=".$id);
+        if ($string!='') {
+            $detail = json_decode($string,true);
+            if ($detail['md5']) {
+                $info['version'] = $detail['time']."\t".$detail['md5'];
+            }
+        }
+        
         $detail = explode(',',$info['hook_key']);
         foreach($detail AS $value){
             $info['hook_key'] = $value;

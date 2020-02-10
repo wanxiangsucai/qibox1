@@ -3267,6 +3267,20 @@ if(!function_exists('cache2')){
      * @param number $time
      */
     function cache2($key='',$value='',$time=0){
+        if (config('cache.prefix')!='' && $key!=='') {
+            if (is_array($key)) {
+                if($value!=='' && $value!==null && isset($key[0])){    //插入一批数据
+                    $value = config('cache.prefix').'___'.$value;
+                }else{
+                    foreach ($key AS $k=>$v){
+                        $k = config('cache.prefix').'___'.$k;
+                        $key[$k] = $v;
+                    }
+                }
+            }else{
+                $key = config('cache.prefix').'___'.$key;
+            }
+        }
         if (is_array($key)) {
             Cache2::set($key,$value,$time);
         }elseif ($value===null) {
