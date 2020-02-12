@@ -534,8 +534,8 @@ loader.define(function(require,exports,module) {
     // 模块初始化定义
     pageview.init = function () {
 
-		if(window.self!=window.top){
-			window.parent.location.href = window.location.href;	//不允许被框架
+		if(window.self!=window.top && (window.parent.location.href).indexOf('/msg/index.html')>0){	//避免重复框架
+			window.parent.location.href = window.location.href;
 		}
 
 		//router.$("#headbody").css({'top':router.$("#chat_head").height()+'px;',});

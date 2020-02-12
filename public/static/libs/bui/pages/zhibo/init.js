@@ -105,7 +105,7 @@ mod_class.zhibo = {
 					title:'请输入本次直播介绍,有利于微信转发推广',
 					shift: 1,
 					btn:["确认","更多设置","取消"],
-					area:in_pc?['500px','350px']:['98%','350px'],
+					area:$('body').width()<800 ?['98%','350px']:['500px','350px'],
 					content: show_str,
 					btn1:function(index){
 						var postdata = {
@@ -207,7 +207,7 @@ mod_class.zhibo = {
 								type: 1,
 								title:'直播推流与拉流地址',
 								shift: 1,
-								area:in_pc?['600px','400px']:['98%','400px'],
+								area:$('body').width()<800 ?['98%','400px']:['600px','400px'],
 								content: show_str,
 						});
 						$(".live_video_warp").last().find(".codeimg img").attr('src',res.data.push_img);

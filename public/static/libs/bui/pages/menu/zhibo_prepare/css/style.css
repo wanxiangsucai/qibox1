@@ -897,6 +897,7 @@ h2 {
 		margin: 0em 1em 2em;
 	}
 }
+/*
 @media(max-width:900px){
 	.position {
 		width: 56px!important;
@@ -905,8 +906,8 @@ h2 {
 	.countDays, .countHours, .countMinutes, .countSeconds {
 		width: 127px;
 	}
-}
-@media(max-width:800px){
+}*/
+@media(max-width:900px){
 	.newsletter {
 	    margin: 1em auto 0em;
 	}
@@ -932,7 +933,7 @@ h2 {
 	}
 	#counter {
 		font-size: 50px;
-		height: 2em;
+		height: 2.1em;
 	}
 	.bg.agile {
 		padding: 0em 0 0 0;

@@ -25,7 +25,7 @@
 }
 #bigwin{
 	position: absolute;
-	right:0px;
+	right:10px;
 	top:10px;
 	font-size:18px;
 	display:block;
@@ -63,6 +63,9 @@
 	    margin-right:15px;
 	}
 }
+.wechat{
+	height:100%;
+}
 </style>
 <script type="text/javascript">
 var in_pc_qun = true;// typeof(in_pc_qun)=='boolean' && in_pc_qun==true 
@@ -81,7 +84,15 @@ $(function(){
 			window.parent.change_win(now_status);
 		}
 	});
+	set_chatwin_height();
 });
+
+function set_chatwin_height(){
+	var h = $("body").height()-$(".windows_input").height()-$(".windows_top").height()-10;
+	if(h>200){
+		$(".windows_body").height(h);
+	}
+}
 </script>
 </head>
 <body>
@@ -140,7 +151,7 @@ var FriendActUrl = "";			//添加,删除好友
 
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
-<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?l"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?{:time()}"></script>
 <script type="text/javascript" src="__STATIC__/layui/laydate/laydate.js"></script> 
 </body>
 </html>

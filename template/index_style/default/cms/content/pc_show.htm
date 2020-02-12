@@ -14,6 +14,10 @@
 {/qb:tag}
 {/block}
 {block name="body_content"}
+
+<!--视频播放器-->
+{if $info.mid==3} {include file="content/zhibo" /} {/if}
+
 <link rel="stylesheet" href="__STATIC__/index/default/pclist.css">
 <div class="ArticlMainContainer">
 	<div class="LeftsCnt">
@@ -34,11 +38,7 @@
 				{php}if(strstr($info['content'],$rs['picurl']))continue;{/php}
 				<br><center><img src="{$rs.picurl}"></center><br>
 				{/volist}
-				
-				{notempty name="$info.mv_url"}
-				<!-- 视频模型 -->
-				<br><center>{:fun('Player@play',$info['mv_url'][0]['url']?:$info['mv_url'],800,600)}</center>
-				{/notempty}
+
 			</div>
 		</div>
 <!--显示自定义字段内容 field="picurl,title,content,keywords" 就是过滤掉不在里边重复显示的字段-->
@@ -90,7 +90,5 @@ function add_fav(id){
 }
 </script>
 
-<!-- 微动态自动收录用户感兴趣的主题,时间60代表用户停留60秒将自动收藏 -->
-{:fun('sns@fav',$info,60,'系统帮你订阅了本主题,下次本主题有回复,将会通知你')}
 
 {/block}

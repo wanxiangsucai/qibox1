@@ -294,7 +294,8 @@ function format_chatmsg_tohtml(array){
 	function goto_bottom(vh){
 		var iCount = setInterval(function() {
 			var obj = $(".pc_show_all_msg");
-			var h = obj.height();
+			var ckh = 473-$(".windows_body").height();
+			var h = obj.height()+ckh;
 			//console.log( '实际的高度='+h);
 			if(h>vh){
 				clearInterval(iCount);
@@ -501,7 +502,7 @@ function ws_link(){
 					shade: 0.1,
 					shadeClose: true,
 					title: '仅列出已注册的在线会员数，不含游客',
-					area: ['400px', '300px'],
+					area: $('body').width()<500?['95%', '300px']:['400px', '300px'],
 					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',
 			});
 		}
@@ -769,20 +770,21 @@ function set_main_win_content(res){
 			layer.msg("已经显示完了！",{time:500});
 		}		
 	}else{
+		
 		//console.log("ddddddddddddddddd-"+show_msg_page);
 		//need_scroll$('.pc_show_all_msg').css('top',(453-that.height())+'px');
 		if(show_msg_page==1){
 			that.html(res.data);
 			format_show_time(that);			
 			setTimeout(function(){
-				that.css('top',(453-that.height())+'px');
+				var ckh = $(".windows_body").height()-473;
+				that.css('top',(453-that.height()+ckh)+'px');
 			},500);
 		}else{
 			var old_h = that.height();
 
 			that.append(res.data);
-			format_show_time(that);	
-			
+			format_show_time(that);
 			setTimeout(function(){
 				var new_h = $(".pc_show_all_msg").height();					
 				$(".pc_show_all_msg").css('top',(old_h-new_h)+'px');
@@ -886,7 +888,9 @@ $(function(){
 					}			
 				}
 			} else if (delta < 0) {
-				 
+				 if(pc_msg_user_list_obj.length<1){
+					 return ;
+				 }
 				//监听用户列表的滚动条
 				var user_top = pc_msg_user_list_obj.css('top');
 				user_top = Math.abs(user_top.replace('px',''));	

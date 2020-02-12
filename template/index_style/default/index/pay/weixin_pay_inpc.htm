@@ -41,7 +41,13 @@
 function countSecond(){　
 	$.get("{:urls('/index/pay/index')}?banktype=weixin&action=checkpay&numcode={$numcode}&"+Math.random(), function(result){
 		if(result.code==0){
-			if(window.top!=window.self && typeof(parent.Pay)=='object' && parent.Pay.pc_callback()==true){
+			var check = false;
+			try{	//避免跨域调用的时候报错,而终止下面的代码
+				check = (typeof(parent.Pay)=='object' && parent.Pay.pc_callback()==true);
+			}catch(e){
+				console.error(e);
+			}
+			if(window.top!=window.self && check){
 				parent.Pay.pc_callback('ok');
 				parent.layer.close(parent.layer.getFrameIndex(window.name));
 			}else{
