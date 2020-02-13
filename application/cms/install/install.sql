@@ -1,12 +1,12 @@
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, 'SEO标题', 'mseo_title', '', 'text', '', 0, '', '', 100, 4);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, 'SEO优化关键字keywords', 'mseo_keyword', '', 'text', '', 0, '', '', 99, 4);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, 'SEO优化描述description', 'mseo_description', '', 'text', '', 0, '', '', 98, 4);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, '是否开启当前模块', 'is_open_modlue', '1', 'radio', '1|开启\r\n0|关闭', 0, '', '', 97, 4);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, '允许发布内容的用户组', 'can_post_group', '', 'checkbox', 'app\\common\\model\\Group@getTitleList@[{"id":["<>",2]}]', 0, '', '', 96, 4);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, '发布内容自动通过审核的用户组', 'post_auto_pass_group', '', 'checkbox', 'app\\common\\model\\Group@getTitleList@[{"id":["<>",2]}]', 0, '', '', 95, 4);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('', -1, '内容被设为精华奖励积分个数', 'com_info_add_money', '', 'text', '', 0, '', '', 94, 4);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, -1, 'SEO标题', 'mseo_title', '', 'text', '', 0, '', '', 100, 4);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, -1, 'SEO优化关键字keywords', 'mseo_keyword', '', 'text', '', 0, '', '', 99, 4);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, -1, 'SEO优化描述description', 'mseo_description', '', 'text', '', 0, '', '', 98, 4);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, -1, '是否开启当前模块', 'is_open_modlue', '1', 'radio', '1|开启\r\n0|关闭', 0, '', '', 97, 4);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, -1, '允许发布内容的用户组', 'can_post_group', '', 'checkbox', 'app\\common\\model\\Group@getTitleList@[{"id":["<>",2]}]', 0, '', '', 96, 4);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, -1, '发布内容自动通过审核的用户组', 'post_auto_pass_group', '', 'checkbox', 'app\\common\\model\\Group@getTitleList@[{"id":["<>",2]}]', 0, '', '', 95, 4);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, -1, '内容被设为精华奖励积分个数', 'com_info_add_money', '', 'text', '', 0, '', '', 94, 4);
 
-
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, -1, '可以免费浏览收费内容的用户组', 'group_view_pay', '3', 'usergroup2', '', 0, '', '', 0, 1);
 
 
 
@@ -202,8 +202,7 @@ CREATE TABLE IF NOT EXISTS `qb_cms_content3` (
   KEY `ispic` (`ispic`),
   KEY `province_id` (`province_id`),
   KEY `city_id` (`city_id`),
-  KEY `ext_id` (`ext_id`,`ext_sys`),
-  KEY `ext_id_2` (`ext_id`,`ext_sys`)
+  KEY `ext_id` (`ext_id`,`ext_sys`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='视频模型模型表' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -211,6 +210,7 @@ CREATE TABLE IF NOT EXISTS `qb_cms_content3` (
 --
 -- 表的结构 `qb_cms_field`
 --
+
 
 DROP TABLE IF EXISTS `qb_cms_field`;
 CREATE TABLE IF NOT EXISTS `qb_cms_field` (
@@ -263,7 +263,7 @@ INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`
 (20, 'picurl', '封面图', 'hidden', 'varchar(32) NOT NULL', '', '', '', 0, 2, '', '', '', '', '', 2, '', '', '', 98, 0, 0, 0, ''),
 (21, 'content', '图片介绍', 'textarea', 'text NOT NULL', '', '', '', 0, 2, '', '', '', '', '', 2, '', '', '', 90, 0, 0, 0, ''),
 (22, 'title', '标题', 'text', 'varchar(256) NOT NULL', NULL, NULL, '', 0, 3, '', '', '', '', '', 2, '', '', '', 100, 1, 1, 1, ''),
-(23, 'picurl', '封面图', 'jcrop', 'varchar(128) NOT NULL', '', '', '', 0, 3, '', '', '', '', '', 2, '', '', '', 99, 0, 0, 0, ''),
+(23, 'picurl', '封面图', 'image', 'varchar(128) NOT NULL', '', '', '', 0, 3, '', '', '', '', '', 2, '', '', '', 99, 0, 0, 0, ''),
 (24, 'content', '内容介绍', 'ueditor', 'text NOT NULL', '', '', '', 0, 3, '', '', '', '', '', 2, '', '', '', 90, 0, 0, 0, ''),
 (25, 'pics', '组图带介绍', 'images2', 'text NOT NULL', '', '', '', 0, 2, '', '', '', '', '', 2, '', '', '', 97, 0, 0, 0, ''),
 (26, 'mv_url', '视频地址', 'file', 'varchar(128) NOT NULL', '', '', '', 0, 3, '', '', '', '', '', 2, '', '', '', 98, 0, 0, 0, '');
@@ -375,6 +375,263 @@ ALTER TABLE  `qb_cms_content1` ADD INDEX (  `myfid` );
 ALTER TABLE  `qb_cms_content2` ADD  `myfid` MEDIUMINT( 7 ) NOT NULL COMMENT  '我的分类';
 ALTER TABLE  `qb_cms_content2` ADD INDEX (  `myfid` );
 
+
+
+DROP TABLE IF EXISTS `qb_cms_buyer`;
+CREATE TABLE IF NOT EXISTS `qb_cms_buyer` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `aid` int(8) NOT NULL COMMENT '内容ID',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '购买时间',
+  `uid` int(7) NOT NULL COMMENT '购买者UID',
+  `author` int(7) NOT NULL COMMENT '创建者UID',
+  `money` decimal(10,2) NOT NULL COMMENT '金额',
+  PRIMARY KEY (`id`),
+  KEY `aid` (`aid`),
+  KEY `uid` (`uid`),
+  KEY `author` (`author`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容付费购买者' AUTO_INCREMENT=5 ;
+
+
+ALTER TABLE  `qb_cms_content1` ADD  `price` DECIMAL( 10, 2 ) NOT NULL COMMENT  '收费阅读';
+ALTER TABLE  `qb_cms_content2` ADD  `price` DECIMAL( 10, 2 ) NOT NULL COMMENT  '收费阅读';
+ALTER TABLE  `qb_cms_content3` ADD  `price` DECIMAL( 10, 2 ) NOT NULL COMMENT  '收费阅读';
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'price', '付费阅读(元)', 'money', 'decimal(10,2) unsigned NOT NULL', '', '', '', 1, 1, '', '', '', '', '', 0, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'price', '付费阅读(元)', 'money', 'decimal(10,2) unsigned NOT NULL', '', '', '', 1, 2, '', '', '', '', '', 0, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'price', '付费阅读(元)', 'money', 'decimal(10,2) unsigned NOT NULL', '', '', '', 1, 3, '', '', '', '', '', 0, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+
+
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'description', '简介(SEO描述)', 'textarea', 'varchar(255) NOT NULL', '', '', '', 1, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'description', '简介(SEO描述)', 'textarea', 'varchar(255) NOT NULL', '', '', '', 1, 2, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'description', '简介(SEO描述)', 'textarea', 'varchar(255) NOT NULL', '', '', '', 1, 3, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+
+ALTER TABLE  `qb_cms_content1` ADD  `description` VARCHAR( 255 ) NOT NULL COMMENT  '简介(SEO描述)';
+ALTER TABLE  `qb_cms_content2` ADD  `description` VARCHAR( 255 ) NOT NULL COMMENT  '简介(SEO描述)';
+ALTER TABLE  `qb_cms_content3` ADD  `description` VARCHAR( 255 ) NOT NULL COMMENT  '简介(SEO描述)';
+
+
+
+
+
+
+
+
+
+
+
+INSERT INTO `qb_cms_module` (`id`, `keyword`, `title`, `layout`, `icon`, `list`, `create_time`, `status`) VALUES(4, 'voice', '音频模型', '', '', 100, 1561445881, 0);
+
+
+DROP TABLE IF EXISTS `qb_cms_content4`;
+CREATE TABLE IF NOT EXISTS `qb_cms_content4` (
+  `id` int(8) unsigned NOT NULL AUTO_INCREMENT,
+  `mid` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '模型ID',
+  `fid` mediumint(7) unsigned NOT NULL DEFAULT '0' COMMENT '栏目ID',
+  `title` varchar(256) NOT NULL DEFAULT '' COMMENT '标题',
+  `ispic` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否带组图',
+  `picurl` text NOT NULL COMMENT '封面图',
+  `uid` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `view` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '浏览量',
+  `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态：0未审 1已审 2推荐',
+  `agree` mediumint(5) NOT NULL DEFAULT '0' COMMENT '点赞',
+  `replynum` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '评论数',
+  `content` text NOT NULL COMMENT '内容介绍',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  `list` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序值',
+  `voice_url` varchar(128) NOT NULL COMMENT '音频地址',
+  `province_id` mediumint(5) NOT NULL COMMENT '省会ID',
+  `city_id` mediumint(5) NOT NULL COMMENT '城市ID',
+  `zone_id` mediumint(5) NOT NULL COMMENT '县级市或所在区ID',
+  `street_id` mediumint(5) NOT NULL COMMENT '乡镇或区域街道ID',
+  `ext_sys` mediumint(5) NOT NULL COMMENT '扩展字段,关联的系统',
+  `ext_id` int(8) NOT NULL COMMENT '扩展字段,供其它调用',
+  `keywords` varchar(128) NOT NULL COMMENT 'SEO关键字',
+  `price` decimal(10,2) NOT NULL COMMENT '收费阅读',
+  `description` varchar(255) NOT NULL COMMENT '简介(SEO描述)',
+  PRIMARY KEY (`id`),
+  KEY `mid` (`mid`),
+  KEY `fid` (`fid`),
+  KEY `view` (`view`),
+  KEY `status` (`status`),
+  KEY `list` (`list`),
+  KEY `ispic` (`ispic`),
+  KEY `province_id` (`province_id`),
+  KEY `city_id` (`city_id`),
+  KEY `ext_id` (`ext_id`,`ext_sys`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='音频模型内容主表' AUTO_INCREMENT=1 ;
+
+
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'title', '标题', 'text', 'varchar(256) NOT NULL', NULL, NULL, '', 0, 4, '', '', '', '', '', 2, '', '', '', 100, 1, 1, 1, '', '', '', '', '', '', '', '', '', '', 0);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'picurl', '封面图', 'image', 'varchar(128) NOT NULL', '', '', '', 0, 4, '', '', '', '', '', 2, '', '', '', 90, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 0);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'content', '内容介绍', 'ueditor', 'text NOT NULL', '', '', '', 0, 4, '', '', '', '', '', 2, '', '', '', -1, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 0);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'voice_url', '音频地址', 'file', 'varchar(128) NOT NULL', '', '', '', 0, 4, '', '', '', '', '', 2, '', '', '', 80, 0, 0, 1, '', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'keywords', 'SEO关键字', 'text', 'varchar(128) NOT NULL', '', '', '', 1, 4, '', '', '', '', '', 2, '', '', '', 98, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'price', '付费阅读(元)', 'money', 'decimal(10,2) unsigned NOT NULL', '', '', '', 1, 4, '', '', '', '', '', 0, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'description', '简介(SEO描述)', 'textarea', 'varchar(255) NOT NULL', '', '', '', 1, 4, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 1);
+
+
+ALTER TABLE  `qb_cms_content4` CHANGE  `voice_url`  `voice_url` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT  '音频地址';
+UPDATE `qb_cms_field` SET  `type` =  'files2',`field_type` =  'text NOT NULL'  WHERE `name` = 'voice_url';
+
+ALTER TABLE  `qb_cms_content3` CHANGE  `mv_url`  `mv_url` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT  '视频地址';
+UPDATE `qb_cms_field` SET  `type` =  'files2',`field_type` =  'text NOT NULL'  WHERE `name` = 'mv_url';
+
+
+
+DROP TABLE IF EXISTS `qb_cms_fav`;
+CREATE TABLE IF NOT EXISTS `qb_cms_fav` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `mid` smallint(4) unsigned NOT NULL DEFAULT '0' COMMENT '模型ID',
+  `type` tinyint(1) NOT NULL COMMENT '0是浏览记录,1是收藏',
+  `aid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '内容ID',
+  `sid` mediumint(4) NOT NULL COMMENT '章节ID',
+  `uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `list` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序值',
+  `paytime` smallint(5) NOT NULL COMMENT '已播放到第几秒',
+  PRIMARY KEY (`id`),
+  KEY `list` (`list`),
+  KEY `aid` (`aid`),
+  KEY `uid` (`uid`),
+  KEY `mid` (`mid`,`type`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='浏览记录及收藏' AUTO_INCREMENT=1 ;
+
+
+ALTER TABLE  `qb_cms_buyer` ADD  `sid` SMALLINT( 5 ) NOT NULL DEFAULT  '-1' COMMENT  '章节ID,注意:0是第一节,-1代表所有章节' AFTER  `aid`;
+ALTER TABLE  `qb_cms_buyer` DROP INDEX  `aid` ,ADD INDEX  `aid` (  `aid` ,  `sid` );
+ALTER TABLE  `qb_cms_fav` CHANGE  `paytime`  `playtime` SMALLINT( 5 ) NOT NULL COMMENT  '已播放到第几秒';
+
+
+
+DROP TABLE IF EXISTS `qb_cms_fx`;
+CREATE TABLE IF NOT EXISTS `qb_cms_fx` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `aid` int(7) NOT NULL COMMENT '内容主题ID',
+  `sid` mediumint(4) NOT NULL COMMENT '章节ID',
+  `uid` int(7) NOT NULL COMMENT '新进来的访问UID',
+  `introducer_1` int(7) NOT NULL COMMENT '分享者,即介绍人的UID',
+  `create_time` int(10) NOT NULL COMMENT '推荐时间',
+  `ifbuy` tinyint(1) NOT NULL COMMENT '是否付款成功购买',
+  PRIMARY KEY (`id`),
+  KEY `aid` (`aid`),
+  KEY `introducer_1` (`introducer_1`),
+  KEY `uid` (`uid`),
+  KEY `ifbuy` (`ifbuy`),
+  KEY `create_time` (`create_time`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户分享的记录' AUTO_INCREMENT=1 ;
+
+ 
+
+DROP TABLE IF EXISTS `qb_cms_fxlog`;
+CREATE TABLE IF NOT EXISTS `qb_cms_fxlog` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `aid` int(7) NOT NULL COMMENT '内容主题ID',
+  `sid` mediumint(4) NOT NULL COMMENT '章节ID',
+  `uid` int(7) NOT NULL COMMENT '当前购买内容主题用户UID',
+  `introducer_uid` int(7) NOT NULL COMMENT '推荐人UID',
+  `introducer_step` tinyint(1) NOT NULL DEFAULT '1' COMMENT '属于第几级推荐人',
+  `create_time` int(10) NOT NULL COMMENT '交易成功时间',
+  `money` decimal(10,2) NOT NULL COMMENT '分销获利金额',
+  PRIMARY KEY (`id`),
+  KEY `aid` (`aid`),
+  KEY `uid` (`uid`),
+  KEY `introducer_uid` (`introducer_uid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='付款交易成功后的分销收益日志' AUTO_INCREMENT=1 ;
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx1', '直接推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx2', '间接推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx3', '三级推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 1, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx1', '直接推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 2, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx2', '间接推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 2, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx3', '三级推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 2, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx1', '直接推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 3, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx2', '间接推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 3, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx3', '三级推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 3, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx1', '直接推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 4, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx2', '间接推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 4, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`) VALUES(0, 'fx3', '三级推荐人收益', 'money', 'decimal(5,2) unsigned NOT NULL', '', '', '注意:0.01代表1%的分成，并不是0.01元，以此类推', 1, 4, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '分销设置');
+
+
+ALTER TABLE  `qb_cms_content1` ADD  `fx1` DECIMAL( 5, 2 ) NOT NULL COMMENT  '直接推荐人收益';
+ALTER TABLE  `qb_cms_content1` ADD  `fx2` DECIMAL( 5, 2 ) NOT NULL COMMENT  '间接推荐人收益';
+ALTER TABLE  `qb_cms_content1` ADD  `fx3` DECIMAL( 5, 2 ) NOT NULL COMMENT  '三级推荐人收益';
+
+ALTER TABLE  `qb_cms_content2` ADD  `fx1` DECIMAL( 5, 2 ) NOT NULL COMMENT  '直接推荐人收益';
+ALTER TABLE  `qb_cms_content2` ADD  `fx2` DECIMAL( 5, 2 ) NOT NULL COMMENT  '间接推荐人收益';
+ALTER TABLE  `qb_cms_content2` ADD  `fx3` DECIMAL( 5, 2 ) NOT NULL COMMENT  '三级推荐人收益';
+
+ALTER TABLE  `qb_cms_content3` ADD  `fx1` DECIMAL( 5, 2 ) NOT NULL COMMENT  '直接推荐人收益';
+ALTER TABLE  `qb_cms_content3` ADD  `fx2` DECIMAL( 5, 2 ) NOT NULL COMMENT  '间接推荐人收益';
+ALTER TABLE  `qb_cms_content3` ADD  `fx3` DECIMAL( 5, 2 ) NOT NULL COMMENT  '三级推荐人收益';
+
+ALTER TABLE  `qb_cms_content4` ADD  `fx1` DECIMAL( 5, 2 ) NOT NULL COMMENT  '直接推荐人收益';
+ALTER TABLE  `qb_cms_content4` ADD  `fx2` DECIMAL( 5, 2 ) NOT NULL COMMENT  '间接推荐人收益';
+ALTER TABLE  `qb_cms_content4` ADD  `fx3` DECIMAL( 5, 2 ) NOT NULL COMMENT  '三级推荐人收益';
+
+
+UPDATE  `qb_cms_field` SET  `index_hide` =  '1' WHERE  `name` = 'fx1';
+UPDATE  `qb_cms_field` SET  `index_hide` =  '1' WHERE  `name` = 'fx2';
+UPDATE  `qb_cms_field` SET  `index_hide` =  '1' WHERE  `name` = 'fx3';
+
+
+DROP TABLE IF EXISTS `qb_cms_yhlog`;
+CREATE TABLE IF NOT EXISTS `qb_cms_yhlog` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `uid` int(8) NOT NULL COMMENT '领取者UID',
+  `aid` int(8) NOT NULL COMMENT '主题ID',
+  `yid` int(8) NOT NULL COMMENT '优惠券ID',
+  `create_time` int(10) NOT NULL COMMENT '领取日期',
+  `money` decimal(8,2) NOT NULL COMMENT '优惠价格，可以是价格，也可以是百分比',
+  `ifuse` tinyint(1) NOT NULL COMMENT '使用与否',
+  `end_time` int(10) NOT NULL COMMENT '截止有效日期',
+  `use_time` int(10) NOT NULL COMMENT '使用时间',
+  PRIMARY KEY (`id`),
+  KEY `aid` (`aid`),
+  KEY `uid` (`uid`),
+  KEY `yid` (`yid`),
+  KEY `end_time` (`end_time`),
+  KEY `ifuse` (`ifuse`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户领取的优惠券' AUTO_INCREMENT=1 ;
+
+
+
+DROP TABLE IF EXISTS `qb_cms_youhui`;
+CREATE TABLE IF NOT EXISTS `qb_cms_youhui` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `uid` int(8) NOT NULL COMMENT '分销创建者',
+  `aid` int(8) NOT NULL COMMENT '主题ID',
+  `create_time` int(10) NOT NULL COMMENT '创建日期',
+  `money` decimal(8,2) NOT NULL COMMENT '优惠价格，可以是价格，也可以是百分比',
+  `max_num` mediumint(5) NOT NULL COMMENT '总数多少份',
+  `end_time` int(10) NOT NULL COMMENT '截止有效日期',
+  PRIMARY KEY (`id`),
+  KEY `aid` (`aid`),
+  KEY `uid` (`uid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='分销用户创建的优惠券' AUTO_INCREMENT=1 ;
+
+
+DROP TABLE IF EXISTS `qb_cms_pages`;
+CREATE TABLE IF NOT EXISTS `qb_cms_pages` (
+  `id` int(8) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(7) NOT NULL COMMENT '用户UID',
+  `aid` int(8) NOT NULL COMMENT '主题ID',
+  `title` varchar(255) NOT NULL COMMENT '标题',
+  `content` mediumtext NOT NULL COMMENT '文章内容',
+  `list` int(10) NOT NULL COMMENT '排序值',
+  `create_time` int(10) NOT NULL COMMENT '添加日期',
+  `money` varchar(5) NOT NULL COMMENT '售价RMB，字段不能有默认值0，0.00',
+  PRIMARY KEY (`id`),
+  KEY `list` (`list`),
+  KEY `aid` (`aid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文章模型分页数据' AUTO_INCREMENT=30 ;
+
+
 ALTER TABLE  `qb_cms_content` ADD  `view` MEDIUMINT( 7 ) NOT NULL COMMENT  '浏览量';
 ALTER TABLE  `qb_cms_content` ADD INDEX (  `view` );
 ALTER TABLE  `qb_cms_content` ADD  `status` TINYINT( 2 ) NOT NULL COMMENT  '状态：0未审 1已审 2推荐';
@@ -384,3 +641,16 @@ ALTER TABLE  `qb_cms_content` ADD  `list` INT( 10 ) NOT NULL COMMENT  '可控排
 ALTER TABLE  `qb_cms_content` ADD INDEX (  `list` );
 ALTER TABLE  `qb_cms_content` ADD  `ext_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '关联其它模型的内容ID',ADD  `ext_sys` SMALLINT( 4 ) NOT NULL COMMENT  '关联其它模型的频道ID';
 ALTER TABLE  `qb_cms_content` ADD INDEX (  `ext_id` ,  `ext_sys` );
+
+
+
+ALTER TABLE  `qb_cms_content3` ADD  `zhibo_status` TINYINT( 1 ) NOT NULL COMMENT  '直播状态,1直播预告,2直播进行中,3直播已结束',ADD  `size_type` TINYINT( 1 ) NOT NULL COMMENT  '0是横屏,1是竖屏';
+ALTER TABLE  `qb_cms_content3` ADD  `start_time` INT( 10 ) NOT NULL COMMENT  '直播开始时间',ADD  `stop_time` INT( 10 ) NOT NULL COMMENT  '直播结束时间';
+ALTER TABLE  `qb_cms_content3` ADD INDEX (  `zhibo_status` );
+
+
+
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'zhibo_status', '直播状态', 'radio', 'tinyint(1) NOT NULL DEFAULT ''0''', '', '0|非直播内容\r\n1|直播预告\r\n2|直播进行中\r\n3|直播已结束', '', 1, 3, '', '', '', '', '', 0, '', '', '', 0, 0, 0, 0, '直播选项', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'size_type', '横屏或竖屏', 'radio', 'tinyint(1) NOT NULL DEFAULT ''0''', '0', '0|横屏\r\n1|是竖屏', '', 1, 3, '', '', '', '', '', 0, '', '', '', 0, 0, 0, 0, '直播选项', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'start_time', '直播开始时间', 'datetime', 'int(10) NOT NULL DEFAULT ''0''', '', '', '', 1, 3, '', '', '', '', '', 0, '', '', '', 0, 0, 0, 0, '直播选项', '', '', '', '', '', '', '', '', '', 1);
+INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'stop_time', '直播结束时间', 'datetime', 'int(10) NOT NULL DEFAULT ''0''', '', '', '', 1, 3, '', '', '', '', '', 0, '', '', '', 0, 0, 0, 0, '直播选项', '', '', '', '', '', '', '', '', '', 1);

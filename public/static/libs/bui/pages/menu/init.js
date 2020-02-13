@@ -79,7 +79,7 @@ load_data.menu = function(res,type){
 					return ;
 				}
 				mod_class.menu.vid = res.data.id;				
-				load_chat_iframe("/public/static/libs/bui/pages/menu/zhibo_prepare/index.html?ggg",function(win,body){
+				load_chat_iframe("/public/static/libs/bui/pages/menu/zhibo_prepare/index.html?0gg",function(win,body){
 					$(".iframe_chat").height(200);
 					win.init(res.data);
 				});

@@ -21,6 +21,23 @@
 
 </head>
 <body>
+<style type="text/css">
+.zb_fav{
+	background:orange;
+	color:#fff;
+	font-size:0.8em;
+	padding:2px 8px 3px 8px;
+	display:inline;
+	position:fixed;
+	right:2%;
+	top:5%;
+	z-index:1000;
+	border-radius:5px;
+	cursor:pointer;
+}
+</style>
+<div class="zb_fav">预 约</div>
+
 	<div class="w3layouts-banner-slider">
 			<div class="container">
 				<div class="slider">
@@ -110,6 +127,16 @@ function init(info){
 		function(){ $(this).animate({ top: 3 }, 'fast'); },
 		function(){ $(this).animate({ top: 0 }, 'fast'); }
 	);
+
+	$(".zb_fav").click(function(){
+		$.get("/index.php/cms/wxapp.live/fav.html?id="+info.id,function(res){
+			if(res.code==0){
+				parent.layer.msg("订阅成功,直播开始前,我们将的发短消息提醒你!");
+			}else{
+				parent.layer.alert(res.msg);
+			}
+		});
+	});
 }
 
 </script>
