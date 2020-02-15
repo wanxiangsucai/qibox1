@@ -9,13 +9,18 @@ mod_class.hongbao = {
 					layer.alert('只有群聊才能发红包');
 					return ;
 				}
-				layer.open({
+				var st = {
 						type: 2,
 						shadeClose: true,
 						shade: 0.3,
-						area: $('body').width()<800 ? ['95%', '80%'] : ['800px', '650px'],
+						area: ['800px', '650px'],
 						content: '/member.php/member/plugin/execute/plugin_name/hongbao/plugin_controller/content/plugin_action/add/mid/1.html?fromtype=msg&ext_id='+(-uid),
-					});
+					};
+				if(parent.$("#iframe_msg").length==1){
+					parent.layer.open(st);
+				}else{
+					layer.open(st);
+				}
 			});
 		}else{
 			router.$("#btn_hongbao").click(function(){
@@ -48,7 +53,7 @@ format_content.hongbao = function(res,type){
 		$(".office_text .hack-hongbao").each(function(){
 			var id = $(this).data("id");
 			var title = $(this).data("title");
-			var str = `<a href="#" title="${title}" onclick="layer.open({type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['600px', '600px'],content: '/index.php/p/hongbao-content-show/id/${id}.html'});"><img src="${w_url}public/static/plugins/hongbao/bongbao.png"></a>`;
+			var str = `<a href="#" title="${title}" onclick="var st={type: 2,title: '${title}',shadeClose: true,shade: 0.3,area: ['600px', '600px'],content: '/index.php/p/hongbao-content-show/id/${id}.html'};if(parent.$('#iframe_msg').length==1){parent.layer.open(st);}else{layer.open(st);}"><img src="${w_url}public/static/plugins/hongbao/bongbao.png"></a>`;
 			$(this).html(str);
 		});
 	}else{

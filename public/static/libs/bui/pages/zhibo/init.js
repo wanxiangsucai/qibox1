@@ -337,7 +337,12 @@ mod_class.zhibo = {
 		if(in_pc==true){
 			if( typeof(in_pc_qun)=='boolean' && in_pc_qun==true ){	//在PC圈子里
 				load_chat_iframe("/public/static/libs/bui/pages/zhibo/player.html",function(win,body){
-					win.player(flv_url,only_sound==true?'200px':'650px',only_sound);
+					if(parent.$("#iframe_play").length==1){
+						if(parent.$("#iframe_play").height()<600){
+							parent.$("#iframe_play").height(600)
+						}
+					}
+					win.player(flv_url,only_sound==true?'200px':'600px',only_sound);
 				});
 			}else{	//在PC聊天界面里
 				this.player_index = layer.open({  

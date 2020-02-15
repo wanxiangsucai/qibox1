@@ -66,6 +66,29 @@
 .wechat{
 	height:100%;
 }
+
+.windows_top{
+	height:50px;
+}
+.other {
+	padding-left:0px;
+}
+.other span {
+	max-width:77%;
+}
+.content{
+	padding: 10px 10px;
+}
+.other span{
+	background:#b4efe9;
+}
+.other span:before {
+    border-right-color:#b4efe9;
+}
+/*
+.talk_window{
+	background:#fff;
+}*/
 </style>
 <script type="text/javascript">
 var in_pc_qun = true;// typeof(in_pc_qun)=='boolean' && in_pc_qun==true 
@@ -85,6 +108,9 @@ $(function(){
 		}
 	});
 	set_chatwin_height();
+	if(typeof(window.parent.chat_init)=='function'){
+		window.parent.chat_init();
+	}
 });
 
 function set_chatwin_height(){

@@ -84,7 +84,7 @@ class User extends IndexBase
                 ['text', 'email', '邮箱'],
                 ['radio', 'sex', '性别','',[0=>'保密',1=>'男',2=>'女']],
                 ['jcrop', 'icon', '头像'],
-                //['textarea', 'introduce', '自我介绍'],
+                ['textarea', 'introduce', '自我介绍(签名)'],
         ];
         //某用户组下面的所有参数选项
         $array = Cfgfield::get_form_items($info['groupid'],'member');

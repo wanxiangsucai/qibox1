@@ -7,7 +7,8 @@
 
 {block name="body_content"}
 
-{if $info['mid']==3&&($info.zhibo_status==1||$info.zhibo_status==2)&&empty($info['mv_url'][0]['url'])}
+{php}$mvurl=is_array($info['mv_url'])?$info['mv_url'][0]['url']:$info['mv_url'];{/php}
+{if $info['mid']==3&&($info.zhibo_status==1||$info.zhibo_status==2)&&empty($mvurl)}
 <!--预告直播-->
 <script type="text/javascript">
 window.location.href="{:get_url('msg',-$info.ext_id)}";
@@ -32,8 +33,8 @@ window.location.href="{:get_url('msg',-$info.ext_id)}";
 			{/volist}
 
 			{notempty name="$info.mv_url"}
-			<!-- 视频模型 -->
-			<br><center>{:fun('Player@play',$info['mv_url'][0]['url'],'100%','250px')}</center>
+			<!-- 视频模型 -->			
+			<br><center>{:fun('Player@play',$mvurl,'100%','250px')}</center>
 			{/notempty}
 
 			{notempty name="$info.voice_url"}
@@ -72,25 +73,6 @@ window.location.href="{:get_url('msg',-$info.ext_id)}";
 		<div class="head"><i class="si si-book-open"></i> 更多阅读</div>
 		<div class="ListMoreInfos">
 {qb:tag name="news_list_page_listdata02" type="cms" where="fid=$fid&id<>$id"}
-<!--
-			<div class="Lists">
-				<ul>
-					<li>
-						<div class="t"><a href="/index.php/news/content/show/id/4.html">山东乡村全面振兴：为乡村振兴注入新动能</a></div>
-						<div class="m"><span><i class="glyphicon glyphicon-time"></i> 2018-01-20</span><em> <i class="si si-eye"></i> 0</em></div>
-					</li>
-				</ul>
-			</div>
-			<div class="Lists">
-				<ul>
-					<ol><a href="#"><img src="__STATIC__/images/1.jpg" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></ol>
-					<li>
-						<div class="t"><a href="/index.php/news/content/show/id/4.html">山东乡村全面振兴：为乡村振兴注入新动能</a></div>
-						<div class="m"><span><i class="glyphicon glyphicon-time"></i> 2018-01-20</span><em> <i class="si si-eye"></i> 0</em></div>
-					</li>
-				</ul>
-			</div>
--->
 			<div class="Lists">
 				<ul>
 {notempty name="rs.picurl"}
@@ -144,9 +126,6 @@ function thisimg_out(imgobjs){
 {include file="$haibao" /}
 {include file="../../../haibao_style/btn" /}
 <!--<div style="position:fixed;right:30px;top:80px;z-index:200;width:30px;font-size:10px;line-height:10px;color:#000;opacity:0.7;"><i id="share_code" onclick="share_btn()" style="font-size:30px;" class="fa fa-qrcode"></i>海报</div>-->
-
-<!-- 微动态自动收录用户感兴趣的主题,时间60代表用户停留60秒将自动收藏 -->
-{:fun('sns@fav',$info,60,'系统帮你订阅了本主题,下次本主题有回复,将会通知你')}
 
 <!-- 微信分享 -->
 {include file="index@share"/}
