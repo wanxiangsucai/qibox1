@@ -694,12 +694,17 @@ class LabelShow extends IndexBase
         self::$list_page_cfg = [$tag_name=> $listpage_filtrate?array_merge($cfg_array,$listpage_filtrate):$cfg_array];    //列表页标签也可以存在多个的
 
         $tag_cache_key = $this->get_cache_key(array_merge($cfg_array,[$tag_name],['page'=>$cfg['page']]));
-        $tag_data = cache2($tag_cache_key);    //首页列表数据缓存
-        //if($listpage_filtrate || $cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存或者存在列表筛选
-        if(empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){
+
+        if (!array_diff(array_keys(input('param.')),array_keys($cfg))) {    //如果有更多查询条件,就不使用缓存
+            $tag_data = cache2($tag_cache_key);    //首页列表数据缓存
+            //if($listpage_filtrate || $cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存或者存在列表筛选
+            if(empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){
+                $tag_data = controller('content','index')->label_list_data($cfg_array);
+                $tag_array['cache_time'] && cache2($tag_cache_key,$tag_data,$tag_array['cache_time']);
+            }
+        }else{
             $tag_data = controller('content','index')->label_list_data($cfg_array);
-            $tag_array['cache_time'] && cache2($tag_cache_key,$tag_data,$tag_array['cache_time']);
-        }
+        }      
         
         if($filemtime!=$label_tags_tpl['_filemtime_']){
             $label_tags_tpl = self::get_listpage_tpl($cfg['dirname']);
