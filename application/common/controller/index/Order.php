@@ -85,10 +85,14 @@ abstract class Order extends IndexBase
         
         if($this -> request -> isPost()){
             $data = $this -> request -> post();
-            $result = $this->check_post_filed($data);
-            if ($result!==true) {
-                $this->error($result);
+            
+            if (empty($this->get_order_field( current(current($listdb)) ))) {   //不存在主题自定义字段才处理
+                $result = $this->check_post_filed($data);
+                if ($result!==true) {
+                    $this->error($result);
+                }
             }
+            
             $data = \app\common\field\Post::format_all_field($data,-1); //对一些特殊的自定义字段进行处理,比如多选项,以数组的形式提交的
             $order_ids = [];    //多条订单数据,多个商家就多个订单
             $car_ids = [];        //购买车里的id数据

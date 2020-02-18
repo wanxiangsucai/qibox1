@@ -25,7 +25,7 @@ function check_post(){
 			});
 			va = va.substring(1);
 		}else{
-			va = $(this).find('input').val();
+			va = $(this).find('input').length>0 ? $(this).find('input').val() : $(this).find('textarea').val();
 		}
 		if(va!=''){
 			array.push( {
