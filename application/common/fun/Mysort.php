@@ -16,13 +16,18 @@ class Mysort{
      * @return array
      */
     public static function getByuid($uid=0,$mod=''){
-        if (empty($id)) {
-            $id = login_user('uid');
+        $mod || $mod=config('system_dirname');
+
+        if (!class_exists("app\\".$mod."\\model\\Mysort")) {
+            return ;
+        }
+        if (empty($uid)) {
+            $uid = login_user('uid');
         }
         $map = [
-                'uid'=>$id,
+            'uid'=>$uid,
         ];
-        $mod || $mod=config('system_dirname');
+        
         return Db::name($mod.'_mysort')->where($map)->order('list desc,id asc')->column(true);
     }
     
@@ -34,13 +39,17 @@ class Mysort{
      * @return array
      */
     public static function getByext($ext_id=0,$ext_sys=0,$mod=''){
+        $mod || $mod=config('system_dirname');
+        
+        if (!class_exists("app\\".$mod."\\model\\Mysort")) {
+            return ;
+        }
         $map = [
                 'ext_id'=>$ext_id,
         ];
         if ($ext_sys) {
             $map['ext_sys'] = $ext_sys;
         }
-        $mod || $mod=config('system_dirname');
         return Db::name($mod.'_mysort')->where($map)->order('list desc,id asc')->column(true);
     }
     

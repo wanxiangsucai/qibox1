@@ -26,7 +26,7 @@
             <div class="cont">
                 <div class="ListNews">
 
-				{qb:tag name="qun_pcindex_cms_model001" union="uid=$info.uid" type="cms" order="id" by="asc" rows="5"}
+				{qb:tag name="qun_pcindex_cms_model001" where="uid=$info.uid&myfid=$myfid" type="cms" order="id" by="asc" rows="5"}
                     <div class='list'>
                         <div class='time'>
                             <ul>
@@ -50,7 +50,7 @@ var page=1;
 //显示更多
 function showMoreContent(){	
 	page++;
-	$.get('{qb:url name="qun_pcindex_cms_model001"/}' + page,function(res){
+	$.get('{qb:url name="qun_pcindex_cms_model001"/}' + page + "&myfid={$myfid}",function(res){
 		if(res.code==0){
 			if(res.data==''){
 				layer.msg("已经显示完了！",{time:500});

@@ -15,7 +15,7 @@
 						<span><i class="fa fa-user-o">{:fun('qun@count','qun_member',$info.id)}</i></span>
 						
 					</div>
-				</li>
+				</li><!--
 				<li class="join">
 					<dl>
 						<dt><span onclick="addpost()">发布</span></dt>
@@ -28,7 +28,7 @@
 							</div>
 						</dd>
 					</dl>
-				</li>
+				</li>-->
 			</ul>
 		</div>
 	</div>
@@ -36,13 +36,18 @@
 	<div class="MainAction">
 		<ul>
 			<ol><a href="{:urls('content/show',['id'=>$id])}"><i class="fa fa-object-ungroup"></i> 返回主页</a></ol>
-			<li><a href="{:urls('cms/add',['aid'=>$info.id,'mid'=>2])}"><i class="fa fa-user-plus"></i> 发布图片</a></li>
+			<li><a href="{:urls('cms/add',['aid'=>$info.id,'mid'=>2])}"><i class="fa fa-user-plus"></i> 发布</a></li>
 		</ul>
 	</div>
+
+<div style="margin-top:10px;padding-left:10px;background:#fff;">
+{include file="../../default/qun/common/mysort" /}
+</div>
+
 	<div class="ShowContentType">
-		<div class="tags"><span class="ck">最新图片</span><span>热门图片</span><span>推荐图片</span></div>
+		<div class="tags"><span class="ck">最新</span><span>热门</span><span>推荐</span></div>
 		<div class="Contents">
-			{qb:hy name="qun_wapindex_model002" union="order,by,ext_id=aid" mid="2" type="cms" rows="6"}
+			{qb:hy name="qun_wapindex_model002" union="order,by" where="uid=$info.uid&myfid=$myfid&mid=$mid" type="cms" rows="6"}
 			<div class="imgs"><a href="{$rs.url}"><span><img src="{$rs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'"></span><em>{$rs.title}</em></a></div>
 			{/qb:hy}
 		</div>
@@ -64,7 +69,7 @@ var haveshowpage = []; //每一项,作个标志,已经已显示到第几页
 function showMoreContent(){	
 	var url = ajax_url_db[choose_i];	//第几项对应的网址
 	haveshowpage[choose_i]++;
-	$.get('{qb:hy_url name="qun_wapindex_model002"/}' + haveshowpage[choose_i] + url + Math.random(),function(res){
+	$.get('{qb:hy_url name="qun_wapindex_model002"/}' + haveshowpage[choose_i] + url + "&myfid={$myfid}",function(res){
 		if(res.code==0){
 			if(res.data==''){
 				layer.msg("已经显示完了！",{time:500});

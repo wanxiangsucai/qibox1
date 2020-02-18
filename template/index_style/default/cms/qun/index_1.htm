@@ -5,10 +5,14 @@
 <link rel="stylesheet" href="__STATIC__/group/index.css">
 <div class="MainContainer">
 
+<div style="margin-top:10px;padding-left:10px;background:#fff;">
+{include file="../../default/qun/common/mysort" /}
+</div>
+
 	<div class="ShowContentType">
 		<div class="tags"><span class="ck">最新资讯</span><span>热门资讯</span><span>推荐资讯</span></div>
 		<div class="Contents">
-			{qb:tag name="qun_wapindex_cms_model001" union="order,by,uid=$info.uid" type="cms" rows="5"}
+			{qb:tag name="qun_wapindex_cms_model001" union="order,by"  where="uid=$info.uid&myfid=$myfid" type="cms" rows="5"}
 			<div class="lists">
 				<ul>
 					<li class="img"><a href="{:get_url('user',$rs.uid)}"><img src="{$rs.user_icon}" onerror="this.src='__STATIC__/images/nobody.gif'"></a></li>
@@ -53,7 +57,7 @@ var haveshowpage = []; //每一项,作个标志,已经已显示到第几页
 function showMoreContent(){	
 	var url = ajax_url_db[choose_i];	//第几项对应的网址
 	haveshowpage[choose_i]++;
-	$.get('{qb:url name="qun_wapindex_cms_model001"/}' + haveshowpage[choose_i] + url + Math.random(),function(res){
+	$.get('{qb:url name="qun_wapindex_cms_model001"/}' + haveshowpage[choose_i] + "&myfid={$myfid}" + url + Math.random(),function(res){
 		if(res.code==0){
 			if(res.data==''){
 				layer.msg("已经显示完了！",{time:500});

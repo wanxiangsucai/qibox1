@@ -17,35 +17,12 @@
         </li>
     </ul>
 
-<!-- 滑动按钮要用到的CSS与JS文件,他涉及到三个class类 swiper-container swiper-wrapper swiper-slide -->
-<link href="__STATIC__/libs/swiper/swiper.min.css" rel="stylesheet">
-<script src="__STATIC__/libs/swiper/swiper.min.js"></script>
-<style type="text/css">
-#ListMySorts .swiper-slide{width: auto!important;}	/*滑动按钮必须的设置,其中swiper-slide类名不能更换*/
-</style>
-<!--
-<script>
-    $(function () {
-        var swiper = new Swiper('#ListMySorts', {
-            spaceBetween: 0,
-            slidesPerView:'auto',
-            freeMode: true
-        });
-    })
-</script>
-    <div id='ListMySorts' class="swiper-container">
-        <ul class="swiper-wrapper">
-            <li class="swiper-slide ck"><a title='?id=1001128'>全部分类</a> </li>
-			{volist name=":fun('mysort@getByuid',$info.uid,'cms')" id="rs"}
-            <li class="swiper-slide"><a href='?id={$rs.id}'>{$rs.name}</a> </li>
-			{/volist}
-        </ul>
-    </div>
---><br>
-
+<div style="margin-top:10px;padding-left:10px;background:#fff;">
+{include file="../../default/qun/common/mysort" /}
+</div>
 
     <div class="ListContent">
-	{qb:tag name="qun_wapindex_model004" union="order,by,uid=$info.uid" type="cms" mid="2" rows="5"}
+	{qb:tag name="qun_wapindex_model004" union="order,by" where="uid=$info.uid&myfid=$myfid" type="cms" mid="2" rows="5"}
         <ul class='listmsg'>
             <ol><em>{:format_time($rs.create_time,'d')}</em><span>{:format_time($rs.create_time,'y.m')}</span>
             </ol>
@@ -251,7 +228,7 @@ $(window).scroll(function(){
 		$('.LoadingBox').fadeIn();
 		page++;
 		loading=0;
-		var urls="{qb:url name='qun_wapindex_model004'}"+page;
+		var urls="{qb:url name='qun_wapindex_model004'}" + page + "&myfid={$myfid}";
 		$.get(urls+"&"+Math.random(),function(res){
 			if(res.code==0){
 				if(res.data==''){
