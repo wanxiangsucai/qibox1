@@ -1,5 +1,5 @@
 <?php
-namespace app\cms\upgrade;
+namespace app\common\upgrade;
 
 use think\Db;
 
