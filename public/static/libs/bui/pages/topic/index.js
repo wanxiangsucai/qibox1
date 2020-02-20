@@ -91,10 +91,26 @@ loader.define(function(require,exports,module) {
 					}else{
 						layer.alert('添加失败:'+res.msg);
 					}				
-				});
+				}
+		);
+		if(quninfo.uid==my_uid){
+			ws_send({
+				type:"qun_to_alluser",
+				tag:"give_topic_state",
+				data: {
+					ext_sys:type,
+					ext_id:id,
+				},
+			});
+			$.get("/member.php/member/quote/live.html?aid="+Math.abs(uid)+"&ext_id="+id+"&ext_sys="+type,function(res){
+				if(res.code==1){
+					alert(res.msg);
+				}
+			});
+		}
 	}
 
-	//赋值到表单那里
+	//赋值到post页面的表单那里,不是群聊使用
 	function send_form(id,m_title,m_content,m_picurl,m_url){
 		m_title = m_title.replace('"',"'");
 		if(m_content==''||m_content==null){
@@ -134,9 +150,9 @@ loader.define(function(require,exports,module) {
 			var m_picurl = $(this).data("picurl");
 			var m_url = $(this).data("url");
 			if(m_picurl==null) m_picurl = '';
-			if(uid!=0){
+			if(uid!=0){  //群聊使用
 				send_msg(id,m_title,m_content,m_picurl,m_url);
-			}else{
+			}else{	//论坛引用主题使用
 				send_form(id,m_title,m_content,m_picurl,m_url);
 			}			
 		});

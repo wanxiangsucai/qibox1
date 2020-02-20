@@ -160,11 +160,18 @@
 <script type="text/javascript">
 var type = 'bbs';
 var module = 'module';
-var uid = 0;
+var uid = "{$uid}";
 var mod_array = {};
 var page = 1;
 var scroll_get = true;
 var keyword = '';
+
+var parents;
+if(window.parent.frames['iframe_msg']!=undefined){
+	parents = window.parent.frames['iframe_msg'];
+}else{
+	parents = window.parent;
+}
 
 function search(){
 	keyword = $("#keyword").val();
@@ -175,6 +182,46 @@ function search(){
 	page = 1;
 	layer.msg("请稍候");
 	get_list_data();
+}
+
+//群聊直接发送到短消息数据表
+function send_msg(id,m_title,m_content,m_picurl){
+		var content = `<ul class="model-list model-${type}" data-id="${id}" data-type="${type}" data-imgurl="${m_picurl}"><li class="model-title">${m_title}</li><li class="model-more"><div class="model-content">${m_content}</div><div class="model-picurl"><img src="${m_picurl}" onerror="$(this).parent().hide()"/></div></li></ul>`;
+
+		parents.postmsg({
+				'uid':uid,
+				'content':content,
+				'ext_id':id,
+				'ext_sys':type,
+				},function(res){
+					if(res.code==0){
+						layer.msg('添加成功');						
+					}else{
+						layer.alert('添加失败:'+res.msg);
+					}				
+				}
+		);
+		if(parents.quninfo.uid==parents.my_uid){
+			parents.ws_send({
+				type:"qun_to_alluser",
+				tag:"give_topic_state",
+				data: {
+					ext_sys:type,
+					ext_id:id,
+				},
+			});
+			$.get("/member.php/member/quote/live.html?aid="+Math.abs(uid)+"&ext_id="+id+"&ext_sys="+type,function(res){
+				if(res.code==0){
+					parent.layer.close(parent.layer.getFrameIndex(window.name));
+				}else{
+					layer.alert(res.msg);
+				}
+			});
+		}else{
+			setTimeout(function(){					
+				parent.layer.close(parent.layer.getFrameIndex(window.name));
+			},500);
+		}
 }
 
 function add_action(){
@@ -190,20 +237,26 @@ function add_action(){
 		if(m_content==''||m_content==null){
 			m_content = '暂无介绍';
 		}
-		//var content = `[topic type=${type} id=${id} picurl=${m_picurl}]${m_title}##@@##${m_content}[/topic]`;
-		var content = `
-			   <div class='topic-box topic-type-${type}' data-id="${id}" data-type="${type}">
-                    <div class='topic-img'><a href='${m_url}' target='_blank'><img width='100' src='${m_picurl}' onerror="this.src='/public/static/images/nopic.png';" /></a></div>
-                    <div class='topic-text'>
-                        <div class='topic-title'><a href='${m_url}' target='_blank'>${m_title}</a></div>
-                        <div class='topic-content'><a href='${m_url}' target='_blank'>${m_content}</a></div>
-                    </div>
-                </div>
-		`;
-		window.parent.layer.closeAll();
-		window.parent.insert_topic(content);		
+		if(uid!=0){
+			send_msg(id,m_title,m_content,m_picurl);
+		}else{
+			//var content = `[topic type=${type} id=${id} picurl=${m_picurl}]${m_title}##@@##${m_content}[/topic]`;
+			var content = `
+				   <div class='topic-box topic-type-${type}' data-id="${id}" data-type="${type}">
+						<div class='topic-img'><a href='${m_url}' target='_blank'><img width='100' src='${m_picurl}' onerror="this.src='/public/static/images/nopic.png';" /></a></div>
+						<div class='topic-text'>
+							<div class='topic-title'><a href='${m_url}' target='_blank'>${m_title}</a></div>
+							<div class='topic-content'><a href='${m_url}' target='_blank'>${m_content}</a></div>
+						</div>
+					</div>
+			`;
+			window.parent.layer.closeAll();
+			window.parent.insert_topic(content);
+		}		
 	});
 }
+
+
 function get_list_data(){
      layer.msg("加载中,请稍候...");
     if(module=='plugin'){

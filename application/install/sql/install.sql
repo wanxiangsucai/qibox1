@@ -1748,3 +1748,7 @@ CREATE TABLE IF NOT EXISTS `qb_redis_list` (
 
 INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'myfid', '我的分类', 'select', 'int(7) NOT NULL DEFAULT ''0''', '', 'cms_mysort@id,name@uid', '<script>if($("#atc_myfid").children().length<1)$("#form_group_myfid").hide();</script>', 1, 3, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 0);
 ALTER TABLE  `qb_cms_content3` ADD  `myfid` INT( 7 ) NOT NULL COMMENT  '我的分类';
+
+UPDATE  `qb_chatmod` SET  `status`=0 WHERE  `keywords` =  'topic' AND `pcwap`=3;
+UPDATE  `qb_chatmod` SET  `pcwap`=0  WHERE  `keywords` =  'topic' AND `pcwap`!=3;
+
