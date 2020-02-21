@@ -459,14 +459,14 @@ function hide_demo(){
 		if($(this).attr('href')=='')$(this).hide();
 	});
 }
-
+var scroll_top = 0;
 var have_pay = [];	//是否已购买过可以直接安装.不提示购买
 function setup_app(id,keywords,price,have_open_layer){
 	if(typeof(app_have_setup[id])!='undefined'){
 		layer.alert('当前应用,已经安装过了!');
 		return ;
 	}
-
+	scroll_top = $(window).scrollTop();
 	layer.open({
 		type: 2,
 		title: '安装应用',
@@ -476,6 +476,7 @@ function setup_app(id,keywords,price,have_open_layer){
 		area: ['80%', '98%'],
 		content: "{:urls('market/show')}?id="+id,
 		end: function(){
+			$(window).scrollTop(scroll_top);
 			//setup_app(id,keywords,price,1);
 		}
 	});

@@ -319,3 +319,11 @@ function check_buy(id,fid,keywords,price){
 		});
 	}, 1000 );
 }
+
+$(document).ready(function () {
+	$(window).scroll(function () {
+		 if($(window).scrollTop()>800){
+			parent.document.body.scrollTop = parent.document.documentElement.scrollTop = 0;	//必须要返回顶部,不然外部框架有可能会显示不了
+		 }
+	});
+});
