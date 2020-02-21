@@ -466,6 +466,21 @@ function setup_app(id,keywords,price,have_open_layer){
 		layer.alert('当前应用,已经安装过了!');
 		return ;
 	}
+
+	layer.open({
+		type: 2,
+		title: '安装应用',
+		shadeClose: true,
+		shade:  [0.9, '#393D49'],
+		maxmin: false, //开启最大化最小化按钮
+		area: ['80%', '98%'],
+		content: "{:urls('market/show')}?id="+id,
+		end: function(){
+			//setup_app(id,keywords,price,1);
+		}
+	});
+	return ;	//改为弹窗安装
+
 	if(have_pay[id]==undefined){
 		have_pay[id]=0;
 	}
@@ -540,8 +555,6 @@ function layer_buy_iframe(url,id,keywords,price){
 				  content: url,
 				  end: function(){
 					  setup_app(id,keywords,price,1);
-					  //alert(77)
-						//window.location.reload();
 					}
 				});
 				document.body.scrollTop = document.documentElement.scrollTop = 0;	//必须要返回顶部,不然外部框架有可能会显示不了

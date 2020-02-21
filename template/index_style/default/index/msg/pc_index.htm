@@ -108,9 +108,13 @@ $(function(){
 		}
 	});
 	set_chatwin_height();
-	if(typeof(window.parent.chat_init)=='function'){
-		window.parent.chat_init();
-	}
+	try{
+		if(typeof(window.parent.chat_init)=='function'){
+			window.parent.chat_init();
+		}
+	}catch(e){
+		console.error(e);
+	}	
 });
 
 function set_chatwin_height(){

@@ -77,19 +77,23 @@ window.onload=function(){
 
 //检查框架宽度与高度是否足够
 $(function(){
-	var obj = window.parent.$("iframe");
-	for(var i=0;i<obj.length;i++){	 
-		var url = obj.eq(i).attr('src');
-		if(url!=undefined && url.indexOf('member/msg/index')>-1){
-			if(obj.eq(i).css('height').replace('px','')<680){
-				obj.eq(i).parent().parent().css({height:'750px'});
-				obj.eq(i).css({height:'707px'});
-			}
+	try{
+		var obj = window.parent.$("iframe");
+		for(var i=0;i<obj.length;i++){	 
+			var url = obj.eq(i).attr('src');
+			if(url!=undefined && url.indexOf('member/msg/index')>-1){
+				if(obj.eq(i).css('height').replace('px','')<680){
+					obj.eq(i).parent().parent().css({height:'750px'});
+					obj.eq(i).css({height:'707px'});
+				}
 
-			if(obj.eq(i).parent().parent().hasClass('layui-layer-iframe') && obj.eq(i).parent().parent().css('width').replace('px','')<950){
-				obj.eq(i).parent().parent().css({width:'950px',top:'0px'});
-			} 
+				if(obj.eq(i).parent().parent().hasClass('layui-layer-iframe') && obj.eq(i).parent().parent().css('width').replace('px','')<950){
+					obj.eq(i).parent().parent().css({width:'950px',top:'0px'});
+				} 
+			}
 		}
+	}catch(e){
+		console.error(e);
 	}	
 });
 

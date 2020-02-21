@@ -121,6 +121,23 @@ function check_upgrade(){
 }
 {if $userdb['groupid']==3&&empty(config('webdb.forbid_upgrade'))} check_upgrade(); {/if}
 
+
+{if count(plugins_config())<2 || time()-filemtime(APP_PATH.'install/install.lock')<180}
+layer.open({
+		type: 2,
+		title: '推荐安装应用',
+		shadeClose: true,
+		offset: 'lb',
+		shade:  [0.8, '#393D49'],
+		maxmin: false, //开启最大化最小化按钮
+		area: ['1100px', '600px'],
+		content: "{:urls('market/show')}",
+		end: function(){
+			//setup_app(id,keywords,price,1);
+		}
+});
+{/if}
+
 </script>
 
 {/block}
