@@ -239,7 +239,7 @@ function format_chatmsg_tohtml(array){
 				return true;
 			}
 			str_name = (rs.qun_id && rs.uid!=my_uid)?`<div class="name" data-uid="${rs.uid}" onclick="$('#input_box').val('@${rs.from_username} ').focus()">@${rs.from_username}</div>`:'';
-			str_del = (rs.uid==my_uid||rs.touid==my_uid) ? `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>` : '';
+			str_del = ((rs.uid==my_uid||rs.touid==my_uid)||(uid<0&&my_uid==quninfo.uid)) ? `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>` : '';
 			str += `<li data-id="${rs.id}" class="` + ( rs.uid==my_uid ? 'me' : 'other' ) + `">
 						<dd class="time" data-time="${rs.full_time}"><a>${rs.create_time}</a></dd>
 						${str_name}
@@ -294,18 +294,15 @@ function format_chatmsg_tohtml(array){
 			m.onclick = function () { window.focus();}
 	}
 
-	//优先显示底部的内容
-	function goto_bottom(vh){
+	//滚动到底部   old_height为pc_show_all_msg之前的高度
+	function goto_bottom(old_height){
 		var iCount = setInterval(function() {
-			var obj = $(".pc_show_all_msg");
-			var ckh = 473-$(".windows_body").height();
-			var h = obj.height()+ckh;
-			//console.log( '实际的高度='+h);
-			if(h>vh){
+			var obj = $(".pc_show_all_msg");	//反复的刷新.pc_show_all_msg渲染完毕没有.用setTimeout的话,数值小又担心还没渲染完毕,数字大,又让用户等太久.
+			var now_height = obj.height();
+			if(now_height>old_height){
 				clearInterval(iCount);
-				show_msg_top = h-453;
+				show_msg_top = now_height+20-$(".windows_body").height();
 				obj.css({top:(-show_msg_top)+"px"});
-				console.log('top='+show_msg_top)
 			}
 		}, 200);
 	}
@@ -471,9 +468,9 @@ function ws_link(){
 				 var usernum = obj.data.length;  //在线会员人数,已注册的会员
 				 if(total>1){
 					 if(type=='goin'){
-						 layer.msg("有新用户："+data[data.length-1].username+" 进来了");
+						 layer.msg("有新用户："+data[data.length-1].username+" 进来了",{offset: 't'});
 					 }else if(type=='getout'){
-						 layer.msg(obj.msg);
+						 layer.msg(obj.msg,{offset: 't'});
 					 }
 					 $("#remind_online").show();
 					 if(uid>0){
@@ -487,9 +484,9 @@ function ws_link(){
 					 }
 				 }else if( !$("#remind_online").is(':hidden') ){
 					 if(uid>0){
-						 layer.msg('对方已离开!');
+						 layer.msg('对方已离开!',{offset: 't'});
 					 }else{
-						 layer.msg('人全走光了!'+obj.msg);
+						 layer.msg('人全走光了!'+obj.msg,{offset: 't'});
 					 }
 					 $("#remind_online").hide();
 				 }
@@ -646,15 +643,35 @@ function showMoreMsg(uid){
 		layer.msg("数据加载中,请稍候...",{time:1000});
 	}
 	msg_scroll = false;
-	$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){  
-		//console.log(res);
-		//console.log(res.data);
+	if(show_msg_page>1){
+		var loadIndex = layer.load(3,{shade: [0.1,'#333'],time:9000});
+	}	
+	$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){
 		if(res.code==0){
 			if(show_msg_page==1){
-				load_first_page(res);				
+				load_first_page(res);
+			}else{				
+				$(".pc_show_all_msg").append("<div style='border-top:1px solid #ddd;border-bottom:1px solid #ddd;text-align:center;padding:5px;'>第"+show_msg_page+"页</div>");
+				var old_height = $(".pc_show_all_msg").height();
 			}
-			set_main_win_content(res);
+			set_main_win_content(res);	//这个函数里,做了show_msg_page++
+			
+			if(show_msg_page>2){		
+				setTimeout(function(){
+					layer.close(loadIndex);
+					var new_height = $(".pc_show_all_msg").height();
+					var top = new_height - old_height - $(".windows_body").height();
+					$(".pc_show_all_msg").css("top",((top>0?-top:0)-$(".windows_body").height())+'px');
+					if( (typeof(res.data)=='string'&&res.data!='') || (typeof(res.data)!='string'&&res.data.length>0) ){
+						msg_scroll = true;
+					}
+				},500);
+			}else{
+				msg_scroll = true;
+			}
+						
 		}else{
+			layer.close(loadIndex);
 			layer.msg(res.msg,{time:2500});
 		}
 	});
@@ -678,11 +695,34 @@ function check_new_showmsg(obj){
 		
         var str = format_chatmsg_tohtml(res.data);
         if(str!=""){	//有新的聊天内容
-            var vh = that.height();
-            //console.log( '原来的高度='+vh);
+
+            var refresh_newmsg = true;	//显示最新消息
+
+			if(res.data[0].uid!=my_uid && show_msg_page>2 && $(".windows_body").height()+300-(that.height()-Math.abs(that.css('top').replace('px','')))<0 ){
+
+				refresh_newmsg = false;	//不在第一屏的时候,就不滚动刷新,自己发布的话,就强制滚动刷新
+			
+			}else if(that.find('li').length>20){	//大于20条就自动清屏
+
+				$('.pc_show_all_msg>li').each(function(i){
+					if(i>10){
+						$(this).remove();
+						console.log('清除了第'+i+'条');
+					}
+				});
+				show_msg_page = 2;
+			}
+
+			var old_height = that.height();
+
             that.prepend(str);
-            format_show_time(that)	//隐藏相邻的时间
-            goto_bottom(vh);		//消息滚到最底部
+            format_show_time(that)			//隐藏相邻的时间
+			
+			
+			if( refresh_newmsg ){
+				goto_bottom(old_height);		//消息滚到最底部
+			}
+			
             content_add_btn(obj,'cknew');
             need_scroll = true;
             if(window.Notification){	//消息提醒
@@ -706,7 +746,7 @@ function check_new_showmsg(obj){
 			load_data[index](res,'cknew');
 		}
         
-    }else{	//客户端拉数据, 主动获取数据
+    }else{	//客户端拉数据, 主动获取数据  ******已经弃用********
         
         $.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){
             if(res.code!=0){
@@ -719,11 +759,11 @@ function check_new_showmsg(obj){
             var that = $('.pc_show_all_msg');
             var str = format_chatmsg_tohtml(res.data);
             if(str!=""){	//有新的聊天内容
-                var vh = that.height();
-                //console.log( '原来的高度='+vh);
+                var old_height = that.height();
+                //console.log( '原来的高度='+old_height);
                 that.prepend(str);
                 format_show_time(that)	//隐藏相邻的时间
-                goto_bottom(vh);
+                goto_bottom(old_height);
                 content_add_btn(res,'cknew');
                 need_scroll = true;
                 if(window.Notification){	//消息提醒
@@ -761,7 +801,7 @@ function check_new_showmsg(obj){
     }
 }
 
-//往主窗口里边加入显示的数据
+//往主窗口里边加入显示的数据, 聊天用到, 统计数据也用到
 function set_main_win_content(res){
 	//layer.closeAll();
 	var that = $('.pc_show_all_msg');
@@ -790,7 +830,7 @@ function set_main_win_content(res){
 			that.append(res.data);
 			format_show_time(that);
 			setTimeout(function(){
-				var new_h = $(".pc_show_all_msg").height();					
+				var new_h = $(".pc_show_all_msg").height();				
 				$(".pc_show_all_msg").css('top',(old_h-new_h)+'px');
 			},500);
 		}		
@@ -798,7 +838,7 @@ function set_main_win_content(res){
 		content_add_btn(res);
 		format_nickname();
 		show_msg_page++;
-		msg_scroll = true;
+		//msg_scroll = true;
 	}
 }
 
@@ -824,6 +864,9 @@ function get_tongji_msg(type){
 	$.get(tongjiMsgUrl + show_msg_page + "&type="+type,function(res){
 		if(res.code==0){
 			set_main_win_content(res);
+			if( (typeof(res.data)=='string'&&res.data!='') || (typeof(res.data)!='string'&&res.data.length>0) ){
+				msg_scroll = true;
+			}
 		}
 	});
 }
@@ -887,6 +930,7 @@ $(function(){
 						if(chat_type=='tongji'){
 							get_tongji_msg(tj_type);
 						}else{
+							console.log("加载内容了");
 							showMoreMsg(uid);
 						}				
 					}			

@@ -269,7 +269,7 @@ loader.define(function(require,exports,module) {
 
     var pageview = {};
 	var qid;
-	var msg_scroll = 1;
+	var msg_scroll = true;
 	var show_msg_page  = 1;
 	var maxid = -1;
 	var getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&page=";	
@@ -560,19 +560,15 @@ loader.define(function(require,exports,module) {
 		},1500);*/
 
 		router.$("#chat_win").parent().scroll(function () {
-			if(window.in_chat!==true){
+			if(window.in_chat!=undefined && window.in_chat!==true){	//切换到非聊天窗口的时候,就上禁用滚动事件
 				return ;
-			}
+			} 
 			var h = router.$("#chat_win").parent().scrollTop();			
-			if( h<100){
-				if(msg_scroll!=-1){
-					router.$('#chat_win').parent().scrollTop(150);
-				}
-				if(msg_scroll==1){
-					msg_scroll = 0;					
-					layer.msg("内容加载中！请稍候...",{time:2000});
+			if(h<100){
+				if(msg_scroll==true){
+					msg_scroll = false;
 					showMoreMsg(uid);
-				}								
+				}		
 			}
 		});
 
@@ -738,17 +734,40 @@ loader.define(function(require,exports,module) {
 
 		if( typeof(obj)=='object' && typeof(obj.data)=='object' && obj.data.length>0 ){		//服务端推数据, 即被动获取数据
 			var res = obj;
-			//layer.closeAll();
+			//var that = router.$('#chat_win');
 			need_scroll = true;
+			
+			var h2 =router.$("#chat_win").height()-router.$("#chat_main").height()+60-router.$("#chat_win").parent().scrollTop();
+			if(res.data[0].uid!=my_uid && show_msg_page>2 && h2>500 ){
+
+				need_scroll = false;	//查看历史消息,就不滚动刷新,自己发布的话,就强制滚动刷新
+			
+			}else if(router.$("#chat_win .bui-box-align-top").length>20){	//大于20条就自动清屏
+
+				$('#chat_win .bui-box-align-top').each(function(i){
+					if(i>10){
+						if($(this).next().next().hasClass("bui-box-center")){	//时间
+							$(this).next().next().remove();
+						}
+						if($(this).next().hasClass("show_username")){	//用户名
+							$(this).next().remove();
+						}
+						$(this).remove();
+						console.log('清除了第'+i+'条');
+					}
+				});
+				show_msg_page = 2;
+			}
+
 			add_msg_data(res,'new');
-			if(typeof(res.ext)!='undefined')maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
+			//if(typeof(res.ext)!='undefined')maxid = res.ext.maxid;	//不主动获取数据的话,这个用不到
 			
 			//当前页面可以这样使用 load_data.xxxx=function(o){} 子窗口可以这样使用 parent.load_data.xxxx=function(o){}
 			for(var index in load_data){
 				load_data[index](res,'cknew');
 			}
 
-		}else{	//客户端拉数据, 主动获取数据
+		}else{	//客户端拉数据, 主动获取数据   ******已经弃用********
 			$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){			
 				if(res.code!=0){				
 					layer.alert('页面加载失败,请刷新当前网页');
@@ -787,33 +806,49 @@ loader.define(function(require,exports,module) {
 	//加载更多的会话记录
 	function showMoreMsg(uid){
 		if(show_msg_page==1){
-			maxid = -1;
-			var index = layer.msg("数据加载中,请稍候...");
-		}	
-		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){			
-			//console.log(res);
+			//maxid = -1;
+			var loadIndex = layer.msg("数据加载中,请稍候...");
+		}else{
+			var loadIndex = layer.load(3,{shade: [0.1,'#333'],time:9000});
+		}
+		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){			//console.log(res);
 			if(res.code==0){
+				var that = router.$('#chat_win');
+
 				if(show_msg_page==1){					
 					load_first_page(res);					
+				}else{
+					that.append("<div style='border-top:1px solid #ddd;border-bottom:1px solid #ddd;text-align:center;padding:5px;'>第"+show_msg_page+"页</div>");
+					var old_height = that.height();
 				}
-				layer.close(index);
-				var that = router.$('#chat_win');
 				if(res.data.length<1){
+					layer.close(loadIndex);
 					if(show_msg_page==1){
-						that.parent().scrollTop(0)
 						layer.msg("没有任何聊天记录！",{time:1000});
 					}else{
-						layer.msg("已经显示完了！",{time:500});
+						layer.msg("已经显示完了！",{time:1000});
 					}
-					msg_scroll = -1;	//允许滚动条滚到尽头
 				}else{
-					console.log(res);
-					show_msg_page++;
-					//msg_scroll = 1;
-					//vues.set_data(res.data);
 					add_msg_data(res);
+
+					if(show_msg_page>1){
+						setTimeout(function(){
+							layer.close(loadIndex);
+							var new_height = that.height();
+							var top = new_height - old_height;
+							that.parent().scrollTop(top);
+							if( res.data.length>0 ){
+								msg_scroll = true;
+							}
+						},500);
+					}else{
+						layer.close(loadIndex);
+						msg_scroll = true;
+					}
+					show_msg_page++;
 				}				
 			}else{
+				layer.close(loadIndex);
 				layer.msg(res.msg,{time:2500});
 			}
 		});
@@ -849,11 +884,8 @@ loader.define(function(require,exports,module) {
 			touser.name = $(this).data('name');
 			console.log(touser);
 		});
-		
-		
 
 		format_nickname();	//设置圈子昵称
-
 
 		for(var index in format_content){
 			if(typeof(format_content[index])=='function'){
@@ -971,7 +1003,7 @@ loader.define(function(require,exports,module) {
 				return true;
 			}
 			del_str = '';
-			if(userdb.uid>0 && (rs.uid==userdb.uid || rs.touid==userdb.uid) ){
+			if((userdb.uid>0 && (rs.uid==userdb.uid || rs.touid==userdb.uid)) || (uid<0 && my_uid==quninfo.uid) ){
 				del_str = `<i data-id="${rs.id}" class="del glyphicon glyphicon-remove-circle"></i>`;
 			}
 			
@@ -1032,7 +1064,7 @@ loader.define(function(require,exports,module) {
 		}else{
 			router.$('#chat_win').parent().scrollTop(400);
 		}		
-		msg_scroll = 1;
+		//msg_scroll = 1;
 	}
 
 	
@@ -1074,7 +1106,7 @@ loader.define(function(require,exports,module) {
 			//vues.set_id(uid);
 			//head_menu(uid);	//设置菜单
 			show_msg_page = 1; //重新恢复第一页
-			msg_scroll = 1; //恢复可以使用滚动条			
+			msg_scroll = true; //恢复可以使用滚动条			
 			showMoreMsg(uid);	//加载相应用户的聊天记录
 			if(uid<0){	//群聊,获取群信息
 				pageview.get_user_list(-uid);

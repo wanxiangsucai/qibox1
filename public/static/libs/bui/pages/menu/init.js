@@ -2,7 +2,7 @@
 mod_class.menu = {
 	vid:0,
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
-		if(in_pc==true){
+		if(in_pc==true||uid>0){
 			return ;
 		}
 		var that = this;
@@ -64,6 +64,9 @@ mod_class.menu = {
 
 //类接口,加载到聊天会话数据时执行的  刷新数据的时候也会有到.不仅仅是初次加载
 load_data.menu = function(res,type){
+	if(in_pc==true||uid>0){
+		return ;
+	}
 	if(type=='cknew'){	//刷新到数据就不需要了,因为WS有另外传数据过来
 		return ;
 	}

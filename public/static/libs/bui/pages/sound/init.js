@@ -18,6 +18,7 @@ function apk_recode_end(url){
 //init() logic_init() once() finish() 的使用教程网址 http://help.php168.com/1435153
 mod_class.sound = {
 	recMp3:null,
+	wx_allow_power:null,
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
 		var that = this;	//引用传递
 		var url = typeof(api)=='object'?web_url:'';
@@ -38,6 +39,9 @@ mod_class.sound = {
 			if(typeof(api)=="object" && that.recMp3 == null){
 				that.recMp3 = api.require('recMp3')
 			}
+			if(typeof(wx)=="object" && that.wx_allow_power==null){	//提前申请权限,避免后续操作中断
+				wx_record_start();
+			}
 			router.$(".chatbar>div").hide();
 			router.$(".sound_warp").show();
 		});
@@ -46,7 +50,7 @@ mod_class.sound = {
 			router.$(".sound_warp").hide();
 			router.$(".bui-input").show();		
 		});
-
+		var layer_msg,recordTimer;
 		var btnRecord = router.$('#voiceBtn');
 		btnRecord.on('touchstart', function(event) {	//按住不放,开始录音
 			event.preventDefault();
@@ -54,20 +58,20 @@ mod_class.sound = {
 			startTime = new Date().getTime();
 			// 延时后录音，避免误操作
 			recordTimer = setTimeout(function() {
-				layer.msg('请不要松手,录音正在进行中...',{time:60000});
-				start_recode();	//执行录音
-			}, 300);
+				layer_msg = layer.msg('请不要松手,正在开始录音...',{time:60000});
+				start_recode();	//开始执行录音
+			}, 200);
 		}).on('touchend', function(event) {  //松手停止录音.
 			event.preventDefault();
 			btnRecord.removeClass('re_cord');	
+			layer.close(layer_msg);
 			// 间隔太短
-			if (new Date().getTime() - startTime < 300) {
+			if (new Date().getTime() - startTime < 200) {
 				startTime = 0;
 				// 不录音
 				clearTimeout(recordTimer);
-				layer.alert('请按住不要松开,才能继续录音');
-			} else { // 松手结束录音
-				layer.closeAll();
+				layer.alert('请按住不要松开,才能录音');
+			} else { // 松手结束录音				
 				layer.msg('录音完毕,上传中...');
 				stop_recode(); //录音结束
 			}
@@ -76,8 +80,7 @@ mod_class.sound = {
 		if(typeof(wx)!='undefined'){
 			wx.onVoiceRecordEnd({
 				complete: function (res) {
-				  //voice.localId = res.localId;
-				  layer.alert('每次录音不得超过一分钟');
+				  layer.msg('提示：每次录音不得超过一分钟',{time:1000});
 				}
 			});
 		}
@@ -124,8 +127,14 @@ mod_class.sound = {
 		}
 
 		function wx_record_start(){
+			try{
+				wx.stopRecord({});
+			}catch(e){
+				console.log(e);
+			}
 			wx.startRecord({
 				success: function() {
+					that.wx_allow_power = true;
 				},
 				cancel: function() {
 					layer.alert('你拒绝了授权录音');
