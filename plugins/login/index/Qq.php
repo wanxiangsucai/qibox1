@@ -12,11 +12,15 @@ class Qq extends IndexBase
      * @param string $fromurl 返回的地址
      * @param string $type 设置为bind的时候,就是绑定帐号
      */
-    public function index($fromurl='',$type=''){
+    public function index($fromurl='',$type='',$sid=''){
 
         if($type=='bind'){
             if(!$this->user){
                 $this->error('请用其它帐号登录后,才能绑定QQ登录!');
+            }
+            $sid || $sid = get_cookie('user_sid');
+            if(cache('bind_'.$sid)==''){
+                $this->error('验证有误!');
             }
         }elseif($this->user){
             $this->error('你已经登录了',get_url('member'),'',1);

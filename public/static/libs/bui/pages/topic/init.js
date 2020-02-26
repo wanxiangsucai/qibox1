@@ -70,7 +70,7 @@ mod_class.topic = {
 			  maxmin: false,
 			  scrollbar: false,
 			  closeBtn:2,  
-			  area: (in_pc?['1250px','800px']:['95%','85%']),  
+			  area: (in_pc?['1250px','85%']:['95%','85%']),  
 			  content: "/index.php/" + sys + "/content/show/id/" + id + ".html",
 			  success: function(layero, index){  
 					//var body = layer.getChildFrame('body', index);  //body.find('#dd').append('ff');    

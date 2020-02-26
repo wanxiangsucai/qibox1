@@ -90,16 +90,30 @@ class Member extends AdminBase
 	    
 	    if ($this->request->isPost()) {    //修改入库处理
 	        $data = $this->request->post();
-	        $data['about'] = $this->user['username'].'操作 '.$data['about'];
+	        $about = $this->user['username'].'操作 '.$data['about'];
+	        
+	        $_name = '';
+	        
 	        if(is_numeric($data['type'])){
-	            add_jifen($data['uid'],$data['num'],$data['about'],$data['type']);
+	            add_jifen($data['uid'],$data['num'],$about,$data['type']);
+	            $_name = jf_name($data['type']);
+	            $_dw = '个';
 	        }elseif($data['type']=='rmb'){
-	            add_rmb($data['uid'],$data['num'],0,$data['about']);
+	            add_rmb($data['uid'],$data['num'],0,$about);
+	            $_name = '余额';
+	            $_dw = '元';
 	        }elseif($data['type']=='rmb_freeze'){
-	            add_rmb($data['uid'],0,$data['num'],$data['about']);
+	            add_rmb($data['uid'],0,$data['num'],$about);
+	            $_name = '冻结余额';
+	            $_dw = '元';
 	        }else{
 	            $this->error('未知类型');
 	        }
+	        $title = jf_name($data['type']).'变动通知';	        
+	        
+	        $content = '你的 '.$_name.' '.($data['num']>0?'增加了':'减少了').' '.abs($data['num']).' '.$_dw.'，原因：'.$data['about'].'，操作员：'.$this->user['username'];
+	        send_msg($data['uid'],$title,$content);
+	        send_wx_msg($data['uid'], $content);
 	        $this->success('修改成功', 'index');
 	    }
 	    

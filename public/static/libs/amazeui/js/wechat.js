@@ -643,20 +643,21 @@ function showMoreMsg(uid){
 		layer.msg("数据加载中,请稍候...",{time:1000});
 	}
 	msg_scroll = false;
+	var loadIndex = null;
 	if(show_msg_page>1){
-		var loadIndex = layer.load(3,{shade: [0.1,'#333'],time:9000});
+		loadIndex = layer.load(3,{shade: [0.1,'#333'],time:9000});
 	}	
 	$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){
 		if(res.code==0){
 			if(show_msg_page==1){
 				load_first_page(res);
-			}else{				
+			}else if(res.data.length>0){				
 				$(".pc_show_all_msg").append("<div style='border-top:1px solid #ddd;border-bottom:1px solid #ddd;text-align:center;padding:5px;'>第"+show_msg_page+"页</div>");
 				var old_height = $(".pc_show_all_msg").height();
 			}
 			set_main_win_content(res);	//这个函数里,做了show_msg_page++
 			
-			if(show_msg_page>2){		
+			if(show_msg_page>2 && res.data.length>0){		
 				setTimeout(function(){
 					layer.close(loadIndex);
 					var new_height = $(".pc_show_all_msg").height();
@@ -667,7 +668,8 @@ function showMoreMsg(uid){
 					}
 				},500);
 			}else{
-				msg_scroll = true;
+				if(loadIndex!=null)layer.close(loadIndex);
+				if(res.data.length>0)msg_scroll = true;
 			}
 						
 		}else{

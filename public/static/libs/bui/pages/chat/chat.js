@@ -817,7 +817,7 @@ loader.define(function(require,exports,module) {
 
 				if(show_msg_page==1){					
 					load_first_page(res);					
-				}else{
+				}else if(res.data.length>0){
 					that.append("<div style='border-top:1px solid #ddd;border-bottom:1px solid #ddd;text-align:center;padding:5px;'>第"+show_msg_page+"页</div>");
 					var old_height = that.height();
 				}
@@ -831,7 +831,7 @@ loader.define(function(require,exports,module) {
 				}else{
 					add_msg_data(res);
 
-					if(show_msg_page>1){
+					if(show_msg_page>1 && res.data.length>0){
 						setTimeout(function(){
 							layer.close(loadIndex);
 							var new_height = that.height();

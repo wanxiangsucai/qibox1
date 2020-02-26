@@ -51,9 +51,9 @@ class User extends IndexBase
         $info['introducer_3'] = $info['introducer_3']?get_user_name($info['introducer_3']):'';
         
         //自定义字段
-        $f_array = Cfgfield::get_form_items($info['groupid']
-                ,$this->user['uid']==$info['uid']?'admin':'view' //自己看自己的就相当于管理员权限
-                ,$this->user);
+        $f_array = Cfgfield::get_form_items($info['groupid'],
+                $this->admin?'admin':'view',    //查看权限处理
+                $this->user);
         
         $this->assign('info',$info);
         $this->assign('uid',$info['uid']);
@@ -81,7 +81,7 @@ class User extends IndexBase
                 ['text', 'username', '帐号',$this->webdb['edit_username_money']?'需要消费积分 '.intval($this->webdb['edit_username_money']).' 个':'请不要随意修改'],
                 ['text', 'password', '密码','留空则代表不修改密码'],
                 ['text', 'nickname', '昵称'],
-                ['text', 'email', '邮箱'],
+               // ['text', 'email', '邮箱'],
                 ['radio', 'sex', '性别','',[0=>'保密',1=>'男',2=>'女']],
                 ['jcrop', 'icon', '头像'],
                 ['textarea', 'introduce', '自我介绍(签名)'],
@@ -157,7 +157,15 @@ class User extends IndexBase
             }
             $data['introduce'] && $data['introduce'] = preg_replace("/(javascript|iframe|script |\/script)/i", '.\\1', $data['introduce']);
             
+            
             if ( $this->model->edit_user($data) ) {
+                if ($data['password']) {
+                    $title = '你修改了密码!';
+                    $content = '你刚刚修改了密码，如果不是你本人操作，请尽快选择微信或手机登录重新修改密码，以避免造成不必要的损失！';
+                    send_msg($this->user['uid'],$title,$content.'<a href="'.murl('member/user/edit').'" target="_blank">立即登录</a>');
+                    send_wx_msg($this->user['uid'], $content.'<a href="'.murl('member/user/edit').'" target="_blank">立即登录</a>');
+                    send_sms($this->user['mobphone'], $content);
+                }
                 $this->success('修改成功');
             } else {
                 $this->error('数据更新失败');

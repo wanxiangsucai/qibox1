@@ -9,12 +9,14 @@
     <div class="cont">
     	<div class="Showpage">        
 
-			 <div style="color:red;padding:10px;">提示:{if $userdb.email_yz}你的邮箱 {$userdb.email} 已经成功验证,如有需要,可以更换其它邮箱进行验证{else /}你的邮箱还没有通过验证,请最好验证,可以享受更多权利.{/if}</div>
+			 <div style="color:red;padding:10px;">提示：{if $userdb.email_yz}你的邮箱 {$userdb.email} 已验证<br>如更换，必须填上旧邮箱进行验证{else /}你的邮箱还没有通过验证，请最好验证,可以享受更多权利。{/if}</div>
 		<form name="form1" method="post" action="{:urls('index')}" class="yzuserfrom">
               {eq name='$userdb.email_yz' value='1'}更换新{/eq}邮箱：<input type="text" name="email" value="{eq name='$userdb.email_yz' value='0'}{$userdb.email}{/eq}" size="13">
               <input type="button"  value="发送验证码" onclick="get_code_num('email')"> <br><br>
 			  验证码：<input type="text" name="email_code" value="" size="13">
 			  <br><br>
+			  {if $userdb.email_yz}旧邮箱：<input type="text" name="old_email" value="" size="13">
+			  <br><br>{/if}
 			  <input type="submit" name="Submit" value="提交验证">
 		</form>
 
@@ -27,7 +29,9 @@
     </div>
     <div class="cont">
     	<ul class="aboutnote">
-        	<li>1、验证邮箱，可以提高信誉度，</li>
+        	<li>1、验证邮箱，可以确保帐号更安全，也会提高帐号信誉度。</li> 
+			<li>2、邮箱只有管理员才有权限查看，请放心，不会对外公开!</li>
+			<li>3、更换邮箱，需要补全原来的邮箱，做安全校验，以避免被他人盗改。</li>
         </ul>
     </div>
 </div>

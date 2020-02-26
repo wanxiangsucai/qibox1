@@ -47,11 +47,12 @@ class Yz extends MemberBase
     
     /**
      * 验证邮箱
-     * @param string $email
-     * @param string $email_code
+     * @param string $email 新邮箱
+     * @param string $email_code 验证码
+     * @param string $old_email 旧邮箱
      * @return mixed|string
      */
-    public function index($email='',$email_code='')
+    public function index($email='',$email_code='',$old_email='')
     {
         if($this->request->isPost()){
             $num = cache(get_cookie('user_sid').$email);
@@ -60,6 +61,11 @@ class Yz extends MemberBase
             if( $email_code!=$send_num  || empty($num)) {
                 $this->error('验证码不对');
             }
+            
+            if($this->user['email_yz'] && $old_email!=$this->user['email']){
+                $this->error('旧邮箱不对');
+            }
+            
             $array = [
                     'uid'=>$this->user['uid'],
                     'email'=>$email,
@@ -71,35 +77,10 @@ class Yz extends MemberBase
                 $this->error('数据写入失败');
             }
         }
+        $this->user['email'] = preg_replace("/([\w]{2})(.*?)@(.*?)/i","\\1***@\\2",$this->user['email']);
         return $this->fetch();
     }
     
-    //邮箱验证
-//     public function index($code='')
-//     {
-//         $code = input('get.code');
-//         if ($code!='') {
-//             list($uid,$time,$email) = explode("\t", $code);
-//             if(time()-$time>1800){  //半小时有效
-//                 $this->error('链接已失效,请重新发送邮件');
-//             }
-//             $array = [
-//                     'uid'=>$this->user['uid'],
-//                     'email'=>$email,
-//                     'email_yz'=>1,
-//             ];
-//             if (UserModel::edit_user($array)) {
-//                 $this->success('验证成功','index');
-//             }else{
-//                 $this->error('数据写入失败');
-//             }
-//         }elseif($this->request->isPost()){
-//             $email = input('email');
-//             $content = mymd5($this->user['uid'] . "\t" . time() . "\t" . $email);
-//             send_mail($email, '邮箱验证', "请点击以下链接进行邮箱验证<a target='_blank' href='" . $this->weburl . "'>" .$this->weburl . "</a>");
-//         }
-//         return $this->fetch();
-//     }
     
     /**
      * 证件验证
@@ -135,11 +116,12 @@ class Yz extends MemberBase
     
     /**
      * 验证手机号
-     * @param string $mobphone
-     * @param string $mobphone_code
+     * @param string $mobphone 新手机号
+     * @param string $mobphone_code 验证码
+     * @param string $old_mobphone 旧手机号
      * @return mixed|string
      */
-    public function mob($mobphone='',$mobphone_code='')
+    public function mob($mobphone='',$mobphone_code='',$old_mobphone='')
     {
         if($this->request->isPost()){            
             $num = cache(get_cookie('user_sid').$mobphone);
@@ -147,6 +129,10 @@ class Yz extends MemberBase
             //$send_num = get_md5_num($mobphone.$num,6);
             if( $mobphone_code!=$send_num  || empty($num)) {
                 $this->error('验证码不对');
+            }
+            
+            if($this->user['mob_yz'] && $old_mobphone!=$this->user['mobphone']){
+                $this->error('旧手机号码不对');
             }
             
             $array = [
@@ -160,43 +146,8 @@ class Yz extends MemberBase
             }else{
                 $this->error('数据写入失败');
             }
-        }
+        }        
         return $this->fetch();
-    }
-    
-    //手机号码验证
-//     public function mob($mobphone='')
-//     {
-//         session([
-//                 'prefix'         => 'yzuser',
-//                 'type'           => '',
-//                 'auto_start'     => true,
-//         ]);
-        
-//         if($this->request->isPost()){
-//             $num = input('post.num');
-//             $code = session('uid_'.$this->user['uid'].'_'.$num);
-//             list($uid,$time,$mob) = explode("\t", $code);
-//             if(time()-$time>1800){  //半小时有效
-//                 $this->error('验证码已失效,请重新发送证码');
-//             }
-//             $array = [
-//                     'uid'=>$this->user['uid'],
-//                     'mobphone'=>$mob,
-//                     'mob_yz'=>1,
-//             ];
-//             if (UserModel::edit_user($array)) {
-//                 $this->success('验证成功','index');
-//             }else{
-//                 $this->error('数据写入失败');
-//             }
-//         }elseif ($mobphone!='') {
-//             $rands = rand(1000,9999);
-//             $content = mymd5($this->user['uid'] . "\t" . time() . "\t" . $mobphone);
-//             session('uid_'.$this->user['uid'].'_'.$rands,$content);
-//             send_sms( $mobphone , '你的邮箱验证码是:' . $rands );
-//         }
-//         return $this->fetch();
-//     }
+    }    
 
 }

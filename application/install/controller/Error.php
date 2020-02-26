@@ -106,21 +106,32 @@ class Error extends Controller
                 $this->error('数据库连接失败，请检查数据库配置！');
             }
             
+            try{
+                $table_array = $db_connect->getTables($database);
+            }catch(\Exception $e){
+                try{
+                    // 创建数据库
+                    $db_connect->execute("CREATE DATABASE IF NOT EXISTS `{$database}` DEFAULT CHARACTER SET utf8");
+                }catch(\Exception $e){
+                    $this->error($database.'当前数据库不存在！');
+                }                
+            }
+
+            if (!$cover && in_array($data['prefix'].'config', $table_array)) {
+                $this->error($data['prefix'].' 当前数据表前缀已经存在,请更换一个数据表前缀,非得要使用当前数据表前缀的话,请选择“覆盖”,即代表替换之前安装过的X1系统.');
+            }
             $data['database'] = $database;
             // 生成配置文件
             self::mkDatabase($data);
 
-            // 不覆盖检测是否已存在数据库
-            if (!$cover) {
-                $check = $db_connect->execute('SELECT * FROM information_schema.schemata WHERE schema_name="'.$database.'"');
-                if ($check) {
-                    $this->error('该数据库已存在，如需覆盖，请选择覆盖数据库！或者修改数据表前缀');
-                }
-            }
-            // 创建数据库
-            if (!$db_connect->execute("CREATE DATABASE IF NOT EXISTS `{$database}` DEFAULT CHARACTER SET utf8")) {
-                return $this->error($db_connect->getError());
-            }
+//             // 不覆盖检测是否已存在数据库
+//             if (!$cover) {
+//                 $check = $db_connect->execute('SELECT * FROM information_schema.schemata WHERE schema_name="'.$database.'"');
+//                 if ($check) {
+//                     $this->error('该数据库已存在，如需覆盖，请选择覆盖数据库！或者修改数据表前缀');
+//                 }
+//             }
+            
             
             return $this->success('数据库连接成功', '');
         } else {

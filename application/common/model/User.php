@@ -386,8 +386,13 @@ class User extends Model
 		        'not_pwd'=>$not_pwd,
 		        'type'=>$type,
 		];
-		get_hook('user_login_end',$array,[],[],true);
-		hook_listen('user_login_end', $array);		
+		get_hook('user_login_end',$array,$rs,[],true);
+		hook_listen('user_login_end', $array,$rs);
+		
+		if ($not_pwd==false) {
+		    $content = '友情提醒：你的帐号 '.$username.' 刚刚登录过 '.config('webdb.webname').'，如果不是你本人操作，估计密码已被盗，请尽快修改密码！'.' <a href="'.murl('member/user/edit').'" target="_blank">立即登录</a>';
+		    send_wx_msg($rs['weixin_api'], $content);
+		}
 		
 		return $rs;
 	}

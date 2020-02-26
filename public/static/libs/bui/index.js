@@ -24,7 +24,7 @@ function apiready() {	//跳转到仿生APP去
 }
 
 window.router = bui.router();
-window.loader = bui.loader({cache: false});	//false代表不要缓存
+window.loader = bui.loader({cache: true});	//false代表不要缓存
 
 bui.ready(function(){
 	window.store = bui.store({
@@ -69,7 +69,7 @@ bui.ready(function(){
 			progress: true,
 			hash: true,
 			store: store,
-			cache: false,	//false代表不要缓存
+			cache: true,	//false代表不要缓存
     });
 	
 	//检查新消息的条数
