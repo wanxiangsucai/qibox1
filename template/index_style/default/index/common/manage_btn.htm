@@ -1,0 +1,32 @@
+<style type="text/css">
+.manage_topic{
+	cursor:pointer;
+	display:{$userdb.uid!=$info.uid&&$userdb.groupid!=3?'none !important':''};
+}
+.manage_button{
+	font-size:16px;
+	background:#fff;
+	color:rgb(15, 166, 216);
+	padding:3px 8px 5px 8px;
+	border-radius:3px;
+	margin:5px 0 15px 0;
+	display:block;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+	$(".manage_topic").click(function(){
+		layer.tips($("#manage_topic_warp").html(), $(this), {tips: [3, '#0FA6D8'],tipsMore: false,time:4000 });
+	});
+});
+ 
+</script>
+<div style="display:none;" id="manage_topic_warp">
+	<a href="{:murl('content/edit')}?id={$id}" class="manage_button" target="blank">修改主题</a>
+	<a href="javascript:" onclick="layer.confirm('你确认要删除吗?',function(){ window.location.href='{:murl('content/delete')}?ids={$id}' })" class="manage_button _alert">删除主题</a>		
+	<a href="{:murl('content/add')}?fid={$info.fid}" class="manage_button" target="blank">发表主题</a>
+{if M('key')=='cms'&&$info.mid==1}
+	<a href="{:murl('pages/add')}?aid={$id}" class="manage_button" target="blank">续发多页</a>
+	<a href="{:murl('pages/index')}?aid={$id}" class="manage_button" target="blank">管理多页</a>
+{/if}
+</div>

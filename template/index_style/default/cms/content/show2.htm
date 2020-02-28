@@ -23,8 +23,28 @@
 		</ul>
 	</div>
 {/qb:showpage}
+<script type="text/javascript">
+function add_fav(id){
+	var url="{:purl('fav/api/add')}?type={:config('system_dirname')}&id="+id;
+	$.get(url,function(res){
+		if(res.code==0){
+			layer.msg('收藏成功');
+		}else{
+			layer.alert(res.msg);
+		}
+	})
+}
+</script>
+<style type="text/css">.infos{font-size:14px;color:#999;}.infos span{margin-right:10px;}</style>
 	<div class="ContentBox">
 		<div class="title">{$info.title}</div>
+		<div class="infos">
+			<span><i class="glyphicon glyphicon-time"></i> {:date("Y-m-d H:i:s",$info.create_time)}</span>
+			<span><i class="si si-eye"></i> {$info.view}</span>
+			<span onclick="add_fav({$id})"> <li class="fa fa-fw fa-heart"></li>收藏</span> 
+			<span class="manage_topic"> <li class="fa fa-cogs"></li> 管理</span> 
+			{include file="index@common/manage_btn" /}
+		</div>
 		<div class="Cont">
 			<i class="glyphicon glyphicon-paperclip"></i>
 			{$info.content}

@@ -81,8 +81,13 @@ trait LabelEdit {
         ];
     }
     
+    /**
+     * 删除标签
+     * @param string $name
+     */
     public function delete($name=''){
         if (LabelModel::destroy(['name'=>$name])) {
+            $this->clean_cache($name);
             $this -> success('删除成功');
         } else {
             $this -> error('删除失败');
@@ -169,10 +174,19 @@ trait LabelEdit {
         return getArray( LabelModel::get(['name'=>input('name')]) );
     }
     
+    /**
+     * 清除当前标签的缓存
+     * @param unknown $tag_name
+     */
+    protected function clean_cache($tag_name){
+        cache2('qbTagCacheKey__'.$tag_name.'-*',null);
+    }
+    
     //保存标签数据
     protected function save($array){
         $result = LabelModel::save_data($array);
         if($result===true){
+            $this->clean_cache($array['name']);
 			if($this->request->isAjax()){
 				$this->success('设置成功');
 			}else{

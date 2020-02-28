@@ -39,13 +39,13 @@ class Content{
      */
     public static function bbscode($content=''){
         $content = preg_replace_callback("/\[face(\d+)\]/is",array(self,'get_face'),$content);
-        $content = preg_replace_callback("/(.?)(http|https):\/\/([\w\.\?\/=\-_]+)/is",array(self,'get_link'),$content);
+        $content = preg_replace_callback("/([^br]?|<br>)(http|https):\/\/([\w\.\?\/=\-_]+)/is",array(self,'get_link'),$content);
         return $content;
     }
     
     private static function get_link($array){
         $url  = $array[2].'://'.$array[3];
-        if(in_array($array[1], ['>',"'",'"']) || preg_match("/([\w]+)/i", $array[1])){
+        if($array[1]!='<br>'&&(in_array($array[1], ['>',"'",'"']) || preg_match("/([\w]+)/i", $array[1]))){
             return $array[1].$url;
         }else{
             return $array[1].'<a href="'.$url.'" target="_blank">'.$url.'</a>';

@@ -693,7 +693,7 @@ class LabelShow extends IndexBase
         //列表页,给AJAX传输数据用
         self::$list_page_cfg = [$tag_name=> $listpage_filtrate?array_merge($cfg_array,$listpage_filtrate):$cfg_array];    //列表页标签也可以存在多个的
 
-        $tag_cache_key = $this->get_cache_key(array_merge($cfg_array,[$tag_name],['page'=>$cfg['page']]));
+        $tag_cache_key = $this->get_cache_key(array_merge($cfg_array,['tag_name'=>$tag_name],['page'=>$cfg['page']]));
 
         if (!array_diff(array_keys(input('param.')),array_keys($cfg))) {    //如果有更多查询条件,就不使用缓存
             $tag_data = cache2($tag_cache_key);    //首页列表数据缓存
@@ -1048,7 +1048,7 @@ class LabelShow extends IndexBase
             $tpl_have_edit = true;
         }
         
-        $tag_key = $this->get_cache_key( array_merge(self::union_live_parameter($cfg),[$tag_name]) );
+        $tag_key = $this->get_cache_key( array_merge(self::union_live_parameter($cfg),['tag_name'=>$tag_name]) );
         $tag_array = cache2($tag_key);  //取得具体某个标签的数据库配置参数，对于文章或贴子类的，也会同时得到相应的列表数据
         if(empty($tag_array)||$tpl_have_edit){
             $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) );
@@ -1144,7 +1144,7 @@ EOT;
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
             if( ($type&&( modules_config($type)||plugins_config($type) ))  ||  $cfg['class']){
-                $tag_key = $this->get_cache_key( array_merge($cfg,[$type,$tag_name]) );
+                $tag_key = $this->get_cache_key( array_merge($cfg,[$type,'tag_name'=>$tag_name]) );
                 $cfg['cache_time'] = $this->get_cache_time($cfg['cache_time']);
                 $default_data = $cfg['cache_time'] ? cache2($tag_key) : null;
                 if (empty($default_data)) {                    
@@ -1228,8 +1228,9 @@ EOT;
      */
     protected function get_cache_key($array=[]){
         ksort($array);
-        return 'qbTagCacheKey__'.md5( http_build_query( $array ) );
+        return 'qbTagCacheKey__'.$array['tag_name'].'-'.md5( http_build_query( $array ) );
     }
+    
     
     /**
      * 获取缓存时间

@@ -39,11 +39,26 @@
 	padding-right:15px;
 }
 </style>
+<script type="text/javascript">
+function add_fav(id){
+	var url="{:purl('fav/api/add')}?type={:config('system_dirname')}&id="+id;
+	$.get(url,function(res){
+		if(res.code==0){
+			layer.msg('收藏成功');
+		}else{
+			layer.alert(res.msg);
+		}
+	})
+}
+</script>
 <div class="BaseInfos">
 	<div class="title">{$info.title}</div>
 	<div class="infos">
 		<span><i class="glyphicon glyphicon-time"></i> {:date("Y-m-d H:i:s",$info.create_time)}</span>
 		<span><i class="si si-eye"></i> {$info.view}</span> 
+		<span onclick="add_fav({$id})"> <li class="fa fa-fw fa-heart"></li>收藏</span> 
+		<span class="manage_topic"> <li class="fa fa-cogs"></li> 管理</span> 
+		{include file="index@common/manage_btn" /}
 	</div>
 </div>
 <!------图片展示开始--------->
@@ -76,7 +91,5 @@ var imgdatas=[
 	{qb:comment name="commentpc01" rows='5' tpl="comment/pc01"}{/qb:comment}
 </div>
 
-<!-- 微动态自动收录用户感兴趣的主题,时间60代表用户停留60秒将自动收藏 -->
-{:fun('sns@fav',$info,60,'系统帮你订阅了本主题,下次本主题有回复,将会通知你')}
 
 {/block}

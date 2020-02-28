@@ -28,7 +28,10 @@
 			<div class="title">{$info.title}</div>
 			<div class="infos">
 				<span><i class="glyphicon glyphicon-time"></i> {:date("Y-m-d H:i:s",$info.create_time)}</span>
-				<span><i class="si si-eye"></i> {$info.view}</span> <span onclick="add_fav({$id})"> <li class="fa fa-fw fa-heart"></li>收藏</span>
+				<span><i class="si si-eye"></i> {$info.view}</span>
+				<span onclick="add_fav({$id})"> <li class="fa fa-fw fa-heart"></li>收藏</span> 
+				<span class="manage_topic"> <li class="fa fa-cogs"></li> 管理</span> 
+				{include file="index@common/manage_btn" /}
 			</div>
 			<div class="cnt">
 				{$info.content}
@@ -38,6 +41,14 @@
 				{php}if(strstr($info['content'],$rs['picurl']))continue;{/php}
 				<br><center><img src="{$rs.picurl}"></center><br>
 				{/volist}
+
+				{notempty name="$info.voice_url"}
+				<!-- 音频模型 -->
+				<br><center><audio controls="controls" autoplay>
+				  <source src="{$info['voice_url'][0]['url']}" type="audio/mp3" />
+				你的浏览器不支持
+				</audio></center>
+				{/notempty}
 
 			</div>
 		</div>

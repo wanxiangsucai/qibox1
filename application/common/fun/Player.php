@@ -36,6 +36,8 @@ class Player{
         
         if (strstr($url,'.swf')) {
             return $this->swfpay($url,$width,$height);
+        }elseif(strstr($url,'.m3u8')){
+            return $this->aliplayer($url,$width,$height);
         }
         
         $content = $this->ckplayer($url,$width,$height);
@@ -107,6 +109,42 @@ class Player{
                 	};
                 	var player{$array_id} = new ckplayer(videoObject);
                 </script>";
+    }
+    
+    /**
+     * 阿里云播放器
+     * @param string $url
+     * @param string $width
+     * @param string $height
+     * @return string
+     */
+    private function aliplayer($url='',$width='',$height=''){
+        return <<<EOT
+<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.7/skins/default/aliplayer-min.css" />
+<script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.8.7/aliplayer-min.js"></script>
+<div class="prism-player" id="player-con"></div>
+<script type="text/javascript">
+var ali_player = new Aliplayer({
+		"id": "player-con",
+		"source": "$url",
+		"width": "$width",
+		"height": "$height",
+		"autoplay": true,
+		"isLive": true,	//直播与点播的开关
+		"rePlay": false,
+		"playsinline": true,
+		"preload": true,
+		"controlBarVisibility": "hover",
+		"useH5Prism": true,
+		//"x5_type":"h5",
+		//"useH5Prism":true,
+		//"playsinline":true,
+	}, function (player) {
+				console.log("The player is created");
+	}
+);
+</script>
+EOT;
     }
     
     /**

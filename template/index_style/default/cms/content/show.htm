@@ -22,6 +22,8 @@ window.location.href="{:get_url('msg',-$info.ext_id)}";
 		<div class="infos">
 			<span><i class="glyphicon glyphicon-time"></i> {:date("Y-m-d H:i:s",$info.create_time)}</span>
 			<span><i class="si si-eye"></i> {$info.view}</span> 
+			<span class="manage_topic"> <li class="fa fa-cogs"></li> 管理</span> 
+			{include file="index@common/manage_btn" /}
 		</div>
 		<div class="ShowContent">
 			{$info.content}

@@ -18,12 +18,15 @@ class Qun{
      * @param array $array
      * @return unknown|array|string|unknown
      */
-    public static function live($aid=0,$tag='',$array=[]){
+    public static function live($aid=0,$tag='',$array=[],$validity_time=0){
         static $data = null;
         if ($data===null) {
             $data = json_decode(substr(file_get_contents(RUNTIME_PATH.'qun_live.php'),14),true)?:[];
         }        
         $need_write = false;
+        if ($validity_time>0 && $validity_time<time()) {
+            $validity_time = time()+$validity_time;
+        }
         if($array===''){
             unset($data[$aid][$tag]);
             if (empty($data[$aid])) {
@@ -31,12 +34,19 @@ class Qun{
             }
             $need_write = true;
         }elseif(is_array($tag)){
+            $tag['validity_time'] = $validity_time;
             $data[$aid] = $tag;
             $need_write = true;
         }elseif($array){
             $data[$aid][$tag] = $array;
+            $data[$aid][$tag]['validity_time'] = $validity_time;
             $data[$aid][$tag]['time'] = time();
             $need_write = true;
+        }
+        foreach($data AS $key=>$rs){
+            if ($rs['validity_time']>0 && $rs['validity_time']<time()) {
+                unset($data[$key]);
+            }
         }
         if ($need_write) {
             file_put_contents(RUNTIME_PATH.'qun_live.php', '<?php die();?>'.json_encode($data));
