@@ -179,6 +179,12 @@ abstract class C extends MemberBase
         
         //发表时可选择的栏目
         $sort_array = $this->s_model->getTreeTitle(0,$mid);
+        foreach($sort_array AS $key=>$title){
+            $allowpost = get_sort($key,'allowpost');
+            if($allowpost&&!in_array($this->user['groupid'],explode(',',$allowpost))){  //设置了用户组权限.
+                unset($sort_array[$key]);
+            }
+        }
         //发布页要填写的字段
         $this->form_items = $this->getEasyFormItems();     //发布表单里的自定义字段
         //如果栏目存在才显示栏目选择项
@@ -240,6 +246,12 @@ abstract class C extends MemberBase
         
         //发表时可选择的栏目
         $sort_array = $this->s_model->getTreeTitle(0,$this->mid);
+        foreach($sort_array AS $key=>$title){
+            $allowpost = get_sort($key,'allowpost');
+            if($allowpost&&!in_array($this->user['groupid'],explode(',',$allowpost))){  //设置了用户组权限.
+                unset($sort_array[$key]);
+            }
+        }
         //发布页要填写的字段
         $this->form_items = $this->getEasyFormItems();     //发布表单里的自定义字段
         //如果栏目存在才显示栏目选择项

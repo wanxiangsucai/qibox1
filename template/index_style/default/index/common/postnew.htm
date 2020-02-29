@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>选择栏目</title>
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="stylesheet" href="__STATIC__/css/base.css">
+<link rel="stylesheet" href="__STATIC__/icon/icon.css">
+<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
+</head>
+<body>
+<style>
+.ChooseSort{
+	background: #F7F7F7;
+}
+.ChooseSort dl{
+	padding: 30px;
+}
+.ChooseSort dl dt{
+	display: inline-block;
+	line-height: 45px;
+	background: #32BD8B;
+	padding: 0 20px;
+	color: #FFF;
+	font-size: 18px;
+	word-spacing: 5px;
+}	
+.ChooseSort dl dd{
+	padding: 20px;
+	background: #FFF;
+	box-shadow:2px 2px 2px #DDD;
+}
+.ChooseSort dl dd ul li{
+	height:45px;
+	line-height: 45px;
+	overflow: hidden;
+	border-bottom: #EEE solid 1px;
+}
+.forbid{
+	display:none;/*直接隐藏,也可以不隐藏的*/
+}
+.forbid a{
+	color:#ddd;
+}
+</style>
+<div class="ChooseSort">
+	<dl>
+		<dt><i class="fa fa-arrow-right"></i> 选择栏目</dt>
+		<dd>
+			<ul>
+			{volist name='sort_list' id='vo'}		
+				<li class="{:empty($vo.allowpost)||in_array($userdb.groupid,explode(',',$vo.allowpost))?'':'forbid'}"><a href="{:auto_url('add',['fid'=>$vo['id'],'ext_id'=>input('ext_id'),'ext_sys'=>input('ext_sys')])}">{$vo.title_display}</a></li>				 
+			{/volist}
+			</ul>
+		</dd>
+	</dl>
+</div>
+<script type="text/javascript">
+$(".forbid a").click(function(){
+	layer.alert("当前分类你没权限,请选择其它分类");
+	return false;
+});
+$(".ChooseSort li").each(function(){
+	if($(this).find('a').html().indexOf('&nbsp;&nbsp;&nbsp;&nbsp;')==-1&&$(this).next().find('a').length>0&&$(this).next().find('a').html().indexOf('&nbsp;&nbsp;&nbsp;&nbsp;')>-1){
+		$(this).click(function(){
+			layer.alert('父栏目不能选择!');
+			return false;
+		});
+	}
+});
+</script>
+</body>
+</html>

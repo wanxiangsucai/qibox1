@@ -100,9 +100,16 @@ $('.Logo_Menu dl').hover(
 	<ul>
 		<ol><i class="fa fa-volume-control-phone"></i> 服务热线 <a href="tel:{$webdb.service_tel}">{$webdb.service_tel}</a></ol>
 		<li>
+<style type="text/css">
+.model_search{float:right;background: #35C4B8;margin-left:15px;border-radius:5px;}
+.model_search a{color:#fff;line-height:36px;margin:0 10px;}
+.model_search:hover{background: orange;}
+.model_search:hover a{color:#fff;}
+</style>
+		    {if config('system_dirname')&&modules_config(config('system_dirname'))}<em class="model_search"><a href="{:urls('search/index')}" target="_blank">精准搜索</a></em>{/if}
 			<form method="get" action="{:urls('search/index/lists')}">
 				<dl>
-					<dt><input type="text" name="keyword" placeholder="请输关键字" required/></dt>
+					<dt><input type="text" name="keyword" placeholder="全站搜索" required/></dt>
 					<dd><button type="submit"><i class="fa fa-search"></i></button></dd>
 				</dl>
 			</form>

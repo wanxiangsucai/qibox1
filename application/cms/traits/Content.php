@@ -19,6 +19,9 @@ trait Content
             if ($data['price']>0 && !strstr($data['content'],'[/paymoney]')) {
                 //设置访问权限的内容不暴露简介
                 $data['content'] = '<!--[paymoney='.intval($data['price']).']-->'.$data['content'].'<!--[/paymoney]-->';
+            }elseif($data['price']<0.01 && strstr($data['content'],'[/paymoney]')){
+                $data['content'] = str_replace('<!--[/paymoney]-->', '', $data['content']);
+                $data['content'] = preg_replace('/<!--\[paymoney=([\d\.]+)\]-->/', '', $data['content']);
             }
         }
     }
