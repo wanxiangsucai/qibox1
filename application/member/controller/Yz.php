@@ -88,6 +88,10 @@ class Yz extends MemberBase
      */
     public function idcard()
     {
+        if (plugins_config('baidu_api')) {
+            $url = purl('baidu_api/certificates/identity_index',[],'member');
+            return $this->redirect($url); 
+        }
         $data = get_post('post');
         if($this->request->isPost()){
             if($this->user['idcard_yz']){

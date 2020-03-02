@@ -30,6 +30,10 @@ class Yz extends AdminBase
      * 用户列表
      */
     public function index() {
+        if (plugins_config('baidu_api')) {
+            $url = purl('baidu_api/realname/index',[],'admin');
+            return $this->redirect($url);
+        }
         $order = 'lastvist desc';
         $map = ['idcard'=>['<>','']];
         $this->list_items = [
@@ -50,6 +54,37 @@ class Yz extends AdminBase
         $this -> tab_ext['search'] = ['username'=>'帐号','truename'=>'真实名','uid'=>'用户ID'];    //支持搜索的字段
         $this -> tab_ext['order'] = 'truename,idcard,uid';   //排序选择
         $this -> tab_ext['id'] = 'uid';    //用户数据表非常特殊，没有用id而是用uid ， 这里需要特别指定id为uid
+        $url = urls('market/show',['id'=>465]);
+        $this -> tab_ext['help_msg'] = '建议你安装更专业、更好用的公安联网实名插件，可以自动审核实名制。<a style="color:red;" href="javascript:open_market()">点击安装</a>'."
+<script type='text/javascript'>  
+function open_market(){
+    layer.open({
+    		type: 2,
+    		title: '推荐安装应用',
+    		shadeClose: true,
+    		//offset: 'lb',
+    		shade:  [0.5, '#393D49'],
+    		maxmin: false, //开启最大化最小化按钮
+    		area: ['1100px', '600px'],
+    		content: '$url',
+    		end: function(){
+    			//setup_app(id,keywords,price,1);
+    		}
+    });
+}
+layer.confirm('建议你安装更专业、更好用的公安联网实名插件，可以自动审核实名制。', {
+			title: '友情提醒!',
+			btn : [ '马上安装', '取消' ],
+			time: 6000,
+			offset: 'rb',
+			anim:2,
+			shade: 0 //不显示遮罩 
+	}, function(index) {
+        layer.close(index);
+	   open_market();
+	});
+</script>
+"; 
         
         //筛选字段
         $this -> tab_ext['filter_search'] = [
