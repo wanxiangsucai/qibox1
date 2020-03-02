@@ -101,6 +101,7 @@ class Chatmod extends AdminBase
 	    ->addText('init_jsfile','初始化加载JS网址(推荐)','(比较常用,推荐使用)界面少,逻辑多,就推荐用JS网址<a href="https://www.kancloud.cn/php168/x1_of_qibo/1434200" target="_blank">点击查看开发教程</a>')
 	    ->addText('init_iframe','初始化加载框架网址(不推荐)','(比较少用,跨窗口要注意的事项比较多)界面多,才考虑用框架<a href="https://www.kancloud.cn/php168/x1_of_qibo/1434200" target="_blank">点击查看开发教程</a>')	    
 	    ->addTextarea('init_jscode','脚本代码','(少用,代码较多的话,不推荐)太多语句,就不建议用,不能加外包围&lt;script type=&quot;text/javascript&quot;&gt;&lt;/script&gt;')
+	    ->addCheckbox('allowgroup','限制用户组使用','',getGroupByid())
 	    ->addPageTitle('添加模块');
 	    return $form::fetchs();
 	}
@@ -109,6 +110,7 @@ class Chatmod extends AdminBase
 	    
 	    if ($this->request->isPost()) {
 	        $data = $this -> request -> post();
+	        $data['allowgroup'] = $data['allowgroup']?implode(',', $data['allowgroup']):'';
 	        if (!empty($this -> validate)) {   //验证数据
 	            $result = $this -> validate($data, $this -> validate);
 	            if (true !== $result) $this -> error($result);
@@ -132,6 +134,7 @@ class Chatmod extends AdminBase
 	    ->addText('init_iframe','初始化加载框架网址(不推荐)','(比较少用,跨窗口要注意的事项比较多)界面多,才考虑用框架<a href="https://www.kancloud.cn/php168/x1_of_qibo/1434200" target="_blank">点击查看开发教程</a>')
 	    ->addTextarea('init_jscode','脚本代码','(少用,代码较多的话,不推荐)不能加外包围&lt;script type=&quot;text/javascript&quot;&gt;&lt;/script&gt;')
 	    ->addNumber('list','排序值')
+	    ->addCheckbox('allowgroup','指定用户组使用','不设置,即都有权限',getGroupByid())
 	    ->addHidden('id',$id);
 
 	    return $form::fetchs();

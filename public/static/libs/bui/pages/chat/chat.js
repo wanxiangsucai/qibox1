@@ -170,9 +170,9 @@ function ws_send(o,getcid){
 }
 
 function ws_link(){
-		w_s = new WebSocket(ws_url);
+	w_s = new WebSocket(ws_url);
 
-		w_s.onmessage = function(e){
+	w_s.onmessage = function(e){
 			var obj = {};
 			try {
 				obj = JSON.parse(e.data);
@@ -187,26 +187,36 @@ function ws_link(){
 					ws_onmsg[index](obj);
 				}				
 			}
-		};
+	};
 		
-		w_s.onopen = function(e) {	//w_s.readyState CONNECTING: 0 OPEN: 1 CLOSING: 2 CLOSED: 3
-			console.log('WebSocket刚刚连接上');			
-		};
-		w_s.onerror = function(e){
-			console.log("#########连接异常中断了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
-		};
-		w_s.onclose = function(e){
-			console.log("########连接被关闭了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
-		};
-		
-		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
-		chat_timer = setInterval(function() {
-			if(w_s.readyState!=1){
+	w_s.onopen = function(e) {	//w_s.readyState CONNECTING: 0 OPEN: 1 CLOSING: 2 CLOSED: 3
+		setTimeout(function() {
+			if(clientId==''){
+				console.log('clientId获取失败,WebSocket连接不顺畅',w_s.readyState);
+				if(w_s.readyState==1||w_s.readyState==0){	////0是连接中,1是已连接上
+					w_s.close();
+				}
 				ws_connect();
 			}else{
-				w_s.send('{"type":"refresh"}');
-			}			
-		}, 1000*50);	//50秒发送一次心跳
+				console.log('WebSocket成功连接上了 '+clientId,w_s.readyState);
+			}		
+		}, 1500 );
+	};
+	w_s.onerror = function(e){
+		console.log("#########连接异常中断了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
+	};
+	w_s.onclose = function(e){
+		console.log("########连接被关闭了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
+	};
+		
+	if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
+	chat_timer = setInterval(function() {
+		if(w_s.readyState!=1){
+			ws_connect();
+		}else{
+			w_s.send('{"type":"refresh"}');
+		}			
+	}, 1000*50);	//50秒发送一次心跳
 }
 
 
@@ -328,42 +338,43 @@ loader.define(function(require,exports,module) {
 					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',
 			});
 		}
-			if(obj.type=='newmsg'){
-				check_new_showmsg(obj);	//推数据
-				$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data[0].id,function(res){//更新记录
-					console.log(res.msg);
-				});	
-				console.log("有新消息来了");
-				console.log(obj);
-			}else if(obj.type=='new_msg_id'){	//圈子直播文字最后得到的真实ID
-				pushIdArray[obj.data.push_id] = obj.data.id; //删除内容的时候要用到
-				$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data.id,function(res){//更新记录
-					console.log(res.msg);
-				});
-			}else if(obj.type=='qun_sync_msg'){	//圈子直播文字  
-				check_new_showmsg(obj);
-			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
-				if(uid==0){
-					return ;
+		
+		if(obj.type=='newmsg'){
+			check_new_showmsg(obj);	//推数据
+			$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data[0].id,function(res){//更新记录
+				console.log(res.msg);
+			});	
+			//console.log("有新消息来了");
+			//console.log(obj);
+		}else if(obj.type=='new_msg_id'){	//圈子直播文字最后得到的真实ID
+			pushIdArray[obj.data.push_id] = obj.data.id; //删除内容的时候要用到
+			$.get("/index.php/index/wxapp.msg/update_user.html?uid="+uid+"&id="+obj.data.id,function(res){//更新记录
+				console.log(res.msg);
+			});
+		}else if(obj.type=='qun_sync_msg'){	//圈子直播文字  
+			check_new_showmsg(obj);
+		}else if(obj.type=='connect'){	//建立链接时得到客户的ID
+			clientId = obj.client_id;
+			if(uid==0){
+				return ;
+			}				
+			$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+obj.client_id,function(res){	//绑定用户
+				if(res.code==0){
+					//layer.msg('欢迎到来!',{time:500});
+				}else{
+					layer.alert(res.msg);
 				}
-				clientId = obj.client_id;
-				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+obj.client_id,function(res){	//绑定用户
-					if(res.code==0){
-						//layer.msg('欢迎到来!',{time:500});
-					}else{
-						layer.alert(res.msg);
-					}
-				});
-				var username = my_uid>0?userinfo.username:'';
-				var icon = my_uid>0?userinfo.icon:'';
-				var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
-				w_s.send('{"type":"connect","url":"'+(typeof(web_url)!='undefined'?web_url:window.location.href)+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
-			}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
-				 show_online(obj,'goin');
-			}else if(obj.type=='leave'){	//某个用户离开了
-				show_online(obj,'getout')
-				console.log(obj);
-			}			
+			});
+			var username = my_uid>0?userinfo.username:'';
+			var icon = my_uid>0?userinfo.icon:'';
+			var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
+			w_s.send('{"type":"connect","url":"'+(typeof(web_url)!='undefined'?web_url:window.location.href)+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
+		}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
+			 show_online(obj,'goin');
+		}else if(obj.type=='leave'){	//某个用户离开了
+			show_online(obj,'getout')
+			console.log(obj);
+		}			
 	}
 
 	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作

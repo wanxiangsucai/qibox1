@@ -145,16 +145,17 @@ class Msg extends IndexBase{
             if($array['live']){unset($array['live']['service_video']);}
             //unset($array['live']['service_video']['push_url']);
         }
-        $array['chatmod'] = $this->get_chat_mod($uid);  //群聊模块
+        $array['chatmod'] = $this->get_chat_mod($uid,$uid<0?get_user($qun_info['uid'])['groupid']:$this->user['groupid']);  //群聊模块
         return $this->ok_js($array);
     }
     
     /**
      * 获取群聊模块
      * @param number $uid 用户是正数,圈子是负数
+     * @param number $groupid uid是负数则是圈主用户组,否则就是当前用户的用户组
      * @return array
      */
-    public function get_chat_mod($uid=0){
+    public function get_chat_mod($uid=0,$groupid=0){
         if(input('inapp')){
             $pcwap = 3;
         }elseif(in_wap()){
@@ -162,7 +163,7 @@ class Msg extends IndexBase{
         }else{
             $pcwap = 2;
         }
-        $array = fun('chatmod@get',$pcwap,$uid<1?1:0,$uid<0?abs($uid):0);  //群聊模块
+        $array = fun('chatmod@get',$pcwap,$uid<1?1:0,$uid<0?abs($uid):0,$groupid);  //群聊模块
         return $array;
     }
     

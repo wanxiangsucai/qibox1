@@ -151,6 +151,7 @@ function pc_msg_user_list(res){
 	add_click_user();
 }
 
+var visit_uids = [];	//考虑到不同的圈子及圈子与私聊之间功能菜单不一样,所以要跳转才更好
 //信息用户列表添加点击事件
 function add_click_user(){
 
@@ -165,11 +166,18 @@ function add_click_user(){
 
 	$(".pc_msg_user_list li").off('click');
 	$(".pc_msg_user_list li").click(function(){
+		uid = $(this).data('uid');
+		visit_uids.push(uid);
+		visit_uids.forEach(v=>{
+			if(v<0){
+				window.location.href="/member.php/member/msg/index.html?uid="+uid;
+				return ;//考虑到不同的圈子及圈子与私聊之间功能菜单不一样,所以要跳转才更好
+			}
+		});		
 		w_s.close();
 		$(this).find(".shownum").removeClass("ck");
 		$(".pc_msg_user_list li").removeClass('user_active');
-		$(this).addClass('user_active');
-		uid = $(this).data('uid');
+		$(this).addClass('user_active');		
 		console.log(uid);
 		show_msg_page = 1; //重新恢复第一页
 		msg_scroll = true; //恢复可以使用滚动条
@@ -328,7 +336,7 @@ function ws_connect(){
 				clearInterval(connect_handle);
 				ws_link();
 			}
-		}, 2000 );
+		}, 500 );
 	}else{
 		ws_link();
 	}
@@ -375,9 +383,10 @@ function ws_send(o,getcid){
 var ws_onmsg = {};
 
 function ws_link(){
-		w_s = new WebSocket(ws_url);
+	clientId = '';
+	w_s = new WebSocket(ws_url);
 
-		w_s.onmessage = function(e){
+	w_s.onmessage = function(e){
 			var obj = {};
 			try {
 				obj = JSON.parse(e.data);
@@ -400,10 +409,10 @@ function ws_link(){
 			}else if(obj.type=='qun_sync_msg'){	//圈子直播文字  
 				check_new_showmsg(obj);
 			}else if(obj.type=='connect'){	//建立链接时得到客户的ID
+				clientId = obj.client_id;
 				if(uid==0){
 					return ;
-				}
-				clientId = obj.client_id;
+				}				
 				$.get("/index.php/index/wxapp.msg/bind_group.html?uid="+uid+"&client_id="+clientId,function(res){	//绑定用户
 					if(res.code==0){
 						//layer.msg('欢迎到来!',{time:500});
@@ -440,28 +449,40 @@ function ws_link(){
 				}				
 			}
 
-		};
+	};
 		
-		w_s.onopen = function(e) {	//w_s.readyState CONNECTING: 0 OPEN: 1 CLOSING: 2 CLOSED: 3
-			console.log('WebSocket刚刚连接上');
-		};
-		w_s.onerror = function(e){
-			console.log("#########连接异常中断了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
-		};
-		w_s.onclose = function(e){
-			console.log("########连接被关闭了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
-		};
-		
-		if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
-		chat_timer = setInterval(function() {
-			if(w_s.readyState!=1){
+	w_s.onopen = function(e) {	//w_s.readyState CONNECTING: 0 OPEN: 1 CLOSING: 2 CLOSED: 3
+		setTimeout(function() {
+			if(clientId==''){
+				console.log('clientId获取失败,WebSocket连接不顺畅',w_s.readyState);
+				if(w_s.readyState==1||w_s.readyState==0){	////0是连接中,1是已连接上
+					w_s.close();
+				}
 				ws_connect();
 			}else{
-				w_s.send('{"type":"refresh"}');
-			}			
-		}, 1000*50);	//50秒发送一次心跳
+				console.log('WebSocket成功连接上了 '+clientId,w_s.readyState);
+			}		
+		}, 1500 );
+	};
+	
+	w_s.onerror = function(e){
+		console.log("#########连接异常中断了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
+	};
+	
+	w_s.onclose = function(e){
+		console.log("########连接被关闭了.........."+Math.random(),e.code + ' ' + e.reason + ' ' + e.wasClean);
+	};
+		
+	if(typeof(chat_timer)!='undefined')clearInterval(chat_timer);
+	chat_timer = setInterval(function() {
+		if(w_s.readyState!=1){	//不处于正常连接状态
+			ws_connect();
+		}else{
+			w_s.send('{"type":"refreshServer"}');
+		}			
+	}, 1000*50);	//50秒发送一次心跳
 
-		var show_online = function(obj,type){
+	var show_online = function(obj,type){
 				 var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
 				 var data = obj.data;
 				 online_members = data;
@@ -490,9 +511,9 @@ function ws_link(){
 					 }
 					 $("#remind_online").hide();
 				 }
-		}
+	}
 
-		var view_online_user = function(data){
+	var view_online_user = function(data){
 			var str = '';
 			data.forEach((rs)=>{
 						str += '<a href="/member.php/home/'+rs.uid+'.html" target="_blank">'+rs.username+'</a>、';
@@ -506,7 +527,7 @@ function ws_link(){
 					area: $('body').width()<500?['95%', '300px']:['400px', '300px'],
 					content: '<div style="padding:20px;line-height:180%;">'+str+'</div>',
 			});
-		}
+	}
 }
 
 var load_data = {};	//接口
@@ -523,6 +544,7 @@ function load_first_page(res){
 
 	ws_url = res.ext.ws_url;
 
+	visit_uids.push(uid);
 
 	//建立链接 延时执行,避免用户反复切换圈子
 	if(typeof(qun_link_handle)!='undefined'){
@@ -601,27 +623,26 @@ function set_chatmod(res){
 		});
 	});
 
-		//首次加载的时候,单独执行
-		function fisrt_load(res,keywords){
-			if(typeof(mod_class[keywords])=='object'){
-				if( typeof(mod_class[keywords].init)=='function' ){
-					mod_class[keywords].init(res);
-				}
-				if( typeof(mod_class[keywords].logic_init)=='function' ){
-					mod_class[keywords].logic_init(res);
-				}
-				if( typeof(mod_class[keywords].once)=='function' ){
-					mod_class[keywords].once(res);
-				}				
-			} 
-			if( typeof(load_data[keywords])=='function' ){
-				load_data[keywords](res);
+	//首次加载的时候,单独执行
+	function fisrt_load(res,keywords){
+		if(typeof(mod_class[keywords])=='object'){
+			if( typeof(mod_class[keywords].init)=='function' ){
+				mod_class[keywords].init(res);
 			}
-			if(typeof(format_content[keywords])=='function'){
-				format_content[keywords](res);
+			if( typeof(mod_class[keywords].logic_init)=='function' ){
+				mod_class[keywords].logic_init(res);
 			}
-
+			if( typeof(mod_class[keywords].once)=='function' ){
+				mod_class[keywords].once(res);
+			}				
+		} 
+		if( typeof(load_data[keywords])=='function' ){
+			load_data[keywords](res);
 		}
+		if(typeof(format_content[keywords])=='function'){
+			format_content[keywords](res);
+		}
+	}
 
 	//所有模块加载完毕后,检查有没有需要执行的回调方法
 	function run_mod_finsih(res){
