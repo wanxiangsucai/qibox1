@@ -39,7 +39,7 @@ return  array(
   //'ckeditor' => 'ckeditor 编辑器',
   'icon' => '字体图标',
   'bmap' => '百度地图',
-  //'colorpicker' => '取色器',
+  'color' => '颜色选择',
   //'masked' => '格式文本',
   //'range' => '范围',
 

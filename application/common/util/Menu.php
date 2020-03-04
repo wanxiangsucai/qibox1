@@ -5,18 +5,27 @@ use app\admin\model\AdminMenu;
 
 class Menu{
     //protected static $instance;
-    protected static $type= 'admin';
-    protected static $groupid=null;
+    protected static $type = 'admin';
+    protected static $groupid = null;
+    protected static $sysmenu = [] ;
     
     protected function __construct($type)
     {
         self::$type = $type;
     }
     
-    public static  function make($type){
+    /**
+     * 获取会员中心或后台菜单
+     * @param unknown $type member admin
+     * @return string|array
+     */
+    public static function make($type){
         //if (is_null(self::$instance)) {
          //   self::$instance = new static($type);
        // }
+        if ($type=='member') {
+            self::$sysmenu = Menu::member_sys_cache();
+        }
         self::$type = $type;
         return self::get_menu();
     }    
@@ -29,14 +38,30 @@ class Menu{
      */
     public static function menu_make_url(&$ar,$model,$isplugin=false)
     {
-        foreach($ar['sons'] AS $key1=> $v){
+        foreach($ar['sons'] AS $key1=>$v){
             foreach($v['sons'] AS $key2=>$v2){
                 $ar['sons'][$key1]['sons'][$key2]['model'] = $model;
                 if (is_array($v2['link'])) {
                     $v2['param'] = $v2['link'][1];
                     $v2['link'] = $v2['link'][0];                    
                 }
-                $ar['sons'][$key1]['sons'][$key2]['url'] = $isplugin ? purl($model.'/'.$v2['link'],$v2['param']) : url($model.'/'.$v2['link'],$v2['param']);
+                $url = $isplugin ? purl($model.'/'.$v2['link'],$v2['param']) : url($model.'/'.$v2['link'],$v2['param']);
+                if (self::$sysmenu[$url]) { //会员中心系统默认菜单被定义过
+                    $array = self::$sysmenu[$url];
+                    if ($array['ifshow']==0 || ($array['allowgroup']&&!in_array(login_user('groupid'), explode(',', $array['allowgroup'])))) {
+                        unset($ar['sons'][$key1]['sons'][$key2]);   //后台设置了权限或不显示
+                    }else{
+                        if ($array['name']!='') {
+                            $array['title'] = $array['name'];   //名称被定义过  
+                        }else{
+                            unset($array['title']);  
+                        }
+                        $_a = $ar['sons'][$key1]['sons'][$key2];
+                        $ar['sons'][$key1]['sons'][$key2] = array_merge($_a,$array);
+                    }                    
+                }else{
+                    $ar['sons'][$key1]['sons'][$key2]['url'] = $url;
+                }
             }
         }
     }
@@ -92,18 +117,47 @@ class Menu{
     }
     
     /**
-     * 系统菜单处理
+     * 文本菜单处理
      * @param array $base_menu
      * @return array|\app\common\util\unknown
      */
-    protected static function build_sys_menu($base_menu=[]){
+    protected static function build_sys_menu(){
+        $base_menu=[];
         $base_menu = empty($base_menu) ? self::get_sys_menu() : array_merge($base_menu,self::get_sys_menu());
         foreach($base_menu AS $key=>$ar){
+            foreach($ar['sons'] AS $i=>$v){
+                $ar['sons'][$i] = self::get_member_set($v);
+            }
             //打上标志是哪个模块的系统，方便处理URL指向
             self::menu_make_url( $ar , self::$type );
             $base_menu[$key]=$ar;
         }
         return $base_menu;
+    }
+    
+    /**
+     * 系统默认所有会员的菜单
+     * @return mixed|\think\cache\Driver|boolean
+     */
+    public static function member_sys_cache($make=false){
+        $listdb = cache('member_sys_menu');
+        if (empty($listdb)||$make) {
+            $map = ['type'=>1,'groupid'=>0];
+            if (is_file(APP_PATH.'common/upgrade/96.sql')) {    //避免升级不成功导致数据库报错进不了后台
+                $map['is_use'] = 1;
+            }
+            $data = AdminMenu::where($map)->column(true);
+            $listdb = [];
+            foreach($data AS $rs){
+                if ($rs['pid']) {
+                    $listdb[$rs['url']] = $rs;
+                }else{
+                    $listdb[$rs['title']] = $rs;
+                }
+            }
+            cache('member_sys_menu',$listdb);
+        }
+        return $listdb;
     }
     
     /**
@@ -124,12 +178,13 @@ class Menu{
             $_array[$key]['title'] = $rs['name'];
             $_array[$key]['icon'] = $rs['icon'];
             foreach ($rs['sons'] AS $k=>$vs){
-                $_array[$key]['sons'][]=[
+                $vs['title'] = $vs['name'];
+                $_array[$key]['sons'][]=$vs;/*[
                         'title'=>$vs['name'],
                         'url'=>$vs['url'],
                         'icon'=>$vs['icon'],
                         'target'=>$vs['target'],
-                ];
+                ];*/
             }             
         }
         if ($type!=0&&empty($_array)) {     //会员中心
@@ -145,6 +200,25 @@ class Menu{
         }
 
         return $base_menu;
+    }
+    
+    /**
+     * 获取默认菜单一级分类的自定义属性
+     * @param array $array
+     * @return array|unknown
+     */
+    protected static function get_member_set($array=[]){
+        if (self::$sysmenu[$array['title']]) {
+            $ar = self::$sysmenu[$array['title']];
+            if($ar['name']!=''){
+                $ar['title'] = $ar['name'];
+            }else{
+                unset($ar['title']);
+            }            
+            return array_merge($array,$ar);
+        }else{
+            return $array;
+        }
     }
     
     /**
@@ -167,17 +241,19 @@ class Menu{
                     if($model['ifsys']){    // 使用顶部菜单的频道
                         $ar['sons'][0]['title'] = $model['name'];
                         $ar['sons'][0]['icon'] = $model['icon'];
-                        $base_menu[$model['keywords']] = array(
+                         
+                        $base_menu[$model['keywords']] = self::get_member_set( array(
                                 'title'=>$model['name'],
                                 'icon'=>$model['icon'],
                                 'sons'=>$ar['sons']
-                        );
+                        ));
 //                     }elseif($base_menu[$key]){  //不是系统模型的话，可以追加到其它顶部导航下面
 //                         $base_menu[$key]['sons'] = array_merge($base_menu[$key]['sons'],$ar['sons']);
                     }else{  //不使用顶部菜单的频道，追加到通用频道下面
                         $ar['sons'][0]['title'] = $model['name'];
                         $ar['sons'][0]['icon'] = $model['icon'];
                         $ar['sons'][0]['dirname'] = $model['keywords'];
+                        $ar['sons'][0] = self::get_member_set($ar['sons'][0]);
                         if( !empty($base_menu['module']['sons']) ){
                             $base_menu['module']['sons'] = array_merge($base_menu['module']['sons'],$ar['sons']);
                         }else{
@@ -209,6 +285,7 @@ class Menu{
                     count($ar['sons'])==1 && $ar['sons'][0]['title'] = $model['name'];   //插件一般情况都只有一组菜单,就用后台定义的名称
                     $ar['sons'][0]['icon'] || $ar['sons'][0]['icon']= $model['icon']; //如果图标不存在,就补上
                     $ar['sons'][0]['dirname'] = $model['keywords'];
+                    $ar['sons'][0] = self::get_member_set($ar['sons'][0]);
                     
                     //如果是复制的插件 key不是plugin的话,要先修改一下 admin_menu.php 里边的key,不然多个插件的key雷同,会导致菜单重叠的BUG
                     if($base_menu[$key]){  //根据不同的参数,可以追加到任何顶部导航下面,一般情况$base_menu[plugin] 是存在的,所以基本都是在这里执行

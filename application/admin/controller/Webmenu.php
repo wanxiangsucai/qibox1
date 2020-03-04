@@ -94,6 +94,8 @@ class Webmenu extends AdminBase
 	    ->addRadio('type','使用范围','',['头部通用','PC头部菜单','wap头部菜单','wap底部菜单'],0)
 	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'],0)
 	    ->addIcon('style','图标','需要模板配合做样式')
+	    ->addColor('fontcolor','字体颜色')
+	    ->addColor('bgcolor','背景颜色')
 	    ->addText('activate','选中,是否高亮显示','需要模板配合做样式,主页就输入index,商城就输入shop以此类推,不过最好是后面加个-横框线因为栏目的话,可以定义为shop-18')
 	    ->addPageTitle('添加菜单');
 	    return $form::fetchs();
@@ -126,7 +128,10 @@ class Webmenu extends AdminBase
 	    ->addRadio('ifshow','是否隐藏','',['隐藏','显示(不隐藏)'])
 	    ->addNumber('list','排序值')
 	    ->addIcon('style','图标')
+	    ->addColor('fontcolor','字体颜色','是否有效果,需要模板配合做样式')
+	    ->addColor('bgcolor','背景颜色','是否有效果,需要模板配合做样式')
 	    ->addText('activate','选中,是否高亮显示','需要模板配合做样式,主页就输入index,商城就输入shop以此类推,不过最好是后面加个-横框线因为栏目的话,可以定义为shop-18')
+	    ->addTextarea('script','脚本事件','要填写的话,需要补齐 &lt;script&gt;&lt;/script&gt;同理,也可以写css或html')
 	    ->addHidden('id',$id);
 
 	    return $form::fetchs();

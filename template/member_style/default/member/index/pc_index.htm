@@ -62,7 +62,7 @@ if($menu['often']['sons'] && $key!='often'){continue;}	//如果有个性菜单,�
  		<ul>
  			<ol><i class="{$ar.icon|default='fa fa-map-o'}"></i>{$ar.title}</ol>
 			{volist name="ar.sons" id="rs"}
- 			<li onclick="linksthis($(this))"><A HREF="{$rs.url}" title="{$rs.title}" target="member_mainiframe">{$rs.title}</A></li>
+ 			<li onclick="linksthis($(this))"><A HREF="{$rs.url}" title="{$rs.title}" target="member_mainiframe" {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty}>{$rs.title}</A>{$rs.script}</li>
  			{/volist}
  		</ul>
 		{/volist}

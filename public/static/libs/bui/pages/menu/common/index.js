@@ -47,11 +47,11 @@ loader.define(function(){
 							subClass = '';
 							break;
 					}
-					el.title = (el.title).substring(0,8);
+					el.title = (el.title).substring(0,34);
 					var url = "/index.php/"+sys+"/content/show/id/"+el.id+".html";
 					if(sys=='bbs'){
 						html += `<li class="bui-btn" data-url="${url}">
-								<h3 class="item-title"><span class="${subClass}">【${sub}】</span>${el.title}</h3>
+								<h3 class="item-title" style="font-size:.30rem;"><span class="${subClass}">【${sub}】</span>${el.title}</h3>
 								<p class="item-text">${el.time}</p>
 							</li>`
 					}else{
@@ -59,7 +59,7 @@ loader.define(function(){
 						html += `<li class="bui-btn bui-box" data-url="${url}">
 							<div class="bui-thumbnail ${subClass}" data-sub="${sub}" ><img src="${el.picurl}" onerror="this.src='/public/static/images/nopic.png'"></div>
 							<div class="span1">
-								<h3 class="item-title">${el.title}</h3>
+								<h3 class="item-title" style="font-size:.30rem;">${el.title}</h3>
 								<p class="item-text">${el.time}</p>
 								<p class="item-text">${el.content}</p>
 							</div>

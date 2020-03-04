@@ -77,7 +77,7 @@ class Yz extends MemberBase
                 $this->error('数据写入失败');
             }
         }
-        $this->user['email'] = preg_replace("/([\w]{2})(.*?)@(.*?)/i","\\1***@\\2",$this->user['email']);
+        $this->user['email'] = preg_replace("/([\w]{2})(.*?)@(.*+)/i","\\1***@\\3",$this->user['email']);
         return $this->fetch();
     }
     

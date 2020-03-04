@@ -550,7 +550,8 @@ class Form extends IndexBase{
      * @return $this
      */
     public static function addPageTips($msg = '', $type = 'info'){
-        self::$instance -> tab_ext['warn_msg'] = $msg;
+        //self::$instance -> tab_ext['warn_msg'] = $msg;
+        self::$instance -> tab_ext['help_msg'] = $msg;
         return self::$instance;
     }
     

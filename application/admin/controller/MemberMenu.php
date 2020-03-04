@@ -17,17 +17,32 @@ class MemberMenu extends AdminBase
         parent::_initialize();
         $this->model = new MenuModel();
         $group_list = getGroupByid();
+        
+        $this->group_nav[0]=[
+            'title'=>'系统默认菜单',
+            'url'=>url('index',['gid'=>0]),
+        ];
+        
         foreach($group_list  AS $id=>$name){
             $this->group_nav[$id]=[
                     'title'=>$name,
                     'url'=>url('index',['gid'=>$id]),
             ];
-        }
+        }        
     }
     
-    public function index($gid=0)
+    /**
+     * 会员菜单列表
+     * @param unknown $gid
+     * @return unknown
+     */
+    public function index($gid=null)
     {
-        $gid || $gid=8;
+        if ($gid==null) {
+            $gid=0;
+            $this->copy_menu($gid);
+            Menu::member_sys_cache(true);
+        }
 	    $map = [
 	            'groupid'=>$gid,
 	            'type'=>1,
@@ -50,6 +65,22 @@ class MemberMenu extends AdminBase
 // 	            },'__data__'],
 	    ];
 	    
+	    $script = "";
+	    if ($gid<1) {
+	        $script = "<script type='text/javascript'>
+$('.quick_edit,.fa-plus,.fa-times,.top_menu').hide();
+$('._switch').click(function(){
+    alert('这里设置不一定会生效,请选择右边菜单修改设置');
+    return false;
+});
+$('.trA').each(function(){
+    if($(this).html().indexOf('&nbsp;&nbsp;&nbsp;&nbsp;')==-1){
+	   $(this).find('._switch,.glyphicon-ban-circle').hide();
+	}
+});
+</script>";
+	    }
+	    
 	    $table = Tabel::make($listdb,$tab)
 	    ->addTopButton('add',['title'=>'手工添加菜单','url'=>url('add',['gid'=>$gid])])
 	    ->addTopButton('custom',['title'=>'快速导入会员所有菜单','url'=>url('copy',['gid'=>$gid]),'icon'=>'fa fa-copy'])
@@ -60,25 +91,23 @@ class MemberMenu extends AdminBase
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
 	    ->addPageTitle('会员个性菜单管理')
+	    ->addPageTips("系统菜单不能删除,不能添加下级菜单".$script)
 	    ->addNav($this->group_nav,$gid) ;   
 
         return $table::fetchs();
 	}
 	
-	/**
-	 * 快速批量复制会员所有菜单
-	 * @param number $gid
-	 */
-	public function copy($gid=0){
+	protected function copy_menu($gid=0){
 	    $num1 = $num2 = 0;
-	    foreach(Menu::make('member') AS $m_name=>$array1){	        
+	    foreach(Menu::make('member') AS $m_name=>$array1){
 	        foreach($array1['sons'] AS $key1=>$array2){
 	            $title1 = $array2['title'];
-	            $data1 = ['type'=>1,'groupid'=>$gid,'name'=>$title1];
+	            $data1 = ['type'=>1,'groupid'=>$gid,'title'=>$title1];
 	            $info1 = MenuModel::get($data1);
 	            if (empty($info1)) {
 	                $num1++;
 	                $array2['icon'] && $data1['icon'] = $array2['icon'];
+	                $data1['name'] = $title1;  //新的菜单名称
 	                $result = MenuModel::create($data1) ;
 	                $data2 = ['pid'=>$result->id];
 	            }else{
@@ -86,17 +115,26 @@ class MemberMenu extends AdminBase
 	            }
 	            $data2['groupid'] = $gid;
 	            $data2['type'] = 1;
-	            foreach($array2['sons'] AS $rs){	                	                
+	            foreach($array2['sons'] AS $rs){
 	                $data2['url'] = str_replace([ADMIN_FILENAME.'/admin/',ADMIN_FILENAME.'/'], ['member.php/member/','member.php/'], $rs['url']);
 	                if (empty(MenuModel::get($data2))) {
 	                    $num2++;
-	                    $data2['name'] = $rs['title'];
+	                    $data2['name'] = $data2['title'] = $rs['title'];
 	                    $rs['icon'] && $data2['icon'] = $rs['icon'];
 	                    MenuModel::create($data2) ;
 	                }
 	            }
 	        }
 	    }
+	    return [$num1,$num2];  //分别是一级菜单二级菜单生成的个数
+	}
+	
+	/**
+	 * 快速批量复制会员所有菜单
+	 * @param number $gid
+	 */
+	public function copy($gid=0){
+	    list($num1,$num2) = $this->copy_menu($gid);
 	    if ($num1 || $num2) {
 	        $this->success("本次共创建一级菜单 {$num1} 个,二级菜单 {$num2} 个");
 	    }else{
@@ -104,6 +142,12 @@ class MemberMenu extends AdminBase
 	    }
 	}
 	
+	/**
+	 * 添加会员个性菜单
+	 * @param number $pid
+	 * @param number $gid
+	 * @return unknown
+	 */
 	public function add($pid=0,$gid=0){
 	    if ($this->request->isPost()) {
 	        $data = $this->request->post();
@@ -123,7 +167,7 @@ class MemberMenu extends AdminBase
 	    }
 	    $gid || $gid=3;
 
-	    $array = MenuModel::where(['groupid'=>$gid,'pid'=>0])->column('id,name');
+	    $array = MenuModel::where(['groupid'=>$gid,'pid'=>0,'type'=>1])->column('id,name');
 	    $form = Form::make()
 	    ->addPageTips('父菜单为PC或WAP的话,子菜单设置通用无效')
 	    ->addSelect('groupid','所属用户组','',getGroupByid(),$gid)
@@ -132,20 +176,29 @@ class MemberMenu extends AdminBase
 	    ->addText('url','菜单链接')
 	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'],0)
 	    ->addIcon('icon','小图标')
+	    ->addColor('fontcolor','字体颜色')
+	    ->addColor('bgcolor','背景颜色')
 	    ->addHidden('type','1')
 	    ->addPageTitle('添加会员个性菜单');
 	    return $form::fetchs();
 	}
 
-	public function edit($id=0){
-	    
+	/**
+	 * 修改会员个性菜单
+	 * @param number $id
+	 * @return unknown
+	 */
+	public function edit($id=0){	    
 	    if ($this->request->isPost()) {
 	        $data = $this -> request -> post();
+	        $data['allowgroup'] = $data['allowgroup']?implode(',',$data['allowgroup']):'';
 	        if (!empty($this -> validate)) {   //验证数据
 	            $result = $this -> validate($data, $this -> validate);
 	            if (true !== $result) $this -> error($result);
 	        }
+	        if(!isset($data['is_use']))$data['is_use'] = 1;   //会员个性菜单才用到
 	        if (MenuModel::update($data)) {
+	            Menu::member_sys_cache(true);
 	            $this->success('修改成功',url('index',['gid'=>$data['groupid']]));
 	        } else {
 	            $this->error('修改失败');
@@ -153,21 +206,35 @@ class MemberMenu extends AdminBase
 	    }
 	    $info = MenuModel::get($id);
 	    $array = MenuModel::where('groupid',$info['groupid'])->where('pid','=',0)->column('id,name');
-	    $form = Form::make([],$info)
-	    ->addPageTitle('修改菜单')
-	    ->addSelect('pid','父级菜单','',$array)
-	    ->addText('name','名称')	    
-	    ->addText('url','菜单链接')
-	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'])
-	    ->addRadio('ifshow','是否隐藏','',['隐藏','显示(不隐藏)'])
-	    ->addNumber('list','排序值')
-	    ->addIcon('icon','小图标')
+	    $form = Form::make([],$info)->addPageTitle('修改菜单');
+	    if($info['groupid']>0 && $info['pid']>0){
+	        $form->addSelect('pid','父级菜单','',$array)->addText('url','菜单链接');
+	    }
+	    $form->addText('name','名称');
+	    if($info['pid']>0){
+	        $form->addCheckbox('allowgroup','指定用户组使用','不设置则按默认为准,即有权限',getGroupByid())
+	        ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'])
+	        ->addRadio('ifshow','是否隐藏','',['隐藏','显示(不隐藏)']);	        
+	    }
+	    $info['groupid']>0 && $form->addNumber('list','排序值');
+	    $form->addIcon('icon','小图标')
+	    ->addColor('fontcolor','字体颜色','是否有效果,需要模板配合做样式')
+	    ->addColor('bgcolor','背景颜色','是否有效果,需要模板配合做样式')
+	    ->addTextarea('script','脚本事件','要填写的话,需要补齐 &lt;script&gt;&lt;/script&gt;同理,也可以写css或html')
 	    ->addHidden('groupid')
+	    ->addPageTips("系统菜单不能修改链接")
 	    ->addHidden('id',$id);
+	    if($info['groupid']==0 && $info['is_use']==1){ //方便用户取消
+	        $form->addRadio('is_use','个性设置','',[0=>'跟随系统',1=>'个性设置']);
+	    }
 
 	    return $form::fetchs();
 	}
 	
+	/**
+	 * 删除会员个性菜单.
+	 * @param unknown $ids
+	 */
 	public function delete($ids){
 	    if (empty($ids)) {
 	        $this -> error('ID有误');

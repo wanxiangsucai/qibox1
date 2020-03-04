@@ -64,7 +64,7 @@ function pc_open_weibo(){
 {php}$menu_choose=config('system_dirname')?config('system_dirname'):'index';{/php}
 {volist name="pc|get_web_menu" id="rs"}
 			<dl {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}class="ck"{/if}>
-				<dt><a href="{$rs.url}" {notempty name="$rs.target"}target="_blank"{/notempty}><i class="{$rs.style|default=''}"></i>{$rs.name}</a></dt>
+				<dt {notempty name="$rs.bgcolor"}style="background-color:{$rs.bgcolor};"{/notempty}><a href="{$rs.url}" {notempty name="$rs.fontcolor"}style="color:{$rs.fontcolor};"{/notempty} {notempty name="$rs.target"}target="_blank"{/notempty}><i class="{$rs.style|default=''}"></i>{$rs.name}</a>{$rs.script}</dt>
 	{notempty name="rs.sons"}
 				<span></span>
 				<dd>

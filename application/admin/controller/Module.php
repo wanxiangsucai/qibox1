@@ -67,7 +67,7 @@ class Module extends AdminBase
 	                return ($rs['type']==0?'':'<a title="复制当前模块" icon="fa fa-copy" class="btn btn-xs btn-default" href="'.url('copy',['id'=>$rs['id']]).'" target="_self"><i class="fa fa-copy"></i></a>').$value;
 	            },'__data__'],
 	    ];
-	    return $this -> getAdminTable(self :: getListData($map = [], $order = [],$rows=50));
+	    return $this -> getAdminTable(self :: getListData($map = [], $order = 'list desc,id desc',$rows=50));
 	}
 	
 	

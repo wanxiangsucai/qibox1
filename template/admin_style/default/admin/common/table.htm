@@ -5,7 +5,7 @@
   <div class="Conter">
 	
 	<!-- 顶部功能按钮 -->	
-	<div style="margin-bottom:10px;float:left;">
+	<div style="margin-bottom:10px;float:left;" class="top_menu">
 		{volist name="$tab_ext.top_button" id="rs"}
 		 {if $rs.type=='add'}
 			<a href="{$rs.href|default=auto_url('add')}" class="layui-btn layui-btn-primary {$rs.class}"><li class="{$rs.icon|default='fa fa-plus'}"></li> {$rs.title|default='新增'}</a>
@@ -20,7 +20,7 @@
 	
 	
 	<!-- 字段搜索功能 -->
-	<div style="margin-bottom:10px;float:right;">
+	<div style="margin-bottom:10px;float:right;" class="top_search">
 		<select name="search_field">
 		<option value="" selected>选择字段</option> 
 		{notempty name="$tab_ext.id"}<option value="{$tab_ext.id}">{$tab_ext.id}</option>{else /}<option value="id">ID</option>{/notempty}

@@ -160,6 +160,30 @@ $(function(){
             $show = "$_show "; 
             
             $field['about'] && $field['about'] = '<br>'.$field['about'];
+
+		}elseif ($field['type'] == 'color') {	//选择颜色
+
+			$field['input_width'] = "width:110px;";
+            $static = config('view_replace_str.__STATIC__');
+            $show = "<div class='layui-input-inline' style='width: 120px;'><input placeholder='点击选择颜色' style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' /></div>
+			<div class='layui-inline' style='left: -11px;'><div id='color_{$name}'></div></div>
+			";
+			$color=$info[$name]?:'#999999';
+            $show .= fun('field@load_js','layui_css')?"<script src='$static/layui/css/layui.css'></script>":'';
+            $show .="<script>
+                              $(function(){
+									layui.use('colorpicker', function(){
+									  var colorpicker = layui.colorpicker;
+									  colorpicker.render({
+										elem: '#color_{$name}'
+										,color: '{$color}'
+										,done: function(color){
+										  $('#atc_{$name}').val(color);
+										}
+									  });
+									});
+								})
+                            </script>";
             
         }elseif(in_array($field['type'], ['time','date','datetime'])){
             if (is_numeric($info[$name])) { //存放格式是int的时候 ,但是 time就没有存放int的意义
