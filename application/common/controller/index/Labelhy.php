@@ -123,8 +123,8 @@ abstract class Labelhy extends IndexBase
                 //['number','cleng','内容显示字数','',250],
                 ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
                 //['radio','status','范围限制','',['不限','已审','推荐'],0],
-                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
-                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
+                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',]],
+                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序']],
                 ];
         }else{  //全站使用
             $array = [
@@ -136,9 +136,9 @@ abstract class Labelhy extends IndexBase
                 //['number','leng','标题显示字数','',70],
                 //['number','cleng','内容显示字数','',250],
                 ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
-                ['radio','status','范围限制','',$this->get_status(),0],
-                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
-                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
+                ['radio','status','范围限制','',$this->get_status(),1],
+                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',]],
+                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序']],
                 ['radio','onlymy','指定用户数据','当前登录用户,适合在会员中心调用',['不限','当前登录用户','指定用户'],'0'],
                 ['text','uids','指定用户uid','多个用户用半角逗号隔开'],
             ];
@@ -146,7 +146,7 @@ abstract class Labelhy extends IndexBase
         
         $self_form = $this->self_form();
         if ($self_form['form']) {
-            if(count($self_form['form'])>5){
+            if(count($self_form['form'])>5 || $self_form['form_title']){
                 $this -> tab_ext['group'] = [
                         '基础设置'=>$array,
                         ($self_form['form_title']?:'更多设置')=>$self_form['form'],

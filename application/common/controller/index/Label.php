@@ -109,9 +109,9 @@ abstract class Label extends IndexBase
                 //['number','leng','标题显示字数','',70],
                 //['number','cleng','内容显示字数','',250],
                 ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
-                ['radio','status','范围限制','',$this->get_status(),0],
-                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
-                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
+                ['radio','status','范围限制','',$this->get_status()],
+                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',]],
+                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序']],
                 ['radio','onlymy','是否只调用自己的','不适合在前台,更适合在会员中心调用',['否','是'],'0'],
                 ['text', 'where', 'where查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5又或者fid|in|2,4,6@uid|not in|5,8',$cfg['where']],
                // ['text', 'whereor', 'whereOr查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5',$cfg['whereor']],
@@ -129,7 +129,7 @@ abstract class Label extends IndexBase
         
         $self_form = $this->self_form();
         if ($self_form['form']) {
-            if(count($self_form['form'])>5){
+            if(count($self_form['form'])>5 || $self_form['form_title']){
                 $this -> tab_ext['group'] = [
                         '基础设置'=>$array,
                         ($self_form['form_title']?:'更多设置')=>$self_form['form'],

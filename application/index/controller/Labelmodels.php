@@ -6,7 +6,7 @@ use app\index\model\Labelhy AS Model;
 
 class Labelmodels extends IndexBase
 {
-    private function make_wap($path='',$tags='',$cfg=[]){
+    protected function make_wap($path='',$tags='',$cfg=[]){
 
         $_path = str_replace(['/','.'], '___', $path);
         $basename = end(explode('___',$_path));
@@ -39,7 +39,7 @@ class Labelmodels extends IndexBase
      * @param string $string
      * @return number
      */
-    private function str2num($string=''){
+    protected function str2num($string=''){
         $j = 0;
         $num = strlen($string);
         for($i=0;$i<$num;$i++){
@@ -89,11 +89,17 @@ class Labelmodels extends IndexBase
                 $div_warp .= $detail[1];
             }
         }
-        
+
         $id = config('system_dirname')=='qun'?intval(input('id')):0; //避免CMS内容页也当作圈子处理
         $jsurl = STATIC_URL.'js/label_model.js';
-        $label_model_url = urls('index/labelmodels/show');
-        $label_model_saveurl = urls('index/labelmodels/save');
+        $index = 'index';
+        if (class_exists("app\\".config('system_dirname')."\\index\\Labelmodels")) {
+            $index = config('system_dirname');
+        }elseif (class_exists("app\\common\\upgrade\\U25")){
+            \app\common\upgrade\U25::up();
+        }
+        $label_model_url = urls($index.'/labelmodels/show');
+        $label_model_saveurl = urls($index.'/labelmodels/save');
         $code = '';
         if (SHOW_SET_LABEL===true) {
             $code = '恢复(添加)模块<br><br>';
