@@ -60,9 +60,10 @@ class Upgrade{
         foreach ($array AS $rs){
             if(in_array($rs['type'],['admin_style','index_style','member_style','qun_style'])&&!is_dir(TEMPLATE_PATH.$rs['type'].'/'.$rs['keywords'])){
                 \app\common\model\Market::destroy($rs['id']);   //用户把目录删除的话,就把数据库的信息也清空掉
-            }
-            list($time,$version) = explode("\t",$rs['version']);
-            $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-'.$rs['type'];
+            }else{
+                list($time,$version) = explode("\t",$rs['version']);
+                $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-'.$rs['type'];
+            }            
         }
         return implode(',', $data);
     }

@@ -242,7 +242,7 @@ function setup_app(id,fid,keywords,price,have_open_layer){
 		mtype = 'plugin';
 	}else if(fid==3){
 		mtype = 'hook_plugin';
-	}else if(fid==4 || fid==7 || fid==9){
+	}else if(fid==4 || fid==7 || fid==9 || fid==11){
 		mtype = 'style';
 	}else{
 		layer.alert('APP分类有误!');

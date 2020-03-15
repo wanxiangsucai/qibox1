@@ -87,6 +87,7 @@ class Upgrade extends AdminBase
 	    $this->upgrade_mark($data['member_style'],'member_style');
 	    $this->upgrade_mark($data['qun_style'],'qun_style');
 	    $this->upgrade_mark($data['haibao_style'],'haibao_style');
+	    $this->upgrade_mark($data['model_style'],'model_style');
 	    $this->upgrade_mark($data['packet'],'packet');
 	    
 	    $this->clean_cache();

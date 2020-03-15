@@ -1,0 +1,28 @@
+{qb:hy name="labelmodel_myform" type="myform" conf="labelmodel/myfrom"}
+<!--这是自定义表单--> 
+<b class="{$_cfg.test_logo}">{$_cfg.test_title}</b><br>
+
+{$_cfg.test_about}<br>
+
+
+<img src="{$_cfg.test_pic|tempdir}">
+<br>
+
+{volist name=":explode(',',$_cfg.test_pics)" id="pic"}
+ <img src="{$pic|tempdir}" style="width:100%;"> 
+{/volist}
+
+<br>
+
+{volist name=":json_decode($_cfg.test_imgs,true)" id="rs"}
+<a href="{$rs.url}"><img src="{$rs.picurl|tempdir}" style="width:100%;"><br>{$rs.title}</a>
+{/volist}
+
+<br>
+ 
+{volist name=":json_decode($_cfg.test_links,true)" id="rs"}
+<a href="{$rs.url}" class="{$rs.icon}" style="color:{$rs.font_color}"> {$rs.title}</a>
+{/volist} 
+
+
+{/qb:hy} 

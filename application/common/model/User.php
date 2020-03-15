@@ -360,13 +360,36 @@ class User extends Model
 	    if($username==''){
             return 0;
         }
-		if($not_pwd){	//不需要知道原始密码就能登录
+		if($not_pwd===true){	//不需要知道原始密码就能登录
 		    $rs = static::get_info($username,$type);
 		}else{
 		    $rs = static::check_password($username,$password,$type);
 			if(!is_array($rs)){
 				return $rs;		//0为用户不存在,-1为密码不正确
 			}
+		}
+		
+		if ($not_pwd==false) {
+		    
+		    if(!config('webdb.allow_allcity_login') && ( $rs['weixin_api'] || $rs['qq_api'] || ($rs['mob_yz']&&preg_match("/^1([\d]{10})+/", $rs['mobphone'])) ) ){
+		        $str = file_get_contents("http://api.map.baidu.com/location/ip?ak=MGdbmO6pP5Eg1hiPhpYB0IVd&ip=".$rs['lastip']."&coor=bd09ll");
+		        $array = json_decode($str ,true);
+		        $lastcity = $array['content'] ? $array['content']['address_detail']['city'] : '';
+		        if($lastcity){
+		            $str = file_get_contents("http://api.map.baidu.com/location/ip?ak=MGdbmO6pP5Eg1hiPhpYB0IVd&ip=".get_ip()."&coor=bd09ll");
+		            $array = json_decode($str ,true);
+		            if($lastcity!=$array['content']['address_detail']['city']){
+		                $show = '';
+		                $rs['weixin_api'] && $show.='微信、';
+		                $rs['qq_api'] && $show.='QQ、';
+		                $rs['mob_yz'] && $show.='手机、';
+		                showerr("你当前登录城市与上一次登录城市不一致，请选择其它方式登录！比如 ".$show);
+		            }
+		        }
+		    }
+		    
+		    $content = '友情提醒：你的帐号 '.$username.' 刚刚登录过 '.config('webdb.webname').'，如果不是你本人操作，估计密码已被盗，请尽快修改密码！'.' <a href="'.murl('member/user/edit').'" target="_blank">立即登录</a>';
+		    $rs['weixin_api'] && send_wx_msg($rs['weixin_api'], $content);
 		}
 
 		$data = [
@@ -388,11 +411,6 @@ class User extends Model
 		];
 		get_hook('user_login_end',$array,$rs,[],true);
 		hook_listen('user_login_end', $array,$rs);
-		
-		if ($not_pwd==false) {
-		    $content = '友情提醒：你的帐号 '.$username.' 刚刚登录过 '.config('webdb.webname').'，如果不是你本人操作，估计密码已被盗，请尽快修改密码！'.' <a href="'.murl('member/user/edit').'" target="_blank">立即登录</a>';
-		    send_wx_msg($rs['weixin_api'], $content);
-		}
 		
 		return $rs;
 	}

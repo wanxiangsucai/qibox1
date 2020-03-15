@@ -90,9 +90,9 @@ mod_class.zhibo = {
 				return ;
 			}
 			var disabled = ' disabled ';
-			if(quninfo.live_api_url!=undefined && quninfo.live_api_url!=''){	//圈子自定义了直播接口,才允许手工设置开播与停播
+			//if(quninfo.live_api_url!=undefined && quninfo.live_api_url!=''){	//圈子自定义了直播接口,才允许手工设置开播与停播
 				disabled = '';
-			}
+			//}
 			var show_str = `<div class="live_video_warp">
 							直播选项：<input type="radio" checked name="zhiboStatus" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').show();" value="2">正式开播  <input type="radio" name="zhiboStatus" value="1" onclick="$('.zhibo_begintime_warp').show();$('.zhibo-btn').hide();">预告  <input type="radio" name="zhiboStatus" value="3" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').hide();" ${disabled}>停播<br>
 							<div class="zhibo_begintime_warp" style="display:none;">开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20'><script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script></div>

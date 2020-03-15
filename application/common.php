@@ -867,11 +867,11 @@ if (!function_exists('str_array')) {
             return [$value];
         }
         $array = explode($exp,$value);
-        if ( $exp == "\n" && (strpos($value, '|')||strpos($value, ':')) ) {
-            $ar  = [];
+        if ( $exp == "\n" && strpos($value, '|') ) {
+            $ar = [];
             foreach ($array as $val) {
-                list($k, $v) = explode( strpos($val,'|')?'|':':' , $val);
-                $ar[$k]   = $v;
+                list($k, $v) = explode( '|' , $val);
+                $ar[$k] = $v;
             }
         } else {
             $ar = $array;

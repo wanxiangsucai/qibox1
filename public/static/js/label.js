@@ -130,27 +130,52 @@
 
 
 
-
+//var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';
 $(document).ready(function () {
-    $('.p8label').each(function () {
-        $(this).hover(function () {
-            $(this).css({
-                'opacity': '0.8',
-                'filter': 'alpha(opacity=70)'
-            });
-        }, function () {
-            $(this).css({
-                'opacity': '0.4',
-                'filter': 'alpha(opacity=50)'
-            });
-        }).jqResize($('div', this))
-    });
+	setTimeout(function(){
+	    $('.p8label').each(function () {
+			$(this).hover(function () {
+				$(this).css({
+					'opacity': '0.8',
+					'filter': 'alpha(opacity=70)'
+				});
+			}, function () {
+				$(this).css({
+					'opacity': '0.4',
+					'filter': 'alpha(opacity=50)'
+				});
+			}).jqResize($('div', this));
+		});
+	},3000);
+	/*
+	if(typeof(labelSet)!='undefined'){
+		var weburl = window.location.href;
+		if(weburl.indexOf('?')>-1){
+			weburl += '&';
+		}else{
+			weburl += '?';
+		}
+		if(labelSet===true){			
+            $('body').dblclick(function(){
+				if(confirm('你确认要退出标签管理吗?')){
+					window.location.href = weburl+'label_set=quit';
+				}
+			});
+		}else if(labelSet===false){
+			$('body').dblclick(function(){
+				if(confirm('你确认要进入标签管理吗?')){
+					window.location.href = weburl+'label_set=set';
+				}
+			});
+		}
+	}
+	*/
 });
 
 
 
 var jumpto=true;
-function showlabel_(obj,mouse,type,name){	
+function showlabel_(obj,mouse,type,name,url){	
 	if(mouse=='over'){
 		obj.style.filter='Alpha(Opacity=80)';
 		obj.style.cursor='hand';
@@ -158,17 +183,13 @@ function showlabel_(obj,mouse,type,name){
 	}else if(mouse=='out'){
 		obj.style.filter='Alpha(Opacity=50)';
 	}else if(mouse=='click'&&jumpto==true){
-		var width = parseInt( $(obj).next().width() );
-		var height = parseInt( $(obj).next().height() );
-		if(width<30 || height<30){
-			width = parseInt( $(obj).next().next().width() );
-			height = parseInt( $(obj).next().next().height() );
+		var width = parseInt( $(obj).parent().width() );
+		if(width<100){
+			width = 100;
 		}
-
-		width = parseInt(obj.style.width)==100 ? width : parseInt(obj.style.width);
-		height = parseInt(obj.style.height)==30 ? height : parseInt(obj.style.height);
-
-		layer_label_iframe(admin_url+'?type='+type+'&name='+name+'&div_width='+width+'&div_height='+height);
+		width = type=='labelmodel' ?  width  : (parseInt(obj.style.width)==100 ? width : parseInt(obj.style.width));
+		height = parseInt(obj.style.height)<10 ? 30 : parseInt(obj.style.height);
+		layer_label_iframe( (url!=undefined&&url!=""?url:admin_url)+'?type='+type+'&name='+name+'&div_width='+width+'&div_height='+height);
 	}
 }
 //layer_label_iframe

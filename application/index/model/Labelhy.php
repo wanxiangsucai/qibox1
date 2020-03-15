@@ -21,13 +21,14 @@ class Labelhy extends Label
         }elseif(empty($data['type'])){
             return '缺少type参数';
         }elseif(empty($data['ext_id'])){
-            return '缺少ext_id参数';
+//             return '缺少ext_id参数';
         }
         
-        $info = self::get([
+        $info = self::where([
                 'name'=>$data['name'],
-                'ext_id'=>$data['ext_id'],
-        ]);
+                'ext_id'=>intval($data['ext_id']),
+                'fid'=>intval($data['fid']),
+        ])->find();
         unset($data['id']);
         if($info){
             if(self::update($data,['id'=>$info['id']])){
@@ -46,14 +47,17 @@ class Labelhy extends Label
      * @param string $page_name 模板页
      * @param number $page_num 第几页，AJAX显示更多用到
      * @param array $live_parameter 跟随页面变化的动态参数
+     * @param number $hy_id  圈子ID
+     * @param number $hy_tags  重复的标签编号
      * @return void|void|unknown|array|NULL[]
      */
-    public static function get_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0){
+    public static function get_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags=''){
         
         //获取当前页面的所有标签的数据库配置参数，如果一个页面有很多标签的时候，比较有帮助，如果标签只有一两个就帮助不太大。
         $page_tags = cache($hy_id.'config_page_tags_'.$page_name);
         if(empty($page_tags)){
-            $page_tags = self::where(['pagename'=>$page_name])->where(['ext_id'=>$hy_id])->column(true,'name');
+            $hy_tags = intval($hy_tags);
+            $page_tags = self::where(['pagename'=>$page_name])->where(['ext_id'=>$hy_id,'fid'=>$hy_tags])->column(true,'name');
             //cache($hy_id.'config_page_tags_'.$page_name,$page_tags,3600);
         }
         
@@ -69,11 +73,13 @@ class Labelhy extends Label
             return ;    //新标签，不存在配置参数，所以也不用执行下面的数据取值
         }
         
-        if($live_parameter){    //跟随页面变化的动态参数
-            $array = unserialize($tag_config['cfg']);
+        $array = unserialize($tag_config['cfg']);
+        if($live_parameter){    //跟随页面变化的动态参数            
             $array = array_merge($array,$live_parameter);
-            $tag_config['cfg'] = serialize($array);
         }
+        $array['tag_name'] = $tag_name;
+        $array['page_name'] = $page_name;
+        $tag_config['cfg'] = serialize($array);
         
         if($tag_config['class_cfg']=='@'){
             return $tag_config;                     //列表页标签不需要在这里处理数据

@@ -85,6 +85,9 @@ trait Market
             return read_file(RUNTIME_PATH.'temp.zip')?:'下载内容为空';
         }
         delete_dir(RUNTIME_PATH.'model');
+        if (!function_exists('zip_open')) {
+            return '你的空间php不支持zip扩展,请安装ZIP扩展,或更换PHP版本';
+        }
         Unzip::unzip(RUNTIME_PATH.'temp.zip',RUNTIME_PATH.'model/');
         if(!is_dir(RUNTIME_PATH.'model/')){
             return '文件解压失败';

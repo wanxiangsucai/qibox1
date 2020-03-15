@@ -7,8 +7,8 @@ class Qb extends TagLib{
      * 定义标签列表
      */
     protected $tags   =  [
-            'tag'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,fid,js,union,field', 'close' => 1],  //field 过滤循环不显示的字段,多个用,号隔开
-            'hy'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,fid,js,union,field', 'close' => 1],  //圈子黄页店铺专用标签
+            'tag'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,fid,js,union,field,conf', 'close' => 1],  //field 过滤循环不显示的字段,多个用,号隔开
+            'hy'      => ['attr' => 'name,type,time,rows,val,list,tpl,order,by,status,class,where,whereor,sql,mid,fid,js,union,field,conf', 'close' => 1],  //圈子黄页店铺专用标签
             'url'      => ['attr' => 'name', 'close' => 0],
             'hy_url'      => ['attr' => 'name', 'close' => 0],
             'nav'      => ['attr' => 'name,title,url', 'close' => 0],
@@ -94,6 +94,7 @@ class Qb extends TagLib{
         }
         $cache_time = empty($tag['time']) ?0: intval($tag['time']);
         $val = $tag['val'];
+        $conf = $this->get_conf($tag['conf']);
         $order = $tag['order']; //按什么排序
         //$rows = $tag['rows'];   //取数据库的多少条记录
         $by = $tag['by'];   //升序还是降序
@@ -122,7 +123,7 @@ class Qb extends TagLib{
         $parse .= ' QB--><?php endif; ?>';
         $where = addslashes($where);
         $whereor = addslashes($whereor);
-        $parse .= '<?php '."\$$name = fun('label@run_label','$name',[$union'val'=>'$val','list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
+        $parse .= '<?php '."\$$name = fun('label@run_label','$name',[$union'val'=>'$val',$conf'list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
         return $parse;
     }
     
@@ -139,6 +140,7 @@ class Qb extends TagLib{
         if(empty($tag['type'])){
             //return '******标签type参数不能为空*******'.$content;
         }
+        $conf = $this->get_conf($tag['conf']);
         $sql = $tag['sql'];   //SQL查询
         $type = $sql?'sql':$tag['type'];
         $name = $this->getName($tag['name']);
@@ -165,6 +167,9 @@ class Qb extends TagLib{
         $class = $tag['class']; //调取数据执行的类
         $tpl = $tag['tpl']; //指定默认模板
         $js = $tag['js']; //通过AJAX方式获取数据,这样就不影响页面打开速度
+        if ($tag['class']==""&&$tag['type']&&$tag['type']!='labelmodel') {
+            $tag['union']=$tag['union']?$tag['union'].'&uid=$info.uid,ext_id=$info.id':'uid=$info.uid,ext_id=$info.id'; //给圈子传变量
+        }
         $union = $this->union_live_parameter($tag['union'],$where);    //动态关联的参数
         $list = $tag['list']?$tag['list']:'rs';
         $parse = '<?php if(defined(\'LABEL_DEBUG\')): ?><!--QB '."<!--$name\t$type\t$tpl-->";
@@ -180,7 +185,7 @@ class Qb extends TagLib{
         $parse .= ' QB--><?php endif; ?>';
         $where = addslashes($where);
         $whereor = addslashes($whereor);
-        $parse .= '<?php '."\$$name = fun('label@run_hy','$name',[$union'hy_id'=>\$info['id'],'val'=>'$val','list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
+        $parse .= '<?php '."\$$name = fun('label@run_hy','$name',[$union'hy_id'=>intval(\$info['id']&&config('system_dirname')=='qun'?\$info['id']:\$hy_id),'hy_tags'=>\$tags,'val'=>'$val',$conf'list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
         return $parse;
     }
     
@@ -209,6 +214,19 @@ class Qb extends TagLib{
         $parse .= ' QB--><?php endif; ?>';
         $parse .= '<?php '."fun('label@run_form_label','$name',[$_farray'mid'=>$_mid,'info'=>\$$info,'field'=>'$field','mod'=>'$mod','dirname'=>__FILE__,]);".' ?>';
         return $parse;
+    }
+    
+    
+    private function get_conf($conf=''){
+        if(substr($conf,0,1)=='$'){
+            if(strstr($conf,'.')){
+                $conf = str_replace('.','[\'',$conf).'\']';
+            }
+            $conf='\\'.$conf;
+        }else{
+            $conf="'{$conf}'";
+        }
+        return "'conf'=>".$conf.',';
     }
     
     /**

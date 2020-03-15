@@ -77,6 +77,7 @@ trait LabelEdit {
                 'div_height'=>input('div_height'),
                 'cache_time'=>input('cache_time'),
                 'hy_id'=>input('hy_id'),
+                'hy_tags'=>input('hy_tags'),
                 'fromurl'=>input('fromurl'),
         ];
     }
@@ -101,7 +102,8 @@ trait LabelEdit {
         if($value!==null){
             $this->$v = $value;
         }else{
-            $this->$v = input('post.'.$key )?input('post.'.$key ):input($key);
+            $data = request()->post();
+            $this->$v = isset($data[$key])?$data[$key]:input($key); //优先使用POST数据
         }
         if(empty($this->$v) && $default!==null){
             $this->$v = $default;
@@ -112,7 +114,9 @@ trait LabelEdit {
         if($value===null){
             $data = input();
             //多余的参数过滤掉
-            unset($data['fromurl'],$data['view_tpl'],$data['ifdata'],$data['extend_cfg'],$data['id'],$data['name'],$data['cache_time'],$data['type'],$data['system_id'],$data['ifsql'],$data['page']);
+            //$data['tag_name'] = $data['name'];
+            //$data['page_name'] = $data['pagename'];
+            unset($data['fromurl'],$data['view_tpl'],$data['ifdata'],$data['Submit'],$data['extend_cfg'],$data['id'],$data['name'],$data['pagename'],$data['cache_time'],$data['type'],$data['system_id'],$data['ifsql'],$data['page']);
             $this->tag_cfg = $data;
         }
         return $this;
@@ -128,12 +132,13 @@ trait LabelEdit {
 
 
     protected function setTag_value($class_cfg){
+        $data = $this->request->post();
         $this->setTag_class_cfg($class_cfg)
             ->setTag_name()
             ->setTag_pagename()
             ->setTag_cfg()
             ->setTag_extend_cfg()
-            ->setTag_type()
+            ->setTag_type($data['type'])
             ->setTag_hide()
             ->setTag_cache_time()
             ->setTag_system_id()
@@ -163,6 +168,7 @@ trait LabelEdit {
                 'view_tpl'=>$this->tag_view_tpl,
                 'uid'=>intval($this->user['uid']),
                 'ext_id'=>input('hy_id'),
+                'fid'=>intval(input('hy_tags')),
                 //'update_time'=>time(),
         ];
         return array_merge($_array,$array);
@@ -184,6 +190,9 @@ trait LabelEdit {
     
     //保存标签数据
     protected function save($array){
+        if(input('hy_id')){
+            unset($array['view_tpl']);  //圈子严禁使用自定义模板
+        }
         $result = LabelModel::save_data($array);
         if($result===true){
             $this->clean_cache($array['name']);
@@ -218,7 +227,7 @@ trait LabelEdit {
 	    return $this;
 	}
 	protected function setTag_type($value=null){
-	    $this->getVal(__METHOD__,$value);
+	    $this->getVal(__METHOD__,strtolower($value));
 	    return $this;
 	}
 	protected function setTag_hide($value=null){

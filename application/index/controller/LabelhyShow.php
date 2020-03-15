@@ -6,18 +6,32 @@ use app\index\model\Labelhy AS LabelModel;
 class LabelhyShow extends LabelShow
 {
     public static $pri_hy_js=null;
+    public static $labelhy_adminurl;
+    
+    protected function  _initialize()
+    {
+        parent::_initialize();
+        if (defined('LABEL_SET') && LABEL_SET===true){
+            set_cookie('labelhy_set','set');
+        }
+    }
     
     /**
      * 得到圈子黄页的ID,为的是给分页URL使用
-     * @param number $id
+     * @param number $id 圈子ID
+     * @param string $tags 重复的标签编号
      * @return number
      */
-    protected function get_hy_id($id=0){
+    protected function get_hy_id($id=0,$tags=''){
         static $hy_id;
+        static $hy_tags;
         if ($id) {
             $hy_id = $id;
         }
-        return $hy_id;
+        if ($tags) {
+            $hy_tags = $tags;
+        }
+        return [$hy_id,$hy_tags];
     }
     
     
@@ -28,7 +42,7 @@ class LabelhyShow extends LabelShow
      * @param string $page 第几页
      * @param string $pagename 标签所在哪个页面
      */
-    public function ajax_get($tagname='' , $page='' , $pagename='' , $hy_id=0){
+    public function ajax_get($tagname='' , $page='' , $pagename='' , $hy_id=0 , $hy_tags=''){
         
         //对应fetch方法,传入一些常用的参数
         $admin = $this->admin;
@@ -56,12 +70,12 @@ class LabelhyShow extends LabelShow
             }
         }
         
-        $_cfg = cache($hy_id.'tag_default_'.$tagname);    //主要为的是传递where参数
+        $_cfg = cache('tag_default_'.$tagname.$hy_id.$hy_tags);    //主要为的是传递where参数
         $parameter = array_merge($_cfg,$parameter);
         
         $live_cfg = self::union_live_parameter($parameter);
         
-        $tag_array = LabelModel::get_tag_data_cfg($tagname , $pagename , $page, $live_cfg, $hy_id);
+        $tag_array = LabelModel::get_tag_data_cfg($tagname , $pagename , $page, $live_cfg, $hy_id, $hy_tags);
         //$view_tpl = cache('tags_tpl_code_'.$tagname);      //原始模板缓存，非数据库的
         $_array = cache('tags_page_demo_tpl_'.$pagename);      //原始模板缓存，非数据库的
         if(!empty($_array)){
@@ -79,8 +93,12 @@ class LabelhyShow extends LabelShow
         if(empty($tag_array)){    //未入库前,随便给些演示数据
             $live_cfg && $_cfg = array_merge($_cfg,$live_cfg) ;
             $_cfg['sys_type'] && $_cfg['systype'] = $_cfg['sys_type'];      //重新定义了调取数据的类型, 也即动态变换
+            $_cfg['tag_name'] = $tagname;
+            $_cfg['page_name'] = $pagename;
             $array = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
             $__LIST__ = is_array($array['data']) ? $array['data'] : $array; //不是数组的时候,就是单张图片,或纯HTML代码
+        }else{
+            $_cfg = unserialize($tag_array['cfg']);
         }
         
         //用户自定义了循环变量,比如listdb
@@ -114,7 +132,9 @@ class LabelhyShow extends LabelShow
      * @return mixed
      */
     protected function build_tag_ajax_url($array=[]){
-        $array['hy_id'] = $this->get_hy_id();   //不同于系统标签,这里必须要传递一下圈子黄页的ID
+        $detail = $this->get_hy_id();
+        $array['hy_id'] = $detail[0];   //不同于系统标签,这里必须要传递一下圈子黄页的ID
+        $array['hy_tags'] = $array['tags'] = $detail[1];
         $array['sys_type'] = $this->get_sys_type();   //同一个标签,动态更换系统 type 参数
 //         foreach($array AS $key=>$value){
 //             $array[$key] = urlencode($value);
@@ -123,12 +143,17 @@ class LabelhyShow extends LabelShow
         return iurl('index/labelhy_show/ajax_get').'?'.http_build_query($array).'&';
     }
     
+    
     public function get_label($tag_name='',$cfg=[]){
-        $hy_id = $cfg['hy_id'];                                          //店铺ID
-        if (empty($hy_id)) {
+        $hy_id = $cfg['hy_id'];   //店铺ID
+        $hy_tags = $cfg['hy_tags'];
+        if (!is_numeric($hy_id)) {
             die('------店铺ID不存在------------');
         }
-        $this->get_hy_id($hy_id);
+        if($cfg['systype']!='labelmodel' && $cfg['hy_id'] && strstr($cfg['union'],'uid') && !strstr($cfg['where'],'uid') && !strstr($cfg['where'],'ext_id')){
+            $cfg['where'] = $cfg['where'] ? $cfg['where'].'&uid=$info.uid':'uid=$info.uid'; //针对圈子,自动加上uid查询
+        }
+        $this->get_hy_id($hy_id,$hy_tags);
         $this->get_sys_type($cfg['sys_type']);
         $filtrate_field = $cfg['field'];                                 //循环字段指定不显示哪些
         $val = $cfg['val'];                                                 //取得数据后，赋值到这个变量名, 分页的话,没做处理会得不到
@@ -157,10 +182,12 @@ class LabelhyShow extends LabelShow
             $tpl_have_edit = true;
         }
         
-        $tag_array = cache($hy_id.'qb_tag_'.$tag_name);        //取得具体某个标签的数据库配置参数，对于取文章列表的，也会同时得到相应的数据
+        echo self::pri_jsfile($pagename, $hy_id, $hy_tags );      //输出JS文件,要放在这个位置是因为其它函数可能要用到SHOW_SET_LABEL
+        
+        $tag_array = cache('qb_tag_'.$tag_name.$hy_id.$hy_tags);        //取得具体某个标签的数据库配置参数，对于取文章列表的，也会同时得到相应的数据
         if(empty($tag_array)||$tpl_have_edit){
-            $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id );
-            $tag_array['cache_time']>0 && cache($hy_id.'qb_tag_'.$tag_name,$tag_array,$tag_array['cache_time']);
+            $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags );
+            $tag_array['cache_time']>0 && cache('qb_tag_'.$tag_name.$hy_id.$hy_tags,$tag_array,$tag_array['cache_time']);
         }
         
         if(!empty($tag_array) && !empty($tag_array['type'])){
@@ -179,10 +206,14 @@ class LabelhyShow extends LabelShow
             }
         }
         
-        echo self::pri_jsfile($pagename, $hy_id);                                   //输出JS文件
-        echo  self::pri_tag_div($tag_name,$type,$tag_array,$cfg['class']);    //输出标签的操作层
+        echo self::pri_tag_div($tag_name,$type,$tag_array,$cfg['class']);    //输出标签的操作层
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
+            
+            if($type=='labelmodel'){    //自定义模块
+                $cfg['class'] = "app\index\controller\Labelmodels@get_label";
+            }
+            
             if($cfg['sql']){    //SQL原生查询语句
                 $cfg['class'] = "app\\index\\controller\\LabelShow@labelGetSql";
             }
@@ -199,8 +230,8 @@ class LabelhyShow extends LabelShow
 //                 }
 //             }
         }
-        if($tpl_have_edit || empty( cache($hy_id.'tag_default_'.$tag_name) )){   //方便AJAX使用
-            cache($hy_id.'tag_default_'.$tag_name,$cfg,36000);
+        if($tpl_have_edit || empty( cache('tag_default_'.$tag_name.$hy_id.$hy_tags) )){   //方便AJAX使用
+            cache('tag_default_'.$tag_name.$hy_id.$hy_tags,$cfg);
         }
         
         self::tag_cfg_parameter($tag_name,$cfg);  //把$cfg存放起来,给get_ajax_url使用
@@ -246,7 +277,10 @@ EOT;
         }
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
-            if( ($type&&( modules_config($type)||plugins_config($type) ))  ||  $cfg['class']){
+            
+            if( ($type&&!in_array($type,['link','links'])&&( modules_config($type)||plugins_config($type) ))  ||  $cfg['class']){
+                $cfg['tag_name'] = $tag_name;
+                $cfg['page_name'] = $pagename;                
                 $default_data = self::get_default_data($type,$cfg);
                 if(!empty($val)){
                     $$val = $default_data;
@@ -261,7 +295,6 @@ EOT;
             return ;
             
         }else{
-            
             //纯文本就直接输出
             if($type=='text'||$type=='txt'||$type=='textarea'||$type=='ueditor'){
                 /*eval('?>'.$tag_array['data']);*/
@@ -270,8 +303,9 @@ EOT;
             }elseif($type=='image'){    //单张图片,特别处理                
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
                 if(strstr($_tpl,'<?php')){	//单张图,有模板的情况
-                    $picurl = $tag_array['data']['picurl'];
-                    $url = $tag_array['data']['url'];
+                    extract($tag_array['data']);
+//                     $picurl = $tag_array['data']['picurl'];
+//                     $url = $tag_array['data']['url'];
                     eval('?>'.$_tpl);
                 }else{	//单张图,没有模板就直接输出图片
                     echo $tag_array['format_data'];
@@ -279,9 +313,17 @@ EOT;
                 return $tag_array['data'];
             }elseif($type=='link'){     //菜单链接
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
-                $url = $tag_array['data']['url'];
-                $title = $tag_array['data']['title'];
-                $logo = $tag_array['data']['logo'];
+                extract($tag_array['data']);
+//                 $url = $tag_array['data']['url'];
+//                 $title = $tag_array['data']['title'];
+//                 $logo = $tag_array['data']['logo'];
+                eval('?>'.$_tpl);
+                return $tag_array['data'];
+            }elseif($type=='myform'){     //自定义表单
+                $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
+                $_cfg = $tag_array['data'];
+                $_cfg['id'] = $tag_array['id'];
+                $__LIST__ = ['']; //为了循环有数据输出
                 eval('?>'.$_tpl);
                 return $tag_array['data'];
             }
@@ -318,33 +360,65 @@ EOT;
     }
     
     
-    protected  function pri_jsfile($pagename='', $hy_id=0){
+    protected  function pri_jsfile($pagename='', $hy_id=0,$hy_tags=''){
         
         if(self::$pri_hy_js === null){
             self::$pri_hy_js = true;
-            
+            if (input('get.label_set')=='quit') {
+                set_cookie('labelhy_set','');
+            }
             if( input('get.labelhy_set')!='' ) {
+                if(input('get.labelhy_set')=='quit' && defined('LABEL_SET') && LABEL_SET===true){ //同时退出全站的标签设置
+                    set_cookie('label_set', input('get.label_set'));
+                }
                 set_cookie('labelhy_set',input('get.labelhy_set'));
             }
             
-            $this->weburl = str_replace(array('labelhy_set=quit','labelhy_set=set','&&'), '', $this->weburl);
-            $weburl = strpos($this->weburl,'?') ? ($this->weburl.'&') : ($this->weburl.'?') ;
+//             $this->weburl = str_replace(['labelhy_set=quit','labelhy_set=set','&&'], '', $this->weburl);
+//             $weburl = strpos($this->weburl,'?') ? ($this->weburl.'&') : ($this->weburl.'?') ;
 
             if(input('get.labelhy_set')=='set' || get_cookie('labelhy_set')=='set'){
-                if(in_wap()){
-                    $label_iframe_width = '95%';
-                    $label_iframe_height = '80%';
-                }else{
-                    $label_iframe_width = '60%';
-                    $label_iframe_height = '80%';
+                $qun = fun("qun@getbyid",$hy_id);
+                if($qun['uid']==$this->user['uid']  //圈主
+                        || (defined('LABEL_SET') && LABEL_SET===true)   //管理员处于标签设置状态
+                        ){
+                    define('SHOW_SET_LABEL',true);      //Labelmodels.php 也用到此常量
+                }else{  //不是圈主,也不是管理员就终止下面的标签相关显示
+                    define('SHOW_SET_LABEL',false);
+                    if ($this->admin && !$this->request->isAjax()) {
+                        echo   $this->remind_set_label('goin');
+                    }
+                    return ;
                 }
                 
-                $admin_url = iurl('index/labelhy/index',"pagename=$pagename&hy_id=$hy_id");
-                echo   "
-                <SCRIPT LANGUAGE='JavaScript' src='/public/static/js/label.js'></SCRIPT>
-                <SCRIPT LANGUAGE='JavaScript'>
-                var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';
-                </SCRIPT>";
+//                 if(in_wap()){
+//                     $label_iframe_width = '95%';
+//                     $label_iframe_height = '80%';
+//                 }else{
+//                     $label_iframe_width = '60%';
+//                     $label_iframe_height = '80%';
+//                 }
+                
+                $admin_url = iurl('index/labelhy/index',"pagename=$pagename&hy_id=$hy_id&hy_tags=$hy_tags");
+                self::$labelhy_adminurl = $admin_url;     //Labelmodels.php要用到
+                
+                if ($this->request->isAjax()) {
+                    return ;    //通过ajax获取数据的,就不要显示标签文件
+                }
+                
+                if ($this->admin) {
+                    echo   $this->remind_set_label('goout');
+                }
+                
+                echo $this->get_label_jsfile($pagename);
+//                 echo   "
+//                <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."libs/jquery-ui/jquery-ui.min.js'></SCRIPT>
+//                 <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."js/label.js'></SCRIPT>
+//                 <SCRIPT LANGUAGE='JavaScript'>
+//                 var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';
+//                 </SCRIPT>";
+            }elseif($this->admin && !$this->request->isAjax()){
+                echo   $this->remind_set_label('goin');
             }
         }
     }
@@ -358,15 +432,23 @@ EOT;
      */
     protected  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name=''){
         if(input('get.labelhy_set')=='set' || get_cookie('labelhy_set')=='set'){
+            if (SHOW_SET_LABEL===false) {
+                return ;
+            }
             $tag_array['cfg'] = unserialize($tag_array['cfg']);
+            $div_bgcolor = 'orange';
             $div_w = $tag_array['cfg']['div_width']>10?$tag_array['cfg']['div_width']:100;
             $div_h = $tag_array['cfg']['div_height']>10?$tag_array['cfg']['div_height']:30;
-            $div_bgcolor = 'orange';
+            if ($type=='labelmodel') {
+                $div_h = $tag_array['cfg']['div_height']>30 ? 30 : $tag_array['cfg']['div_height'];
+                $div_h<10 && $div_h = 30; 
+                $div_bgcolor = '#06a0ce';
+            }            
             if (($type=='choose'||$type=='classname') && $class_name!='') {
                 $type = str_replace('\\', '--', $class_name);
             }
             
-            echo "<div  class=\"p8label\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(/public/static/js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
+            echo "<div  class=\"p8label hylabel\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name','".self::$labelhy_adminurl."');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(".STATIC_URL."js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
             ";
         }        
     }

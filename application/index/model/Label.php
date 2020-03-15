@@ -107,12 +107,13 @@ class Label extends Model
             return ;    //新标签，不存在配置参数，所以也不用执行下面的数据取值
         }
         
-        if($live_parameter){    //跟随页面变化的动态参数
-            $array = unserialize($tag_config['cfg']);
-            $array = array_merge($array,$live_parameter);
-            $tag_config['cfg'] = serialize($array);
+        $array = unserialize($tag_config['cfg']);
+        if($live_parameter){    //跟随页面变化的动态参数            
+            $array = array_merge($array,$live_parameter);            
         }
-        
+        $array['tag_name'] = $tag_name;
+        $array['page_name'] = $page_name;
+        $tag_config['cfg'] = serialize($array);
         if($tag_config['class_cfg']=='@'){
             return $tag_config;                     //列表页标签不需要在这里处理数据
         }

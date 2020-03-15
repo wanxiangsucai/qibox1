@@ -12,8 +12,8 @@ trait LabelhyEdit {
      * @return boolean
      */
     protected function check_power(){
-        $info = fun('qun@getByid',input('hy_id'));
-        if ($info['uid'] && $info['uid']==$this->user['uid']) {
+        $info = input('hy_id')?fun('qun@getByid',input('hy_id')):[];
+        if ( ($info['uid'] && $info['uid']==$this->user['uid']) || defined('LABEL_SET') && LABEL_SET===true ) {
             return true;
         }
     }
@@ -26,6 +26,10 @@ trait LabelhyEdit {
      */
     protected function get_form_table($info,$tab_items) {
         $this->form_items = $tab_items;
+//         if (input('hy_tags')) {
+//             $this->form_items[] = ['number','top_size','上边距离(像素)'];
+//             $this->form_items[] = ['number','bottom_size','下边距离(像素)'];
+//         }
         //$this->form_items[] = ['number','cache_time','标签缓存时间','单位是秒'];
         return $this->editContent($info);
     }
@@ -34,9 +38,10 @@ trait LabelhyEdit {
      * 删除某个标签
      * @param string $name 标签名
      * @param number $hy_id 圈子黄页ID
+     * @param number $hy_tags 同名标签编号
      */
-    public function delete($name='',$hy_id=0){
-        if (LabelModel::destroy(['name'=>$name,'ext_id'=>$hy_id])) {
+    public function delete($name='',$hy_id=0,$hy_tags=0){
+        if (LabelModel::where(['name'=>$name,'ext_id'=>$hy_id,'fid'=>intval($hy_tags)])->delete()) {
             $this -> success('删除成功');
         } else {
             $this -> error('删除失败');
@@ -50,12 +55,14 @@ trait LabelhyEdit {
     protected function getTagInfo(){
         return getArray( LabelModel::get([
                 'name'=>input('name'),
-                'ext_id'=>input('hy_id'),                
+                'ext_id'=>input('hy_id'),
+                'fid'=>intval(input('hy_tags')), 
         ]) );
     }
     
     //保存标签数据
     protected function save($array){
+        unset($array['view_tpl']);  //安全起见,不允许设置模板代码
         $result = LabelModel::save_data($array);
         if($result===true){
             if($this->request->isAjax()){

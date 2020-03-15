@@ -244,8 +244,9 @@ class Qun{
      * @return void|string|mixed
      */
     public static function getByid($id,$time=3600){
-        static $array = [];
-        $info = $array[$id];
+        //static $array = [];
+        //$info = $array[$id];
+        $info = cache('qunById'.$id);
         if (empty($info)) {
             //$info = getArray( query('qun_content1')->where('id',$id)->find() );
             $info = ContentModel::getInfoByid($id);
@@ -255,7 +256,8 @@ class Qun{
             $info['url'] = iurl("qun/content/show",['id'=>$info['id']]);
             $info['picurl'] = tempdir($info['picurl']);
             unset($info['sncode']);
-            $array[$id] = $info;
+            //$array[$id] = $info;
+            cache('qunById'.$id,$info,60);
         }
         return $info;
     }

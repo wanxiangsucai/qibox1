@@ -8,6 +8,7 @@ class LabelShow extends IndexBase
 {
     public static $pri_js=null;
     public static $list_page_cfg = [];   //列表页的标签参数，主要是给AJAX传输数据用
+    public static $label_adminurl;
 
     /**
      * 同一个标签,动态更换系统 type 参数,为的是给分页URL使用
@@ -49,6 +50,8 @@ class LabelShow extends IndexBase
             $cfg['mid'] = $_array['mid'];
             $cfg['fid'] = $_array['fid'];
             $cfg['rows'] = $_array['rows'];
+            $cfg['tag_name'] = $name;
+            $cfg['page_name'] = $page;
             $array = self::get_default_data($type,$cfg,$page,false);            
             return $this->ok_js($array);
         }
@@ -126,6 +129,8 @@ class LabelShow extends IndexBase
         if(empty($tag_array)){    //未入库前,随便给些演示数据            
             $live_cfg && $_cfg = array_merge($_cfg,$live_cfg) ;
             $_cfg['sys_type'] && $_cfg['systype'] = $_cfg['sys_type'];      //重新定义了调取数据的类型, 也即动态变换
+            $_cfg['tag_name'] = $tagname;
+            $_cfg['page_name'] = $pagename;
             $array = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
             $__LIST__ = is_array($array['data']) ? $array['data'] : $array; //不是数组的时候,就是单张图片,或纯HTML代码
         }
@@ -200,7 +205,7 @@ class LabelShow extends IndexBase
      * @return string[]|void[][]|string[][]|unknown[][]
      */
     public function labelGetImage($tag_array=[]){
-        list($picurl,$url) = explode(',',$tag_array['extend_cfg']);
+        list($picurl,$url,$title) = explode(',',$tag_array['extend_cfg']);
         $picurl = tempdir($picurl);
         return [
                 'data'=>['picurl'=>$picurl,'url'=>$url],
@@ -208,12 +213,38 @@ class LabelShow extends IndexBase
         ];
     }
     
+    /**
+     * 自定义表单
+     * @param array $tag_array
+     * @return array
+     */
+    public function labelGetMyform($tag_array=[]){
+        return json_decode($tag_array['extend_cfg'],true)?:[];
+    }
+    
+    
+    /**
+     * 标签数据 显示多个链接导航
+     * @param array $tag_array
+     * @return mixed
+     */
+    public function labelGetLinks($tag_array=[]){
+        return json_decode($tag_array['extend_cfg'],true)?:[];
+    }
+    
+    /**
+     * 获取标签设置的链接
+     * @param array $tag_array
+     * @return unknown[]|array[]
+     */
     public function labelGetLink($tag_array=[]){
-        list($title,$url,$logo) = explode("\t",$tag_array['extend_cfg']);        
+        list($title,$url,$logo,$font_color,$bgcolor) = explode("\t",$tag_array['extend_cfg']);        
         return [
-                'title'=>$title,
-                'url'=>$url,
-                'logo'=>$logo,
+            'title'=>$title,
+            'url'=>$url,
+            'logo'=>$logo,
+            'font_color'=>$font_color,
+            'bgcolor'=>$bgcolor,
         ];
     }
     
@@ -240,35 +271,91 @@ class LabelShow extends IndexBase
         if(self::$pri_js==null){
             self::$pri_js=true;
             
-            $this->weburl = str_replace(array('label_set=quit','label_set=set','&&'), '', $this->weburl);
-            $weburl = strpos($this->weburl,'?') ? ($this->weburl.'&') : ($this->weburl.'?') ;
-            
-            if(LABEL_SET!==true){
-                if($this->user['groupid']==3){
-                    echo   "
-                    <SCRIPT LANGUAGE='JavaScript'>
-                    $('body').dblclick(function(){var msg=confirm('你确认要进入标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=set';}});
-                    </SCRIPT>";
-                }
+            if ($this->request->isAjax()) {  //通过ajax获取数据的,就不要显示标签文件
+                return ;
+            }elseif(empty($this->admin)){    //非管理员不显示下面的
                 return ;
             }
+//             }elseif( input('tags') && input('path') ){  //标签模块不显示下面的
+//                 return ;
+//             }
             
-            if(in_wap()){
-                $label_iframe_width = '95%';
-                $label_iframe_height = '80%';
+//             $this->weburl = str_replace(['label_set=quit','label_set=set','&&'], '', $this->weburl);
+//             $weburl = strpos($this->weburl,'?') ? ($this->weburl.'&') : ($this->weburl.'?') ;
+            if(!defined('LABEL_SET') || LABEL_SET!==true){ //提示进入标签管理
+                echo   $this->remind_set_label('goin');
             }else{
-                $label_iframe_width = '60%';
-                $label_iframe_height = '80%';
+                $admin_url = iurl('index/label/index',"pagename=$pagename");
+                self::$label_adminurl = $admin_url;
+                
+                //if (input('tags') && input('path') ) {  //模块调用的话,不要显示下面的.
+//                 if ($this->request->isAjax()) {  //通过ajax获取数据的,就不要显示标签文件
+//                     return ;
+//                 }
+
+                echo   $this->remind_set_label('goout');
+                echo   $this->get_label_jsfile($pagename);
+                
+//                 if(in_wap()){
+//                     $label_iframe_width = '95%';
+//                     $label_iframe_height = '80%';
+//                 }else{
+//                     $label_iframe_width = '60%';
+//                     $label_iframe_height = '80%';
+//                 }
+//                 echo   "<SCRIPT LANGUAGE='JavaScript'>var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';
+//                             $('body').dblclick(function(){var msg=confirm('你确认要退出标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=quit';}});</SCRIPT>
+//                             <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."libs/jquery-ui/jquery-ui.min.js'></SCRIPT>                            
+//                             <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."js/label.js'></SCRIPT>";
             }
-            
-            $admin_url = iurl('index/label/index',"pagename=$pagename");
-            echo   "
-            <SCRIPT LANGUAGE='JavaScript' src='/public/static/js/label.js'></SCRIPT>
-            <SCRIPT LANGUAGE='JavaScript'>
-            var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';
-            $('body').dblclick(function(){var msg=confirm('你确认要退出标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=quit';}});
-        </SCRIPT>";
         }
+    }
+    
+    /**
+     * 提示进入或退出标签管理
+     * @param string $type
+     * @return string
+     */
+    protected function remind_set_label($type='goin'){
+        static $have_load = false;
+        if($have_load){
+            return '';            
+        }
+        $have_load = true;
+        $this->weburl = str_replace(['label_set=quit','label_set=set','&&'], '', $this->weburl);
+        $weburl = strpos($this->weburl,'?') ? ($this->weburl.'&') : ($this->weburl.'?') ;
+        if($type=='goin'){
+            return "<SCRIPT LANGUAGE='JavaScript'>$('body').dblclick(function(){if(confirm('你确认要进入标签管理吗?')==true){window.location.href='{$weburl}label_set=set';}});
+            </SCRIPT>";
+        }elseif($type=='goout'){
+            return "<SCRIPT LANGUAGE='JavaScript'>$('body').dblclick(function(){var msg=confirm('你确认要退出标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=quit';}});</SCRIPT>";
+        }
+    }
+    
+    /**
+     * 标签管理要用到的JS文件
+     * @param string $pagename
+     * @return string
+     */
+    protected function get_label_jsfile($pagename=''){
+        static $have_load = false;
+        if($have_load){
+            return '';
+        }
+        $have_load = true;
+        $admin_url = iurl('index/label/index',"pagename=$pagename");
+        self::$label_adminurl = $admin_url;
+        
+        if(in_wap()){
+            $label_iframe_width = '95%';
+            $label_iframe_height = '80%';
+        }else{
+            $label_iframe_width = '60%';
+            $label_iframe_height = '80%';
+        }
+        return "<SCRIPT LANGUAGE='JavaScript'>var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';</SCRIPT>
+        <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."libs/jquery-ui/jquery-ui.min.js'></SCRIPT>
+        <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."js/label.js'></SCRIPT>";
     }
     
     /**
@@ -278,8 +365,8 @@ class LabelShow extends IndexBase
      * @param array $tag_array
      * @param string $class_name
      */
-    protected  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name=''){
-        if(LABEL_SET!==true){
+    protected  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name='',$pagename=''){
+        if(!defined('LABEL_SET') || LABEL_SET!==true){
             return ;
         }
         $tag_array['cfg'] = unserialize($tag_array['cfg']);
@@ -289,8 +376,10 @@ class LabelShow extends IndexBase
         if (($type=='choose'||$type=='classname') && $class_name!='') {
             $type = str_replace('\\', '--', $class_name);
         }
-        
-        echo "<div  class=\"p8label\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(/public/static/js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
+        if (empty(self::$label_adminurl)) { //模块AJAX使用
+            self::$label_adminurl = iurl('index/label/index',"pagename=".$pagename);
+        }
+        echo "<div  class=\"p8label taglabel\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name','".self::$label_adminurl."');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(".STATIC_URL."js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
         ";
     }
     
@@ -356,7 +445,7 @@ class LabelShow extends IndexBase
         
         
         self::pri_jsfile($pagename);                                                              //输出JS文件
-        self::pri_tag_div($tag_name,'comment_set_'.$type,$tag_array);             //输出标签的操作层
+        self::pri_tag_div($tag_name,'comment_set_'.$type,$tag_array,$pagename);             //输出标签的操作层
         
         if($tag_array && trim($tag_array['view_tpl']!='')){         //数据库设定的模板优先
             $tpl = $tag_array['view_tpl'];
@@ -428,7 +517,7 @@ class LabelShow extends IndexBase
         
         
         self::pri_jsfile($pagename);                                                              //输出JS文件
-        self::pri_tag_div($tag_name,'reply_set_'.$type,$tag_array);             //输出标签的操作层
+        self::pri_tag_div($tag_name,'reply_set_'.$type,$tag_array,$pagename);             //输出标签的操作层
         
         if($tag_array && trim($tag_array['view_tpl']!='')){         //数据库设定的模板优先
             $tpl = $tag_array['view_tpl'];
@@ -489,7 +578,7 @@ class LabelShow extends IndexBase
         $type = config('system_dirname');   //系统模块目录名
         
         echo self::pri_jsfile($pagename);                                                               //输出JS文件
-        echo  self::pri_tag_div($tag_name,'showpage_set_'.$type,$tag_array);             //输出标签的操作层
+        echo  self::pri_tag_div($tag_name,'showpage_set_'.$type,$tag_array,$pagename);             //输出标签的操作层
         
         if($tag_array && trim($tag_array['view_tpl']!='')){         //数据库设定的模板优先
             $tpl = $tag_array['view_tpl'];
@@ -718,7 +807,7 @@ class LabelShow extends IndexBase
         $type = config('system_dirname');   //系统模块目录名
 
         echo self::pri_jsfile($pagename);                                                               //输出JS文件
-        echo  self::pri_tag_div($tag_name,'listpage_set_'.$type,$tag_array);             //输出标签的操作层
+        echo  self::pri_tag_div($tag_name,'listpage_set_'.$type,$tag_array,$pagename);             //输出标签的操作层
         
         //指定了过滤字段,代表想要取某些字段的数值
         $fields = $filtrate_field ? $this->list_show_field( get_field($cfg['mid'],$type) , $filtrate_field ) : [];
@@ -1075,7 +1164,7 @@ class LabelShow extends IndexBase
         }
         
         echo self::pri_jsfile($pagename);                                   //输出JS文件
-        echo  self::pri_tag_div($tag_name,$type,$tag_array,$cfg['class']);    //输出标签的操作层
+        echo  self::pri_tag_div($tag_name,$type,$tag_array,$cfg['class'],$pagename);    //输出标签的操作层
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
             if($cfg['sql']){    //SQL原生查询语句
@@ -1096,7 +1185,7 @@ class LabelShow extends IndexBase
         }
 
 		if($tpl_have_edit || empty( cache('tag_default_'.$tag_name) )){   //方便AJAX
-             cache('tag_default_'.$tag_name,$cfg,36000);
+             cache('tag_default_'.$tag_name,$cfg);
         }
         
         self::tag_cfg_parameter($tag_name,$cfg);  //把$cfg存放起来,给get_ajax_url使用
@@ -1143,11 +1232,13 @@ EOT;
         }
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
-            if( ($type&&( modules_config($type)||plugins_config($type) ))  ||  $cfg['class']){
+            if( ($type&&!in_array($type,['link','links'])&&( modules_config($type)||plugins_config($type) ))  ||  $cfg['class']){
                 $tag_key = $this->get_cache_key( array_merge($cfg,[$type,'tag_name'=>$tag_name]) );
                 $cfg['cache_time'] = $this->get_cache_time($cfg['cache_time']);
                 $default_data = $cfg['cache_time'] ? cache2($tag_key) : null;
-                if (empty($default_data)) {                    
+                if (empty($default_data)) {
+                    $cfg['tag_name'] = $tag_name;
+                    $cfg['page_name'] = $pagename;
                     $default_data = self::get_default_data($type,$cfg);                    
                     $cfg['cache_time'] && cache2($tag_key,$default_data,$cfg['cache_time']);
                 }
@@ -1156,7 +1247,7 @@ EOT;
                     $$val = $default_data;
                 }else{
                     $__LIST__ = $default_data;
-                }                
+                }
                 eval('?>'.$page_demo_tpl_tags[$tag_name]['tpl']);
                 return ;
             }
@@ -1173,8 +1264,9 @@ EOT;
             }elseif($type=='image'){    //单张图片,特别处理                
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
                 if(strstr($_tpl,'<?php')){	//单张图,有模板的情况
-                    $picurl = $tag_array['data']['picurl'];
-                    $url = $tag_array['data']['url'];
+                    extract($tag_array['data']);
+//                     $picurl = $tag_array['data']['picurl'];
+//                     $url = $tag_array['data']['url'];
                     eval('?>'.$_tpl);
                 }else{	//单张图,没有模板就直接输出图片
                     echo $tag_array['format_data'];                    
@@ -1182,9 +1274,17 @@ EOT;
                 return $tag_array['data'];
             }elseif($type=='link'){     //菜单链接
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
-                $url = $tag_array['data']['url'];
-                $title = $tag_array['data']['title'];
-                $logo = $tag_array['data']['logo'];
+                extract($tag_array['data']);
+//                 $url = $tag_array['data']['url'];
+//                 $title = $tag_array['data']['title'];
+//                 $logo = $tag_array['data']['logo'];
+                eval('?>'.$_tpl);
+                return $tag_array['data'];
+            }elseif($type=='myform'){     //自定义表单
+                $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
+                $_cfg = $tag_array['data'];
+                $_cfg['id'] = $tag_array['id'];
+                $__LIST__ = ['']; //为了循环有数据输出
                 eval('?>'.$_tpl);
                 return $tag_array['data'];
             }
@@ -1287,6 +1387,8 @@ EOT;
         }
         $page_num<1 && $page_num = 1;
 //         $config['cfg'] = serialize( ['rows'=>$cfg['rows']] );
+
+
         $config['cfg'] = serialize( $cfg );        
         $data = $obj->$action($config,$page_num);
         $data = getArray($data);

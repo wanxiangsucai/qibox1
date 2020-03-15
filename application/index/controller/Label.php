@@ -56,6 +56,10 @@ class Label extends IndexBase
                 $url = url("index/label/member",$url_array);
             }elseif($type=='link'){
                 $url = url("index/label/link",$url_array);
+            }elseif($type=='links'){
+                $url = url("index/label/links",$url_array);
+            }elseif($type=='myform'){
+                $url = url("index/label/myform",$url_array);
             }elseif($type=='sql'){
                 $url = url("index/label/sql",$url_array);
             }elseif(modules_config($type)){
@@ -154,6 +158,53 @@ class Label extends IndexBase
         return $array;
     }
     
+    
+    /**
+     * 自定义表单
+     * @return mixed|string
+     */
+    public function myform($name='',$hy_id='',$hy_tags=''){
+        if(IS_POST){
+            $data = $this->request->post();
+            $this->setTag_value("app\\index\\controller\\LabelShow@labelGetMyform")
+            ->setTag_extend_cfg(json_encode($data))
+            ->setTag_type( substr(strstr(__METHOD__,'::'),2) );
+            $_array = $this->get_post_data();
+            $this->save($_array);
+        }
+        
+        $_array = cache('tag_default_'.$name.$hy_id.$hy_tags);
+
+        $path = $_array['conf'].(strstr($_array['conf'],'.php')?'':'.php');
+        if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
+            $path = TEMPLATE_PATH.'index_style/'.$path;
+        }else{
+            $path = TEMPLATE_PATH.$path;
+        }
+        
+        if (!is_file($path)) {
+            $this->error('配置文件不存在');
+        }
+        $array = include($path);
+        if ( empty($array['form']) || !is_array($array['form']) || empty($array['form'][0]) ) {
+            $this->error('表单参数不存在');
+        }
+        $form_items = $array['form'];
+        
+        $this -> tab_ext['page_title'] = $array['page_title']?:'自定义表单';
+        $array['help_msg'] && $this -> tab_ext['help_msg'] = $array['help_msg'];
+        $array['trigger'] && $this -> tab_ext['trigger'] = $array['trigger'];
+        
+        $_info = $this->getTagInfo();
+        $info = json_decode($_info['extend_cfg'],true);
+        
+        //         $form_items = [
+        //                 ['textarea', 'extend_cfg','内容代码','',$info['extend_cfg']],
+        //         ];
+        $this->tab_ext['hidebtn']='back';
+        return $this -> get_form_table($info, $form_items);
+    }
+    
     /**
      * 标签设置 SQL原生查询语句
      * @param number $name
@@ -214,7 +265,7 @@ class Label extends IndexBase
         if(IS_POST){
             $data = $this -> request -> post();
             $this->setTag_value("app\\common\\model\\User@labelGet")
-            ->setTag_type('member');
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
@@ -269,7 +320,7 @@ class Label extends IndexBase
         if(IS_POST){
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetImage")
             ->setTag_extend_cfg(input('picurl').','.input('url'))
-            ->setTag_type('image');
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
@@ -290,30 +341,54 @@ class Label extends IndexBase
     
     
     /**
-     * 标签设置菜单链接
+     * 标签设置单个菜单链接
      * @return mixed|string
      */
     public function Link(){
         if(IS_POST){
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetLink")
-            ->setTag_extend_cfg(input('title')."\t".input('url')."\t".input('logo'))
-            ->setTag_type('link');
+            ->setTag_extend_cfg(input('title')."\t".input('url')."\t".input('logo')."\t".input('font_color')."\t".input('bgcolor'))
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
         
         $info = $this->getTagInfo();
         $cfg = unserialize($info['cfg']);
-        list($title,$url,$logo) = explode("\t",$info['extend_cfg']);
-        $info['title'] = $title;
-        $info['url'] = $url;
-        $info['logo'] = $logo;
+        list($info['title'],$info['url'],$info['logo'],$info['font_color'],$info['bgcolor']) = explode("\t",$info['extend_cfg']);
+
         $form_items = [
-                ['text', 'url', '链接网址','',$url],
-                ['text', 'title', '标题','',''],                                
-                ['icon', 'logo', '图标','',$logo],
+            ['text', 'url', '链接网址'],
+            ['text', 'title', '标题'],                                
+            ['icon', 'logo', '图标'],
+            ['color', 'font_color', '字体颜色'],
+            ['color', 'bgcolor', '背景颜色'],
         ];
         $this -> tab_ext['page_title'] = '菜单链接';
+        $this->tab_ext['hidebtn']='back';
+        return $this -> get_form_table($info, $form_items);
+    }
+    
+    /**
+     * 标签设置多个菜单链接
+     * @return mixed|string
+     */
+    public function Links(){
+        if(IS_POST){
+            $this->setTag_value("app\\index\\controller\\LabelShow@labelGetLinks")
+            ->setTag_extend_cfg(input('extend_cfg'))
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
+            $_array = $this->get_post_data();
+            $this->save($_array);
+        }
+        
+        $array = $this->getTagInfo();
+        $info = unserialize($array['cfg']);
+        $info['extend_cfg'] = $array['extend_cfg']; //赋值给表单
+        $form_items = [
+            ['links', 'extend_cfg', '导航链接'],
+        ];
+        $this -> tab_ext['page_title'] = '导航链接';
         $this->tab_ext['hidebtn']='back';
         return $this -> get_form_table($info, $form_items);
     }
@@ -362,7 +437,7 @@ class Label extends IndexBase
             unset($data['pics']);
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetImages")
             ->setTag_extend_cfg($extend)
-            ->setTag_type('images');
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
@@ -418,7 +493,7 @@ class Label extends IndexBase
         if(IS_POST){            
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetUeditor")
             ->setTag_extend_cfg(input('htmlcode'))
-            ->setTag_type('ueditor');
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
@@ -449,7 +524,7 @@ class Label extends IndexBase
         if(IS_POST){
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetTextarea")
             ->setTag_extend_cfg(input('htmlcode'))
-            ->setTag_type('textarea');
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }

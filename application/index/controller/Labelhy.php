@@ -34,12 +34,15 @@ class Labelhy extends Label
                 'div_height'=>input('div_height'),
                 'cache_time'=>input('cache_time'),
                 'hy_id'=>input('hy_id'),
+                'hy_tags'=>input('hy_tags'),
                 'fromurl'=>urlencode(input('fromurl')),
         ];
         $type = input('type');
         if($type&&$type!='choose'){
             if($type=='image'){
                 $url = url("index/labelhy/image",$url_array);                
+            }elseif($type=='labelmodel'){
+                $url = url("index/labelhy/labelmodel",$url_array);
             }elseif($type=='images'){
                 $url = url("index/labelhy/images",$url_array);
             }elseif($type=='textarea'||$type=='text'||$type=='txt'){
@@ -50,6 +53,10 @@ class Labelhy extends Label
                 $url = url("index/labelhy/member",$url_array);
             }elseif($type=='link'){
                 $url = url("index/labelhy/link",$url_array);
+            }elseif($type=='links'){
+                $url = url("index/labelhy/links",$url_array);
+            }elseif($type=='myform'){
+                $url = url("index/labelhy/myform",$url_array);
 //             }elseif($type=='sql'){
 //                 $url = url("index/labelhy/sql",$url_array);
             }elseif(modules_config($type)){
@@ -107,7 +114,7 @@ class Labelhy extends Label
         if(IS_POST){
             $data = $this -> request -> post();
             $this->setTag_value("app\\common\\model\\User@labelGet")
-            ->setTag_type('member');
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
@@ -158,77 +165,214 @@ class Labelhy extends Label
     public function image(){
         if(IS_POST){
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetImage")
-            ->setTag_extend_cfg(input('picurl').','.input('url'))
-            ->setTag_type('image');
+            ->setTag_extend_cfg(input('picurl').','.input('url').','.str_replace(',', '，', input('title')))
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
         
-        $info = $this->getTagInfo();
-        $cfg = unserialize($info['cfg']);
-        list($picurl,$title) = explode(',',$info['extend_cfg']);
+        $array = $this->getTagInfo();
+        $info = unserialize($array['cfg']);
+        list($picurl,$url,$title) = explode(',',$array['extend_cfg']);
         $form_items = [
-                ['image', 'picurl', '图片','',$picurl],
-                ['text', 'url', '链接网址','',$title],
-                ['number', 'pic_width', '图片宽度','',$cfg['pic_width']?$cfg['pic_width']:input('div_width')],
-                ['number', 'pic_height', '图片高度','',$cfg['pic_height']?$cfg['pic_height']:input('div_height')],
+            ['image', 'picurl', '图片','',$picurl],
+            ['text', 'url', '链接网址','',$url],
+            ['text', 'title', '描述','',$title],
+//                 ['number', 'pic_width', '图片宽度','',$cfg['pic_width']?$cfg['pic_width']:input('div_width')],
+//                 ['number', 'pic_height', '图片高度','',$cfg['pic_height']?$cfg['pic_height']:input('div_height')],
         ];
         $this -> tab_ext['page_title'] = '单张图片';
         $this->tab_ext['hidebtn']='back';
         return $this -> get_form_table($info, $form_items);
     }
     
-    //组图
+    
+    protected function get_common_model(){
+        $array = glob(TEMPLATE_PATH.'model_style/*/*.php');
+        $data = [];
+        $hyid = input('hy_id');
+        $width = input('div_width');
+        foreach ($array AS $file){
+            $info = include($file);
+            if(IN_WAP===true){
+                if($info['type1']=='pc'){
+                    continue ;
+                }
+            }else{
+                if($info['type1']=='wap'){
+                    continue ;
+                }
+                if ($info['type3']=='small' && $width>500) {
+                    continue ;
+                }elseif ($info['type3']=='big' && $width<500) {
+                    continue ;
+                }
+            }
+            if ($hyid>0) {
+                if($info['type2']=='www'){
+                    continue ;
+                }
+            }else{
+                if($info['type2']=='hy'){
+                    continue ;
+                }
+            }
+            $data[substr(strstr($file,'model_style/'),0,-4)] = $info['title'];
+        }
+        return $data;
+    }
+    
+    /**
+     * 获取风格模块名称
+     * @param array $array
+     */
+    protected function get_model_name($array=[]){
+        foreach($array AS $path=>$name){
+            if(strstr($name,'/')){
+                $file = TEMPLATE_PATH."index_style/{$path}.htm";
+                if (!is_file($file)) {
+                    $file = TEMPLATE_PATH."{$path}.htm";
+                }
+                preg_match("/^<!--(.*?)-->/is", trim(file_get_contents($file)),$data);
+                $array[$path]=trim($data[1],'-')?:$path;
+            }
+        }
+        return $array;
+    }
+    
+    /**
+     * 生成唯一固定数值
+     * @param string $string
+     * @return number
+     */
+    private function str2num($string=''){
+        $j = 0;
+        $num = strlen($string);
+        for($i=0;$i<$num;$i++){
+            $j +=ord(substr($string, $i , 1));
+        }
+        return 10000+$j;
+    }
+    
+    /**
+     * 圈子模块管理
+     * @return mixed|string
+     */
+    public function labelmodel(){        
+        
+        $info = $this->getTagInfo();
+        $cfg = unserialize($info['cfg']);
+        
+        $tag_name = input('name');
+        $hy_id = input('hy_id');
+        $cfg = cache('tag_default_'.$tag_name.$hy_id);
+        
+        $all_model = $this->get_common_model();
+        $default_model = [];   //初始化的模块
+        if (strstr($cfg['where'],'model=$')) {
+            $default_model = explode(',', $cfg['model']);
+        }else{
+            $default_model = explode(',',str_replace('model=', '', $cfg['where']));
+        }
+        
+        foreach($default_model AS $k=>$v){
+            $v = trim($v," \r\n\t");
+            if (empty($v)) {
+                unset($default_model[$k]);
+            }else{
+                $default_model[$k] = $v;
+            }            
+        }
+        
+        $_array_path = [];
+        foreach ($default_model AS $path){
+            $path = str_replace('___', '/', $path);
+            if (!$all_model[$path]) {
+                $all_model[$path] = $path;
+            }
+            if(empty($_array_path) && !strstr($path,'model_style') && count(explode('/', $path))>2){
+                if(is_file(TEMPLATE_PATH.'index_style/'.$path.'.'.config('template.view_suffix'))){
+                    $_array_path = glob(TEMPLATE_PATH.'index_style/'.dirname($path).'/model_*.htm');
+                }elseif(is_file(TEMPLATE_PATH.$path.'.'.config('template.view_suffix'))){
+                    $_array_path = glob(TEMPLATE_PATH.dirname($path).'/model_*.htm');
+                }                
+            }
+        }
+        
+        //查找私有碎片的公共可选碎片 model_ 开头就列出来        
+        foreach($_array_path AS $path){
+            $path = str_replace([TEMPLATE_PATH."index_style/",'.htm'],'', $path);
+            $all_model[$path] = $path;
+        }
+        
+        $all_model = $this->get_model_name($all_model);
+        ksort($all_model);
+        $use_ar = [];
+        $use_model = json_decode($info['extend_cfg'],true)?:[];//最近设置的模块
+        foreach($use_model AS $rs){
+            $path =  str_replace('___', '/', $rs['path']);
+            $use_ar[$path] = $path;
+        }
+        
+        if(IS_POST){
+            $data = $this->request->post();
+            foreach($use_model AS $key=>$rs){
+                $path = str_replace(  '___','/', $rs['path']);
+                if(!in_array($path, $data['extend_cfg'])){
+                    unset($use_model[$key]);
+                }
+            }
+            
+            foreach($data['extend_cfg'] AS $path){
+                if (!in_array($path, $use_ar)) {
+                    $use_model[] = [
+                            'path'=>str_replace( '/', '___', $path),
+                            'tags'=>$this->str2num($tag_name),
+                    ];
+                }
+            }
+            
+            $this->setTag_value("app\\index\\controller\\Labelmodels@get_label")
+                ->setTag_extend_cfg(json_encode($use_model))
+                ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
+            $_array = $this->get_post_data();
+            $this->save($_array);
+        }
+        unset($info['extend_cfg']); //避免变量冲突
+        $form_items = [
+                ['checkbox', 'extend_cfg', '已使用的模块','',$all_model,implode(',', $info['id']?$use_ar:$default_model)],
+        ];
+        $this -> tab_ext['page_title'] = '模块管理';
+        
+        $this->tab_ext['hidebtn']='back';
+        return $this -> get_form_table($info, $form_items);
+    }
+    
+
+    /**
+     * 组图
+     */
     public function images($name=0,$pagename=0){        
         if(IS_POST){
             $data = $this -> request -> post();
-//             $extend = json_encode(array_values($data['images2']['pics']));
-//             unset($data['images2'],$data['pics']);
-            $extend = $data['pics'];
-            unset($data['pics']);
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetImages")
-            ->setTag_extend_cfg($extend)
-            ->setTag_type('images');
+            ->setTag_extend_cfg($data['extend_cfg'])
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
         
-        $info = $this->getTagInfo();
+        $array = $this->getTagInfo();
+        $info = unserialize($array['cfg']);
+        $info['extend_cfg'] = $array['extend_cfg'];
         
-        if(empty($info) || empty($info['view_tpl'])){
-            //$_array = cache('tags_page_demo_tpl_'.$pagename);
-            //$info['view_tpl'] = $_array[$name]['tpl'];
-        }
         $this->tab_ext['hidebtn']='back';
-        //$this->tab_ext['addbtn']='<a class="fa fa-plus-square pop" href="/"></a>';
-//         $this->tab_ext['js_code']='  <script type="text/javascript">
-// $("#choose_style").click(function(){
-//   var url = $(this).data("url");
-//   var layer_style =layer.open({
-//             type: 2,
-//              title: "风格选择",
-//             area: ["90%", "90%"], 
-//             content: url,
-//          });
-// });
-//   </script>';
-        
+
         $cfg = unserialize($info['cfg']);
         $form_items = [
-                
-                ['images2', 'pics', '组图','',$info['extend_cfg']],
-                ['number', 'pic_width', '图片宽度','',$cfg['pic_width']?$cfg['pic_width']:input('div_width')],
-                ['number', 'pic_height', '图片高度','',$cfg['pic_height']?$cfg['pic_height']:input('div_height')],
-//                 ['textarea', 'view_tpl', '模板代码','',$info['view_tpl']],                
-//                 ['button', 'choose_style', [
-//                         'title' => '点击选择风格',
-//                         'icon' => 'fa fa-plus-circle',
-//                         'href'=>url('choose_style',['type'=>'images','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
-//                         //'data-url'=>url('choose_style',['type'=>'images']),
-//                         'class'=>'form-btn pop',
-//                          ],
-//                         'a'
-//                 ],
+                ['images2', 'extend_cfg', '组图','',$info['extend_cfg']],
+//                 ['number', 'pic_width', '图片宽度','',$cfg['pic_width']?$cfg['pic_width']:input('div_width')],
+//                 ['number', 'pic_height', '图片高度','',$cfg['pic_height']?$cfg['pic_height']:input('div_height')],
         ];
         if($info['if_js']){ //APP站外调用,不使用模板,只要JSON数据
             $num = count($form_items);
@@ -239,48 +383,59 @@ class Labelhy extends Label
         return $this -> get_form_table($info, $form_items);
     }
     
-    //在线编辑器
+    /**
+     * 百度在线编辑器
+     */
     public function ueditor(){        
         if(IS_POST){            
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetUeditor")
-            ->setTag_extend_cfg(input('htmlcode'))
-            ->setTag_type('ueditor');
+            ->setTag_extend_cfg(input('extend_cfg'))
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
         
-        $info = $this->getTagInfo();
-        
-        if(empty($info) || empty($info['extend_cfg'])){
+        $array = $this->getTagInfo();
+        $info = unserialize($array['cfg']);
+        if(empty($array) || empty($array['extend_cfg'])){
             $info['extend_cfg'] = $this->get_cache_tpl();
+        }else{
+            $info['extend_cfg'] = $array['extend_cfg'];
         }
         
         $this -> tab_ext['page_title'] = '在线编辑器';
         
         $form_items = [
-                ['ueditor', 'htmlcode','内容代码','',$info['extend_cfg']],
+                ['ueditor', 'extend_cfg','内容代码','',$info['extend_cfg']],
         ];
         $this->tab_ext['hidebtn']='back';
         return $this -> get_form_table($info, $form_items);
     }
     
-    //多行文本
+    /**
+     * 多行文本
+     * {@inheritDoc}
+     * @see \app\index\controller\Label::textarea()
+     */
     public function textarea(){
         if(IS_POST){
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetTextarea")
-            ->setTag_extend_cfg(input('htmlcode'))
-            ->setTag_type('textarea');
+            ->setTag_extend_cfg(input('extend_cfg'))
+            ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
         }
         $this -> tab_ext['page_title'] = '纯文本';
         
-        $info = $this->getTagInfo();
-        if(empty($info) || empty($info['extend_cfg'])){
+        $array = $this->getTagInfo();
+        $info = unserialize($array['cfg']);
+        if(empty($array) || empty($array['extend_cfg'])){
             $info['extend_cfg'] = $this->get_cache_tpl();
+        }else{
+            $info['extend_cfg'] = $array['extend_cfg'];
         }
         $form_items = [
-                ['textarea', 'htmlcode','内容代码','',$info['extend_cfg']],
+                ['textarea', 'extend_cfg','内容代码','',$info['extend_cfg']],
         ];
         $this->tab_ext['hidebtn']='back';
         return $this -> get_form_table($info, $form_items);

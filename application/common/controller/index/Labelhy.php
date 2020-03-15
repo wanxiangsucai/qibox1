@@ -45,7 +45,19 @@ abstract class Labelhy extends IndexBase
     public function tag_set()
     {
         if($this->request->isPost()){
-            $this->setTag_value("app\\".config('system_dirname')."\\model\\Content@labelGetList");
+            $this->request->post(['view_tpl'=>'']); //严禁模板代码
+            $data = $this->request->post();
+            if (empty($this->admin)) {
+                foreach($data AS $value){
+                    if (preg_match("/(<script |<iframe )/is", $value)) {
+                        $this->error("禁止提交脚本与框架代码1");
+                    }elseif( preg_match("/ (onload|onmouseover|onerror|onclick)([ \t\n\r]*)=/is", $value) ) {
+                        $this->error("禁止提交脚本与框架代码2");
+                    }
+                }
+            }
+            $this->setTag_value("app\\".config('system_dirname')."\\model\\Content@labelGetList")
+            ->setTag_type( $data['type'] );
             $_array = $this->get_post_data();
             //这里要做个权限判断,避免修改其它用户的信息 $_array['ext_id']
             $this->save($_array);
@@ -99,32 +111,97 @@ abstract class Labelhy extends IndexBase
                 $mid,
         ];
         
-        $cfg = cache('tag_default_'.input('name'));
-        
-        $this->form_items = [
+        if (input('hy_id')) {   //圈子使用
+            $array = [
                 ['hidden','mid',$mid],
                 ['hidden','type',config('system_dirname')],
                 //['radio','fidtype','栏目范围','',['不限','指定栏目'],0],
                 //['checkboxtree','fids','指定栏目','不选择将显示所有栏目，要显示子栏目的话，必须全选中',$this->s_model->getTreeTitle(0,$mid,false)],
+                ['radio','choose_type','条件筛选','',['uid'=>'所有我的','ext_id'=>'圈内成员的','uid-ext_id'=>'圈内我的'],'uid'],
                 ['number','rows','显示条数','',5],
-                ['number','leng','标题显示字数','',70],
-                ['number','cleng','内容显示字数','',250],
+                //['number','leng','标题显示字数','',70],
+                //['number','cleng','内容显示字数','',250],
                 ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
                 //['radio','status','范围限制','',['不限','已审','推荐'],0],
                 ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
                 ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
-        ];
-        
-        if($info['if_js']){ //APP站外调用,不使用模板,只要JSON数据
-            $num = count($this->form_items);
-            unset($this->form_items[$num-2] , $this->form_items[$num-1]);            
+                ];
+        }else{  //全站使用
+            $array = [
+                ['hidden','mid',$mid],
+                ['hidden','type',config('system_dirname')],
+                ['radio','fidtype','栏目范围','',['不限','指定栏目','跟随栏目动态变化(仅适合列表页、内容页)'],0],
+                ['checkboxtree','fids','指定栏目','不选择将显示所有栏目，要显示子栏目的话，必须全选中',$this->s_model->getTreeTitle(0,$mid,false)],
+                ['number','rows','显示条数','',5],
+                //['number','leng','标题显示字数','',70],
+                //['number','cleng','内容显示字数','',250],
+                ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
+                ['radio','status','范围限制','',$this->get_status(),0],
+                ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
+                ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
+                ['radio','onlymy','指定用户数据','当前登录用户,适合在会员中心调用',['不限','当前登录用户','指定用户'],'0'],
+                ['text','uids','指定用户uid','多个用户用半角逗号隔开'],
+            ];
         }
         
+        $self_form = $this->self_form();
+        if ($self_form['form']) {
+            if(count($self_form['form'])>5){
+                $this -> tab_ext['group'] = [
+                        '基础设置'=>$array,
+                        ($self_form['form_title']?:'更多设置')=>$self_form['form'],
+                ];
+                $array = [];
+            }else{
+                $array = array_merge($array,$self_form['form']);
+            }            
+        }
+        $this->form_items = $array;
+        
+//         if($info['if_js']){ //APP站外调用,不使用模板,只要JSON数据
+//             $num = count($this->form_items);
+//             unset($this->form_items[$num-2] , $this->form_items[$num-1]);            
+//         }
+        
         $this->tab_ext['trigger'] = [
-                ['fidtype', '1', 'fids'],
+            ['fidtype', '1', 'fids'],
+            ['onlymy', '2', 'uids'],
         ];
         
+        $self_form['page_title'] && $this -> tab_ext['page_title'] = $array['page_title'];
+        $self_form['help_msg'] && $this -> tab_ext['help_msg'] = $self_form['help_msg'];
+        $self_form['trigger'] && $this -> tab_ext['trigger'] = array_merge($this -> tab_ext['trigger'],$self_form['trigger']);
+        
         return $this->editContent($rsdb);
+    }
+    
+    
+    protected function self_form(){
+        $my_form_items = [];
+        $data = input();
+        $hy_id = isset($data['hy_id'])?$data['hy_id']:'';
+        $hy_tags = isset($data['hy_tags'])?$data['hy_tags']:'';
+        $name = $data['name'];
+        $_array = cache('tag_default_'.$name.$hy_id.$hy_tags);
+        if ($_array['conf'] && !strstr($_array['conf'],'/')) {
+            $_array['conf'] = 'labelmodel/'.$_array['conf'];
+        }
+        if (empty($_array['conf'])) {
+            return [];
+        }
+        $path = $_array['conf'].(strstr($_array['conf'],'.php')?'':'.php');
+        if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
+            $path = TEMPLATE_PATH.'index_style/'.$path;
+        }else{
+            $path = TEMPLATE_PATH.$path;
+        }
+        if (is_file($path)) {
+            $array = include($path);
+            if ( $array['form'] && is_array($array['form']) && $array['form'][0] ) {
+                $my_form_items = $array;
+            }
+        }
+        return $my_form_items;
     }
     
     

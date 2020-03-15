@@ -100,21 +100,21 @@ abstract class Label extends IndexBase
         
         $cfg = cache('tag_default_'.input('name'));
         
-        $this->form_items = [
+        $array = [
                 ['hidden','mid',$mid],
                 ['hidden','type',config('system_dirname')],
                 ['radio','fidtype','栏目范围','',['不限','指定栏目','跟随栏目动态变化(仅适合列表页、内容页)'],0],
                 ['checkboxtree','fids','指定栏目','不选择将显示所有栏目，要显示子栏目的话，必须全选中',$this->s_model->getTreeTitle(0,$mid,false)],
                 ['number','rows','显示条数','',5],
-                ['number','leng','标题显示字数','',70],
-                ['number','cleng','内容显示字数','',250],
+                //['number','leng','标题显示字数','',70],
+                //['number','cleng','内容显示字数','',250],
                 ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
                 ['radio','status','范围限制','',$this->get_status(),0],
                 ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',],'id'],
                 ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
                 ['radio','onlymy','是否只调用自己的','不适合在前台,更适合在会员中心调用',['否','是'],'0'],
                 ['text', 'where', 'where查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5又或者fid|in|2,4,6@uid|not in|5,8',$cfg['where']],
-                ['text', 'whereor', 'whereOr查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5',$cfg['whereor']],
+               // ['text', 'whereor', 'whereOr查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5',$cfg['whereor']],
                 ['textarea','view_tpl','模板代码','',$info['view_tpl']],
                 ['button', 'choose_style', [
                         'title' => '点击选择模板',
@@ -127,6 +127,20 @@ abstract class Label extends IndexBase
                 ],
         ];
         
+        $self_form = $this->self_form();
+        if ($self_form['form']) {
+            if(count($self_form['form'])>5){
+                $this -> tab_ext['group'] = [
+                        '基础设置'=>$array,
+                        ($self_form['form_title']?:'更多设置')=>$self_form['form'],
+                ];
+                $array = [];
+            }else{
+                $array = array_merge($array,$self_form['form']);
+            }
+        }
+        $this->form_items = $array;
+        
         if($info['if_js']){ //APP站外调用,不使用模板,只要JSON数据
             $num = count($this->form_items);
             unset($this->form_items[$num-2] , $this->form_items[$num-1]);            
@@ -136,7 +150,42 @@ abstract class Label extends IndexBase
                 ['fidtype', '1', 'fids'],
         ];
         
+        $self_form['page_title'] && $this -> tab_ext['page_title'] = $array['page_title'];
+        $self_form['help_msg'] && $this -> tab_ext['help_msg'] = $self_form['help_msg'];
+        $self_form['trigger'] && $this -> tab_ext['trigger'] = array_merge($this -> tab_ext['trigger'],$self_form['trigger']);
+        
         return $this->editContent($rsdb);
+    }
+    
+    /**
+     * 自定义表单参数
+     * @return array|array|unknown
+     */
+    protected function self_form(){
+        $my_form_items = [];
+//         $hy_id = input('hy_id')?:'';
+//         $hy_tags = input('hy_tags')?:'';
+        $name = input('name');
+        $_array = cache('tag_default_'.$name) ;
+        if ($_array['conf'] && !strstr($_array['conf'],'/')) {
+            $_array['conf'] = 'model_style/default/'.$_array['conf'];
+        }
+        if (empty($_array['conf'])) {
+            return [];
+        }
+        $path = $_array['conf'].(strstr($_array['conf'],'.php')?'':'.php');
+        if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
+            $path = TEMPLATE_PATH.'index_style/'.$path;
+        }else{
+            $path = TEMPLATE_PATH.$path;
+        }
+        if (is_file($path)) {
+            $array = include($path);
+            if ( $array['form'] && is_array($array['form']) && $array['form'][0] ) {
+                $my_form_items = $array;
+            }
+        }
+        return $my_form_items;
     }
     
     /**

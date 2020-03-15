@@ -21,6 +21,9 @@ class Msg{
      * @return string|boolean
      */
     public static function send($uid=0,$title='',$content='',$array=[]){
+        if (!plugins_config('msgtask')) {
+            return '系统没有安装 定时群发消息 插件';
+        }
         $time = $array['time']?:0;
         $sncode = $array['sncode']?:'';
         $msgtype = $array['msgtype']?:'msg,wxmsg';
@@ -57,7 +60,7 @@ class Msg{
             ];
             $result = TaskModel::create($data);
             if(!$result){
-                return '入库失败';
+                return '入库失败1';
             }
             $tid = $result->id;
         }else{
@@ -77,8 +80,11 @@ class Msg{
             ];
         }
         $obj = new LogModel;
-        $obj->saveAll($_array);
-        return true;
+        if ($obj->saveAll($_array)) {
+            return true;
+        }else{
+            return '入库失败2';   
+        }        
     }
     
 }

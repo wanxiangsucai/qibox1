@@ -1,0 +1,15 @@
+<div  style="display:table;width:100%;">
+{qb:hy name="labelmodel_shop" type="shop" rows="4" conf="model_style/default/shop.php"}
+<!--<a href="#">这是商城商品,自由设置</a>-->
+<div class="qb_ui_listShop_type2" style="display:table;">
+	<ul>
+		<ol><a href="{$rs.url}"><img src="{$rs.picurl}" onerror="this.src='/public/static/images/nopic.png'" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></ol>
+		<li>
+			<div><a href="{$rs.url}">{$rs.title|get_word=100}</a></div>
+			<p><span>{if isset($rs.price)}&yen;{$rs.price}{else /}浏览:{$rs.view}{/if}</span><a href="{$rs.url}">查看</a></p>
+		</li>
+	</ul>				
+</div>
+{/qb:hy}
+</div>
+ 

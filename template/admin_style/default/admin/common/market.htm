@@ -133,10 +133,13 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 	color:#fff;
 	padding:5px 10px 5px 8px;	
 }
-.category a{
+.listsort{
+	display:none;
+}
+.bluebg a{
 	background:#349ADB;
 }
-.category a.ck{
+.bluebg a.ck{
 	color:yellow;
 }
 
@@ -156,7 +159,11 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 			</dd>
 			<button class="layui-btn" onclick="search_app()">搜索</button>
 		</div>
-		<div class="category listsort"><span class="title">应用分类： </span><span class="list"></span></div>
+		<div class="client_type listsort bluebg"><span class="title">终端分类： </span><span class="list"></span></div>
+		<div class="form_type listsort bluebg"><span class="title">页面结构： </span><span class="list"></span></div>
+		<div class="fun_type listsort bluebg"><span class="title">功能分类： </span><span class="list"></span></div>
+
+		<div class="category listsort bluebg"><span class="title">应用分类： </span><span class="list"></span></div>
 		<div class="goodapp listsort"><span class="title">网友推荐： </span><span class="list"></span></div>
 		<ul class="MarketBox Markercontents">
 				<li v-for="rs in listdb" v-bind:key="rs.id">
@@ -245,19 +252,33 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 
 <script type="text/javascript">
 
-$.get("https://x1.php168.com/appstore/wxapp.index/get_category/fid/{$fid}.html",function(res){
+$.get("https://x1.php168.com/appstore/wxapp.index/get_style_fenlei/fid/{$fid}.html",function(res){
 	if(res.code==0){
-		var str = '';
-		res.data.forEach((rs)=>{
-			str += '<a href="javascript:category_search(\''+rs.id+'\')">'+rs.title+'</a>';
-		});
-		$(".category .list").html(str);		
-		$(".category .list a").click(function(){
-			$(".category .list a").removeClass('ck');
-			$(this).addClass('ck');
-		});
+		if("{$fid}"==11){
+			get_sort_menu(res.data.client_type,'client_type');
+			get_sort_menu(res.data.form_type,'form_type');
+			get_sort_menu(res.data.fun_type,'fun_type');
+		}else if("{$fid}"<5||"{$fid}"==8){
+			get_sort_menu(res.data.category,'category');
+		}
 	}
 });
+
+function get_sort_menu(array,type){
+	var str = '';
+	if(type!='category'){
+		str += '<a class="ck" href="javascript:fenlei_search(\''+type+'\',\'\')">不限</a>';
+	}
+	array.forEach((rs)=>{
+		str += '<a href="javascript:fenlei_search(\''+type+'\',\''+rs.id+'\')">'+rs.title+'</a>';
+	});
+	$("."+type).show();	
+	$("."+type+" .list").html(str);		
+	$("."+type+" .list a").click(function(){
+		$("."+type+" .list a").removeClass('ck');
+		$(this).addClass('ck');
+	});
+}
 
 
 $.get("https://x1.php168.com/appstore/wxapp.index/index/fid/{$fid}.html?rows=8&status=2&order_by=appupdate_time",function(res){
@@ -266,6 +287,7 @@ $.get("https://x1.php168.com/appstore/wxapp.index/index/fid/{$fid}.html?rows=8&s
 		res.data.forEach((rs)=>{
 			str += '<a href="javascript:good_search(\''+rs.id+'\')">'+rs.title+'</a>';
 		});
+		if(str!='')$(".goodapp").show();
 		$(".goodapp .list").html(str);
 	}
 });
@@ -276,20 +298,30 @@ function good_search(title){
 	page = 1;
 	order_by = 'id';
 	category = 0;
+	client_type =  form_type = fun_type = '';
 	showlist();
 }
 
-function category_search(id){
+function fenlei_search(type,value){
 	keyword = '';
-	$('.Markercontents').html('');
+	//$('.Markercontents').html('');
+	vues.del_data();
 	page = 1;
-	category = id;
+	//category = client_type = form_type = fun_type = '';
+	if(type=='category'){
+		category = value;
+	}else if(type=='client_type'){
+		client_type = value;
+	}else if(type=='form_type'){
+		form_type = value;
+	}else if(type=='fun_type'){
+		fun_type = value;
+	}
 	order_by = 'appupdate_time';
 	showlist();
 }
 
-
-var page = 1,loading=1,order_by='appupdate_time',keyword='',category=0;
+var page = 1,loading=1,order_by='appupdate_time',keyword='',category=0,client_type='',form_type='',fun_type='';
 var appUrl = 'https://x1.php168.com/appstore/wxapp.index/index/fid/{$fid}.html?rows=20';
 
 
@@ -351,6 +383,9 @@ var vues = new Vue({
 			array.forEach((rs)=>{
 				this.listdb.push(rs);
 			});			
+		},
+		del_data:function(){
+			this.listdb = [];
 		}
 	}		  
 });
@@ -362,7 +397,7 @@ var vues = new Vue({
 
 function showlist(){
 	layer.load(3,{shade: [0.1,'#333']});
-	var url = appUrl + '&order_by='+order_by+'&page='+page+'&keyword='+keyword+'&category='+category;
+	var url = appUrl + '&order_by='+order_by+'&page='+page+'&keyword='+keyword+'&category='+category+'&client_type='+client_type+'&form_type='+form_type+'&fun_type='+fun_type;
 	$.get(url,function(res){
 		if(res.code==0){
 			layer.closeAll();

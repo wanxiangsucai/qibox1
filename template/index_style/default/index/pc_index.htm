@@ -1,158 +1,19 @@
 ﻿{extend name="index@layout" /}
+
 {block name="body_AllScorllSlide"}
-<!--幻灯片样式1__STATIC__/css/qb_ui.css中控制---->
-<!--幻灯片高度由height参数控制，如果参数小于50则按参数*10的宽高比显示，否则按参数值显示高度--->
-{qb:tag name="pc_index_slidepic" type="images" val="listdb"}
-<!--
-<div class="qb_ui_SlideStyle1" height='400'>
-	<div class="slide">
-		<ul>
-			<li><a href="#1"><img src="__STATIC__/images/s0.jpg"></a><span>标题1</span></li>
-			<li><a href="#2"><img src="__STATIC__/images/s1.jpg"></a><span>标题2</span></li>
-			<li><a href="#3"><img src="__STATIC__/images/s2.jpg"></a><span>标题3</span></li>
-			<li><a href="#4"><img src="__STATIC__/images/s3.jpg"></a><span>标题4</span></li>
-		</ul>
-	</div>
-</div>
-<script type="text/javascript" src="__STATIC__/js/slidestyle1.js"></script>
--->
-<div class="qb_ui_SlideStyle1" height='400'>
-	<div class="slide">
-		<ul>
-	{volist name="listdb" id="rs"}
-			<li><a href="{$rs.url}"><img src="{$rs.picurl}"></a><span>{$rs.title}</span></li>
-	{/volist}
-		</ul>
-	</div>
-</div>
-<script type="text/javascript" src="__STATIC__/js/slidestyle1.js"></script>
-{/qb:tag}
+	{qb:hy name="qun_pc_show_body1920" where="index_style/default/index/index_pc/rollpic,index_style/default/index/index_pc/roll_title" val="datas" type="labelmodel"}
+		{$datas}
+	{/qb:hy}
 {/block}
-{block name="body_LeftMenu"}
-<link rel="stylesheet" href="__STATIC__/index/default/leftmenu.css"> 
-<div class="body_LeftMenu">
-	<div class="MenuBox">
-		{qb:tag type="text" name="pc_index_top_title"}
-		<ul>
-			<ol><i class="fa fa-globe"></i></ol>
-			<li>
-				<a href="/">国内游</a>
-				<a href="/">周边游</a>
-				<a href="/">出境游</a>
-				<a href="/">主题游</a>
-			</li>
-		</ul>
-		<ul>
-			<ol><i class="fa fa-calendar"></i></ol>
-			<li>
-				<a href="/">2天一晚</a>
-				<a href="/">一日游</a>
-				<a href="/">二日游</a>
-				<a href="/">3天以上</a>
-			</li>
-		</ul>
-		<ul>
-			<ol><i class="si si-directions"></i></ol>
-			<li>
-				<a href="/">特色玩法</a>
-				<a href="/">五一去哪玩</a>
-				<a href="/">周末玩啥</a>
-			</li>
-		</ul>
-		<ul>
-			<ol><i class="glyphicon glyphicon-fire"></i></ol>
-			<li>
-				<a href="/">热门目的地</a>
-				<a href="/">北京</a>
-				<a href="/">上海</a>
-				<a href="/">厦门</a>
-			</li>
-		</ul>
-	{/qb:tag}
-	</div>
-</div>
-{/block}
+
+{block name="body_LeftMenu"} {/block}
 {block name="nav"}{/block}
+
 {block name="body_content"}
 <link rel="stylesheet" href="__STATIC__/index/default/pcindex.css"> 
 <div class="body_content">
-	<div class="head">
-		<div class="tag"><i class="si si-fire"></i> 热门推荐</div>
-		<div class="tab">{qb:tag type="text" name="pc_index_title01"}拎包就走，轻松出游{/qb:tag}</div>
-		<div class="more">{qb:tag type="text" name="pc_index_title02"}<a href="/">更多推荐{/qb:tag}  <i class="fa fa-angle-double-right"></i></a></div>
-	</div>
-	<!---图片展示样式1---->
-	<link rel="stylesheet" href="__STATIC__/css/showpictype1.css">
-	<div class="ShowPicType1">
-		<div class="listpicBox">
-{qb:tag name="pc_index_pic001" rows="4" type="cms"}
-<!--
-			<ul class='ul1'>
-				<ol><a href="#1"><img src="__STATIC__/images/1.jpg"></a></ol>
-				<li>
-					<div class="title"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-					<div class="price">&yen; 168 <span>起</span></div>
-				</li>
-			</ul>
-			<ul class='ul2'>
-				<ol><a href="#1"><img src="__STATIC__/images/2.jpg"></a></ol>
-				<li>
-					<div class="title"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-					<div class="price">&yen; 168 <span>起</span></div>
-				</li>
-			</ul>
-			<ul class='ul3'>
-				<ol><a href="#1"><img src="__STATIC__/images/3.jpg"></a></ol>
-				<li>
-					<div class="title"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-					<div class="price">&yen; 168 <span>起</span></div>
-				</li>
-			</ul>
-			<ul class='ul4'>
-				<ol><a href="#1"><img src="__STATIC__/images/4.jpg"></a></ol>
-				<li>
-					<div class="title"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-					<div class="price">&yen; 168 <span>起</span></div>
-				</li>
-			</ul>
--->
-			<ul class='ul{$i}'>
-				<ol><a href="{$rs.url}"><img src="{$rs.picurl}"></a></ol>
-				<li>
-					<div class="title"><a href="{$rs.url}">{$rs.title}</a></div>
-					<div class="price">{$rs.view} <span>关注度</span></div>
-				</li>
-			</ul>
-{/qb:tag}
-		</div>
-	<script>
-		$('.listpicBox img').hover(
-			function(){$(this).animate({"width":"150%"},300);},
-			function(){$(this).animate({"width":"100%"},300);}
-		);
-	</script>
-	</div>
-	<div class="head">
-		<div class="tag tag1"><i class="si si-book-open"></i> {qb:tag type="text" name="pc_index_title03"}旅游攻略{/qb:tag}</div>
-		<div class="tab">{qb:tag type="text" name="pc_index_title04"}为您提供更多的旅途服务{/qb:tag}</div>
-		<div class="more">{qb:tag type="text" name="pc_index_title05"}<a href="/">更多推荐{/qb:tag} <i class="fa fa-angle-double-right"></i></a></div>
-	</div>
-	<!--三列标题列表__STATIC__/css/qb_ui.css中控制---->
-	<div class="qb_ui_ListTitle_list3">
-{qb:tag name="pc_index_title001" rows="9" type="cms"}
-<!--
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
-		<div class="lists"><a href="#1">致我们的青春 [江西武功山精品2天游] 为您提供更多的旅途服务</a></div>
--->
-<div class="lists"><a href="{$rs.url}">{$rs.title}</a></div>
-{/qb:tag}
-	</div>
+	{qb:hy name="qun_pc_show_body1200" where="index_style/default/index/index_pc/list_img,index_style/default/index/index_pc/list_title" val="datas" type="labelmodel"}
+		{$datas}
+	{/qb:hy}
 </div>
 {/block}

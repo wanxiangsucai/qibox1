@@ -864,12 +864,14 @@ abstract class C extends Model
         
         //只调用自己的数据,一般只适合用在会员中心
         static $uid = null;
-        if($cfg['onlymy']){
+        if($cfg['onlymy']==1){
             if($uid===null){
                 $uid = login_user('uid');
             }
             $map['uid'] = intval($uid);
-        }elseif(is_numeric($cfg['uid'])){
+        }elseif($cfg['onlymy']==2 && $cfg['uids']){ //指定多个用户UID,全站使用的情况,圈子暂时没用
+            $map['uid'] = ['in',str_array($cfg['uids'])];
+        }elseif($cfg['uid']>0){
             $map['uid'] = $cfg['uid'];
         }
         
@@ -880,14 +882,29 @@ abstract class C extends Model
 //             $model_list = model_config($mid,self::$model_key);  //模型配置文件
 //         }
 //         if($model_list){
+
+        
+        
         if($mid){   //指定模型取数据,效率更高,并且也能准确取出想要的指定数量
             if($cfg['where']){  //用户自定义的查询语句
                 $_array = fun('label@where',$cfg['where'],$cfg);
                 if($_array){
-                    $map = array_merge($map,$_array);
-                }
-            }elseif(is_numeric($cfg['ext_id'])){     //关联数据  不能与上面的 where 同时存在. 因为商铺有时只根据uid取数据
+                    $map = array_merge($_array,$map);
+                }                
+            }elseif(empty($cfg['uid']) && is_numeric($cfg['ext_id'])){     //圈子使用,但慢慢弃用这一行,兼容旧模板
                 $map['ext_id'] = $cfg['ext_id'];
+            }
+            //下面是圈子的选择显示方式
+            if($cfg['choose_type']=='ext_id'){
+                unset($map['uid']);
+                $map['ext_id'] = $cfg['ext_id'];
+            }elseif($cfg['choose_type']=='uid'){
+                unset($map['ext_id']);
+            }elseif($cfg['choose_type']=='uid-ext_id'){
+                $map['ext_id'] = $cfg['ext_id'];
+                $map['uid'] = $cfg['uid'];
+            }elseif ($map['ext_id'] && $map['uid']) {
+                unset($map['uid']);
             }
             $whereor = [];
             if($cfg['whereor']){  //用户自定义的查询语句
@@ -896,6 +913,7 @@ abstract class C extends Model
                     $whereor = $_array;
                 }
             }
+            
             //$data = Db::name(self::getTableByMid($mid))->where($map)->whereOr($whereor)->limit($min,$rows)->order($order,$by)->column(true);
             if(strstr($order,'rand()')){
                 $data = Db::name(self::getTableByMid($mid)) -> where($map) -> whereOr($whereor) -> orderRaw('rand()') -> paginate($rows,false,['page'=>$page]);
@@ -913,12 +931,26 @@ abstract class C extends Model
             if($cfg['where']){  //用户自定义的查询语句
                 $_array = fun('label@where',$cfg['where'],$cfg);
                 if($_array){
-                    $map = array_merge($map,$_array);
+                    $map = array_merge($_array,$map);
                 }
             }
+            
+            //下面是圈子的选择显示方式
+            if($cfg['choose_type']=='ext_id'){
+                unset($map['uid']);
+                $map['ext_id'] = $cfg['ext_id'];
+            }elseif($cfg['choose_type']=='uid'){
+                unset($map['ext_id']);
+            }elseif($cfg['choose_type']=='uid-ext_id'){
+                $map['ext_id'] = $cfg['ext_id'];
+                $map['uid'] = $cfg['uid'];
+            }elseif ($map['ext_id'] && $map['uid']) {
+                unset($map['uid']);
+            }
+            
             $_map = [];
             foreach($map AS $key=>$value){
-                if (in_array($key, ['id','uid','list','view','status'])) {
+                if (in_array($key, ['id','uid','list','view','status','ext_id'])) {
                     $_map[$key] = $value;
                 }
             }

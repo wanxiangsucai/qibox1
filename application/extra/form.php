@@ -40,6 +40,7 @@ return  array(
   'icon' => '字体图标',
   'bmap' => '百度地图',
   'color' => '颜色选择',
+  'links' => '链接导航',
   //'masked' => '格式文本',
   //'range' => '范围',
 

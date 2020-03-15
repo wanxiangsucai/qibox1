@@ -1770,3 +1770,7 @@ ALTER TABLE  `qb_admin_menu` ADD  `is_use` TINYINT( 1 ) NOT NULL COMMENT  'ä¼šå‘
 ALTER TABLE  `qb_admin_menu` ADD INDEX (  `groupid` );
 ALTER TABLE  `qb_admin_menu` ADD INDEX (  `is_use` );
 ALTER TABLE  `qb_admin_menu` ADD INDEX (  `type` );
+
+ALTER TABLE  `qb_cms_content1` ADD INDEX (  `uid` );
+ALTER TABLE  `qb_cms_content2` ADD INDEX (  `uid` );
+ALTER TABLE `qb_labelhy` DROP INDEX  `page` ,ADD INDEX (  `pagename` ,  `ext_id` ,  `fid` );
