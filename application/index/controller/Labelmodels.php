@@ -131,7 +131,7 @@ class Labelmodels extends IndexBase
         if(!is_file($path)){
             return $this->ok_js(['content'=>"<script>layer.alert('".str_replace(TEMPLATE_PATH, '', $path)."碎片模板不存在!')</script>"]);
         }
-        $qun = fun('qun@getByid',$id);
+        $qun = $id ? fun('qun@getByid',$id) : [];
         $this->assign('info',$qun);
         $this->assign('id',$id);
         $this->assign('hy_id',$id); //不在圈子目录的话,就必须要指定hy_id

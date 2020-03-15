@@ -246,8 +246,14 @@ class Qun{
     public static function getByid($id,$time=3600){
         //static $array = [];
         //$info = $array[$id];
+        if (empty($id)) {
+            return [];
+        }
         $info = cache('qunById'.$id);
         if (empty($info)) {
+            if (empty(modules_config('qun'))) {
+                return [];
+            }
             //$info = getArray( query('qun_content1')->where('id',$id)->find() );
             $info = ContentModel::getInfoByid($id);
             if (empty($info)) {
