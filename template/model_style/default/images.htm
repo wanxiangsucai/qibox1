@@ -41,7 +41,7 @@ if(!haveload_swiper){
 				<!--用户自定义的幻灯片循环开始-->
 				{volist name="picdb" id="rs"}
 				<div class="swiper-slide">
-					 <a href="{$rs.url}"><img src="{$rs.picurl}"></a>
+					 <a href="{$rs.url}"><img src="{$rs.picurl|tempdir}"></a>
 				</div>
 				{/volist}
 				<!--用户自定义的幻灯片循环结束-->
