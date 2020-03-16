@@ -5,20 +5,20 @@ namespace app\common\upgrade;
 class U25{
     public static function up(){
 	    
-	    $strA = '<?php
+	    $_strA = '<?php
 namespace app\qun\index;
 use app\index\controller\Labelmodels AS _Labelmodels;
 class Labelmodels extends _Labelmodels
 {  
 }';
 	    
-	    $strB = '<?php
+	    $_strB = '<?php
 namespace app\qun\index;
 use app\common\controller\index\Labelhy AS _Label;
 class Labelhy extends _Label
 {
 }';
-	    $strC = '<?php
+	    $_strC = '<?php
 namespace app\qun\index;
 use app\common\controller\index\Label AS _Label;
 class Label extends _Label
@@ -29,20 +29,20 @@ class Label extends _Label
 	    foreach($array AS $rs){
 	        
 	        $filename = APP_PATH.$rs['keywords'].'/index/Labelmodels.php';
-	        if(!is_file($filename)){
-	            $strA = str_replace('qun', $rs['keywords'], $strA);
+	        if(!is_file($filename) || !strstr(file_get_contents($filename),"app\\".$rs['keywords']."\\")){ 
+	            $strA = str_replace('qun', $rs['keywords'], $_strA);
 	            file_put_contents($filename, $strA);
 	        }
 	        
 	        $filename = APP_PATH.$rs['keywords'].'/index/Labelhy.php';
-	        if(!is_file($filename)){
-	            $strB = str_replace('qun', $rs['keywords'], $strB);
+	        if(!is_file($filename) || !strstr(file_get_contents($filename),"app\\".$rs['keywords']."\\")){ 
+	            $strB = str_replace('qun', $rs['keywords'], $_strB);
 	            file_put_contents($filename, $strB);
 	        }
 	        
 	        $filename = APP_PATH.$rs['keywords'].'/index/Label.php';
-	        if(!is_file($filename)){
-	            $strC = str_replace('qun', $rs['keywords'], $strC);
+	        if(!is_file($filename) || !strstr(file_get_contents($filename),"app\\".$rs['keywords']."\\")){
+	            $strC = str_replace('qun', $rs['keywords'], $_strC);
 	            file_put_contents($filename, $strC);
 	        }
 	        
