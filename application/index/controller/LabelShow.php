@@ -325,10 +325,17 @@ class LabelShow extends IndexBase
         $this->weburl = str_replace(['label_set=quit','label_set=set','&&'], '', $this->weburl);
         $weburl = strpos($this->weburl,'?') ? ($this->weburl.'&') : ($this->weburl.'?') ;
         if($type=='goin'){
+            $code = '';
+            if(IN_WAP===true){
+                $code = "<a href='{$weburl}label_set=set' class='labelSet'><i class='si si-puzzle' style='position:fixed;left:0;top:50%;opacity:0.5;font-size:2rem;color:orange;z-index:1;'></i></a>";
+            }
             return "<SCRIPT LANGUAGE='JavaScript'>$('body').dblclick(function(){if(confirm('你确认要进入标签管理吗?')==true){window.location.href='{$weburl}label_set=set';}});
-            </SCRIPT>";
+            </SCRIPT>$code";
         }elseif($type=='goout'){
-            return "<SCRIPT LANGUAGE='JavaScript'>$('body').dblclick(function(){var msg=confirm('你确认要退出标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=quit';}});</SCRIPT>";
+            if(IN_WAP===true){
+                $code = "<a href='{$weburl}label_set=quit' class='labelSet'><i class='fa fa-sign-out' style='position:fixed;left:0;top:50%;opacity:0.5;font-size:2rem;color:#119BB8;z-index:1;'></i></a>";
+            }
+            return "$code<SCRIPT LANGUAGE='JavaScript'>$('body').dblclick(function(){var msg=confirm('你确认要退出标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=quit';}});</SCRIPT>";
         }
     }
     
