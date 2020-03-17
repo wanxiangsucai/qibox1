@@ -54,11 +54,11 @@ class Labelhy extends Label
     public static function get_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags=''){
         
         //获取当前页面的所有标签的数据库配置参数，如果一个页面有很多标签的时候，比较有帮助，如果标签只有一两个就帮助不太大。
-        $page_tags = cache($hy_id.'config_page_tags_'.$page_name);
+        $page_tags = cache('config_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags);
         if(empty($page_tags)){
             $hy_tags = intval($hy_tags);
             $page_tags = self::where(['pagename'=>$page_name])->where(['ext_id'=>$hy_id,'fid'=>$hy_tags])->column(true,'name');
-            //cache($hy_id.'config_page_tags_'.$page_name,$page_tags,3600);
+            //cache('config_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags,$page_tags,600);
         }
         
         //取得具体某个标签的配置数据

@@ -1,9 +1,15 @@
-function label_model_init(file,tags,hyid){
-	var url = label_model_url + "?id=" + hyid + "&path=" + file + "&tags="+tags;
+function label_model_init(file,tags,hyid,ids){
+	var url = label_model_url + "?id=" + hyid + "&path=" + file + "&tags="+tags + "&ids="+ids;
 	$.get(url,function(res){
 		if(res.code==0){
 			var that = $(".diyKey-"+file+"-"+tags+"[data-tags='"+tags+"']");
 			that.append(res.data.content);	//标签内容赋值到页面
+			if(typeof(admin_url)!=='undefined'){
+				if(that.height()==that.find(".headle").height()){
+					that.css("min-height","80px");
+				}
+			}
+			
 			
 			init_margin(that);	//初始化边距
 

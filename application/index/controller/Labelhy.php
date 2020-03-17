@@ -275,11 +275,17 @@ class Labelhy extends Label
             $default_model = explode(',',str_replace('model=', '', $cfg['where']));
         }
         
+        $_path = '';
         foreach($default_model AS $k=>$v){
             $v = trim($v," \r\n\t");
             if (empty($v)) {
                 unset($default_model[$k]);
             }else{
+                if(strstr($v,'/')){
+                    $_path = dirname($v);
+                }elseif(!strstr($v,'/') && $_path){
+                    $v = $_path.'/'.$v;
+                }
                 $default_model[$k] = $v;
             }            
         }

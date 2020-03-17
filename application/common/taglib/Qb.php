@@ -185,7 +185,8 @@ class Qb extends TagLib{
         $parse .= ' QB--><?php endif; ?>';
         $where = addslashes($where);
         $whereor = addslashes($whereor);
-        $parse .= '<?php '."\$$name = fun('label@run_hy','$name',[$union'hy_id'=>intval(\$info['id']&&config('system_dirname')=='qun'?\$info['id']:\$hy_id),'hy_tags'=>\$tags,'val'=>'$val',$conf'list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
+        $_info =$tag['type']=='labelmodel'?"'Info'=>\$info,'Id'=>\$id,":''; //传递缓存
+        $parse .= '<?php '."\$$name = fun('label@run_hy','$name',[$union $_info 'hy_id'=>intval(\$info['id']&&config('system_dirname')=='qun'?\$info['id']:\$hy_id),'hy_tags'=>\$tags,'val'=>'$val',$conf'list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
         return $parse;
     }
     

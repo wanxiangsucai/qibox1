@@ -106,8 +106,8 @@ abstract class Label extends IndexBase
                 ['radio','fidtype','栏目范围','',['不限','指定栏目','跟随栏目动态变化(仅适合列表页、内容页)'],0],
                 ['checkboxtree','fids','指定栏目','不选择将显示所有栏目，要显示子栏目的话，必须全选中',$this->s_model->getTreeTitle(0,$mid,false)],
                 ['number','rows','显示条数','',5],
-                //['number','leng','标题显示字数','',70],
-                //['number','cleng','内容显示字数','',250],
+                ['number','leng','标题显示字数','',70],
+                ['number','cleng','内容显示字数','',250],
                 ['radio','ispic','是否要求有封面图','',['不限','必须要有封面图'],0],
                 ['radio','status','范围限制','',$this->get_status()],
                 ['radio','order','排序方式','',['id'=>'发布日期','view'=>'浏览量','list'=>'可控排序','rand()'=>'随机排序',]],
@@ -131,8 +131,8 @@ abstract class Label extends IndexBase
         if ($self_form['form']) {
             if(count($self_form['form'])>5 || $self_form['form_title']){
                 $this -> tab_ext['group'] = [
-                        '基础设置'=>$array,
-                        ($self_form['form_title']?:'更多设置')=>$self_form['form'],
+                    ($self_form['form_title']?:'个性设置')=>$self_form['form'],
+                    '基础设置'=>$array,
                 ];
                 $array = [];
             }else{

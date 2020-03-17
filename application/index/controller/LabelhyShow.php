@@ -153,6 +153,9 @@ class LabelhyShow extends LabelShow
         if($cfg['systype']!='labelmodel' && $cfg['hy_id'] && strstr($cfg['union'],'uid') && !strstr($cfg['where'],'uid') && !strstr($cfg['where'],'ext_id')){
             $cfg['where'] = $cfg['where'] ? $cfg['where'].'&uid=$info.uid':'uid=$info.uid'; //针对圈子,自动加上uid查询
         }
+        if($cfg['systype']=='labelmodel' && $cfg['Info'] && $cfg['Id']){    //缓存内容页的数据 Labelmodels.php 及ajax可能需要
+            cache('tag_info-'.config('system_dirname').'-'.$cfg['Id'],$cfg['Info'],60);
+        }
         $this->get_hy_id($hy_id,$hy_tags);
         $this->get_sys_type($cfg['sys_type']);
         $filtrate_field = $cfg['field'];                                 //循环字段指定不显示哪些
@@ -187,7 +190,8 @@ class LabelhyShow extends LabelShow
         $tag_array = cache('qb_tag_'.$tag_name.$hy_id.$hy_tags);        //取得具体某个标签的数据库配置参数，对于取文章列表的，也会同时得到相应的数据
         if(empty($tag_array)||$tpl_have_edit){
             $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags );
-            $tag_array['cache_time']>0 && cache('qb_tag_'.$tag_name.$hy_id.$hy_tags,$tag_array,$tag_array['cache_time']);
+            //$cache_time = isset($tag_array['cache_time'])?$tag_array['cache_time']:$cfg['cache_time'];
+            //$cache_time>0 && cache('qb_tag_'.$tag_name.$hy_id.$hy_tags,$tag_array,$cache_time);
         }
         
         if(!empty($tag_array) && !empty($tag_array['type'])){

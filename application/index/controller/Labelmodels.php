@@ -11,8 +11,9 @@ class Labelmodels extends IndexBase
         $_path = str_replace(['/','.'], '___', $path);
         $basename = end(explode('___',$_path));
         $div='';
-        $id = config('system_dirname')=='qun'?intval(input('id')):0; //避免CMS内容页也当作圈子处理
-        $js="label_model_init('{$_path}','{$tags}',{$id});\r\n";
+        $id = intval(input('id'));
+        $hyid = config('system_dirname')=='qun'?$id:0; //避免CMS内容页也当作圈子处理
+        $js="label_model_init('{$_path}','{$tags}',{$hyid},$id);\r\n";
         if (SHOW_SET_LABEL===true) {
             $div = "
                 <div class='headle'>
@@ -64,11 +65,17 @@ class Labelmodels extends IndexBase
             $_array = explode(',', str_replace('model=', '', $cfg['where']));
         }
         
+        $_path = '';
         foreach($_array AS $k=>$v){
             $v = trim($v," \r\n\t");
             if (empty($v)) {
                 unset($_array[$k]);
             }else{
+                if(strstr($v,'/')){
+                    $_path = dirname($v);
+                }elseif(!strstr($v,'/') && $_path){
+                    $v = $_path.'/'.$v;
+                }
                 $_array[$k] = $v;
             }
         }
@@ -91,7 +98,6 @@ class Labelmodels extends IndexBase
         }
 
         $id = config('system_dirname')=='qun'?intval(input('id')):0; //避免CMS内容页也当作圈子处理
-        $jsurl = STATIC_URL.'js/label_model.js';
         $index = 'index';
         if (class_exists("app\\".config('system_dirname')."\\index\\Labelmodels")) {
             $index = config('system_dirname');
@@ -105,7 +111,7 @@ class Labelmodels extends IndexBase
             $code = '恢复(添加)模块<br><br>';
         }
         return $code."
-                <script type=\"text/javascript\" src=\"{$jsurl}\"></script>
+                <script type=\"text/javascript\" src=\"".STATIC_URL.'js/label_model.js'."?d\"></script>
                 <script type='text/javascript'>
                 var label_model_url = '{$label_model_url}';
                 var label_model_saveurl = '{$label_model_saveurl}';
@@ -117,12 +123,13 @@ class Labelmodels extends IndexBase
     
     /**
      * 显示标签数据
-     * @param number $id
+     * @param number $id 圈子ID,内容ID不用ID,避免跟圈子冲突
      * @param string $path
      * @param string $tags
+     * @param number $ids 内容ID
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
-    public function show($id=0,$path='',$tags=''){
+    public function show($id=0,$path='',$tags='',$ids=0){
         if(strstr($path,'___')){
             $path = str_replace('___', '/', $path).'.'.config('template.view_suffix');
             if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
@@ -137,8 +144,13 @@ class Labelmodels extends IndexBase
         if(!is_file($path)){
             return $this->ok_js(['content'=>"<script>layer.alert('".str_replace(TEMPLATE_PATH, '', $path)."碎片模板不存在!')</script>"]);
         }
-        $qun = $id ? fun('qun@getByid',$id) : [];
-        $this->assign('info',$qun);
+        $info = [];
+        if ($ids) { //内容ID,也有可能是圈子ID
+            $info = cache('tag_info-'.config('system_dirname').'-'.$ids);
+        }elseif($id){   //这个是圈子ID,不是内容ID
+            $info = fun('qun@getByid',$id);
+        }
+        $this->assign('info',$info);
         $this->assign('id',$id);
         $this->assign('hy_id',$id); //不在圈子目录的话,就必须要指定hy_id
         $this->assign('tags',$tags);
