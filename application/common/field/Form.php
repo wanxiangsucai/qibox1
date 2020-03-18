@@ -142,10 +142,10 @@ $(function(){
        
         }elseif ($field['type'] == 'checkbox'||$field['type'] == 'usergroup2') {    // 多选按钮  及用户组多选
             
-            $_detail = explode(',',$info[$name]);
+            $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
-                $cked = in_array($key, $_detail)?' checked ':'';
+                $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
                 $_show .= " <input $ifmust type='checkbox' name='{$name}[]'  id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span>";
             }            
             $show = "$_show "; 
@@ -154,7 +154,7 @@ $(function(){
 
             $detail = $field['value'];
             foreach ($detail as $key => $value) {
-                $cked = in_array($key, $info[$name])?' checked ':'';
+                $cked = in_array((string)$key, $info[$name])?' checked ':'';     //强制转字符串是避免0会出问题
                 $_show .= " <input $ifmust type='checkbox' name='{$name}[]' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span><br>";
             }
             $show = "$_show "; 

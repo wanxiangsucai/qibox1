@@ -17,11 +17,11 @@ class Labelmodels extends IndexBase
         if (SHOW_SET_LABEL===true) {
             $div = "
                 <div class='headle'>
-                        <em class='up glyphicon glyphicon-arrow-up'>上移</em>  
-                        <em class='down glyphicon glyphicon-arrow-down'>下移</em> 
-                        <em class='margin-size glyphicon glyphicon-resize-vertical'>边距</em>
-                        <em class='delete fa fa-times-circle'> 删除</em> 
-                        <em class='copy fa fa-copy'> 复制</em>                        
+                        <a href='javascript:' class='up glyphicon glyphicon-arrow-up'>上移</a>  
+                        <a href='javascript:' class='down glyphicon glyphicon-arrow-down'>下移</a> 
+                        <a href='javascript:' class='margin-size glyphicon glyphicon-resize-vertical'>边距</a>
+                        <a href='javascript:' class='delete fa fa-times-circle'> 删除</a> 
+                        <a href='javascript:' class='copy fa fa-copy'> 复制</a>                        
                     </div>
                 ";
         }

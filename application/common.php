@@ -1514,6 +1514,9 @@ if(!function_exists('plugins_config')){
 
 
 if(!function_exists('get_ip')){
+    /**
+     *获取用户当前的IP地址 
+     */
     function get_ip(){        
         static $onlineip  =   NULL;
         if ($onlineip !== NULL) return $onlineip;
@@ -1529,6 +1532,38 @@ if(!function_exists('get_ip')){
         preg_match("/[\d\.]{7,15}/", $onlineip, $onlineipArray);
         $onlineip = $onlineipArray[0] ? $onlineipArray[0] : '0.0.0.0';
         return $onlineip;
+    }
+}
+
+if(!function_exists('ipfrom')){
+    /**
+     * 根据IP获取来源地
+     * 示例Array
+        (
+            [0] => 广东省茂名市
+            [city] => 茂名市
+            [province] => 广东省
+        )
+     * @param string $ip
+     * @return string|unknown[]|mixed[]|string[]
+     */
+    function ipfrom($ip=''){
+        if(!preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/", $ip)) {
+            return '';
+        }elseif(preg_match("/(127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3})/", $ip)){
+            return '局域网';
+        }
+        $str = file_get_contents("http://api.map.baidu.com/location/ip?ak=MGdbmO6pP5Eg1hiPhpYB0IVd&ip=".$ip."&coor=bd09ll");
+        $array = json_decode($str ,true);
+        $city = $array['content'] ? $array['content']['address_detail']['city'] : '';
+        if (empty($city)) {
+            return '未知地址';
+        }
+        return [
+            0=>$array['content']['address'],
+            'city'=>$city,
+            'province'=>$array['content']['address_detail']['province'],
+        ];
     }
 }
 

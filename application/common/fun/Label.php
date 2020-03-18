@@ -11,7 +11,7 @@ class Label{
      * @param string $code 比如 fid=$fid&uid=$info[uid]&pid=$info.pid
      * @return void|string
      */
-    public function get_union($code=''){
+    public static function get_union($code=''){
         if($code==''){
             return ;
         }
@@ -42,7 +42,7 @@ class Label{
      * @param unknown $cfg
      * @return string|unknown
      */
-    private function get_label_value($field,$value,$cfg){
+    private static function get_label_value($field,$value,$cfg){
         if( substr($value,0,1)=='$' ){            
             $value = isset($cfg[$field]) ? $cfg[$field] : null ;
 //             $_v = substr($value,1);
@@ -57,7 +57,7 @@ class Label{
      * @param string $code
      * @return unknown
      */
-    public function where($code='',$cfg=[]){
+    public static function where($code='',$cfg=[]){
         if($code==''){
             return ;
         }
@@ -70,12 +70,12 @@ class Label{
                     $str = str_replace('!=','<>',$str);
                     list($field,$value) = explode('|',preg_replace('/^([-\w\.]+)([<>=\*]+)([^<>=\*]+)/i','\\1|\\3',$str));
                     $mod = preg_replace('/^([-\w\.]+)([<>=\*]+)([^<>=\*]+)/i','\\2',$str);
-                    if($value=="''"){
+                    if($value=="''"||$value=='NULL'){
                         $value='';
                     }
                     $field = trim($field);
                     if( substr($value,0,1)=='$' ){  //获取动态变量的具体值
-                        $value = $this->get_label_value($field,$value,$cfg);
+                        $value = self::get_label_value($field,$value,$cfg);
                         if ($value===null) {
                             continue;
                         }
@@ -88,7 +88,7 @@ class Label{
                     }else{
                         $array[$field] = [$mod,$value];
                     }
-                    $this->check_where_range($array,$field);
+                    self::check_where_range($array,$field);
                     continue;
                 }
                 //下面的计划要弃用
@@ -103,7 +103,7 @@ class Label{
                     $array[$field] = $value;
                 }else{
                     if( substr($value,0,1)=='$' ){
-                        $array[trim($field)] = $this->get_label_value(trim($field),$value,$cfg);
+                        $array[trim($field)] = self::get_label_value(trim($field),$value,$cfg);
                     }elseif(strstr($value,',')){
                         $value = explode(',',$value);
                     }
@@ -124,7 +124,7 @@ class Label{
      * @param array $array
      * @param string $field
      */
-    private function check_where_range(&$array=[],$field=''){
+    private static function check_where_range(&$array=[],$field=''){
         if ( preg_match("/^([\w]+)_2$/", $field,$data) ) {    //范围搜索 比如 price_1>=0&price_2<=100 其中price才是真正的字段值
             if ($array["{$data[1]}_1"] && preg_match("/(<|>)/", $array["{$data[1]}_1"][0]) && preg_match("/(<|>)/", $array["{$data[1]}_2"][0]) ) {
 //                 if( preg_match("/(time|date)$/", $data[1]) ){   //时间范围处理,比如只限昨天的信息 create_time>1&create_time<3 单位是天 今天内的信息就是 create_time>0&create_time<2
@@ -149,7 +149,7 @@ class Label{
                         time()-$array[$field][1]*3600*24,
                 ];
             }elseif($array[$field][0]=='=' && preg_match("/^(day|week|month|year)([\d]*)$/", $array[$field][1],$data)){     //某个周期内的时间段
-                list($min,$max) = $this->get_time_bynum($data[1],$data[2]);
+                list($min,$max) = self::get_time_bynum($data[1],$data[2]);
                 $array[$field] = [
                         ['>',$min],
                         ['<',$max],
@@ -165,7 +165,7 @@ class Label{
      * @param string $num 1可以不写,2就代表上一个周期,
      * @return number[]
      */
-    public function get_time_bynum($type='',$num=''){
+    public static function get_time_bynum($type='',$num=''){
         list($y,$m,$d,$w) = explode(' ',date('Y m d w'));
         if($type=='day'){
             $time = strtotime("{$y}-{$m}-{$d} 00:00:00");     //今天凌晨0点是分隔界
@@ -224,7 +224,7 @@ class Label{
      * @param unknown $tag_name
      * @param unknown $cfg
      */
-    public function run_label($tag_name,$cfg){
+    public static function run_label($tag_name,$cfg){
         return controller('index/labelShow')->get_label($tag_name,$cfg);
     }
     
@@ -233,7 +233,7 @@ class Label{
      * @param unknown $tag_name
      * @param unknown $cfg
      */
-    public function run_hy($tag_name,$cfg){
+    public static function run_hy($tag_name,$cfg){
         return controller('index/labelhyShow')->get_label($tag_name,$cfg);
     }
     
@@ -242,7 +242,7 @@ class Label{
      * @param unknown $tag_name
      * @param unknown $cfg
      */
-    public function run_form_label($tag_name,$cfg){
+    public static function run_form_label($tag_name,$cfg){
         controller('index/labelShow')->get_form_label($tag_name,$cfg);
     }
     
@@ -251,7 +251,7 @@ class Label{
      * @param string $tag_name
      * @param unknown $dirname
      */
-    public function label_ajax_url($tag_name='',$dirname){
+    public static function label_ajax_url($tag_name='',$dirname){
         controller('index/labelShow')->get_ajax_url($tag_name ,$dirname );
     }
     
@@ -260,7 +260,7 @@ class Label{
      * @param string $tag_name
      * @param unknown $dirname
      */
-    public function label_hy_ajax_url($tag_name='',$dirname){
+    public static function label_hy_ajax_url($tag_name='',$dirname){
         controller('index/labelhyShow')->get_ajax_url($tag_name ,$dirname );
     }
     
@@ -270,7 +270,7 @@ class Label{
      * @param unknown $cfg
      * @return unknown
      */
-    public function run_listpage_label($tag_name,$cfg){
+    public static function run_listpage_label($tag_name,$cfg){
         return controller('index/labelShow')->listpage_label($tag_name,$cfg);  //返回分页代码
     }
     
@@ -281,7 +281,7 @@ class Label{
      * @param unknown $cfg
      * @return unknown
      */
-    public function run_showpage_label($tag_name,$info,$cfg){
+    public static function run_showpage_label($tag_name,$info,$cfg){
         return controller('index/labelShow')->showpage_label($tag_name,$info,$cfg);    //返回分页代码
     }
     
@@ -289,7 +289,7 @@ class Label{
      * 列表页的分页AJAX地址
      * @param string $tag_name
      */
-    public function label_listpage_ajax_url($tag_name=''){
+    public static function label_listpage_ajax_url($tag_name=''){
         controller('index/labelShow')->get_listpage_ajax_url($tag_name);
     }
     
@@ -299,7 +299,7 @@ class Label{
      * @param unknown $info
      * @param unknown $cfg
      */
-    public function run_comment_label($tag_name,$info,$cfg){
+    public static function run_comment_label($tag_name,$info,$cfg){
         controller('index/labelShow')->comment_label($tag_name,$info,$cfg);
     }
     
@@ -309,7 +309,7 @@ class Label{
      * @param unknown $info
      * @param unknown $cfg
      */
-    public function reply_label($tag_name,$info,$cfg){
+    public static function reply_label($tag_name,$info,$cfg){
         controller('index/labelShow')->reply_label($tag_name,$info,$cfg);
     }
     
@@ -319,7 +319,7 @@ class Label{
      * @param number $aid 频道的内容ID
      * @param unknown $sysid 频道模块的ID，一般可以自动获取
      */
-    public function comment_api($type='',$aid=0,$sysid=0,$cfg=[]){
+    public static function comment_api($type='',$aid=0,$sysid=0,$cfg=[]){
         static $data = null;
         $order = $cfg['order'];
         $by = $cfg['by'];
@@ -350,7 +350,7 @@ class Label{
      * @param string $type 参数有三个，分别是 posturl 获取回复提交的地址，pageurl 获取回复的分页，list或留空即代表获取回复内容
      * @param number $aid 频道的内容ID
      */
-    public function reply_api($type='',$aid=0,$cfg=[]){
+    public static function reply_api($type='',$aid=0,$cfg=[]){
         static $data = null;
         $order = $cfg['order'];
         $by = $cfg['by'];
