@@ -46,11 +46,7 @@ class Count{
             }, $str); 
             parse_str($str, $cfg);
         }
-        if ($cfg['types']==1) {
-            $table = $cfg['table_name2'];
-        }else{
-            $table = $cfg['table_name'];
-        }
+        $table = $cfg['table_name'];
         if (empty($table)) {
             return [$table.'无数据来源选项'];
         }

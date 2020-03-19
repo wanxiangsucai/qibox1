@@ -25,6 +25,14 @@ trait LabelhyEdit {
      * @return mixed|string
      */
     protected function get_form_table($info,$tab_items) {
+        
+        if($this->tab_ext['template']){
+            $this->tab_ext['template'] = TEMPLATE_PATH.$this->tab_ext['template'].'.'.config('template.view_suffix');
+            if (!is_file($this->tab_ext['template'])) {
+                $this->tab_ext['template'] = null;
+            }
+        }
+        
         $this->form_items = $tab_items;
 //         if (input('hy_tags')) {
 //             $this->form_items[] = ['number','top_size','上边距离(像素)'];

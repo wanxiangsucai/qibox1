@@ -1,3 +1,28 @@
+var loadAllLabel = [];
+var have_label_model_num = 0;
+function load_all_label(o){
+	loadAllLabel.push(o);
+}
+
+load_all_label(function(){
+	if(typeof(showlabel_)=='function'){
+		//拖动 
+		$(".diy_pages").each(function(){
+			var that = $(this);
+			that.find(".headle").css("cursor","move");
+			that.sortable({
+				handle:".headle",
+				//revert: true,
+				axis: 'y', 
+				items: '.c_diypage', 
+				stop:function(){
+					save_labelmodel(that) 
+				}
+			});
+		});	
+	}
+});
+
 function label_model_init(file,tags,hyid,ids){
 	var url = label_model_url + "?id=" + hyid + "&path=" + file + "&tags="+tags + "&ids="+ids;
 	$.get(url,function(res){
@@ -9,6 +34,15 @@ function label_model_init(file,tags,hyid,ids){
 					that.css("min-height","80px");
 				}
 			}
+			have_label_model_num++;
+			$(function(){
+				if(label_model_num==have_label_model_num){
+					for (var i=0;i<loadAllLabel.length;i++){
+						loadAllLabel[i]();
+					}
+				}
+			});
+			
 			
 			
 			init_margin(that);	//初始化边距
@@ -125,26 +159,6 @@ function label_model_init(file,tags,hyid,ids){
 	}
 
 }
-
-$(function(){
-	if(typeof(showlabel_)=='function'){
-		//拖动 
-		$(".diy_pages").each(function(){
-			var that = $(this);
-			that.find(".headle").css("cursor","move");
-			that.sortable({
-				handle:".headle",
-				//revert: true,
-				axis: 'y', 
-				items: '.c_diypage', 
-				stop:function(){
-					save_labelmodel(that) 
-				}
-			});
-		});	
-	}
-
-});
 
 
 //保存设置

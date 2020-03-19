@@ -292,9 +292,13 @@ trait AddEditList {
         // 		    $this->error('缺少字段参数form_items');
         // 		}
         
-        $template = $this->get_template('',$this->mid);
-        if (empty($template)) {
-            $template = $this->get_template('admin@common/wn_form');
+        if ($this->tab_ext['template'] && is_file($this->tab_ext['template'])) {
+            $template = $this->tab_ext['template'];
+        }else{
+            $template = $this->get_template('',$this->mid);
+            if (empty($template)) {
+                $template = $this->get_template('admin@common/wn_form');
+            }
         }
         
         $this->assign('info',$info);

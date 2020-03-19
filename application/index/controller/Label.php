@@ -194,6 +194,7 @@ class Label extends IndexBase
         $this -> tab_ext['page_title'] = $array['page_title']?:'自定义表单';
         $array['help_msg'] && $this -> tab_ext['help_msg'] = $array['help_msg'];
         $array['trigger'] && $this -> tab_ext['trigger'] = $array['trigger'];
+        $array['template'] && $this -> tab_ext['template'] = $array['template'];
         
         $_info = $this->getTagInfo();
         $info = json_decode($_info['extend_cfg'],true);
@@ -201,7 +202,8 @@ class Label extends IndexBase
         //         $form_items = [
         //                 ['textarea', 'extend_cfg','内容代码','',$info['extend_cfg']],
         //         ];
-        $this->tab_ext['hidebtn']='back';
+        $this->tab_ext['hidebtn'] = 'back';
+        
         return $this -> get_form_table($info, $form_items);
     }
     

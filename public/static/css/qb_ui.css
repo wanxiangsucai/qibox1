@@ -1342,14 +1342,17 @@ input.layui-input{
 	}
 }
 
-
+/*碎片标签*/
 .c_diypage .headle{
 	background:#5eaef5;
 	padding-left:10px;
 	line-height:35px;
 	color:#fff;
 }
-.c_diypage .headle em{
+.c_diypage .headle em,.c_diypage .headle a{
 	margin-right:10px;
 	cursor:pointer;
 }
+.c_diypage .headle {background: #409EFF!important;padding-left: 10px;line-height: 35px;font-size: 14px;}
+.c_diypage .headle a{color: #fff;}
+.ui-sortable > .c_diypage:hover {background:rgba(216,231,250, 0.8);box-shadow: 0 0 8px #27a9e3 ;outline: 2px dashed white;} 

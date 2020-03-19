@@ -153,6 +153,7 @@ abstract class Label extends IndexBase
         $self_form['page_title'] && $this -> tab_ext['page_title'] = $array['page_title'];
         $self_form['help_msg'] && $this -> tab_ext['help_msg'] = $self_form['help_msg'];
         $self_form['trigger'] && $this -> tab_ext['trigger'] = array_merge($this -> tab_ext['trigger'],$self_form['trigger']);
+        $self_form['template'] && $this -> tab_ext['template'] = $self_form['template'];
         
         return $this->editContent($rsdb);
     }

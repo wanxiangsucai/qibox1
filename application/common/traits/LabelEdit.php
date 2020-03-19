@@ -59,9 +59,21 @@ trait LabelEdit {
      * @return mixed|string
      */
     protected function get_form_table($info,$tab_items) {
+
+        if($this->tab_ext['template']){
+            $this->tab_ext['template'] = TEMPLATE_PATH.$this->tab_ext['template'].'.'.config('template.view_suffix');
+            if (!is_file($this->tab_ext['template'])) {
+                $this->tab_ext['template'] = null;
+            }            
+        }
+        
         $this->form_items = $tab_items;
         $this->form_items[] = ['number','cache_time','标签缓存时间','单位是秒'];
         return $this->editContent($info);
+    }
+    
+    protected function get_template($template){
+        return $template;
     }
     
     /**

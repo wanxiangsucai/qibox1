@@ -47,6 +47,10 @@ $times = [
 	'week2'=>'上周',
 	'month'=>'本月',
 	'month2'=>'上月',
+    'year'=>'今年',
+    'year2'=>'去年',
+    'quarter'=>'本季度',
+    'quarter2'=>'上一季度',
 ];
 return [
 	'form'=>[
@@ -54,9 +58,9 @@ return [
 	    ['color','bgcolor','背景颜色'],
 		['text','title','描述'],
 		['text','url','链接地址'],
-		['radio','types','数据来源','',['默认(非自定义)','自定义'],0],
-		['select','table_name','统计哪种数据','',$array],
-		['text','table_name2','自定义查询数据表','数据表不要加前缀'],
+		//['radio','types','数据来源','',['默认(非自定义)','自定义'],0],
+		['select','table_name2','统计哪种数据','',$array],
+		['text','table_name','数据来源','若手工添加数据表,不要加前缀'],
 		['text','where','附加查询条件','比如:“status=0”代表未审,“fid=5&status=0”代表ID为5的栏目并且未审的筛选'],
 	    ['checkbox','showtime','时间范围','可多选,但页面未必挤得下',$times,'0'],
 	    ['radio','timefield_type','时间字段','',['默认(自动识别)','自定义(无法识别才定义)'],'0'],
@@ -65,13 +69,24 @@ return [
 	    ['text','sum_field','求和字段名','一般是money或rmb'],
 	],
 	'trigger'=>[
-		['types','0','table_name'],
-		['types','1','table_name2'],
+		//['types','0','table_name'],
+		//['types','1','table_name2'],
 	    ['timefield_type','1','time_field'],
 		['count_type','1','sum_field'],
 	],
+    'template'=>'admin_style/default/admin/index/count_set',
     'page_title'=>'自定义统计数据',
     'help_msg'=>'1、内容审核与未审的字段一般是“status=0”代表未审,“status>0”代表已审<br>
                  2、订单字段一般是“pay_status=0”代表未付款,“pay_status=1”代表已付款<br>
                  3、需要了解更多查询方法,请上论坛求助',
 ];
+
+
+
+
+
+
+
+
+
+

@@ -80,16 +80,20 @@ class Labelmodels extends IndexBase
             }
         }
         
+        static $model_num = 0;
+        
         $js_warp = $div_warp =  '';
         if($tag_array['extend_cfg']!=''){ //数据库有记录
             $array = json_decode($tag_array['extend_cfg'],true)?:[];
             foreach ($array AS $rs){
+                $model_num++;
                 $detail = $this->make_wap($rs['path'],$rs['tags'],$rs);
                 $js_warp .= $detail[0];
                 $div_warp .= $detail[1];
             }
         }else{  //数据库没记录
             foreach ($_array AS $tpl){
+                $model_num++;
                 $detail = $this->make_wap($tpl,$_tags);
                 $_tags++;
                 $js_warp .= $detail[0];
@@ -98,24 +102,33 @@ class Labelmodels extends IndexBase
         }
 
         $id = config('system_dirname')=='qun'?intval(input('id')):0; //避免CMS内容页也当作圈子处理
-        $index = 'index';
-        if (class_exists("app\\".config('system_dirname')."\\index\\Labelmodels")) {
-            $index = config('system_dirname');
-        }elseif (class_exists("app\\common\\upgrade\\U25")){
-            \app\common\upgrade\U25::up();
-        }
-        $label_model_url = urls($index.'/labelmodels/show');
-        $label_model_saveurl = urls($index.'/labelmodels/save');
+        
         $code = '';
         if (SHOW_SET_LABEL===true) {
-            $code = '恢复(添加)模块<br><br>';
+            $code = '<div class="diy-page-model-btn">恢复(添加)模块<br><br></div>';
         }
-        return $code."
-                <script type=\"text/javascript\" src=\"".STATIC_URL.'js/label_model.js'."?d\"></script>
+        static $if_loadjs = false;
+        if($if_loadjs==false){
+            $if_loadjs = true;
+            $index = 'index';
+            if (class_exists("app\\".config('system_dirname')."\\index\\Labelmodels")) {
+                $index = config('system_dirname');
+            }elseif (class_exists("app\\common\\upgrade\\U25")){
+                \app\common\upgrade\U25::up();
+            }
+            $label_model_url = urls($index.'/labelmodels/show');
+            $label_model_saveurl = urls($index.'/labelmodels/save');
+            $code .="<script type=\"text/javascript\" src=\"".STATIC_URL.'js/label_model.js'."?d\"></script>
                 <script type='text/javascript'>
                 var label_model_url = '{$label_model_url}';
                 var label_model_saveurl = '{$label_model_saveurl}';
+                var label_model_num = 0;
+                </script>"; 
+        }
+        return $code."
+                <script type='text/javascript'>
                 {$js_warp}
+                label_model_num = {$model_num};
                 </script>
                 <div class='diy_pages {$cfg['tag_name']}' data-tagname='{$cfg['tag_name']}' data-pagename='{$cfg['page_name']}' data-id='{$id}'>{$div_warp}\r\n</div>";
 
