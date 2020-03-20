@@ -112,6 +112,11 @@ class Label{
                 //上面的计划要弃用                
             }
         }
+        foreach($array AS $key=>$value){
+            if(!preg_match("/^[\w]+$/", $key)){
+                unset($array[$key]);
+            }
+        }
         return $array;
     }
     

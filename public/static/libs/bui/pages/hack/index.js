@@ -102,20 +102,21 @@ loader.define(function(require,exports,module) {
 	}
 
 	//赋值到表单那里
-	function send_form(id,m_title,m_content,m_picurl,m_url){
+	function send_form(id,m_title,m_content,m_picurl,m_url,mid,path){
 		m_title = m_title.replace('"',"'");
 		if(m_content==''||m_content==null){
 			m_content = '暂无介绍';
 		}
+		var labelpath = path==undefined ? '' : `data-labelpath="${path},${type},${id},${mid}"`;
 		//var content = `[topic type=${type} id=${id} picurl=${m_picurl}]${m_title}##@@##${m_content}[/topic]`;
 		var content = `
-			   <div class='topic-box topic-type-${type}' data-id="${id}" data-type="${type}">
+			   <section ${labelpath} class='topic-box topic-type-${type}' data-id="${id}" data-type="${type}">
                     <div class='topic-img'><a href='${m_url}' target='_blank'><img width='100' src='${m_picurl}' onerror="this.src='/public/static/images/nopic.png';" /></a></div>
                     <div class='topic-text'>
                         <div class='topic-title'><a href='${m_url}' target='_blank'>${m_title}</a></div>
                         <div class='topic-content'><a href='${m_url}' target='_blank'>${m_content}</a></div>
                     </div>
-                </div>
+                </section>
 		`;
 		window.parent.layer.closeAll();
 		window.parent.insert_topic(content);
@@ -136,15 +137,37 @@ loader.define(function(require,exports,module) {
 		router.$('.list-hack .add').off("click");
 		router.$('.list-hack .add').click(function(){
 			var id = $(this).data("id");
-			var m_title = $(this).data("title");
+			var m_title = $(this).data("title").toString();
 			var m_content = $(this).data("content");
 			var m_picurl = $(this).data("picurl");
 			var m_url = $(this).data("url");
+			var mid = $(this).data("mid");
 			if(m_picurl==null) m_picurl = '';
 			if(uid!=0){
 				send_msg(id,m_title,m_content,m_picurl,m_url);
 			}else{
-				send_form(id,m_title,m_content,m_picurl,m_url);
+				//send_form(id,m_title,m_content,m_picurl,m_url,$(this).data("mid"));
+				layer.msg('请稍候...');
+				$.get("/member.php/member/quote/get_template.html?type="+type+"&mid="+mid,function(res){
+					if(res.code==0){
+						var btn_title = ['默认设置'];
+						var o = {btn1:function(){
+							layer.close(index);
+							send_form(id,m_title,m_content,m_picurl,m_url);
+						}};
+						res.data.forEach(function(rs,i){
+							btn_title.push(rs.title);
+							var key = 'btn'+(i+2);
+							o[key] = function(){
+								send_form(id,m_title,m_content,m_picurl,m_url,mid,rs.path);
+							}
+						});
+						o.btn = btn_title;
+						var index = layer.confirm('你可以选择一种风格',o);
+					}else{
+						send_form(id,m_title,m_content,m_picurl,m_url);
+					}
+				});
 			}			
 		});
 
@@ -173,6 +196,9 @@ loader.define(function(require,exports,module) {
 			if(rs.url==undefined){
 				rs.url=`/index.php/${type}/content/show/id/${rs.id}.html`;
 			}
+			if(rs.mid==undefined){
+				rs.mid = '';
+			}
 			str +=`
 			<li class="list-item" data-uid="${rs.id}">
 				<div class="bui-btn bui-box">
@@ -183,7 +209,7 @@ loader.define(function(require,exports,module) {
 						</h3>
 						<p class="item-text">${content}</p>
 					</div>
-					<i class="icon- primary add" data-id="${rs.id}" data-url="${rs.url}" data-title="${rs.title}" data-picurl="${rs.picurl}" data-content="${rs.content}"><i class="fa fa-plus-circle"></i></i>
+					<i class="icon- primary add" data-id="${rs.id}" data-mid="${rs.mid}" data-url="${rs.url}" data-title="${rs.title}" data-picurl="${rs.picurl}" data-content="${rs.content}"><i class="fa fa-plus-circle"></i></i>
 				</div>
 			</li>
 			`;

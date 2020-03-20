@@ -71,7 +71,7 @@ table{border-collapse:collapse;border-spacing:0;}
 <table class="ListTable">
  <tr>
 {volist name="titledb" id="value"}
- 	<th style="line-height:14px;"><a href="{:url('showtable',['table'=>$table,'ordertype'=>$value,'orderby'=>($orderby=='desc'?'asc':'desc')])}" {eq name="ordertype" value="$value"}style="color:red;"{/eq}>{$value}</a><br><font style="font-size:12px;font-weight:normal;color:#666;">{$field_describe[$value]}</font></th>
+ 	<th style="line-height:14px;"><a href="{:url('showtable',['table'=>$table,'ordertype'=>$value,'orderby'=>($orderby=='asc'?'desc':'asc')])}" {eq name="ordertype" value="$value"}style="color:red;"{/eq}>{$value}</a><br><font style="font-size:12px;font-weight:normal;color:#666;">{$field_describe[$value]}</font></th>
 
 {/volist}
  </tr>

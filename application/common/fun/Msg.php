@@ -21,8 +21,12 @@ class Msg{
      * @return string|boolean
      */
     public static function send($uid=0,$title='',$content='',$array=[]){
+        $task_file = RUNTIME_PATH.'Task.txt';
+        $task_web_file = RUNTIME_PATH.'Task_web.txt';
         if (!plugins_config('msgtask')) {
             return '系统没有安装 定时群发消息 插件';
+        }elseif( time()-filemtime($task_file)>1800 && time()-filemtime($task_web_file)>1800  ){
+            return '定时任务没有启动';
         }
         $time = $array['time']?:0;
         $sncode = $array['sncode']?:'';

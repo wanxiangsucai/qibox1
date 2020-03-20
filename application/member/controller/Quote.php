@@ -20,6 +20,54 @@ class Quote extends MemberBase
     }
     
     /**
+     * 获取可用的模板
+     * @param string $type 频道目录名
+     * @param number $mid 模型ID
+     * @return unknown[]
+     */
+    protected function get_common_model($type='',$mid=0){
+        $array = glob(TEMPLATE_PATH.'model_style/*/*.php');
+        $data = [];
+        foreach ($array AS $file){
+            $info = include($file);
+            if(empty($info['quote'])){
+                continue ;
+            }elseif(is_string($info['quote'])){
+                list($_type,$_mid) = explode('|',$info['quote']);
+                if ($_type!=$type) {
+                    continue ;
+                }elseif($_mid && $_mid!=$mid){
+                    continue ;
+                }
+            }
+            $data[substr(strstr($file,'model_style/'),0,-4)] = $info['title'];
+        }
+        return $data;
+    }
+    
+    /**
+     * 引用主题获取风格
+     * @param string $type 频道目录名
+     * @param number $mid 模型ID
+     * @return void|unknown|\think\response\Json|void|\think\response\Json
+     */
+    public function get_template($type='',$mid=0){
+        $array = $this->get_common_model($type,$mid);
+        if ($array) {
+            $data = [];
+            foreach($array AS $path=>$name){
+                $data[] = [
+                    'path'=>str_replace('/', '___', $path),
+                    'title'=>$name,
+                ];
+            }
+            return $this->ok_js($data);
+        }else{
+            return $this->err_js('无风格可选');
+        }
+    }
+    
+    /**
      * 设置推荐主题
      * @param number $aid
      * @param number $ext_id

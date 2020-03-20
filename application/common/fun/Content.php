@@ -103,7 +103,7 @@ class Content{
     
     /**
      * 获取信息主题内容
-     * @param number $aid 信息内容ID,
+     * @param number|array|string $aid 信息内容ID,数据是数组
      * @param string $sysid 频道id,也可以是频道目录名
      * @param string $format 是否对内容进行格式化转义
      * @return void|unknown
@@ -115,19 +115,36 @@ class Content{
             return ;
         }
         $class = "app\\$dirname\\model\\Content";
-        if(class_exists($class) && method_exists($class,'getInfoByid')){
-            $obj = new $class;
-            $info = $obj->getInfoByid($aid,$format);
-            if(empty($info)){
-                return ;
-            }
-            if ($format===true&&empty($info['picurls'])) {
-                $info['picurls'] = self::get_images($info['content']);
-            }
-            $info['module_dir'] = $mods['keywords'];    //频道目录,生成频道网址要用到
-            $info['module_name'] = $mods['name'];     //频道名称
-            return $info;
+        if ( !class_exists($class) || !method_exists($class,'getInfoByid') ) {
+            return ;
         }
+        $obj = new $class;
+        if (is_numeric($aid)) {
+            $info = $obj->getInfoByid($aid,$format);            
+        }else{
+            if (is_array($aid)) {
+                $map = is_array($aid['where'])?$aid['where']:$aid;
+            }else{
+                $map = Label::where($aid);
+            }
+            if (empty($map['mid'])) {
+                $mid = 1;
+            }else{
+                $mid = is_numeric($map['mid'])?$map['mid']:$map['mid'][1];
+            }
+            $array = $obj->getListByMid($mid,$map,$order='id desc',$rows=1,$pages=[],$format);
+            $info = getArray($array)['data'][0];
+        }
+        if(empty($info)){
+            return ;
+        }        
+        
+        if ($format===true&&empty($info['picurls'])) {
+            $info['picurls'] = self::get_images($info['content']);
+        }
+        $info['module_dir'] = $mods['keywords'];    //频道目录,生成频道网址要用到
+        $info['module_name'] = $mods['name'];     //频道名称
+        return $info;
     }
     
     /**

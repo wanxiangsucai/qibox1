@@ -1108,6 +1108,32 @@ class LabelShow extends IndexBase
         }
         return $array;
     }
+    
+    
+    /**
+     * 站内引用主题使用的时候,要改变原来的默认值
+     * @param array $array
+     */
+    protected function get_topic_quote(&$array=[]){
+        $str = input('topic_quote');
+        if ($str!='') {
+            $str = mymd5($str,'DE');
+            if ($str) {
+                list($system,$mid,$id) = explode(',',$str);
+                //$array['where'] = $array['where'] ? $array['where'].'&id='.$id : 'id='.$id;
+                $array['where'] = 'id='.$id;
+                $array['mid'] = $mid;
+                $array['systype'] = $system;
+                if(isset($array['status'])){
+                    unset($array['status']);
+                }
+                if(isset($array['uid'])){
+                    unset($array['uid']);
+                }
+            }
+        }
+        
+    }
 
     
     /**
@@ -1116,6 +1142,7 @@ class LabelShow extends IndexBase
      * @param unknown $cfg
      */
     public function get_label($tag_name='',$cfg=[]){
+        $this->get_topic_quote($cfg);           //处理用户发表内容时,站内引用的主题
         $filtrate_field = $cfg['field'];                                 //循环字段指定不显示哪些
         $this->get_sys_type($cfg['sys_type']);
         $val = $cfg['val'];                                                 //取得数据后，赋值到这个变量名, 分页的话,没做处理会得不到

@@ -19,4 +19,5 @@ return [
 	'type1'=>'wap', //wap 或 pc
 	'type2'=>'', //www 或 hy 
 	'type3'=>'', //这一项是为PC考虑的,WAP不需要考虑,可设置big small 或留空. big代表很宽的 small代表窄边
+	'quote'=>true, //设置为true发布信息时允许站内引用使用此风格,不允许使用就删除或设置为false,若要指定频道使用的话,就设置频道的目录名,如果即要限频道又要限模型的话,就用类似这样的格式化 cms|3
 ];

@@ -24,7 +24,34 @@ class Ueditor{
             $content = preg_replace_callback('/\[iframe_mv\](.*?)\[\/iframe_mv\]/is',array(self,'get_iframe_mv'),$content);
         }
         
+        if(strstr($content,'<section data-labelpath="')){
+            $content = preg_replace_callback('/<section data-labelpath="([^"]+)" ([^>]+)>(.*?)<\/section>/is',array(self,'get_quote'),$content);
+        }
+        
         return $content;
+    }
+    
+    /**
+     * 解释站内引用主题
+     * @param array $array
+     * @return string
+     */
+    private static function get_quote($array=[]){
+        list($path,$sysname,$id,$mid) = explode(',',$array[1]);
+        $index = 'index';
+        if (class_exists("app\\".$sysname."\\index\\Labelmodels")) {
+            $index = $sysname;
+        }
+        $url = urls($index.'/labelmodels/show')."?path={$path}&topic_quote=".mymd5("$sysname,$mid,$id");
+        $rand = rands(5);
+        return "<div class='topic-quote' id='quote-{$rand}'></div>
+<script type='text/javascript'>
+$.get('{$url}',function(res){
+	if(res.code==0){
+		$('#quote-{$rand}').html(res.data.content);
+	}
+})
+</script>";
     }
     
     private static function get_iframe_mv($array=[]){        

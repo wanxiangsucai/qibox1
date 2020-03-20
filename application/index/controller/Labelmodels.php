@@ -143,15 +143,19 @@ class Labelmodels extends IndexBase
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
     public function show($id=0,$path='',$tags='',$ids=0){
-        if(strstr($path,'___')){
-            $path = str_replace('___', '/', $path).'.'.config('template.view_suffix');
-            if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
-                $path = TEMPLATE_PATH.'index_style/'.$path;
+        if(preg_match('/^[\w\-]+$/', $path)){
+            if (!strstr($path,'___')) {
+                $path = TEMPLATE_PATH.'model_style/default/'.$path.'.'.config('template.view_suffix');
             }else{
-                $path = TEMPLATE_PATH.$path;
-            }
+                $path = str_replace('___', '/', $path).'.'.config('template.view_suffix');
+                if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
+                    $path = TEMPLATE_PATH.'index_style/'.$path;
+                }else{
+                    $path = TEMPLATE_PATH.$path;
+                }
+            }                      
         }else{
-            $path = TEMPLATE_PATH.'model_style/default/'.$path.'.'.config('template.view_suffix');
+            return $this->ok_js(['content'=>"<script>layer.alert('".$path."碎片模板路径有误!')</script>"]);
         }
         
         if(!is_file($path)){

@@ -57,7 +57,11 @@ abstract class Label extends IndexBase
             //$info['view_tpl'] = $this->get_cache_tpl();
         }
         
-        $rsdb = unserialize($info['cfg']);
+        if ($info) {
+            $rsdb = unserialize($info['cfg']);
+        }else{
+            $rsdb = cache('tag_default_'.input('name'));
+        }
         
         $mid = input('mid');
         
@@ -129,6 +133,14 @@ abstract class Label extends IndexBase
         
         $self_form = $this->self_form();
         if ($self_form['form']) {
+            if ($self_form['forbid_field']) {
+                $detail = explode(',',$self_form['forbid_field']);
+                foreach($array AS $k=>$v){
+                    if(in_array($v[1], $detail)){
+                        unset($array[$k]);
+                    }
+                }
+            }
             if(count($self_form['form'])>5 || $self_form['form_title']){
                 $this -> tab_ext['group'] = [
                     ($self_form['form_title']?:'个性设置')=>$self_form['form'],
@@ -185,6 +197,8 @@ abstract class Label extends IndexBase
             if ( $array['form'] && is_array($array['form']) && $array['form'][0] ) {
                 $my_form_items = $array;
             }
+        }else{
+            return [];
         }
         return $my_form_items;
     }

@@ -141,10 +141,16 @@ class LabelhyShow extends LabelShow
 //         }
 //         return iurl('index/labelhy_show/ajax_get',$array);
         return iurl('index/labelhy_show/ajax_get').'?'.http_build_query($array).'&';
-    }
+    }    
     
     
+    /**
+     * 解释标签
+     * {@inheritDoc}
+     * @see \app\index\controller\LabelShow::get_label()
+     */
     public function get_label($tag_name='',$cfg=[]){
+        $this->get_topic_quote($cfg);   //处理用户发表内容时,站内引用的主题
         $hy_id = $cfg['hy_id'];   //店铺ID
         $hy_tags = $cfg['hy_tags'];
         if (!is_numeric($hy_id)) {

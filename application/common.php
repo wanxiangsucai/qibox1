@@ -1709,7 +1709,7 @@ if(!function_exists('query')){
      * 数据库操作方法,可以执行原生数据库语句
      * 也可以直接使用TP的数据库方法,比如 query('memberdata')->where('uid',1)->value('username'); 
      * @param unknown $sql 可以是数据库语句,也可以是数据库表名,不带前缀
-     * @param array $array 类似TP的查询方法.这里就可以使用缓存
+     * @param array|string $array 可以是数组也可以是URL字符串
      * @param number $cache_time 缓存时间 必须第二项设置了才生效
      * @return mixed|\think\cache\Driver|boolean|unknown|string|number
      */
@@ -1722,8 +1722,22 @@ if(!function_exists('query')){
 	                return $_array;
 	            }
 	        }
-	        if (empty($array)) {
+	        if (empty($array)) {   //只想使用DB类的情况
 	            return Db::name($sql);
+	        }elseif(!is_array($array)){
+	            $str = $array;
+	            $array = [];
+	            //若有where=条件的话,必须放在最后面
+	            $str =  preg_replace_callback("/&where=(.*?)$/is", function($array){
+	                return '&where='.urlencode($array[1]);
+	            }, $str);
+	            parse_str($str, $array);
+	            $array['where'] = $array['where'] ? \app\common\fun\Label::where($array['where']) : [];
+	            if (isset($array['where']['uid']) && ($array['where']['uid']==0||$array['where']['uid']=='my')) {
+	                $array['where']['uid'] = login_user('uid');
+	            }
+	            
+	            //print_r($array);exit;
 	        }
 	        $result = false;
 	        $array['where'] || $array['where']=[];
@@ -1734,8 +1748,10 @@ if(!function_exists('query')){
 	        $array['field'] && $obj->field($array['field']);
 	        $array['having'] && $obj->having($array['having']);
 	        $array['group'] && $obj->group($array['group']);
-	        $array['order'] && $obj->order($array['order']);	        	        
+	        $array['order'] && $obj->order($array['order'],preg_match('/( asc| desc)$/i', $array['order'])?null:'desc');
+	        $array['order'] || $obj->orderRaw("1 desc");
 	        $array['limit'] && $obj->limit($array['limit']);
+	        $array['rows'] && $obj->limit($array['rows']);
 	        $array['page'] && $obj->page($array['page']);	        
 	        $array['value'] && $result = $obj->value($array['value']);
 	        $array['column'] && $result = $obj->column($array['column']);
