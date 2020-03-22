@@ -1,10 +1,14 @@
 <?php
 function_exists('query')||die('err');
 $data = [];
-$_array = query('party_content',['where'=>['uid'=>login_user('uid')]]);
-foreach($_array AS $rs){
-	$data[$rs['id']]=query('party_content'.$rs['mid'],['where'=>['id'=>$rs['id']],'value'=>'title']);
+
+if(GET_CFG!==true && modules_config('party')){  //避免没有装此模块的时候或者仅获取公共碎片的时候,也执行下面的代码
+    $_array = query('party_content',['where'=>['uid'=>login_user('uid')]]);
+    foreach($_array AS $rs){
+        $data[$rs['id']]=query('party_content'.$rs['mid'],['where'=>['id'=>$rs['id']],'value'=>'title']);
+    }
 }
+
 return [
 	'title'=>'活动报名表单',
 	'form'=>[

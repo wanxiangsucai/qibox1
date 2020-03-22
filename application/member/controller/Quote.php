@@ -25,6 +25,7 @@ class Quote extends MemberBase
      * @return unknown
      */
     private function get_file_cfg($file=''){
+        defined('GET_CFG') || define('GET_CFG',true);
         $array = include($file);
         return $array;
     }
