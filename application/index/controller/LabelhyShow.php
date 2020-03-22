@@ -445,6 +445,9 @@ EOT;
             if (SHOW_SET_LABEL===false) {
                 return ;
             }
+            if (IS_TOPIC_QUOTE===true) {
+                return ;    //站内引用主题不给设置标签
+            }
             $tag_array['cfg'] = unserialize($tag_array['cfg']);
             $div_bgcolor = 'orange';
             $div_w = $tag_array['cfg']['div_width']>10?$tag_array['cfg']['div_width']:100;
@@ -454,7 +457,7 @@ EOT;
                 $div_h<10 && $div_h = 30; 
                 $div_bgcolor = '#06a0ce';
             }            
-            if (($type=='choose'||$type=='classname') && $class_name!='') {
+            if ($class_name!='' && ($type=='choose'||$type=='classname')) {
                 $type = str_replace('\\', '--', $class_name);
             }
             

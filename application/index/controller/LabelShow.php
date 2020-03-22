@@ -376,6 +376,9 @@ class LabelShow extends IndexBase
         if(!defined('LABEL_SET') || LABEL_SET!==true){
             return ;
         }
+        if (IS_TOPIC_QUOTE===true) {
+            return ;    //站内引用主题不给设置标签
+        }
         $tag_array['cfg'] = unserialize($tag_array['cfg']);
         $div_w = $tag_array['cfg']['div_width']>10?$tag_array['cfg']['div_width']:100;
         $div_h = $tag_array['cfg']['div_height']>10?$tag_array['cfg']['div_height']:30;
@@ -1119,9 +1122,11 @@ class LabelShow extends IndexBase
         if ($str!='') {
             $str = mymd5($str,'DE');
             if ($str) {
+                define('IS_TOPIC_QUOTE', true);
                 list($system,$mid,$id) = explode(',',$str);
                 //$array['where'] = $array['where'] ? $array['where'].'&id='.$id : 'id='.$id;
                 $array['where'] = 'id='.$id;
+                $array['ids'] = $id;
                 $array['mid'] = $mid;
                 $array['systype'] = $system;
                 if(isset($array['status'])){

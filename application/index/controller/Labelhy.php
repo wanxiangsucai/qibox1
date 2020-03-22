@@ -186,14 +186,27 @@ class Labelhy extends Label
         return $this -> get_form_table($info, $form_items);
     }
     
+    /**
+     * 把包含文件封闭起来,避免多个文件里边有变量冲突互相污染
+     * @param string $file
+     * @return unknown
+     */
+    private function get_file_cfg($file=''){
+        $array = include($file);
+        return $array;
+    }
     
+    /**
+     * 获取公共碎片
+     * @return unknown[]
+     */
     protected function get_common_model(){
         $array = glob(TEMPLATE_PATH.'model_style/*/*.php');
         $data = [];
         $hyid = input('hy_id');
         $width = input('div_width');
         foreach ($array AS $file){
-            $info = include($file);
+            $info = $this->get_file_cfg($file);
             if(IN_WAP===true){
                 if($info['type1']=='pc'){
                     continue ;
@@ -214,6 +227,22 @@ class Labelhy extends Label
                 }
             }else{
                 if($info['type2']=='hy'){
+                    continue ;
+                }
+            }
+            if ($info['quote'] && $info['quote']!==true) {
+                $detail = explode('|',$info['quote']);
+                $ck = false;
+                foreach(explode(',',$detail[0]) AS $v){
+                    if (!$v) {
+                        continue;
+                    }
+                    if (modules_config($v)||plugins_config($v)) {
+                        $ck=true;
+                        break;
+                    }
+                }
+                if ($ck == false) {
                     continue ;
                 }
             }

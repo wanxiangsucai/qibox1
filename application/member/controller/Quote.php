@@ -20,6 +20,16 @@ class Quote extends MemberBase
     }
     
     /**
+     * 把包含文件封闭起来,避免多个文件里边有变量冲突互相污染
+     * @param string $file
+     * @return unknown
+     */
+    private function get_file_cfg($file=''){
+        $array = include($file);
+        return $array;
+    }
+    
+    /**
      * 获取可用的模板
      * @param string $type 频道目录名
      * @param number $mid 模型ID
@@ -29,15 +39,39 @@ class Quote extends MemberBase
         $array = glob(TEMPLATE_PATH.'model_style/*/*.php');
         $data = [];
         foreach ($array AS $file){
-            $info = include($file);
+            $info = $this->get_file_cfg($file);
             if(empty($info['quote'])){
                 continue ;
-            }elseif(is_string($info['quote'])){
+            }elseif($info['quote']!==true){
                 list($_type,$_mid) = explode('|',$info['quote']);
-                if ($_type!=$type) {
+                
+                $ck = false;
+                foreach(explode(',',$_type) AS $v){
+                    if (!$v) {
+                        continue;
+                    }
+                    if ($v==$type) {
+                        $ck=true;
+                        break;
+                    }
+                }
+                if ($ck == false) {
                     continue ;
-                }elseif($_mid && $_mid!=$mid){
-                    continue ;
+                }
+                if($_mid){
+                    $ck = false;
+                    foreach(explode(',',$_mid) AS $v){
+                        if (!$v) {
+                            continue;
+                        }
+                        if ($v==$mid) {
+                            $ck=true;
+                            break;
+                        }
+                    }
+                    if ($ck == false) {
+                        continue ;
+                    }
                 }
             }
             $data[substr(strstr($file,'model_style/'),0,-4)] = $info['title'];

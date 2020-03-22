@@ -36,10 +36,27 @@ abstract class Car extends IndexBase
     
     protected function check_status($shopid=0,$num=1,$type1='',$type2='',$type3=''){
         if (!$shopid) {
-            return '商品不存在';
+            return '商品id不存在';
         }
         if (!$this->user) {
             return '你还没登录';
+        }
+        $shop = $this->topic_model->getInfoByid($shopid);
+        if($shop['end_time']){
+            if (!is_numeric($shop['end_time'])) {
+                $shop['end_time'] = strtotime($shop['end_time']);
+            }
+            if ($shop['end_time']<time()) {
+                return '已经过期了!';
+            }
+        }
+        if($shop['begin_time']){
+            if (!is_numeric($shop['begin_time'])) {
+                $shop['begin_time'] = strtotime($shop['begin_time']);
+            }
+            if ($shop['begin_time']>time()) {
+                return '还没有开始!';
+            }
         }
         return true;
     }

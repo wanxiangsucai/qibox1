@@ -45,7 +45,7 @@ abstract class Labelhy extends IndexBase
     public function tag_set()
     {
         if($this->request->isPost()){
-            $this->request->post(['view_tpl'=>'']); //严禁模板代码
+            //$this->request->post(['view_tpl'=>'']); //严禁模板代码
             $data = $this->request->post();
             if (empty($this->admin)) {
                 foreach($data AS $value){
@@ -242,7 +242,7 @@ abstract class Labelhy extends IndexBase
         
         $this->tab_ext['page_title'] = '类标签设置';
         
-        $this->form_items = [
+        $array = [
                 //['hidden','div_width',input('div_width')],
                 //['hidden','div_height',input('div_height')],
                 ['hidden','type','class'],
@@ -251,17 +251,37 @@ abstract class Labelhy extends IndexBase
                 //['radio','order','排序方式','',['id'=>'日期','rand()'=>'随机排序',],'id'],
                 ['radio','by','排序方式','',['desc'=>'降序','asc'=>'升序'],'desc'],
                 //['text', 'where', 'where查询条件(不懂PHP,禁止乱填,否则页面会报错)','例如:fid=5又或者fid|in|2,4,6@uid|not in|5,8'],                
-                ['textarea','view_tpl','模板代码','',$info['view_tpl']],
-                ['button', 'choose_style', [
-                        'title' => '点击选择模板',
-                        'icon' => 'fa fa-plus-circle',
-                        'href'=>url('index/label/choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
-                        //'data-url'=>url('choose_style',['type'=>'images']),
-                        'class'=>'form-btn pop',
-                    ],
-                        'a'
-                ],
+                //['textarea','view_tpl','模板代码','',$info['view_tpl']],
+//                 ['button', 'choose_style', [
+//                         'title' => '点击选择模板',
+//                         'icon' => 'fa fa-plus-circle',
+//                         'href'=>url('index/label/choose_style',['type'=>'title','tpl_cache'=>'tags_page_demo_tpl_'.input('pagename'),'name'=>input('name')]),
+//                         //'data-url'=>url('choose_style',['type'=>'images']),
+//                         'class'=>'form-btn pop',
+//                     ],
+//                         'a'
+//                 ],
         ];
+        
+        $self_form = $this->self_form();
+        if ($self_form['form']) {
+            if ($self_form['forbid_field']) {
+                $detail = explode(',',$self_form['forbid_field']);
+                foreach($array AS $k=>$v){
+                    if(in_array($v[1], $detail)){
+                        unset($array[$k]);
+                    }
+                }
+            }
+            $array = array_merge($array,$self_form['form']);
+        }
+        $this->form_items = $array;
+        
+        $self_form['page_title'] && $this -> tab_ext['page_title'] = $array['page_title'];
+        $self_form['help_msg'] && $this -> tab_ext['help_msg'] = $self_form['help_msg'];
+        $self_form['trigger'] && $this -> tab_ext['trigger'] = $self_form['trigger'];
+        $self_form['template'] && $this -> tab_ext['template'] = $self_form['template'];
+        
         return $this->editContent(unserialize($info['cfg']));
     }
     

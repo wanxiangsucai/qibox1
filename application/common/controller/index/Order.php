@@ -14,6 +14,7 @@ abstract class Order extends IndexBase
 {    
     protected $order_model;
     protected $car_model;
+    protected $content_model;
     
     protected function _initialize()
     {
@@ -22,6 +23,7 @@ abstract class Order extends IndexBase
         $dirname = $array[0][1];
         $this->order_model = get_model_class($dirname,'order');
         $this->car_model = get_model_class($dirname,'car');
+        $this->content_model = get_model_class($dirname,'content');
     }
     
     /**
@@ -220,6 +222,20 @@ abstract class Order extends IndexBase
         $this->assign('f_array',$this->get_order_field($info)); //用户自定义表单字段,只适合于订单中只有一个商品的情况
         
         return $this ->fetch();
+    }
+    
+    /**
+     * 给标签调用
+     * @param array $cfg
+     * @return array
+     */
+    public function label($tag_array=[]){
+        $cfg = unserialize($tag_array['cfg']);
+        $info = $this->content_model->getInfoByid(intval($cfg['ids']));
+        return [
+            'info'=>$info,
+            'f_array'=>$info ? $this->get_order_field($info) : [],
+        ];
     }
     
     /**
