@@ -228,17 +228,18 @@ function postmsg(content,callback){
 		}
 
 		var push_id = (Math.random()+'').substring(2);
-
-		var content_obj = {};
+		var content_obj;
 		if(typeof(content)=='object'){
-			content_obj = content;
-			content_obj.push_id = push_id;
+			content_obj = content;				
 		}else{
 			content_obj = {
 				'content':content,
-				'push_id':push_id,
 			}
 		}
+
+		content_obj.push_id = push_id;
+		content_obj.ext_id = msg_id;
+		content_obj.ext_sys = msg_sys;
 
 		$(".chatInput").val('');
 		$(".chat_mod_btn").hide();
@@ -267,6 +268,7 @@ function postmsg(content,callback){
 		});
 }
 
+var msg_sys,msg_id;  //关联频道主题
 var uid,my_uid,quninfo = {};
 var qun_userinfo = '';	//当前用户所在当前圈子的信息
 
@@ -282,7 +284,7 @@ loader.define(function(require,exports,module) {
 	var msg_scroll = true;
 	var show_msg_page  = 1;
 	var maxid = -1;
-	var getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&page=";	
+	var getShowMsgUrl; //"/index.php/index/wxapp.msg/get_more.html?rows=15&page=";	
 	var need_scroll = false;
 	var touser = {uid:0};	//@TA	
 	var user_list = {}; //圈子用户列表
@@ -1114,6 +1116,11 @@ loader.define(function(require,exports,module) {
 		console.log("当前用户ID-"+result.uid);
 		if(result.uid!=undefined){
 			qid = uid = result.uid;
+
+			msg_sys = result.msg_sys!=undefined?result.msg_sys:'';
+			msg_id = result.msg_id!=undefined?result.msg_id:'';
+			getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&msg_sys="+msg_sys+"&msg_id="+msg_id+"&page=";
+
 			//vues.set_id(uid);
 			//head_menu(uid);	//设置菜单
 			show_msg_page = 1; //重新恢复第一页

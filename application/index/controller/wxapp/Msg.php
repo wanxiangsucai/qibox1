@@ -62,9 +62,11 @@ class Msg extends IndexBase{
      * @param number $rows 取几条
      * @param number $maxid 消息中最新的那条记录ID
      * @param number $is_live 是否在视频直播
+     * @param number $msg_id 归属主题 ID
+     * @param number $msg_sys 归属主题的频道 ID
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
-    public function get_more($uid=0,$id=0,$rows=5,$maxid=0,$is_live=0){
+    public function get_more($uid=0,$id=0,$rows=5,$maxid=0,$is_live=0,$msg_id=0,$msg_sys=0){
         if (empty($this->user) && ($uid>=0 || $id>0)) {
             return $this->err_js("请先登录");
         }
@@ -93,7 +95,7 @@ class Msg extends IndexBase{
             }
         }
         
-        $array = model::list_moremsg($this->user['uid'],$uid,$id,$rows,$maxid);
+        $array = model::list_moremsg($this->user['uid'],$uid,$id,$rows,$maxid,$msg_id,$msg_sys);
         $array['qun_info'] = $qun_info;
         $array['qun_userinfo'] = $qun_user;
         if ($this->user) {

@@ -894,20 +894,25 @@ function get_tongji_msg(type){
 	});
 }
 
+var msg_id=0,msg_sys=0;
 var uid = 0;	//当前聊天用户的UID
 
 //URL中指定的用户,同步WAP模板
 var str = window.location.href;
 if (str.indexOf('uid=')>-1) {	//;
-    str = str.substring(str.indexOf('uid=')+4).replace(/[^\d|^\-]/g,"");
-	if (/^[-]?[0-9]+$/.test(str)) {
-		uid = str;
-		$(function(){
-			showMoreMsg(uid);
-			set_user_name(uid);
-		});
-	}
+    uid = str.split('uid=')[1].split('&')[0];
+	$(function(){
+		showMoreMsg(uid);
+		set_user_name(uid);
+	});
 }
+if (str.indexOf('msg_sys=')>-1) {
+	msg_sys = str.split('msg_sys=')[1].split('&')[0];
+}
+if (str.indexOf('msg_id=')>-1) {
+	msg_id = str.split('msg_id=')[1].split('&')[0];
+}
+getShowMsgUrl = getShowMsgUrl.replace('?','?msg_sys='+msg_sys+'&msg_id='+msg_id+'&');
 
 
 var chat_type = 'chat';   //主窗口当前应该加载哪类内容,执行哪个函数
@@ -1104,7 +1109,7 @@ function postmsg(cnt,callback){
 	}
 	var content_obj = {};
 	if(typeof(cnt)=='object'){
-		content_obj = cnt;
+		content_obj = cnt;		
 	}else{
 		var content = (typeof(cnt)=='string' && cnt!='') ? cnt : $(".msgcontent").val();
 		if(content==''){
@@ -1113,6 +1118,8 @@ function postmsg(cnt,callback){
 		}
 		content_obj.content = content;
 	}
+	content_obj.ext_id = msg_id;
+	content_obj.ext_sys = msg_sys;
 	
 	if(allowsend == false){
 		layer.alert('请不要重复发送信息');

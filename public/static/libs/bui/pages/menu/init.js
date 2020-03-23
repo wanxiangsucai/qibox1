@@ -75,14 +75,14 @@ load_data.menu = function(res,type){
 	}else if(typeof(res.ext)=='object' && typeof(res.ext.live)=='object' && typeof(res.ext.live.vod_mv)=='object'){	//点播中
 		mod_class.menu.vid = res.ext.live.vod_mv.id;
 	}else{
-		$.get("/index.php/p/alilive-api-get_cms_video_info.html?uid="+quninfo.uid,function(res){
+		$.get("/index.php/p/alilive-api-get_cms_video_info.html?aid="+quninfo.id,function(res){
 			if(res.code==0){
 				var time = res.data._start_time;
 				if(time*1000<(new Date()).getTime()){
 					return ;
 				}
 				mod_class.menu.vid = res.data.id;				
-				load_chat_iframe("/public/static/libs/bui/pages/menu/zhibo_prepare/index.html?0gg",function(win,body){
+				load_chat_iframe("/public/static/libs/bui/pages/menu/zhibo_prepare/index.html",function(win,body){
 					$(".iframe_chat").height(200);
 					win.init(res.data);
 				});

@@ -62,7 +62,7 @@ if($i>1)break;
     display: inline-block;
     width: 28px;
     height: 28px;
-    background: url(/public/static/images/ic_fol.png) no-repeat;
+    background: url(__STATIC__/images/ic_fol.png) no-repeat;
     background-size: contain;
     position: absolute;
     top: 3px;
@@ -138,13 +138,17 @@ if($i>1)break;
 			<div class="fa fa-bullhorn"> 已预约用户</div> 
 			<div class="fav_user">
 				<ul>
+				{if plugins_config('fav')}
 					{volist name=":query('fav',['rows'=>20,'where'=>['aid'=>$rs['id'],'sysid'=>modules_config('cms')['id']]])" id="us"}
 					<li><a href="{:get_url('user',$us.uid)}" target="_blank">{:get_user_name($us.uid)}</a>　<i class="si si-clock"></i> {:format_time($us.create_time)}</li>
 					{/volist}
+				{else /}
+				系统没安装收藏夹插件
+				{/if}
 				</ul>
 			</div>			
 		</div>
-		<a href="javascript:"><div class="guanzhu_zhibo" data-id="{$rs.id}" data-time="{:intval($_cfg.order_time?:0)*60}"><em></em><span class="txt"> 预约</span><span class="num">{:query('fav',['count'=>'id','where'=>['aid'=>$rs['id'],'sysid'=>modules_config('cms')['id']]])}人</span></div></a>
+		<a href="javascript:"><div class="guanzhu_zhibo" data-id="{$rs.id}" data-time="{:intval($_cfg.order_time?:0)*60}"><em></em><span class="txt"> 预约</span><span class="num">{if plugins_config('fav')} {:query('fav',['count'=>'id','where'=>['aid'=>$rs['id'],'sysid'=>modules_config('cms')['id']]])}人 {/if}</span></div></a>
 	</div>
 </div>
 

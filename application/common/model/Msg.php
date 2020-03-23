@@ -104,9 +104,11 @@ class Msg extends Model
      * @param number $id 内容详情ID
      * @param number $rows 取几条
      * @param number $maxid 指定大于某个ID的内容
+     * @param number $msg_id 归属主题 ID
+     * @param number $msg_sys 归属主题的频道 ID
      * @return array|NULL[]|unknown
      */
-    public static function list_moremsg($myuid=0,$uid=0,$id=0,$rows=10,$maxid=0){
+    public static function list_moremsg($myuid=0,$uid=0,$id=0,$rows=10,$maxid=0,$msg_id=0,$msg_sys=0){
         $rows<1 && $rows=10;
         if($uid>0){
             cache('msg_time_'.$myuid.'-'.$uid,time(),60);  //把自己的操作时间做个标志
@@ -150,6 +152,15 @@ class Msg extends Model
             if($uid==0){    //系统消息
                 self::$map['b'] = [];
             }
+        }
+        
+        if ($msg_id || $msg_sys) {
+            $_array = [];
+            $msg_id && $_array['ext_id'] = $msg_id;
+            $msg_sys && $_array['ext_sys'] = $msg_sys;
+
+            self::$map['a'] = array_merge(self::$map['a'],$_array);            
+            self::$map['b'] && self::$map['b'] = array_merge(self::$map['b'],$_array);
         }
         
         $data_list = self::where(function($query){

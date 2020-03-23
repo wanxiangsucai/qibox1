@@ -105,45 +105,117 @@
 	padding:2px 10px;
 	border-radius:3px;
 }
+.left_top .cmore .fav_list{
+	position:absolute;
+	left:400px;
+	bottom:12px;
+}
+.left_top .cmore .fav_list>div{
+	float:left;
+}
+.left_top .cmore .fav_list>div:first-child{
+	padding-top:3px;
+	padding-right:10px;
+}
+.left_top .cmore .fav_list .fav_user{
+	height:15px;
+	overflow:hidden;
+}
 .mv_player{
 	background:#eee;
+	min-height:450px;
 }
 </style>
 <div class="mv_warp">
 	<ul class="main_cnt">
 		<li class="play_warp">
 			<div class="left_top">
-				<div class="ctitle">{$info.title}</div>
+				<div class="ctitle"><a href="{:urls('qun/content/show',['id'=>$info.ext_id])}" target="_blank">{$info.title}</a></div>
 				<div class="cmore">
-					<a href="{:get_url('user',$info.uid)}" target="_blank"><img onerror="this.src='__STATIC__/images/noface.png'" class="user_icon" src="{:get_user_icon($info.uid)}"></a>
+					<a href="{:get_url('user',$info.uid)}" target="_blank"><img class="user_icon" src="{:get_user_icon($info.uid)}"></a>
 					<div class="user_info">作者：<a href="{:get_url('user',$info.uid)}" target="_blank">{:get_user_name($info.uid)}</a> <i class="time si si-speedometer"></i> 发布日期 {$info.create_time|format_time}</div>
-					<div class="zb_info"><i class="time si si-speedometer"></i> 直播开始时间 {:format_time($info.start_time?:$info.create_time)}</div>
-					<a href="{:urls('qun/content/show',['id'=>$info.ext_id])}" target="_blank"><div class="guanzhu"><em></em><span class="txt">关注</span><span class="num">{$info.view}</span></div></a>
+					<div class="zb_info">
+						<i class="time si si-speedometer"></i> 直播开始时间 {:format_time($info.start_time?:$info.create_time)}
+					</div>
+					<div class="fav_list">
+						<div class="fa fa-bullhorn"> 已预约用户</div> 
+						<div class="fav_user">
+							<ul>
+							<li>{if plugins_config('fav')}
+								{volist name=":query('fav',['rows'=>20,'where'=>['aid'=>$id,'sysid'=>M('id')]])" id="us"}
+								<li><a href="{:get_url('user',$us.uid)}" target="_blank">{:get_user_name($us.uid)}</a>　<i class="si si-clock"></i> {:format_time($us.create_time)}</li>
+								{/volist}
+								{else /}
+									系统没安装收藏夹插件
+								{/if}
+							</ul>
+						</div>			
+					</div>
+					<div class="guanzhu"><em></em><span class="txt">预约</span><span class="num">{if plugins_config('fav')} {:query('fav',['count'=>'id','where'=>['aid'=>$id,'sysid'=>M('id')]])} {/if}</span></div>
 				</div>
 			</div>
 			<div class="mv_player">
-				<!-- 视频播放器 -->
-				<div class="vod_mv">
-					{php}$mvurl=is_array($info['mv_url'])?$info['mv_url'][0]['url']:$info['mv_url'];{/php}
-					{if empty($info.zhibo_status)||$info.zhibo_status==3||($mvurl&&time()-$info['start_time']>3600*5)}
-						{:fun('Player@play',$mvurl,'100%',600)}
-					{/if}
-				</div>
-
 				<!--群聊直播预告的播放器框架,可以放在当前页面的任何位置 关键元素name="iframe_play" class="iframe_play" id="iframe_play" -->
-				{if $info.zhibo_status==1||$info.zhibo_status==2}
-					<iframe name="iframe_play" class="iframe_play" id="iframe_play" src="about:blank" style="height:400px;width:100%;display:none;" scrolling="no" frameborder="0" allowfullscreen="true"></iframe>
-				{/if}
+				{if $info.zhibo_status==2||$info.zhibo_status==1}
+					<iframe name="iframe_play" class="iframe_play" id="iframe_play" src="about:blank" style="height:450px;width:100%;display:none;" scrolling="no" frameborder="0" allowfullscreen="true"></iframe>
 
+					{if $info.zhibo_status==1}
+						<script type="text/javascript">						
+							$(".iframe_play").show().attr('src','__STATIC__/libs/bui/pages/menu/zhibo_prepare/index.html');
+							$(".iframe_play").load(function(){
+								var win = $(".iframe_play")[0].contentWindow;
+								win.init({ title:"{$info.title}",start_time:"{$info.start_time|format_time}",_start_time:"{$info.start_time}",id:"{$id}" });
+							});						
+						</script>
+					{/if}
+				{else /}
+					<!-- 视频播放器 -->
+					<div class="vod_mv">
+						{php}$mvurl=is_array($info['mv_url'])?$info['mv_url'][0]['url']:$info['mv_url'];{/php}
+						{if empty($info.zhibo_status)||$info.zhibo_status==3||($mvurl&&time()-$info['start_time']>3600*5)}
+							{:fun('Player@play',$mvurl,'100%',600)}
+						{/if}
+					</div>
+				{/if}
 			</div>
 			<div class="left_bottom"></div>
 		</li>
 		<li class="chat_warp">
-			<iframe name="iframe_msg" id="iframe_msg" src="{:urls('index/msg/index')}?uid={$info.ext_id?-$info.ext_id:$info.uid}" width="100%" style="height:100%;"  frameborder="0" allowfullscreen="true"></iframe>
+			{if $info.zhibo_status>0&&$info.ext_id==0}
+			<script type="text/javascript">layer.alert('当前直播没有指定圈子,请圈主指定一个!');</script>
+			{/if}
+			<iframe name="iframe_msg" id="iframe_msg" src="{:urls('index/msg/index')}?uid={$info.ext_id?-$info.ext_id:$info.uid}&msg_sys={:M('id')}&msg_id={$id}" width="100%" style="height:100%;"  frameborder="0" allowfullscreen="true"></iframe>			
 		</li>
 	</ul>
 </div>
 <script type="text/javascript">
+
+function fav_Scroll(obj){  
+	$(obj).find("ul").animate({  
+		marginTop : "-20px"  
+	},1000,function(){  
+		$(this).css({marginTop : "0px"}).find("li:first").appendTo(this);  
+	})  
+}
+$(function(){   
+	var scroll = setInterval('fav_Scroll(".fav_user")',2000);
+    $(".fav_user").hover(function(){
+		clearInterval(scroll);
+	},function(){
+		scroll = setInterval('fav_Scroll(".fav_user")',2000);
+	});
+
+	$(".guanzhu").click(function(){
+		$.get("{:urls('cms/wxapp.live/fav')}?id={$id}&time=0",function(res){
+			if(res.code==0){
+				layer.msg("预约成功");
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	});
+});
+
 function change_win(type){
 	if(type){
 		$(".main_cnt").css({width:'100%'});

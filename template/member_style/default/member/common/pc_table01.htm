@@ -74,7 +74,7 @@
 			<div class="img"><a href="{:iurl('show',['id'=>$rs.id])}" target="_blank"><img src="{$rs.picurl|tempdir}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></div>
 		{/notempty}
 		{notempty name="$rs.title"}<!--标题单独显示-->
-			<div class="title"><a href="{:iurl('show',['id'=>$rs.id])}" target="_blank">{$rs.title}</a></div>
+			<div class="title"><a href="{:iurl('show',['id'=>$rs.id])}" target="_blank">{$rs.id}、{$rs.title}</a></div>
 		{/notempty}
 		
 		{if $f_array}
@@ -95,6 +95,7 @@
 			日期：<span>{$rs.create_time|format_time="Y-m-d H:i"}</span> 
 			{notempty name="$rs.view"} 浏览：<span>{$rs.view}</span>{/notempty}
 			{if isset($rs.status) } 状态：<span>{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status==2) /} 精华 {else /} 已审核 {/if}</span>{/if}
+			<i>{:get_status($rs.zhibo_status,['','直播预告','直播中','直播结束'])}</i>
 			</div>
 		{/notempty}
 

@@ -73,7 +73,7 @@
 				{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}				
 					<tr id="form_group_{$rs.name}" {if $rs.type=='hidden'}style="display:none;"{/if}> 
 					  <td class='tdL'>{$rs.title}: </td>
-					  <td class="tdR {if in_array($rs['type'],['text','password','number','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
+					  <td class="tdR {if in_array($rs['type'],['password','number','money','datetime','date','time','color','icon','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
 						<div>{$rs.value}</div>
 						{notempty name="$rs.about"}<div class="layui-form-mid layui-word-aux">{$rs.about}</div>{/notempty}
 					  </td>
