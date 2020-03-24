@@ -105,19 +105,26 @@ class Mysql extends AdminBase
 	 * @param string $orderby
 	 * @return mixed|string
 	 */
-	public function showtable($table='',$keyword='',$types='',$field='',$ordertype='',$orderby=''){
-	    if($keyword && $field){
-	        if($types){
+	public function showtable($table='',$keyword='',$keyword2='',$types='',$field='',$ordertype='',$orderby=''){
+	    
+	    $map = [];
+	    if( ($keyword&&$field) || ($keyword2&&$types==2) ){
+	        if($keyword2 && $types==2){
+	            $map = fun('label@where',$keyword2);
+	        }elseif($types==1){
 	            $map = [$field=>$keyword];
 	        }else{
 	            $map = [$field=>['like',"%{$keyword}%"]];
-	            $SQL=" WHERE binary `$field` LIKE '%$keyword%'";
+	            //$SQL=" WHERE binary `$field` LIKE '%$keyword%'";
 	        }
 	    }
 	    
-	    
-	    
-	    $titledb = table_field($table,'',false);
+	    $titledb = table_field($table,'',false); 
+	    foreach($map AS $f=>$v){
+	        if (!in_array($f, $titledb)) {
+	            $this->error("该字段不存在:".$f);
+	        }
+	    }
 	    $order = $titledb[0].' desc';
 	    if($ordertype && $orderby){
 	        $order = "$ordertype $orderby";
@@ -158,6 +165,7 @@ class Mysql extends AdminBase
 	    $this->assign('field',$field);
 	    $this->assign('types',$types);
 	    $this->assign('keyword',$keyword);
+	    $this->assign('keyword2',$keyword2);
 	    $this->assign('table_describe',$this->table_describe($create_table));
 	    $this->assign('field_describe',$this->field_describe($create_table));
 	    

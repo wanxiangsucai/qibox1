@@ -2349,6 +2349,9 @@ if (!function_exists('getTemplate')) {
          if(!$openid){
              return false;
          }
+         if( config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')=='' ){
+             return false;
+         }
          if(is_numeric($openid)){
              $array = get_user($openid);
              $openid = $array['weixin_api'];

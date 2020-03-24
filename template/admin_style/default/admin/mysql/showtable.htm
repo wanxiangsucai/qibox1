@@ -65,13 +65,22 @@ table{border-collapse:collapse;border-spacing:0;}
     border: #CCC solid 0px!important;
 }
 /*****PC分页样式结束*****/
+
+.normal_search,.where_search{float:left;line-height:40px;padding-right:10px;}
+
+{if $types==2}
+.normal_warp{display:none;}
+{else /}
+.where_search{display:none;}
+{/if}
+
 </style>
 <div class="MainContainers">
 <div style="padding:10px;"><button onclick="history.go(-1)" class="layui-btn layui-btn-normal">返回</button> {$table} {$table_describe}</div>
 <table class="ListTable">
  <tr>
 {volist name="titledb" id="value"}
- 	<th style="line-height:14px;"><a href="{:url('showtable',['table'=>$table,'ordertype'=>$value,'orderby'=>($orderby=='asc'?'desc':'asc')])}" {eq name="ordertype" value="$value"}style="color:red;"{/eq}>{$value}</a><br><font style="font-size:12px;font-weight:normal;color:#666;">{$field_describe[$value]}</font></th>
+ 	<th style="line-height:14px;"><a href="{:url('showtable',['table'=>$table,'ordertype'=>$value,'orderby'=>($orderby=='asc'?'desc':'asc')])}?field={$field}&keyword={:urlencode($keyword)}&keyword2={:urlencode($keyword2)}&types={$types}" {eq name="ordertype" value="$value"}style="color:red;"{/eq}>{$value}</a><br><font style="font-size:12px;font-weight:normal;color:#666;">{$field_describe[$value]}</font></th>
 
 {/volist}
  </tr>
@@ -121,19 +130,25 @@ function end_edit(obj){
 <div class="Nodata">当前数据表没有相应内容,记录为空!!</div>
 {/empty}
 <div class="SearchBox">
-<form name="form_order" method="get" action="" class="layui-form">
+<form name="form_search" method="get" action="" class="layui-form">
 
-	 <div style="float:left;line-height:40px;padding-right:10px;">关键词:</div> <div style="float:left;"><input style="width:200px;" class="layui-input" name="keyword" type="text" value="{$keyword}"/></div>
-	 <div style="float:left;line-height:40px;padding-right:10px;">字段：</div>
-	<div  style="width:100px;float:left;">
-	<select name="field"> 
-{volist name="titledb" id="value"}
-	  <option value="{$value}" {eq name="field" value="$value"}selected{/eq}>{$value}</option>
-{/volist}
-	</select>
+	 <div class="normal_search normal_warp">关键词:</div>
+	 <div class="normal_warp" style="float:left;"><input style="width:200px;" class="layui-input" name="keyword" type="text" value="{$keyword}"/></div>
+	 <div class="normal_search normal_warp">字段：</div>
+	<div class="normal_warp" style="float:left;width:100px;">
+		<select name="field"> 
+	{volist name="titledb" id="value"}
+		  <option value="{$value}" {eq name="field" value="$value"}selected{/eq}>{$value}</option>
+	{/volist}
+		</select>
 	</div>
-	<input name="types" type="radio" value="0" {empty name="types"}checked{/empty} title="模糊搜索" /> 
-	<input name="types" type="radio" value="1" {eq name="types" value="1"}checked{/eq} title="精确搜索" /> 
+
+	<div class="where_search">查询条件:</div> 
+	<div class="where_search"><input style="width:300px;" placeholder="比如:uid=4&fid!=6&title*手机&picurl!=NULL" class="layui-input" name="keyword2" type="text" value="{$keyword2}"/></div>
+
+	<input name="types" type="radio" value="0" lay-filter="types" {empty name="types"}checked{/empty} title="模糊搜索" /> 
+	<input name="types" type="radio" value="1" lay-filter="types"  {eq name="types" value="1"}checked{/eq} title="精确搜索" /> 
+	<input name="types" type="radio" value="2" lay-filter="types"  {eq name="types" value="2"}checked{/eq} title="多条件搜索" />
 	 
 	<button class="layui-btn" lay-submit lay-filter="formDemo">立即搜索</button>
 	<a href="{:url('showtable',['table'=>$table])}" class="layui-btn layui-btn-warm">查看全部</a>
@@ -146,8 +161,30 @@ function end_edit(obj){
 </div>
 
 </div>
-
+<script src="/public/static/layui/layui.js"></script>
 <script type="text/javascript">
+
+$("form input[name=types]").click(function(){
+	$(".normal_warp,.where_search").hide();
+	if($(this).val()==2){
+		$(".where_search").show();
+	}else{
+		$(".normal_warp").show();
+	}
+});
+
+$(function(){
+	layui.use(['form'], function(){
+		var form = layui.form;	 
+		form.on('radio(types)', function(data){
+			$(data.elem).trigger('click');
+		})
+	});
+});
+
+
+
+
 $("body").css({'overflow':'scroll'});
 </script>
 
