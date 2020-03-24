@@ -66,6 +66,7 @@ function set_filed_click(){
 	$(".filed_a input").click(function(){
 		var title = $(this).attr("title");
 		make_item_html(title,'text');
+		add_fun();
 		check_item();
 	});
 
@@ -77,6 +78,7 @@ function set_filed_click(){
             formType: 0
 		}, function(value){
 		   make_item_html(value,filed_type);
+		   add_fun();
 		   check_item();
 		});
 	});
@@ -95,30 +97,44 @@ function make_item_html(title,filed_type,options_value,must){
 	}
 
 	{if (IN_WAP===true)}
-	var str = `<dl class="field_item_box" data-title="${title}" data-type="${filed_type}">
-							<dt><i class="del_item fa fa-times-rectangle"></i> ${title}</dt>
-							<dd>
-								<div>
-									<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="0" title="选填" ${ck[0]} onclick="check_item()">
-									<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="1" title="必填" ${ck[1]} onclick="check_item()">
-								</div>
-							</dd>
-							${str2}
-						</dl>`;
+			var str = `<dl class="field_item_box" data-title="${title}" data-type="${filed_type}">
+									<dt>
+									<i class="del_item fa fa-times-rectangle"></i>
+									<i class="down_item glyphicon glyphicon-arrow-down"></i> 
+									<i class="up_item glyphicon glyphicon-arrow-up"></i>
+									${title}</dt>
+									<dd>
+										<div>
+											<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="0" title="选填" ${ck[0]} onclick="check_item()">
+											<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="1" title="必填" ${ck[1]} onclick="check_item()">
+										</div>
+									</dd>
+									${str2}
+								</dl>`;
 	{else /}
-	var str = `<tr class="field_item_box" data-title="${title}" data-type="${filed_type}"> 
-		<td class='tdL'><i class="del_item fa fa-times-rectangle"></i> ${title}: </td>
-		<td class="tdR layui-input-block"> 
-			<div>
-				<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="0" title="选填" ${ck[0]} onclick="check_item()">
-				<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="1" title="必填" ${ck[1]} onclick="check_item()">
-			</div>
-			<div>${str2}</div>
-		</td>
-</tr>`;
+			var str = `<tr class="field_item_box" data-title="${title}" data-type="${filed_type}"> 
+				<td class='tdL'>
+				<i class="del_item fa fa-times-rectangle"></i> 
+				<i class="down_item glyphicon glyphicon-arrow-down"></i> 
+				<i class="up_item glyphicon glyphicon-arrow-up"></i>
+				${title}: </td>
+				<td class="tdR layui-input-block"> 
+					<div>
+						<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="0" title="选填" ${ck[0]} onclick="check_item()">
+						<input type="radio" lay-filter="order_must_choose" name="ifmust[${title}]" value="1" title="必填" ${ck[1]} onclick="check_item()">
+					</div>
+					<div>${str2}</div>
+				</td>
+		</tr>`;
 	{/if}
-	$("#form_group_order_filed").parent().append(str);
+
+	$("#form_group_order_filed").parent().append(str);	
+}
+
+function add_fun(){
 	del_item();
+	up_item();
+	down_item();
 	layui.use('form', function() {
 		var form = layui.form; 
 			form.render("radio");
@@ -130,8 +146,38 @@ function make_item_html(title,filed_type,options_value,must){
 
 function del_item(){
 	$("#form_group_order_filed").parent().find(".del_item").click(function(){
-		$(this).parent().parent().remove();
-		check_item();
+		var that = $(this).parent().parent();
+		layer.confirm("你确认要删除吗?",{btn:['删除','取消']},function(index){
+			layer.close(index);
+			that.remove();
+			check_item();
+		});
+	});
+}
+
+function up_item(){
+	$("#form_group_order_filed").parent().find(".up_item").click(function(){
+		var that = $(this).parent().parent();
+		if(that.prev().find(".up_item").length<1){
+			layer.alert('已经到尽头了');
+		}else{
+			that.prev().before(that.clone(true));
+			that.remove();
+			check_item();
+		} 	
+	});
+}
+
+function down_item(){
+	$("#form_group_order_filed").parent().find(".down_item").click(function(){
+		var that = $(this).parent().parent();
+		if(that.next().find(".down_item").length<1){
+			layer.alert('已经到尽头了');
+		}else{
+			that.next().after(that.clone(true));
+			that.remove();
+			check_item();
+		} 	
 	});
 }
 
@@ -162,5 +208,6 @@ function jsonToHtml(){
 	array.forEach((rs)=>{
 		make_item_html(rs.title,rs.type,rs.options,rs.must);
 	});
+	add_fun();
 }
 </script>

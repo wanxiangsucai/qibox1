@@ -94,11 +94,18 @@ mod_class.zhibo = {
 				disabled = '';
 			//}
 			var show_str = `<div class="live_video_warp">
-							直播选项：<input type="radio" checked name="zhiboStatus" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').show();" value="2">开播  <input type="radio" name="zhiboStatus" value="1" onclick="$('.zhibo_begintime_warp').show();$('.zhibo-btn').hide();">预告  <input type="radio" name="zhiboStatus" value="3" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').hide();" ${disabled}>停播<br>
-							<div class="zhibo_begintime_warp" style="display:none;">开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20'><script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script></div>
-							分享标题：<input class="zhibo_share_title" type="text" style="width:80%;" value="${quninfo.title}"><br>
-							分享描述：<textarea class="zhibo_share_about"  style="width:80%;height:100px;" value="${quninfo.content}"></textarea><br>
-							<span class="zhibo-btn"><input type="radio" checked name="zhiboBtn"  value="0">体验自动开播或停播(非正式场合)<br><input type="radio" name="zhiboBtn" value="1" ${disabled}>正式强制开播(正式场合,需手工停播)</span>
+							直播选项：<input type="radio" checked name="zhiboStatus" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').show();$('.zhibo-about').show();" value="2">开播  <input type="radio" name="zhiboStatus" value="1" onclick="$('.zhibo_begintime_warp').show();$('.zhibo-btn').hide();$('.zhibo-about').show();">预告  <input type="radio" name="zhiboStatus" value="3" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').hide();$('.zhibo-about').hide();layer.msg('请点击下方确认按钮!')" ${disabled}>停播  <input type="radio" name="zhiboStatus" value="0" onclick="$('.zhibo_begintime_warp').hide();$('.zhibo-btn').hide();$('.zhibo-about').hide();layer.msg('请点击下方确认按钮!')">取URL<br>
+							<div class="zhibo_begintime_warp" style="display:none;">
+								开播时间：<input class="zhibo_begintime" type="text" style="width:80%;" placeholder='格式:2020-12-20 12:20'>
+								<script>laydate.render({ elem: '.zhibo_begintime',type: 'datetime'});</script>
+							</div>
+							<span class="zhibo-about">
+								分享标题：<input class="zhibo_share_title" type="text" style="width:80%;" value="${quninfo.title}"><br>
+								分享描述：<textarea class="zhibo_share_about"  style="width:80%;height:100px;" value="${quninfo.content}"></textarea><br>
+							</span>
+							<span class="zhibo-btn">
+								<input type="radio" checked name="zhiboBtn"  value="0">体验自动开播或停播(非正式场合)<br><input type="radio" name="zhiboBtn" value="1" ${disabled}>正式强制开播(正式场合,需手工停播)
+							</span>
 							</div>`;
 			layer.open({
 					type: 1,
@@ -201,7 +208,7 @@ mod_class.zhibo = {
 							</div>
 							`;
 					}
-					layer.alert("只有在app中才能直播，请点击确定，可以获取推流码或者是推流地址用其它第三方APP推流直播",function(index){
+					layer.alert("提醒：只有在app中或者用其它第三方推流工具才能直播<br>请点击确定，可以获取推流码及推流地址给第三方工具使用",function(index){
 						layer.close(index);
 						layer.open({
 								type: 1,
