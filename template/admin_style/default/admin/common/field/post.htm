@@ -221,7 +221,7 @@ function is_rangeopt(){
     </tr>
 
 	<tr id="groupview_tr"> 
-      <td class='tdL'>仅限哪些用户组查看:   </td>
+      <td class='tdL'>仅限哪些用户组查看:  <br> (不设置都有权限) </td>
       <td class='tdR'> 
 {volist name=":getGroupByid()" id="name"}
         <input type="checkbox" name="" value="{$key}">{$name} 
@@ -261,6 +261,60 @@ $(function(){
 </script>
 </td>
     </tr>
+
+	<tr id="grouppost_tr"> 
+      <td class='tdL'>仅限哪些用户组发布修改设置使用: <br> (不设置都有权限) </td>
+      <td class='tdR'> 
+{volist name=":getGroupByid()" id="name"}
+        <input type="checkbox" name="" value="{$key}">{$name} 
+{/volist}
+<input type="hidden" name="group_post" value="{$info.group_post}">
+<script type="text/javascript">
+$(function(){
+		var base = $('#grouppost_tr');
+ 
+		var count_value = function(){
+			var vals = [];
+			base.find("input[type=checkbox]:checked").each(function(){
+				vals.push($(this).val());
+			});
+			base.find('input[name=group_post]').val( vals.join(',')  );
+		}
+
+		base.find("input[type=checkbox]").on('click',
+				function(){
+					count_value();
+				}
+		);
+		
+		//初始化
+		var str = base.find('input[name=group_post]').val();
+		if(str!=''){
+			var ar = str.split(',');
+			for (var i=0;i<ar.length;i++) {
+				base.find("input[type=checkbox]").each(function(){
+					if($(this).val()==ar[i]){
+						$(this).attr('checked',true);
+					}
+				});
+			}
+		}
+});
+</script>
+</td>
+    </tr>
+
+	<tr id="indexhide_tr"> 
+      <td class='tdL'>详情页是否隐藏:<br>
+        (一般来说二次开发才会用到隐藏) </td>
+      <td class='tdR'> 
+        <input type="radio" name="index_hide" value="0" {if empty($info.index_hide)} checked {/if}>
+        显示 
+        <input type="radio" name="index_hide" value="1" {if $info.index_hide} checked {/if} >
+        隐藏</td>
+    </tr>
+
+
  
 	
 	<tr class="t_input"> 

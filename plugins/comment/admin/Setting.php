@@ -62,6 +62,25 @@ class Setting extends _Setting
                         'ifsys'=>0,
                         'list'=>96,
                 ],
+			
+				[
+                        'c_key'=>'forbid_comnent_phone_noyz',
+                        'title'=>'未验证手机是否禁止发评论',
+                        'c_value'=>'0',
+                        'form_type'=>'radio',
+                        'options'=>"0|不限\r\n1|未验证不允许发布",
+                        'ifsys'=>0,
+                        'list'=>0,
+                ],
+				[
+                        'c_key'=>'forbid_pass_phone_noyz',
+                        'title'=>'未验证手机是否不给通过审核',
+                        'c_value'=>'0',
+                        'form_type'=>'radio',
+                        'options'=>"0|不限制\r\n1|限制",
+                        'ifsys'=>0,
+                        'list'=>0,
+                ],
         ];
         return parent::index($group);
     }

@@ -689,7 +689,9 @@ class LabelShow extends IndexBase
         $obj = new \app\common\field\Form;      //目标是把字段转成对应的各种输入样式
         $data = [];
         foreach ($array AS $rs){
-            if(in_array($rs['name'], $filtrate_field)){
+            if(in_array($rs['name'], $filtrate_field)){ //过滤的字段
+                continue;
+            }elseif($rs['group_post']!='' && !in_array(login_user('groupid'),explode(',',$rs['group_post']))){ //指定用户组才能使用的字段
                 continue;
             }
             $data[] = array_merge($rs,$obj->get_field($rs,$info));      //取得每一项表单的最终转义后的效果

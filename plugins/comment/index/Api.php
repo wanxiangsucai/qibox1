@@ -67,6 +67,8 @@ class Api extends IndexBase
                 return $this->err_js('很抱歉,系统禁止游客发表评论!<br>请复制保存好你的内容,登录后,再评论<br>'.$data['content']);
             }elseif( $this->webdb['can_post_comment_group'] && !in_array($this->user['groupid'],$this->webdb['can_post_comment_group'])){
                 return $this->err_js('很抱歉,你所在用户组禁止评论!');
+            }elseif(empty($this->admin) && $this->webdb['forbid_comnent_phone_noyz'] && empty($this->user['mob_yz'])){
+                return $this->err_js('很抱歉,你还没有验证手机,不能发表评论,请进会员中心验证手机');
             }
             
             if (!empty($this -> validate)) {   //验证数据
@@ -97,6 +99,10 @@ class Api extends IndexBase
                 }
             }else{
                 $data['status'] = $this->webdb['guest_auto_pass_comment'];
+            }
+            
+            if(empty($this->admin) && $this->webdb['forbid_pass_phone_noyz'] && empty($this->user['mob_yz'])){
+                $data['status'] = 0;    //没验证手机,强制变为非审核状态
             }
             
             $data['aid'] = $aid;

@@ -151,6 +151,9 @@ class Field{
 	    $obj = new \app\common\field\Form;
 	    $data = [];
 	    foreach ($array AS $rs){
+	        if($rs['group_post']!='' && !in_array(login_user('groupid'),explode(',',$rs['group_post']))){ //指定用户组才能使用的字段
+	            continue;
+	        }
 	        $data[] = array_merge($rs,$obj->get_field($rs,$info));      //取得每一项表单的最终转义后的效果
 	    }
 	    return $data;

@@ -231,7 +231,7 @@ $(function(){
 
         }
         return [
-                'value'=>$show . $field['script'] ,
+                'value'=>$show . $field['script'] ,     //后台设置的自定义脚本追加到表单这里
                 'title'=>$field['title'],
                 'need'=>$mustfill,
                 'about'=>$field['about'],

@@ -499,7 +499,10 @@ trait ModuleContent
 	                if (in_array($rs['type'], ['text','image','images','file','files'])) {
 	                    $data[$rs['name']] = filtrate($data[$rs['name']]);
 	                }
-	            }
+	                if($rs['group_post']!='' && !in_array($this->user['groupid'],explode(',',$rs['group_post']))){ //指定用户组才能使用的字段
+	                    unset($data[$rs['name']]);
+	                }
+	            }	            
 	        }
 	    }
 	    return true;

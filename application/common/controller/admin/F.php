@@ -23,20 +23,22 @@ abstract class F extends AdminBase
         $this->model = get_model_class($dirname,'field');
         $this->set_config();
         
-        if ($this->request->isPost() && !table_field($dirname.'_field','input_width')) {
-            query("ALTER TABLE  `qb_{$dirname}_field` ADD  `input_width` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单宽度',ADD  `input_height` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单高度',ADD  `unit` VARCHAR( 20 ) NOT NULL COMMENT  '单位名称',ADD  `match` VARCHAR( 150 ) NOT NULL COMMENT  '表单正则匹配',ADD  `css` VARCHAR( 20 ) NOT NULL COMMENT  '表单CSS类名';");
+        if ($this->request->action()=='index'){
+            if(!table_field($dirname.'_field','input_width')) {
+                query("ALTER TABLE  `qb_{$dirname}_field` ADD  `input_width` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单宽度',ADD  `input_height` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单高度',ADD  `unit` VARCHAR( 20 ) NOT NULL COMMENT  '单位名称',ADD  `match` VARCHAR( 150 ) NOT NULL COMMENT  '表单正则匹配',ADD  `css` VARCHAR( 20 ) NOT NULL COMMENT  '表单CSS类名';");
+            }            
+            if(!table_field($dirname.'_field','script')) {
+                query("ALTER TABLE  `qb_{$dirname}_field` ADD  `script` TEXT NOT NULL COMMENT  'JS脚本',ADD  `trigger` VARCHAR( 255 ) NOT NULL COMMENT  '选择某一项后,联动触发显示其它字段';");
+            }            
+            if(!table_field($dirname.'_field','range_opt')) {
+                query("ALTER TABLE  `qb_{$dirname}_field` ADD  `range_opt` TEXT NOT NULL COMMENT  '范围选择,比如价格范围',ADD  `group_view` VARCHAR( 255 ) NOT NULL COMMENT  '允许哪些用户组查看',ADD  `index_hide` TINYINT( 1 ) NOT NULL COMMENT  '是否前台不显示并不做转义处理';");
+            }
+            if(!table_field($dirname.'_field','group_post') ){
+                query("ALTER TABLE  `qb_{$dirname}_field` ADD  `group_post` VARCHAR( 255 ) NOT NULL COMMENT  '允许使用此字段的用户组'");
+                query("ALTER TABLE  `qb_{$dirname}_field` CHANGE  `title`  `title` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题'");
+            }
         }
         
-        if ($this->request->isPost() && !table_field($dirname.'_field','script')) {
-            query("ALTER TABLE  `qb_{$dirname}_field` ADD  `script` TEXT NOT NULL COMMENT  'JS脚本',ADD  `trigger` VARCHAR( 255 ) NOT NULL COMMENT  '选择某一项后,联动触发显示其它字段';");
-        }
-        
-        if ($this->request->isPost() && !table_field($dirname.'_field','range_opt')) {
-            query("ALTER TABLE  `qb_{$dirname}_field` ADD  `range_opt` TEXT NOT NULL COMMENT  '范围选择,比如价格范围',ADD  `group_view` VARCHAR( 255 ) NOT NULL COMMENT  '允许哪些用户组查看',ADD  `index_hide` TINYINT( 1 ) NOT NULL COMMENT  '是否前台不显示并不做转义处理';");
-        }
-        if ($this->request->isPost()){
-            query("ALTER TABLE  `qb_{$dirname}_field` CHANGE  `title`  `title` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题'");
-        }
     }
     
     protected function set_config(){
@@ -160,7 +162,7 @@ abstract class F extends AdminBase
                 $result = $this->validate($data, $this->validate);
                 if(true !== $result) $this->error($result);
             }
-            $data['group_view'] = $data['group_view'] ? implode(',', $data['group_view']) : '';
+            $data['group_view'] = is_array($data['group_view']) ? implode(',', $data['group_view']) : $data['group_view'].'';   //强制变成字符串,避免数组的时候没东西提交导致修改不成功
             
             $this -> request -> post(['group_view'=>$data['group_view']]);
             
