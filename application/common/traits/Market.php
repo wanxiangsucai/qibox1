@@ -164,7 +164,11 @@ trait Market
         }
         $file_array = get_dir_file($basepath.$newkey,'php');
         foreach ($file_array AS $file){
-            write_file($file, str_replace([" $basename\\$oldkey\\"," $basename\\$oldkey;"] , [" $basename\\$newkey\\"," $basename\\$newkey;"] , read_file($file)));
+            $str = str_replace([" $basename\\$oldkey\\"," $basename\\$oldkey;"] , [" $basename\\$newkey\\"," $basename\\$newkey;"] , read_file($file));
+            if (strstr($file,'/model/')||strstr($file,"\\model\\")) {
+                $str = str_replace('__'.strtoupper($oldkey), '__'.strtoupper($newkey), $str);
+            }
+            write_file($file, $str);
         }
     }
     

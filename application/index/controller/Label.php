@@ -117,7 +117,7 @@ class Label extends IndexBase
         $array = [];
         $dir = opendir(APP_PATH);
         while (($file = readdir($dir))!==false) {
-            if($file!='.'&&$file!='..'&&is_dir(APP_PATH.$file)&&modules_config($file)){
+            if($file!='search'&&$file!='tongji'&&$file!='.'&&$file!='..'&&is_dir(APP_PATH.$file)&&modules_config($file)){
                 if(is_file(APP_PATH."$file/index/".ucfirst($type).".php")){
                     $class = "\\app\\$file\\index\\Label";
                     if(class_exists($class)&&method_exists($class,'tag_set')){

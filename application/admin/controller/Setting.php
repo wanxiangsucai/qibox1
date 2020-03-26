@@ -195,6 +195,15 @@ class Setting extends AdminBase
                         'ifsys'=>0,
                         'list'=>-1,
                 ],
+				[
+                        'c_key'=>'forbid_post_topic_phone_noyz',
+                        'title'=>'未验证手机是否禁止发主题',
+                        'c_value'=>'0',
+                        'form_type'=>'radio',
+                        'options'=>"0|不限\r\n1|未验证不允许发布",
+                        'ifsys'=>0,
+                        'list'=>-2,
+                ],
         ];
     }
     

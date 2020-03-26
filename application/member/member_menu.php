@@ -41,18 +41,18 @@ return array(
 //                                         ),
 										array(
 										    'icon'=>'fa fa-wechat',
-                                                'title'=>'绑定第三方登录',
+                                                'title'=>'绑定微信QQ',
                                                 'link'=>'bindlogin/weixin',
                                         ),
 										array(
 										    'icon'=>'glyphicon glyphicon-circle-arrow-up',
-                                                'title'=>'认证身份/升级等级',
+                                                'title'=>'升级会员等级',
                                                 'link'=>'group/index',
                                         ),
                                         array(
                                             'icon'=>'fa fa-drivers-license',
-                                                'title'=>'身份验证',
-                                                'link'=>'yz/index',
+                                                'title'=>'手机身份验证',
+                                                'link'=>'yz/mob',
                                         ),
                                 ),
                         ), 

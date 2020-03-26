@@ -418,6 +418,8 @@ trait ModuleContent
 	        return '模型不存在!';
 	    }elseif(!$this->admin && fun('admin@sort',$fid)!==true && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
 	        return '你所在用户组没权限!';
+	    }elseif(empty($this->admin) && $this->webdb['forbid_post_topic_phone_noyz'] && empty($this->user['mob_yz']) ){
+	        return '很抱歉,你没有绑定手机,没权限发布,请先进会员中心绑定手机!';
 	    }
 	    
 	    $result = $this->check_info_num();

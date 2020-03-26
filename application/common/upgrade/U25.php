@@ -27,7 +27,12 @@ class Label extends _Label
 	    
 	    $array = modules_config();
 	    foreach($array AS $rs){
-	        
+	        if($rs['keywords']=='search'||$rs['keywords']=='tongji'){
+	            @unlink(APP_PATH.$rs['keywords'].'/index/Labelmodels.php');
+	            @unlink(APP_PATH.$rs['keywords'].'/index/Labelhy.php');
+	            @unlink(APP_PATH.$rs['keywords'].'/index/Label.php');
+	            continue ;
+	        }
 	        $filename = APP_PATH.$rs['keywords'].'/index/Labelmodels.php';
 	        if(!is_file($filename) || !strstr(file_get_contents($filename),"app\\".$rs['keywords']."\\")){ 
 	            $strA = str_replace('qun', $rs['keywords'], $_strA);
