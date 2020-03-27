@@ -293,12 +293,15 @@ loader.define(function(require,exports,module) {
 	var pushIdArray = [];
 
 	ws_onmsg.chat = function(obj){
+
 		var show_online = function(obj,type){
 			var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
 			var data = obj.data;
 			online_members = data;
 			var usernum = obj.data.length;  //在线会员人数,已注册的会员
-			if(total>1){
+			if(type=='show'){
+				view_online_user(data);
+			}else if(total>1){
 				if(type=='goin'){
 					bui.hint ( {content:"有新用户："+data[data.length-1].username+" 进来了",position:'top'} );
 				}else if(type=='getout'){
@@ -308,10 +311,12 @@ loader.define(function(require,exports,module) {
 				if(uid>0){
 					$("#remind_online").html('对方在线,请不要离开!');
 				}else{
-					$("#remind_online").html('共有 '+total+' 个访客,会员有 '+usernum+' 人! 查看详情');
+					$("#remind_online").html('共有 '+total+' 个访客,会员有 '+obj.total_login+' 人! 查看详情');
 					$("#remind_online").off('click');
 					$("#remind_online").click(function(){
-						view_online_user(data);
+						layer.msg('请稍候,正在拉取数据!',{time:500});
+						ws_send({type:'get_online_user',});
+						//view_online_user(data);
 					});
 				}
 			}else if( !$("#remind_online").is(':hidden') ){
@@ -371,12 +376,14 @@ loader.define(function(require,exports,module) {
 			var icon = my_uid>0?userinfo.icon:'';
 			var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
 			w_s.send('{"type":"connect","url":"'+(typeof(web_url)!='undefined'?web_url:window.location.href)+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
-		}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
+		}else if(obj.type=='count'||obj.type=='goin'){  //用户连接成功后,算出当前在线数据统计
 			 show_online(obj,'goin');
 		}else if(obj.type=='leave'){	//某个用户离开了
 			show_online(obj,'getout')
 			console.log(obj);
-		}			
+		}else if(obj.type=='give_online_user'){  //服务器给出在线用户数据
+			show_online(obj,'show')
+		}		
 	}
 
 	//加载到第一页成功后,就获得了相关数据,才好进行其它的操作

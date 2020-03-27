@@ -16,9 +16,9 @@ class Member{
         $rs['group_name'] = getGroupByid($rs['groupid']);
         $rs['lastvist'] = format_time($rs['_lastvist']=$rs['lastvist'],true);
         $rs['regdate'] = format_time($rs['_regdate']=$rs['regdate'],'Y-m-d H:i');
-        unset($rs['password'],$rs['password_rand'],$rs['qq_api'],$rs['weixin_api'],$rs['wxapp_api'],$rs['unionid'],$rs['wxopen_api'],$rs['config'],$rs['rmb_pwd']);
+        unset($rs['password'],$rs['password_rand'],$rs['qq_api'],$rs['weixin_api'],$rs['wxapp_api'],$rs['unionid'],$rs['wxopen_api'],$rs['config'],$rs['rmb_pwd'],$rs['regip'],$rs['email'],$rs['address'],$rs['mobphone'],$rs['idcard'],$rs['idcardpic'],$rs['lastip'],$rs['ext_field']);
         if ($rs['uid']!=$uid) {
-            unset($rs['rmb'],$rs['truename'],$rs['lastip'],$rs['regip'],$rs['email'],$rs['address'],$rs['mobphone'],$rs['idcard']);
+            unset($rs['rmb'],$rs['truename']);
         }
         return $rs;
     }

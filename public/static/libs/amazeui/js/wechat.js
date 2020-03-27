@@ -424,11 +424,13 @@ function ws_link(){
 				var icon = my_uid>0?userinfo.icon:'';
 				var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
 				w_s.send('{"type":"connect","url":"'+window.location.href+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
-			}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
-				 show_online(obj,'goin');
+			}else if(obj.type=='count'||obj.type=='goin'){  //用户连接成功后,算出当前在线数据统计
+				show_online(obj,'goin');
 			}else if(obj.type=='leave'){	//某个用户离开了
 				show_online(obj,'getout')
 				//console.log(obj);
+			}else if(obj.type=='give_online_user'){  //服务器给出在线用户数据
+				show_online(obj,'show')
 			}else if(obj.type=='msglist'){	//需要更新列表信息
 				//console.log("消息列表,有新消息来了..........");
 				//console.log(e.data);
@@ -483,41 +485,45 @@ function ws_link(){
 	}, 1000*50);	//50秒发送一次心跳
 
 	var show_online = function(obj,type){
-				 var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
-				 var data = obj.data;
-				 online_members = data;
-				 var usernum = obj.data.length;  //在线会员人数,已注册的会员
-				 if(total>1){
-					 if(type=='goin'){
-						 layer.msg("有新用户："+data[data.length-1].username+" 进来了",{offset: 't'});
-					 }else if(type=='getout'){
-						 layer.msg(obj.msg,{offset: 't'});
-					 }
-					 $("#remind_online").show();
-					 if(uid>0){
-						 $("#remind_online").html('对方在线,请不要离开!');
-					 }else{
-						 $("#remind_online").html('共有 '+total+' 个访客,会员有 '+usernum+' 人! 查看详情');
-						 $("#remind_online").off('click');
-						 $("#remind_online").click(function(){
-							 view_online_user(data);
-						 });
-					 }
-				 }else if( !$("#remind_online").is(':hidden') ){
-					 if(uid>0){
-						 layer.msg('对方已离开!',{offset: 't'});
-					 }else{
-						 layer.msg('人全走光了!'+obj.msg,{offset: 't'});
-					 }
-					 $("#remind_online").hide();
-				 }
+			var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
+			var data = obj.data;
+			online_members = data;
+			var usernum = obj.data.length;  //在线会员人数,已注册的会员
+			if(type=='show'){
+				view_online_user(data);
+			}else if(total>1){
+				if(type=='goin'){
+					 layer.msg("有新用户："+data[data.length-1].username+" 进来了",{offset: 't'});
+				}else if(type=='getout'){
+					layer.msg(obj.msg,{offset: 't'});
+				}
+				$("#remind_online").show();
+				if(uid>0){
+					$("#remind_online").html('对方在线,请不要离开!');
+				}else{
+					$("#remind_online").html('共有 '+total+' 个访客,会员有 '+ obj.total_login +' 人! 查看详情');
+					$("#remind_online").off('click');
+					$("#remind_online").click(function(){
+						layer.msg('请稍候,正在拉取数据!',{time:800});
+						ws_send({type:'get_online_user',});
+						//view_online_user(data);
+					});
+				}
+			}else if( !$("#remind_online").is(':hidden') ){
+				if(uid>0){
+					layer.msg('对方已离开!',{offset: 't'});
+				}else{
+					layer.msg('人全走光了!'+obj.msg,{offset: 't'});
+				}
+				$("#remind_online").hide();
+			}
 	}
 
 	var view_online_user = function(data){
 			var str = '';
 			data.forEach((rs)=>{
-						str += '<a href="/member.php/home/'+rs.uid+'.html" target="_blank">'+rs.username+'</a>、';
-					});
+				str += '<a href="/member.php/home/'+rs.uid+'.html" target="_blank">'+rs.username+'</a>、';
+			});
 			layer.open({
 					type: 1,
 					anim: 5,
