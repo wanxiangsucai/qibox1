@@ -371,7 +371,7 @@ class User extends Model
 		
 		if ($not_pwd==false) {
 		    
-		    if(!config('webdb.allow_allcity_login') && ( $rs['weixin_api'] || $rs['qq_api'] || ($rs['mob_yz']&&preg_match("/^1([\d]{10})+/", $rs['mobphone'])) ) ){
+		    if(!config('webdb.allow_allcity_login') && ( strlen($rs['weixin_api'])>20 || strlen($rs['qq_api'])>20 || ($rs['mob_yz']&&preg_match("/^1([\d]{10})+/", $rs['mobphone'])) ) ){
 		        $str = file_get_contents("http://api.map.baidu.com/location/ip?ak=MGdbmO6pP5Eg1hiPhpYB0IVd&ip=".$rs['lastip']."&coor=bd09ll");
 		        $array = json_decode($str ,true);
 		        $lastcity = $array['content'] ? $array['content']['address_detail']['city'] : '';
