@@ -1082,16 +1082,19 @@ CREATE TABLE IF NOT EXISTS `qb_market` (
 -- 表的结构 `qb_memberdata`
 --
 
+
 DROP TABLE IF EXISTS `qb_memberdata`;
 CREATE TABLE IF NOT EXISTS `qb_memberdata` (
-  `uid` mediumint(7) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `password` varchar(32) NOT NULL COMMENT '密码',
   `password_rand` varchar(10) NOT NULL COMMENT '密码混淆加密字串',
-  `username` varchar(50) NOT NULL DEFAULT '' COMMENT '会员帐号ID',
+  `username` varchar(80) NOT NULL DEFAULT '' COMMENT '会员帐号ID',
   `nickname` varchar(80) NOT NULL COMMENT '用户昵称',
+  `unionid` varchar(32) NOT NULL COMMENT '微信开放平台统一登录ID',
   `qq_api` varchar(32) NOT NULL DEFAULT '' COMMENT 'QQ登录接口',
   `weixin_api` varchar(32) NOT NULL DEFAULT '' COMMENT '微信登录接口',
   `wxapp_api` varchar(32) NOT NULL COMMENT '微信小程序登录接口',
+  `wxopen_api` varchar(32) NOT NULL COMMENT '微信开放平台移动应用登录openid',
   `groupid` smallint(4) NOT NULL DEFAULT '0' COMMENT '会员用户组ID',
   `grouptype` tinyint(1) NOT NULL DEFAULT '0' COMMENT '用户组扩展字段',
   `groups` varchar(255) NOT NULL DEFAULT '' COMMENT '多用户组,扩展用',
@@ -1132,17 +1135,18 @@ CREATE TABLE IF NOT EXISTS `qb_memberdata` (
   `introducer_num` mediumint(5) NOT NULL COMMENT '直接推荐用户数',
   `introducer_nums` mediumint(5) NOT NULL COMMENT '间接推荐用户数',
   `group_endtime` int(10) NOT NULL COMMENT '用户组截止日期',
+  `map_x` double NOT NULL COMMENT '地图经度坐标',
+  `map_y` double NOT NULL COMMENT '地图纬度坐标',
   PRIMARY KEY (`uid`),
-  KEY `groups` (`groups`),
-  KEY `sex` (`sex`,`bday`,`cityid`),
   KEY `qq_api` (`qq_api`),
   KEY `username` (`username`),
   KEY `weixin_api` (`weixin_api`),
   KEY `lastvist` (`lastvist`),
   KEY `money` (`money`),
   KEY `rmb` (`rmb`),
-  KEY `dou` (`dou`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户数据表' AUTO_INCREMENT=2 ;
+  KEY `unionid` (`unionid`),
+  KEY `groupid` (`groupid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- 转存表中的数据 `qb_memberdata`
@@ -1621,7 +1625,7 @@ CREATE TABLE IF NOT EXISTS `qb_friend` (
   KEY `suid` (`suid`,`type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='粉丝好友' AUTO_INCREMENT=1 ;
 
-ALTER TABLE  `qb_memberdata` ADD  `map_x` DOUBLE NOT NULL COMMENT  '地图经度坐标',ADD  `map_y` DOUBLE NOT NULL COMMENT  '地图纬度坐标';
+
 
 DROP TABLE IF EXISTS `qb_shorturl`;
 CREATE TABLE IF NOT EXISTS `qb_shorturl` (
@@ -1632,11 +1636,6 @@ CREATE TABLE IF NOT EXISTS `qb_shorturl` (
   PRIMARY KEY (`id`),
   KEY `type` (`type`,`url`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='短网址' AUTO_INCREMENT=1 ;
-
-
-ALTER TABLE  `qb_memberdata` ADD  `unionid` VARCHAR( 32 ) NOT NULL COMMENT  '微信开放平台统一登录ID' AFTER  `nickname` ;
-ALTER TABLE  `qb_memberdata` ADD INDEX (  `unionid` );
-ALTER TABLE  `qb_memberdata` ADD  `wxopen_api` VARCHAR( 32 ) NOT NULL COMMENT  '微信开放平台移动应用登录openid' AFTER  `wxapp_api` ;
 
 
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '微信开放平台移动应用AppID', 'wxopen_appid', '', 'text', '', 1, '', '如果需要申请并愿意付费认证,请点击 <a href="https://open.weixin.qq.com/" target="_target">付费申请</a>，未付费认证的话，就留空。', -2, '-2');
