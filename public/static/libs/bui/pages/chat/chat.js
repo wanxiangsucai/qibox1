@@ -103,6 +103,11 @@ function load_chat_iframe(url,callback){
 	});
 }
 
+//显示超长内容
+function get_longmsg(id){
+	ws_send({type:'user_ask_longmsg',msgid:id});
+}
+
 
 var chat_timer,connect_handle,qun_link_handle;
 
@@ -275,7 +280,8 @@ var qun_userinfo = '';	//当前用户所在当前圈子的信息
 var mod_class={},iframe_body_class={};
 var is_repeat = 0;
 var userinfo = {};	//当前登录用户的基础信息
-var online_members = []; //所有在线用户
+
+
 
 loader.define(function(require,exports,module) {
 
@@ -291,41 +297,74 @@ loader.define(function(require,exports,module) {
 	var user_num = 0; //圈子成员总数
 	var uiSidebar;          // 侧边栏
 	var pushIdArray = [];
+	var online_members = []; //所有在线用户
+	var roll_user_obj = null;
 
 	ws_onmsg.chat = function(obj){
 
 		var show_online = function(obj,type){
 			var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
 			var data = obj.data;
-			online_members = data;
-			var usernum = obj.data.length;  //在线会员人数,已注册的会员
+			//online_members = data;
+			//var usernum = obj.data.length;  //在线会员人数,已注册的会员
+			var ol_obj = $('#remind_online');
 			if(type=='show'){
 				view_online_user(data);
 			}else if(total>1){
 				if(type=='goin'){
-					bui.hint ( {content:"有新用户："+data[data.length-1].username+" 进来了",position:'top'} );
+					bui.hint ( {content:"有新用户："+data[0].username+" 进来了",position:'top'} );
+
+					//统计最近来访的用户开始
+					online_members.forEach(function(rs,i){
+						if(rs.username==data[0].username){
+							online_members.splice(i,1);
+						}						
+					});					
+					online_members.push(data[0]);
+					if(online_members.length>1){
+						var str = '';
+						for(var i=online_members.length-1;i>=0;i--){
+							str += '<a data-uid="'+(online_members[i].uid>0?online_members[i].uid:0)+'">'+online_members[i].username + (i==0?'</a>':'</a>、');
+						}						
+						if(roll_user_obj==null){
+							loader.import(["/public/static/libs/swiper/jquery.liMarquee.js","/public/static/libs/swiper/jquery.liMarquee.css"],function(){
+								setTimeout(function(){
+									ol_obj.css('position','relative');
+									ol_obj.find('.welcome-user').css('margin','0 10px');
+									ol_obj.find('.welcome-user').html('<i class="fa fa-bullhorn"> 欢迎：</i>'+str);
+									roll_user_obj = ol_obj.liMarquee({loop:-1,direction:'left',scrollamount:30,circular:true});
+								},2500);
+							});							
+						}else{
+							roll_user_obj.liMarquee('destroy');
+							ol_obj.find('.welcome-user').html('<i class="fa fa-bullhorn"> 欢迎：</i>'+str);
+							roll_user_obj.liMarquee('update');
+						}
+					}				
+					//统计最近来访的用户结束
+
 				}else if(type=='getout'){
 					bui.hint ( {content:obj.msg,position:'top'} );
 				}
-				router.$(".header_content").show();$("#remind_online").show();bui.init();
+				router.$(".header_content").show();ol_obj.show();bui.init();
 				if(uid>0){
-					$("#remind_online").html('对方在线,请不要离开!');
+					ol_obj.find(".online").html('对方在线,请不要离开!');
 				}else{
-					$("#remind_online").html('共有 '+total+' 个访客,会员有 '+obj.total_login+' 人! 查看详情');
-					$("#remind_online").off('click');
-					$("#remind_online").click(function(){
+					ol_obj.find(".online").html('共有 '+total+' 个访客,会员有 '+obj.total_login+' 人! 查看详情');
+					ol_obj.off('click');
+					ol_obj.click(function(){
 						layer.msg('请稍候,正在拉取数据!',{time:500});
 						ws_send({type:'get_online_user',});
 						//view_online_user(data);
 					});
 				}
-			}else if( !$("#remind_online").is(':hidden') ){
+			}else if( !ol_obj.is(':hidden') ){
 				if(uid>0){
 					bui.hint ( {content:'对方已离开!',position:'top'} );
 				}else{
 					bui.hint ( {content:'人全走光了!'+obj.msg,position:'top'} );
 				}
-				$("#remind_online").hide();bui.init();
+				ol_obj.hide();bui.init();
 			}
 		}
 

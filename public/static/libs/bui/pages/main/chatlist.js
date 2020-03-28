@@ -23,7 +23,7 @@ loader.define(function(require,exports,module) {
 			if ((navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i))){
 				var str = window.location.href;
 				if (str.indexOf('uid=')>-1) {	//replace(/[^\d|^\-]/g,"");
-					str_uid = str.split('uid=')[1].split('&')[0];	//parseInt(str.substring(str.indexOf('uid=')+4));
+					str_uid = parseInt(str.split('uid=')[1].split('&')[0]);	//parseInt(str.substring(str.indexOf('uid=')+4));
 
 					var msg_sys = str.indexOf('msg_sys=')>0?str.split('msg_sys=')[1].split('&')[0]:'';
 					var msg_id = str.indexOf('msg_id=')>0?str.split('msg_id=')[1].split('&')[0]:'';
@@ -236,6 +236,9 @@ loader.define(function(require,exports,module) {
 	//var uid_array = [];   //每个用户的最新消息ID
 	//刷新有没有新用户发消息 过来
 	function check_list_new_msgnum(){
+		if(typeof(uid_array)=='undefined'){
+			return ;
+		}
 		$.get(ListMsgUserUrl+"1",function(res){
 			if(res.code==0){			
 				$.each(res.ext.s_data,function(i,rs){

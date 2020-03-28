@@ -956,3 +956,23 @@ font-size:18px;
 .live_video_warp .codeimg img{
 	width:130px;
 }
+
+
+/*欢迎新用户*/
+.welcome_user{
+	width:100%;	
+	z-index:1;	
+	position:absolute;
+	top:0px;
+	background:#666;
+	color:#fff;
+	line-height:30px;
+	height:30px;
+	opacity:0.4;
+	display:none;
+	padding-right:30px;
+}
+.welcome_user a{
+	color:#fff;
+	font-weight:bold;
+}

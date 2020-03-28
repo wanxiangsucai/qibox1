@@ -259,8 +259,8 @@ function format_chatmsg_tohtml(array){
 }
 
 
-	//刷新最近的消息用户
-	function check_list_new_msgnum(){
+//刷新最近的消息用户
+function check_list_new_msgnum(){
 		$.get(ListMsgUserUrl+"1",function(res){
 			if(res.code==0){
 				var remind = true;
@@ -293,17 +293,17 @@ function format_chatmsg_tohtml(array){
 				});
 			}
 		});
-	}
+}
 
-	//右下角弹信息提示,有新消息来了
-	function pushNotice(){
+//右下角弹信息提示,有新消息来了
+function pushNotice(){
 		console.log('你有新消息');
 		var m = new Notification('新消息提醒', {body: '你收到一条新消息,请注意查收',});
 			m.onclick = function () { window.focus();}
-	}
+}
 
-	//滚动到底部   old_height为pc_show_all_msg之前的高度
-	function goto_bottom(old_height){
+//滚动到底部   old_height为pc_show_all_msg之前的高度
+function goto_bottom(old_height){
 		var iCount = setInterval(function() {
 			var obj = $(".pc_show_all_msg");	//反复的刷新.pc_show_all_msg渲染完毕没有.用setTimeout的话,数值小又担心还没渲染完毕,数字大,又让用户等太久.
 			var now_height = obj.height();
@@ -313,9 +313,15 @@ function format_chatmsg_tohtml(array){
 				obj.css({top:(-show_msg_top)+"px"});
 			}
 		}, 200);
-	}
+}
+
+//显示超长内容
+function get_longmsg(id){
+	ws_send({type:'user_ask_longmsg',msgid:id});
+}
 
 var online_members = []; //所有在线用户
+var roll_user_obj = null;
 
 //建立WebSocket长连接
 var chat_timer,clientId = '';
@@ -487,13 +493,35 @@ function ws_link(){
 	var show_online = function(obj,type){
 			var total = obj.total; //在线窗口,同一个人可能有多个窗口				 
 			var data = obj.data;
-			online_members = data;
-			var usernum = obj.data.length;  //在线会员人数,已注册的会员
+			//online_members = data;
+			//var usernum = obj.data.length;  //在线会员人数,已注册的会员
 			if(type=='show'){
 				view_online_user(data);
 			}else if(total>1){
 				if(type=='goin'){
-					 layer.msg("有新用户："+data[data.length-1].username+" 进来了",{offset: 't'});
+					layer.msg("有新用户："+data[0].username+" 进来了",{offset: 't'});
+					//统计最近来访的用户开始
+					online_members.forEach(function(rs,i){
+						if(rs.username==data[0].username){
+							online_members.splice(i,1);
+						}						
+					});
+					online_members.push(data[0]);
+					if(online_members.length>1){
+						var str = '';
+						for(var i=online_members.length-1;i>=0;i--){
+							str += '<a href="/member.php/home/'+(online_members[i].uid>0?online_members[i].uid:0)+'.html" target="_blank">'+online_members[i].username + (i==0?'</a>':'</a>、');
+						}
+						if(roll_user_obj==null){
+							$('.welcome_user').show();
+							roll_user_obj = $('.welcome_user').html($('.welcome_user i')[0].outerHTML+str).liMarquee({loop:-1,direction:'left',scrollamount:30,circular:true});
+						}else{
+							roll_user_obj.liMarquee('destroy');
+							$('.welcome_user').html($('.welcome_user i')[0].outerHTML+str);
+							roll_user_obj.liMarquee('update');
+						}
+					}					
+					//统计最近来访的用户结束
 				}else if(type=='getout'){
 					layer.msg(obj.msg,{offset: 't'});
 				}
@@ -906,7 +934,7 @@ var uid = 0;	//当前聊天用户的UID
 //URL中指定的用户,同步WAP模板
 var str = window.location.href;
 if (str.indexOf('uid=')>-1) {	//;
-    uid = str.split('uid=')[1].split('&')[0];
+    uid = parseInt(str.split('uid=')[1].split('&')[0]);
 	$(function(){
 		showMoreMsg(uid);
 		set_user_name(uid);
