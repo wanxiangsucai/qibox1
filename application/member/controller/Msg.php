@@ -96,7 +96,7 @@ class Msg extends MemberBase
         }
         if ($ck==false) {
             $kefu_uid = Db::name('memberdata')->where('groupid',3)->value('uid');
-            MsguserModel::add($this->user['uid'],$kefu_uid);
+            MsguserModel::add(login_user('uid'),$kefu_uid);
         }
     }
     
