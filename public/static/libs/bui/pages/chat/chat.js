@@ -291,7 +291,7 @@ loader.define(function(require,exports,module) {
 	var msg_scroll = true;
 	var show_msg_page  = 1;
 	var maxid = -1;
-	var getShowMsgUrl; //"/index.php/index/wxapp.msg/get_more.html?rows=15&page=";	
+	var getShowMsgUrl;
 	var need_scroll = false;
 	var touser = {uid:0};	//@TA	
 	var user_list = {}; //圈子用户列表
@@ -1182,6 +1182,8 @@ loader.define(function(require,exports,module) {
 				console.log("当前用户UID-"+uid);
 				set_user_name(uid);	//设置当前会话的用户名
 			}
+		}else{
+			getShowMsgUrl =  "/index.php/index/wxapp.msg/get_more.html?rows=15&page=";	//显示内容页信息的时候要用到
 		}
     })
 
