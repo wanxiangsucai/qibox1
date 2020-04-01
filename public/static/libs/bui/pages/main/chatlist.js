@@ -22,17 +22,21 @@ loader.define(function(require,exports,module) {
 		try {	//地址栏目中有UID就会自动跳转
 			if ((navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i))){
 				var str = window.location.href;
-				if (str.indexOf('uid=')>-1) {	//replace(/[^\d|^\-]/g,"");
-					str_uid = parseInt(str.split('uid=')[1].split('&')[0]);	//parseInt(str.substring(str.indexOf('uid=')+4));
+				if (str.indexOf('?uid=')>-1 || str.indexOf('&uid=')>-1) {	//replace(/[^\d|^\-]/g,"");
+					//str_uid = parseInt(str.split('uid=')[1].split('&')[0]);	//parseInt(str.substring(str.indexOf('uid=')+4));
+					var uid_array = str.indexOf('?uid=')>-1 ? str.split('?uid=') : str.split('&uid=');
+					var str_uid = parseInt(uid_array[1].split('&')[0]);
 
 					var msg_sys = str.indexOf('msg_sys=')>0?str.split('msg_sys=')[1].split('&')[0]:'';
 					var msg_id = str.indexOf('msg_id=')>0?str.split('msg_id=')[1].split('&')[0]:'';
+					var my_uid = str.indexOf('my_uid=')>0?str.split('my_uid=')[1].split('&')[0]:'';
 
 					if (/^[-]?[0-9]+$/.test(str_uid)) {
 						bui.load({url: "/public/static/libs/bui/pages/chat/chat.html",param: {
 							"uid":str_uid,
 							"msg_sys":msg_sys,
 							"msg_id":msg_id,
+							"my_uid":my_uid,
 						}});
 					}
 				}

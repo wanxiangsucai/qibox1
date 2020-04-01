@@ -3,6 +3,7 @@ namespace app\member\controller;
 
 use app\common\model\Msg AS Model;
 use app\common\controller\MemberBase;
+use app\common\model\Msguser AS MsguserModel;
 use think\Db;
 
 class Msg extends MemberBase
@@ -66,11 +67,37 @@ class Msg extends MemberBase
         $uid = $this->user['uid'];
         
         $listdb =  Model::get_listuser($uid,$rows,$page);
+        if (empty($listdb) && $page<2) {
+            self::add_kefu(true);
+            $listdb =  Model::get_listuser($uid,$rows,$page);
+        }
         
         $array['data'] = $listdb;
         $array['s_data'] = $array['data'];
         $array['total'] = '';
         return $array;
+    }
+    
+    /**
+     * 对于新用户,给他推荐客服为好友
+     * @param string $type
+     */
+    public static function add_kefu($type=false){
+        if($type!==true){   //避免外外恶意提交访问
+            return ;
+        }
+        $array = explode(',',trim(str_replace('，',',',config('webdb.weixin_reply_kefu')),','));
+        $ck = false;
+        foreach($array AS $kefu_uid){
+            if ($kefu_uid && get_user($kefu_uid)) {
+                $ck = true;
+                MsguserModel::add(login_user('uid'),$kefu_uid);
+            }
+        }
+        if ($ck==false) {
+            $kefu_uid = Db::name('memberdata')->where('groupid',3)->value('uid');
+            MsguserModel::add($this->user['uid'],$kefu_uid);
+        }
     }
     
     

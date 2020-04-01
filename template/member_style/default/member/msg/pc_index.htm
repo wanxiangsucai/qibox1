@@ -76,11 +76,11 @@
 			<div class="office_text">
 				<ul class="user_list pc_msg_user_list">
 <!--短消息最近的会话用户列表-->
-{qb:tag name="pc_msg_user_list" js="pc_msg_user_list" class="app\member\controller\Msg@listuser" rows="15"}
+{qb:tag name="pc_msg_user_list" js="pc_msg_user_list" class="app\member\controller\Msg@listuser" rows="50"}
 					<li data-uid="{$rs.f_uid}" class="{$key==0?'user_active':''} list_{$rs.f_uid}">
 						<div class="user_head"><a href="{$rs.f_uid>0?get_url('user',$rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['url']}" target="_blank"><img class="ring ring-group" src="{$rs.f_uid>0?get_user_icon($rs.f_uid):fun('qun@getByid',abs($rs.f_uid))['picurl']}" onerror="this.src='__STATIC__/images/noface.png'"></a></div>
 						<div class="user_text">
-							<p class="user_name">{if $rs.f_uid>0} {$rs.f_uid|get_user_name} {elseif $rs.f_uid<0} {:fun('qun@getByid',abs($rs.f_uid))['title']} {else /} 系统消息 {/if}</p>
+							<p class="user_name">{if $rs.f_uid>0} {$rs.f_uid<9999999?get_user_name($rs.f_uid):'游客'}  {elseif $rs.f_uid<0} {:fun('qun@getByid',abs($rs.f_uid))['title']} {else /} 系统消息 {/if}</p>
 							<p class="user_message">
 								{if $rs.qun}
 									{$rs['qun']['uid']|get_user_name} 说: {$rs['qun']['content']|del_html|get_word=30}

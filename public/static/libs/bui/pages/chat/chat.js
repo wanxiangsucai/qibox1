@@ -258,6 +258,7 @@ function postmsg(content,callback){
 		
 		content_obj.uid = uid;
 		content_obj.send_to = typeof(touser)=='object'?touser.uid:0;
+		content_obj.my_uid = my_uid;
 		
 		//入库处理
 		$.post("/member.php/member/wxapp.msg/add.html",content_obj,function(res){
@@ -415,7 +416,7 @@ loader.define(function(require,exports,module) {
 			var icon = my_uid>0?userinfo.icon:'';
 			var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
 			w_s.send('{"type":"connect","url":"'+(typeof(web_url)!='undefined'?web_url:window.location.href)+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
-		}else if(obj.type=='count'||obj.type=='goin'){  //用户连接成功后,算出当前在线数据统计
+		}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
 			 show_online(obj,'goin');
 		}else if(obj.type=='leave'){	//某个用户离开了
 			show_online(obj,'getout')
@@ -827,7 +828,7 @@ loader.define(function(require,exports,module) {
 			}
 
 		}else{	//客户端拉数据, 主动获取数据   ******已经弃用********
-			$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){			
+			$.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num+"&my_uid="+my_uid,function(res){			
 				if(res.code!=0){				
 					layer.alert('页面加载失败,请刷新当前网页');
 					return ;
@@ -870,7 +871,7 @@ loader.define(function(require,exports,module) {
 		}else{
 			var loadIndex = layer.load(3,{shade: [0.1,'#333'],time:9000});
 		}
-		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){			//console.log(res);
+		$.get(getShowMsgUrl+show_msg_page+"&uid="+uid+"&my_uid="+my_uid,function(res){			//console.log(res);
 			if(res.code==0){
 				var that = router.$('#chat_win');
 
@@ -1165,7 +1166,10 @@ loader.define(function(require,exports,module) {
 
 			msg_sys = result.msg_sys!=undefined?result.msg_sys:'';
 			msg_id = result.msg_id!=undefined?result.msg_id:'';
-			getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&msg_sys="+msg_sys+"&msg_id="+msg_id+"&page=";
+			if (my_uid<1 && result.my_uid!=undefined) {
+				my_uid = result.my_uid;
+			}
+			getShowMsgUrl = "/index.php/index/wxapp.msg/get_more.html?rows=15&msg_sys="+msg_sys+"&msg_id="+msg_id+"&my_uid="+my_uid+"&page=";
 
 			//vues.set_id(uid);
 			//head_menu(uid);	//设置菜单

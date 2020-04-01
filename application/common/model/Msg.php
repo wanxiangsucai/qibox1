@@ -214,7 +214,17 @@ class Msg extends Model
      * @param number $rows
      * @param number $page
      */
-    public static function get_listuser($uid=0,$rows=0,$page=0){
+    public static function get_listuser($uid=0,$rows=0,$page=0,$cache_time=0){
+        if ($cache_time>0 && $page<2) {
+            $listdb = cache("msg_listuser-{$uid}");
+            if ($listdb) {
+                foreach ($listdb AS $key=>$rs){
+                    $rs['new_num'] = 0;
+                    $listdb[$key] = $rs;
+                }
+                return $listdb;
+            }
+        }
         $page>0 || $page=1;
         $min = ($page-1)*$rows;
         $subQuery = self::where('touid',$uid)->whereOr('uid',$uid)
@@ -275,8 +285,8 @@ class Msg extends Model
                     $rs['new_num'] = self::where('touid',$uid)->where('uid',$rs['f_uid'])->where('ifread',0)->count('id');
                 }
                 if ($rs['f_uid']!=0) {
-                    $rs['f_name'] = get_user_name($rs['f_uid']);
-                    $rs['f_icon'] = get_user_icon($rs['f_uid']);
+                    $rs['f_name'] = $rs['f_uid']<9999999?get_user_name($rs['f_uid']):'游客';
+                    $rs['f_icon'] = $rs['f_uid']<9999999?get_user_icon($rs['f_uid']):'';
                 }else{
                     $rs['f_name'] = '系统消息';
                 }      
@@ -345,8 +355,12 @@ class Msg extends Model
                 }
             }
         }        
-
-        return array_values($array);
+        
+        $listdb = array_values($array);
+        if ($cache_time>0&&$page<2) {
+            cache("msg_listuser-{$uid}",$listdb,$cache_time);
+        }        
+        return $listdb;
     }
     
     /**

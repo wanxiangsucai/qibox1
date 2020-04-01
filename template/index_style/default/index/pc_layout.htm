@@ -9,8 +9,11 @@
 {block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/pc_reset.css">{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
-{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>{/block}
-{block name="head_layer_js"}<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?f"></script>{/block}
+{block name="head_layer_js"}
+<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
+<script type="text/javascript" src="__STATIC__/layui/layui.js"></script>
+{/block}
 </head>
 <body>
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展  -->
@@ -35,13 +38,23 @@
 function pc_open_msg(){
 	layer.open({
 	  type: 2,
+	  maxmin:true,
+	  shade: 0,
 	  title: '短消息',
-	  shade: [0.3,'#333'], 
+	  //shade: [0.3,'#333'], 
 	  area: ['900px', '600px'],
 	  anim: 1,
 	  content: '{:urls("member/msg/index")}',
-	  end: function(){ //关闭事件	
-	  }
+	  end: function(){ //关闭事件
+		  if(typeof(close_msg_win)=="function"){
+			  close_msg_win();
+		  }
+	  },
+	  success: function(layero, index){ 
+		  if(typeof(oepn_msg_win)=="function"){
+			  oepn_msg_win();
+		  }
+	  },
 	});
 }
 function pc_open_weibo(){
@@ -117,6 +130,15 @@ $('.Logo_Menu dl').hover(
 	</ul>
 </div>
 {/block}
+
+{block name="model_content"}
+	<!--引用碎片-->
+	{qb:hy name="pc_layout_001" where="index_style/default/index/kefu" val="datas" type="labelmodel"}
+		{$datas}
+	{/qb:hy}
+{/block}
+
+
 <!--下面这一行是导航条-->
 {block name="nav"}{qb:nav title="" url="" /}{/block}
 {block name="body_content"}页面主体部分内容{/block}
@@ -129,7 +151,7 @@ $('.Logo_Menu dl').hover(
 		<ol>
 			<dl>
 				<dt>{$webdb.copyright}</dt>
-				<dd><a href="http://beian.miit.gov.cn/" target="_blank">{$webdb.miibeian_gov_cn}</a> Powered by <a href="http://www.php168.com" target="_blank">qibosoft {$webdb.QB_VERSION}</a> Code &copy;2003-2019</dd>
+				<dd><a href="http://www.beian.miit.gov.cn/" target="_blank">{$webdb.miibeian_gov_cn}</a> Powered by <a href="http://www.php168.com" target="_blank">qibosoft {$webdb.QB_VERSION}</a> Code &copy;2003-2020</dd>
 			</dl>
 		</ol>
 		<li>

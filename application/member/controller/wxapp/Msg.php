@@ -2,10 +2,28 @@
 namespace app\member\controller\wxapp;
 
 use app\common\model\Msg AS Model;
-use app\common\controller\MemberBase;
+use app\common\controller\IndexBase;
+//use app\common\controller\MemberBase;
 
-class Msg extends MemberBase
-{    
+class Msg extends IndexBase
+{
+    protected $my_uid = 0;
+    protected function _initialize()
+    {
+        parent::_initialize();
+        $my_uid = input('my_uid');
+        if ($my_uid) {
+            if ( (empty($this->user) && $my_uid<9999999) || ($this->user&&$this->user['uid']!=$my_uid) ) {
+                $this->error("my_uid数值有误");
+            }
+            $this->my_uid = $my_uid;
+        }else{
+            $this->my_uid = $this->user['uid'];
+        }
+        if (empty($this->my_uid)){
+            $this->error("请先登录!");
+        }
+    }
     /**
      * 查看最新的信息
      * @param number $id
@@ -19,22 +37,22 @@ class Msg extends MemberBase
         }
         
         $this->map = [
-                'touid'=>$this->user['uid'],
-                'uid'=>$info['uid'],
-                'id'=>['<=',$id],
+            'touid'=>$this->my_uid,
+            'uid'=>$info['uid'],
+            'id'=>['<=',$id],
         ];
         
         $this->OrMap = [
-                'uid'=>$this->user['uid'],
-                'touid'=>$info['uid'],
-                'id'=>['<=',$id],
+            'uid'=>$this->my_uid,
+            'touid'=>$info['uid'],
+            'id'=>['<=',$id],
         ];
         
         $this->NewMap = [
-                'uid'=>$this->user['uid'],
-                'touid'=>$info['uid'],
-                'id'=>['>',$id],
-                'ifread'=>0,
+            'uid'=>$this->my_uid,
+            'touid'=>$info['uid'],
+            'id'=>['>',$id],
+            'ifread'=>0,
         ];
         
         $data_list = Model::where(function($query){
@@ -61,8 +79,12 @@ class Msg extends MemberBase
      * @param number $page
      */
     public function get_listuser($rows=0,$page=0){
-        $uid = $this->user['uid'];
-        $array = Model::get_listuser($uid,$rows,$page);        
+        $uid = $this->my_uid;
+        $array = Model::get_listuser($uid,$rows,$page);
+        if (empty($array) && $page<2) {
+            \app\member\controller\Msg::add_kefu(true);
+            $array =  Model::get_listuser($uid,$rows,$page);
+        }
         return $this->ok_js($array);
     }
     
@@ -72,8 +94,11 @@ class Msg extends MemberBase
      */
     public function index()
     {
+        if (empty($this->user)) {
+            return $this->err_js('请先登录!');
+        }
         $map = [
-                'touid'=>$this->user['uid']                
+            'touid'=>$this->my_uid
         ];
         $data_list = Model::where($map)->order("id desc")->paginate(15);
         $data_list->each(function($rs,$key){
@@ -88,7 +113,7 @@ class Msg extends MemberBase
      * @return void|\think\response\Json
      */
     public function checknew(){
-        $num = Model::where([ 'touid'=>$this->user['uid'],'ifread'=>0 ])->count('id');
+        $num = Model::where([ 'touid'=>$this->my_uid,'ifread'=>0 ])->count('id');
         if($num>0){
             return $this->ok_js(['num'=>$num]);
         }else{
@@ -103,6 +128,9 @@ class Msg extends MemberBase
      */
     public function delete($id)
     {
+        if (empty($this->user)) {
+            return $this->err_js('请先登录!');
+        }
         $info = getArray(Model::where(['id'=>$id])->find());
         if(!$info){
             return $this->err_js('内容不存在');
@@ -212,7 +240,11 @@ class Msg extends MemberBase
                 $data['ext_sys'] = modules_config($data['ext_sys'])['id'];
             }
             $post_uid = $data['uid'];   //后面这个值$data['uid']会变动
+            $touser_info = $info = [];
             if ($data['uid']<0) {   //圈子群聊
+                if (empty($this->user)) {
+                    return $this->err_js('请先登录!');
+                }
                 $qun_id = abs($data['uid']);
                 $info = fun('qun@getByid',$qun_id);
                 if (!$info) {
@@ -228,24 +260,31 @@ class Msg extends MemberBase
                 ]);
                 Model::where('qun_id',$qun_id)->update(['update_time'=>time()]);    //其它人的群聊消息方便排在前面
             }else{
+                $guest_name = '游客';
                 //这里有点BUG,如果用户名是数字的话,偶尔会冲突
-                $info = $data['uid'] ? get_user($data['uid']) : get_user($data['touser'],'username');
-                if (!$info) {
-                    return $this->err_js('该用户不存在!');
+                if ($data['uid']>9999999) {
+                    $detail = ipfrom(long2ip($data['uid']));
+                    $guest_name = is_array($detail)?$detail['city']:'游客';
+                }else{
+                    
+                    $touser_info = $data['uid'] ? get_user($data['uid']) : get_user($data['touser'],'username');
+                    if (!$touser_info) {
+                        return $this->err_js('该用户不存在!');
+                    }
                 }
                 if (!$data['title']) {
-                    $data['title'] = '来自 '.$this->user['username'].' 的私信';
+                    $data['title'] = '来自 '.($this->user['username']?:$guest_name).' 的私信';
                 }
-                $data['touid'] = $info['uid'];
+                $data['touid'] = $data['uid'];
             }      
-            $data['uid'] = $this->user['uid'];  //务必高度注意这里 uid值变成了当前用户自己的ID,不再是对方的ID
+            $data['uid'] = $this->my_uid;  //!!!!!!务必高度注意这里 uid值变成了当前用户自己的ID,不再是对方的ID
             $data['content'] = fun('Filter@str',$data['content']);            
             //$data['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($data['content']));
             $result = Model::add($data,$this->admin,$data['push_id']?false:true);
             if(is_numeric($result)){    //发送成功
-                $content = $this->user['username'] . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
+                $content = ($this->user['username']?:'游客') . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
                 if(empty($qun_id)){
-                    $info['weixin_api'] && send_wx_msg($info['weixin_api'], $content);
+                    $touser_info['weixin_api'] && send_wx_msg($touser_info['weixin_api'], $content);
                 }else{
                     if( preg_match("/@([^ ]+)/", $data['content'],$array) ){
                         if(empty($data['send_to'])){
@@ -277,7 +316,7 @@ class Msg extends MemberBase
 //                 }
                 
 //                 fun("Gatewayclient@send_to_group",$this->user['uid'],$post_uid,$msg_array);     //同时通知其它客户, 推数据
-                if ($data['push_id']) {
+                if ($data['push_id']) { //目的是方便把push_id替换为真实的ID,方便删除消息
                     $msg_array = [
                         'type'=>'new_msg_id',
                         'data'=>[
@@ -285,7 +324,7 @@ class Msg extends MemberBase
                             'push_id'=>$data['push_id'],
                         ],
                     ];
-                    fun("Gatewayclient@send_to_group",$this->user['uid'],$post_uid,$msg_array);
+                    fun("Gatewayclient@send_to_group",$this->my_uid,$post_uid,$msg_array); //ws要用到真实的消息ID,方便删除该条信息
                 }
                 return $this->ok_js(['id'=>$result]);
                 
@@ -303,6 +342,9 @@ class Msg extends MemberBase
      * @return void|\think\response\Json|unknown
      */
     protected function get_info($id=0){
+        if (empty($this->user)) {
+            return $this->err_js('请先登录!');
+        }
         $info = getArray(Model::where(['id'=>$id])->find());
         if(!$info){
             return $this->err_js('内容不存在');
@@ -334,6 +376,9 @@ class Msg extends MemberBase
      */
     public function clean()
     {
+        if (empty($this->user)) {
+            return $this->err_js('请先登录!');
+        }
         $touid=$this->user['uid'];
        // if(Model::destroy(['touid' => $touid])){
         if(Model::where('touid','=',$touid)->delete()){
@@ -347,6 +392,9 @@ class Msg extends MemberBase
      * 标志为已读
      */
     public function set_read($ids=[]){
+        if (empty($this->user)) {
+            return $this->err_js('请先登录!');
+        }
         if (empty($ids)) {
             return $this->err_js('请必须选择一项');
         }

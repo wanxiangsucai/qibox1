@@ -66,8 +66,15 @@ class Msg extends IndexBase{
      * @param number $msg_sys 归属主题的频道 ID
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
-    public function get_more($uid=0,$id=0,$rows=5,$maxid=0,$is_live=0,$msg_id=0,$msg_sys=0){
-        if (empty($this->user) && ($uid>=0 || $id>0)) {
+    public function get_more($uid=0,$id=0,$rows=5,$maxid=0,$is_live=0,$msg_id=0,$msg_sys=0,$my_uid=0){
+        if ($my_uid) {
+            if ( (empty($this->user) && $my_uid<9999999) || ($this->user&&$this->user['uid']!=$my_uid) ) {
+                return $this->err_js("my_uid数值有误");
+            }
+        }else{
+            $my_uid = $this->user['uid'];
+        }
+        if (($uid>=0 || $id>0) && empty($this->user) && empty($my_uid)) {
             return $this->err_js("请先登录");
         }
         $qun_user = $qun_info = '';
@@ -95,7 +102,7 @@ class Msg extends IndexBase{
             }
         }
         
-        $array = model::list_moremsg($this->user['uid'],$uid,$id,$rows,$maxid,$msg_id,$msg_sys);
+        $array = model::list_moremsg($my_uid,$uid,$id,$rows,$maxid,$msg_id,$msg_sys);
         $array['qun_info'] = $qun_info;
         $array['qun_userinfo'] = $qun_user;
         if ($this->user) {
@@ -107,7 +114,7 @@ class Msg extends IndexBase{
                 'groupid'=>$this->user['groupid'],
             ];
         }else{
-            $array['userinfo'] = ['uid'=>0,'username'=>'游客','groupid'=>0];
+            $array['userinfo'] = ['uid'=>$my_uid?:0,'username'=>'','groupid'=>0,'icon'=>''];
         }
         
         if ($maxid<1) { //首次加载

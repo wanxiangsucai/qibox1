@@ -170,8 +170,8 @@ function add_click_user(){
 		visit_uids.push(uid);
 		visit_uids.forEach(v=>{
 			if(v<0){
-				window.location.href="/member.php/member/msg/index.html?uid="+uid;
-				return ;//考虑到不同的圈子及圈子与私聊之间功能菜单不一样,所以要跳转才更好
+				//window.location.href="/member.php/member/msg/index.html?uid="+uid;
+				//return ;//考虑到不同的圈子及圈子与私聊之间功能菜单不一样,所以要跳转才更好
 			}
 		});		
 		w_s.close();
@@ -430,7 +430,7 @@ function ws_link(){
 				var icon = my_uid>0?userinfo.icon:'';
 				var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
 				w_s.send('{"type":"connect","url":"'+window.location.href+'","uid":"'+uid+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
-			}else if(obj.type=='count'||obj.type=='goin'){  //用户连接成功后,算出当前在线数据统计
+			}else if(obj.type=='count'){  //用户连接成功后,算出当前在线数据统计
 				show_online(obj,'goin');
 			}else if(obj.type=='leave'){	//某个用户离开了
 				show_online(obj,'getout')
@@ -701,8 +701,8 @@ function showMoreMsg(uid){
 	var loadIndex = null;
 	if(show_msg_page>1){
 		loadIndex = layer.load(3,{shade: [0.1,'#333'],time:9000});
-	}	
-	$.get(getShowMsgUrl+show_msg_page+"&uid="+uid,function(res){
+	}
+	$.get(getShowMsgUrl+show_msg_page+"&uid="+uid+"&my_uid="+my_uid,function(res){
 		if(res.code==0){
 			if(show_msg_page==1){
 				load_first_page(res);
@@ -805,7 +805,7 @@ function check_new_showmsg(obj){
         
     }else{	//客户端拉数据, 主动获取数据  ******已经弃用********
         
-        $.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&num="+num,function(res){
+        $.get(getShowMsgUrl+"1&maxid="+maxid+"&uid="+uid+"&my_uid="+my_uid+"&num="+num,function(res){
             if(res.code!=0){
                 layer.alert('页面加载失败,请刷新当前网页');
                 return ;
@@ -933,12 +933,16 @@ var uid = 0;	//当前聊天用户的UID
 
 //URL中指定的用户,同步WAP模板
 var str = window.location.href;
-if (str.indexOf('uid=')>-1) {	//;
-    uid = parseInt(str.split('uid=')[1].split('&')[0]);
+if (str.indexOf('?uid=')>-1 || str.indexOf('&uid=')>-1) {
+	var uid_array = str.indexOf('?uid=')>-1 ? str.split('?uid=') : str.split('&uid=');
+    uid = parseInt(uid_array[1].split('&')[0]);
 	$(function(){
 		showMoreMsg(uid);
 		set_user_name(uid);
 	});
+}
+if (my_uid<1 && str.indexOf('my_uid=')>-1) {
+	my_uid = str.split('my_uid=')[1].split('&')[0];
 }
 if (str.indexOf('msg_sys=')>-1) {
 	msg_sys = str.split('msg_sys=')[1].split('&')[0];
@@ -1168,6 +1172,7 @@ function postmsg(cnt,callback){
 		data:content_obj,
 	});
 	content_obj.uid = uid;
+	content_obj.my_uid = my_uid;
 	$.post(postMsgUrl,content_obj,function(res){
 		allowsend = true;
 		if(res.code==0){				
@@ -1175,7 +1180,7 @@ function postmsg(cnt,callback){
 			$("#hack_wrap").hide(100);
 		}else{
 			//$(".msgcontent").val(content);
-			layer.msg('本条信息已发出，在线会员都能看，但后面来的人看不到，因为没有入库，原因:'+res.msg);
+			layer.msg('本条信息已发出，在线会员都能看，但后面来的人看不到，因为没有入库，<br>原因：'+res.msg,{time:5000});
 		}
 		if(typeof(callback)=='function'){
 			callback(res);

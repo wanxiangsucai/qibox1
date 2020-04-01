@@ -174,8 +174,8 @@ var get_uid_by_name_url = "{:urls('index/wxapp.member/get_uid')}";	//根据帐�
 var tongjiMsgUrl = "";		//获取分页的统计数据
 var tongjiCountUrl = "";			//获取各种统计的数量
 
-var my_uid = "{$userdb.uid}";										//我的UID,当前用户的UID
-var userinfo = {$userdb?json_encode(fun('member@format',$userdb,$userdb.uid)):'""'}; //用户详细资料
+var my_uid = "{$userdb.uid?:input('my_uid')}";										//我的UID,当前用户的UID
+var userinfo = {:json_encode($userdb?fun('member@format',$userdb,$userdb.uid):['username'=>'','uid'=>0,'icon'=>'','groupid'=>0])}; //用户详细资料
 var MyFriendUrl = "";					//获取好友列表
 var FriendActUrl = "";			//添加,删除好友
 </script>

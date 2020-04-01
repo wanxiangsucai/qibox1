@@ -1774,3 +1774,6 @@ ALTER TABLE  `qb_admin_menu` ADD INDEX (  `type` );
 ALTER TABLE  `qb_cms_content1` ADD INDEX (  `uid` );
 ALTER TABLE  `qb_cms_content2` ADD INDEX (  `uid` );
 ALTER TABLE `qb_labelhy` DROP INDEX  `page` ,ADD INDEX (  `pagename` ,  `ext_id` ,  `fid` );
+
+ALTER TABLE  `qb_msg` CHANGE  `touid`  `touid` BIGINT( 12 ) NOT NULL DEFAULT  '0' COMMENT  '接收者的帐户uid';
+ALTER TABLE  `qb_msg` CHANGE  `uid`  `uid` BIGINT( 12 ) NOT NULL DEFAULT  '0' COMMENT  '发送者的UID';

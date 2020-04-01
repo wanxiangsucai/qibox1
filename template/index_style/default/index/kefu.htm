@@ -1,0 +1,56 @@
+<!--客服-->
+<style type="text/css">
+.kefu_warp_offline{
+	background:url(__STATIC__/images/kefu_0.png);
+}
+.kefu_warp_online{
+	background:url(__STATIC__/images/kefu_1.png);
+}
+.kefu_warp{
+	cursor:pointer;
+	position:fixed;
+	top:50%;
+	right:10px;
+	width:80px;
+	height:80px;	
+	background-size:80px 80px;
+	z-index:1;
+	opacity:0.7;
+}
+.kefu_tip_msg .getout{
+	color:#999;
+}
+.kefu_tip_msg .goin{
+	color:blue;
+	cursor:pointer;
+}
+.kefu_tip_msg .send-msg div:first-child{
+	color:orange;
+}
+</style>
+<div class="kefu_warp kefu_warp_offline" onclick="KF.callKefu()"></div>
+<script type="text/javascript">
+{php}
+$array=explode(',',trim(str_replace('，',',',$webdb['weixin_reply_kefu']?:1),','));
+$kefu_id=$array[rand(0,count($array)-1)];
+{/php}
+{volist name="$array" id="kid"}
+KF.kefu_list[{$kid}] = {:json_encode(['name'=>get_user($kid)['nickname'],'icon'=>tempdir(get_user($kid)['icon']),'sign'=>get_user($kid)['introduce'],])};
+{/volist}
+WS.link({
+	kefu:{$kefu_id}
+	,kefu_info:KF.kefu_list[{$kefu_id}]
+	,userinfo:{:json_encode($userdb?fun('member@format',$userdb):['uid'=>0])}
+	,my_uid:{$userdb.uid?:0}
+	,ws_url:"{:fun('Gatewayclient@client_url')}",
+});
+</script>
+{if is_file(STATIC_PATH.'layui/lay/modules/layim.js')}
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<script type="text/javascript">
+if(typeof(layui)=='undefined'){
+	document.write('<script LANGUAGE="JavaScript" src="__STATIC__/layui/layui.js"><\/script>');
+}
+</script>
+<script LANGUAGE="JavaScript" src="__STATIC__/layui/kefu.js"></script>
+{/if}

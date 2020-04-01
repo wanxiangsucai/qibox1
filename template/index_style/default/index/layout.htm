@@ -11,8 +11,11 @@
 {block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/base.css">{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
-{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>{/block}
-{block name="head_layer_js"}<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?b"></script>{/block}
+{block name="head_layer_js"}
+<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
+<script type="text/javascript" src="__STATIC__/layui/layui.js"></script>
+{/block}
 </head>
 <body>
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
@@ -79,7 +82,15 @@
 </div>
 -->
 {/block}
+
 {block name="nav"}{// qb:nav title="" url="" /}{/block}
+
+{block name="model_content"}
+	<!--引用碎片-->
+	{qb:hy name="wap_layout_001" where="index_style/default/index/wap_kefu" val="datas" type="labelmodel"}
+		{$datas}
+	{/qb:hy}
+{/block}
 
 {block name="body_content"}页面主体部分内容{/block}	
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
@@ -87,6 +98,7 @@
 {block name="body_Footcont"}
 	{include file="index@footmenu" /}
 {/block}
+
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>

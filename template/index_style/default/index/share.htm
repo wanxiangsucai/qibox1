@@ -41,7 +41,7 @@ function SharHiddenMsg() {
 <div class="Share_Message" onClick="SharHiddenMsg();"></div>
 <script src="__STATIC__/js/jweixin.js"></script>
 <script type="text/javascript">
-
+wx.miniProgram.postMessage({ data:{title: '{$share.title}',desc:'{$share.about}'} });
 function ShareTimeline(){
     wx.onMenuShareTimeline({
       title: '{$share.title}',
