@@ -37,27 +37,36 @@ if(WS.my_uid()<1 || WS.guest_id()>0){
 	};
 }
 
+$(function(){	//延时开始
 
 layui.use('layim', function(layim){
+	console.log('layim','加载成功');
 	layim.config({
 		//初始化接口		
 		init: KF.layui_init
 
 		//查看群员接口
 		,members: {
-			url: '/json/getMembers.json'
+			url: '/index.php/index/wxapp.layim/getMembers.html'
 			,data: {}
 		}
 			//上传图片接口
-			,uploadImage: false
-			
+			,uploadImage: {
+  			 url: '/index.php/index/attachment/upload/dir/chatpic/module/chat.html'
+			 
+			} 
 			//上传文件接口
-			,uploadFile: false
+			,uploadFile: {
+  			url: '/index.php/index/attachment/upload/dir/chatfile/module/chat.html'
+			} 
+		//截图上传接口地址
+			,paseImg: '/index.php/index/attachment/upload/dir/chatpic/from/base64/module/chat.html'
 			,isAudio: false //开启聊天工具栏音频
 			,isVideo: false //开启聊天工具栏视频
 			
 			//扩展工具栏
-			,tool: false
+			,tool: true
+			,tool: [{alias: 'paseimg',title: '截图上传' ,icon: '&#xe64a;' }] 
 			
 			//,brief: true //是否简约模式（若开启则不显示主面板）
 			
@@ -76,6 +85,25 @@ layui.use('layim', function(layim){
 			//,find: layui.cache.dir + 'css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
 			,chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
 			
+	});
+//监听自定义工具栏点击，以添加代码为例
+layim.on('tool(paseimg)', function(insert, send, obj){
+layer.tips('使用QQ或者微信截图后回到聊天输入框Ctr+V粘贴即可实现截图上传', '.layim-tool-paseimg', {
+  tips: [1, '#2F4056'],
+  time: 4000
+});
+});
+ 
+	//修改签名
+	layim.on('sign', function(value){
+	  $.ajax({
+				url: "/index.php/index/wxapp.layim/sign.html",
+				type: "POST",
+				data:{sign:value},
+				success: function(info) {
+					layer.msg(info.msg);
+				}
+			});
 	});
 
 	//监听layim建立就绪
@@ -115,32 +143,42 @@ layui.use('layim', function(layim){
 	  layim.on('chatChange', function(res){
 		var type = res.data.type;
 		uid = res.data.id;
-		console.log('切换了窗口',uid);
+		console.log('切换了窗口',uid);		
+		
+		if(uid>0){
+			$.get("/index.php/index.php/index/wxapp.layim/set_read.html?uid="+uid,function(res){}); //标注已读
+		}else{
+			WS.link({"uid":uid,"kefu":0});	//跟圈子建立连接通道,才能收到那边新的即时消息
+		}
+		
 		var str = $.cookie('layim_msg_id');
-		if(str && str.indexOf(","+uid+",")>-1){
+		if(str && str.indexOf(","+uid+",")>-1 && $(".layim-"+type+uid+" .layim-msg-status").html()<1){
 			return ;
 		}
 		str = str ? str+uid+"," : ","+uid+"," ;
 		$.cookie('layim_msg_id', str, { expires: 30, path: '/' });
+
+		$(".layim-"+type+uid+" .layim-msg-status").html(0).hide();
 		
-		var index = layer.msg("请稍候,正在加载数据...");
-		$.get("/index.php/index.php/index/wxapp.layim/get_more_msg.html?uid="+uid,function(res){
-				layer.close(index);
-				if(res.code==0){
-					for(var i=res.data.length-1;i>=0;i--){
-						var rs = res.data[i];
-						layim.getMessage({
-							username: rs.from_username
-							,avatar: rs.from_icon
-							,id: uid
-							,type: type //"friend"
-							,mine:WS.my_uid()==rs.uid?true:false
-							,content: rs.content
-						});
-					}
-				}else{
-					layer.msg('没有任何聊天记录!');
+		var index = layer.msg("请稍候,正在加载数据...",{time:1500});
+		$.get("/index.php/index.php/index/wxapp.layim/get_more_msg.html?rows=20&uid="+uid,function(res){
+			layer.close(index);
+			if(res.code==0){
+				for(var i=res.data.length-1;i>=0;i--){
+					var rs = res.data[i];
+					layim.getMessage({
+						username: rs.from_username
+						,avatar: rs.from_icon
+						,timestamp:rs.full_time*1000
+						,id: uid
+						,type: type //"friend"
+						,mine:WS.my_uid()==rs.uid?true:false
+						,content: rs.content
+					});
 				}
+			}else{
+				layer.msg('没有任何聊天记录!');
+			}
 		});
 
 		if(type === 'friend'){			
@@ -161,25 +199,30 @@ layui.use('layim', function(layim){
 	LayIm = layim;
 });
 
+});	//延时结束,为了确认能顺利加载layim
+
+
 
 //接收各种WS的消息处理
 WS.onmsg(function(obj){
 	if(obj.type=='have_new_msg' || obj.type=='qun_sync_msg'){
 		var data;
-		if(obj.type=='qun_sync_msg'){	//兼容群聊的模式
+		if(obj.type=='qun_sync_msg'){	//兼容群聊的模式 两端直接连通的情况
 			data = obj.data[0];
 			if(data.uid==WS.my_uid()){
 				return ;
 			}
-		}else{	//私信的专有模式
+		}else{	//私信的专有模式,两端并没有直接连通
 			data = obj.data.msgdata;
 		}		
 		LayIm.getMessage({
 			username: data.from_username
 			,avatar: data.from_icon==''?'/public/static/images/noface.png':data.from_icon
-			,id: data.uid
-			,type: data.qun_id?"group":"friend"
+			,id: data.qun_id>0 ? -data.qun_id : data.uid
+			,type: data.qun_id>0 ? "group" : "friend"
 			,content: data.content
+			,timestamp:data.full_time*1000
+			,is_new:true	//需要声音提醒有新消息
       });
 	}
 });

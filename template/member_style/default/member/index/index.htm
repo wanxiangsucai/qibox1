@@ -21,7 +21,11 @@
                 <li class="bui-btn bui-box user-btn">
                     <div class="thumbnail a" href="{:get_url('user',$info.uid)}"><img src="{$info.icon|tempdir}" class="pic"  onerror="this.src='__STATIC__/images/nobody.gif'" /></div>
                     <div class="span1">
-                        <h3 class="item-title" title="昵称：{$info.nickname}">{$info.username}</h3>
+                        <h3 class="item-title" title="昵称：{$info.nickname}">{$info.username}
+						{volist name=":explode(',',config('webdb.M__qun')['show_vip_qun'])" id="qid"}
+									{if get_user($info.uid)['qun_group'][$qid]['type']==4}<a href="{:iurl('qun/content/show',['id'=>$qid])}" title="归属于 {:fun('qun@getByid',$qid)['title']} 的VIP会员" target="_blank"><img src="__STATIC__/images/vip2.png" width="25"></a>{/if}
+							   {/volist}
+							   </h3>
                         <p class="item-text">级别：{$info.groupid|getGroupByid} UID：{$info.uid}</p>
                         <div class="account-address">
                             <i class="user-right fa fa-clock-o"></i> 注册日期 {$info.regdate|format_time}

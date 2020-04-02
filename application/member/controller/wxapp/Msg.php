@@ -267,6 +267,7 @@ class Msg extends IndexBase
                     $guest_name = is_array($detail)?$detail['city']:'游客';
                 }else{
                     
+                    cache("msg_listuser-".$data['uid'],null);
                     $touser_info = $data['uid'] ? get_user($data['uid']) : get_user($data['touser'],'username');
                     if (!$touser_info) {
                         return $this->err_js('该用户不存在!');

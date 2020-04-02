@@ -36,7 +36,30 @@ class User extends Model
      */
 	public static function getById($id = '')
     {
-        return static::format(self::get(['uid' => $id]));
+        $rarray = static::format(self::get(['uid' => $id]));
+        if (empty($rarray)) {
+	        return ;
+	    }
+	    return $rarray;
+    }
+    
+    
+    /**
+     *  获取某个用户的所有信息
+     * @param unknown $value 可以是数组
+     * @param string $type 可以取任何字段
+     * @return array|\app\common\model\NULL[]|\app\common\model\unknown|array
+     */
+    public static function get_info($value,$type='uid'){
+        if(is_array($value)){
+            $map = $value;
+        }elseif($type=='name'){
+            $map['username'] = $value;
+        }elseif(preg_match('/^[\w]+$/', $type)){
+            $map[$type] = $value;
+        }
+        $array = self::get($map);
+        return static::format($array);
     }
     
     /**
@@ -46,43 +69,26 @@ class User extends Model
      */
     protected static function format($array=[]){
         $array = getArray($array);
-        if ($array) {
-            $array['sendmsg'] = json_decode($array['sendmsg'],true)?:[];
-            $array['ext_field'] = json_decode($array['ext_field'],true)?:[];
-            if ($array['ext_field']) {
-                $array = array_merge(Cfgfield::format($array['ext_field'],$array['groupid']),$array);   //ext_field自定义字段的优先级要低于系统字段
-            }
+        if (empty($array)) {
+            return [];
         }
+        if ($array['group_endtime'] && $array['groupid'] != 8 && $array['group_endtime']<time()) { //用户组过期了
+            $array['groupid'] = ($array['old_groupid']&&getGroupByid($array['old_groupid'])) ? $array['old_groupid'] : 8;     //恢复之前的用户组
+            static::edit_user([
+                'uid'=>$array['uid'],
+                'groupid'=>$array['groupid'],
+            ]);
+        }        
+        $array['sendmsg'] = json_decode($array['sendmsg'],true)?:[];
+        $array['ext_field'] = json_decode($array['ext_field'],true)?:[];
+        if ($array['ext_field']) {
+            $array = array_merge(Cfgfield::format($array['ext_field'],$array['groupid']),$array);   //ext_field自定义字段的优先级要低于系统字段
+        }
+        $array['icon'] && $array['icon'] = tempdir($array['icon']);
+        $array['qun_group'] = fun('qun@get_my_group',$array['uid']);
         return $array;
     }
-	
-	
-    /**
-     *  获取某个用户的所有信息
-	 * @param unknown $value 可以是数组
-	 * @param string $type 可以取任何字段
-     * @param string $format 是否转义,修改的时候,就不要转义.
-     * @return array|\app\common\model\NULL[]|\app\common\model\unknown|array
-     */
-	public static function get_info($value,$type='uid',$format=true){
-	    if(is_array($value)){
-	        $map = $value;
-	    }elseif($type=='name'){
-	        $map['username'] = $value;
-	    }elseif(preg_match('/^[\w]+$/', $type)){
-	        $map[$type] = $value;
-	    }
-	    $array = self::get($map);
-	    if($format===true){
-	        return static::format($array);
-	    }else{
-	        $array = getArray($array);
-	        $array['sendmsg'] = json_decode($array['sendmsg'],true)?:[];
-	        $array['ext_field'] = json_decode($array['ext_field'],true)?:[];
-	        $array['ext_field'] && $array = array_merge($array['ext_field'],$array);
-	        return $array;
-	    }	    
-	}
+    
 	
 	/**
 	 * 检查密码是否正确,密码正确,返回用户所有信息, 用户不存在,返回0, 密码不正确返回-1
@@ -94,7 +100,7 @@ class User extends Model
 	 */
 	public static function check_password($username='',$password='',$type='username',$checkmd5=false){
 	    $rs = self::get_info($username,$type);
-		if(!$rs){
+	    if(empty($rs) || !is_array($rs)){
 			return 0;
 		}
 		if($checkmd5===true && strlen($password)==32 && $password==$rs['password'] ){
@@ -472,14 +478,6 @@ class User extends Model
 	        static::quit($usr_info['uid']);
 	        return false;
 	    }
-		if ($usr_info['group_endtime'] && $usr_info['groupid'] != 8 && $usr_info['group_endtime']<time()) { //用户组过期了
-		    $usr_info['groupid'] = ($usr_info['old_groupid']&&getGroupByid($usr_info['old_groupid'])) ? $usr_info['old_groupid'] : 8;     //恢复之前的用户组
-		    edit_user([
-		        'uid'=>$usr_info['uid'],
-		        'groupid'=>$usr_info['groupid'],
-		    ]);
-		    cache('user_'.$usr_info['uid'],null);
-		}
 		return $usr_info;
 	}
 

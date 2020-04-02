@@ -87,6 +87,39 @@ class Qun{
         return MemberModel::where($map)->column(true);
     }
     
+    public static function get_my_group($uid=0,$qun_id=0){
+        if (!modules_config('qun')) {
+            return ;
+        }
+        $map = [
+            'uid'=>$uid,
+        ];
+        if ($qun_id){
+            $map['aid'] = $qun_id;
+            $info = getArray(MemberModel::where($map)->find());
+            if ($info['end_time']>0 && $info['end_time']<time() && $info['type']==4) {
+                $info['type']=1;
+                MemberModel::where('id',$info['id'])->update(['type'=>1]);
+            }
+            return $info;
+        }else{
+            $data = [];
+            $listdb = MemberModel::where($map)->order('type','desc')->column(true);
+            foreach($listdb AS $info){
+                if ($info['end_time']>0 && $info['end_time']<time() && $info['type']==4) {
+                    $info['type']=1;
+                    MemberModel::where('id',$info['id'])->update(['type'=>1]);
+                }
+                if ($data[$info['aid']]) {
+                    MemberModel::where('id',$info['id'])->delete();
+                }else{
+                    $data[$info['aid']] = $info;
+                }                
+            }
+            return $data;
+        }
+    }
+    
     /**
      * 查找某个主题被多少个圈子调整用过.
      * @param number $ext_id 主题ID
@@ -240,7 +273,7 @@ class Qun{
     /**
      * 根据圈子ID获取圈子的信息
      * @param unknown $id
-     * @param number $time
+     * @param number $time 缓存时间
      * @return void|string|mixed
      */
     public static function getByid($id,$time=3600){
@@ -263,7 +296,7 @@ class Qun{
             $info['picurl'] = tempdir($info['picurl']);
             unset($info['sncode']);
             //$array[$id] = $info;
-            cache('qunById'.$id,$info,60);
+            cache('qunById'.$id,$info,$time);
         }
         return $info;
     }

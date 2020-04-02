@@ -241,8 +241,9 @@ function format_chatmsg_tohtml(array){
 		var str_name = '';
 		var str_del = '';
 		var old_html = $(".pc_show_all_msg").html();
+		var old_num = $(".pc_show_all_msg li").length,new_num = array.length;	//解决重复点击没有内容的BUG
 		array.forEach((rs)=>{
-			if(old_html.indexOf( '<li data-id="'+rs.id )>-1){
+			if(old_html.indexOf( '<li data-id="'+rs.id )>-1 && new_num<old_num){
 				console.log('有重复的消息'+rs.id);
 				return true;
 			}
@@ -695,7 +696,7 @@ function showMoreMsg(uid){
 	if(show_msg_page==1){
 		maxid = -1;
 		get_qunuser_list(uid);	//获取圈内成员列表
-		layer.msg("数据加载中,请稍候...",{time:1000});
+		layer.msg("数据加载中,请稍候...",{time:300});
 	}
 	msg_scroll = false;
 	var loadIndex = null;

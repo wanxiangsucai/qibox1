@@ -1,19 +1,27 @@
 let localStream = null;
 let peer = null;
-var mycid = window.parent.clientId;		//自己的唯一标志
+
+var parents;
+if(window.parent.frames['iframe_msg']!=undefined){
+	parents = window.parent.frames['iframe_msg'];
+}else{
+	parents = window.parent;
+}
+
+var mycid = parents.clientId;		//自己的唯一标志
 var hecid;	//请求通话者的唯一标志
-var userinfo = window.parent.userinfo;  //当前用户信息
+var userinfo = parents.userinfo;  //当前用户信息
 var localVideo = document.querySelector("video#localVideo");
 var remoteVideo = document.querySelector("video#remoteVideo");
 var videoSelect = document.querySelector("select#videoSelect");
 var btnCall = document.querySelector("button#btnCall");
 var accept_send_stream = false;
 
-function list_user(){
+function list_user(online_members){
 	var str = '';
 	var weburl = window.location.href;	//var weburl = window.location.href.indexOf("http")==0 ? '' : '../../../../../..';
 		weburl = weburl.substring(0,weburl.indexOf('/public/static/')); //方便手机获取真实路径
-	window.parent.online_members.forEach((rs)=>{
+	online_members.forEach((rs)=>{
 		rs.username = rs.username.substring(0,8)
 		str += `<li class="user" data-id="${rs.uid}"><a href="#"><img src="${rs.icon}" onerror="this.src='${weburl}/public/static/images/noface.png'" ><br>${rs.username}</a></li>`;
 	});
@@ -25,13 +33,13 @@ function list_user(){
 			layer.alert("你的电脑没有摄像头,不能发起视频通话!");
 			return ;
 		}		
-		window.parent.mod_class.p2pvideo.is_invite = true;
+		parents.mod_class.p2pvideo.is_invite = true;
 		var arr = {
 			uid:$(this).data('id'),
 			user:userinfo,
 			cid:mycid,
 		}
-		window.parent.ws_send({
+		parents.ws_send({
 			type:"qun_to_alluser",	//群发给所有圈内成员的标志,固定格式
 			tag:"ask_video_phone",	//接收标志,根据不同的应用,需要重新自定义
 			data:arr,				//接收变量
@@ -61,9 +69,19 @@ function palyer(cid){
 	videoSelect.onchange = start;
 
 	if(typeof(cid)=='undefined'){
-		list_user();
+		//list_user();
+		
+		parents.ws_send({type:'get_online_user',tag:'gave_p2p_user'});  //请求在线用户
 	}
 }
+
+//接收到的在线用户数
+parents.ws_onmsg.getlistuser = function(obj){
+	if(obj.type=='gave_p2p_user'){
+		console.log(obj.data);
+		list_user(obj.data);
+	}
+};
 
 //开启本地摄像头 或切换摄像头
 function start() {

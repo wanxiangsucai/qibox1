@@ -960,7 +960,7 @@ if (!function_exists('get_user')) {
             if($rarray===null){
                 if(!$rarray=cache('user_'.$value)){
                     $mod===null && $mod = model('common/user');
-                    $rarray = $mod->getByid($value) ?: [];
+                    $rarray = $mod->getById($value) ?: [];
                     cache('user_'.$value,$rarray,3600*12);
                 }
                 $user_array[$value] = $rarray;
@@ -969,14 +969,6 @@ if (!function_exists('get_user')) {
             $mod===null && $mod = model('common/user');
 		    $rarray = $mod->get_info($value,$type);
         }
-		if ($rarray['group_endtime'] && $rarray['groupid'] != 8 && $rarray['group_endtime']<time()) { //用户组过期了
-		    $rarray['groupid'] = ($rarray['old_groupid']&&getGroupByid($rarray['old_groupid'])) ? $rarray['old_groupid'] : 8;     //恢复之前的用户组
-		    edit_user([
-		        'uid'=>$rarray['uid'],
-		        'groupid'=>$rarray['groupid'],
-		    ]);
-		    cache('user_'.$rarray['uid'],null);
-		}
 		return $rarray;
     }
 }

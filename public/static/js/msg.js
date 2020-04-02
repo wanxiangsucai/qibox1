@@ -158,10 +158,11 @@ var WS = function () {	//类开始
 				});
 			}
 			
-			var username = my_uid>0?userinfo.username:'';
-			var icon = my_uid>0?userinfo.icon:'';
-			var is_quner = my_uid==quninfo.uid ? 1 : 0;	//圈主
-			w_s.send('{"type":"connect","url":"'+window.location.href+'","uid":"'+uid+'","kefu":"'+kefu+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
+			var username = (my_uid>0&&userinfo.username) ? userinfo.username : '';
+			var icon = (my_uid>0&&userinfo.icon) ? userinfo.icon : '';
+			var is_quner = my_uid==quninfo.uid ? 1 : 0;	//是否圈主
+			var is_kefu = KF.kefu_list[my_uid] ? 1 : 0;	//是否客服
+			w_s.send('{"type":"connect","url":"'+window.location.href+'","uid":"'+uid+'","kefu":"'+kefu+'","my_uid":"'+my_uid+'","is_quner":"'+is_quner+'","is_kefu":"'+is_kefu+'","userAgent":"'+navigator.userAgent+'","my_username":"'+username+'","my_icon":"'+icon+'"}');
 		}else if(obj.type=='count'||obj.type=='goin'){  //用户连接成功后,算出当前在线数据统计
 			//show_online(obj,'goin');
 		}else if(obj.type=='leave'){	//某个用户离开了
@@ -244,7 +245,7 @@ var WS = function () {	//类开始
 
 	function init(o){
 			if(o.ws_url)ws_url = o.ws_url;		
-			if(o.kefu)kefu = o.kefu;
+			if(o.kefu!=undefined)kefu = o.kefu;
 			if(o.uid){
 				uid = o.uid;
 			}else if(o.kefu){
@@ -349,7 +350,8 @@ WS.onmsg(function(obj){
 				KF.welcome_msg(obj.data[0].username);
 			}
 		}
-		if( obj.kefu_online==1 || WS.my_uid()==WS.kefu() ){
+		//if( obj.kefu_online==1 || WS.my_uid()==WS.kefu() ){
+		if( obj.online_kefus.length>0 ){
 			$(".kefu_warp").removeClass("kefu_warp_offline");
 			$(".kefu_warp").addClass("kefu_warp_online");				
 		}else{
@@ -407,7 +409,8 @@ var KF = {
 		}else if(obj.type=='kehu_getout'){
 			msg = '<div class="getout"><i class="fa fa-sign-in"></i> '+obj.data.user_name + ' 离开了</div>';
 		}else if(obj.type=='have_new_msg'){
-			msg = '<div class="send-msg"><div><i class="glyphicon glyphicon-hand-right"></i> '+obj.data.user_name + ' 私聊你,内容如下</div><div>'+obj.data.msgdata.content+'</div></div>';
+			var content  = obj.data.msgdata.content.replace(/<\/?[^>]*>/g, '');
+			msg = '<div class="send-msg" data-id="'+key+'"><div><i class="glyphicon glyphicon-hand-right"></i> '+obj.data.user_name + ' 私聊你,内容如下</div><div>'+content+'</div></div>';
 		}
 		KF.tip_msg += msg;
 		if(!KF.tip_open){
@@ -434,8 +437,8 @@ var KF = {
 		}else{
 			$('.kefu_tip_msg').html(KF.tip_msg);
 		}
-		$(".kefu_tip_msg .goin").off("click");
-		$(".kefu_tip_msg .goin").click(function(){
+		$(".kefu_tip_msg .goin,.kefu_tip_msg .send-msg").off("click");
+		$(".kefu_tip_msg .goin,.kefu_tip_msg .send-msg").click(function(){
 			//KF.tip_open = false;
 			var id = $(this).data('id');
 			KF.chat_win(id);
@@ -466,7 +469,8 @@ var KF = {
 		if(KF.chat_open==true){	//已经打开了会话窗口,就不提示了
 			return ;
 		}
-		var msg = obj.data[0].from_username + ' 给你发了一条新消息,内容如下<br>'+obj.data[0].content+'<br><br>';
+		var content = obj.data[0].content.replace(/<\/?[^>]*>/g, '');
+		var msg = obj.data[0].from_username + ' 给你发了一条新消息,内容如下<br>'+content+'<br><br>';
 		KF.tip_msg += msg;
 		if(!KF.tip_open){
 			KF.tip_open = true;

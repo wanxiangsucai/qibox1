@@ -219,7 +219,7 @@ class Msg extends Model
             $listdb = cache("msg_listuser-{$uid}");
             if ($listdb) {
                 foreach ($listdb AS $key=>$rs){
-                    $rs['new_num'] = 0;
+                    //$rs['new_num'] = 0;
                     $listdb[$key] = $rs;
                 }
                 return $listdb;
@@ -235,7 +235,7 @@ class Msg extends Model
         ->buildSql();
         
         $listdb = Db::table($subQuery.' a')
-        ->field('uid,touid,create_time,title,id,qun_id,visit_time,update_time,count(id) AS num,sum(ifread) AS old_num,(qun_id*1000000 + uid + touid + uid * uid + touid * touid) AS MX')
+        ->field('uid,touid,create_time,title,id,qun_id,visit_time,update_time,count(id) AS num,sum(ifread) AS old_num,(qun_id*1000000 + uid + touid + POWER( uid, 1 /2 ) + POWER( touid, 1 /2 )) AS MX')
         ->group('MX')
         //->order('id','desc')
         ->order('update_time','desc')

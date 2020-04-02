@@ -11,9 +11,9 @@
 	position:fixed;
 	top:50%;
 	right:10px;
-	width:2rem;
-	height:2rem;	
-	background-size:2rem 2rem;
+	width:35px;
+	height:35px;	
+	background-size:35px 35px;
 	opacity:0.8;
 	z-index:1;
 }
@@ -31,9 +31,16 @@
 <div class="kefu_warp kefu_warp_offline" onclick="KF.callKefu()"></div>
 
 <script type="text/javascript">
+{php}
+$array=explode(',',trim(str_replace('，',',',$webdb['weixin_reply_kefu']?:1),','));
+$kefu_id=$array[rand(0,count($array)-1)];
+{/php}
+{volist name="$array" id="kid"}
+KF.kefu_list[{$kid}] = {:json_encode(['name'=>get_user($kid)['nickname'],'icon'=>tempdir(get_user($kid)['icon']),'sign'=>get_user($kid)['introduce'],])};
+{/volist}
 WS.link({
-	kefu:1
-	,kefu_info:{:json_encode(['name'=>get_user_name(1),'icon'=>get_user_icon(1),])}
+	kefu:{$kefu_id}
+	,kefu_info:KF.kefu_list[{$kefu_id}]
 	,userinfo:{:json_encode($userdb?fun('member@format',$userdb):['uid'=>0])}
 	,my_uid:{$userdb.uid?:0}
 	,ws_url:"{:fun('Gatewayclient@client_url')}",

@@ -33,9 +33,12 @@ trait Market
                     Cache::clear();
                     return $this->err_js( '当前应用成功授权为正版应用,请按键盘F5键,刷新网页获取升级文件.' );
                 }elseif ($type=='m' && $_array && $_array['version_id']!=$id) {
+                    $_info = json_decode(http_curl("https://x1.php168.com/appstore/getapp/info.html?id=".$id),true);
                     $this->model->update([
-                            'id'=>$_array['id'],
-                            'version_id'=>$id,
+                        'id'=>$_array['id'],
+                        'version_id'=>$id,
+                        'name'=>$_info['title']?:("增强版".$_array['name']),
+                        'author'=>$_info['author']?:'',
                     ]);
                     Cache::clear();
                     return $this->err_js( $_array['name'].' 频道数据库升级成功,你还需要进一步升级文件,请按键盘F5键,刷新网页重新升级程序文件.' );
