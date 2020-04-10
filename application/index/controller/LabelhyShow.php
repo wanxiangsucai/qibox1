@@ -217,7 +217,7 @@ class LabelhyShow extends LabelShow
             }
         }
         
-        echo self::pri_tag_div($tag_name,$type,$tag_array,$cfg['class']);    //输出标签的操作层
+        echo self::pri_tag_div($tag_name, $type, $tag_array, $cfg['class'], $hy_tags?iurl('index/labelhy/index',"pagename=$pagename&hy_id=$hy_id&hy_tags=$hy_tags"):'');    //输出标签的操作层
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
             
@@ -441,7 +441,7 @@ EOT;
      * @param array $tag_array
      * @param string $class_name
      */
-    protected  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name=''){
+    protected  function pri_tag_div($tag_name='',$type='',$tag_array=[],$class_name='',$url=''){
         if(input('get.labelhy_set')=='set' || get_cookie('labelhy_set')=='set'){
             if (SHOW_SET_LABEL===false) {
                 return ;
@@ -462,7 +462,7 @@ EOT;
                 $type = str_replace('\\', '--', $class_name);
             }
             
-            echo "<div  class=\"p8label hylabel\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name','".self::$labelhy_adminurl."');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(".STATIC_URL."js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
+            echo "<div  class=\"p8label hylabel\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name','".($url?:self::$labelhy_adminurl)."');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(".STATIC_URL."js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
             ";
         }        
     }

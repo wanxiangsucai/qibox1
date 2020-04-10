@@ -372,7 +372,6 @@ class Label extends IndexBase
             $_array = $this->get_post_data();
             $this->save($_array);
         }
-        
         $_array = cache('tag_default_'.$name.$hy_id.$hy_tags);
 
         $path = $_array['conf'].(strstr($_array['conf'],'.php')?'':'.php');
