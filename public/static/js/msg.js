@@ -1,6 +1,7 @@
 var WS = function () {	//类开始
 
 	var my_uid = 0 ;	//当前访客UID,游客的话是8位以上数字,登录用户的话是8位以下数字
+	var is_login = false;
 	var guest_id = 0;  //游客UID , 登录用户的话为0
 	var uid = 0;	//对方UID,或客服UID,或圈子负数ID
 	var kefu = 0;  //客服UID
@@ -244,17 +245,18 @@ var WS = function () {	//类开始
 	}
 
 	function init(o){
-			if(o.ws_url)ws_url = o.ws_url;		
-			if(o.kefu!=undefined)kefu = o.kefu;
-			if(o.uid){
-				uid = o.uid;
-			}else if(o.kefu){
-				uid = o.kefu;
-			}		
-			if(o.my_uid)my_uid = o.my_uid;
-			if(o.userinfo)userinfo = o.userinfo;
-			if(o.quninfo)quninfo = o.quninfo;
-			if(o.kefu_info)member_array[kefu] = o.kefu_info;
+		if(o.ws_url)ws_url = o.ws_url;		
+		if(o.kefu!=undefined)kefu = o.kefu;
+		if(o.uid){
+			uid = o.uid;
+		}else if(o.kefu){
+			uid = o.kefu;
+		}		
+		if(o.my_uid)my_uid = o.my_uid;
+		if(o.userinfo)userinfo = o.userinfo;
+		if(o.quninfo)quninfo = o.quninfo;
+		if(o.kefu_info)member_array[kefu] = o.kefu_info;
+		if(my_uid>0 && my_uid<9999999)is_login=true;
 	}
 
 	return {
@@ -312,6 +314,9 @@ var WS = function () {	//类开始
 			}else{
 				return guest_id;
 			}		
+		},
+		is_login:function(v){
+			return is_login;	
 		},
 		postmsg:function(cnt,callback){
 			postmsg(cnt,callback);
@@ -452,6 +457,10 @@ var KF = {
 			url = "/member.php/member/msg/index.html?uid="+touid;
 		}else{
 			url = "/member.php/member/msg/index.html"
+		}
+		if ((navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i))){
+			location.href=url;
+			return ;
 		}
 		KF.chat_open = true;		
 		layer.open({

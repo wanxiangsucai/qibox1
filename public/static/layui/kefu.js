@@ -81,7 +81,7 @@ layui.use('layim', function(layim){
 			,notice: true //是否开启桌面消息提醒，默认false
 			//,voice: false //声音提醒，默认开启，声音文件为：default.mp3
 			
-			//,msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+			,msgbox:(WS.my_uid()<1 || WS.guest_id()>0)?false:layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
 			//,find: layui.cache.dir + 'css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
 			,chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
 			
@@ -195,13 +195,21 @@ layer.tips('使用QQ或者微信截图后回到聊天输入框Ctr+V粘贴即可�
 		  });*/
 		}
 	  });
-
+	//网页调用聊天框
+ 
+$('.site-send-layim').on('click', function() {
+    layim.chat({
+        name: $(this).data('name'),
+        type: 'friend',
+        avatar: $(this).data('picurl'),
+        id: $(this).data('id')
+    });
+});
 	LayIm = layim;
 });
 
 });	//延时结束,为了确认能顺利加载layim
-
-
+ 
 
 //接收各种WS的消息处理
 WS.onmsg(function(obj){
@@ -230,25 +238,31 @@ WS.onmsg(function(obj){
 
 //重置会话窗口
 KF.chat_win = function(touid){
-	if(!touid){
-		$(".layui-layim-min").trigger("click");
-		return ;
-	}
-	layui.layim.setFriendStatus(touid, 'online');
-	let username,user = WS.user_db(touid);
-	if(user){
-		username = user.name;
-	}else if(touid==WS.kefu()){
-		username = '客服MM';
-	}else if(WS.my_uid()==WS.kefu()){
-		username = '客户';
+	if(typeof(touid)=='object'){
+		var o = touid;
+		var username=o.username,type=o.type||'friend',icon=o.icon||'/public/static/images/noface.png',id=o.uid;
 	}else{
-		username = '网友';
-	}console.log('dddddd',user);
+		if(!touid){
+			$(".layui-layim-min").trigger("click");
+			return ;
+		}
+		layui.layim.setFriendStatus(touid, 'online');
+		var username,user = WS.user_db(touid)||KF.kefu_list[touid];
+		if(user){
+			username = user.name;
+		}else if(touid==WS.kefu()){
+			username = '客服MM';
+		}else if(WS.my_uid()==WS.kefu()){
+			username = '客户';
+		}else{
+			username = '网友';
+		}
+		var type = 'friend',icon = user&&user.icon ? user.icon : '/public/static/images/noface.png',id = touid;
+	}
 	LayIm.chat({
 		name: username
-		,type: 'friend'
-		,avatar: user&&user.icon ? user.icon : '/public/static/images/noface.png'
-		,id: touid,
+		,type: type
+		,avatar: icon
+		,id: id,
 	});
 }

@@ -92,17 +92,20 @@ class Label extends Model
         if(empty($page_tags)){
             //比如头尾公共标签多处调用的话，$page_name值是反复变化的,所以要用OR查询
             $page_tags = self::where(['pagename'=>$page_name])->whereOr(['name'=>$tag_name])->column(true,'name');
-            //cache('config_page_tags_'.$page_name,$page_tags,3600);
+            cache('config_page_tags_'.$page_name,LABEL_SET===true?null:$page_tags);
         }
         
         //取得具体某个标签的配置数据
         if(!empty($page_tags)&&!empty($page_tags[$tag_name])){
             $tag_config = $page_tags[$tag_name];
+        }else{
+            //对于layout.htm布局模板的公共标签，$page_name值是反复变化的
+            $tag_config = cache('config_page_tag_'.$tag_name);
+            if (empty($tag_config)) {
+                $tag_config = getArray(self::where(['name'=>$tag_name])->find());
+                cache('config_page_tag_'.$tag_name,LABEL_SET===true?null:$tag_config);
+            }            
         }
-        //else{
-            //比如头尾公共标签多处调用的话，$page_name值是反复变化的
-            //$tag_config = getArray(self::where(['name'=>$tag_name])->find());
-       // }
         if(empty($tag_config)){
             return ;    //新标签，不存在配置参数，所以也不用执行下面的数据取值
         }
@@ -138,6 +141,18 @@ class Label extends Model
             }
         }
         return $tag_config;
+    }
+    
+    /**
+     * 碎片专用,避免跟get_tag_data_cfg冲突,因为碎片里边可能有多个标签
+     * @param string $tag_name
+     * @param string $page_name
+     * @param number $page_num
+     * @param array $live_parameter
+     * @return void|\app\index\model\unknown|array|\app\index\model\NULL[]
+     */
+    public static function get_labelmodel_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[]){
+        return self::get_tag_data_cfg($tag_name , $page_name , $page_num , $live_parameter);
     }
     
     /**

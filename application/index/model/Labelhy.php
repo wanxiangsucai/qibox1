@@ -54,21 +54,24 @@ class Labelhy extends Label
     public static function get_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags=''){
         
         //获取当前页面的所有标签的数据库配置参数，如果一个页面有很多标签的时候，比较有帮助，如果标签只有一两个就帮助不太大。
-        $page_tags = cache('config_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags);
+        $page_tags = cache('hyconfig_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags);
         if(empty($page_tags)){
             $hy_tags = intval($hy_tags);
             $page_tags = self::where(['pagename'=>$page_name])->where(['ext_id'=>$hy_id,'fid'=>$hy_tags])->column(true,'name');
-            //cache('config_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags,$page_tags,600);
+            cache('hyconfig_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags,SHOW_SET_LABEL===true?null:$page_tags);
         }
         
         //取得具体某个标签的配置数据
         if(!empty($page_tags)&&!empty($page_tags[$tag_name])){
             $tag_config = $page_tags[$tag_name];
+        }else{
+            //对于layout.htm布局模板的公共标签，$page_name值是反复变化的
+            $tag_config = cache('hyconfig_page_tag_'.$tag_name.'-'.$hy_id.'-'.$hy_tags);
+            if (empty($tag_config)) {
+                $tag_config = getArray(self::where(['name'=>$tag_name])->where(['ext_id'=>$hy_id,'fid'=>$hy_tags])->find());
+                cache('hyconfig_page_tag_'.$tag_name.'-'.$hy_id.'-'.$hy_tags,LABEL_SET===true?null:$tag_config);
+            }
         }
-        //else{
-            //比如头尾公共标签多处调用的话，$page_name值是反复变化的
-            //$tag_config = getArray(self::where(['name'=>$tag_name])->find());
-       // }
         if(empty($tag_config)){
             return ;    //新标签，不存在配置参数，所以也不用执行下面的数据取值
         }
@@ -104,6 +107,19 @@ class Labelhy extends Label
         return $tag_config;
     }
     
+    /**
+     * 碎片专用,避免跟get_tag_data_cfg冲突,因为碎片里边可能有多个标签
+     * @param string $tag_name
+     * @param string $page_name
+     * @param number $page_num
+     * @param array $live_parameter
+     * @param number $hy_id
+     * @param string $hy_tags
+     * @return void|\app\index\model\unknown|array|\app\index\model\NULL[]
+     */
+    public static function get_labelmodel_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags=''){
+        return self::get_tag_data_cfg($tag_name , $page_name , $page_num , $live_parameter , $hy_id , $hy_tags );
+    }
 
 }
 

@@ -1,4 +1,4 @@
-<!--客服-->
+<!--简单网页客服-->
 <style type="text/css">
 .kefu_warp_offline{
 	background:url(__STATIC__/images/kefu_0.png);
@@ -29,28 +29,5 @@
 }
 </style>
 <div class="kefu_warp kefu_warp_offline" onclick="KF.callKefu()"></div>
-<script type="text/javascript">
-{php}
-$array=explode(',',trim(str_replace('，',',',$webdb['weixin_reply_kefu']?:1),','));
-$kefu_id=$array[rand(0,count($array)-1)];
-{/php}
-{volist name="$array" id="kid"}
-KF.kefu_list[{$kid}] = {:json_encode(['name'=>get_user($kid)['nickname'],'icon'=>tempdir(get_user($kid)['icon']),'sign'=>get_user($kid)['introduce'],])};
-{/volist}
-WS.link({
-	kefu:{$kefu_id}
-	,kefu_info:KF.kefu_list[{$kefu_id}]
-	,userinfo:{:json_encode($userdb?fun('member@format',$userdb):['uid'=>0])}
-	,my_uid:{$userdb.uid?:0}
-	,ws_url:"{:fun('Gatewayclient@client_url')}",
-});
-</script>
-{if is_file(STATIC_PATH.'layui/lay/modules/layim.js')}
-<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
-<script type="text/javascript">
-if(typeof(layui)=='undefined'){
-	document.write('<script LANGUAGE="JavaScript" src="__STATIC__/layui/layui.js"><\/script>');
-}
-</script>
-<script LANGUAGE="JavaScript" src="__STATIC__/layui/kefu.js"></script>
-{/if}
+{:fun('kefu@init')}
+{if LABEL_SET===true}<div style="font-size:20px;">客服碎片<!--这里仅仅是方便提示用户而已,没实际作用--></div>{/if}

@@ -1777,3 +1777,6 @@ ALTER TABLE `qb_labelhy` DROP INDEX  `page` ,ADD INDEX (  `pagename` ,  `ext_id`
 
 ALTER TABLE  `qb_msg` CHANGE  `touid`  `touid` BIGINT( 12 ) NOT NULL DEFAULT  '0' COMMENT  '接收者的帐户uid';
 ALTER TABLE  `qb_msg` CHANGE  `uid`  `uid` BIGINT( 12 ) NOT NULL DEFAULT  '0' COMMENT  '发送者的UID';
+
+ALTER TABLE  `qb_memberdata` CHANGE  `money`  `money` MEDIUMINT( 7 ) NOT NULL DEFAULT  '0' COMMENT  '会员积分数';
+

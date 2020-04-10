@@ -6,15 +6,25 @@ use app\index\model\Labelhy AS Model;
 
 class Labelmodels extends IndexBase
 {
+    protected $info = [];
+    protected $id = 0;
+    protected $synchronize = true; //同步获取碎片数据
+    
+    protected function _initialize()
+    {
+        parent::_initialize();
+        if (isset($this->webdb['label_model_synchronize'])) {
+            $this->synchronize = $this->webdb['label_model_synchronize'];
+        }
+    }
+    
     protected function make_wap($path='',$tags='',$cfg=[]){
-
         $_path = str_replace(['/','.'], '___', $path);
         $basename = end(explode('___',$_path));
-        $div='';
+        $div = $js = '';
         $id = intval(input('id'));
-        $hyid = config('system_dirname')=='qun'?$id:0; //避免CMS内容页也当作圈子处理
-        $js="label_model_init('{$_path}','{$tags}',{$hyid},$id);\r\n";
-        if (SHOW_SET_LABEL===true) {
+        $hyid = config('system_dirname')=='qun'?$id:0; //避免CMS内容页也当作圈子处理        
+        if (SHOW_SET_LABEL===true || (LABEL_SET===true&&$this->synchronize)) {
             $div = "
                 <div class='headle'>
                         <a href='javascript:' class='up glyphicon glyphicon-arrow-up'>上移</a>  
@@ -25,6 +35,13 @@ class Labelmodels extends IndexBase
                     </div>
                 ";
         }
+        
+        $js = "label_model_init('{$_path}','{$tags}',{$hyid},$id);\r\n";
+        
+        if ($this->synchronize) {
+            $div .= $this->display_html($_path,$tags);
+        }
+        
         $top = $cfg['top']?:0;
         $bottom = $cfg['bottom']?:0;
         $left = $cfg['left']?:0;
@@ -33,6 +50,25 @@ class Labelmodels extends IndexBase
                     $div
                    </div>";
         return [$js,$div];
+    }
+    
+    /**
+     * 解释碎片模板
+     * @param string $path 只能是___替换/的非真实路径模板
+     * @param string $tags
+     * @return string|mixed|string
+     */
+    protected function display_html($path='',$tags=''){
+        $result = $this->get_path($path);
+        if ($result!==true) {
+            return "$result<script>layer.alert('".$result."')</script>";
+        }
+        $this->request->get(['tags'=>$tags]);
+        $this->assign('tags',$tags);
+        $this->assign('info',$this->info);
+        $this->assign('id',$this->id);
+        $content = $this->fetch($path);
+        return $content;
     }
     
     /**
@@ -56,6 +92,8 @@ class Labelmodels extends IndexBase
      */
     public function get_label($tag_array=[]){
         $cfg = unserialize($tag_array['cfg']);
+        $this->info = $cfg['Info'];
+        $this->id = $cfg['Id'];
         
         $_tags = $this->str2num($cfg['tag_name']);
         
@@ -80,8 +118,31 @@ class Labelmodels extends IndexBase
             }
         }
         
-        static $model_num = 0;
+        $id = config('system_dirname')=='qun'?intval(input('id')):0; //避免CMS内容页也当作圈子处理
         
+        $code = '';
+        if (SHOW_SET_LABEL===true || (LABEL_SET===true&&$this->synchronize)) {
+            $code = '<div class="diy-page-model-btn">恢复(添加)模块<br><br></div>';
+        }
+        static $if_loadjs = false;
+        if($if_loadjs==false){
+            $if_loadjs = true;
+            $model_dir = 'index';
+            if (class_exists("app\\".config('system_dirname')."\\index\\Labelmodels")) {
+                $model_dir = config('system_dirname');
+            }elseif (class_exists("app\\common\\upgrade\\U25")){
+                \app\common\upgrade\U25::up();
+            }
+            $code .="<script type=\"text/javascript\" src=\"".STATIC_URL.'js/label_model.js'."?0\"></script>
+            <script type='text/javascript'>
+            var label_model_url = '".urls($model_dir.'/labelmodels/show')."';
+            var label_model_saveurl = '".urls($model_dir.'/labelmodels/save')."';
+            var label_model_num = 0;
+            var label_model_synchronize = ".($this->synchronize?'true':'false').";
+            </script>";
+        }
+        
+        static $model_num = 0;        
         $js_warp = $div_warp =  '';
         if($tag_array['extend_cfg']!=''){ //数据库有记录
             $array = json_decode($tag_array['extend_cfg'],true)?:[];
@@ -100,37 +161,12 @@ class Labelmodels extends IndexBase
                 $div_warp .= $detail[1];
             }
         }
-
-        $id = config('system_dirname')=='qun'?intval(input('id')):0; //避免CMS内容页也当作圈子处理
         
-        $code = '';
-        if (SHOW_SET_LABEL===true) {
-            $code = '<div class="diy-page-model-btn">恢复(添加)模块<br><br></div>';
-        }
-        static $if_loadjs = false;
-        if($if_loadjs==false){
-            $if_loadjs = true;
-            $index = 'index';
-            if (class_exists("app\\".config('system_dirname')."\\index\\Labelmodels")) {
-                $index = config('system_dirname');
-            }elseif (class_exists("app\\common\\upgrade\\U25")){
-                \app\common\upgrade\U25::up();
-            }
-            $label_model_url = urls($index.'/labelmodels/show');
-            $label_model_saveurl = urls($index.'/labelmodels/save');
-            $code .="<script type=\"text/javascript\" src=\"".STATIC_URL.'js/label_model.js'."?d\"></script>
-                <script type='text/javascript'>
-                var label_model_url = '{$label_model_url}';
-                var label_model_saveurl = '{$label_model_saveurl}';
-                var label_model_num = 0;
-                </script>"; 
-        }
-        return $code."
+        return $code."<div class='diy_pages {$cfg['tag_name']}' data-tagname='{$cfg['tag_name']}' data-pagename='{$cfg['page_name']}' data-id='{$id}'>{$div_warp}\r\n</div>
                 <script type='text/javascript'>
                 {$js_warp}
                 label_model_num = {$model_num};
-                </script>
-                <div class='diy_pages {$cfg['tag_name']}' data-tagname='{$cfg['tag_name']}' data-pagename='{$cfg['page_name']}' data-id='{$id}'>{$div_warp}\r\n</div>";
+                </script> ";
 
     }
     
@@ -143,23 +179,9 @@ class Labelmodels extends IndexBase
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
     public function show($id=0,$path='',$tags='',$ids=0){
-        if(preg_match('/^[\w\-]+$/', $path)){
-            if (!strstr($path,'___')) {
-                $path = TEMPLATE_PATH.'model_style/default/'.$path.'.'.config('template.view_suffix');
-            }else{
-                $path = str_replace('___', '/', $path).'.'.config('template.view_suffix');
-                if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
-                    $path = TEMPLATE_PATH.'index_style/'.$path;
-                }else{
-                    $path = TEMPLATE_PATH.$path;
-                }
-            }                      
-        }else{
-            return $this->ok_js(['content'=>"<script>layer.alert('".$path."碎片模板路径有误!')</script>"]);
-        }
-        
-        if(!is_file($path)){
-            return $this->ok_js(['content'=>"<script>layer.alert('".str_replace(TEMPLATE_PATH, '', $path)."碎片模板不存在!')</script>"]);
+        $result = $this->get_path($path);
+        if ($result!==true) {
+            return $this->ok_js(['content'=>"<script>layer.alert('".$result."')</script>"]);
         }
         $info = [];
         if ($ids) { //内容ID,也有可能是圈子ID
@@ -173,6 +195,33 @@ class Labelmodels extends IndexBase
         $this->assign('tags',$tags);
         $content = $this->fetch($path);
         return $this->ok_js(['content'=>$content]);
+    }
+
+    /**
+     * 获取模板的真实路径
+     * @param string $path
+     * @return string|boolean
+     */
+    protected function get_path(&$path=''){
+        if(preg_match('/^[\w\-]+$/', $path)){
+            if (!strstr($path,'___')) {
+                $path = TEMPLATE_PATH.'model_style/default/'.$path.'.'.config('template.view_suffix');
+            }else{
+                $path = str_replace('___', '/', $path).'.'.config('template.view_suffix');
+                if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
+                    $path = TEMPLATE_PATH.'index_style/'.$path;
+                }else{
+                    $path = TEMPLATE_PATH.$path;
+                }
+            }
+        }else{
+            return $path.'碎片模板路径有误!';
+        }
+        
+        if(!is_file($path)){
+            return str_replace(TEMPLATE_PATH, '', $path).'碎片模板不存在!';
+        }
+        return true;
     }
     
     /**

@@ -105,29 +105,59 @@ class Layim extends IndexBase{
 					'online'   =>2,
 				],
 			],
+		    'history'=>[],
 		];
 		foreach($listdb AS $rs){
 			if(empty($rs['f_icon'])){
 				$rs['f_icon']='/public/static/images/noface.png';
 			}
-			if($rs['qun_id']>0){
-				$array['group'][]=[
+			$time = strtotime($rs['create_time'])*1000;
+			$histime = $rs['new_num']>0?time()*1000:$time;
+			if($rs['qun_id']>0){ //圈子
+			    $sign = get_user_name($rs['uid']).' 在圈子最后发表了';			    
+				$array['group'][] = [
 					'groupname'=>$rs['f_name'],
 					'id'       =>$rs['f_uid'],
 					'avatar'   =>$rs['f_icon'],
 					'status'   =>$rs['new_num']?'online':'offline',
 					'new_num'  =>$rs['new_num'],
 					'num'      =>$rs['num'],
+				    'sign'     =>$sign,
 				];
-			}else{
-				$array['friend'][1]['list'][]=[
+				$array['history']['group'.$rs['f_uid']] = [
+				    'avatar'=>$rs['f_icon'],
+				    //'content'=>$sign,
+				    'sign'=>$sign,
+				    'historyTime'=>$histime,
+				    'timestamp'=>$time,
+				    'id'=>$rs['f_uid'],
+				    //'groupname'=>$rs['f_name'],
+				    'name'=>$rs['f_name'],
+				    'new_num' =>$rs['new_num'],
+				    'type'=>'group',
+				];
+			}else{   //好友
+			    $sign = get_word($rs['title'],30);
+				$array['friend'][1]['list'][] = [
 					'username'=>$rs['f_name'],
 					'id'      =>$rs['f_uid']?:9999999,
 					'status'  =>$rs['new_num']?'online':'offline',
-					'sign'    =>get_word($rs['title'],30),
+				    'sign'    =>$sign,
 					'avatar'  =>$rs['f_icon'],
 					'new_num' =>$rs['new_num'],
 					'num'     =>$rs['num'],
+				];
+				$array['history']['friend'.$rs['f_uid']] = [
+				    'avatar'=>$rs['f_icon'],
+				    //'content'=>$sign,
+				    'sign'=>$sign,
+				    'historyTime'=>$histime,
+				    'timestamp'=>$time,
+				    'id'=>$rs['f_uid']?:9999999,
+				    //'username'=>$rs['f_name'],
+				    'name'=>$rs['f_name'],
+				    'new_num' =>$rs['new_num'],
+				    'type'=>'friend',
 				];
 			}
 		}

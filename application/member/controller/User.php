@@ -164,7 +164,7 @@ class User extends IndexBase
                     $content = '你刚刚修改了密码，如果不是你本人操作，请尽快选择微信或手机登录重新修改密码，以避免造成不必要的损失！';
                     send_msg($this->user['uid'],$title,$content.'<a href="'.murl('member/user/edit').'" target="_blank">立即登录</a>');
                     send_wx_msg($this->user['uid'], $content.'<a href="'.murl('member/user/edit').'" target="_blank">立即登录</a>');
-                    send_sms($this->user['mobphone'], $content);
+                    //send_sms($this->user['mobphone'], $content);
                 }
                 $this->success('修改成功');
             } else {

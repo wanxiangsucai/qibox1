@@ -14,5 +14,11 @@ class Msg extends IndexBase
 		return $this->fetch('index');
     }
     
+    public function layim()
+    {
+        return $this->fetch('layim');
+    }
+    
+    
 }
 

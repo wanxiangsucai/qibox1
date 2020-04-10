@@ -85,7 +85,7 @@ class LabelShow extends IndexBase
         $timestamp = $this->timestamp;
         $webdb = $this->webdb;
         
-        $parameter =get_post(); //这里不能用input 因为GET的优先级更高   
+        $parameter =get_post(); //这里不能用input 因为GET的优先级更高
         foreach ($parameter AS $key=>$value){
             if($value===''){
                 unset($parameter[$key]);    //避免空值也执行where语句
@@ -104,7 +104,7 @@ class LabelShow extends IndexBase
                 $parameter[$key] = $value;
             }
         }
-
+        
         $live_cfg = self::union_live_parameter($parameter);
         
         $tag_array = LabelModel::get_tag_data_cfg($tagname , $pagename , $page, $live_cfg);
@@ -120,19 +120,19 @@ class LabelShow extends IndexBase
         
         $__LIST__ = $tag_array['data'];
         if ($tag_array) {
-            $array = $tag_array['pages'];       //分页数据
-            $tag_array['s_data'] && $array['s_data'] = $tag_array['s_data'];  //源数据给页面自定义使用 要单独定义，不能使用data数据，避免一些密码字段也暴露出来。
+            $__array__ = $tag_array['pages'];       //分页数据
+            $tag_array['s_data'] && $__array__['s_data'] = $tag_array['s_data'];  //源数据给页面自定义使用 要单独定义，不能使用data数据，避免一些密码字段也暴露出来。
         }
         
         
         $_cfg = cache('tag_default_'.$tagname);
-        if(empty($tag_array)){    //未入库前,随便给些演示数据            
+        if(empty($tag_array)){    //未入库前,随便给些演示数据
             $live_cfg && $_cfg = array_merge($_cfg,$live_cfg) ;
             $_cfg['sys_type'] && $_cfg['systype'] = $_cfg['sys_type'];      //重新定义了调取数据的类型, 也即动态变换
             $_cfg['tag_name'] = $tagname;
             $_cfg['page_name'] = $pagename;
-            $array = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
-            $__LIST__ = is_array($array['data']) ? $array['data'] : $array; //不是数组的时候,就是单张图片,或纯HTML代码
+            $__array__ = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
+            $__LIST__ = is_array($__array__['data']) ? $__array__['data'] : $__array__; //不是数组的时候,就是单张图片,或纯HTML代码
         }
         
         //用户自定义了循环变量,比如listdb
@@ -155,9 +155,9 @@ class LabelShow extends IndexBase
             $content = ob_get_contents();
             ob_end_clean();
         }
-        //$array['s_data'] = $__LIST__; //这里要慎重，避免一些密码字段也暴露出来。
-        $array['data'] = $content;
-        return $this->ok_js($array);
+        //$__array__['s_data'] = $__LIST__; //这里要慎重，避免一些密码字段也暴露出来。
+        $__array__['data'] = $content;
+        return $this->ok_js($__array__);
     }
     
     
@@ -1164,27 +1164,31 @@ class LabelShow extends IndexBase
         }else{
             $get_all_model = false;
         }
-        static $pagename = null;    //避免重复执行
-        $pagename===null && $pagename = md5( $cfg['dirname'] );       //模板目录名
+        static $pagename_array = [];    //避免重复执行
+        $pagename = $pagename_array[$cfg['dirname']] = $pagename_array[$cfg['dirname']] ?: md5( $cfg['dirname'] );       //模板目录名
         $ifdata = intval($cfg['ifdata']);                            //是否只要原始数据
-        $dirname = $cfg['dirname'];
-        static $filemtime = null;   //避免重复执行
-        $filemtime===null && $filemtime = filemtime($cfg['dirname']);      //记录模板文件的修改时间，模板修改后，就取消缓存
+
+        static $filemtime_array = [];    //避免重复执行
+        $filemtime = $filemtime_array[$pagename] = $filemtime_array[$pagename] ?: filemtime($cfg['dirname']);      //记录模板文件的修改时间，模板修改后，就取消缓存
         //某个页面所有标签的模板代码与演示数据
-        static $page_demo_tpl_tags = null; //避免重复执行
-        $page_demo_tpl_tags === null && $page_demo_tpl_tags = cache('tags_page_demo_tpl_'.$pagename);
-        static $tpl_have_edit = null;   //做个记录,因为多次执行本函数后,这个值会变的.让他不要再变
+        static $page_demo_tpl_tags_array = []; //避免重复执行
+        $page_demo_tpl_tags = $page_demo_tpl_tags_array[$pagename] = $page_demo_tpl_tags_array[$pagename] ?: cache('tags_page_demo_tpl_'.$pagename);
+        $tpl_have_edit = false;
         if($filemtime!=$page_demo_tpl_tags['_filemtime_']){  //模板被修改过
             $tpl_have_edit = true;
         }
         
-        $tag_key = $this->get_cache_key( array_merge(self::union_live_parameter($cfg),['tag_name'=>$tag_name]) );
-        $tag_array = cache2($tag_key);  //取得具体某个标签的数据库配置参数，对于文章或贴子类的，也会同时得到相应的列表数据
-        if(empty($tag_array)||$tpl_have_edit){
-            $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) );
-            if($tag_array){
-                $tag_array['cache_time'] = $this->get_cache_time($tag_array['cache_time']);
-                $tag_array['cache_time'] && cache2($tag_key,$tag_array,$tag_array['cache_time']);
+        if ($type=='labelmodel') {  //碎片不适合用标签
+            $tag_array = LabelModel::get_labelmodel_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) );
+        }else{
+            $tag_key = $this->get_cache_key( array_merge(self::union_live_parameter($cfg),['tag_name'=>$tag_name]) );
+            $tag_array = cache2($tag_key);  //取得具体某个标签的数据库配置参数，对于文章或贴子类的，也会同时得到相应的列表数据
+            if(empty($tag_array)||$tpl_have_edit){
+                $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) );
+                if($tag_array){
+                    $tag_array['cache_time'] = $this->get_cache_time($tag_array['cache_time']);
+                    $tag_array['cache_time'] && cache2($tag_key,$tag_array,$tag_array['cache_time']);
+                }
             }
         }
         
@@ -1195,9 +1199,9 @@ class LabelShow extends IndexBase
         //$rows = $tag_array['rows']?$tag_array['rows']:$cfg['rows'];     //分页可能会用到
 
         if($tpl_have_edit){
-            static $have_get_tpl = null;
-            if($have_get_tpl === null){ //避免重复执行
-                $have_get_tpl = true;
+            static $have_get_tpl_array = [];
+            if(!$have_get_tpl_array[$pagename]){ //避免重复执行
+                $have_get_tpl_array[$pagename] = true;
                 $page_demo_tpl_tags = self::get_page_demo_tpl($cfg['dirname']);
                 $page_demo_tpl_tags['_filemtime_'] = $filemtime;
                 cache('tags_page_demo_tpl_'.$pagename,$page_demo_tpl_tags,36000);
@@ -1208,6 +1212,11 @@ class LabelShow extends IndexBase
         echo  self::pri_tag_div($tag_name,$type,$tag_array,$cfg['class'],$pagename);    //输出标签的操作层
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
+            
+            if($type=='labelmodel'){    //自定义模块
+                $cfg['class'] = "app\index\controller\Labelmodels@get_label";
+            }
+            
             if($cfg['sql']){    //SQL原生查询语句
                 $cfg['class'] = "app\\index\\controller\\LabelShow@labelGetSql";
             }
@@ -1274,6 +1283,9 @@ EOT;
         
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
             if( ($type&&!in_array($type,['link','links'])&&( modules_config($type)||plugins_config($type) ))  ||  $cfg['class']){
+                if ($type=='labelmodel') {  //碎片不适合用缓存
+                    $cfg['cache_time'] = -1;
+                }
                 $tag_key = $this->get_cache_key( array_merge($cfg,[$type,'tag_name'=>$tag_name]) );
                 $cfg['cache_time'] = $this->get_cache_time($cfg['cache_time']);
                 $default_data = $cfg['cache_time'] ? cache2($tag_key) : null;

@@ -30,8 +30,8 @@ class CopyMp
 //         if($array[1]==''){
 //             preg_match("/<title>(.*?)<\/title>/is",$content,$array);
 //         }
-        preg_match('/var msg_title = "([^"]+)";/is',$content,$array);
-        $postdb['title'] = $array[1];
+        preg_match('/var msg_title = ("|\')([^"\']+)("|\')/is',$content,$array);
+        $postdb['title'] = $array[2];
         
         preg_match("/var msg_cdn_url = \"([^\"]+)\"/is",$content,$array);
         $postdb['picurl'] = addslashes($array[1]);

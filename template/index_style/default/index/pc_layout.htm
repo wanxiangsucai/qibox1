@@ -9,7 +9,7 @@
 {block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/pc_reset.css">{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
-{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?ff"></script>{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?f2"></script>{/block}
 {block name="head_layer_js"}
 <script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 <script type="text/javascript" src="__STATIC__/layui/layui.js"></script>
@@ -133,9 +133,9 @@ $('.Logo_Menu dl').hover(
 
 {block name="model_content"}
 	<!--引用碎片-->
-	{qb:hy name="pc_layout_001" where="index_style/default/index/kefu" val="datas" type="labelmodel"}
+	{qb:tag name="pc_layout_001" where="index_style/default/index/kefu" val="datas" type="labelmodel"}
 		{$datas}
-	{/qb:hy}
+	{/qb:tag}
 {/block}
 
 

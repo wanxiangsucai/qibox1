@@ -41,7 +41,7 @@ class LabelhyShow extends LabelShow
      * @param string $tagname 标签变量名
      * @param string $page 第几页
      * @param string $pagename 标签所在哪个页面
-     */
+     */    
     public function ajax_get($tagname='' , $page='' , $pagename='' , $hy_id=0 , $hy_tags=''){
         
         //对应fetch方法,传入一些常用的参数
@@ -87,7 +87,7 @@ class LabelhyShow extends LabelShow
         }
         
         $__LIST__ = $tag_array['data'];
-        $array = $tag_array['pages'];       //分页数据
+        $__array__ = $tag_array['pages'];       //分页数据
         
         
         if(empty($tag_array)){    //未入库前,随便给些演示数据
@@ -95,8 +95,8 @@ class LabelhyShow extends LabelShow
             $_cfg['sys_type'] && $_cfg['systype'] = $_cfg['sys_type'];      //重新定义了调取数据的类型, 也即动态变换
             $_cfg['tag_name'] = $tagname;
             $_cfg['page_name'] = $pagename;
-            $array = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
-            $__LIST__ = is_array($array['data']) ? $array['data'] : $array; //不是数组的时候,就是单张图片,或纯HTML代码
+            $__array__ = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
+            $__LIST__ = is_array($__array__['data']) ? $__array__['data'] : $__array__; //不是数组的时候,就是单张图片,或纯HTML代码
         }else{
             $_cfg = unserialize($tag_array['cfg']);
         }
@@ -121,8 +121,8 @@ class LabelhyShow extends LabelShow
             $content = ob_get_contents();
             ob_end_clean();
         }
-        $array['data'] = $content;
-        return $this->ok_js($array);
+        $__array__['data'] = $content;
+        return $this->ok_js($__array__);
     }
     
     
@@ -177,28 +177,29 @@ class LabelhyShow extends LabelShow
         }else{
             $get_all_model = false;
         }
-        static $pagename = null;    //避免重复执行
-        $pagename===null && $pagename = md5( $cfg['dirname'] );       //模板目录名
+        static $pagename_array = [];    //避免重复执行
+        $pagename = $pagename_array[$cfg['dirname']] = $pagename_array[$cfg['dirname']] ?: md5( $cfg['dirname'] );       //模板目录名
         $ifdata = intval($cfg['ifdata']);                            //是否只要原始数据
-        $dirname = $cfg['dirname'];
-        static $filemtime = null;   //避免重复执行
-        $filemtime===null && $filemtime = filemtime($cfg['dirname']);      //记录模板文件的修改时间，模板修改后，就取消缓存
+        
+        static $filemtime_array = [];    //避免重复执行
+        $filemtime = $filemtime_array[$pagename] = $filemtime_array[$pagename] ?: filemtime($cfg['dirname']);      //记录模板文件的修改时间，模板修改后，就取消缓存
+        
         //某个页面所有标签的模板代码与演示数据
-        static $page_demo_tpl_tags = null; //避免重复执行
-        $page_demo_tpl_tags === null && $page_demo_tpl_tags = cache('tags_page_demo_tpl_'.$pagename);
-        static $tpl_have_edit = null;   //做个记录,因为多次执行本函数后,这个值会变的.让他不要再变
+        static $page_demo_tpl_tags_array = []; //避免重复执行
+        $page_demo_tpl_tags = $page_demo_tpl_tags_array[$pagename] = $page_demo_tpl_tags_array[$pagename] ?: cache('tags_page_demo_tpl_'.$pagename);
+        $tpl_have_edit = false;
         if($filemtime!=$page_demo_tpl_tags['_filemtime_']){  //模板被修改过
             $tpl_have_edit = true;
         }
         
         echo self::pri_jsfile($pagename, $hy_id, $hy_tags );      //输出JS文件,要放在这个位置是因为其它函数可能要用到SHOW_SET_LABEL
         
-        $tag_array = cache('qb_tag_'.$tag_name.$hy_id.$hy_tags);        //取得具体某个标签的数据库配置参数，对于取文章列表的，也会同时得到相应的数据
-        if(empty($tag_array)||$tpl_have_edit){
-            $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags );
+        //$tag_array = cache('qb_tag_'.$tag_name.$hy_id.$hy_tags);        //取得具体某个标签的数据库配置参数，对于取文章列表的，也会同时得到相应的数据
+        //if(empty($tag_array)||$tpl_have_edit){
+        $tag_array = $type=='labelmodel' ? LabelModel::get_labelmodel_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags ) : LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags );
             //$cache_time = isset($tag_array['cache_time'])?$tag_array['cache_time']:$cfg['cache_time'];
             //$cache_time>0 && cache('qb_tag_'.$tag_name.$hy_id.$hy_tags,$tag_array,$cache_time);
-        }
+        //}
         
         if(!empty($tag_array) && !empty($tag_array['type'])){
             $type = $tag_array['type'];
@@ -207,9 +208,9 @@ class LabelhyShow extends LabelShow
         //$rows = $tag_array['rows']?$tag_array['rows']:$cfg['rows'];     //分页可能会用到
         
         if($tpl_have_edit){
-            static $have_get_tpl = null;
-            if($have_get_tpl === null){ //避免重复执行
-                $have_get_tpl = true;
+            static $have_get_tpl_array = [];
+            if(!$have_get_tpl_array[$pagename]){ //避免重复执行
+                $have_get_tpl_array[$pagename] = true;
                 $page_demo_tpl_tags = self::get_page_demo_tpl($cfg['dirname']);
                 $page_demo_tpl_tags['_filemtime_'] = $filemtime;
                 cache('tags_page_demo_tpl_'.$pagename,$page_demo_tpl_tags,36000);

@@ -23,26 +23,38 @@ load_all_label(function(){
 	}
 });
 
+
 function label_model_init(file,tags,hyid,ids){
-	var url = label_model_url + "?id=" + hyid + "&path=" + file + "&tags="+tags + "&ids="+ids;
-	$.get(url,function(res){
-		if(res.code==0){
-			var that = $(".diyKey-"+file+"-"+tags+"[data-tags='"+tags+"']");
-			that.append(res.data.content);	//标签内容赋值到页面
+	var that = $(".diyKey-"+file+"-"+tags+"[data-tags='"+tags+"']");
+
+	if(label_model_synchronize){
+		init_model(that);
+	}else{
+		var url = label_model_url + "?id=" + hyid + "&path=" + file + "&tags="+tags + "&ids="+ids;
+		$.get(url,function(res){
+			if(res.code==0){
+				that.append(res.data.content);	//标签内容赋值到页面
+				
+				have_label_model_num++;
+				$(function(){
+					if(label_model_num==have_label_model_num){
+						for (var i=0;i<loadAllLabel.length;i++){
+							loadAllLabel[i]();
+						}
+					}
+				});
+
+				init_model(that);
+			}
+		});
+	}
+
+	function init_model(that){
 			if(typeof(admin_url)!=='undefined'){
 				if(that.height()==that.find(".headle").height()){
 					that.css("min-height","80px");
 				}
 			}
-			have_label_model_num++;
-			$(function(){
-				if(label_model_num==have_label_model_num){
-					for (var i=0;i<loadAllLabel.length;i++){
-						loadAllLabel[i]();
-					}
-				}
-			});
-			
 			
 			
 			init_margin(that);	//初始化边距
@@ -118,8 +130,7 @@ function label_model_init(file,tags,hyid,ids){
 					},
 				});						
 			});
-		}
-	});
+	}
 
 	function init_margin(that){
 		var top = that.data("top");

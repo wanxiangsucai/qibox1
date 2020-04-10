@@ -86,7 +86,20 @@ class Api extends IndexBase
             define('NewUser',true);     //声明是新用户注册，方便后续判断调用
         }
         if ($this->user) {
-            $user = $this->user;
+			$user = $this->user;
+			//把关注事件提前到这里
+			$result = wx_check_attention($user['uid']);
+			if ($result===true&&empty($user['wx_attention'])) {
+				 edit_user([
+						'uid'=>$user['uid'],
+						'wx_attention'=>1
+					]);
+			}elseif($result===false&&$user['wx_attention']){
+				 edit_user([
+						'uid'=>$user['uid'],
+						'wx_attention'=>0
+					]);
+			}
             $this->user_token = md5( mymd5($this->wx_apiId . $user['lastip'] . $user['lastvist']) );
             cache($this->user_token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
         }
