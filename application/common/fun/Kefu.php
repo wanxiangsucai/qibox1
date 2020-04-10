@@ -32,7 +32,7 @@ class Kefu{
         $ws_url = fun('Gatewayclient@client_url');
         $userinfo = json_encode($userdb?fun('member@format',$userdb):['uid'=>0]);
         $jsfile = '';
-        if ( is_file(STATIC_PATH.'layui/lay/modules/layim0.js') ) {
+        if ( is_file(STATIC_PATH.'layui/lay/modules/layim.js') ) {
             if(IN_WAP===true){
                 $jsfile = '<link rel="stylesheet" href="'.STATIC_URL.'layui/css/layui.mobile.css">
                             <script type="text/javascript">
