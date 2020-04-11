@@ -274,13 +274,13 @@ WS.onmsg(function(obj){
 		if(is_first_load===true){	//避免反复执行
 			is_first_load = false;
 			if(WS.guest_id()>0){	//游客现在才获取到IP
-				let time = 0;
-				if(LayIm==undefined){
-					time = 1000
-				}		
-				setTimeout(function(){
-					LayIm.config( get_config() );	//初始化游客聊天窗口,登录用户的话,不在这里处理,需要查询数据库聊天记录
-				},time);				
+				var timer = setInterval(function() {
+					if(LayIm!=undefined){
+						clearInterval( timer );
+						LayIm.config( get_config() );	//初始化游客聊天窗口,登录用户的话,不在这里处理,需要查询数据库聊天记录
+					}
+					console.log('游客LayIm加载中...');
+				},30);
 			}
 		}
 	}else if(obj.type=='have_new_msg' || obj.type=='qun_sync_msg'){
