@@ -399,6 +399,11 @@ class LabelShow extends IndexBase
      * @param array $cfg 配置参数
      */
     public function comment_label($tag_name='',$info=[],$cfg=[]){
+        //对应fetch方法,传入一些常用的参数
+        $admin = $this->admin;
+        $userdb = $this->user;
+        $timestamp = $this->timestamp;
+        $webdb = $this->webdb;
 //         $pagename = md5( basename($cfg['dirname']) );
         $pagename = md5( $cfg['dirname'] );
         $cache_time = $cfg['cache_time'];
@@ -472,6 +477,11 @@ class LabelShow extends IndexBase
      * @param array $cfg 配置参数
      */
     public function reply_label($tag_name='',$info=[],$cfg=[]){
+        //对应fetch方法,传入一些常用的参数
+        $admin = $this->admin;
+        $userdb = $this->user;
+        $timestamp = $this->timestamp;
+        $webdb = $this->webdb;
         //         $pagename = md5( basename($cfg['dirname']) );
         $pagename = md5( $cfg['dirname'] );
         $cache_time = $cfg['cache_time'];

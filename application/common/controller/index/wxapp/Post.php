@@ -107,7 +107,7 @@ abstract class Post extends IndexBase
             //以下两行是接口
             //hook_listen('cms_edit_end',$data,$reult);
             hook_listen('cms_edit_end',$data,['result' =>$result, 'module' =>$this->request->module(),'info'=>$info]);
-            $this->end_edit($data['id'],$data);
+            $this->end_edit($data['id'],$data,$info);
             
             return $this->ok_js(['id'=>$id],'修改成功');
         }else{

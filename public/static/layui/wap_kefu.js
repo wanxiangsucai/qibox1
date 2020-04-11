@@ -9,15 +9,14 @@ WS.onmsg(function(obj){
 			if(WS.guest_id()>0){	//游客现在才获取到IP
 				let time = 0;
 				if(LayIm==undefined){
-					time = 500
+					time = 1000
 				}		
 				setTimeout(function(){
 					LayIm.config( get_config() );	//初始化游客聊天窗口,登录用户的话,不在这里处理,需要查询数据库聊天记录
 				},time);				
 			}
 		}
-	}
-	if(obj.type=='have_new_msg' || obj.type=='qun_sync_msg'){
+	}else if(obj.type=='have_new_msg' || obj.type=='qun_sync_msg'){
 		var data;
 		if(obj.type=='qun_sync_msg'){	//兼容群聊的模式 两端直接连通的情况
 			data = obj.data[0];
@@ -125,20 +124,13 @@ function get_config(obj){
 }
 
 
-var chatLog;
+var chat_Log;
 //登录用户获取聊天记录
 $(function(){
 if( WS.is_login() ){
 	$.get("/index.php/index/wxapp.layim/msg_user_list.html",function(res){
 		if(res.code==0){
-			var time = 0;
-			if(LayIm==undefined){
-				time = 500
-			}		
-			setTimeout(function(){
-				chatLog = res.data;
-				//login_member_set_im(res.data);
-			},time);
+			chat_Log = res.data;
 		}
 	});
 }
@@ -163,7 +155,7 @@ function login_member_set_im(data){
 //重置会话窗口
 KF.chat_win = function(touid){
 	if( WS.is_login()  ){
-		login_member_set_im(chatLog);
+		login_member_set_im(chat_Log);
 	}
 	if(typeof(touid)=='object'){
 		var o = touid;
@@ -333,12 +325,18 @@ layui.config({
 	  layim.on('chatChange', function(res){
 		var type = res.data.type;
 		uid = res.data.id;
-		console.log('切换了窗口',uid);		
 		
 		if(uid>0){
 			$.get("/index.php/index.php/index/wxapp.layim/set_read.html?uid="+uid,function(res){}); //标注已读
 		}else{
 			WS.link({"uid":uid,"kefu":0});	//跟圈子建立连接通道,才能收到那边新的即时消息
+		}
+
+		if(!WS.is_login()){
+			console.log('游客的话,就不获取数据的记录了' );
+			return ;
+		}else{
+			console.log('切换了窗口,UID是',uid);
 		}
 		
 		var str = $.cookie('wap_layim_msg_id');
@@ -346,7 +344,7 @@ layui.config({
 			return ;
 		}
 		str = str ? str+uid+"," : ","+uid+"," ;
-		$.cookie('wap_layim_msg_id', str, { expires: 30, path: '/' });
+		$.cookie('wap_layim_msg_id', str, { expires: 3, path: '/' });
 
 		$(".layim-"+type+uid+" .layim-msg-status").html(0).hide();
 		

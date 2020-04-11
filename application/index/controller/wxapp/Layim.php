@@ -114,7 +114,7 @@ class Layim extends IndexBase{
 			$time = strtotime($rs['create_time'])*1000;
 			$histime = $rs['new_num']>0?time()*1000:$time;
 			if($rs['qun_id']>0){ //圈子
-			    $sign = get_user_name($rs['uid']).' 在圈子最后发表了';			    
+			    $sign = '圈子';			    
 				$array['group'][] = [
 					'groupname'=>$rs['f_name'],
 					'id'       =>$rs['f_uid'],
@@ -147,13 +147,14 @@ class Layim extends IndexBase{
 					'new_num' =>$rs['new_num'],
 					'num'     =>$rs['num'],
 				];
-				$array['history']['friend'.$rs['f_uid']] = [
+				$fuid = $rs['f_uid']?:9999999;
+				$array['history']['friend'.$fuid] = [
 				    'avatar'=>$rs['f_icon'],
 				    //'content'=>$sign,
 				    'sign'=>$sign,
 				    'historyTime'=>$histime,
 				    'timestamp'=>$time,
-				    'id'=>$rs['f_uid']?:9999999,
+				    'id'=>$fuid,
 				    //'username'=>$rs['f_name'],
 				    'name'=>$rs['f_name'],
 				    'new_num' =>$rs['new_num'],

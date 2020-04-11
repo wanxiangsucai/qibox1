@@ -276,11 +276,14 @@ class Qun{
      * @param number $time 缓存时间
      * @return void|string|mixed
      */
-    public static function getByid($id,$time=3600){
-        //static $array = [];
-        //$info = $array[$id];
+    public static function getByid($id,$time=3600){        
         if (empty($id)) {
             return [];
+        }
+        static $array = [];
+        $info = $array[$id];
+        if ($info) {
+            return $info;
         }
         $info = cache('qunById'.$id);
         if (empty($info)) {
@@ -298,6 +301,7 @@ class Qun{
             //$array[$id] = $info;
             cache('qunById'.$id,$info,$time);
         }
+        $array[$id] = $info;
         return $info;
     }
     

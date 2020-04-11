@@ -11,7 +11,7 @@ trait ModuleContent
 	 * @param number $mid
 	 * @return unknown
 	 */
-	public  function postnew($mid = 0){
+	public function postnew($mid = 0){
 	    if (config('post_need_sort')==true) {
 	        return self::chooseSort($mid);
 	    }else{
@@ -27,12 +27,43 @@ trait ModuleContent
 	}
 	
 	/**
+	 * 分类读取
+	 * @param int $pid
+	 * @param int $list
+	 */
+	public function showthissorts($pid=0,$list=0){
+		$list++;
+		$show="<ul>\n";
+		$lanmu=$this->s_model->where('pid',$pid)->select();
+		foreach($lanmu as $k=>$rs){
+			$lanmu2=$this->s_model->get(['pid'=>$rs['id']]);
+			if(!$lanmu2){
+				if($rs['allowpost']&&!in_array($this->user['groupid'],explode(',',$rs['allowpost']))){  //设置了用户组权限.
+					$show.='';
+				}else{
+					$show.="<li><div><a href=\"".urls('add',['fid'=>$rs['id']])."\">".$rs['name']."</a></div></li>\n";
+				}
+			}else{
+				if($rs['allowpost']&&!in_array($this->user['groupid'],explode(',',$rs['allowpost']))){  //设置了用户组权限.
+					$show.='';
+				}else{
+					$show.="<li onClick=\"showmore(".$rs['id'].",".$list.",$(this))\"><div class=\"more\">".$rs['name']."</div></li>\n";
+				}
+			}
+		}
+		$show.="</ul>";
+		return $show;
+	}
+	
+	/**
 	 * 新发表内容入口  选择栏目
 	 * @param number $mid 必须先指定模型I
 	 * @return unknown
 	 */
 	protected function chooseSort($mid = 0){
 	    $sort_list = $this->s_model->getTreeList(0, $mid);
+		$lanmu=$this->showthissorts(0,0);
+		$this->assign('lanmu',$lanmu);
 	    $template = getTemplate('postnew');
 	    $tpl = $template ? $template : config('post_choose_sort');
 	    return $this->fetch($tpl,['sort_list'=>$sort_list]);

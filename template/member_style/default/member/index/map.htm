@@ -39,7 +39,7 @@ body .Notes{margin:0 2px 15px 0;}
 					<a href="{:get_url('user',['uid'=>$userdb['uid']])}" target="_blank">{$user.username}</a> UID:{$user.uid}
 
 					{volist name=":explode(',',$webdb['M__qun']['show_vip_qun'])" id="qid"}
-						{if get_user($info.uid)['qun_group'][$qid]['type']==4}<a href="{:iurl('qun/content/show',['id'=>$qid])}" title="归属于 {:fun('qun@getByid',$qid)['title']} 的VIP会员" target="_blank" style="background-color:transparent;"><img src="__STATIC__/images/vip.png" width="25"></a>{/if}
+						{if get_user($info.uid)['qun_group'][$qid]['type']==4}<a href="{:iurl('qun/content/show',['id'=>$qid])}" title="归属于 {:fun('qun@getByid',$qid)['title']} 的VIP会员" target="_blank" style="background-color:transparent;margin:0 5px;"><img src="{:tempdir(fun('qun@getByid',$qid)['vip_img'])}" onerror="this.src='__STATIC__/images/vip.png'" height="20" /></a>{/if}
 					{/volist}
 					</div>
                     {if $user.mob_yz==0}<div class="yzmob"><a href="{:urls('yz/mob')}">验证手机享受更多权限</a></div>{/if}
