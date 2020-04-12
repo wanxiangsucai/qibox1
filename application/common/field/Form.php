@@ -151,11 +151,12 @@ $(function(){
             $show = "$_show "; 
             
         }elseif ($field['type'] == 'checkboxtree') {    // 树状多选按钮
-
-            $detail = $field['value'];
+            
+            $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
+            $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
-                $cked = in_array((string)$key, $info[$name])?' checked ':'';     //强制转字符串是避免0会出问题
-                $_show .= " <input $ifmust type='checkbox' name='{$name}[]' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span><br>";
+                $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
+                $_show .= " <input $ifmust type='checkbox' name='{$name}[]' id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span><br>";
             }
             $show = "$_show "; 
             
@@ -327,7 +328,7 @@ $(function(){
             if($rs['type']=='hidden'){   //隐藏域比较特别些
                 $rs['title'] = $rs['value'];
             }
-            if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'){
+            if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'||$rs['type']=='checkboxtree'){
                 $arr = [
                         $rs['type'],
                         $rs['name'],

@@ -31,6 +31,8 @@ abstract class C extends MemberBase
         $this->model        = get_model_class($dirname,'content');
         $this->s_model     = get_model_class($dirname,'sort');
         $this->m_model   = get_model_class($dirname,'module');
+        $this->category_model     = get_model_class($dirname,'category');
+        $this->info_model     = get_model_class($dirname,'info');
         $this->f_model     = get_model_class($dirname,'field');
     }
     
@@ -190,12 +192,13 @@ abstract class C extends MemberBase
         //如果栏目存在才显示栏目选择项
         if(count($sort_array)>0){
             $this->form_items = array_merge(
-                    [
-                            [ 'select','fid','所属栏目','',$sort_array,$fid],
-                    ],
-                    input('ext_id')?[]:$this->get_my_qun(),
-                    $this->form_items
-                    );
+                [
+                    [ 'select','fid','所属栏目','',$sort_array,$fid],
+                ],
+                $this->get_category_select(),   //辅栏目
+                input('ext_id')?[]:$this->get_my_qun(),
+                $this->form_items
+            );
         }
         
         //联动字段
@@ -257,12 +260,13 @@ abstract class C extends MemberBase
         //如果栏目存在才显示栏目选择项
         if(count($sort_array)>1){
             $this->form_items = array_merge(
-                    [
-                            [ 'select','fid','所属栏目','',$sort_array],
-                    ],
-                    $this->get_my_qun($info),
-                    $this->getEasyFormItems()
-                    );
+                [
+                    [ 'select','fid','所属栏目','',$sort_array],
+                ],
+                $this->get_category_select($id),   //辅栏目
+                $this->get_my_qun($info),   //归属圈子专题或归属圈子
+                $this->getEasyFormItems()
+            );
         }
         
         //联动字段

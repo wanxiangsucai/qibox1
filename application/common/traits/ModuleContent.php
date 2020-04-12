@@ -672,8 +672,8 @@ trait ModuleContent
 	    if($result!==null){
 	        return $result;
 	    }
-	    
 	    $this->add_post_money($data);
+	    $this->add_post_category($id,$data);
 	    set_cookie('cms_title', md5($data['title']));
 	    set_cookie('cms_content', md5($data['content']));
 	}
@@ -719,6 +719,7 @@ trait ModuleContent
 	 */
 	protected function end_edit($id=0,$data=[],$info=[]){
 	    
+	    $this->edit_post_category($id,$data);	    
 	    //齐博首创 钩子文件扩展接口
 	    $result = $this->get_hook('cms_edit_end',$data,$info,['id'=>$id]);
 	    if($result!==null){
@@ -741,6 +742,75 @@ trait ModuleContent
 	    }
 	    
 	    $this->delete_post_money($info);
+	}
+	
+	/**
+	 * 加内容进辅栏目
+	 * @param number $id
+	 * @param array $data
+	 */
+	protected function add_post_category($id=0,$data=[]){
+	    if ( empty($data['category_fids']) || empty(config('use_category')) ) {
+	        return [];
+	    }
+	    $array = [];
+	    foreach($data['category_fids'] AS $fid){
+	        $array[] = [
+	            'aid'=>$id,
+	            'cid'=>$fid,
+	        ];
+	    }
+	    $this->info_model->saveAll($array);
+	}
+	
+	/**
+	 * 修改处理辅栏目
+	 * @param number $id
+	 * @param array $data
+	 * @return array
+	 */
+	protected function edit_post_category($id=0,$data=[]){
+	    if (empty(config('use_category')) ) {
+	        return [];
+	    }
+	    $cid_array = $this->info_model->where('aid',$id)->column('id,cid');
+	    foreach($cid_array AS $k=>$fid){
+	        if (!in_array($fid, $data['category_fids'])) {
+	            $this->info_model->where('id',$k)->delete();
+	        }
+	    }
+	    $array = [];
+	    foreach($data['category_fids'] AS $fid){
+	        if (!in_array($fid, $cid_array)) {
+	            $array[] = [
+	                'aid'=>$id,
+	                'cid'=>$fid,
+	            ];
+	        }	        
+	    }
+	    $array && $this->info_model->saveAll($array);
+	}
+	
+	
+	/**
+	 * 获取辅栏目
+	 * @return array|string[][]
+	 */
+	protected function get_category_select($id=0){
+	    if (empty(config('use_category')) || !in_array($this->user['groupid'], $this->webdb['post_use_category'])) {
+	        return [];
+	    }
+	    $fid_array = $this->category_model->getTreeTitle(0,0,false);
+	    if(empty($fid_array)){
+	        return [];
+	    }
+	    $array = [];
+	    if ($id) {
+	        $array = $this->info_model->where('aid',$id)->column('cid');
+	    }
+	    return [
+	        ['checkboxtree','category_fids','辅栏目','',$fid_array,$array]
+	    ];
 	}
 	
 	/**

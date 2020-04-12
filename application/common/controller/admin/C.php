@@ -41,6 +41,8 @@ abstract class C extends AdminBase
         $this->s_model     = get_model_class($dirname,'sort');
         $this->m_model   = get_model_class($dirname,'module');
         $this->f_model     = get_model_class($dirname,'field');
+        $this->category_model     = get_model_class($dirname,'category');
+        $this->info_model     = get_model_class($dirname,'info');
         $this->status_array = fun('content@status');
     }
     
@@ -49,7 +51,7 @@ abstract class C extends AdminBase
      * @param number $mid
      * @return unknown
      */
-    public  function postnew($mid = 0){
+    public function postnew($mid = 0){
         if (config('post_need_sort')==true) {
             return self::chooseSort($mid);
         }else{
@@ -90,7 +92,6 @@ abstract class C extends AdminBase
 //             if(isset($data['map'])){
 //                 list($data['map_x'],$data['map_y']) = explode(',', $data['map']);
 //             }
-            
             $this->saveAdd($mid,$fid,$data);
         }
         
@@ -101,14 +102,15 @@ abstract class C extends AdminBase
         //如果栏目存在才显示栏目选择项
         if( config('post_need_sort') ){
             $this->form_items = array_merge(
-                        [
-                                [ 'select','fid','所属栏目','',$sort_array,$fid],
-                               // [ 'linkages','street_id','所属地区','','area',4],
-                        ],
-                        $this->get_my_qun(),
-                        $this->form_items
-                        //$this->getEasyFormItems()
-                    );
+                [
+                    [ 'select','fid','所属栏目','',$sort_array,$fid],
+                    // [ 'linkages','street_id','所属地区','','area',4],
+                ],
+                $this->get_category_select(),   //辅栏目
+                $this->get_my_qun(),    //归属圈子及圈子专题
+                $this->form_items
+                //$this->getEasyFormItems()
+             );
         }
         
         //联动字段
@@ -371,13 +373,14 @@ abstract class C extends AdminBase
         //如果栏目存在才显示栏目选择项
         if(config('post_need_sort')){
             $this->form_items = array_merge(
-                    [
-                            [ 'select','fid','所属栏目','',$sort_array],
-                    ],
-                    $this->get_my_qun($info),
-                    //$this->getEasyFormItems()
-                    $this->form_items
-                    );
+                [
+                    [ 'select','fid','所属栏目','',$sort_array],
+                ],
+                $this->get_category_select($id),   //辅栏目
+                $this->get_my_qun($info),   //圈子及圈子专题
+                //$this->getEasyFormItems()
+                $this->form_items
+             );
         }
         
         //联动字段

@@ -216,6 +216,12 @@ class Api extends IndexBase
      */
     private function ajax_content($name='',$page='',$pagename='',$sysid=0, $aid=0 ,$rows=0,$order='',$by='',$status='',$data_type=''){
         
+        //对应fetch方法,传入一些常用的参数
+        $admin = $this->admin;
+        $userdb = $this->user;
+        $timestamp = $this->timestamp;
+        $webdb = $this->webdb;
+        
         //$tag_array = self::get_tag_config($name,$pagename);
         $info = fun('content@info',$aid,$sysid);    //主题信息
         $id = $aid;
