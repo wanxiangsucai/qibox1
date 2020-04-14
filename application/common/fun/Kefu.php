@@ -12,7 +12,7 @@ class Kefu{
         if (empty($kefu)) {
             $kefu = config('webdb.weixin_reply_kefu')?:1;
         }
-        $array = explode(',',trim(str_replace('，',',',$kefu),','));        
+        $array = explode(',',trim(str_replace(['，',' ','　'],',',$kefu),"　, "));
         $code = '';
         foreach ($array AS $key=>$kid){
             $user = get_user($kid);
