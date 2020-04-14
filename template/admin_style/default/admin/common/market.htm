@@ -232,7 +232,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 								更新时间：{{rs.time}}
 							</div>
 							<div class="butter">
-								<a @click="setup(rs.id,rs.app_keywords,rs.price)" href="javascript:;" :data-id="rs.id"
+								<a @click="setup(rs.id,rs.app_keywords,rs.price,rs.must_view_about)" href="javascript:;" :data-id="rs.id"
 								class="fa fa-cloud-download">
 									在线安装
 								</a>
@@ -376,8 +376,8 @@ var vues = new Vue({
       }
     },
 	methods: {
-		setup: function (id,keywords,price) {
-			setup_app(id,keywords,price);
+		setup: function (id,keywords,price,must_view_about) {
+			setup_app(id,keywords,price,0,must_view_about);
 		},
 		add_data:function(array){
 			array.forEach((rs)=>{
@@ -494,14 +494,11 @@ function hide_demo(){
 		if($(this).attr('href')=='')$(this).hide();
 	});
 }
+
 var scroll_top = 0;
 var have_pay = [];	//是否已购买过可以直接安装.不提示购买
-function setup_app(id,keywords,price,have_open_layer){
-	if(typeof(app_have_setup[id])!='undefined'){
-		layer.alert('当前应用,已经安装过了!');
-		return ;
-	}
-	scroll_top = $(window).scrollTop();
+
+function open_setup_win(id){
 	layer.open({
 		type: 2,
 		title: '安装应用',
@@ -515,6 +512,36 @@ function setup_app(id,keywords,price,have_open_layer){
 			//setup_app(id,keywords,price,1);
 		}
 	});
+}
+function setup_app(id,keywords,price,have_open_layer,must_view_about){
+	if(typeof(app_have_setup[id])!='undefined'){
+		layer.alert('当前应用,已经安装过了!');
+		return ;
+	}
+	scroll_top = $(window).scrollTop();
+	if(must_view_about){
+		var index = layer.confirm("安装当前应用，必须要先阅读注意事项及声明相关介绍，以避免安装后产生不愉快的后果！",{
+			title:'敬告提示',
+			btn:['确定','放弃安装']
+		},function(){
+			layer.close(index);
+			layer.open({
+				type: 2,
+				title: '安装前必读',
+				shadeClose: true,
+				shade:  [0.9, '#393D49'],
+				maxmin: false, //开启最大化最小化按钮
+				area: ['95%', '98%'],
+				content: "https://x1.php168.com/appstore/content/show/id/"+id+".html#about",
+				end: function(){
+					//$(window).scrollTop(scroll_top);
+					open_setup_win(id);
+				}
+			});
+		});
+		return ;
+	}	
+	open_setup_win(id);
 	return ;	//改为弹窗安装
 
 	if(have_pay[id]==undefined){
