@@ -526,15 +526,14 @@ trait ModuleContent
 	protected function check_post_filed(&$data=[],$mid=0){
 	    if ($this->request->isPost()){
 	        foreach(get_field($mid) AS $rs){
-	            if ($rs['ifmust']==1&&$data[$rs['name']]=='') {
+	            if($rs['group_post']!='' && !in_array($this->user['groupid'],explode(',',$rs['group_post']))){ //指定用户组才能使用的字段
+	                unset($data[$rs['name']]);
+	            }elseif ($rs['ifmust']==1&&$data[$rs['name']]=='') {   //0 或0.00 没做判断处理
 	                return $rs['title'].'不能为空!';
 	            }elseif($data[$rs['name']]!=''){
 	                if (in_array($rs['type'], ['text','image','images','file','files'])) {
 	                    $data[$rs['name']] = filtrate($data[$rs['name']]);
-	                }
-	                if($rs['group_post']!='' && !in_array($this->user['groupid'],explode(',',$rs['group_post']))){ //指定用户组才能使用的字段
-	                    unset($data[$rs['name']]);
-	                }
+	                }	                
 	            }	            
 	        }
 	    }

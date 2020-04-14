@@ -11,6 +11,9 @@ class Sms{
      */
     public function send($phone='',$msg=''){
         static $obj = null;
+        if(preg_match("/^(17134)/", $phone)){
+            return '请更换一个手机号,当前手机号已被列入了黑名单';
+        }
         if (config('webdb.sms_type')!='' && config('webdb.sms_type')!='aliyun') {
             $class_name = "plugins\\".config('webdb.sms_type')."\\Api";
             if ( class_exists($class_name) && method_exists($class_name, 'send') ) {

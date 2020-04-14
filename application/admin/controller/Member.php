@@ -82,9 +82,10 @@ EOT;
 	        }],
 	    ];	    
 	    
-	    $this -> tab_ext['search'] = ['username'=>'用户名','uid'=>'用户ID','regip'=>'注册IP'];    //支持搜索的字段
+	    $this -> tab_ext['search'] = ['username'=>'用户名','nickname'=>'昵称','truename'=>'真实姓名','uid'=>'用户UID','mobphone'=>'手机号','regip'=>'注册IP'];    //支持搜索的字段
 	    $this -> tab_ext['order'] = 'money,rmb,uid,regdate,lastvist';   //排序选择
 	    $this -> tab_ext['id'] = 'uid';    //用户数据表非常特殊，没有用id而是用uid ， 这里需要特别指定id为uid
+	    $this -> tab_ext['help_msg'] = '1、这里的权限很大,建议设置为只有超管才能使用<br>2、这里修改财务不会有记录,要有记录的话,请分配财务人员使用插件中心>财务与积分功能><a href="'.purl('marketing/member/index',[],'admin').'" style="color:red;">会员积分财务管理</a> 在那里操作';
 	    
 	    //筛选字段
 	    $this -> tab_ext['filter_search'] = [
@@ -137,7 +138,7 @@ EOT;
 	    
 	    $this->form_items = [
 	            ['hidden', 'uid'],
-	            ['static', 'username', '用户名','用户名不可修改'],
+	            ['text', 'username', '用户名','用户名请不要随意修改'],
 	            ['text', 'password', '密码','留空则代表不修改密码,之前加密后的密码是：'.$info['password']],
 	            ['select', 'groupid', '用户组','',getGroupByid()],
 	        ['datetime', 'group_endtime', '用户组有效期','留空则长期有效,除普通用户组外其它任何用户组（包括超管及黑名单）都可以设置有效期，过期后统一归为普通用户组'],

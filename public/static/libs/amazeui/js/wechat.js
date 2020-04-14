@@ -499,6 +499,9 @@ function ws_link(){
 			if(type=='show'){
 				view_online_user(data);
 			}else if(total>1){
+				if(typeof(parent.show_qun_online)=='function'){
+					parent.show_qun_online(obj,type);
+				}
 				if(type=='goin'){
 					layer.msg("有新用户："+data[0].username+" 进来了",{offset: 't'});
 					//统计最近来访的用户开始

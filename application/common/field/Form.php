@@ -158,7 +158,7 @@ $(function(){
                 $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
                 $_show .= " <input $ifmust type='checkbox' name='{$name}[]' id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span><br>";
             }
-            $show = "$_show "; 
+            $show = "<div style='height:100px;overflow-x:auto;'>$_show <div>"; 
             
             $field['about'] && $field['about'] = '<br>'.$field['about'];
 
