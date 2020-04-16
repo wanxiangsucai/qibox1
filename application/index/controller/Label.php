@@ -251,10 +251,34 @@ class Label extends IndexBase
             $this->save($_array);
         }
         unset($info['extend_cfg']); //避免变量冲突
+        $run_model = $info['id']?$use_ar:$default_model;    //在使用着的模块
         $form_items = [
-            ['checkbox', 'extend_cfg', '已使用的模块','',$all_model,implode(',', $info['id']?$use_ar:$default_model)],
+            ['checkbox', 'extend_cfg', '已使用的模块','',$all_model,implode(',',$run_model)],
         ];
         $this -> tab_ext['page_title'] = '模块管理';
+        
+        $_all_model = [];
+        foreach($all_model AS $path=>$name){            
+            if(is_file(STATIC_PATH.$path.'.jpg')){
+                $picurl = STATIC_URL.$path.'.jpg';
+            }elseif(is_file(STATIC_PATH.$path.'.gif')){
+                $picurl = STATIC_URL.$path.'.gif';
+            }elseif(is_file(STATIC_PATH.$path.'.png')){
+                $picurl = STATIC_URL.$path.'.png';
+            }elseif(is_file(STATIC_PATH.$path.'.jpeg')){
+                $picurl = STATIC_URL.$path.'.jpeg';
+            }else{
+                $picurl = '';
+            }
+            $_all_model[] = [
+                'path'=>$path,
+                'name'=>$name,
+                'picurl'=>$picurl,
+            ];
+        }
+        $this->assign('all_model',$_all_model);
+        $this->assign('use_model',$run_model);
+        $this->assign('recover_url',auto_url('delete',$this->get_parameter()));
         
         $this->tab_ext['hidebtn']='back';
         return $this -> get_form_table($info, $form_items);

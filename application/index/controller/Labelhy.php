@@ -208,9 +208,9 @@ class Labelhy extends Label
 
         $cfg = unserialize($info['cfg']);
         $form_items = [
-                ['images2', 'extend_cfg', '组图','',$info['extend_cfg']],
-//                 ['number', 'pic_width', '图片宽度','',$cfg['pic_width']?$cfg['pic_width']:input('div_width')],
-//                 ['number', 'pic_height', '图片高度','',$cfg['pic_height']?$cfg['pic_height']:input('div_height')],
+            ['images2', 'extend_cfg', '组图','',$info['extend_cfg']],
+            ['number', 'pic_width', '图片宽度','有的风格可能设置无效',$cfg['pic_width']],
+            ['number', 'pic_height', '图片高度','有的风格可能设置无效',$cfg['pic_height']],
         ];
         if($info['if_js']){ //APP站外调用,不使用模板,只要JSON数据
             $num = count($form_items);

@@ -22,8 +22,8 @@
                     <div class="thumbnail a" href="{:get_url('user',$info.uid)}"><img src="{$info.icon|tempdir}" class="pic"  onerror="this.src='__STATIC__/images/nobody.gif'" /></div>
                     <div class="span1">
                         <h3 class="item-title" style="line-height:20px;" title="昵称：{$info.nickname}">{$info.username}
-						{volist name=":explode(',',config('webdb.M__qun')['show_vip_qun'])" id="qid"}
-									{if get_user($info.uid)['qun_group'][$qid]['type']==4}<a href="{:iurl('qun/content/show',['id'=>$qid])}" title="归属于 {:fun('qun@getByid',$qid)['title']} 的VIP会员"  style="margin:0 5px;"><img src="{:tempdir(fun('qun@getByid',$qid)['vip_img'])}" onerror="this.src='__STATIC__/images/vip.png'" height="16"></a>{/if}
+						{volist name=":get_user($info.uid)['qun_group']" id="rs"}
+									{if $rs.type==4}<a href="{:iurl('qun/content/show',['id'=>$rs['aid']])}" title="归属于 {:fun('qun@getByid',$rs['aid'])['title']} 的VIP会员"  style="margin:0 5px;"><img src="{:tempdir(fun('qun@getByid',$rs['aid'])['vip_img'])}" onerror="this.src='__STATIC__/images/vip.png'" height="16"></a>{/if}
 							   {/volist}
 						</h3>
                         <p class="item-text">级别：{$info.groupid|getGroupByid} UID：{$info.uid}</p>

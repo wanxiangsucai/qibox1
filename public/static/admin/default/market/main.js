@@ -93,21 +93,45 @@ var vues = new Vue({
 		},
     },
 	methods: {
-		setup: function (id,fid,keywords,price) {
+		setup: function (id,fid,keywords,price,must_view_about) {
 			//setup_app(id,fid,keywords,price);	//当前界面安装
-			parent.layer.open({
-				type: 2,
-				title: '安装应用',
-				shadeClose: true,
-				shade:  [0.9, '#393D49'],
-				maxmin: false, //开启最大化最小化按钮
-				area: ['80%', '98%'],
-				content: market_url+"?id="+id,
-				end: function(){
-					//setup_app(id,keywords,price,1);
-				}
-			});
 			
+			if(must_view_about){
+				var index = parent.layer.open({
+					type: 2,
+					title: '安装当前应用，必须先阅读注意事项，以避免安装后产生不愉快的后果！',
+					shadeClose: true,
+					shade: [0.9, '#393D49'],
+					maxmin: false, //开启最大化最小化按钮
+					area: ['80%', '80%'],
+					content: "https://x1.php168.com/appstore/content/about/id/" + id + ".html",
+					btn: ['确定安装', '放弃安装'],
+					yes: function() {
+						parent.layer.close(index);
+						open_win(id);
+					},
+					btn2: function() {
+						parent.layer.close(index);
+					},
+				});
+			}else{
+				open_win(id);
+			}
+
+			function open_win(id){
+				parent.layer.open({
+					type: 2,
+					title: '安装应用',
+					shadeClose: true,
+					shade:  [0.9, '#393D49'],
+					maxmin: false, //开启最大化最小化按钮
+					area: ['80%', '98%'],
+					content: market_url+"?id="+id,
+					end: function(){
+						//setup_app(id,keywords,price,1);
+					}
+				});
+			}			
 		},
 		add_data:function(array){
 			array.forEach((rs)=>{

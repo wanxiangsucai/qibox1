@@ -59,7 +59,7 @@ trait LabelEdit {
      * @return mixed|string
      */
     protected function get_form_table($info,$tab_items) {
-
+        
         if($this->tab_ext['template']){
             $this->tab_ext['template'] = TEMPLATE_PATH.$this->tab_ext['template'].'.'.config('template.view_suffix');
             if (!is_file($this->tab_ext['template'])) {
@@ -72,9 +72,9 @@ trait LabelEdit {
         return $this->editContent($info);
     }
     
-    protected function get_template($template){
-        return $template;
-    }
+//     protected function get_template($template){
+//         return $template;
+//     }
     
     /**
      * 取得所有对应的参数

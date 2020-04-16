@@ -520,24 +520,22 @@ function setup_app(id,keywords,price,have_open_layer,must_view_about){
 	}
 	scroll_top = $(window).scrollTop();
 	if(must_view_about){
-		var index = layer.confirm("安装当前应用，必须要先阅读注意事项及声明相关介绍，以避免安装后产生不愉快的后果！",{
-			title:'敬告提示',
-			btn:['确定','放弃安装']
-		},function(){
-			layer.close(index);
-			layer.open({
-				type: 2,
-				title: '安装前必读',
-				shadeClose: true,
-				shade:  [0.9, '#393D49'],
-				maxmin: false, //开启最大化最小化按钮
-				area: ['95%', '98%'],
-				content: "https://x1.php168.com/appstore/content/show/id/"+id+".html#about",
-				end: function(){
-					//$(window).scrollTop(scroll_top);
-					open_setup_win(id);
-				}
-			});
+		 var index = layer.open({
+			type: 2,
+			title: '安装当前应用，必须先阅读注意事项，以避免安装后产生不愉快的后果！',
+			shadeClose: true,
+			shade: [0.9, '#393D49'],
+			maxmin: false, //开启最大化最小化按钮
+			area: ['60%', '70%'],
+			content: "https://x1.php168.com/appstore/content/about/id/" + id + ".html",
+			btn: ['确定安装', '放弃安装'],
+			yes: function() {
+				layer.close(index);
+				open_setup_win(id);
+			},
+			btn2: function() {
+				layer.close(index);
+			},
 		});
 		return ;
 	}	
