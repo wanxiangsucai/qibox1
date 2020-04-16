@@ -15,6 +15,7 @@ class Index extends AdminBase
 	protected $list_items;
 	protected $tab_ext;
 	protected $group = 'base';
+	protected $hytag = false;
 	
 	protected function _initialize()
     {
@@ -32,7 +33,8 @@ class Index extends AdminBase
 	public function index($group=0,$sys_id=null)
 	{
 	    $this->tab_ext = [
-	            'page_title'=>'全站标签管理(提醒:设置标签出错,导致页面无法打开,请把他删除即可)',
+	        'page_title'=>($this->hytag?'qb:hy':'qb:tag').'标签管理(提醒:设置标签出错,导致页面无法打开,请把他删除即可)',
+	        'help_msg'=>'1、这里的主要用途是解决前台添加设置标签出错，导致页面报数据库错误，无法打开页面的时候。方便删除相应的标签。<br>2、对于qb:hy标签，请不要在这里进行设置。',
 	    ];
 	    
 	    $array = $this->get_basemodel();	    
@@ -88,11 +90,11 @@ class Index extends AdminBase
 	    
 	    
 	    if($base_label[$type]){
-	        $url = iurl('index/label/'.$type , ['name'=>$name],true,false,'m');
+	        $url = iurl('index/'.($this->hytag?'labelhy':'label').'/'.$type , ['name'=>$name],true,false,'m');
 	    }elseif ($module_label[$type]){
-	        $url = iurl($type.'/label/tag_set' , ['name'=>$name],true,false,'m');
+	        $url = iurl($type.'/'.($this->hytag?'labelhy':'label').'/tag_set' , ['name'=>$name],true,false,'m');
 	    }elseif ($plugins_labe[$type]){
-	        $url = iurl($type.'/label/tag_set' , ['name'=>$name]);
+	        $url = iurl($type.'/'.($this->hytag?'labelhy':'label').'/tag_set' , ['name'=>$name]);
 	    }else{
 	        $this->error('标签类型数据有误!');
 	    }
@@ -151,12 +153,16 @@ class Index extends AdminBase
 	
 	private function get_basemodel(){
 	    return [
-	            'image'=>'image',
-	            'images'=>'images',
-	            'textarea'=>'纯文本代码',
-	            'ueditor'=>'编辑器',
-	            'sql'=>'SQL原生查询万能标签',
-	            'member'=>'会员模块',
+	        'image'=>'image',
+	        'images'=>'images',
+	        'textarea'=>'纯文本代码',
+	        'ueditor'=>'富文本编辑器',
+	        'sql'=>'SQL原生查询万能标签',
+	        'member'=>'会员模块',
+	        'labelmodel'=>'碎片模块',
+	        'myform'=>'自定义表单',
+	        'links'=>'多菜单导航',
+	        'link'=>'超级连接',
 	    ];
 	}
 	
