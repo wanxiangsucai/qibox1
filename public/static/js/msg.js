@@ -449,7 +449,12 @@ var KF = {
 			KF.chat_win(id);
 		});
 	},
-	chat_win:function(touid,type){  //打开会话窗口, 可以被重置换其它的聊天窗口
+	chat_win:function(o,type){  //打开会话窗口, 可以被重置换其它的聊天窗口
+		if(typeof(o)=='object'){
+			var touid = o.uid;
+		}else{
+			var touid = o;
+		}
 		var url = '';
 		if(WS.guest_id()>0){	//未登录的游客
 			url = KF.win_type('url')+"?my_uid="+WS.guest_id()+"&uid="+touid;

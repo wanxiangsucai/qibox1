@@ -317,11 +317,10 @@ class LabelShow extends IndexBase
      * @return string
      */
     protected function remind_set_label($type='goin'){
-        static $have_load = false;
-        if($have_load){
+        if(defined('HAVE_LOAD_REMIND')){
             return '';            
         }
-        $have_load = true;
+        define('HAVE_LOAD_REMIND',TRUE);
         $this->weburl = str_replace(['label_set=quit','label_set=set','&&'], '', $this->weburl);
         $weburl = strpos($this->weburl,'?') ? ($this->weburl.'&') : ($this->weburl.'?') ;
         if($type=='goin'){
@@ -345,11 +344,10 @@ class LabelShow extends IndexBase
      * @return string
      */
     protected function get_label_jsfile($pagename=''){
-        static $have_load = false;
-        if($have_load){
+        if(defined('HAVE_LOAD_LABEL_JSFILE')){
             return '';
         }
-        $have_load = true;
+        define('HAVE_LOAD_LABEL_JSFILE',TRUE);
         $admin_url = iurl('index/label/index',"pagename=$pagename");
         self::$label_adminurl[$pagename] = $admin_url;
         
