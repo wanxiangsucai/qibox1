@@ -8,6 +8,8 @@ class Labelmodels extends IndexBase
 {
     protected $info = [];
     protected $id = 0;
+    protected $mid = 0;
+    protected $fid = 0;
     protected $synchronize = true; //同步获取碎片数据
     
     protected function _initialize()
@@ -67,6 +69,8 @@ class Labelmodels extends IndexBase
         $this->assign('tags',$tags);
         $this->assign('info',$this->info);
         $this->assign('id',$this->id);
+        $this->assign('fid',$this->fid);
+        $this->assign('mid',$this->mid);
         $content = $this->fetch($path);
         return $content;
     }
@@ -94,6 +98,8 @@ class Labelmodels extends IndexBase
         $cfg = unserialize($tag_array['cfg']);
         $this->info = $cfg['Info'];
         $this->id = $cfg['Id'];
+        $this->mid = $cfg['Mid'];
+        $this->fid = $cfg['Fid'];
         
         $_tags = $this->str2num($cfg['tag_name']);
         

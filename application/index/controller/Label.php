@@ -213,7 +213,7 @@ class Label extends IndexBase
         
         //查找私有碎片的公共可选碎片 model_ 开头就列出来
         foreach($_array_path AS $path){
-            $path = str_replace([TEMPLATE_PATH."index_style/",'.htm'],'', $path);
+            $path = str_replace([TEMPLATE_PATH,'.htm'],'', $path);
             $all_model[$path] = $path;
         }
         

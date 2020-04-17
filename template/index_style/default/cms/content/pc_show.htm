@@ -19,9 +19,12 @@
 {if $info.mid==3} {include file="content/zhibo" /} {/if}
 
 <link rel="stylesheet" href="__STATIC__/index/default/pclist.css">
+<link rel="stylesheet" href="__STATIC__/index/default/left.css">
 <div class="ArticlMainContainer">
 	<div class="LeftsCnt">
-		{include file="content/left" /}
+		<div class="LeftBoxInfo">
+			{qb:hy name="pc_cms_show_left001" type="labelmodel" val="datas" where="index_style/default/cms/pc_model/sort,contact"} {$datas} {/qb:hy}
+		</div>
 	</div>
 	<div class="RightCnt">
 		<div class="ShowContent">

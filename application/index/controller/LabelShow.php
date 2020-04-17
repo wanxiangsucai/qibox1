@@ -8,7 +8,7 @@ class LabelShow extends IndexBase
 {
     public static $pri_js=null;
     public static $list_page_cfg = [];   //列表页的标签参数，主要是给AJAX传输数据用
-    public static $label_adminurl;
+    public static $label_adminurl = [];
 
     /**
      * 同一个标签,动态更换系统 type 参数,为的是给分页URL使用
@@ -286,7 +286,7 @@ class LabelShow extends IndexBase
                 echo   $this->remind_set_label('goin');
             }else{
                 $admin_url = iurl('index/label/index',"pagename=$pagename");
-                self::$label_adminurl = $admin_url;
+                self::$label_adminurl[$pagename] = $admin_url;
                 
                 //if (input('tags') && input('path') ) {  //模块调用的话,不要显示下面的.
 //                 if ($this->request->isAjax()) {  //通过ajax获取数据的,就不要显示标签文件
@@ -351,7 +351,7 @@ class LabelShow extends IndexBase
         }
         $have_load = true;
         $admin_url = iurl('index/label/index',"pagename=$pagename");
-        self::$label_adminurl = $admin_url;
+        self::$label_adminurl[$pagename] = $admin_url;
         
         if(in_wap()){
             $label_iframe_width = '95%';
@@ -386,10 +386,10 @@ class LabelShow extends IndexBase
         if (($type=='choose'||$type=='classname') && $class_name!='') {
             $type = str_replace('\\', '--', $class_name);
         }
-        if (empty(self::$label_adminurl)) { //模块AJAX使用
-            self::$label_adminurl = iurl('index/label/index',"pagename=".$pagename);
+        if (empty(self::$label_adminurl[$pagename])) { //模块AJAX使用
+            self::$label_adminurl[$pagename] = iurl('index/label/index',"pagename=".$pagename);
         }
-        echo "<div  class=\"p8label taglabel\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name','".self::$label_adminurl."');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(".STATIC_URL."js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
+        echo "<div  class=\"p8label taglabel\" id=\"$tag_name\" style=\"filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;\" onmouseover=\"showlabel_(this,'over','$type','');\" onmouseout=\"showlabel_(this,'out','$type','');\" onclick=\"showlabel_(this,'click','$type','$tag_name','".self::$label_adminurl[$pagename]."');\"><div onmouseover=\"ckjump_(0);\" onmouseout=\"ckjump_(1);\" style=\"position: absolute; width: 15px; height: 15px; background: url(".STATIC_URL."js/se-resize.png) no-repeat scroll -8px -8px transparent; right: 0px; bottom: 0px; clear: both; cursor: se-resize; font-size: 1px; line-height: 0%;\"></div></div>
         ";
     }
     
@@ -460,7 +460,7 @@ class LabelShow extends IndexBase
         
         
         self::pri_jsfile($pagename);                                                              //输出JS文件
-        self::pri_tag_div($tag_name,'comment_set_'.$type,$tag_array,$pagename);             //输出标签的操作层
+        self::pri_tag_div($tag_name,'comment_set_'.$type,$tag_array,'',$pagename);             //输出标签的操作层
         
         if($tag_array && trim($tag_array['view_tpl']!='')){         //数据库设定的模板优先
             $tpl = $tag_array['view_tpl'];
@@ -537,7 +537,7 @@ class LabelShow extends IndexBase
         
         
         self::pri_jsfile($pagename);                                                              //输出JS文件
-        self::pri_tag_div($tag_name,'reply_set_'.$type,$tag_array,$pagename);             //输出标签的操作层
+        self::pri_tag_div($tag_name,'reply_set_'.$type,$tag_array,'',$pagename);             //输出标签的操作层
         
         if($tag_array && trim($tag_array['view_tpl']!='')){         //数据库设定的模板优先
             $tpl = $tag_array['view_tpl'];
@@ -598,7 +598,7 @@ class LabelShow extends IndexBase
         $type = config('system_dirname');   //系统模块目录名
         
         echo self::pri_jsfile($pagename);                                                               //输出JS文件
-        echo  self::pri_tag_div($tag_name,'showpage_set_'.$type,$tag_array,$pagename);             //输出标签的操作层
+        echo  self::pri_tag_div($tag_name,'showpage_set_'.$type,$tag_array,'',$pagename);             //输出标签的操作层
         
         if($tag_array && trim($tag_array['view_tpl']!='')){         //数据库设定的模板优先
             $tpl = $tag_array['view_tpl'];
@@ -788,7 +788,7 @@ class LabelShow extends IndexBase
         $label_tags_tpl = cache('tags_listpage_tpl_'.$pagename);
 
         $tag_array = cache('qb_tag_'.$tag_name);    //数据库参数配置文件，不包含有列表数据
-        if(empty($tag_array) || $filemtime!=$label_tags_tpl['_filemtime_']){
+        if(empty($tag_array) || $filemtime!=$label_tags_tpl['_filemtime_'] || LABEL_SET===true){
             $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename);
             $tag_array['cache_time'] = $this->get_cache_time($tag_array['cache_time']);
             $tag_array['cache_time'] && cache('qb_tag_'.$tag_name,$tag_array,$tag_array['cache_time']);
@@ -817,7 +817,7 @@ class LabelShow extends IndexBase
             $tag_data = controller('content','index')->label_list_data($cfg_array);
         }      
         
-        if($filemtime!=$label_tags_tpl['_filemtime_']){
+        if($filemtime!=$label_tags_tpl['_filemtime_'] || LABEL_SET===true){
             $label_tags_tpl = self::get_listpage_tpl($cfg['dirname']);
             $label_tags_tpl['_filemtime_'] = $filemtime;
             //标签模板必须要缓存起来，提高效率，同时更为了方便AJAX或者后台调用，没入库前，AJAX必须要使用缓存模板
@@ -829,7 +829,7 @@ class LabelShow extends IndexBase
         $type = config('system_dirname');   //系统模块目录名
 
         echo self::pri_jsfile($pagename);                                                               //输出JS文件
-        echo  self::pri_tag_div($tag_name,'listpage_set_'.$type,$tag_array,$pagename);             //输出标签的操作层
+        echo self::pri_tag_div($tag_name,'listpage_set_'.$type,$tag_array,'',$pagename);             //输出标签的操作层
         
         //指定了过滤字段,代表想要取某些字段的数值
         $fields = $filtrate_field ? $this->list_show_field( get_field($cfg['mid'],$type) , $filtrate_field ) : [];
@@ -1184,7 +1184,7 @@ class LabelShow extends IndexBase
         static $page_demo_tpl_tags_array = []; //避免重复执行
         $page_demo_tpl_tags = $page_demo_tpl_tags_array[$pagename] = $page_demo_tpl_tags_array[$pagename] ?: cache('tags_page_demo_tpl_'.$pagename);
         $tpl_have_edit = false;
-        if($filemtime!=$page_demo_tpl_tags['_filemtime_']){  //模板被修改过
+        if($filemtime!=$page_demo_tpl_tags['_filemtime_'] || LABEL_SET===true){  //模板被修改过
             $tpl_have_edit = true;
         }
         

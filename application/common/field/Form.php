@@ -75,7 +75,7 @@ class Form extends Base
         }elseif ($field['type'] == 'button') {    // 按钮
             
             $array = $field['title'];
-            $show = "<a onclick=\"layer.open({type: 2,title:false,area: ['850px', '650px'],content:'{$array['href']}',})\" name='{$name}'  id='atc_{$name}' class='c_{$name} {$array['class']}'/><i class='{$array['icon']}'></i> {$array['title']}</a>";
+            $show = "<a onclick=\"layer.open({type: 2,area: ['80%', '90%'],content:'{$array['href']}',})\" name='{$name}'  id='atc_{$name}' class='c_{$name} {$array['class']}'/><i class='{$array['icon']}'></i> {$array['title']}</a>";
             $field['title'] = '';
             $field['about'] = '';
             

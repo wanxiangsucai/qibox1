@@ -1,4 +1,4 @@
-<link href="__STATIC__/images/template/title/img_003/style.css" rel="stylesheet" type="text/css" /> 
+<link href="<?php echo STATIC_URL;?>/images/template/title/img_003/style.css" rel="stylesheet" type="text/css" /> 
 <div class="qb_img_003">
 <?php if(is_array($__LIST__) || $__LIST__ instanceof \think\Collection || $__LIST__ instanceof \think\Paginator): $i = 0; $__LIST__ = $__LIST__;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$rs): $mod = ($i % 2 );++$i;?>
 <?php if(count($rs['picurls'])>1): ?>
@@ -7,14 +7,14 @@
 			<h3><a href="<?php echo $rs['url']; ?>" target="_blank"><?php echo $rs['title']; ?></a></h3>
 			<section>
 				<?php foreach($rs['picurls'] AS $picurl):  ?>
-				<a href="<?php echo $rs['url']; ?>" target="_blank"><span><img src="<?php echo $picurl; ?>" onerror="this.src='__STATIC__/images/nopic.png'"/></span></a>
+				<a href="<?php echo $rs['url']; ?>" target="_blank"><span><img src="<?php echo $picurl; ?>" onerror="this.src='<?php echo STATIC_URL;?>/images/nopic.png'"/></span></a>
 				<?php  endforeach;  ?>
 			</section>
 		</li>
 	</ul>
 <?php  elseif($rs['picurl']):  ?>
 	<ul>
-		<ol><a href="<?php echo $rs['url']; ?>" target="_blank"><img src="<?php echo $rs['picurl']; ?>" onerror="this.src='__STATIC__/images/nopic.png'"/></a></ol>
+		<ol><a href="<?php echo $rs['url']; ?>" target="_blank"><img src="<?php echo $rs['picurl']; ?>" onerror="this.src='<?php echo STATIC_URL;?>/images/nopic.png'"/></a></ol>
 		<li>
 			<h3><a href="<?php echo $rs['url']; ?>" target="_blank"><?php echo $rs['title']; ?></a></h3>
 			<p><?php echo get_word($rs['content'],$cleng>10?:200); ?></p>
