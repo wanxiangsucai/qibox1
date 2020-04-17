@@ -196,7 +196,7 @@ class LabelhyShow extends LabelShow
         
         //$tag_array = cache('qb_tag_'.$tag_name.$hy_id.$hy_tags);        //取得具体某个标签的数据库配置参数，对于取文章列表的，也会同时得到相应的数据
         //if(empty($tag_array)||$tpl_have_edit){
-        $tag_array = $type=='labelmodel' ? LabelModel::get_labelmodel_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags ) : LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags );
+        $tag_array = $type=='labelmodel' ? LabelModel::get_labelmodel_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags , $cfg) : LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) , $hy_id  , $hy_tags  , $cfg);
             //$cache_time = isset($tag_array['cache_time'])?$tag_array['cache_time']:$cfg['cache_time'];
             //$cache_time>0 && cache('qb_tag_'.$tag_name.$hy_id.$hy_tags,$tag_array,$cache_time);
         //}

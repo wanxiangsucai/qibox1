@@ -49,9 +49,10 @@ class Labelhy extends Label
      * @param array $live_parameter 跟随页面变化的动态参数
      * @param number $hy_id  圈子ID
      * @param number $hy_tags  重复的标签编号
+     * @param array $cfg 页面参数变量
      * @return void|void|unknown|array|NULL[]
      */
-    public static function get_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags=''){
+    public static function get_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags='',$cfg=[]){
         
         //获取当前页面的所有标签的数据库配置参数，如果一个页面有很多标签的时候，比较有帮助，如果标签只有一两个就帮助不太大。
         $page_tags = cache('hyconfig_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags);
@@ -77,6 +78,7 @@ class Labelhy extends Label
         }
         
         $array = unserialize($tag_config['cfg']);
+        $array = array_merge($cfg,$array);
         if($live_parameter){    //跟随页面变化的动态参数            
             $array = array_merge($array,$live_parameter);
         }
@@ -117,8 +119,8 @@ class Labelhy extends Label
      * @param string $hy_tags
      * @return void|\app\index\model\unknown|array|\app\index\model\NULL[]
      */
-    public static function get_labelmodel_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags=''){
-        return self::get_tag_data_cfg($tag_name , $page_name , $page_num , $live_parameter , $hy_id , $hy_tags );
+    public static function get_labelmodel_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags='',$cfg=[]){
+        return self::get_tag_data_cfg($tag_name , $page_name , $page_num , $live_parameter , $hy_id , $hy_tags ,$cfg);
     }
 
 }
