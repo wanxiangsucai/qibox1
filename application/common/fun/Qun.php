@@ -66,6 +66,9 @@ class Qun{
      * @return unknown
      */
     public static function menu($id=0,$type=3){
+        if (!modules_config('qun')) {
+            return [];
+        }
         $tag = 'qun_menu_'.$type.'_'.$id;
         $menu = cache($tag);
         if (empty($menu)) {
@@ -146,6 +149,9 @@ class Qun{
      * @return void|array|\think\db\false|PDOStatement|string|\think\Model
      */
     public static function get_user_group($id=0,$uid=0,$field='type'){
+        if (!modules_config('qun')) {
+            return [];
+        }
         if (empty($id)) {
             return ;
         }
@@ -175,6 +181,9 @@ class Qun{
      * @return string
      */
     public static function getid_bykey($keywrod=''){
+        if (!modules_config('qun')) {
+            return [];
+        }
         if(!is_numeric($keywrod)){  //不是模型ID,而是关键字的情况,比如是qz hy之类的
             foreach(model_config(null,'qun') AS $rs){
                 if($keywrod==$rs['keyword']){
@@ -194,6 +203,9 @@ class Qun{
      * @return number|string|unknown|array|number[][]|string[][]|unknown[][]|array[][]
      */
     public static function get_group($groupid=null,$mid=0){
+        if (!modules_config('qun')) {
+            return [];
+        }
         $array = [];
         $i = 0;
         if($mid){
@@ -259,6 +271,9 @@ class Qun{
      * @return number|string
      */
     public static function count($table='',$id=0){
+        if (!modules_config('qun')) {
+            return [];
+        }
         if (preg_match('/^qb_/', $table)) {
             $table = str_replace('qb_', '', $table);
         }
@@ -276,7 +291,10 @@ class Qun{
      * @param number $time 缓存时间
      * @return void|string|mixed
      */
-    public static function getByid($id,$time=3600){        
+    public static function getByid($id,$time=3600){
+        if (!modules_config('qun')) {
+            return [];
+        }
         if (empty($id)) {
             return [];
         }
@@ -412,6 +430,9 @@ class Qun{
      * @param number $id
      */
     public static function adsetByid($id=0){
+        if (!modules_config('qun')) {
+            return [];
+        }
         if (empty($id)) {
             return ;
         }
@@ -424,6 +445,9 @@ class Qun{
      * @return void|array|\think\db\false|PDOStatement|string|\think\Model
      */
     public static function adset_status($id=0){
+        if (!modules_config('qun')) {
+            return [];
+        }
         if (empty($id)) {
             return ;
         }
@@ -446,6 +470,9 @@ class Qun{
      * @return void|array[]|\think\db\false[]|PDOStatement[]|string[]|\think\Model[]
      */
     public static function adByid($id=0){
+        if (!modules_config('qun')) {
+            return [];
+        }
         if (empty($id)) {
             return ;
         }
