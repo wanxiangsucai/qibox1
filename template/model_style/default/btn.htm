@@ -6,7 +6,7 @@
 
 {qb:hy name="labelmodel_btn" type="links"}
 <!--
-	{if ($btn_menu=fun('qun@menu',input('id'),3))}
+	{if (modules_config('qun')&&$btn_menu=fun('qun@menu',input('id'),3))}
 
 		{volist name="$btn_menu" id="rs"}
 			<div class="post_btn btn{$i}" onclick="window.location.href='{$rs.url}'"><span>{$rs.name}</span></div>
@@ -31,32 +31,15 @@
 	</div>
 </div>
 
-
-
 <style type="text/css">
-.post_btn_wrap{width:57px;height:57px;position:fixed;right:0;bottom:0;}
+.post_btn_wrap{width:57px;height:57px;position:fixed;right:0;bottom:0;z-index:3;}
 .post_btn_menu{
 	width:57px;height:57px;background:orange;position:absolute;bottom:60px;right:2px;z-index:10;cursor:pointer;
-	border-radius:100%;
-	-moz-border-radius:100%;
-	opacity:0.7;
-	font-size:30px;
-	color:#fff;
-	text-align:center;
-	line-height:57px;
+	border-radius:100%;-moz-border-radius:100%;opacity:0.7;font-size:30px;color:#fff;text-align:center;line-height:57px;
 }
 .post_btn{
-	width:52px;
-	height:52px;
-	background:orange;
-	border-radius:100%;
-	-moz-border-radius:100%;
-	opacity:0.3;
-	font-size:15px;
-	color:#fff;
-	text-align:center;
-	line-height:52px;
-	z-index:1;position:absolute;bottom:60px;right:0;margin:0 5px 2px 0;cursor:pointer;
+	width:52px;height:52px;background:orange;border-radius:100%;-moz-border-radius:100%;opacity:0.3;
+	font-size:15px;color:#fff;text-align:center;line-height:52px;z-index:3;position:absolute;bottom:60px;right:0;margin:0 5px 2px 0;cursor:pointer;
 }
 .btn1.close, .btn2.close, .btn3.close, .btn4.close{bottom:60px;right:0;}
 .btn1.open{bottom:175px;right:0;opacity:0.8;}

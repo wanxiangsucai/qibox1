@@ -66,55 +66,9 @@ window.location.href="{:get_url('msg',-$info.ext_id)}";
 {/qb:showpage}
 	</div>
 
-
-	<!--引用评论-->
-	{qb:comment name="commentwap01" rows='5'}
-		{include file="content/comment" /}
-	{/qb:comment}
-	<div class="ShowMoreInfos">
-		<div class="head"><i class="si si-book-open"></i> 更多阅读</div>
-		<div class="ListMoreInfos">
-{qb:tag name="news_list_page_listdata02" type="cms" where="fid=$fid&id<>$id"}
-			<div class="Lists">
-				<ul>
-{notempty name="rs.picurl"}
-					<ol><a href="{$rs.url}"><img src="{$rs.picurl}" onmouseover='thisimg_over($(this))' onmouseout='thisimg_out($(this))'/></a></ol>
-{/notempty}
-					<li>
-						<div class="t"><a href="{$rs.url}">{$rs.title}</a></div>
-						<div class="m"><span><i class="glyphicon glyphicon-time"></i> {$rs.time}</span><em> <i class="si si-eye"></i> {$rs.view}</em></div>
-					</li>
-				</ul>
-			</div>
-{/qb:tag}
-
-		</div>
-		<div class="ShowMoreButter"><button type="butter" onclick="ShowMoreInfo()">查看更多</button></div>
-	</div>
+	{qb:hy name="wap_cmsshow_content001" val="datas" type="labelmodel"  where="index_style/default/cms/content/wap_model/comment,quninfo,morelist,index_style/default/index/userkefu,index_style/default/index/footmenu"} {$datas} {/qb:hy}
 </div>
 <script>
-var morepage=1;
-var url='{qb:url name="news_list_page_listdata02" /}';//异步获取更多内容的url
-function ShowMoreInfo(){	
-	morepage++;	
-	$.get(url+morepage+'&'+Math.random(),function(res){
-		if(res.code==0){
-			if(res.data==''){
-				layer.msg("已经显示完了！",{time:500});
-				$('.ShowMoreButter button').attr('onclick','');
-				$('.ShowMoreButter button').html('显示完了');
-				$('.ShowMoreButter button').css({'background':'#CCC'});
-			}else{
-				res.data="<span class='pages"+morepage+"'>"+res.data+"</span>";			
-				$('.ListMoreInfos').append(res.data);
-				$('.ListMoreInfos .pages'+morepage).hide();
-				$('.ListMoreInfos .pages'+morepage).show(500);
-			}
-		}else{
-			layer.msg(res.msg,{time:2500});
-		}
-	});
-}
 function thisimg_over(imgobjs){
 	imgobjs.animate({"max-width":"150%","max-height":"150%"},300);
 }
@@ -132,3 +86,5 @@ function thisimg_out(imgobjs){
 <!-- 微信分享 -->
 {include file="index@share"/}
 {/block}
+
+{block name="body_Footcont"} {/block}
