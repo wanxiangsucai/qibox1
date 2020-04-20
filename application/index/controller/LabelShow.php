@@ -864,7 +864,7 @@ class LabelShow extends IndexBase
                         'pagename'=>$pagename,
                 ],
                 self::union_live_parameter($array)
-                )).'?page=';
+            ),$array['_type']?:$array['class']).'?page=';
     }
     
     /**
@@ -872,13 +872,34 @@ class LabelShow extends IndexBase
      * @param array $array
      * @return mixed
      */
-    protected function build_tag_ajax_url($array=[]){
+    protected function build_tag_ajax_url($array=[],$type=''){
+         
         $array['sys_type'] = $this->get_sys_type();   //同一个标签,动态更换系统 type 参数
 //         foreach($array AS $key=>$value){
 //             $array[$key] = urlencode($value);
 //         }
 //         return iurl('index/label_show/ajax_get',$array);
-        return iurl('index/label_show/ajax_get').'?'.http_build_query($array).'&';
+        $model_dir = 'index';
+        if(!defined('IN_PLUGIN')){
+            if ($type && !preg_match("/^([\w]+)$/", $type)) {
+                preg_match("/app\\\([\w]+)\\\/",$type,$array);
+                $type = $array[1];
+            }
+            $type = ($type&&modules_config($type))?$type:config('system_dirname');
+            if ($type) {
+                $path = APP_PATH.$type.'/index/LabelShow.php';
+                $data = '<?php
+namespace app\\'.$type.'\index;
+use app\index\controller\LabelShow AS _LabelShow;
+class LabelShow extends _LabelShow
+{
+}';
+                if (is_file($path) || file_put_contents($path, $data)) {
+                    $model_dir = $type;
+                }
+            }            
+        }
+        return iurl($model_dir.'/label_show/ajax_get').'?'.http_build_query($array).'&';
     }
     
     /**
@@ -1203,6 +1224,7 @@ class LabelShow extends IndexBase
         if(!empty($tag_array) && !empty($tag_array['type'])){
             $type = $tag_array['type'];
         }
+        $cfg['_type'] = $type;
         
         //$rows = $tag_array['rows']?$tag_array['rows']:$cfg['rows'];     //分页可能会用到
 
@@ -1222,7 +1244,7 @@ class LabelShow extends IndexBase
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
             
             if($type=='labelmodel'){    //自定义模块
-                $cfg['class'] = "app\index\controller\Labelmodels@get_label";
+                $cfg['class'] = "app\\index\\controller\\Labelmodels@get_label";
             }
             
             if($cfg['sql']){    //SQL原生查询语句
@@ -1265,7 +1287,7 @@ class LabelShow extends IndexBase
                     'page'=>1,
                     ],
                     self::union_live_parameter($cfg)
-                    ));
+                ),$type?:$cfg['class']);
 print<<<EOT
 <script type="text/javascript">
 //对标签进行特殊处理

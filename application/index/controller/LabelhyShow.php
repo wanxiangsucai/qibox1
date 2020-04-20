@@ -131,7 +131,7 @@ class LabelhyShow extends LabelShow
      * @param array $array
      * @return mixed
      */
-    protected function build_tag_ajax_url($array=[]){
+    protected function build_tag_ajax_url($array=[] , $type=''){
         $detail = $this->get_hy_id();
         $array['hy_id'] = $detail[0];   //不同于系统标签,这里必须要传递一下圈子黄页的ID
         $array['hy_tags'] = $array['tags'] = $detail[1];
@@ -140,7 +140,27 @@ class LabelhyShow extends LabelShow
 //             $array[$key] = urlencode($value);
 //         }
 //         return iurl('index/labelhy_show/ajax_get',$array);
-        return iurl('index/labelhy_show/ajax_get').'?'.http_build_query($array).'&';
+
+        $model_dir = 'index';
+        if(!defined('IN_PLUGIN')){
+            if ($type && !preg_match("/^([\w]+)$/", $type)) {
+                preg_match("/app\\\([\w]+)\\\/",$type,$array);
+                $type = $array[1];
+            }
+            $type = ($type&&modules_config($type))?$type:config('system_dirname');
+            $path = APP_PATH.$type.'/index/LabelhyShow.php';
+            $data = '<?php
+namespace app\\'.$type.'\index;
+use app\index\controller\LabelhyShow AS _LabelhyShow;
+class LabelhyShow extends _LabelhyShow
+{
+}';
+            if (is_file($path) || file_put_contents($path, $data)) {
+                $model_dir = $type;
+            }
+        }
+        
+        return iurl($model_dir.'/labelhy_show/ajax_get').'?'.http_build_query($array).'&';
     }    
     
     
@@ -204,6 +224,7 @@ class LabelhyShow extends LabelShow
         if(!empty($tag_array) && !empty($tag_array['type'])){
             $type = $tag_array['type'];
         }
+        $cfg['_type'] = $type;
         
         //$rows = $tag_array['rows']?$tag_array['rows']:$cfg['rows'];     //分页可能会用到
         
@@ -222,7 +243,7 @@ class LabelhyShow extends LabelShow
         if(empty($tag_array)){     //新标签还没有入库就输出演示数据
             
             if($type=='labelmodel'){    //自定义模块
-                $cfg['class'] = "app\index\controller\Labelmodels@get_label";
+                $cfg['class'] = "app\\index\\controller\\Labelmodels@get_label";
             }
             
             if($cfg['sql']){    //SQL原生查询语句
@@ -264,7 +285,7 @@ class LabelhyShow extends LabelShow
                             'page'=>1,
                     ],
                     self::union_live_parameter($cfg)
-                    ));
+                ),$type?:$cfg['class']);
             print<<<EOT
 <script type="text/javascript">
 //对标签进行特殊处理
