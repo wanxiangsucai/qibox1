@@ -148,15 +148,17 @@ class LabelhyShow extends LabelShow
                 $type = $array[1];
             }
             $type = ($type&&modules_config($type))?$type:config('system_dirname');
-            $path = APP_PATH.$type.'/index/LabelhyShow.php';
-            $data = '<?php
+            if ($type) {
+                $path = APP_PATH.$type.'/index/LabelhyShow.php';
+                $data = '<?php
 namespace app\\'.$type.'\index;
 use app\index\controller\LabelhyShow AS _LabelhyShow;
 class LabelhyShow extends _LabelhyShow
 {
 }';
-            if (is_file($path) || file_put_contents($path, $data)) {
-                $model_dir = $type;
+                if (is_file($path) || file_put_contents($path, $data)) {
+                    $model_dir = $type;
+                }
             }
         }
         
