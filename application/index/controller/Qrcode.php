@@ -15,10 +15,13 @@ class Qrcode extends IndexBase
                 if (!is_file($logo)) {
                     $logo='';
                 }
-            }elseif(!strstr($logo,'http')){
-                $logo = UPLOAD_PATH.$logo;
-                if (!is_file($logo)) {
-                    $logo='';
+            }elseif(!strstr($logo,'http')){                
+                if (is_file(UPLOAD_PATH.$logo)) {
+                    $logo = UPLOAD_PATH.$logo;
+                }elseif( is_file(PUBLIC_PATH.$logo) ){
+                    $logo = PUBLIC_PATH.$logo;
+                }else{
+                    $logo = '';
                 }
             }else{
                 $name = md5($logo).'.jpg';
