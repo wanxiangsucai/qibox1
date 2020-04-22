@@ -5,11 +5,12 @@ class Haibao{
     
     /**
      * 带分销的宣传二维码
-     * @param array $userdb
-     * @param number $id
+     * @param array $userdb 当前登录用户UID
+     * @param number $id 内容ID
+     * @param string $logo 二维码LOGO
      * @return string
      */
-    public function img($userdb=[],$id=0){
+    public function img($userdb=[],$id=0,$logo=''){
         $share_url = get_url(auto_url('content/show',['id'=>$id]));
         if (!strstr($share_url,'p_uid=')) {
             if(strstr($share_url,'?')){
@@ -19,7 +20,10 @@ class Haibao{
             }
             $share_url .= 'p_uid='.$userdb['uid'];
         }
-        return get_qrcode($share_url);
+        if ($logo=='' && $userdb['icon']) {
+            $logo = tempdir($userdb['icon']);
+        }
+        return get_qrcode($share_url,$logo);
     }
     
     /**

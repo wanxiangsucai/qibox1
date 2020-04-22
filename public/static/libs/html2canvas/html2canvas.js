@@ -40,9 +40,11 @@ function app_page(id, func) {
 	$("#"+id).find("img").each(function(){
 		var imgurl = $(this).attr('src');
 		//if((imgurl.indexOf('http://')==0||imgurl.indexOf('https://')==0) && imgurl.indexOf(domain)==-1){
-		if( imgurl.search(/(\.jpg|\.jpeg|\.png|\.gif)$/i)>0 ){
-			console.log('图片url',imgurl);
-			$(this).attr('src',"/index.php/index/image/headers.html?url="+ imgurl);	//处理图片跨域问题
+		//if( imgurl.search(/(\.jpg|\.jpeg|\.png|\.gif)$/i)>0 ){
+		if( (imgurl.indexOf('http')==0 && imgurl.indexOf(domain)==-1) || imgurl.indexOf('/uploads/')>-1 ){ //附件有可能做了301跳转
+			let _url = "/index.php/index/image/headers.html?url="+ encodeURIComponent(imgurl);
+			console.log('跨域图片url',imgurl+"\n"+_url);
+			$(this).attr('src',_url);	//处理图片跨域问题
 		}
 	}); 
 

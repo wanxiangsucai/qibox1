@@ -3310,6 +3310,40 @@
     }
     
 error_reporting(0);
-QRcode::png($url,false,8,8,true);
+$_QR = $logo ? RUNTIME_PATH.rand(1,3000).'.png' : false;
+QRcode::png($url,$_QR,8,8,1);
+
+if ($logo) {  //是否有Logo图
+    //对logo加白边
+    $w = 26; //logo白边的宽带
+    //源图对象
+    $src_image = imagecreatefromstring(file_get_contents($logo));
+    $src_width = imagesx($src_image);
+    $src_height = imagesy($src_image);
+    //添加白边
+    $final_image = imagecreatetruecolor($src_width+$w, $src_height+$w);
+    $color = imagecolorallocate($final_image, 255, 255, 255);
+    imagefill($final_image, 0, 0, $color);
+    $x = $w/2;
+    $y = $w/2;
+    imagecopy($final_image, $src_image, $x, $y, 0, 0, $src_width, $src_height);
+    $QR = imagecreatefromstring(file_get_contents($_QR));
+    // $logo = imagecreatefromstring(file_get_contents($logo));
+    $logo = $final_image;
+    $QR_width = imagesx($QR);//二维码图片宽度
+    $QR_height = imagesy($QR);//二维码图片高度
+    $logo_width = imagesx($logo);//logo图片宽度
+    $logo_height = imagesy($logo);//logo图片高度
+    $logo_qr_width = $QR_width / 5;
+    $scale = $logo_width/$logo_qr_width;
+    $logo_qr_height = $logo_height/$scale;
+    $from_width = ($QR_width - $logo_qr_width) / 2;
+    //重新组合图片并调整大小
+    imagecopyresampled($QR, $logo, $from_width, $from_width, 0, 0, $logo_qr_width,$logo_qr_height, $logo_width, $logo_height);
+    //输出图片
+    Header("Content-type: image/png");
+    ImagePng($QR);
+    //unlink($_QR);
+}
 exit;
 

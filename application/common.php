@@ -3031,10 +3031,11 @@ if (!function_exists('url_clean_domain')) {
 if (!function_exists('get_qrcode')) {
     /**
      * 获取某个网址的二维码
-     * @param string $url
+     * @param string $url 要生成的真实二维码网址
+     * @param string $logo 小LOGO地址
      * @return string
      */
-    function get_qrcode($url=''){
+    function get_qrcode($url='',$logo=''){
         static $domain = '';
         if($domain === ''){
             $domain = request()->domain();
@@ -3044,7 +3045,7 @@ if (!function_exists('get_qrcode')) {
         }else{
             $url=request()->url(true);
         }
-        return iurl('index/qrcode/index') . '?url=' . urlencode($url);
+        return iurl('index/qrcode/index') . '?url=' . urlencode($url).($logo?'&logo='.urlencode($logo):'');
     }
 }
 
