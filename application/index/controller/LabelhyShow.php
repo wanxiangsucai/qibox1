@@ -374,9 +374,9 @@ EOT;
             //什么都没有设置的时候，就直接输出
             if(empty($val)&&empty($page_demo_tpl_tags[$tag_name]['demo'])){
                 $_tpl = trim(preg_replace('/<\?php(.*?)\?>/is','',$page_demo_tpl_tags[$tag_name]['tpl']));
-                if(empty($_tpl)){
+                if(empty($_tpl) && empty($tag_array['view_tpl'])){
                     echo $tag_array['format_data']?$tag_array['format_data']:$tag_array['data'];
-                    reutrn ;
+                    return ;
                 }
             }
             if( $tag_array && trim($tag_array['view_tpl'])!='' ){         //数据库设定的模板优先
