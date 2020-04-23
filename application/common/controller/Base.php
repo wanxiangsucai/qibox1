@@ -108,6 +108,14 @@ class Base extends Controller
     
     protected function error($msg = '', $url = null, $data = '', $wait = 60, array $header = [])
     {
+        if ($url==404) {
+            $this->assign('msg', $msg);
+            header('HTTP/1.1 404 Not Found');
+            header("status: 404 Not Found");
+            echo $this->fetch('index@404');
+            //echo '404 Not Found';
+            exit;
+        }
         if(!$this->request->isAjax() && (strstr($msg,'没登录')||strstr($msg,'先登录')) ){
 
             if ( in_weixin() && config('webdb.weixin_type')==3  ) {  //在微信端,就强制自动登录!
