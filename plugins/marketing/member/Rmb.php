@@ -136,6 +136,7 @@ class Rmb extends MemberBase
 	            unset($detail[$key]);
 	        }
 	    }
+	    $this->assign('alipay_id',$cfg['alipay_id']);
 	    $this->assign('listdb',$detail);
 	    $this->assign('getout_percent_money',$getout_percent_money*100);   //提现手续费
 	    return $this->pfetch();

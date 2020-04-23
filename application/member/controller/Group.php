@@ -53,8 +53,8 @@ class Group extends MemberBase
         }elseif($money<0.01){
             $this->error('充值金额不能小于0.01元！');
         }
-        $this->webdb['money_ratio']>0 || $this->webdb['money_ratio']=10;
-        add_jifen($this->user['uid'],$money*$this->webdb['money_ratio'],'在线充值积分');
+        $this->webdb['P__marketing']['money_ratio']>0 || $this->webdb['P__marketing']['money_ratio']=10;
+        add_jifen($this->user['uid'],$money*$this->webdb['P__marketing']['money_ratio'],'在线充值积分');
         add_rmb($this->user['uid'], -abs($money), 0,'充值积分消费');
         $this->success('充值成功,请继续下一步升级',url('buy',['gid'=>$gid]),[],1);
     }
@@ -94,7 +94,7 @@ class Group extends MemberBase
             }
         }else{
             if($this->user['money']<$ginfo['level']){
-                $money = ($ginfo['level'] - $this->user['money']) / ($this->webdb['money_ratio']?:10);
+                $money = ($ginfo['level'] - $this->user['money']) / ($this->webdb['P__marketing']['money_ratio']?:10);
                 $money = ceil($money*100)/100;
                 $payurl = url('pay',['money'=>$money,'gid'=>$gid]);     //提示充值积分
                 if($this->user['rmb']<$money){
