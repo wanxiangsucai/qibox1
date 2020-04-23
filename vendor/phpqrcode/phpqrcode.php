@@ -3343,7 +3343,7 @@ if ($logo) {  //是否有Logo图
     //输出图片
     Header("Content-type: image/png");
     ImagePng($QR);
-    //unlink($_QR);
+    $_QR && unlink($_QR);
 }
 exit;
 
