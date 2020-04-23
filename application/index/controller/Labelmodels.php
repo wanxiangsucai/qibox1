@@ -126,9 +126,10 @@ class Labelmodels extends IndexBase
         
         $id = config('system_dirname')=='qun'?intval(input('id')):0; //避免CMS内容页也当作圈子处理
         
-        $code = '';
+        $code = $edit_css = '';
         if (SHOW_SET_LABEL===true || (LABEL_SET===true&&$this->synchronize)) {
             $code = '<div class="diy-page-model-btn">恢复(添加)模块<br><br></div>';
+            $edit_css = 'ui-sortable';            
         }
         static $if_loadjs = false;
         if($if_loadjs==false){
@@ -168,7 +169,7 @@ class Labelmodels extends IndexBase
             }
         }
         
-        return $code."<div class='diy_pages {$cfg['tag_name']}' data-tagname='{$cfg['tag_name']}' data-pagename='{$cfg['page_name']}' data-id='{$id}'>{$div_warp}\r\n</div>
+        return $code."<div class='diy_pages {$edit_css} {$cfg['tag_name']}' data-tagname='{$cfg['tag_name']}' data-pagename='{$cfg['page_name']}' data-id='{$id}'>{$div_warp}\r\n</div>
                 <script type='text/javascript'>
                 {$js_warp}
                 label_model_num = {$model_num};
