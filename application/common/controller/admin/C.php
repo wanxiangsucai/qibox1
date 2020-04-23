@@ -195,24 +195,31 @@ abstract class C extends AdminBase
         if(empty($this->list_items)){
             //列表显示哪些字段
             $this->list_items =  [
-                    ['title', '标题', 'link',iurl('content/show',['id'=>'__id__']),'_blank'],
-                    ['fid', '所属栏目', 'select',$this->s_model->getTitleList(),config('system_dirname')],
-                    ['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
+                ['title', '标题', 'link',iurl('content/show',['id'=>'__id__']),'_blank'],
+                ['fid', '所属栏目', 'select',$this->s_model->getTitleList(),config('system_dirname')],
+                ['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
 //                     ['uid', '发布者', 'callback',function($value){
 //                         $array = get_user($value);
 //                         return $array['username'];
 //                     }],
-                    ['uid', '发布者', 'username'],
-                    ['create_time', '发布日期', 'datetime'],
-                    ['view', '浏览量', 'text.edit'],
-                    ['list', '排序值', 'text.edit'],
-                    ['status', '审核', 'select',$this->status_array],
+                ['uid', '发布者', 'username'],
+                ['create_time', '发布日期', 'datetime'],
+                ['view', '浏览量', 'text.edit'],
+                ['list', '排序值', 'text.edit'],
+                ['status', '状态', 'select',$this->status_array],
+                //['delete_time', '回收站', 'select',['正常','回收站']],
             ];
             //比如万能表单是不需要栏目的，就不要显示栏目
             if(empty(config('post_need_sort'))){
                 unset($this->list_items[1]);
             }
         }
+        //筛选字段
+        $this->tab_ext['filter_search'] = [
+            'status'=>$this->status_array,
+            //'delete_time'=>['正常','回收站'],
+        ];
+        $this->tab_ext['help_msg'] = '1、提醒：为避免误删除操作，第一次删除的内容先进回收站，只有变成回收站的内容再删除才是彻底的删除<br>2、前台与会员中心的所有删除操作都不会彻底的删除';
         $data = $this->model->getAll( $this->getMap() ,$this->getOrder('id desc'));
         return $this->getAdminTable($data);
     }
@@ -293,8 +300,9 @@ abstract class C extends AdminBase
         $this -> tab_ext['search'] = array_merge(['title'=>'标题','uid'=>'用户uid'],$this->getEasySearchItems());
         //筛选字段
         $this->tab_ext['filter_search'] = array_merge( $this->getEasyfiltrateItems(),[
-                'fid'=>get_sort(0,'all'),
-                'status'=>$this->status_array
+            'fid'=>get_sort(0,'all'),
+            'status'=>$this->status_array,
+            //'delete_time'=>['正常','回收站'],
         ]);
         
         if(empty($this->list_items)){
@@ -308,7 +316,8 @@ abstract class C extends AdminBase
                     ['create_time', '创建日期', 'datetime'],
                     ['view', '浏览量', 'text.edit'],
                     ['list', '排序值', 'text.edit'],
-                    ['status', '审核', 'select',$this->status_array],
+                    ['status', '状态', 'select',$this->status_array],
+                    //['delete_time', '回收站', 'select',['正常','回收站']],
             ];
             
             //比如万能表单是不需要栏目的，就不要显示栏目

@@ -13,10 +13,11 @@ class Content{
      */
     public static function status(){
         $array = [
-            '未审核',
-            '已审核',
+            -1=>'回收站',
+            0=>'未审核',
+            1=>'已审核',
         ];
-        $data = config('webdb.content_status')?str_array(config('webdb.content_status')):null;
+        $data = config('webdb.content_status')?str_array(config('webdb.content_status')):[];
         if(empty($data)){
             $data = [
                 '1星推荐',
@@ -29,7 +30,12 @@ class Content{
                 '8星推荐',
             ];
         }
-        $array = array_merge($array,$data);
+        foreach ($data AS $value){
+            if($value){
+                $array[] = $value;
+            }
+        }
+        //$array = array_merge($array,$data);
         return $array;
     }
     

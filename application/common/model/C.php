@@ -90,6 +90,28 @@ abstract class C extends Model
     }
     
     /**
+     * 是否同时显示回收站的内容
+     * 商城可以重写此方法加多一个条件判断做商品上下架处理
+     * 前台如果要显示回收站的内容,可以定义define('SHOW_RUBBISH',true)
+     * @param array $where
+     * @param string $A 连表查询要用到.比如可以设置 A.
+     * @return array
+     */
+    protected static function map($where = [],$A=''){
+        if( defined('IN_ADMIN') || defined('SHOW_RUBBISH') ){
+            $map = [];
+        }else{
+            $map = [
+                ($A?:'').'status'=>['<>',-1],
+            ];
+        }
+        if ($where) {
+            $map = array_merge($where,$map);
+        }
+        return $map;
+    }
+    
+    /**
      * 查询用户的记录条数
      * @param unknown $uid 用户ID
      * @param number $mid 模型ID 为0的时候,查询所有模型
@@ -104,7 +126,7 @@ abstract class C extends Model
         }else{
             $table = self::$base_table;
         }        
-        return Db::name($table)->where('uid',$uid)->count('id');
+        return Db::name($table)->where(static::map())->where('uid',$uid)->count('id');
     }
     
     /**
@@ -123,6 +145,19 @@ abstract class C extends Model
         }        
         $table = self::getTableByMid($mid);
         $info = static::getInfoByid($id);
+        
+//         if ($info && !isset($info['delete_time'])) {
+//             into_sql("ALTER TABLE  `qb_{$table}` ADD  `delete_time` INT( 10 ) NOT NULL COMMENT  '0的话代表正常,大于0的话代表已删除';\r\nALTER TABLE  `qb_{$table}` ADD INDEX (  `delete_time` );");
+//             if(!table_field(self::$base_table,'delete_time')){
+//                 into_sql("ALTER TABLE  `qb_" .self::$base_table. "` ADD  `delete_time` INT( 10 ) NOT NULL COMMENT  '0的话代表正常,大于0的话代表已删除';\r\nALTER TABLE  `qb_" .self::$base_table. "` ADD INDEX (  `delete_time` );");
+//             }
+//         }
+        
+        if (!defined('IN_ADMIN') || $info['status']!=-1) { //不在后台的话,只能是软删除 在后台的话,要先进回收站,再真正删除
+            Db::name(self::$base_table)->where('id',$id)->update(['status'=>-1]);
+            Db::name($table)->where('id',$id)->update(['status'=>-1]);
+            return 1;
+        }
         
         //先删除主表记录
         try {
@@ -189,7 +224,7 @@ abstract class C extends Model
             return false;
         }
         foreach ($data AS $key=>$value){
-            if (in_array($key, ['view','status','list','ext_id','ext_sys'])) {
+            if (in_array($key, ['view','status','list','ext_id','ext_sys','delete_time'])) {
                 Db::name(self::$base_table)->update($data);
                 break;
             }
@@ -360,7 +395,7 @@ abstract class C extends Model
         static $mids = [];
         $mkey = self::$model_key.'_'.$id;   //避免不同模型出现同样ID的主题
         if(empty($mids[$mkey])){
-            $info = Db::name(self::$base_table)->where('id','=',$id)->find();
+            $info = Db::name(self::$base_table)->where(static::map())->where('id','=',$id)->find();
             if ($info) {
                 $table = config('database.prefix') . self::$base_table;
                 if (!isset($info['view'])) {
@@ -410,7 +445,7 @@ abstract class C extends Model
         if (empty($mid)) {
             return ;
         }
-        return Db::name(self::getTableByMid($mid))->where('id','=',$id)->value('fid');
+        return Db::name(self::getTableByMid($mid))->where(static::map())->where('id','=',$id)->value('fid');
     }
     
     
@@ -420,11 +455,11 @@ abstract class C extends Model
      */
     public static function getAll($map=[],$order="id desc",$rows=0,$pages=[],$format=FALSE){
         static::check_model();
-        $array = Db::name(self::$base_table)->where($map)->order($order)->paginate(
+        $array = Db::name(self::$base_table)->where(static::map())->where($map)->order($order)->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
                 empty($pages[1])?['query'=>input('get.')]:$pages[1]
-                );
+            );
         foreach ($array AS $key=>$ar){
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();
@@ -444,7 +479,7 @@ abstract class C extends Model
      */
     public static function getListByUid($uid=0,$rows=20,$pages=[]){
         static::check_model();
-        $array = Db::name(self::$base_table)->where('uid',$uid)->order('id','desc')->paginate(
+        $array = Db::name(self::$base_table)->where(static::map())->where('uid',$uid)->order('id','desc')->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
                 empty($pages[1])?['query'=>input('get.')]:$pages[1]
@@ -469,7 +504,7 @@ abstract class C extends Model
      */
     public static function getIndexByUid($uid=0,$rows=50,$min=0){
         static::check_model();
-        $array = Db::name(self::$base_table)->where('uid',$uid)->order('id','asc')->limit($min,$rows)->column(true);
+        $array = Db::name(self::$base_table)->where(static::map())->where('uid',$uid)->order('id','asc')->limit($min,$rows)->column(true);
         return $array;
     }
     
@@ -485,7 +520,7 @@ abstract class C extends Model
         if (empty($mid)) {
             return ;
         }
-        $info = Db::name(self::getTableByMid($mid))->where('id','=',$id)->find();
+        $info = Db::name(self::getTableByMid($mid))->where(static::map())->where('id','=',$id)->find();
         if($info){
             return $format ? static::format_data($info) : $info;
         }        
@@ -514,16 +549,16 @@ abstract class C extends Model
                 $info = static::getInfoByid($id);
             }
             $mid = $info['mid'];
-            return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->where('fid','=',$info['fid'])->order($order)->limit(1)->value('id');
+            return Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->where('id',$mod,$id)->where('fid','=',$info['fid'])->order($order)->limit(1)->value('id');
         }elseif($type=='model' && ($id||$info) ){
             if(empty($info['mid'])){
                 $mid = self::getMidById($id);
             }else{
                 $mid = $info['mid'];
             }
-            return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->order($order)->limit(1)->value('id');    
+            return Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->where('id',$mod,$id)->order($order)->limit(1)->value('id');    
         }else{
-            return Db::name(self::$base_table)->where($map)->where('id',$mod,$id)->order($order)->limit(1)->value('id');
+            return Db::name(self::$base_table)->where(static::map())->where($map)->where('id',$mod,$id)->order($order)->limit(1)->value('id');
         }        
     }
     
@@ -544,16 +579,16 @@ abstract class C extends Model
                 $info = static::getInfoByid($id);
             }
             $mid = $info['mid'];
-            return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->where('fid','=',$info['fid'])->orderRaw('rand()')->limit(1)->value('id');
+            return Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->where('id',$mod,$id)->where('fid','=',$info['fid'])->orderRaw('rand()')->limit(1)->value('id');
         }elseif($type=='model' && ($id||$info)){
             if(empty($info['mid'])){
                 $mid = self::getMidById($id);
             }else{
                 $mid = $info['mid'];
             }
-            return Db::name(self::getTableByMid($mid))->where($map)->where('id',$mod,$id)->orderRaw('rand()')->limit(1)->value('id');
+            return Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->where('id',$mod,$id)->orderRaw('rand()')->limit(1)->value('id');
         }else{
-            return Db::name(self::$base_table)->where($map)->where('id',$mod,$id)->orderRaw('rand()')->limit(1)->value('id');
+            return Db::name(self::$base_table)->where(static::map())->where($map)->where('id',$mod,$id)->orderRaw('rand()')->limit(1)->value('id');
         }
     }
     
@@ -568,7 +603,7 @@ abstract class C extends Model
         if (empty($mid)) {
             return 0;
         }
-        return Db::name(self::getTableByMid($mid))->where($map)->count('id');
+        return Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->count('id');
     }
     
     
@@ -597,7 +632,7 @@ abstract class C extends Model
         list($x,$y) = explode(',',$point);
         $x = (float)$x;
         $y = (float)$y;
-        $data_list = Db::name(self::getTableByMid($mid))->where($map)->field("*,(POW( `map_x`-$x,2 )+POW(`map_y`-$y,2)) AS map_point")->order('map_point asc')->paginate(
+        $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->field("*,(POW( `map_x`-$x,2 )+POW(`map_y`-$y,2)) AS map_point")->order('map_point asc')->paginate(
             empty($rows)?null:$rows,    //每页显示几条记录
             empty($pages[0])?false:$pages[0],
             empty($pages[1])?['query'=>input('get.')]:$pages[1]
@@ -630,7 +665,7 @@ abstract class C extends Model
         list($x,$y) = explode(',',$point);
         $x = (float)$x;
         $y = (float)$y;
-        $data_list = Db::name(self::getTableByMid($mid))->where($map)->field("*,SIGN(ROUND((POW( `map_x`-$x,2 )+POW(`map_y`-$y,2))*1000/$range)) AS map_point")->order('map_point asc,id desc')->paginate(
+        $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->field("*,SIGN(ROUND((POW( `map_x`-$x,2 )+POW(`map_y`-$y,2))*1000/$range)) AS map_point")->order('map_point asc,id desc')->paginate(
             empty($rows)?null:$rows,    //每页显示几条记录
             empty($pages[0])?false:$pages[0],
             empty($pages[1])?['query'=>input('get.')]:$pages[1]
@@ -665,13 +700,13 @@ abstract class C extends Model
             $order .= ',id desc';
         }
         if(strstr($order,'rand()')){    //随机排序不能用 order() 方法
-            $data_list = Db::name(self::getTableByMid($mid))->where($map)->orderRaw('rand()')->paginate(
+            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->orderRaw('rand()')->paginate(
                     empty($rows)?null:$rows,    //每页显示几条记录
                     empty($pages[0])?false:$pages[0],
                     empty($pages[1])?['query'=>input('get.')]:$pages[1]
                     );            
         }else{
-            $data_list = Db::name(self::getTableByMid($mid))->where($map)->order($order)->paginate(
+            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->order($order)->paginate(
                     empty($rows)?null:$rows,    //每页显示几条记录
                     empty($pages[0])?false:$pages[0],
                     empty($pages[1])?['query'=>input('get.')]:$pages[1]
@@ -916,9 +951,9 @@ abstract class C extends Model
             
             //$data = Db::name(self::getTableByMid($mid))->where($map)->whereOr($whereor)->limit($min,$rows)->order($order,$by)->column(true);
             if(strstr($order,'rand()')){
-                $data = Db::name(self::getTableByMid($mid)) -> where($map) -> whereOr($whereor) -> orderRaw('rand()') -> paginate($rows,false,['page'=>$page]);
+                $data = Db::name(self::getTableByMid($mid)) -> where(static::map()) -> where($map) -> whereOr($whereor) -> orderRaw('rand()') -> paginate($rows,false,['page'=>$page]);
             }else{
-                $data = Db::name(self::getTableByMid($mid)) -> where($map) -> whereOr($whereor) -> order($order,$by) -> paginate($rows,false,['page'=>$page]);
+                $data = Db::name(self::getTableByMid($mid)) -> where(static::map()) -> where($map) -> whereOr($whereor) -> order($order,$by) -> paginate($rows,false,['page'=>$page]);
            }
            $array = getArray($data);
         }else{  //全频道全模型取数据, 如果有不符合条件的话, 就会导致取出的数据量比指定的要少,甚至有可能取出0条数据,不能精准
@@ -957,7 +992,7 @@ abstract class C extends Model
             if (!preg_match("/^(id|uid|list|view|status)/i", $order)) {
                 $order = 'id';
             }            
-            $data = Db::name(self::$base_table)->where($_map)->field('id,mid')->order($order,$by)->paginate($rows,false,['page'=>$page]);
+            $data = Db::name(self::$base_table) ->where(static::map()) ->where($_map)->field('id,mid')->order($order,$by)->paginate($rows,false,['page'=>$page]);
 //             $data->each(function($rs,$key){
 //                 $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->find();
 //                 return $vs;
@@ -965,7 +1000,7 @@ abstract class C extends Model
             $array = getArray($data);//print_r($array) ;exit;
             foreach($array['data'] AS $key=>$rs){
                 unset($map['id']);
-                $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->where($map)->find();
+                $vs = Db::name(self::getTableByMid($rs['mid'])) ->where(static::map()) ->where(['id'=>$rs['id']])->where($map)->find();
                 if (empty($vs)) {
                     unset($array['data'][$key]);
                 }else{
