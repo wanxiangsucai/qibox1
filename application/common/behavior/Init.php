@@ -162,7 +162,7 @@ class Init{
 					        header('location:'.url($array[$module]));
 					        exit;
 					    }
-						showerr('当前频道不存在！');
+						showerr('当前频道不存在！',404);
 					}
 				}
 				// 定义模块的前台文件目录
