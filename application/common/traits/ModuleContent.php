@@ -843,8 +843,9 @@ trait ModuleContent
 	            $form_array = [];
 	        }
 	        
-	        if (empty($info)) {    //修改就不处理了	            
-	            if(!isset($this->webdb['M__qun']['modules_show_select_topic']) || in_array(config('system_dirname'), $this->webdb['M__qun']['modules_show_select_topic']) ){
+	        if (empty($info)) {    //修改就不处理了
+	            if( $this->webdb['M__qun']['modules_show_select_topic'] && in_array(config('system_dirname'), $this->webdb['M__qun']['modules_show_select_topic']) ){
+	            //if(!isset($this->webdb['M__qun']['modules_show_select_topic']) || in_array(config('system_dirname'), $this->webdb['M__qun']['modules_show_select_topic']) ){
 	                $data2 = [];
 	                foreach($array AS $rs){
 	                    if ($rs['uid']==$uid) {

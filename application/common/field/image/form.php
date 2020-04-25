@@ -16,17 +16,33 @@ if(fun('field@load_js',$field['type'])){
 	line-height: 35px;
 	font-size: 16px;
 }
-.uploadImg li{
+.uploadImg .upbtn{
 	width:80px;
 	border:#DDD dotted 1px;
 	text-align: center;
 	padding: 15px 0;
-	background: #FFF;
-	font-size:32px;
+	background: #FFF;	
 	cursor: pointer;
 	color: #999;
+	position:relative;
 }
-.uploadImg li:hover{
+.uploadImg .upbtn i:first-child{
+	font-size:32px;
+}
+.uploadImg .upbtn i:last-child{
+	position:absolute;
+	right:0;
+	top:0;
+	z-index:1;
+	font-size:20px;
+	background:#ff8300;
+	padding:2px;
+	color:#fff;
+}
+.uploadImg .upbtn i:last-child:hover{
+	background:green;
+}
+.uploadImg .upbtn:hover{
 	border: #F60 dotted 1px;
 	color: #F60;
 }
@@ -94,12 +110,14 @@ EOT;
 
 }
 
-
+$dir = config('system_dirname')?:'pasepic';
+$cut_pic_save_url = iurl('index/attachment/upload',"dir={$dir}&from=base64&module={$dir}");
 return <<<EOT
 
 $jscode
 <script type="text/javascript">
 jQuery(document).ready(function() {
+
 	$(".uploadImge_{$name}").each(function(){
 		var pics = [];
 		var that = $(this);
@@ -108,26 +126,96 @@ jQuery(document).ready(function() {
 			that.find('input[type="file"]').click();
 		});
 
-	//截图事件
-	var add_cutimg = function(e){
-		that.find('.cut').each(function () {
-			var cthis = $(this);
-			cthis.on('click',function(){
-				var pic = cthis.parent().find("img").attr('src');
-				var opt = cthis.data('options');
-				layer.open({
-					type: 2,
-					title: '截图',
-					area: ["{$width}", "{$height}"],
-					scrollbar: false,
-					content: '{$cuturl}?picurl='+pic+'&opt='+opt,
-					end: function () {
-						check_value();	//重新核对数据
+
+		var j=0;
+		that.find(".upbtn i:last").click(function(event){
+			j++;
+			if(j==1){
+				paseImg($(this));
+			}
+			layer.msg("先按住“Ctrl+Alt+A”截图完毕,再点击这个图标,最后按住“Ctrl+V”,即可上传截图",{time:5000});
+			$(this).focus();
+			event.stopPropagation();
+			
+		});
+
+		//截图后再上传
+		function paseImg(that){		
+			var imgReader = function(item) {	
+				var blob = item.getAsFile(),	
+					reader = new FileReader();	
+				reader.onloadend = function(e) {
+					$.ajax({
+						url: '{$cut_pic_save_url}',	
+						type: 'POST',	
+						data: {	
+							imgBase64: e.target.result	
+						},	
+						success: function(res) {	
+							layer.msg(res.info);	
+							if (res.code == 1) {	
+								var url = res.path;	
+								if (url.indexOf('://') == -1 && url.indexOf('/public/') == -1) {	
+									url = (typeof(web_url) != 'undefined' ? web_url : '') + '/public/' + url;	
+								}
+
+								//显示与赋值
+								pics[0] = res.path;	//单图
+								that.find(".input_value").val( pics.join(',') );
+								viewpics('',pics);
+							}
+						}	
+					})	
+				};	
+				reader.readAsDataURL(blob);	
+			};
+			that.get(0).addEventListener("paste", function(e) {
+				var clipboardData = e.clipboardData,	
+					i = 0,	
+					items,	
+					item,	
+					types;	
+				if (clipboardData) {	
+					items = clipboardData.items;
+					if (!items) {	
+						return;	
+					}	
+					item = items[0];	
+					types = clipboardData.types || [];
+					for (; i < types.length; i++) {	
+						if (types[i] === 'Files') {	
+							item = items[i];	
+							break;	
+						}	
 					}
+					if (item && item.kind === 'file' && item.type.match(/^image\//i)) {	
+						imgReader(item);	
+					}	
+				}	
+			});
+		};
+
+		//对已上传的图片进行截图
+		var add_cutimg = function(e){
+			that.find('.cut').each(function () {
+				var cthis = $(this);
+				cthis.on('click',function(){
+					var pic = cthis.parent().find("img").attr('src');
+					var opt = cthis.data('options');
+					layer.open({
+						type: 2,
+						title: '截图',
+						area: ["{$width}", "{$height}"],
+						scrollbar: false,
+						content: '{$cuturl}?picurl='+pic+'&opt='+opt,
+						end: function () {
+							check_value();	//重新核对数据
+						}
+					});
 				});
 			});
-		});
-	}
+		}
+
 		//核对数据
 		var check_value = function(){
 				pics = [];	//重新设置值
@@ -305,7 +393,7 @@ jQuery(document).ready(function() {
 				<input type="file" accept="image/*"/> 
 				<input type="text" name="{$name}" id="atc_{$name}" value="{$info[$name]}" class="input_value" style="width:100%;" />				
 			</div>			 
-			<li class="upbtn"><i class="si si-camera"></i></li>
+			<li class="upbtn"><i class="si si-camera"></i><i class="fa fa-crop"></i></li>
 		</ul>
 		<div class="ListImgs"></div>
 </div>
