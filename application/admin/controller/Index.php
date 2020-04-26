@@ -94,16 +94,63 @@ class Index extends AdminBase
         return $this->fetch();
     }
     
+    /**
+     * 后台默认主页
+     * @return mixed|string
+     */
 	public function welcome()
-	{
+	{$this->check_table();
 		$map = [];
 		$map['uid']  = ['>',0];
         $this->assign('user_num', User::where($map)->count('uid') );
-        is_table('cms_content') && $this->assign('cms_num', Db::name('cms_content')->count('id') );
+        modules_config('cms') && $this->assign('cms_num', Db::name('cms_content')->count('id') );
         $this->assign('systemMsg', self::get_system_info());
 		return $this->fetch();
 	}
 	
+	/**
+	 * 补全字段
+	 */
+	private function check_table(){
+	    foreach( modules_config() AS $rs){
+	        if(is_file(APP_PATH.$rs['keywords'].'/model/Content.php') && is_file(APP_PATH.$rs['keywords'].'/model/Field.php')){
+	            $this->add_table_field($rs['keywords']);
+	        }
+	    }
+	    
+	    foreach( plugins_config() AS $rs){
+	        if(is_file(PLUGINS_PATH.$rs['keywords'].'/model/Content.php') && is_file(PLUGINS_PATH.$rs['keywords'].'/model/Field.php')){
+	            $this->add_table_field($rs['keywords']);
+	        }
+	    }
+	}
+	
+	private function add_table_field($keywords=''){
+	    $base_table = $keywords.'_content';
+	    $array = table_field($base_table);
+	    $table = config('database.prefix') . $base_table;
+	    if (!in_array('view', $array)) {
+	        Db::execute("ALTER TABLE  `{$table}` ADD  `view` MEDIUMINT( 7 ) NOT NULL COMMENT  '浏览量';");
+	        Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `view` );");
+	    }
+	    if (!in_array('status', $array)) {
+	        Db::execute("ALTER TABLE  `{$table}` ADD  `status` TINYINT( 2 ) NOT NULL COMMENT  '状态：-1回收站 0未审 1已审 2推荐';");
+	        Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `status` );");
+	        Db::execute("UPDATE  `{$table}` SET  `status` =1");
+	    }
+	    if (!in_array('list', $array)) {
+	        Db::execute("ALTER TABLE  `{$table}` ADD  `list` INT( 10 ) NOT NULL COMMENT  '可控排序';");
+	        Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `list` );");
+	    }
+	    if (!in_array('ext_id', $array)) {
+	        Db::execute("ALTER TABLE  `{$table}` ADD  `ext_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '关联其它模型的内容ID',ADD  `ext_sys` SMALLINT( 4 ) NOT NULL COMMENT  '关联其它模型的频道ID';");
+	        Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `ext_id` ,  `ext_sys` );");
+	    }
+	}
+	
+	/**
+	 * 查看服务器的PHPINFO信息
+	 */
 	public function sysinfo(){
 	    if (!function_exists('phpinfo')) {
 	        $this->error('phpinfo函数被禁用了!');
@@ -111,6 +158,11 @@ class Index extends AdminBase
 	    phpinfo();
 	}
 	
+	/**
+	 * 左边菜单
+	 * @param string $type
+	 * @return mixed|string
+	 */
 	public function leftmenu($type='often')
 	{
 	    $array = Menu::get_menu($this->user['groupid']);
