@@ -272,6 +272,7 @@ class Msg extends IndexBase
                     if (!$touser_info) {
                         return $this->err_js('该用户不存在!');
                     }
+                    $data['uid'] || $data['uid'] = $touser_info['uid'];
                 }
                 if (!$data['title']) {
                     $data['title'] = '来自 '.($this->user['username']?:$guest_name).' 的私信';
