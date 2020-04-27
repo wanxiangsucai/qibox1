@@ -127,6 +127,9 @@ class Index extends AdminBase
 	
 	private function add_table_field($keywords=''){
 	    $base_table = $keywords.'_content';
+	    if (!is_table($base_table)) {
+	        return ;
+	    }
 	    $array = table_field($base_table);
 	    $table = config('database.prefix') . $base_table;
 	    if (!in_array('view', $array)) {
