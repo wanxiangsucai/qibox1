@@ -104,14 +104,14 @@ abstract class C extends IndexBase
         }elseif($fid){ //根据栏目选择发表内容
             $mid = $this->model->getMidByFid($fid);
             if(empty($mid)){
-                $this->error('分类不存在!');
+                $this->error('分类不存在!',404);
             }
         }
         
         $this->mid = $mid;
         $m_info = model_config($this->mid);        
         if(!$m_info){
-            $this->error('模型不存在!');
+            $this->error('模型不存在!',404);
         }
         
         
