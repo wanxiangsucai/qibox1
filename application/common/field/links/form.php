@@ -55,6 +55,7 @@ jQuery(document).ready(function() {
 			init_delete(that);
 			init_down(that);
 			init_up(that);
+			init_copy(that);
 		}
 		
 
@@ -69,6 +70,7 @@ jQuery(document).ready(function() {
 					font_color:$(this).find(".font_color input").val(),
 					bgcolor:$(this).find(".bgcolor input").val(),
 					about:$(this).find(".about input").val(),
+					tagid:$(this).find(".tagid input").val(),
 				});
 			});
 			//vals.join(',')
@@ -142,6 +144,17 @@ jQuery(document).ready(function() {
 			});
 		}
 		init_link(base);
+
+		//复制一个
+		function init_copy(o){
+			o.find(".copy").click(function(){
+				var that = $(this).parent();
+				that.after(that.clone());
+				set_init(that.next(),{font_color:that.find(".font_color input").val(),bgcolor:that.find(".bgcolor input").val()});	that.next().find(".url input").val('');
+				that.next().find(".title input").val('').focus();
+			});
+		}
+		init_copy(base);
 		
 		//下移
 		function init_down(o){
@@ -185,6 +198,7 @@ jQuery(document).ready(function() {
 					that.find(".font_color input").val(rs.font_color);
 					that.find(".bgcolor input").val(rs.bgcolor);
 					that.find(".about input").val(rs.about);
+					that.find(".tagid input").val(rs.tagid);
 
 					that.find(".get-icon").attr('class',"get-icon "+rs.icon);
 			});
@@ -252,11 +266,13 @@ return <<<EOT
 	<span class='addmore' style="cursor:pointer;">
 		<i style="font-size:18px;" class=' fa fa-plus-square'></i> 增加一项
 	</span>
+	<textarea style="display:none;" id="{$name}" name="{$name}">{$info[$name]}</textarea>
 	<div class='input-group' style='border:1px dotted #ccc;padding:8px;margin:8px;'>
 			<span class='input-group-addon del' title="删除"><i class='fa fa-fw fa-close'></i></span> 
 			<span class='input-group-addon move' title="移动"><i class='fa fa-arrows'></i></span>
 			<span class='input-group-addon down' title="下移"><i class='fa fa-arrow-down'></i></span>
 			<span class='input-group-addon up' title="上移"><i class='fa fa-arrow-up'></i></span>
+			<span class='input-group-addon copy' title="复制一个"><i class='fa fa-copy'></i></span>
 			<span class="mc">
 				<div class='url'>链接:<input type='text' placeholder='必填'> <span class="get-link fa fa-chain">选择</span></div>
 				<div class='title'>标题:<input type='text' placeholder='必填'></div>				
@@ -270,9 +286,9 @@ return <<<EOT
 					<ul class='layui-inline' style='left: -44px;'><li class='get-color'></li></ul>
 				</div>
 				<div class='about'>描述:<input type='text' placeholder='描述介绍,一般留空'></div>
+				<div class='tagid'>分组:<input type='text' placeholder='一般留空,可扩展为二级菜单'> <span class="glyphicon glyphicon-question-sign" onclick="layer.alert('分组标志，一般为空。<br>设置的话(可用任何字符)，模板可以自由发挥排版。<br>比如可以做高亮显示标志。<br>或者扩展为二级菜单，即同一个分组的第一个就是一级菜单，其它就是二组菜单。')"></span></div>
 			</span>
    </div>
-<textarea style="display:none;" id="{$name}" name="{$name}">{$info[$name]}</textarea>
 </div>
 $jscode
  
