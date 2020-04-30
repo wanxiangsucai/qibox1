@@ -1282,9 +1282,10 @@ if(!function_exists('sort_config')){
      * 获取模块里边的栏目配置参数
      * @param string $sys_type 可以指定其他频道的目录名
      * @param unknown $pid 可以指定只调取哪些父栏目的下的子栏目数据
+     * @param string $field_name 默认指定取什么字段,设置true的话,就可以获取所有字段
      * @return array|unknown
      */
-    function sort_config($sys_type='',$pid=null){
+    function sort_config($sys_type='',$pid=null,$field_name='name'){
         if(empty($sys_type)){
             $sys_type=config('system_dirname');
         }
@@ -1307,7 +1308,7 @@ if(!function_exists('sort_config')){
             $_array = [];
             foreach ($array AS $id=>$rs){
                 if($rs['pid']==$pid){
-                    $_array[$id] = $rs['name'];
+                    $_array[$id] = (is_string($field_name)&&$field_name&&isset($rs[$field_name]))?$rs[$field_name]:$rs;
                 }
             }
             return $_array;
