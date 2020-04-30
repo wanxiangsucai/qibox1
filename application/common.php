@@ -1297,6 +1297,11 @@ if(!function_exists('sort_config')){
         if(empty($array)){
             $array = cache('sort_config_'.$sys_type);
             if (empty($array)) {
+                if (!modules_config($sys_type)&&!plugins_config($sys_type)) {
+                    return [];
+                }elseif (!is_file(APP_PATH.$sys_type.'/model/Sort.php')&&!is_file(PLUGINS_PATH.$sys_type.'/model/Sort.php')) {
+                    return [];
+                }
                 //$array = model($sys_type.'/sort')->getTreeList();
                 $array = get_model_class($sys_type,'sort')->getTreeList();
                 cache('sort_config_'.$sys_type,$array);
