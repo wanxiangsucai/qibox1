@@ -16,7 +16,8 @@ class Time{
             if ($num>1) {
                 $array = [
                     ['<',strtotime(date('Y-m-d 00:00:00'))-3600*24*($num-2)],
-                    ['>',strtotime(date('Y-m-d 00:00:00'))-3600*24*($num-1)]
+                    ['>',strtotime(date('Y-m-d 00:00:00'))-3600*24*($num-1)],
+                    'and'
                 ];
             }else{
                 $array = ['>',strtotime(date('Y-m-d 00:00:00'))];
@@ -26,7 +27,8 @@ class Time{
                 $a = strtotime(date('Y-m-d 00:00:00'))-((date('w')?:7)-1)*3600*24;
                 $array = [
                     ['<',$a-3600*24*7*($num-2)],
-                    ['>',$a-3600*24*7*($num-1)]
+                    ['>',$a-3600*24*7*($num-1)],
+                    'and'
                 ];
             }else{
                 $a = strtotime(date('Y-m-d 00:00:00'))-((date('w')?:7)-1)*3600*24;
@@ -50,7 +52,8 @@ class Time{
                 
                 $array = [
                     ['<',strtotime($end_year.'-'.$end_m."-01 00:00:00")],
-                    ['>',strtotime($next_year.'-'.$next_m."-01 00:00:00")]
+                    ['>',strtotime($next_year.'-'.$next_m."-01 00:00:00")],
+                    'and'
                 ];
             }else{
                 $array = ['>',strtotime(date('Y-m-01 00:00:00'))];
@@ -60,7 +63,8 @@ class Time{
                 $year = date('Y')-($num-1);                
                 $array = [
                     ['<',strtotime($year."-12-31 23:59:59")],
-                    ['>',strtotime($year."-01-01 00:00:00")]
+                    ['>',strtotime($year."-01-01 00:00:00")],
+                    'and'
                 ];
             }else{
                 $array = ['>',strtotime(date('Y-01-01 00:00:00'))];
@@ -91,7 +95,8 @@ class Time{
                 }
                 $array = [
                     ['<',strtotime("{$year}-{$end_m}-{$end_day} 23:59:59")],
-                    ['>',strtotime("{$year}-{$start_m}-01 00:00:00")]
+                    ['>',strtotime("{$year}-{$start_m}-01 00:00:00")],
+                    'and'
                 ];
             }else{
                 $m = (ceil(date('m')/3)-1)*3+1;

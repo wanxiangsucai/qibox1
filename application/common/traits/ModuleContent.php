@@ -708,7 +708,7 @@ trait ModuleContent
 	    }else{
 	        $msg = M('name') . '删除主题扣除:'.$info['title'];
 	    }
-	    add_jifen($this->user['uid'], -$group_array[$groupid],$msg,$this->webdb['group_topic_jftype']);
+	    add_jifen($info['uid'], -$group_array[$groupid],$msg,$this->webdb['group_topic_jftype']);
 	}
 	
 	/**

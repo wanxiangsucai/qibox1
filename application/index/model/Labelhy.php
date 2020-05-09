@@ -56,10 +56,10 @@ class Labelhy extends Label
         
         //获取当前页面的所有标签的数据库配置参数，如果一个页面有很多标签的时候，比较有帮助，如果标签只有一两个就帮助不太大。
         $page_tags = cache('hyconfig_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags);
-        if(empty($page_tags)){
+        if(empty($page_tags)||SHOW_SET_LABEL===true||LABEL_SET===true){
             $hy_tags = intval($hy_tags);
             $page_tags = self::where(['pagename'=>$page_name])->where(['ext_id'=>$hy_id,'fid'=>$hy_tags])->column(true,'name');
-            cache('hyconfig_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags,SHOW_SET_LABEL===true?null:$page_tags);
+            cache('hyconfig_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags, $page_tags);
         }
         
         //取得具体某个标签的配置数据
@@ -68,9 +68,9 @@ class Labelhy extends Label
         }else{
             //对于layout.htm布局模板的公共标签，$page_name值是反复变化的
             $tag_config = cache('hyconfig_page_tag_'.$tag_name.'-'.$hy_id.'-'.$hy_tags);
-            if (empty($tag_config)) {
+            if (empty($tag_config)||SHOW_SET_LABEL===true||LABEL_SET===true) {
                 $tag_config = getArray(self::where(['name'=>$tag_name])->where(['ext_id'=>$hy_id,'fid'=>$hy_tags])->find());
-                cache('hyconfig_page_tag_'.$tag_name.'-'.$hy_id.'-'.$hy_tags,LABEL_SET===true?null:$tag_config);
+                cache('hyconfig_page_tag_'.$tag_name.'-'.$hy_id.'-'.$hy_tags, $tag_config);
             }
         }
         if(empty($tag_config)){

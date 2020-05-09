@@ -154,17 +154,19 @@ class Label{
                         time()-$array[$field][1]*3600*24,
                 ];
             }elseif($array[$field][0]=='=' && preg_match("/^(day|week|month|year)([\d]*)$/", $array[$field][1],$data)){     //某个周期内的时间段
-                list($min,$max) = self::get_time_bynum($data[1],$data[2]);
-                $array[$field] = [
-                        ['>',$min],
-                        ['<',$max],
-                        'and'
-                ];
+//                 list($min,$max) = self::get_time_bynum($data[1],$data[2]);
+//                 $array[$field] = [
+//                         ['>',$min],
+//                         ['<',$max],
+//                         'and'
+//                 ];
+                $array[$field] = Time::only($data[1],$data[2]);
             }
         }
     }
     
     /**
+     * 将弃用,建议使用 \app\common\fun\Time\only
      * 根据day今天 day2昨天 day3前天数据对应那天的开始与结束时间, 年月周同理,也是对应的那年或那月或那周的开始与结束时间
      * @param string $type
      * @param string $num 1可以不写,2就代表上一个周期,

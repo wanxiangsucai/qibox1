@@ -89,10 +89,10 @@ class Label extends Model
         
         //获取当前页面的所有标签的数据库配置参数，如果一个页面有很多标签的时候，比较有帮助，如果标签只有一两个就帮助不太大。
         $page_tags = cache('config_page_tags_'.$page_name);
-        if(empty($page_tags)){
+        if(empty($page_tags)||LABEL_SET===true){
             //比如头尾公共标签多处调用的话，$page_name值是反复变化的,所以要用OR查询
             $page_tags = self::where(['pagename'=>$page_name])->whereOr(['name'=>$tag_name])->column(true,'name');
-            cache('config_page_tags_'.$page_name,LABEL_SET===true?null:$page_tags);
+            cache('config_page_tags_'.$page_name, $page_tags);
         }
         
         //取得具体某个标签的配置数据
@@ -101,9 +101,9 @@ class Label extends Model
         }else{
             //对于layout.htm布局模板的公共标签，$page_name值是反复变化的
             $tag_config = cache('config_page_tag_'.$tag_name);
-            if (empty($tag_config)) {
+            if (empty($tag_config)||LABEL_SET===true) {
                 $tag_config = getArray(self::where(['name'=>$tag_name])->find());
-                cache('config_page_tag_'.$tag_name,LABEL_SET===true?null:$tag_config);
+                cache('config_page_tag_'.$tag_name, $tag_config);
             }            
         }
         if(empty($tag_config)){
