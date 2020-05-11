@@ -14,7 +14,7 @@ class Content extends C
      */
     public static function deleteData($id=0,$mid=0){
         $result = parent::deleteData($id,$mid);
-        if ($result===true) { //必须绝对等于,因为1的时候是软删除
+        if ($result===true && class_exists('Pages')) { //必须绝对等于,因为1的时候是软删除
             Pages::where('aid',$id)->delete();
         }
         return $result;
