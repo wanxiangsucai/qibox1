@@ -113,7 +113,7 @@ class Label{
             }
         }
         foreach($array AS $key=>$value){
-            if(!preg_match("/^[\w]+$/", $key)){
+            if(!preg_match("/^[\w\.]+$/", $key)){
                 unset($array[$key]);
             }
         }
