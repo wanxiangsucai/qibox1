@@ -736,6 +736,8 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(667, 32, '是否要求先绑定手机号才能提现', 'getout_need_yzphone', '', 'radio', '0|不强制\r\n1|强制绑定手机号', 0, '', '', 0, -5);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(668, 8, '是否强制绑定手机号', 'must_yz_phone', '0', 'radio', '0|不强制\r\n1|强制绑定', 1, '', '', 0, 0);
 
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '短信接口标志', 'sms_type', '', 'text', '', 1, '', '留空或设置为aliyun则使用阿里云短信接口，其它接口请输入短信接口插件目录关键字，其中腾迅的短信接口关键字是qqsms', -1, 0);
+
 -- --------------------------------------------------------
 
 --

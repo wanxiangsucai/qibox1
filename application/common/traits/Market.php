@@ -45,6 +45,8 @@ trait Market
                 }else{
                     return $this->err_js($basepath.$keywords.'该频道已经存在了,不能重复安装');
                 }                
+            }else{
+                return $this->err_js("目录冲突，安全起见，请先卸载或删除当前目录:".$basepath.$keywords."，才能安装当前应用");
             }
             copy_dir($basepath.$keywords, RUNTIME_PATH."bakfile/$keywords".date('Y-m-d_H-i'));
             delete_dir($basepath.$keywords);
