@@ -327,11 +327,14 @@ var WS = function () {	//类开始
 			}else{
 				return member_array[uid];
 			}			
+		},
+		send:function(o,getcid){
+			ws_send(o,getcid)
 		}
 	};
 
 
-}();//类结束
+}();//类结束 
 
 
 
@@ -345,6 +348,9 @@ var WS = function () {	//类开始
 //定义websocket接收到的消息做处理
 WS.onmsg(function(obj){
 	if(obj.type=='count'){	//用户刚刚建立链接时,不仅仅是自己.还可以是其它人
+		if(KF.kefu_list.length<1){
+			return ; //非客服功能
+		}
 		if(KF.first_load==true){
 			KF.first_load = false;
 			if( WS.my_uid()<1 ){	//未登录游客,刚刚建立WS连接
