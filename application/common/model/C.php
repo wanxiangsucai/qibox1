@@ -395,7 +395,11 @@ abstract class C extends Model
         static $mids = [];
         $mkey = self::$model_key.'_'.$id;   //避免不同模型出现同样ID的主题
         if(empty($mids[$mkey])){
-            $info = Db::name(self::$base_table)->where(static::map())->where('id','=',$id)->find();
+            try {
+                $info = Db::name(self::$base_table)->where(static::map())->where('id','=',$id)->find();
+            }catch (\Exception $e){
+                $info = Db::name(self::$base_table)->where('id','=',$id)->find();
+            }
             if ($info) {
                 $table = config('database.prefix') . self::$base_table;
                 if (!isset($info['view'])) {
