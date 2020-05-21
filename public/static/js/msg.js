@@ -527,7 +527,7 @@ var KF = {
 			$('.kefu_tip_msg').html(KF.tip_msg);
 		}	
 	},
-	welcome_msg:function(name){
+	welcome_msg:function(name){return ;
 		if( $.cookie('welcome_msg') ){
 			return ;
 		}
