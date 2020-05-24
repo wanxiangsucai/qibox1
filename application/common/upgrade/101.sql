@@ -1,0 +1,1 @@
+INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, '电话群主', '', 'fa fa-fw fa-volume-control-phone', 0, 'tel', '/public/static/libs/bui/pages/tel/init.js', '', '', 0, 0, '');
