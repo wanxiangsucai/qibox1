@@ -41,12 +41,19 @@ function SharHiddenMsg() {
 <div class="Share_Message" onClick="SharHiddenMsg();"></div>
 <script src="__STATIC__/js/jweixin.js"></script>
 <script type="text/javascript">
-wx.miniProgram.postMessage({ data:{title: '{$share.title}',desc:'{$share.about}'} });
+var wxShare = {
+	title: '{$share.title}',
+	about: '{$share.about}',
+	timeline: '{$share.timeline?:$share.title}',
+	link: '{$share.link}',
+	picurl: '{$share.picurl}',	
+}
+wx.miniProgram.postMessage({ data:{title: wxShare.title , desc:wxShare.about } }); //小程序的分享
 function ShareTimeline(){
     wx.onMenuShareTimeline({
-      title: '{$share.title}',
-      link: '{$share.link}',
-      imgUrl: '{$share.picurl}',
+      title: wxShare.title,
+      link: wxShare.link,
+      imgUrl: wxShare.picurl,
       trigger: function (res) {
         // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
       },
@@ -67,10 +74,10 @@ function ShareTimeline(){
 
 function ShareAppMessage(){
 	wx.onMenuShareAppMessage({
-      title: '{$share.title}',
-      desc: '{$share.about}',
-      link: '{$share.link}',
-      imgUrl: '{$share.picurl}',
+      title: wxShare.title ,
+      desc: wxShare.about ,
+      link: wxShare.link ,
+      imgUrl: wxShare.picurl ,
       trigger: function (res) {
         // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
 		//alert('请分享到朋友圈去，分享到微信好友无效！');
@@ -110,6 +117,9 @@ function wx_share_config(){
 		//wx.hideOptionMenu();
 		ShareTimeline();
 		ShareAppMessage();
+		if(typeof(wx_ready)=='function'){
+			wx_ready();
+		}
 	});
 
 	wx.error(function (res) {
