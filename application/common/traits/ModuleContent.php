@@ -698,6 +698,9 @@ trait ModuleContent
 	 * 删除主题时,如果原来新发表有奖励的话,这里要对应的扣除. 如果新发表是扣除的话,这里不做补偿
 	 */
 	protected function delete_post_money($info=[]){
+	    if ($info['status']==-1) {
+	        return ;   //回收站清除,就不重复扣积分了
+	    }
 	    $group_array = json_decode($this->webdb['group_post_money'],true);
 	    $groupid = $this->user['groupid'];
 	    if( empty($group_array[$groupid]) ){

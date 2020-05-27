@@ -153,7 +153,7 @@ abstract class C extends Model
 //             }
 //         }
         
-        if (!defined('IN_ADMIN') || $info['status']!=-1) { //不在后台的话,只能是软删除 在后台的话,要先进回收站,再真正删除
+        if (isset($info['status']) && (!defined('IN_ADMIN') || $info['status']!=-1)) { //不在后台的话,只能是软删除 在后台的话,要先进回收站,再真正删除
             Db::name(self::$base_table)->where('id',$id)->update(['status'=>-1]);
             Db::name($table)->where('id',$id)->update(['status'=>-1]);
             return 1;
@@ -271,25 +271,34 @@ abstract class C extends Model
         $data['picurl'] && $data['ispic'] = 1 ;
         
         //先要往索引表插一条记录做索引用 , 模型表的ID以主表的ID为标准 
-        try {
-			//入库前的钩子,可以在这里设置禁止发布信息
-			get_hook('cms_model_add_begin',$data,$info=[],['mid'=>$mid],true);
-            hook_listen('cms_model_add_begin',$data,$mid);
-            $data['id'] = Db::name( self::$base_table )->insertGetId($data);
-        } catch(\Exception $e) {
-            return '索引表插入失败';
-        }        
+        
+        get_hook('cms_model_add_begin',$data,$info=[],['mid'=>$mid],true);
+        hook_listen('cms_model_add_begin',$data,$mid);
+        $data['id'] = Db::name( self::$base_table )->insertGetId($data);
+        
+//         try {
+// 			//入库前的钩子,可以在这里设置禁止发布信息
+// 			get_hook('cms_model_add_begin',$data,$info=[],['mid'=>$mid],true);
+//             hook_listen('cms_model_add_begin',$data,$mid);
+//             $data['id'] = Db::name( self::$base_table )->insertGetId($data);
+//         } catch(\Exception $e) {
+//             return '索引表插入失败';
+//         }
+        
         if( empty($data['id']) ){
             return '新增ID不存在';
         }        
         
         $table = self::getTableByMid($mid); //内容主表
-        try {
-            $result = Db::name($table)->insert($data);  //insert 成功只返回true 不会返回ID值 insertGetId才返回ID值,或者给insert补全其它参数
-        } catch(\Exception $e) {
-            Db::name( self::$base_table )->where('id',$data['id'])->delete();
-            return '内容表数据插入失败';
-        }
+        
+        $result = Db::name($table)->insert($data);  //insert 成功只返回true 不会返回ID值 insertGetId才返回ID值,或者给insert补全其它参数
+        
+//         try {
+            
+//         } catch(\Exception $e) {
+//             Db::name( self::$base_table )->where('id',$data['id'])->delete();
+//             return '内容表数据插入失败';
+//         }
         
         if ($result) {
 			//成功发表信息后的钩子
@@ -993,14 +1002,19 @@ abstract class C extends Model
                     $_map[$key] = $value;
                 }
             }
-            if (!preg_match("/^(id|uid|list|view|status)/i", $order)) {
-                $order = 'id';
-            }            
-            $data = Db::name(self::$base_table) ->where(static::map()) ->where($_map)->field('id,mid')->order($order,$by)->paginate($rows,false,['page'=>$page]);
-//             $data->each(function($rs,$key){
-//                 $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->find();
-//                 return $vs;
-//             });
+            if ($order=='rand()') {
+                $data = Db::name(self::$base_table) ->where(static::map()) ->where($_map)->field('id,mid')->orderRaw('rand()')->paginate($rows,false,['page'=>$page]);
+            }else{
+                if (!preg_match("/^(id|uid|list|view|status)/i", $order)) {
+                    $order = 'id';
+                }
+                $data = Db::name(self::$base_table) ->where(static::map()) ->where($_map)->field('id,mid')->order($order,$by)->paginate($rows,false,['page'=>$page]);
+                //             $data->each(function($rs,$key){
+                //                 $vs = Db::name(self::getTableByMid($rs['mid']))->where(['id'=>$rs['id']])->find();
+                //                 return $vs;
+                //             });
+            }                        
+
             $array = getArray($data);//print_r($array) ;exit;
             foreach($array['data'] AS $key=>$rs){
                 unset($map['id']);

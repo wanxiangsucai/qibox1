@@ -10,7 +10,7 @@ abstract class Category extends Model
     protected $table;// = '__FORM_MODULE__';
     
     //以下三项必须在这里先赋值，不然下面的重新定义table会不生效
-    protected $autoWriteTimestamp = false;   // 自动写入时间戳
+    protected $autoWriteTimestamp = true;   // 自动写入时间戳
     protected $dateFormat = 'Y-m-d H:i:s';
     protected $resultSetType = 'array';
     
