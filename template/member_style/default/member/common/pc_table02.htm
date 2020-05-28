@@ -44,7 +44,7 @@
 	</th>
 	<!-- 自定义字段头部标题 -->
 	{volist name=":fun('field@fields_to_table',$f_array,[])" id="vs"}
-    <th>
+    <th data-status="{$rs.status}" data-id="{$rs.id}">
 		<!--排序-->
 		{if in_array($vs.name,explode(',',$tab_ext.order))}
 			{if input('_order')==$vs.name&&input('_by')=='desc'}

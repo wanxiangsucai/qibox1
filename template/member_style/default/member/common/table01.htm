@@ -63,7 +63,7 @@ body{
 
 
 {volist name="listdb" id="rs"}
-<div class="sideBox">
+<div class="sideBox" data-status="{$rs.status}" data-id="{$rs.id}">
 	
 	{notempty name="$rs.title"}<!--标题单独显示-->
 		<ul><a href="{:iurl('show',['id'=>$rs.id])}">{$rs.title}</a><ol>&nbsp;</ol></ul>
@@ -96,7 +96,7 @@ body{
 		{if isset($rs.status)}	
 		<ul>
 			<ol>状态</ol>
-			<li>{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status==2) /} 精华 {else /} 已审核 {/if}<div></div></li>		
+			<li>{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status>1) /} 推荐 {elseif($rs.status==1) /} 已审核 {elseif($rs.status==-1) /} <i style="color:green;">回收站</i> {/if}<div></div></li>		
 		</ul>
 		{/if}
 	

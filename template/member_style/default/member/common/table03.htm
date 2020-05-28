@@ -9,7 +9,7 @@
 
 <div class="MyshopBox">
 {volist name="listdb" id="rs"}
-	<div class="ListShop">
+	<div class="ListShop" data-status="{$rs.status}" data-id="{$rs.id}">
 		<dl>
 			{notempty name="$rs.picurl"}<!--图片单独显示-->
 				<dt><a href="{$rs.url}"><img src="{$rs.picurl|tempdir}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></dt>
@@ -25,13 +25,7 @@
 						<a href="{:iurl('index',['fid'=>$rs.fid])}" target="_blank">{$rs.fid|get_sort='name'}</a>
 					{/if}
 					{if isset($rs.status)}	 <!--状态单独显示-->
-						{if $rs.status==0} 
-							<i style='color:blue;'>未审核</i> 
-						{elseif($rs.status==2) /} 
-							<span style='color:orange;'>已推荐</span> 
-						{else /} 
-							<span style='color:red;'>已审核</span> 
-						{/if}
+						{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status>1) /} 推荐 {elseif($rs.status==1) /} 已审核 {elseif($rs.status==-1) /} <i style="color:green;">回收站</i> {/if}
 					{/if}
 					<br>
 					{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"} <!--自定义字段-->

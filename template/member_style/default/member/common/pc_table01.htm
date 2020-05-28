@@ -69,7 +69,7 @@
 {/if}
 
 {volist name="listdb" id="rs"}
-	<div class="list_item">
+	<div class="list_item" data-status="{$rs.status}" data-id="{$rs.id}">
 		{notempty name="$rs.picurl"}<!--图片单独显示-->
 			<div class="img"><a href="{:iurl('show',['id'=>$rs.id])}" target="_blank"><img src="{$rs.picurl|tempdir}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></div>
 		{/notempty}
@@ -94,7 +94,7 @@
 			{notempty name="$rs.fid"} 分类：<a href="{:iurl('index',['fid'=>$rs.fid])}" target="_blank">{$rs.fid|get_sort='name'}</a>{/notempty} 
 			日期：<span>{$rs.create_time|format_time="Y-m-d H:i"}</span> 
 			{notempty name="$rs.view"} 浏览：<span>{$rs.view}</span>{/notempty}
-			{if isset($rs.status) } 状态：<span>{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status==2) /} 精华 {else /} 已审核 {/if}</span>{/if}
+			{if isset($rs.status) } 状态：<span>{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status>1) /} 推荐 {elseif($rs.status==1) /} 已审核 {elseif($rs.status==-1) /} <i style="color:green;">回收站</i> {/if}</span>{/if}
 			<i>{:get_status($rs.zhibo_status,['','直播预告','直播中','直播结束'])}</i>
 			</div>
 		{/notempty}

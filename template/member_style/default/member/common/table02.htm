@@ -1,6 +1,6 @@
 <div class="qb_member_Cnt">
 {volist name="listdb" id="rs"}
-	<ul class="qb_member_ListType1">
+	<ul class="qb_member_ListType1" data-status="{$rs.status}" data-id="{$rs.id}">
 		<ol>
 		{notempty name="$rs.title"}<!--标题单独显示-->
 			<a href="{$rs.url}">{$rs.title}</a> 
@@ -13,13 +13,7 @@
 		{/volist}
 
 			{if isset($rs.status)}	 <!--状态单独显示-->
-				{if $rs.status==0} 
-					<i style='color:blue;'>未审核</i> 
-				{elseif($rs.status==2) /} 
-					<span style='color:orange;'>已推荐</span> 
-				{else /} 
-					<span style='color:red;'>已审核</span> 
-				{/if}
+				{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status>1) /} 推荐 {elseif($rs.status==1) /} 已审核 {elseif($rs.status==-1) /} <i style="color:green;">回收站</i> {/if}
 			{/if}
 		</ol>
 
