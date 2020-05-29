@@ -155,6 +155,7 @@ class Msg extends IndexBase{
             //unset($array['live']['service_video']['push_url']);
         }
         $array['chatmod'] = $this->get_chat_mod($uid,$uid<0?get_user($qun_info['uid'])['groupid']:$this->user['groupid']);  //群聊模块
+        
         return $this->ok_js($array);
     }
     
@@ -172,7 +173,7 @@ class Msg extends IndexBase{
         }else{
             $pcwap = 2;
         }
-        $array = fun('chatmod@get',$pcwap,$uid<1?1:0,$uid<0?abs($uid):0,$groupid);  //群聊模块
+        $array = fun('chatmod@get',$pcwap,$uid<1?1:(in_wap()?2:0),$uid<0?abs($uid):0,$groupid);  //群聊模块
         return $array;
     }
     

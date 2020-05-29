@@ -1787,3 +1787,6 @@ ALTER TABLE  `qb_memberdata` CHANGE  `money`  `money` MEDIUMINT( 7 ) NOT NULL DE
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 14, '发表修改主题使用辅栏目的用户组', 'post_use_category', '12,11', 'usergroup2', '', 0, '', '', 0, 1);
 
 INSERT INTO `qb_chatmod` (`id`, `uid`, `aid`, `type`, `name`, `about`, `icon`, `pcwap`, `keywords`, `init_jsfile`, `init_iframe`, `init_jscode`, `status`, `list`, `allowgroup`) VALUES(0, 0, 0, 1, '电话群主', '', 'fa fa-fw fa-volume-control-phone', 0, 'tel', '/public/static/libs/bui/pages/tel/init.js', '', '', 0, 0, '');
+
+UPDATE `qb_chatmod` SET type=0 WHERE pcwap=1 AND keywords='uploadpic';
+UPDATE `qb_chatmod` SET type=0 WHERE pcwap=1 AND keywords='sound';
