@@ -89,8 +89,11 @@ class Exam{
      * @param array $info 试题数据
      * @param string $ans 用户的答案
      */
-    public function check_answer($info=[],$ans=''){        
-        if(trim($info['answer'],',')==trim($ans,',')){
+    public function check_answer($info=[],$ans=''){
+        if($info['answer']=='#'){   //调查表,没有标准答案
+            return 1;
+        }
+        if(trim($info['answer'],', 　')==trim($ans,', 　')){
             return 1;
         }else{
             return -1;
