@@ -1472,8 +1472,24 @@ EOT;
 //         $config['cfg'] = serialize( ['rows'=>$cfg['rows']] );
 
 
-        $config['cfg'] = serialize( $cfg );        
-        $data = $obj->$action($config,$page_num);
+        $config['cfg'] = serialize( $cfg );
+        try {
+            $data = $obj->$action($config,$page_num);
+        } catch(\Exception $e) {
+            $string = var_export($e,true) ;
+            preg_match("/'Error SQL' => '(.*?)',/", $string,$array);
+            $err_sql = $array[1];
+            preg_match("/'Error Message' => '(.*?)',/", $string,$array);
+            $err_msg = $array[1];
+            if (!$err_sql || !$err_msg) {
+                echo '<pre>当前标签《'.$cfg['tag_name'].'》调用的数据库出错,详情如下:'.$string.'</pre>';
+            }else{
+                if (strstr($err_msg,'Unknown column')) {
+                    $msg = '当前标签《'.$cfg['tag_name'].'》调用的数据库缺少字段<br>'.filtrate($err_msg)."<br>".filtrate($err_sql);
+                    echo $msg."<script>layer.alert(`".str_replace('`', '', $msg)."`);</script>";
+                }
+            }
+        }
         $data = getArray($data);
         if($onlyData){
             return is_array($data['data']) ? $data['data'] : $data; //不是数组的时候,就是那些单张图或HTML代码

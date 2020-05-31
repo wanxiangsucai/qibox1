@@ -98,7 +98,7 @@ class LabelhyShow extends LabelShow
             $__array__ = self::get_default_data($_cfg['systype']?$_cfg['systype']:'cms',$_cfg,$page,false);
             $__LIST__ = is_array($__array__['data']) ? $__array__['data'] : $__array__; //不是数组的时候,就是单张图片,或纯HTML代码
         }else{
-            $_cfg = unserialize($tag_array['cfg']);
+            $_cfg = array_merge($_cfg,unserialize($tag_array['cfg'])) ;
         }
         
         //用户自定义了循环变量,比如listdb
