@@ -121,7 +121,24 @@ class Label extends Model
             return $tag_config;                     //列表页标签不需要在这里处理数据
         }
         //具体某个标签从数据库取数据
-        $tag_data = self::run_tag_class($tag_config , $page_num);
+        try {
+            $tag_data = self::run_tag_class($tag_config , $page_num);
+        } catch(\Exception $e) {
+            $string = var_export($e,true) ;
+            preg_match("/'Error SQL' => '(.*?)',/", $string,$array);
+            $err_sql = $array[1];
+            preg_match("/'Error Message' => '(.*?)',/", $string,$array);
+            $err_msg = $array[1];
+            if (!$err_sql || !$err_msg) {
+                echo '<pre>当前标签《'.$tag_name.'》调用的数据库出错,详情如下:'.$string.'</pre>';
+            }else{
+                if (strstr($err_msg,'Unknown column')) {
+                    $msg = '当前标签《'.$tag_name.'》调用的数据库缺少字段<br>'.filtrate($err_msg)."<br>".filtrate($err_sql);
+                    echo $msg."<script>layer.alert(`".str_replace('`', '', $msg)."`);</script>";
+                }
+            }
+        }
+        
         if(!empty($tag_data)){
             if(is_array($tag_data)&&$tag_data['format_data']){   //同时存在HTML数据，比如图片<img src=$pic>
                 $tag_config['format_data'] = $tag_data['format_data'];

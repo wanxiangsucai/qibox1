@@ -53,7 +53,7 @@ class Labelhy extends Label
      * @return void|void|unknown|array|NULL[]
      */
     public static function get_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags='',$cfg=[]){
-        
+
         //获取当前页面的所有标签的数据库配置参数，如果一个页面有很多标签的时候，比较有帮助，如果标签只有一两个就帮助不太大。
         $page_tags = cache('hyconfig_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags);
         if(empty($page_tags)||SHOW_SET_LABEL===true||LABEL_SET===true){
@@ -89,8 +89,25 @@ class Labelhy extends Label
         if($tag_config['class_cfg']=='@'){
             return $tag_config;                     //列表页标签不需要在这里处理数据
         }
-        //具体某个标签从数据库取数据
-        $tag_data = self::run_tag_class($tag_config , $page_num);
+        //具体某个标签从数据库取数据        
+        try {
+            $tag_data = self::run_tag_class($tag_config , $page_num);
+        } catch(\Exception $e) {
+            $string = var_export($e,true) ;
+            preg_match("/'Error SQL' => '(.*?)',/", $string,$array);
+            $err_sql = $array[1];
+            preg_match("/'Error Message' => '(.*?)',/", $string,$array);
+            $err_msg = $array[1];
+            if (!$err_sql || !$err_msg) {
+                echo '<pre>当前标签《'.$tag_name.'》调用的数据库出错,详情如下:'.$string.'</pre>';
+            }else{
+                if (strstr($err_msg,'Unknown column')) {
+                    $msg = '当前标签《'.$tag_name.'》调用的数据库缺少字段<br>'.filtrate($err_msg)."<br>".filtrate($err_sql);
+                    echo $msg."<script>layer.alert(`".str_replace('`', '', $msg)."`);</script>";
+                }
+            }
+        }
+        
         if(!empty($tag_data)){
             if(is_array($tag_data)&&$tag_data['format_data']){   //同时存在HTML数据，比如图片<img src=$pic>
                 $tag_config['format_data'] = $tag_data['format_data'];

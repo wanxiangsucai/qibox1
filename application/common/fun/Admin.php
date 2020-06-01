@@ -12,6 +12,10 @@ class Admin{
      * @return boolean
      */
     public static function sort($fid=0,$dirname=''){
+        $user = login_user();
+        if ($user['groupid']==3) {
+            return true;
+        }
         if (empty($dirname)) {
             $dirname = config('system_dirname');
         }
@@ -20,7 +24,7 @@ class Admin{
             $str .= ','.get_sort($fid,'admin','',$dirname);
         }        
         foreach(explode(',',$str) AS $uid){
-            if($uid>0 && $uid==login_user('uid')){
+            if($uid>0 && $uid==$user['uid']){
                 return true;
             }
         }

@@ -46,12 +46,24 @@ abstract class Reply extends Model
         }
     }
     
+    /**
+     * 删除评论,在前台的话,是伪删除
+     * @param unknown $id
+     * @return boolean
+     */
     public static function delete_Info($id){
         empty(self::$model_key) && self::InitKey();
         $info = self::get($id);
         //$topic = self::$content_model->where('id',$info['aid'])->find(); 
-        self::where('pid',$id)->update(['pid'=>0]); //把引用评论提取出来
-        if(self::destroy($id)){
+        if (defined('IN_ADMIN')) {
+            $result = self::destroy($id);
+        }else{
+            $result = self::where('id',$id)->update([
+                'status'=>-1
+            ]);
+        }
+        if($result){
+            self::where('pid',$id)->update(['pid'=>0]); //把引用评论提取出来
             self::$content_model->addReply($info['aid'],false);
             return true;
         }
@@ -109,16 +121,19 @@ abstract class Reply extends Model
      * @param array $pages
      * @return unknown
      */
-    public static function getListByAid($aid=0,$sysid=0,$order='',$rows=10,$pages=[])
+    public static function getListByAid($aid=0,$sysid=0,$order='',$rows=10,$pages=[],$map=[])
     {
         empty(self::$model_key) && self::InitKey();
         if(empty($order)){
             $order = 'list desc ,id desc';
         }elseif($order == 'list desc'){
             $order .= ',id desc';
+        }        
+        $_map = ['aid'=>$aid,'pid'=>0];
+        if ( !defined('IN_ADMIN') && !$map['status'] ) {
+            $map['status'] = ['<>', -1];
         }
-        $map = ['aid'=>$aid,'pid'=>0];
-        $data_list = self::where($map)->order($order)->paginate(
+        $data_list = self::where($_map)->where($map)->order($order)->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
                 empty($pages[1])?[]:$pages[1]
@@ -127,7 +142,7 @@ abstract class Reply extends Model
         $data_list->each(function(&$rs,$key){
             $rs = self::format_content($rs);
             if($rs['reply']){
-                $rs['sons'] = self::getSons($rs['id']);
+                $rs['sons'] = self::getSons($rs['id'],$map);
             }else{
                 $rs['sons'] = [];
             }
@@ -156,12 +171,12 @@ abstract class Reply extends Model
         return $rs;
     }
     
-    public static function getSons($pid){
+    public static function getSons($pid,$map=[]){
         empty(self::$model_key) && self::InitKey();
-        $map = [
+        $_map = [
             'pid'=>$pid,
         ];
-        $array = self::where($map)->order('id asc')->column(true);
+        $array = self::where($_map)->where($map)->order('id asc')->column(true);
         foreach($array AS $key=>$rs){
             $rs = self::format_content($rs);
             $array[$key] = $rs;

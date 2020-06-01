@@ -4,12 +4,42 @@ use think\Db;
 use app\qun\model\Content AS ContentModel;
 use app\qun\model\Topic AS TopicModel;
 use app\qun\model\Member AS MemberModel;
+use app\qun\model\Moneylog AS MoneylogModel;
 
 /**
  * 圈子
  *
  */
 class Qun{
+    
+    /**
+     * 圈币消费与赚取日志
+     * @param number $aid
+     * @param number $uid
+     * @param number $money
+     * @param string $about
+     */
+    public static function money($aid=0,$uid=0,$money=0,$about=''){
+        if ($money==0||$uid==0||$aid==0) {
+            return ;
+        }
+        
+        $result = MoneylogModel::create([
+            'uid'=>$uid,
+            'aid'=>$aid,
+            'money'=>$money,
+            'about'=>$about,
+        ]);
+        
+        if ($result) {
+            if ($money>0) {
+                MemberModel::where('uid',$uid)->where('aid',$aid)->setInc('money',$money);
+            }else{
+                MemberModel::where('uid',$uid)->where('aid',$aid)->setDec('money',abs($money));
+            }
+            return true;
+        }
+    }
     
     /**
      * 圈子的一些活跃信息,比如直播信息

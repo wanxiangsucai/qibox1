@@ -328,7 +328,15 @@ abstract class C extends IndexBase
 //                 $order = 'list';
 //             }
 //         }
-        return $this->getListData($map, "$order $by",  $rows , [] ,true);
+        $listdb = $this->getListData($map, "$order $by",  $rows , [] ,true);
+        $listdb->each(function($rs,$key){
+            if( $rs['status']==0 && (empty($this->user)||($rs['uid']!=$this->user['uid']&&fun('admin@sort',$rs['fid'])!==true)) ){
+                return [];
+            }else{
+                return $rs;
+            }
+        });
+        return $listdb;
     }
     
     

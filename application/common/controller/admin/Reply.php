@@ -37,7 +37,7 @@ class Reply extends AdminBase
                     $info = $this->c_model->getInfoByid($rs['aid']);
                     return '主题:'.$info['title'].'<br>回复:'.get_word(del_html($value), 50);
                 }],
-                ['status', '审核与否', 'switch'],
+                ['status', '状态','select', ['-1'=>'回收站','0'=>'未审核','1'=>'已审']],
                 ['uid', '发布者', 'username'],
                 ['create_time', '发布日期', 'text'],
         ];

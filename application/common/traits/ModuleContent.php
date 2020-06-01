@@ -463,10 +463,14 @@ trait ModuleContent
 	        return $result;
 	    }
 	    
-	    if(!$this->admin && config('webdb.post_auto_pass_group') && !in_array($this->user['groupid'], config('webdb.post_auto_pass_group'))){
-	        $data['status'] = 0;
-	    }else{
-	        $data['status'] = 1;
+	    $data['status'] = 0;
+	    if ( empty($this->webdb['post_auto_pass_group'])
+	        || in_array($this->user['groupid'], $this->webdb['post_auto_pass_group'])
+	        || $this->admin
+	        || fun('admin@sort',$data['fid'])===true
+	        || ($this->webdb['post_auto_pass_uids'] && in_array($this->user['uid'], str_array($this->webdb['post_auto_pass_uids'])))
+	        ) {
+	            $data['status'] = 1;
 	    }
 	    
 	    $s_config = $fid ? get_sort($fid,'config') : [];

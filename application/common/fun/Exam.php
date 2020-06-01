@@ -93,6 +93,9 @@ class Exam{
         if($info['answer']=='#'){   //调查表,没有标准答案
             return 1;
         }
+        if ($ans!='' && strstr($info['answer'],'|') && in_array($ans, str_array($info['answer'],'|'))) {
+            return 1;
+        }
         if(trim($info['answer'],', 　')==trim($ans,', 　')){
             return 1;
         }else{

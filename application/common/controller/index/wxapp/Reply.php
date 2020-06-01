@@ -27,7 +27,7 @@ abstract class Reply extends IndexBase
      * @param string $page 第几页
      * @return \think\response\Json
      */
-    public function index($id=0,$orderby='',$rows='',$page=0){        
+    public function index($id=0,$orderby='',$rows='',$page=0,$status=0,$fid=0){        
         if($orderby=='asc'){
             $orderby = 'id asc';
         }elseif($orderby=='desc'){
@@ -35,7 +35,29 @@ abstract class Reply extends IndexBase
         }else{
             $orderby = '';
         }
-        $data = getArray($this->model->getListByAid($id,'',$orderby,$rows));
+        $map = [];
+        if ($status==1) {
+            $map['status'] = ['>', 0];
+        }        
+        $data = getArray($this->model->getListByAid($id,'',$orderby,$rows,$pages=[],$map));
+        $array = [];
+        foreach($data['data'] AS $key=>$rs){
+            if ( $rs['status']==0 && (empty($this->user) || (fun('admin@sort',$fid)!==true && $rs['uid']!=$this->user['uid'])) ) {
+                continue;
+            }            
+            if ($rs['sons']) {
+                $_array = [];
+                foreach ($rs['sons'] AS $k=>$v){
+                    if ( $v['status']==0 && (empty($this->user) || (fun('admin@sort',$fid)!==true && $v['uid']!=$this->user['uid'])) ) {
+                        continue;
+                    }
+                    $_array[] = $v;
+                }
+                $rs['sons'] = $_array;
+            }
+            $array[] = $rs;
+        }
+        $data['data'] = $array;
         return $this->ok_js($data);
     }
     
@@ -227,6 +249,15 @@ abstract class Reply extends IndexBase
         $data['list'] = time();
         
         $data['uid'] = intval($this->user['uid']);
+        
+        $data['status'] = 0;
+        if ( empty($this->webdb['reply_auto_pass_group']) 
+             || in_array($this->user['groupid'], $this->webdb['reply_auto_pass_group'])
+             || fun('admin@sort',$data['fid'])===true
+            || ($this->webdb['post_auto_pass_uids'] && in_array($this->user['uid'], str_array($this->webdb['post_auto_pass_uids'])))
+            ) {
+            $data['status'] = 1;
+        }
         
         return true;
     }

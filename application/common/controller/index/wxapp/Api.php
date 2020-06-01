@@ -28,6 +28,7 @@ abstract class Api extends IndexBase
         preg_match_all('/([_a-z]+)/',get_called_class(),$array);
         $dirname = $array[0][1];
         $this->model = get_model_class($dirname,'content');
+        $this->model_reply = get_model_class($dirname,'reply');
         $this->mid = 1;
     }
     
@@ -42,6 +43,40 @@ abstract class Api extends IndexBase
 //         $table = $this->model->getTableByMid($info['mid']);         
 //         return array_merge($info,['table'=>$table]);
         return $info;
+    }
+    
+    
+    /**
+     * 审核操作
+     * @param number $id
+     * @param number $rid
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function yz($id=0,$rid=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $this->err_js($info);
+        }
+        if ($rid) {
+            $reply_info = $this->model_reply->where('id',$rid)->find();
+            if (empty($reply_info)) {
+                return $this->err_js('回复不存在');
+            }
+            $this->model_reply->where('id',$rid)->update([
+                'status'=>$reply_info['status']==1?0:1
+            ]);
+            return $this->ok_js([
+                'status'=>$reply_info['status']
+            ]);
+        }else{
+            $this->model->updates([
+                'id'=>$id,
+                'status'=>$info['status']==1?0:1
+            ]);
+            return $this->ok_js([
+                'status'=>$info['status']
+            ]);
+        }
     }
     
     /**

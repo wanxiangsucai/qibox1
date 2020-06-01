@@ -833,9 +833,15 @@ class LabelShow extends IndexBase
         $fields = $filtrate_field ? $this->list_show_field( get_field($cfg['mid'],$type) , $filtrate_field ) : [];
         
         $__LIST__= $tag_data ? getArray($tag_data)['data'] : [];
+        foreach($__LIST__ AS $key=>$value){
+            if (empty($value)) {    //针对未通过审核的内容,只能自己查看的情况
+                unset($__LIST__[$key]);
+            }
+        }        
         if(empty($__LIST__)){     //没数据
             return ;
         }else{
+            $__LIST__ = array_values($__LIST__);
             if($tag_array && trim($tag_array['view_tpl']!='')){         //数据库设定的模板优先
                 $tpl = $tag_array['view_tpl'];
             }else{
