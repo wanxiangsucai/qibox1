@@ -267,6 +267,15 @@ class Setting extends AdminBase
      * @param string $filename
      */
     private function rename_adminfile($filename=''){
+
+        if ($filename!=''){
+            if (!preg_match('/^[\w\.]+$/i', $filename)) {
+                $this->error('后台入口文件名格式有误!');
+            }
+            if (!preg_match('/\.php$/i', $filename)) {
+                $filename .= '.php';
+            }            
+        }
         if ($filename!=''&&$filename!=config('admin.filename')) {
             if (!is_file(APP_PATH.'extra/admin.php')) {
                 write_file(APP_PATH.'extra/admin.php', '<?php ');
@@ -322,8 +331,7 @@ class Setting extends AdminBase
                 
                 $this->success('修改成功');
             }            
-        }
-
+        }        
         
         $this->get_hook('setting_get',$data=[],[],[],false);     //扩展增强文件接口
         
@@ -349,7 +357,7 @@ class Setting extends AdminBase
             $data[$rs['c_key']] = $rs['c_value'];
         }
         if ($group==1) {
-            $data['admin_filename'] = config('admin.filename')=='admin.php'?'':config('admin.filename');
+            $data['admin_filename'] = config('admin.filename')=='admin.php'?'':str_replace('.php','',config('admin.filename'));
         }
         $this->mid = $group;    //纯属为了模板考虑的
 		return $this->editContent($data);

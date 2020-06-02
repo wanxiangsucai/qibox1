@@ -1,0 +1,1 @@
+UPDATE `qb_config` SET  `c_descrip` =  '默认是admin.php，为安全起见，你可以改成其它文件名，不需要加.php后缀' WHERE  `c_key` = 'admin_filename';
