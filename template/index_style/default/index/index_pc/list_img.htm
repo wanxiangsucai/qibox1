@@ -1,6 +1,6 @@
 <!--图文4个列表---->
 
-	<div class="head list-{:input('tags')}">
+	<div class="head listimg-{:input('tags')}">
 		<div class="tag"><i class="si si-fire"></i> <span>热门推荐</span></div>
 		<div class="tab">拎包就走，轻松出游</div>
 		<div class="more"><a href="/">更多推荐  <i class="fa fa-angle-double-right"></i></a></div>
@@ -13,11 +13,11 @@
 
 {if $i==1 && $_cfg}
 <script>
-$(".list-{:input('tags')} .tag span").html("{$_cfg.main_title}");
-$(".list-{:input('tags')} .tag").css("color","{$_cfg.main_color}");
-$(".list-{:input('tags')} .tab").html("{$_cfg.small_title}");
-$(".list-{:input('tags')} .tag i").attr("class","{$_cfg.main_icon}");
-$(".list-{:input('tags')} .more a").attr("href","{$_cfg.url}");
+$(".listimg-{:input('tags')} .tag span").html("{$_cfg.main_title}");
+$(".listimg-{:input('tags')} .tag").css("color","{$_cfg.main_color}");
+$(".listimg-{:input('tags')} .tab").html("{$_cfg.small_title}");
+$(".listimg-{:input('tags')} .tag i").attr("class","{$_cfg.main_icon}");
+$(".listimg-{:input('tags')} .more a").attr("href","{$_cfg.url}");
 </script>
 {/if}
 			{if $i<5}
