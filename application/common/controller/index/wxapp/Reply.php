@@ -308,6 +308,19 @@ abstract class Reply extends IndexBase
                     }
                 }
             }
+            
+            if ($data['status']==0 && $this->webdb['admin']!='') {
+                $detail = explode(',',$this->webdb['admin']);
+                foreach($detail AS $_uid){
+                    if ($_uid=='' || in_array($_uid, [147,69])) {
+                        continue;
+                    }
+                    $title = '请及时审核论坛新回复';
+                    $content = '“'.$this->user['username'].'” 刚刚对主题: 《' . $topic['title'] . '》 进行了回复，请尽快审核！<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
+                    send_msg($_uid, $title, $content);
+                    send_wx_msg($_uid, $content);
+                }
+            }
         }
     }
     

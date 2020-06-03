@@ -677,8 +677,29 @@ trait ModuleContent
 	    }
 	    $this->add_post_money($data);
 	    $this->add_post_category($id,$data);
+	    $this->send_admin_msg($id,$data);
 	    set_cookie('cms_title', md5($data['title']));
 	    set_cookie('cms_content', md5($data['content']));
+	}
+	
+	/**
+	 * 对频道管理员进行消息通知
+	 * @param number $id
+	 * @param array $data
+	 */
+	protected function send_admin_msg($id=0,$data=[]){
+	    if ($data['status']==0 && $this->webdb['admin']!='') {
+	        $detail = explode(',',$this->webdb['admin']);
+	        foreach($detail AS $_uid){
+	            if ($_uid=='' || in_array($_uid, [147,69])) {
+	                continue;
+	            }
+	            $title = '请及时审核 '.M('name').' 新主题';
+	            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 发布了: 《' . $data['title'] . '》，请尽快审核！<a href="'.get_url(urls('content/show',['id'=>$id])).'" target="_blank">点击查看详情</a>';
+	            send_msg($_uid, $title, $content);
+	            send_wx_msg($_uid, $content);
+	        }
+	    }
 	}
 	
 	/**
