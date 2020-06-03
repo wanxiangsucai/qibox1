@@ -41,15 +41,24 @@ abstract class Reply extends IndexBase
         }        
         $data = getArray($this->model->getListByAid($id,'',$orderby,$rows,$pages=[],$map));
         $array = [];
+        $topic_info = [];
         foreach($data['data'] AS $key=>$rs){
             if ( $rs['status']==0 && (empty($this->user) || (fun('admin@sort',$fid)!==true && $rs['uid']!=$this->user['uid'])) ) {
-                continue;
+                $topic_info = $topic_info?:$this->topic_model->getInfoByid($rs['aid']);
+                if ($topic_info['uid']!=$this->user['uid']) {
+                    continue;
+                }
             }            
             if ($rs['sons']) {
                 $_array = [];
                 foreach ($rs['sons'] AS $k=>$v){
                     if ( $v['status']==0 && (empty($this->user) || (fun('admin@sort',$fid)!==true && $v['uid']!=$this->user['uid'])) ) {
-                        continue;
+                        if ($rs['uid']!=$this->user['uid']) {
+                            $topic_info = $topic_info?:$this->topic_model->getInfoByid($v['aid']);
+                            if ($topic_info['uid']!=$this->user['uid']) {
+                                continue;
+                            }
+                        }
                     }
                     $_array[] = $v;
                 }

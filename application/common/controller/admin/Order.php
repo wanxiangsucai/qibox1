@@ -22,6 +22,7 @@ class Order extends AdminBase
         preg_match_all('/([_a-z]+)/',get_called_class(),$array);
         $dirname = $array[0][1];
         $this->model        = get_model_class($dirname,'order');
+        $this->model_content        = get_model_class($dirname,'content');
     }
     
     /**
@@ -65,13 +66,16 @@ class Order extends AdminBase
         //列表定义显示的字段
         $list_field = \app\common\field\Table::get_list_field(-1);
         $array = [
-                ['order_sn', '订单号', 'text'],
-                ['pay_status', '支付与否', 'switch'],
-                ['shipping_status', '发货与否', 'switch'],
-                ['receive_status', '签收与否', 'switch'],
-                ['totalmoney', '订单总额', 'text'],
-                ['uid', '用户帐号', 'username'],
-                ['create_time', '下单日期', 'text'],
+            ['id', '订购商品', 'callback',function($id,$rs){
+                return $this->get_shop($rs);
+            }],
+            ['uid', '用户帐号', 'username'],
+            ['order_sn', '订单号', 'text'],
+            ['pay_status', '支付与否', 'switch'],
+            ['shipping_status', '发货与否', 'switch'],
+            ['receive_status', '签收与否', 'switch'],
+            ['totalmoney', '订单总额', 'text'],            
+            ['create_time', '下单日期', 'date'],
         ];
         $this->list_items = $list_field ? array_merge($array,$list_field) : $array;
         
@@ -80,7 +84,12 @@ class Order extends AdminBase
         $this -> tab_ext['search'] = array_merge(['uid'=>'用户uid'],$search);
         
         //筛选字段
-        $this->tab_ext['filter_search'] = \app\common\field\Table::get_filtrate_field(-1);
+        $this->tab_ext['filter_search'] = [
+            'pay_status'=>['未支付','已支付'],
+            'shipping_status'=>['未发货','已发货'],
+            'receive_status'=>['未签收','已签收'],
+        ];
+        $array = \app\common\field\Table::get_filtrate_field(-1);
         
         //右边菜单
         $this -> tab_ext['right_button'] = [
@@ -107,13 +116,19 @@ class Order extends AdminBase
         $form_items = \app\common\field\Form::get_all_field(-1);    //自定义字段
         $this->form_items = array_merge(
                 [
-                        ['text','order_sn', '订单号'],
-                        ['text','shipping_code', '物流单号'],
-                        ['radio','shipping_status', '发货与否', '',['未发货','已发货']],
-                        ['radio','receive_status', '签收与否','',['未签收','已签收']],
-                        ['text','totalmoney', '订单总额'],
-                        ['date','create_time', '下单日期'],
-                        ['radio','pay_status', '支付与否','',['未支付','已支付']],
+                    ['text','order_sn', '订单号'],
+                    ['text','shipping_code', '物流单号'],
+                    ['radio','shipping_status', '发货与否', '',['未发货','已发货']],
+                    ['radio','receive_status', '签收与否','',['未签收','已签收']],
+                    ['text','totalmoney', '订单总额'],
+                    ['datetime','create_time', '下单日期'],
+                    ['radio','pay_status', '支付与否','',['未支付','已支付']],
+                    ['text','linkman', '收货联系人'],
+                    ['text','telphone', '联系电话'],
+                    ['text','address', '收货地址'],
+                    ['callback','id', '订购商品','',function($id,$rs){
+                        return $this->get_shop($rs);
+                    }],
                 ],
                 $form_items
           );
@@ -122,6 +137,39 @@ class Order extends AdminBase
         $info = fun('field@format',$info,'','show','',$this->form_items);  //数据转义
         
         return $this->getAdminShow($info) ;
+    }
+    
+    /**
+     * 获取订单里的商品信息
+     * @param array $rs
+     * @return string
+     */
+    private function get_shop($rs=[]){
+        $array = [];
+        $detail = explode(',',$rs['shop']);
+        foreach($detail AS $value){
+            if ($value=='') {
+                continue;
+            }
+            list($shopid,$num,$type1,$type2,$type3) = explode('-',$value);
+            $_info = $this->model_content->getInfoByid($shopid);
+            $more_about = [];
+            if ($type1) {
+                $_array = json_decode($_info['type1'],true);
+                $more_about[] = explode('|',$_array[$type1-1])[0];
+            }
+            if ($type2) {
+                $_array = json_decode($_info['type2'],true);
+                $more_about[] = $_array[$type2-1];
+            }
+            if ($type3) {
+                $_array = json_decode($_info['type3'],true);
+                $more_about[] = $_array[$type3-1];
+            }
+            $array[] = "<a href='".iurl('content/show',['id'=>$shopid])."' target='_blank'>".$_info['title']."</a> "
+                .($more_about?' （'.implode('/', $more_about).'） ':'').$num.' 件';
+        }
+        return implode("<br>", $array);
     }
 
     
