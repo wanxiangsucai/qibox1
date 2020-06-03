@@ -311,17 +311,16 @@ abstract class C extends IndexBase
             if(empty($mid)){
                 return [];
             }            
-        }
-        
+        }        
         $by = $by == 'asc' ? 'asc' : 'desc';
-        $mid || $mid = $this->model->getMidByFid($fid);
+        if($fid){
+            $fids = get_sort($fid,'sons') ;
+            $map['fid'] = $fids ? ['in',$fids] : $fid;
+            $mid = get_sort($fid,'mid');    //$this->model->getMidByFid($fid);
+        }
         $this->mid = $mid;  //getListData要用到的
         $rows = intval( $rows<1 ? 10 : $rows);
         $map['mid'] = $mid;
-        if($fid){
-           $fids = get_sort($fid,'sons') ;
-           $map['fid'] = $fids ? ['in',$fids] : $fid;
-        }
         $order = $order ? filtrate($order) : 'list';
 //         if (!in_array($order, ['id','create_time','list','rand()','view'])) {
 //             if(empty($order) || table_field($this->model->getTableByMid($mid),$order)==false){

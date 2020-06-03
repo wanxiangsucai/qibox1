@@ -94,11 +94,11 @@ class Player{
     private function ckplayer($url='',$width='',$height=''){
         static $array_id = 0;
         $array_id++;
-        $js = 0;
+        $js = '';
         if($array_id==1){
             $js = '<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/ckplayer/ckplayer.js"></script>';
         }
-        return "{$js}<div class='video{$array_id}' style='width: {$width};height: {$height};'></div>
+        return "{$js}<center><div class='video{$array_id} video-player' style='width: {$width};height: {$height};'></div></center>
                 <script type='text/javascript'>
                 	var videoObject = {
                 		container: '.video{$array_id}', //“#”代表容器的ID，“.”或“”代表容器的class
