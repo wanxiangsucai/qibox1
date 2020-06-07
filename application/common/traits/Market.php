@@ -246,6 +246,7 @@ trait Market
         if(empty($info)){
             return '安装配置文件不存在!';
         }elseif($this->bind_model($info['bind_modules'],$info['bind_plugins'])!==true){    //检查依赖的模块
+            $keywords && delete_dir($basepath.$keywords);
             return $this->bind_model($info['bind_modules'],$info['bind_plugins']);
         }
         $sql = read_file($basepath."$keywords/install/install.sql");
