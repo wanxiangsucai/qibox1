@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>站内消息</title>
 <link rel="stylesheet" href="__STATIC__/libs/amazeui/css/amazeui.min.css" />
-<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/main.css?fs" />
+<link rel="stylesheet" href="__STATIC__/libs/amazeui/css/main.css?" />
 <link rel="stylesheet" href="__STATIC__/icon/icon.css">
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/js/core/jquery.min.js"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/layer/layer.js"></SCRIPT>
@@ -99,8 +99,8 @@
 
 <!--好友列表标签用到的,这段隐藏代码可以任意移动位置,不影响页面布局-->
 <div id="friends_tag" class="pc_myfriend" style="display:none">
-{php}$type='1,2';$uid='';{/php}
-{qb:tag name="pc_myfriend" js="pc_myfriend" class="app\common\model\Friend@get_label" where="suid=$userdb.uid&type=$type&uid=$uid" rows="500"}
+{php}$type='2';$suid='';{/php}
+{qb:tag name="pc_myfriend" js="pc_myfriend" class="app\common\model\Friend@get_label" where="suid=$suid&type=$type&uid=$userdb.uid" rows="500"}
 					<div class="friends_box" data-uid="{$rs.he_id}">
 							<div class="user_head"><a href="{:get_url('user',$rs.he_id)}" target="_blank"><img src="{$rs.he_id|get_user_icon}" onerror="this.src='__STATIC__/images/noface.png'"/></a></div>
 							<div class="friends_text">
@@ -122,16 +122,7 @@
 				<button>+</button>
 			</div>
 			<div class="office_text">
-				<ul class="friends_list">
-					<li id="hot_qunzi">
-						<p>活跃圈子<i class="fa fa-chevron-down"></i></p>
-					</li>
-					<li id="my_join_qunzi">
-						<p>我加入的圈子<i class="fa fa-chevron-down"></i></p>
-					</li>
-					<li id="my_visit_qunzi">
-						<p>我浏览过的圈子<i class="fa fa-chevron-down"></i></p>
-					</li>
+				<ul class="friends_list">					
 					<li id="my_friend">
 						<p>我的好友<i class="fa fa-chevron-down"></i></p>
 						<div class="friends_box">
@@ -149,8 +140,16 @@
 					</li>
 					<li id="my_blacklist">
 						<p>黑名单<i class="fa fa-chevron-down"></i></p>
+					</li>					
+					<li id="my_join_qunzi">
+						<p>我加入的圈子<i class="fa fa-chevron-down"></i></p>
 					</li>
-					
+					<li id="my_visit_qunzi">
+						<p>我浏览过的圈子<i class="fa fa-chevron-down"></i></p>
+					</li>
+					<li id="hot_qunzi">
+						<p>活跃圈子<i class="fa fa-chevron-down"></i></p>
+					</li>					
 				</ul>
 			</div>	
 		</div>
@@ -334,7 +333,7 @@ var FriendActUrl = "{:urls('member/wxapp.friend/act')}";			//添加,删除好友
 
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/amazeui.min.js"></script>
 <script type="text/javascript" src="__STATIC__/libs/amazeui/js/zUI.js"></script>
-<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?yw3"></script>
+<script type="text/javascript" src="__STATIC__/libs/amazeui/js/wechat.js?"></script>
 <script type="text/javascript" src="__STATIC__/layui/laydate/laydate.js"></script> 
 <script type="text/javascript" src="__STATIC__/libs/swiper/jquery.liMarquee.js"></script>
 <link rel="stylesheet" href="__STATIC__/libs/swiper/jquery.liMarquee.css" />

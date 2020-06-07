@@ -751,7 +751,7 @@ font-size:18px;
 .office_text .del{
 	color:#ddd;
 	font-size:18px;
-	margin-top:9px;
+	margin-top:1px;
 	cursor:pointer;
 }
 .office_text .del:hover{

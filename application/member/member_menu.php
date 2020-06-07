@@ -54,6 +54,11 @@ return array(
                                                 'title'=>'手机身份验证',
                                                 'link'=>'yz/mob',
                                         ),
+                                        array(
+                                                'icon'=>'fa fa-group',
+                                                'title'=>'好友粉丝管理',
+                                                'link'=>'friend/index',
+                                        ),
                                 ),
                         ), 
                 )

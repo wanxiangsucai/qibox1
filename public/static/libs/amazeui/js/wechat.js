@@ -1198,8 +1198,8 @@ var format_content = {};
 
 //添加删除信息的功能按钮
 function content_add_btn(res,type){
-	$(".office_text .del").off('click');
-	$(".office_text .del").click(function(){
+	$("#chatbox .del").off('click');
+	$("#chatbox .del").click(function(){
 		var id = $(this).data("id");
 		var that = $(this);
 		if(pushIdArray[id]!=undefined){
@@ -1214,8 +1214,8 @@ function content_add_btn(res,type){
 			}
 		});
 	});
-	$(".office_text .big").off('click');
-	$(".office_text .big").click(function(){
+	$("#chatbox .big").off('click');
+	$("#chatbox .big").click(function(){
 		window.open($(this).attr('src'));
 	});
 
@@ -1333,7 +1333,7 @@ function add_friend_click_fun(){
 			that.find("i").show();
 			$("#my_friend .friends_box i.add").hide();
 			$("#my_blacklist .friends_box i.bad").hide();
-			$("#my_idol .friends_box i.bad").hide();
+			//$("#my_idol .friends_box i.bad").hide();
 			//$("#my_idol .friends_box i.add").hide();
 		});
 		btn.click(function(){
@@ -1353,14 +1353,14 @@ function add_friend_click_fun(){
 function get_friend_data(ty){
 	var page = 1;
 	var url = MyFriendUrl + page + "&type=";
-	if(ty=='my_idol'){	//我的偶像
-		url += "0&suid=&uid="+my_uid;
+	if(ty=='my_idol'){	//我的偶像,我所关注的人
+		url += "1&suid=&uid="+my_uid;
 	}else if(ty=='my_fans'){	//我的粉丝
-		url += "0&uid=&suid="+my_uid;
+		url += "1&uid=&suid="+my_uid;
 	}else if(ty=='my_blacklist'){	//黑名单
-		url += "-1&uid=&suid="+my_uid;
+		url += "-1&suid=&uid="+my_uid;
 	}else if(ty=='my_friend'){	//我的好友
-		url += "1,2&uid=&suid="+my_uid;
+		url += "2&uid=&suid="+my_uid;
 	}
 	$.get(url,function(res){
 		if(res.code==0){

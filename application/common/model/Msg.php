@@ -45,21 +45,25 @@ class Msg extends Model
         
         $result = parent::create($data);
         if($data['uid']>0 && $data['touid']>0){
-            if (empty($info)) {
-                Friend::add($data['uid'],$data['touid']);    //给用户发消息,就相当于成为他的粉丝
-            }else{
-                if ($info['type']!=2) {
+            $myinfo = Friend::where('uid',$data['uid'])->where('suid',$data['touid'])->find();
+            if (empty($myinfo)) {
+                //给用户发消息,就相当于成为他的粉丝
+                Friend::create([
+                    'suid'=>$data['touid'],
+                    'uid'=>$data['uid'],
+                    'type'=>$info['type']==1 ? 2 : 1,
+                ]);
+            }
+            if ($info){
+                if ($info['type']==1) {
                     Friend::where('id',$info['id'])->update(['type'=>2]);   //把对方也设置为双向好友
+                    if ($myinfo['type']!=-1) {
+                        Friend::where('id',$myinfo['id'])->update(['type'=>2]);
+                    }
+                }else{
+                    Friend::where('id',$info['id'])->update(['update_time'=>time()]);
                 }
-                $res = Friend::where('suid',$data['touid'])->where('uid',$data['uid'])->update(['type'=>2,'update_time'=>time()]);
-                if (empty($res)) {   //如果自己当中没有对方的资料,就要新建一条
-                    Friend::create([
-                        'suid'=>$data['touid'],
-                        'uid'=>$data['uid'],
-                        'type'=>2
-                    ]);
-                }
-            }            
+            }          
         }
         if ($result) {
             

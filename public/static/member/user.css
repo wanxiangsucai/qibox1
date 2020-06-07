@@ -45,6 +45,9 @@
 	display:table;
 	width:100%;
 }
+.OtherInfos ul li .num,.OtherInfos ul li .gz{
+	color:orange;
+}
 .OtherInfos ul li{
 	display:table-cell;
 	width:33%;
@@ -52,9 +55,9 @@
 	vertical-align:middle;
 	color:#666;
 }
-.OtherInfos ul li.money{
-	border-left:#DDD solid 1px;
-	border-right:#DDD solid 1px;
+.OtherInfos ul li.middle{
+	border-left:#eee solid 1px;
+	border-right:#eee solid 1px;
 }
 .OtherInfos ul li .yz{
 	color:#F90;
@@ -149,7 +152,7 @@
 .SideInfos ul{
 	display: table;
 	width: 100%;
-	border-top:#DDD solid 1px;
+	border-top:#f1f1f1 dotted 1px;
 }
 .SideInfos ul ol,.SideInfos ul li{
 	display: table-cell;

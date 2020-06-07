@@ -53,7 +53,7 @@ class Friend extends Model
 	        }
 	    }
 	    $array = self::where($map)->order('update_time desc,id desc')->paginate($rows);
- 	    $array = getArray($array);
+	    $array = getArray($array);
  	    foreach($array['data'] AS $key=>$rs){
  	        if($suid){
  	            $rs['he_id'] = $rs['uid'];

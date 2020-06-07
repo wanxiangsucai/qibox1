@@ -10,7 +10,7 @@
 <script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 </head>
 <body>
-<link rel="stylesheet" href="__STATIC__/member/pcuser.css">
+<link rel="stylesheet" href="__STATIC__/member/pcuser.css?d">
 <div class="TopContainer">
 	<div class="TopBox">
 		<div class="logo"><a href="/"><img src="{:tempdir($webdb.logo)}" onerror="this.src='__STATIC__/index/default/logo.png'"></a></div>
@@ -34,7 +34,7 @@
 					<dt>
 						<div><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></div>
 						<p>{$info.username}</p>
-						<button onclick="send_msg()"><i class="fa fa-fw fa-comment"></i> 给TA发短消息</button>
+						<button onclick="send_msg()"><i class="fa fa-child"></i> {$info.groupid|getGroupByid}</button>
 					</dt>
 					<dd>
 						<h3>个人基本信息</h3>
@@ -50,16 +50,14 @@
 				</dl>
 			</ol>
 			<li>
-				<dl>
-					<dt><span>个人财务相关信息</span></dt>
+				<dl class="morebtn">
+					<dt><span>与Ta互动</span></dt>
 					<dd>
-						<div>积分： <span>{$info.money} 个</span> </div>
-						<div>可用余额： <em>{$info.rmb} </em>元 </div>
-						<div>冻结余额：<em>{$info.rmb_freeze} </em>元</div>
-						 
+						<div onclick="KF.chat_win({uid:'{$info.uid}',username:'{$info.uid|get_user_name}',icon:'{$info.uid|get_user_icon}'});"><i class="fa fa-twitch"></i>私信他 </div>
+						<div class="gzfans"><i class="glyphicon glyphicon-heart-empty"></i><font>关注他</font>(<em class="num" style="color:yellow;">{:fun('Count@Info','friend',['suid'=>$info['uid']])}</em>) </div>
+						{if modules_config('qun')}<div class="myqunzi"><i class="fa fa-connectdevelop"></i>他的圈子</div>{/if}
 					</dd>
-				</dl>
-				
+				</dl>				
 				<br>
 				<dl>
 					<dt><span>用户组扩展信息</span></dt>
@@ -77,6 +75,77 @@
 		</ul>
 	</div>
 </div>
+
+{:fun('kefu@init')}<!--客服会话接口-->
+<script type="text/javascript">
+$(function(){
+	var that = $(".gzfans");
+	//检查是否已关注
+	$.get("{:murl('member/wxapp.friend/ckgz',['uid'=>$uid])}",function(res){
+		if(res.code==1){	//还没关注
+			that.click(function(){	//添加关注点击事件
+				$.get("{:murl('member/wxapp.friend/add',['uid'=>$uid])}",function(res){
+					if(res.code==0){	//关注成功
+						that.find('.num').html( parseInt(that.find('.num').html())+1);
+						that.addClass('gz');
+						layer.msg('关注成功');
+						that.unbind("click");
+					}else{	//关注失败
+						layer.alert(res.msg);
+					} 
+				});						
+			});
+		}else if(res.code==0){	//已关注
+			that.addClass('gz');
+			that.find('font').html('取消关注');
+			that.click(function(){
+				$.get("{:murl('member/wxapp.friend/del',['uid'=>$uid])}",function(res){
+					if(res.code==0){	//取消关注
+						that.find('.num').html( parseInt(that.find('.num').html())-1);
+						that.removeClass('gz');
+						layer.msg('成功取消关注');
+						that.unbind("click");
+					}else{	//取消失败
+						layer.alert(res.msg);
+					} 
+				});
+			})
+		}
+	});
+
+
+	var obj = $(".myqunzi");
+	$.get("{:iurl('qun/wxapp.qun/mycreate')}?uid={$info.uid}",function(res){
+		if(res.code==0){
+			var qunurl = "{:iurl('qun/content/show')}?id=";
+			if(res.data.length==1){
+				//obj.attr("target","_blank");
+				//obj.attr("href",qunurl+res.data[0].id);
+				obj.click(function(){
+					window.location.href = qunurl+res.data[0].id;
+				});	
+				return ;
+			}else{
+				if(res.data.length>0){					
+					obj.click(function(){
+						var qun = [];
+						$.each(res.data,function(i,rs){
+							qun.push("<div class='morelink'><a target='_blank' href='" + qunurl + rs.id + "'>"+rs.title+"</a></div>");
+						});
+						layer.tips( qun.join(''), obj , {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });
+					});
+					return ;
+				}
+			}
+		}
+		obj.click(function(){
+			layer.alert('TA还没有创建任何圈子!');
+		});
+	});
+})
+</script>
+
+
 <script type="text/javascript">
 function send_msg(){
 	layer.open({
@@ -197,6 +266,10 @@ function set_i_num(){
 <div class="SideContainer">
 	<div class="head"><i class="si si-lock"></i>我的私密资料</div>
 	<div class="MoreCnt">
+		<div class="list1">可用{$webdb.MoneyName}：{$info.money} 个</div>
+		<div class="list1">可用余额：{$info.rmb} 元</div>
+		<div class="list1">冻结余额：{$info.rmb_freeze} 元</div>
+
 		<div class="list1">注册IP：{$info.regip}</div>
 		<div class="list1">真实姓名：{$info.truename}</div>
 		<div class="list1">身份证号码：{$info.idcard}</div>

@@ -286,7 +286,12 @@ class Msg extends IndexBase
             if(is_numeric($result)){    //发送成功
                 $content = ($this->user['username']?:'游客') . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
                 if(empty($qun_id)){
-                    $touser_info['weixin_api'] && send_wx_msg($touser_info['weixin_api'], $content);
+                    if ($touser_info['weixin_api']) {
+                        //检查是否设置了只接收好友的微信通知
+                        if (empty($touser_info['sendmsg']['forbid_stranger_wxmsg']) || fun('Friend@my',$data['touid'])['type']==2) {
+                            send_wx_msg($touser_info['weixin_api'], $content);
+                        }
+                    }
                 }else{
                     if( preg_match("/@([^ ]+)/", $data['content'],$array) ){
                         if(empty($data['send_to'])){

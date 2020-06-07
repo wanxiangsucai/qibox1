@@ -180,14 +180,14 @@ loader.define(function(require,exports,module) {
 	//获取我的好友或粉丝列表
 	function get_friend_data(ty){
 		var url = "/index.php/index/wxapp.friend/get_list.html?page=1&row=100&type=";
-		if(ty=='my_idol'){	//我的偶像
-			url += "0&suid=&uid="+my_uid;
+		if(ty=='my_idol'){	//我的偶像,我所关注的人
+			url += "1&suid=&uid="+my_uid;
 		}else if(ty=='my_fans'){	//我的粉丝
-			url += "0&uid=&suid="+my_uid;
+			url += "1&uid=&suid="+my_uid;
 		}else if(ty=='my_blacklist'){	//黑名单
-			url += "-1&uid=&suid="+my_uid;
+			url += "-1&suid=&uid="+my_uid;
 		}else if(ty=='my_friend'){	//我的好友
-			url += "1,2&uid=&suid="+my_uid;
+			url += "2&suid=&uid="+my_uid;
 		}
 		$.get(url,function(res){
 			if(res.code==0){
@@ -197,14 +197,27 @@ loader.define(function(require,exports,module) {
 					//添加侧滑菜单
 					bui.listview({
 							id   : '#'+ty,
-							data : [{text : "删除",classname : "danger"},{text : "拉黑",classname : "warning"}],
+							data : [{text : "删除",classname : "danger"},{text : "拉黑",classname : "warning"},{text : "+好友",classname : "primary"}],
 							callback : function(e,ui) {
+								$(e.target).parents(".list-item").fadeOut(300,function () {
+									$(this).remove();
+								});
+								var urls = "/member.php/member/wxapp.friend/act.html?uid=" + $(e.target).parents(".list-item").data('uid') + "&type=";
 								var text = $(e.target).text().trim();
 								if( text == '删除' ){
-									$(e.target).parents(".list-item").fadeOut(300,function () {
-										$(this).remove();
-									});
+									urls+='del';
+								}else if( text == '拉黑' ){
+									urls+='bad';
+								}else if( text == '+好友' ){
+									urls+='add';
 								}
+								$.get(urls,function(res){
+									if(res.code==0){
+										layer.msg(res.msg);
+									}else{
+										layer.alert(res.msg);
+									}
+								});
 								// 关闭侧滑
 								ui.close();
 							}
@@ -227,7 +240,7 @@ loader.define(function(require,exports,module) {
 						</h3>
 						<p class="item-text">[近况] ${rs.he_lastvist}登录过</p>
 					</div>
-					<i class="icon- primary">&#xe603;</i>
+					<i class="icon- primary"><i class="si si-logout"></i></i>
 				</div>
 			</li>
 			`;

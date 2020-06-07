@@ -11,12 +11,12 @@ class Friend extends IndexBase{
      * 列出某个用户的好友与粉丝
      * @param number $uid 
      * @param number $suid
-     * @param number $type 0是粉丝,1是单向好友,-1黑名单,2是双向好友
+     * @param number $type 1是粉丝,-1黑名单,2是好友(未必是双向好友,他是我的好友,但我可能是他的黑名单或者他还没关注我)
      * @param number $rows
      * @param number $page
      * @return void|unknown|\think\response\Json
      */
-    public function get_list($uid=0,$suid=0,$type=0,$rows=20,$page=1){
+    public function get_list($uid=0,$suid=0,$type='',$rows=20,$page=1){
         $map = [];
         if ($uid>0) {
             $map['uid'] = $uid;

@@ -12,7 +12,7 @@
 	<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 </head>
 <body>
-<link rel="stylesheet" href="__STATIC__/member/user.css">
+<link rel="stylesheet" href="__STATIC__/member/user.css?fd">
 <div class="BaseInfos">
 	<ul>
 		<ol><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></ol>
@@ -24,24 +24,94 @@
 </div>
 <div class="OtherInfos">
 	<ul>
-
-		<li>
-			<div><i class="fa fa-fw fa-database"></i></div>
-			<span>积分{$info.money}个</span> 
-		</li>	
-
-		<li class="money">
-			<div><i class="fa fa-rmb"></i></div>
-			<span>余额{$info.rmb}元</span> 
+		{if modules_config('qun')}
+		<li class="myqunzi">
+			<div><i class="fa fa-connectdevelop"></i></div>
+			<span>Ta的圈子</span> 
 		</li>
+		{/if}
+
+		<li class="middle gzfans">
+			<div class="icon"><i class="glyphicon glyphicon-heart-empty"></i></div>
+			<span><font>关注Ta</font>(<em class="num">{:fun('Count@Info','friend',['suid'=>$info['uid']])}</em>)</span> 
+		</li>
+
 		<li>
-			<div><i class="fa fa-fw fa-comment"></i></div>
-			<span onclick="window.location.href='{:url('member/msg/add',['uid'=>$info['uid']])}'">发消息</span> 
+			<div><i class="fa fa-twitch"></i></div>
+			<span onclick="KF.chat_win({uid:'{$info.uid}',username:'{$info.uid|get_user_name}',icon:'{$info.uid|get_user_icon}'});">私信Ta</span> 
 		</li>		
 	</ul>
 </div>
+<script type="text/javascript">
+$(function(){
+	var that = $(".gzfans");
+	//检查是否已关注
+	$.get("{:murl('member/wxapp.friend/ckgz',['uid'=>$uid])}",function(res){
+		if(res.code==1){	//还没关注
+			that.click(function(){	//添加关注点击事件
+				$.get("{:murl('member/wxapp.friend/add',['uid'=>$uid])}",function(res){
+					if(res.code==0){	//关注成功
+						that.find('.num').html( parseInt(that.find('.num').html())+1);
+						that.find('.icon').addClass('gz');
+						layer.msg('关注成功');
+						that.unbind("click");
+					}else{	//关注失败
+						layer.alert(res.msg);
+					} 
+				});						
+			});
+		}else if(res.code==0){	//已关注
+			that.find('.icon').addClass('gz');
+			that.find('font').html('取消关注');
+			that.click(function(){
+				$.get("{:murl('member/wxapp.friend/del',['uid'=>$uid])}",function(res){
+					if(res.code==0){	//取消关注
+						that.find('.num').html( parseInt(that.find('.num').html())-1);
+						that.find('.icon').removeClass('gz');
+						layer.msg('成功取消关注');
+						that.unbind("click");
+					}else{	//取消失败
+						layer.alert(res.msg);
+					} 
+				});
+			})
+		}
+	});
+
+
+	var obj = $(".myqunzi");
+	$.get("{:iurl('qun/wxapp.qun/mycreate')}?uid={$info.uid}",function(res){
+		if(res.code==0){
+			var qunurl = "{:iurl('qun/content/show')}?id=";
+			if(res.data.length==1){
+				//obj.attr("target","_blank");
+				//obj.attr("href",qunurl+res.data[0].id);
+				obj.click(function(){
+					window.location.href = qunurl+res.data[0].id;
+				});	
+				return ;
+			}else{
+				if(res.data.length>0){					
+					obj.click(function(){
+						var qun = new Array();
+						$.each(res.data,function(i,rs){
+							qun.push("<a style='color:#fff;' target='_blank' href='" + qunurl + rs.id + "'>"+rs.title+"</a>");
+						});
+						layer.tips( qun.join('<br>'), obj , {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });
+					});
+					return ;
+				}
+			}
+		}
+		obj.click(function(){
+			layer.alert('TA还没有创建任何圈子!');
+		});
+	});
+})
+</script>
+{:fun('kefu@init')}<!--客服会话接口-->
 <div class="SideInfos">
-	<h3><i class="fa fa-user"></i>我的基本信息</h3>
+	<h3><i class="fa fa-user"></i>基本信息</h3>
 	<ul><ol>昵称</ol><li>{$info.nickname}</li></ul>
 	<ul><ol>我的ID</ol><li>{$info.uid}</li></ul>
 	<ul><ol>注册日期</ol><li>{:date("Y-m-d H:i:s",$info.regdate)}</li></ul>
@@ -78,8 +148,8 @@
 <div class="SideInfos member_showbbs_title">
 	<div class="bbs_title">
 		<!--这里可以是多个TAB按钮-->
-		<h3 class="ck"><i class="fa fa-fw fa-file-text-o"></i>我发表的主题</h3>
-		<h3><i class="fa fa-fw fa-file-text-o"></i>我回复的贴子</h3>
+		<h3 class="ck"><i class="fa fa-fw fa-file-text-o"></i>TA发表的主题</h3>
+		<h3><i class="fa fa-fw fa-file-text-o"></i>TA回复的贴子</h3>
 	</div>
 	<!--上面若有多个TAB按钮,那下面也要对应多个,必须要命名为了 class="show_content" 其中的 bbs_content_reply 为的是异步加载用的, 可以不使用 -->
 	<div class="show_content">
@@ -158,7 +228,7 @@ function set_i_num(){
 
 
 <div class="SideInfos">
-	<h3><i class="fa fa-fw fa-book"></i>我发的文章</h3>
+	<h3><i class="fa fa-fw fa-book"></i>TA发的文章</h3>
 {qb:tag name="wap_member_homepage_001" union="uid" type="cms" rows="5" mid="1" order="id" by="desc"}
 	<ul> <ol style="width:80%;">{$i}、<a href="{$rs.url}">{$rs.title|get_word=24}</a></ol><li>{:date("m-d",$rs.create_time)}</li></ul>
 {/qb:tag}
@@ -167,8 +237,10 @@ function set_i_num(){
 
 {if ($userdb.uid==$info.uid||$userdb.groupid==3)}
 <div class="SideInfos">
-	<h3><i class="si si-lock"></i>我的私密资料</h3>
-	 
+	<h3><i class="si si-lock"></i>私密资料</h3>
+	<ul><ol>可用{$webdb.MoneyName}</ol><li>{$info.money}</li></ul>
+	<ul><ol>可用余额</ol><li>{$info.rmb}</li></ul>
+
 	<ul><ol>真实姓名</ol><li>{$info.truename}</li></ul>
 	<ul><ol>联系电话</ol><li>{$info.mobphone}</li></ul>
 	<ul><ol>联系地址</ol><li>{$info.address}</li></ul>

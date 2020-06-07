@@ -5,6 +5,10 @@ use app\common\model\User AS UserModel;
 use app\common\controller\MemberBase;
 use app\common\traits\AddEditList;
 
+/**
+ * 消息提醒设置开关
+ *
+ */
 class Remind extends MemberBase
 {
     use AddEditList;
@@ -65,6 +69,15 @@ class Remind extends MemberBase
         }
         $this->tab_ext['page_title'] = '消息提醒设置';
         $this->form_items = config('remind');
+        foreach ($this->form_items AS $key=>$v){
+            if($v[1]=='weibo_pop' && !modules_config('weibo')){
+                unset($this->form_items[$key]);
+            }
+            if($v[1]=='bbs_reply_wxmsg' && !modules_config('bbs')){
+                unset($this->form_items[$key]);
+            }
+        }
+        $this->form_items = array_values($this->form_items);
         
         return $this->editContent($this->user['sendmsg']);
     }
