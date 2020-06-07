@@ -74,12 +74,20 @@ class Attachment extends IndexBase{
 				
 				// 判断附件存在的情况
 				if ( ( $file_exists = AttachmentModel::get( [ 'md5' => md5_file( $new_file ) ] ) ) != false ) {
-// 				    if ( $file_exists['driver'] == 'local' ) {
-// 				        $file_path = PUBLIC_URL . $file_exists['path'];
-// 				    } else {
-				        $file_path = $file_exists['path'];
-// 				    }
-				    return $this->succeFile( $from,$file_path,$file_exists );
+				    $file_is_exists = false;
+				    if (preg_match("/^(http|https):/i", $file_exists['path'])) {
+				        if (file_get_contents($file_exists['path']) || http_curl($file_exists['path'])) {
+				            $file_is_exists = true;
+				        }
+				    }elseif(is_file(PUBLIC_PATH . $file_exists['path'])){
+				        $file_is_exists = true;
+				    }
+				    if ($file_is_exists) {
+				        unlink( $new_file );
+				        return $this->succeFile( $from,$file_exists['path'],$file_exists );
+				    }else{
+				        AttachmentModel::where('id',$file_exists['id'])->delete();
+				    }				    
 				}
 				
 				/*随风修改了这里*/
@@ -309,12 +317,24 @@ class Attachment extends IndexBase{
 		}
 		// 判断附件存在的情况
 		if ( ( $file_exists = AttachmentModel::get( [ 'md5' => $file->hash( 'md5' ) ] ) ) != false ) {
-			if ( $file_exists['driver'] == 'local' ) {
+		    
+		    $file_is_exists = false;
+		    if ( !preg_match("/^(http|https):/i", $file_exists['path']) ) {
 				$file_path = PUBLIC_URL . $file_exists['path'];
+				if(is_file(PUBLIC_PATH . $file_exists['path'])){
+				    $file_is_exists = true;
+				}
 			} else {
 				$file_path = $file_exists['path'];
+				if (file_get_contents($file_exists['path']) || http_curl($file_exists['path'])) {
+				    $file_is_exists = true;
+				}
 			}
-			return $this->succeFile( $from,$file_path,$file_exists );
+			if ($file_is_exists) {
+			    return $this->succeFile( $from,$file_path,$file_exists );
+			}else{
+			    AttachmentModel::where('id',$file_exists['id'])->delete();
+			}			
 		}
 		// 附件大小限制
 		$size_limit = config( 'webdb.upfileMaxSize' ) ? config( 'webdb.upfileMaxSize' ) : 1024000;
