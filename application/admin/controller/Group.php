@@ -189,6 +189,8 @@ class Group extends AdminBase
 	    
 	    $this->form_items = array_merge($this->form_items,$array);
 	    
+	    $this->tab_ext['help_msg'] = '注意,还有另一种不需要在这里修改设置的自定义会员中心及会员主页的模板方法是,直接在风格目录,比如“\template\member_style\default\member\index\”或者目录“\template\member_style\default\member\user\”里边分别新建index3.htm或者是pc_index3.htm即可,其中3就是对应的用户组ID';
+	    
 	    $info = GroupModel::get($id);
 	    return $this->editContent($info);
 	}

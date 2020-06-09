@@ -109,6 +109,7 @@ trait AddEditList {
         $this->assign('tab_ext',$this->tab_ext);
         $this->assign('f_array',$this->list_items);
         $this->assign('pages',$pages);
+        $this->assign('search_file',$this->tab_ext['search_file'] ?: ($this->get_template('search_inc')?:$this->get_template('admin@common/search_inc')));
         return $this->fetch($template);
     }
     
@@ -138,6 +139,7 @@ trait AddEditList {
         $this->assign('tab_ext',$this->tab_ext);
         $this->assign('f_array',$this->list_items);
         $this->assign('pages',$pages);
+        $this->assign('search_file',$this->tab_ext['search_file'] ?: TEMPLATE_PATH.'admin_style/default/admin/common/search_inc.htm');
         return $this->fetch($template);
     }
     

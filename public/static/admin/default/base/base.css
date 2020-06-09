@@ -349,3 +349,24 @@ table.ListTable tr:hover td{
 	background-color:#F60;
 	color:white;
 }
+
+/**列表搜索**/
+.MainContainers .top_search{
+	margin-bottom:10px;
+	float:right;
+}
+.MainContainers .top_search select{
+	height:30px;
+	margin-right:10px;
+}
+.MainContainers .top_search input[type=text]{
+	height:28px;
+}
+
+.MainContainers .top_search .search_word{
+	width:150px;
+}
+.MainContainers .top_search .time{
+	width:130px;
+	margin-right:10px;
+}

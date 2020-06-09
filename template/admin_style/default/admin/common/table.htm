@@ -1,3 +1,4 @@
+<script type="text/javascript" src="__STATIC__/layui/laydate/laydate.js"></script> 
 <form name="form1" method="post" action="">
 <div class="MainContainers">
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {else /} 内容管理 {/if}</span></div>
@@ -19,33 +20,10 @@
 	</div>
 	
 	
-	<!-- 字段搜索功能 -->
-	<div style="margin-bottom:10px;float:right;" class="top_search">
-		<select name="search_field">
-		<option value="" selected>选择字段</option> 
-		{notempty name="$tab_ext.id"}<option value="{$tab_ext.id}">{$tab_ext.id}</option>{else /}<option value="id">ID</option>{/notempty}
-		{volist name="$tab_ext.search" id="name"}
-			<option value="{$key}">{$name}</option> 
-		{/volist}
-		</select>
-		<input type="text" placeholder='请输入关键字' name="search_word" style="line-height:23px;width:150px;"> <input onclick="search_content()" type="button" name="" value="搜索" class="layui-btn layui-btn-sm">
+	<!-- 搜索功能 -->
+	<div class="top_search">
+		{include file="$search_file" /}
 	</div>
-<script type="text/javascript">
-function search_content(){
-	var field = $("select[name='search_field']").val();
-	var keyword = $("input[name='search_word']").val();
-	if(field==''){
-		layer.alert('请选择搜索字段类型');
-		return ;
-	}else if(keyword==''){
-		layer.alert('关键字不能为空');
-		return ;
-	}
-	var url = location.href.indexOf('?')>0 ? location.href.substr(0,location.href.indexOf('?')) : location.href;
-	url +='?search_field=' + field + '&keyword=' +keyword;
-	window.location.href = url;
-}
-</script>
 
     <table class="ListTable">
 	<tr>

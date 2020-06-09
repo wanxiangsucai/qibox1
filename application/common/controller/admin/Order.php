@@ -102,8 +102,34 @@ class Order extends AdminBase
                 ],
         ];
         
-        $listdb = self::getListData($map = [], $order = []);
+        $listdb = self::getListData($this->get_search(), $order = []);
+        $this->tab_ext['id_name'] = '订单ID';
+        $this->assign('search_time','create_time');
+        if (empty($this->get_template('search_inc'))) {
+            $this->tab_ext['search_file'] = $this->get_template('admin@common/order_search');
+        }
         return $this -> getAdminTable($listdb);
+    }
+    
+    /**
+     * 多条件搜索
+     * @return string[][]|unknown[]|mixed[]
+     */
+    protected function get_search()
+    {
+        $map = [];
+        $detail = input();
+
+        if (isset($detail['search_pay_status']) && $detail['search_pay_status']!=='') {
+            $map['pay_status'] = $detail['search_pay_status'];
+        }
+        if (isset($detail['search_shipping_status']) && $detail['search_shipping_status']!=='') {
+            $map['shipping_status'] = $detail['search_shipping_status'];
+        }
+        if (isset($detail['search_receive_status']) && $detail['search_receive_status']!=='') {
+            $map['receive_status'] = $detail['search_receive_status'];
+        }
+        return $map;
     }
     
     /**

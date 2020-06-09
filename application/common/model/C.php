@@ -224,7 +224,7 @@ abstract class C extends Model
             return false;
         }
         foreach ($data AS $key=>$value){
-            if (in_array($key, ['view','status','list','ext_id','ext_sys','delete_time'])) {
+            if (in_array($key, ['view','status','list','ext_id','ext_sys','fid','create_time','title'])) {
                 Db::name(self::$base_table)->update($data);
                 break;
             }
@@ -348,6 +348,9 @@ abstract class C extends Model
                         'list'=>$info['list'],
                         'ext_id'=>$info['ext_id'],
                         'ext_sys'=>$info['ext_sys'],
+                        'fid'=>$info['fid']?:0,
+                        'title'=>$info['title']?:'',
+                        'create_time'=>$info['create_time'],
                 ]);
             }
             Db::name(self::$base_table)->where('id','=',$id)->setInc('view',1);
@@ -428,7 +431,20 @@ abstract class C extends Model
                     Db::execute("ALTER TABLE  `{$table}` ADD  `ext_id` MEDIUMINT( 7 ) NOT NULL COMMENT  '关联其它模型的内容ID',ADD  `ext_sys` SMALLINT( 4 ) NOT NULL COMMENT  '关联其它模型的频道ID';");
                     Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `ext_id` ,  `ext_sys` );");
                 }
-                if ($info['view']==0&&$info['list']==0) {
+                
+                if (!isset($info['fid'])) {
+                    Db::execute("ALTER TABLE  `{$table}` ADD  `fid` MEDIUMINT( 7 ) NOT NULL COMMENT  '栏目ID' AFTER  `mid`;");
+                    Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `fid` );");
+                }
+                if (!isset($info['create_time'])) {
+                    Db::execute("ALTER TABLE  `{$table}` ADD  `create_time` INT( 10 ) NOT NULL COMMENT  '发布日期' AFTER  `list`;");
+                    Db::execute("ALTER TABLE  `{$table}` ADD INDEX (  `create_time` );");
+                }
+                if (!isset($info['title'])) {
+                    Db::execute("ALTER TABLE  `{$table}` ADD  `title` VARCHAR( 255 ) NOT NULL COMMENT  '标题';");
+                }
+                
+                if ( empty($info['create_time']) ) {
                     define('NEED_UPDATE_TABLE', true); //兼容升级的情况,通知要同步数据
                 }
             }

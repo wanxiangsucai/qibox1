@@ -117,14 +117,23 @@
 
   					<li>
   						{php}
-							$rs['power'] = preg_match('/\/index$/',$rs['link'])&&!isset($rs['power'])?['add','edit','delete']:$rs['power'];
+							if(!isset($rs['power'])){
+								if(preg_match('/content\/index$/',$rs['link'])&&modules_config($rs['model'])){
+									$rs['power'] = ['add'=>'新增','edit'=>'修改','delete'=>'删除','index_fid'=>'改栏目',
+    								                'index_view'=>'改浏览量',
+    								                'index_list'=>'改排序值',
+    								                'index_status'=>'改状态',];
+								}elseif(preg_match('/\/index$/',$rs['link'])){
+									$rs['power'] = ['add','edit','delete'];
+								}
+							}
 							$power = [];
 							$_title=['add'=>'新增','edit'=>'修改','delete'=>'删除'];
 							foreach($rs['power'] AS $_k=>$_v)$power[is_numeric($_k)?$_v:$_k] = is_numeric($_k)?$_title[$_v]:$_v;
 							list($controller) = explode('/',$rs['link']);
-							{/php}
+						{/php}
 							{volist name="power" id="ps"}
-						{php} $k=$_key.'-'.$rs['model'].'-'.(strstr($key,'/')?'':$controller.'/').$key;{/php}
+								{php} $k=$_key.'-'.$rs['model'].'-'.(strstr($key,'/')?'':$controller.'/').$key;{/php}
 							<div><input type="checkbox" name="powerdb[{$k}]" value="1" {eq name="$info['admindb'][$k]" value="1"}checked{/eq}> {$ps}</div>
 							{/volist}
   					</li>

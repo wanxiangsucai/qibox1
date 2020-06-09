@@ -214,6 +214,9 @@ abstract class C extends AdminBase
                 unset($this->list_items[1]);
             }
         }
+        
+        $this -> tab_ext['search'] = ['title'=>'标题','uid'=>'用户uid'];
+        
         //筛选字段
         $this->tab_ext['filter_search'] = [
             'status'=>$this->status_array,
@@ -221,7 +224,30 @@ abstract class C extends AdminBase
         ];
         $this->tab_ext['help_msg'] = '1、提醒：为避免误删除操作，第一次删除的内容先进回收站，只有变成回收站的内容再删除才是彻底的删除<br>2、前台与会员中心的所有删除操作都不会彻底的删除';
         $data = $this->model->getAll( $this->getMap() ,$this->getOrder('id desc'));
+        $this->tab_ext['id_name'] = $this->get_id_name();
+        $sort_array = $this->s_model->getTreeTitle(0,0,'所属分类');
+        $this->assign('sort_array',$sort_array);
+        $this->assign('status_array',$this->status_array);
+        $this->assign('search_time','create_time');
         return $this->getAdminTable($data);
+    }
+    
+    /**
+     * 给ID赋值一个名称
+     * @param number $mid
+     * @return string
+     */
+    private function get_id_name($mid=0){
+        if ($mid) {
+            $name = model_config($mid)['title'];
+            $name = str_replace('模型', '', $name);
+        }else{
+            $name = get_status(M('key'),['cms'=>'文章','bbs'=>'贴子','dati'=>'问题','party'=>'活动','qun'=>'圈子','exam'=>'试题','coupon'=>'代金券','fenlei'=>'分类信息']);
+            if (in_array(M('key'),['shop','giftshop','miaosha','booking'])) {
+                $name = '商品';
+            }
+        }        
+        return $name?$name.'id':'';
     }
     
     
@@ -332,7 +358,13 @@ abstract class C extends AdminBase
                     );            
         }
         
+        $sort_array = $this->s_model->getTreeTitle(0,$mid,'所属分类');
+        $this->assign('sort_array',$sort_array);
+        $this->assign('status_array',$this->status_array);
+        
         $data = self::getListData($fid ? ['fid'=>$fid] : ['mid'=>$mid]);
+        $this->tab_ext['id_name'] = $this->get_id_name($mid);
+        $this->assign('search_time','create_time');
         return $this->getAdminTable($data);
     }
     

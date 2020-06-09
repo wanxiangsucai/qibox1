@@ -34,7 +34,6 @@ class Member extends AdminBase
 	 */
 	public function index() {
 	    $order = 'uid desc';
-	    $map = [];
 	    $this->list_items = [
 	        //['uid', '用户UID', 'text'],
 	        ['uid', '用户名', 'username'],
@@ -82,7 +81,7 @@ EOT;
 	        }],
 	    ];	    
 	    
-	    $this -> tab_ext['search'] = ['username'=>'用户名','nickname'=>'昵称','truename'=>'真实姓名','uid'=>'用户UID','mobphone'=>'手机号','regip'=>'注册IP'];    //支持搜索的字段
+	    $this -> tab_ext['search'] = ['username'=>'用户名','nickname'=>'昵称','truename'=>'真实姓名','mobphone'=>'手机号','regip'=>'注册IP'];    //支持搜索的字段
 	    $this -> tab_ext['order'] = 'money,rmb,uid,regdate,lastvist';   //排序选择
 	    $this -> tab_ext['id'] = 'uid';    //用户数据表非常特殊，没有用id而是用uid ， 这里需要特别指定id为uid
 	    $this -> tab_ext['help_msg'] = '1、这里的权限很大,建议设置为只有超管才能使用<br>2、这里修改财务不会有记录,要有记录的话,请分配财务人员使用插件中心>财务与积分功能><a href="'.purl('marketing/member/index',[],'admin').'" style="color:red;">会员积分财务管理</a> 在那里操作';
@@ -106,7 +105,39 @@ EOT;
 	        ];
 	    }
 	    
-	    return $this -> getAdminTable(self::getListData($map, $order ));
+	    return $this -> getAdminTable(self::getListData($this->get_search(), $order ));
+	}
+	
+	/**
+	 * 多条件搜索
+	 * @return string[][]|unknown[]|mixed[]
+	 */
+	protected function get_search()
+	{
+	    $map = [];
+	    $detail = input();
+	    if (isset($detail['search_bindphone']) && $detail['search_bindphone']!=='') {
+	        $map['mob_yz'] = $detail['search_bindphone'];
+	    }
+	    if (isset($detail['search_bindwxmp']) && $detail['search_bindwxmp']!=='') {
+	        $map['wx_attention'] = $detail['search_bindwxmp'];
+	    }
+	    if (isset($detail['search_bindwxlogin']) && $detail['search_bindwxlogin']!=='') {
+	        $map['weixin_api'] = ['<>',''];
+	    }
+	    if (isset($detail['search_bindqqlogin']) && $detail['search_bindqqlogin']!=='') {
+	        $map['qq_api'] = ['<>',''];
+	    }
+	    if (isset($detail['search_sex']) && $detail['search_sex']!=='') {
+	        $map['sex'] = $detail['search_sex'];
+	    }
+	    if (isset($detail['search_bindidcard']) && $detail['search_bindidcard']!=='') {
+	        $map['idcard_yz'] = $detail['search_bindidcard'];
+	    }
+	    if (isset($detail['search_groupid']) && $detail['search_groupid']!=='') {
+	        $map['groupid'] = $detail['search_groupid'];
+	    }
+	    return $map;
 	}
 	
 	/**

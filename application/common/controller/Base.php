@@ -353,14 +353,14 @@ class Base extends Controller
         $search_fields    = input()['search_fields'];
         $search_field     = input('param.search_field/s', '');
         $keyword          = input('param.keyword/s', '');
-        $filter           = input('param._filter/s', '');
-        $filter_content   = input('param._filter_content/s', '');
-        $filter_time      = input('param._filter_time/s', '');
-        $filter_time_from = input('param._filter_time_from/s', '');
-        $filter_time_to   = input('param._filter_time_to/s', '');
+        $search_status    = input('param.search_status/s', '');
+        $search_fid       = input('param.search_fid/s', '');
+        $timefield        = input('param.search_timefield/s', 'create_time');
+        $search_begintime = input('param.search_begintime/s', '');
+        $search_endtime   = input('param.search_endtime/s', '');
         $select_field     = input('param._select_field/s', '');
         $select_value     = input('param._select_value/s', '');
-
+        
         $map = [];
 
         // 搜索框搜索
@@ -383,6 +383,27 @@ class Base extends Controller
                 }
             }
         }
+        
+        //状态搜索
+        if ($search_status!=='') {
+            $map['status'] = $search_status;
+        }
+        if ($search_fid) {
+            $map['fid'] = config('post_need_sort')?['in',array_values(get_sort($search_fid,'sons'))]:$search_fid;
+        }
+        
+        //时间段搜索
+        if ($search_begintime != '' && $search_endtime != '') {
+            $map[$timefield] = [
+                ['>',strtotime($search_begintime)],
+                ['<',strtotime($search_endtime)],
+                'and'
+            ];
+        }elseif ($search_begintime != '') {
+            $map[$timefield] = ['>',strtotime($search_begintime)];
+        }elseif ($search_endtime != '') {
+            $map[$timefield] = ['<',strtotime($search_endtime)];
+        }
 
         // 下拉筛选
 //         if ($select_field != '') {
@@ -395,10 +416,7 @@ class Base extends Controller
 //             }
 //         }
 
-        // 时间段搜索
-//         if ($filter_time != '' && $filter_time_from != '' && $filter_time_to != '') {
-//             $map[$filter_time] = ['between time', [$filter_time_from.' 00:00:00', $filter_time_to.' 23:59:59']];
-//         }
+        
 
         // 表头筛选
 //         if ($filter != '') {

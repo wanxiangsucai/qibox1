@@ -44,7 +44,7 @@ class AdminBase extends Base
                     if ($admin_uid) {
                         if (time()-$time>3600*12) {
                             set_cookie('admin_login',null);
-                            $this->error('已经超时了，请重新登录！');
+                            $this->error('没权限操作,可能已经超时了，请重新登录试试！');
                         }elseif($ip!=get_ip()){
                             set_cookie('admin_login',null);
                             $this->error('IP换了，请重新登录！');
@@ -113,7 +113,8 @@ class AdminBase extends Base
             if($power['plugin'][input('plugin_name')][input('plugin_controller').'/'.input('plugin_action')]){
                 return true;
             }
-        }elseif($this->route[2]=='quickedit'&&$power[$this->route[0]][$this->route[1].'/edit']){
+        }elseif($this->route[2]=='quickedit' && ($power[$this->route[0]][$this->route[1].'/edit'] || $power[$this->route[0]][$this->route[1].'/index_'.input('name')])){
+            
             return true;
         }elseif($this->route[0]=='admin'){
             if($_power){
