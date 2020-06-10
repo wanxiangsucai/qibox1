@@ -332,6 +332,11 @@ abstract class C extends IndexBase
             if( $rs['status']==0 && (empty($this->user)||($rs['uid']!=$this->user['uid']&&fun('admin@sort',$rs['fid'])!==true)) ){
                 return [];
             }else{
+                if ($rs['fid'] && $allow_viewtitle=get_sort($rs['fid'],'allow_viewtitle')) {    //允许查看标题的用户组
+                    if (empty($this->user)||!in_array($this->user['groupid'], explode(',',$allow_viewtitle))) {
+                        return [];
+                    }
+                }
                 return $rs;
             }
         });
@@ -488,6 +493,12 @@ abstract class C extends IndexBase
         $data_list = $this->label_get_list_data($fid,$mid,$rows,$order,$by,$map);
         $array = getArray($data_list);
         $__LIST__ = $array['data'];
+        foreach ($__LIST__ AS $key=>$value){
+            if (empty($value)) {
+                unset($__LIST__[$key]);
+            }
+        }
+        $__LIST__ = array_values($__LIST__);
         if(empty($__LIST__)){
             //return $this->err_js('null');
             //die('null');

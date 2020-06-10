@@ -102,6 +102,7 @@ abstract class S extends AdminBase
                         ['icon', 'logo', '图标',],
                         ['checkbox', 'allowpost', '允许发布内容的用户组','全留空,则不作限制',getGroupByid()],
                         ['checkbox', 'allowview', '允许查看内容的用户组','全留空,则不作限制。注意标题不能限制。',getGroupByid()],
+                        ['checkbox', 'allow_viewtitle', '允许查看标题的用户组','全留空,则不作限制。注意标签调用可能无效。',getGroupByid()],
                 ],
                 '模板设置'=>[
                         ['text', 'haibao', '海报模板路径',fun('haibao@get_haibao_list').'可留空,多个用逗号隔开,需要补全路径(其中haibao_style不用填):比如:“xxx/show.htm”'],
@@ -117,6 +118,20 @@ abstract class S extends AdminBase
                         ['text', 'seo_description', 'SEO描述'],
                 ],
         ];
+    }
+    
+    
+    /**
+     * 默认列表页
+     * @return mixed|string
+     */
+    public function index() {
+        if ($this->request->isPost()) {
+            //修改排序
+            return $this->edit_order();
+        }
+        $listdb = $this->getListData($map = [], $order = '');
+        return $this -> getAdminTable($listdb);
     }
     
     /**
@@ -150,6 +165,7 @@ abstract class S extends AdminBase
             
             $data['allowpost'] = implode(',', $data['allowpost']);  //允许发布内容的用户组
             $data['allowview'] = implode(',', $data['allowview']);  //允许查看内容的用户组
+            $data['allow_viewtitle'] = implode(',', $data['allow_viewtitle']);  //允许查看标题的用户组
             $data['template'] = $this->get_tpl($data);                  //栏目自定义模板
             
             
@@ -181,6 +197,12 @@ abstract class S extends AdminBase
             if (is_array($array)){
                 $info = array_merge($info,['templates'=>$array]);
             }
+        }
+        
+        if ( !isset($info['allow_viewtitle']) ) {
+            preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+            $dirname = $array[0][1];
+            into_sql("ALTER TABLE  `qb_".$dirname."_sort` ADD  `allow_viewtitle` VARCHAR( 255 ) NOT NULL COMMENT  '允许查看标题的用户组'");
         }
         
         return $this->editContent($info);
