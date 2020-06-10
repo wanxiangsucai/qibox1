@@ -332,7 +332,7 @@ abstract class C extends IndexBase
             if( $rs['status']==0 && (empty($this->user)||($rs['uid']!=$this->user['uid']&&fun('admin@sort',$rs['fid'])!==true)) ){
                 return [];
             }else{
-                if ($rs['fid'] && $allow_viewtitle=get_sort($rs['fid'],'allow_viewtitle')) {    //允许查看标题的用户组
+                if ($rs['fid'] && $allow_viewtitle=sort_config()[$rs['fid']]['allow_viewtitle']) {    //允许查看标题的用户组
                     if (empty($this->user)||!in_array($this->user['groupid'], explode(',',$allow_viewtitle))) {
                         return [];
                     }
