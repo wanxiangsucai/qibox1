@@ -223,13 +223,15 @@ class Module extends AdminBase
 	    }
 	    
 	    $this->form_items = [
-	            ['text','name', '模块名称', ''],
-	            ['static','keywords', '所在目录', ''],	      
-	            ['radio','ifsys', '使用顶部菜单', '',['禁用','启用']],
-	            ['radio','ifopen', '启用或禁用', '',['关闭系统','启用系统']],
-	            ['textarea','about', '介绍', ''],
-	            ['number','list', '排序值', ''],
-	            ['icon','icon', '图标', ''],
+	        ['text','name', '模块名称', ''],
+	        ['static','keywords', '所在目录', ''],	      
+	        ['radio','ifsys', '使用顶部菜单', '',['禁用','启用']],
+	        ['radio','ifopen', '启用或禁用', '',['关闭系统','启用系统']],
+	        ['textarea','about', '介绍', ''],
+	        ['number','list', '排序值', ''],
+	        ['icon','icon', '图标', ''],
+	        //['text','pc_domain', '二级域名', '没配置好服务器的话，必须留空，否则请输入二级域名比如“bbs”而不是http://bbs.xxx.com也不是bbs.xxx.com'],
+	        //['text','wap_domain', 'WAP版二级域名', '一般留空,如果配置好服务器的话,请输入http://或https://开头'],
 	    ];
 	    
 	    return $this->editContent($info);

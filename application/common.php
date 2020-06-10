@@ -486,6 +486,7 @@ if (!function_exists('urls')) {
                 $_url = '/member.php'.$_url;
             }else{
                 $_url = str_replace(array(ADMIN_FILENAME,'index.php'), 'member.php', $_url);
+                $_url = preg_replace("/^(http|https):\/\/([^\/]+)\/([\w-]+)\//i", "\\1://\\2/member.php/\\3/", $_url);
             }            
         }
         return $_url ;
@@ -554,6 +555,7 @@ if (!function_exists('purl')) {
                 $url = '/member.php'.$url;
             }else{
                 $url = str_replace(array(ADMIN_FILENAME,'index.php'), 'member.php', $url);
+                $url = preg_replace("/^(http|https):\/\/([^\/]+)\/([\w-]+)\//i", "\\1://\\2/member.php/\\3/", $url);
             }            
         }
         return $url;
@@ -670,11 +672,12 @@ if (!function_exists('murl')) {
         }else{
             $url = str_replace([ADMIN_FILENAME.'/admin','index.php/index'],'member.php/member', $_url);
             $url = str_replace([ADMIN_FILENAME,'index.php'],'member.php', $url);
+            $url = preg_replace("/^(http|https):\/\/([^\/]+)\/([\w-]+)\//i", "\\1://\\2/member.php/\\3/", $url);
         }        
 
-        if(!preg_match('/^member.php/', $url)){
+        //if(!preg_match('/^member.php/', $url)){
             //$url = '/index.php'.$url;
-        }
+        //}
         return $url;
     }
 }
@@ -686,10 +689,14 @@ if (!function_exists('full_url')) {
      * @return string
      */
     function full_url($url=''){
+        $detail = explode('/',$url);
+        if (count($detail)==3) {
+            return $url;
+        }
         static $_m = null;
         $_m===null && $_m = Request::instance()->dispatch();
         $m = $_m['module'];
-        $detail = explode('/',$url);
+        
         if(count($detail)==1){
             $url = $m[0] . '/' . $m[1] . '/' . $url;
         }elseif(count($detail)==2){
@@ -1457,7 +1464,8 @@ if(!function_exists('modules_config')){
      * @return NULL|unknown|string|array|NULL[]|string|array|unknown|NULL[]
      */
     function modules_config($id=null , $getcache=true){
-        $array = $getcache===true ? cache('cache_modules_config') : '';
+        static $data = null;
+        $array = $getcache===true ? ($data?:cache('cache_modules_config')) : '';
         if(empty($array)){
             $result = Module::getList(['ifopen'=>1]);
             foreach($result AS $rs){
@@ -1465,6 +1473,7 @@ if(!function_exists('modules_config')){
             }
             cache('cache_modules_config',$array);
         }
+        $data = $array;
         if(is_numeric($id)){ //根据模块ID返回数组
             return $array[$id];
         }elseif($id!==null){ //根据模块目录名返回数组
@@ -1473,6 +1482,7 @@ if(!function_exists('modules_config')){
                     return $rs;
                 }
             }
+            return [];
         }else{
             return $array;
         }
@@ -1488,14 +1498,16 @@ if(!function_exists('plugins_config')){
      * @return NULL|unknown|string|array|NULL[]|string|array|unknown|NULL[]
      */
     function plugins_config($id=null , $getcache=true){
-        $array = $getcache===true ? cache('cache_plugins_config') : '';
+        static $data = null;
+        $array = $getcache===true ? ($data?:cache('cache_plugins_config')) : '';
         if(empty($array)){
             $result = Plugin::getList(['ifopen'=>1]);
             foreach($result AS $rs){
                 $array[$rs['id']] = $rs;
             }
             cache('cache_plugins_config',$array);
-        }        
+        }
+        $data = $array;
         if(is_numeric($id)){ //根据插件ID返回数组
             return $array[$id];
         }elseif($id!==null){ //根据插件目录名返回数组
@@ -1504,6 +1516,7 @@ if(!function_exists('plugins_config')){
                     return $rs;
                 }
             }
+            return [];
         }else{
             return $array;
         }
@@ -2815,7 +2828,7 @@ if (!function_exists('getTemplate')) {
                  $url = request()->domain().'/';
                  break;
              case 'member':  //会员中心
-                 $url = request()->domain().'/member.php';
+                 $url = murl('member/index/index');//request()->domain().'/member.php';
                  break;
              case 'user':   //用户的主页
                  $url = murl('member/user/index',is_numeric($array)?['uid'=>$array]:$array);
