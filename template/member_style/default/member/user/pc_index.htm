@@ -160,9 +160,9 @@ function send_msg(){
 }
 </script>
 <div class="SideContainer">
-	<div class="head"><i class="fa fa-fw fa-book"></i>我发的文章</div>
+	<div class="head"><i class="fa fa-fw fa-book"></i>{$uid==$userdb.uid?'我':'Ta'}发的文章</div>
 	<div class="MoreCnt">
-	{qb:tag name="wap_member_homepage_001" union="uid" type="cms" rows="6" mid="1" order="id" by="desc"}
+	{qb:tag name="pc_member_homepage_001" union="uid" type="cms" rows="6" mid="1" order="id" by="desc"}
 		<div class="list1">{$i}、<a href="{$rs.url}" target="_blank">{$rs.title|get_word=85}</a> <span style="float:right;margin-right:10px;">[{:date("y-m-d",$rs.create_time)}]</span></div>
 	{/qb:tag}
 	</div>
@@ -189,7 +189,7 @@ function send_msg(){
 </style>
 {if modules_config('bbs')}
 <div class="SideContainer member_showbbs_title">
-	<div class="head"><span class="ck">我发表的主题</span><span>我回复的主题</span></div>
+	<div class="head"><span class="ck">{$uid==$userdb.uid?'我':'Ta'}发表的主题</span><span>{$uid==$userdb.uid?'我':'Ta'}回复的主题</span></div>
 	<div class="MoreCnt show_content">
 	{qb:tag name="pc_member_homepage_002" union="uid" type="bbs" rows="10" mid="1" order="id" by="desc"}
 		<div class="list1"><span class="gi">{$i}</span>、<a href="{$rs.url}" target="_blank">{$rs.title|get_word=85}</a> <span style="float:right;margin-right:10px;">[{:date("y-m-d",$rs.create_time)}]</span></div>
@@ -264,7 +264,7 @@ function set_i_num(){
 
 {if ($userdb.uid==$info.uid||$userdb.groupid==3)}
 <div class="SideContainer">
-	<div class="head"><i class="si si-lock"></i>我的私密资料</div>
+	<div class="head"><i class="si si-lock"></i>{$uid==$userdb.uid?'我':'Ta'}的私密资料</div>
 	<div class="MoreCnt">
 		<div class="list1">可用{$webdb.MoneyName}：{$info.money} 个</div>
 		<div class="list1">可用余额：{$info.rmb} 元</div>

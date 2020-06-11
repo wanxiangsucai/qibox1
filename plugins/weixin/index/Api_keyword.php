@@ -59,7 +59,7 @@ class Api_keyword extends Api
                 $ts = WeixinAutoreply::get($value);
                 if($ts['type']==1){	//图文信息
                     $_array = unserialize($ts['answer']);
-                    $_arr = '';
+                    $_arr = [];
                     if(is_array($_array)){
                         foreach($_array AS $_r){
                             $_arr[] = array(

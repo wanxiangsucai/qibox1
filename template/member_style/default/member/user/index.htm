@@ -148,8 +148,8 @@ $(function(){
 <div class="SideInfos member_showbbs_title">
 	<div class="bbs_title">
 		<!--这里可以是多个TAB按钮-->
-		<h3 class="ck"><i class="fa fa-fw fa-file-text-o"></i>TA发表的主题</h3>
-		<h3><i class="fa fa-fw fa-file-text-o"></i>TA回复的贴子</h3>
+		<h3 class="ck"><i class="fa fa-fw fa-file-text-o"></i>{$uid==$userdb.uid?'我':'Ta'}发表的主题</h3>
+		<h3><i class="fa fa-fw fa-file-text-o"></i>{$uid==$userdb.uid?'我':'Ta'}回复的贴子</h3>
 	</div>
 	<!--上面若有多个TAB按钮,那下面也要对应多个,必须要命名为了 class="show_content" 其中的 bbs_content_reply 为的是异步加载用的, 可以不使用 -->
 	<div class="show_content">
@@ -228,7 +228,7 @@ function set_i_num(){
 
 
 <div class="SideInfos">
-	<h3><i class="fa fa-fw fa-book"></i>TA发的文章</h3>
+	<h3><i class="fa fa-fw fa-book"></i>{$uid==$userdb.uid?'我':'Ta'}发的文章</h3>
 {qb:tag name="wap_member_homepage_001" union="uid" type="cms" rows="5" mid="1" order="id" by="desc"}
 	<ul> <ol style="width:80%;">{$i}、<a href="{$rs.url}">{$rs.title|get_word=24}</a></ol><li>{:date("m-d",$rs.create_time)}</li></ul>
 {/qb:tag}
@@ -237,7 +237,7 @@ function set_i_num(){
 
 {if ($userdb.uid==$info.uid||$userdb.groupid==3)}
 <div class="SideInfos">
-	<h3><i class="si si-lock"></i>私密资料</h3>
+	<h3><i class="si si-lock"></i>{$uid==$userdb.uid?'我':'Ta'}的私密资料</h3>
 	<ul><ol>可用{$webdb.MoneyName}</ol><li>{$info.money}</li></ul>
 	<ul><ol>可用余额</ol><li>{$info.rmb}</li></ul>
 
