@@ -12,6 +12,9 @@
 	margin:5px 0 15px 0;
 	display:block;
 }
+.menu_highlight{
+	color:red;
+}
 </style>
 <script type="text/javascript">
 $(function(){
@@ -29,4 +32,59 @@ $(function(){
 	<a href="{:murl('pages/add')}?aid={$id}" class="manage_button" target="blank">续发多页</a>
 	<a href="{:murl('pages/index')}?aid={$id}" class="manage_button" target="blank">管理多页</a>
 {/if}
+
+	{if $info.list>time()}
+		<a onclick="api_get('{:urls('wxapp.api/recover','id='.$id)}','你要取消置顶吗?',this)" class="manage_button menu_highlight" title="取消置顶">取消置顶</a>
+	{else /}
+		<a onclick="set_topic_top('{:urls('wxapp.api/top','id='.$id)}',this)" class="manage_button" title="排序置顶">栏目置顶</a>
+	{/if}
 </div>
+
+<script type="text/javascript">
+function post_act_menu(url,obj){
+	layer.load(1);
+	$.get(url,function(res){
+		layer.closeAll();
+			if(res.code==0){
+				layer.msg('操作成功');
+				if($(obj).hasClass('menu_highlight')){
+					$(obj).removeClass('menu_highlight');
+				}else{
+					$(obj).addClass('menu_highlight');
+				}
+			}else if(res.code==1){
+				layer.alert(res.msg);
+			}else{
+				layer.alert('未知错误');
+			}
+	}).fail(function(){
+			layer.alert('页面出错');
+	});
+}
+function api_get(url,msg,obj,type){
+	if(type=='color'){
+		layer.confirm(msg,{title:false,btn:['加红色','加蓝色','取消'],btn2:function(){
+			post_act_menu(url+"?type=blue",obj);
+		}},function(index){
+			post_act_menu(url,obj);
+		});
+	}else{
+		layer.confirm(msg,{title:false,},function(index){
+			post_act_menu(url,obj);
+		});
+	}
+}
+
+function set_topic_top(url,obj){
+	layer.prompt({
+		  formType: 0,
+		  value: '3',
+		  title: '请输入要置顶多少天?',
+		  //area: ['100px', '20px'] //formType:2 自定义文本域宽高
+		}, function(value, index, elem){
+			layer.close(index);
+			var time = value * 24;	//单位小时
+			post_act_menu(url+'?time='+time,obj);
+	});
+}
+</script>

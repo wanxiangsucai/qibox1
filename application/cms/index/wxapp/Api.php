@@ -1,5 +1,5 @@
 <?php
-namespace app\bbs\index\wxapp;
+namespace app\cms\index\wxapp;
 
 use app\common\controller\index\wxapp\Api AS _Api; 
 
