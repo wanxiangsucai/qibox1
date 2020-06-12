@@ -47,8 +47,11 @@ class Member extends IndexBase
      * @param number $rows
      * @return void|unknown|\think\response\Json
      */
-    public function get_list($type='',$rows=1){
+    public function get_list($type='',$rows=1,$name=''){
         $map = [];
+        if ($name!='') {
+            $map['username'] = ['like','%'.$name.'%'];
+        }
         $data_list = User::where($map)->order("uid desc")->paginate($rows);
         $data_list->each(function($rs,$key){            
             $this->format_field($rs);

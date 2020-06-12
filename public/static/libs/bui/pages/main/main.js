@@ -92,7 +92,7 @@ loader.define(function(require,exports,module) {
 
                   //清空列表数据
                   $("#uiScroll .bui-list").empty();
-
+					console.log('fd',keyword);
                   //实时搜索
                   if( uiListSearch ){
 
@@ -100,7 +100,7 @@ loader.define(function(require,exports,module) {
                       uiListSearch.init({
                         page: 1,
                         data: {
-                          "keyword":keyword
+                          "name":keyword
                         }
                       });
                   }else{
@@ -108,15 +108,21 @@ loader.define(function(require,exports,module) {
                     // 搜索结果的列表初始化
                     uiListSearch = bui.list({
                           id: "#uiScroll",
-                          url: "/public/static/libs/bui/userlist.json",
-                          data: {},
+                          url: "/index.php/index/wxapp.member/get_list.html?rows=10",
+                          data: {"name":keyword},
                           field: {
                             data:"data"
                           },
                           page:1,
                           pageSize:10,
                           height: listHeight,
-                          template: uiListSearchTemplate
+                          template: uiListSearchTemplate,
+						  callback: function (e) {
+							  var uid = $(e.target).data("uid");
+							  bui.load({url: "/public/static/libs/bui/pages/chat/chat.html",param: {
+								"uid":uid,}
+							  });
+						  },
                     });
                   }
               },
@@ -178,7 +184,7 @@ loader.define(function(require,exports,module) {
 
         $.each(data,function(index, el) {
 
-            html += '<li class="bui-btn"><i class="icon-facefill" style="font-size:.4rem;margin-right:.1rem;"></i>'+el.name+'</li>';
+            html += '<li class="bui-btn" data-uid="'+el.uid+'"><i class="icon-facefill" style="font-size:.4rem;margin-right:.1rem;"></i>'+el.username+'</li>';
         });
 
         return html;

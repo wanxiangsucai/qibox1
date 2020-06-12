@@ -28,6 +28,31 @@ $(document).ready(function(){
 			chat_type = 'chat';
 		}
 	});
+
+	$(".wx_search button").click(function(){
+		$(".wx_search input").val('');
+		$(".pc_msg_user_list>li").show();
+	});
+	$(".wx_search input").keyup(function(){
+		var word = $(this).val();
+		var obj = $(".pc_msg_user_list>li");
+		if(word===''){
+			obj.show();
+		}else{
+			console.log('长 '+word,obj.length);
+			if(obj.length>=50 && user_scroll==true){
+				showMore_User();
+			}
+			obj.each(function(){
+				if($(this).find('.user_name').html().indexOf(word)==-1){
+					$(this).hide();
+				}else{
+					$('.pc_msg_user_list').css('top',0);
+					$(this).show();
+				}
+			});
+		}
+	});
 });
 
 
