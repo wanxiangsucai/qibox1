@@ -41,6 +41,7 @@ class User extends UserModel
             return '当前微信号已经注册过了！';
         }
         
+        $data['nickname'] = self::filterEmoji($data['nickname']);
         $data['nickname'] = str_replace(array('|',' ','',"'",'"','/','*',',','~',';','<','>','$',"\\","\r","\t","\n","`","!","?","%","^"),'',$data['nickname']);
         $username = $nickname = self::filterEmoji($data['nickname']);
         

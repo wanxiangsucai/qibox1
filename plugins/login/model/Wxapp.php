@@ -16,6 +16,7 @@ class Wxapp extends UserModel
             return '当前微信号已经注册过了！';
         }
         
+        $data['nickName'] = self::filterEmoji($data['nickName']);
         $username = $nickname = str_replace(array('|',' ','',"'",'"','/','*',',','~',';','<','>','$',"\\","\r","\t","\n","`","!","?","%","^"),'',$data['nickName']);
         
         $address = filtrate("{$data['province']} {$data['city']}");

@@ -147,6 +147,21 @@ class User extends Model
 	}
 	
 	/**
+	 * 过滤掉emoji表情
+	 * @param unknown $str
+	 * @return mixed
+	 */
+	protected static function filterEmoji($str)
+	{
+	    $str = preg_replace_callback( '/./u',
+	            function (array $match) {
+	                return strlen($match[0]) >= 4 ? '' : $match[0];
+	            },
+	            $str);
+	    return $str;
+	}
+	
+	/**
 	 * 用户注册 注册成功,只返回UID数值,不成功,返回对应的提示字符串
 	 * @param unknown $array
 	 * @return string|mixed
