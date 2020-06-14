@@ -32,6 +32,9 @@ class Label extends Model
         $info = self::get(['name'=>$data['name']]);
         unset($data['id']);
         if($info){
+            if ($info['if_js']) {
+                $data['cfg'] = serialize(array_merge(unserialize($info['cfg'])?:[],unserialize($data['cfg'])?:[]));
+            }
             if(self::update($data,['id'=>$info['id']])){
                 return true;
             }
@@ -72,6 +75,17 @@ class Label extends Model
                 $tag_config['pages'] = $tag_data;   //分页数据
             }else{
                 $tag_config['data'] = $tag_data;
+            }
+        }
+        //APP站外调用,只显示指定的字段
+        $cfg = unserialize($tag_config['cfg']);
+        if ($cfg['showfield'] && is_array($tag_config['data'])) {
+            foreach ($tag_config['data'] AS $key=>$rs){
+                $vs = [];
+                foreach ($cfg['showfield'] AS $k){
+                    $vs[$k] = $rs[$k];
+                }
+                $tag_config['data'][$key] = $vs;
             }
         }
         return $tag_config;

@@ -28,14 +28,18 @@ class Group extends MemberBase
         }
     }
     
-    public function index()
+    public function index($tag='')
     {
+        $groupdb = [];
         $data_list = getGroupByid(null,false);
         foreach($data_list AS $gid=>$rs){
+            if ($tag!='' && $rs['tag']!=$tag) {
+                continue;
+            }
             if($rs['type']==0&&$gid!=8){
                 $groupdb[] = $rs;
             }
-        }        
+        }
         $this->assign('groupdb',$groupdb);
         $this->assign('money_dw',$this->money_dw);
         $this->assign('money_name',$this->money_name);

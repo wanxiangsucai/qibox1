@@ -24,14 +24,23 @@
                   <td> 
                     <textarea style="width:100%;height:250px;" >{$json_code}</textarea>
                   </td>
-                  <td width="0%">&nbsp;</td>
+                
                 </tr>
 				<tr> 
                   <td width="15%">还原数组参考</td>
                   <td> 
                     <textarea style="width:100%;height:250px;" >{$array_code}</textarea>
                   </td>
-                  <td width="0%">&nbsp;</td>
+                 
+                </tr>
+				<tr> 
+                  <td width="15%">只调用哪些字段<br>(不选择的话,会显示所有字段,但这是很不安全的)</td>
+                  <td> 
+				  {volist name="karray" id="v"}
+                    <div style="float:left;width:100px;margin:10px;"><input type="checkbox" name="postdb[]" {:in_array($v,$showfield)?'checked':''} value="{$v}">{$v}</div>
+				  {/volist}
+				   <div style="clear:both;width:100%;margin:10px;height:50px;text-align:center;"> <input style="background:orange;color:#fff;padding:8px 20px;border:0px;" type="submit" class="btn" value="保存"></div>
+                  </td>                  
                 </tr>
               </table>
 

@@ -93,12 +93,32 @@ class Applabel extends AdminBase
 	    }
 	    
 	    if($act=='view'){
+	        $info = getArray($this->model->where('name',$name)->find());
+	        $cfg = unserialize($info['cfg']);
+	        if ($this->request->isPost()) {
+	            $data = $this->request->post();
+	            $cfg['showfield'] = $data['postdb'];
+	            $result = $this->model->where('name',$name)->update(['cfg'=>serialize($cfg)]);
+	            if ($result) {
+	                cache('config_app_tags',null);
+	                $this->success('修改成功');
+	            }	            
+	        }
 	        $url = $this->request->domain().iurl('index/label_show/app_get' , ['name'=>$name],true,false,'m');	        
 	        $this->assign('label_url',$url);
 	        $json_code  = file_get_contents($url);
 	        $this->assign('json_code',$json_code);
-	        $array_code = var_export(  json_decode($json_code,true)  ,true);
+	        $array = json_decode($json_code,true);
+	        $array_code = var_export(  $array  ,true);
 	        $this->assign('array_code',  str_replace(["\n"],["\n  "], $array_code));
+	        $karray = [];
+	        if ($array['data'][0]) {
+	            foreach($array['data'][0] AS $key=>$v){
+	                $karray[] = $key;
+	            }
+	        }
+	        $this->assign('karray',$karray);
+	        $this->assign('showfield',$cfg['showfield']);
 	        return $this->pfetch('view');
 	    }else{
 	        echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL=$url'>";

@@ -185,11 +185,13 @@ class Group extends AdminBase
 	        ['text','wap_member','wap会员中心模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/index/目录下，只输入文件名即可，比如“indexppp”'],
 	        ['text','pc_page','pc个人主页模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/user/目录下，只输入文件名即可，比如“indexppp”'],
 	        ['text','pc_member','pc会员中心模板','请输入详细路径,比如:“/member_style/default/xxx.htm”若在对应的模板/template/member_style/default/member/index/目录下，只输入文件名即可，比如“indexppp”'],
+	        ['text','tag','分组标志','一般留空,极少用（不留空的话,输入字母或数字）'],
 	    ];
 	    
 	    $this->form_items = array_merge($this->form_items,$array);
 	    
-	    $this->tab_ext['help_msg'] = '注意,还有另一种不需要在这里修改设置的自定义会员中心及会员主页的模板方法是,直接在风格目录,比如“\template\member_style\default\member\index\”或者目录“\template\member_style\default\member\user\”里边分别新建index3.htm或者是pc_index3.htm即可,其中3就是对应的用户组ID';
+	    $this->tab_ext['help_msg'] = '注意,还有另一种不需要在这里修改设置的自定义会员中心及会员主页的模板方法是,直接在风格目录,比如“\template\member_style\default\member\index\”或者目录“\template\member_style\default\member\user\”里边分别新建index3.htm或者是pc_index3.htm即可,其中3就是对应的用户组ID<br>
+                                      分组标志，适用于创建的用户组太多，可以分类给用户选择，而不要全部塞在一起给用户选择。前台可以用类似以下网址引导用户升级“/member.php/member/group/index.html?tag=分组标志”';
 	    
 	    $info = GroupModel::get($id);
 	    return $this->editContent($info);

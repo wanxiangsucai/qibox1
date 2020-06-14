@@ -1,0 +1,1 @@
+ALTER TABLE  `qb_group` ADD  `tag` VARCHAR( 50 ) NOT NULL COMMENT  '分类标志';
