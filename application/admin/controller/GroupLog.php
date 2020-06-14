@@ -54,7 +54,8 @@ class GroupLog extends AdminBase
 	            'groupid'=>$info['gid'],
 	            'group_endtime'=>$gdb['daytime']?($gdb['daytime']*3600*24+time()):0,
 	        ];
-	        if ($status==1) {	            
+	        if ($status==1) {
+	            $data['old_groupid'] = get_user($info['uid'])['groupid'];      //记录之前的用户组ID,方便到期后,恢复
 	            edit_user($data);
 	            $content = "你申请认证的身份为:“".getGroupByid($info['gid'])."”被通过审核了";
 	            send_msg($info['uid'],"恭喜你，你申请的认证信息通过审核了",$content);

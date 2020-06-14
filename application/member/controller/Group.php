@@ -115,48 +115,58 @@ class Group extends MemberBase
         }        
         
         $this->form_items = Cfgfield::get_form_items($gid,'upgroup');
-        if (empty($this->form_items)) { //特别提醒!!!!!!!!!!!!!没有需要填写的项目  , 会终止掉下面所有操作  
-            $data = [];
-            $data['uid'] = $this->user['uid'];
-            $data['old_groupid'] = $this->user['groupid'];  //记录之前的用户组ID,方便到期后,恢复
-            UserModel::edit_user($data);
-            $this->post($gid,$ginfo['level']);
-        }
-        
-        if ($this->request->isPost()) {
-            $data = $this->request->post();            
-            $data = FieldPost::format_php_all_field($data,$this->form_items);            
-            //form_items之外的项目不允许伪造表单修改
-            $allow = [];
-            foreach($this->form_items AS $key=>$ar){
-                $allow[] = $ar[1];
-            }
-            foreach($data AS $key=>$value){
-                if(!in_array($key, $allow)){
-                    unset($data[$key]);
-                }elseif($value==''){
-                    $this->error('每一项都要必填!');
+        if (empty($this->form_items)) { //没有需要填写的项目  , 直接入库处理
+            return $this->post($gid,$ginfo['level']);
+        }else{
+            if ($this->request->isPost()) {
+                $data = $this->request->post();            
+                $data = FieldPost::format_php_all_field($data,$this->form_items);            
+                
+                //form_items之外的项目不允许伪造表单修改
+                $allow = [];
+                foreach($this->form_items AS $key=>$ar){
+                    $allow[] = $ar[1];
                 }
+                foreach($data AS $key=>$value){
+                    if(!in_array($key, $allow)){
+                        unset($data[$key]);     //不允许伪造表单修改
+                    }elseif(empty($value)){
+                        $this->error('必填项不能为空!');
+                    }
+                }
+                return $this->post($gid,$ginfo['level'],$data);
             }
-            $data['uid'] = $this->user['uid'];
-            $data['old_groupid'] = $this->user['groupid'];  //记录之前的用户组ID,方便到期后,恢复
-            if ( UserModel::edit_user($data) ) {
-                $this->post($gid,$ginfo['level']);
-            } else {
-                $this->error('数据更新失败');
+            
+            if ($this->request->isAjax()) {
+                $this->success('请稍候...',get_url('location'));   //AJAX访问的话,要跳出去
             }
+            
+            $this->assign('money_name',$this->money_name);
+            $this->assign('money_dw',$this->money_dw);
+            
+            $this->tab_ext['page_title'] = '申请认证为: '.$ginfo['title'].($ginfo['level'] ? " 本次认证需要消费".$this->money_name." {$ginfo['level']} ".$this->money_dw:' 本次认证免费');
+            $info = $this->user;
+            return $this->editContent($info);
         }
-        
-        if ($this->request->isAjax()) {
-            $this->success('请稍候...',get_url('location'));   //AJAX访问的话,要跳出去
-        }
-        
-        $this->assign('money_name',$this->money_name);
-        $this->assign('money_dw',$this->money_dw);
-        
-        $this->tab_ext['page_title'] = '申请认证为: '.$ginfo['title'].($ginfo['level'] ? " 本次认证需要消费".$this->money_name." {$ginfo['level']} ".$this->money_dw:' 本次认证免费');
-        $info = $this->user;
-        return $this->editContent($info);
+    }
+    
+    /**
+     * 自动通过审核
+     * @param number $gid
+     * @param array $data
+     * @return string|boolean
+     */
+    protected function auto_upgroup($gid=0,$data=[]){
+        $gdb = getGroupByid($gid,false);        
+        $data['uid'] = $this->user['uid'];        
+        $data['old_groupid'] = $this->user['groupid'];  //记录之前的用户组ID,方便到期后,恢复
+        $data['groupid'] = $gid;
+        $data['group_endtime'] = $gdb['daytime']?($gdb['daytime']*3600*24+time()):0;
+        $content = "恭喜你，成功升级为:“".$gdb['title']."”，将可享受更多权利";
+        send_msg($this->user['uid'],"恭喜你，成功升级会员等级",$content);
+        send_wx_msg($this->user['uid'], $content); 
+        $result = UserModel::edit_user($data);
+        return $result;
     }
     
     /**
@@ -164,7 +174,7 @@ class Group extends MemberBase
      * @param number $gid 新的用户组ID
      * @param number $money 升级所需的RMB或积分
      */
-    protected function post($gid=0,$money=0){
+    protected function post($gid=0,$money=0,$data=[]){
         $array = [
                 'uid'=>$this->user['uid'],
                 'gid'=>$gid,
@@ -180,6 +190,11 @@ class Group extends MemberBase
         }elseif ($info && empty($info['status'])) {
             $this->error('你之前的认证资料还没通过审核,暂时不能重复申请!');
         }
+        if (!$this->webdb['forbid_auto_upgroup']) {
+            $array['status'] = 1;
+            $array['check_time'] = time();
+        }
+        
         $array['create_time'] = time();
         $result = GrouplogModel::create($array);
         if ($result) {
@@ -190,11 +205,16 @@ class Group extends MemberBase
                     add_jifen($this->user['uid'],-$money,'认证升级用户身份');
                 }                
             }
-            $this->fx();
-            $title = $this->user['username'] . '申请升级用户组为 ' . getGroupByid($gid) . '请尽快进后台审核处理！';
-            $content = $title."\r\n 申请日期：".date('Y-m-d H:i');
-            send_admin_msg($title,$content);
-            $this->success('信息已提交,请等待管理员审核!',urls('index'));
+            $this->fx();            
+            if (!$this->webdb['forbid_auto_upgroup']) {
+                $this->auto_upgroup($gid,$data);
+                $this->success('成功升级!',urls('index'));
+            }else{
+                $title = $this->user['username'] . '申请升级用户组为 ' . getGroupByid($gid) . '请尽快进后台审核处理！';
+                $content = $title."\r\n 申请日期：".date('Y-m-d H:i');
+                send_admin_msg($title,$content);
+                $this->success('信息已提交,请等待管理员审核!',urls('index'));
+            }            
         }else{
             $this->error('数据提交失败');
         }

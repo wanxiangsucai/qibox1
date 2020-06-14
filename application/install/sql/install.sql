@@ -1797,3 +1797,7 @@ ALTER TABLE  `qb_friend` CHANGE  `suid`  `suid` INT( 7 ) NOT NULL COMMENT  '被�
 ALTER TABLE  `qb_friend` CHANGE  `uid`  `uid` INT( 7 ) NOT NULL COMMENT  '关注者uid，当前登录用户的uid';
 ALTER TABLE  `qb_friend` CHANGE  `type`  `type` TINYINT( 1 ) NOT NULL COMMENT  '1是粉丝,-1黑名单,2是好友(未必是双向好友,他是我的好友,但我可能是他的黑名单或者他还没关注我)';
 ALTER TABLE  `qb_group` ADD  `tag` VARCHAR( 50 ) NOT NULL COMMENT  '分类标志';
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '用户升级用户组是否自动审核', 'forbid_auto_upgroup', '0', 'radio', '0|自动审核\r\n1|人工审核', 1, '', '即使人工审核,也会先扣费的,所以推荐自动审核', -4, 0);
+UPDATE`qb_config` SET `list`='-4',title='用户组升级方式'  WHERE `c_key`='up_group_use_rmb';
+
