@@ -6,6 +6,12 @@
 .upbtn{background:#F60;color:#FFF;padding:5px 6px;}
 .upbtn:before{padding-right:3px;}
 .upbtn:hover{background:#F30;color:#FFF;}
+.show-about{
+	margin:10px;
+}
+.show-about img{
+	max-width:95%;
+}
 </style>
 <div class="MainCont">
 	<div class="head">
@@ -24,22 +30,50 @@
           <tr>
             <td>所需{$money_name}</td>
 {volist name="groupdb" id="rs"}
-           <td><span class="b red">{$rs.level}</span>{$money_dw}</td>
+           <td>
+		   {if strstr($rs['level'],'=')}
+				{volist name="$rs._level" id="money"}
+					<input type="radio" name="time_{$rs.id}" value="{$key}"><span class="b blue">{$key}</span>天（<span class="b red">{$money}</span>{$money_dw}）<br>
+				{/volist}
+			{else /}
+				<span class="b red">{$rs.level}</span>{$money_dw}
+			{/if}
+		   </td>
 {/volist}
           </tr>
 		  <tr>
-            <td>认证有效期</td>
+            <td>有效期</td>
 {volist name="groupdb" id="rs"}
-           <td><span class="b red">{$rs.daytime?:"365"}</span>天</td>
+           <td> {if !strstr($rs['level'],'=')}<span class="b red">{$rs.daytime?:"365"}</span>天 {/if} </td>
 {/volist}
           </tr>
- 
+		<tr>
+        <td>权限介绍</td>
+        {volist name="groupdb" id="rs"}
+        <td>
+		<div class="about-{$rs.id}" style="display:none;"><div class="show-about">{$rs.about}</div></div>
+		<a href="javascript:layer.open({type:1,title:'权限介绍',area: ['95%', '80%'],content:$('.about-{$rs.id}').html()});" class="glyphicon glyphicon-exclamation-sign">权限介绍</a></td>
+        {/volist} 
+	  </tr>
           <tr> 
             <td>&nbsp;</td>
 {volist name="groupdb" id="rs"}
             
 			<td>
-			<a href="{:urls('buy',['gid'=>$rs['id']])}" class='ajax_get upbtn fa fa-id-badge' data-alert="你确认要付费认证吗?">{$rs.level?'付费认证':'免费认证'}</a> 
+		  {if is_array(fun("shengji@status",$userdb['uid'],$rs['id']))}
+			  {if fun("shengji@status",$userdb['uid'],$rs['id'])['status']=='0'}
+			  信息已提交,请等待管理员审核! 
+			  {elseif fun("shengji@status",$userdb['uid'],$rs['id'])['status']=='-1'}
+			  申请失败：{:fun("shengji@status",$userdb['uid'],$rs['id'])['refuse_reason']} <a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge'>{$rs.level?'重新付费认证':'重新免费认证'}</a> {elseif fun("shengji@status",$userdb['uid'],$rs['id'])['status']=='1'}
+			  成功升级到 {$rs.title}
+			  {/if}
+          {else/} 
+		  	{if count($rs._level)>1}
+				<a href="javascript:upgroup('{:urls('buy',['gid'=>$rs['id']])}',{$rs['id']})" class='upbtn fa fa-id-badge'>{$rs.level?'付费升级':'免费升级'}</a>
+			{else /}
+				<a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge ajax_get' data-alert="你确认要付费认证吗?">{$rs.level?'付费升级':'免费升级'}</a>
+			{/if}
+		  {/if}
 			</td>
 {/volist}
           </tr>
@@ -58,4 +92,28 @@
         </ul>
     </div>
 </div>
+<script type="text/javascript">
+function upgroup(url,gid){
+	var day = $("input[name='time_"+gid+"']:checked").val();
+	if(day==undefined ){
+		layer.alert('请选择要升级几天?');
+	}else{
+		layer.confirm("你确认要升级 "+day+" 天吗?",{btn1:function(index){
+			layer.close(index);
+			$.get(url+"?day="+day,function(res){
+				if(res.code==0){
+					layer.msg(res.msg);
+					window.location.href = res.url;
+				}else if(res.msg.indexOf('充值')>-1){
+					layer.confirm(res.msg,{btn1:function(index){
+						window.location.href = res.url;
+					}});
+				}else{
+					layer.alert(res.msg);
+				}
+			});
+		}});
+	}
+}
+</script>
 {/block}

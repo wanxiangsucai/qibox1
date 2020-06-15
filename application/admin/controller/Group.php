@@ -27,8 +27,9 @@ class Group extends AdminBase
             ['text','title','用户组名称'],
             ['radio','allowadmin','是否有后台权限','',['没权限','有后台权限'],0],
             ['radio','type','用户组类型','会员级可以升级,系统组不能升级',['会员组','系统组'],0],
-            ['number','level','升级所需'.$this->money_name],
-            ['text','daytime','有效期(天)','针对会员组而言的，系统组无效，0则是长期有效'],
+            ['text','level','升级所需'.$this->money_name,'可以设置为“1=2,30=5”即1天只须2元,30天须5元，这种格式代表多个情况就用英文半角逗号隔开。此时下面的“有效期(天):”设置就不生效了'],
+            ['text','daytime','有效期(天)','针对会员组而言的，系统组无效，0则是长期有效，仅当上面“升级所需金额”设置为单一情况即具体的数值时才生效。'],
+            ['ueditor','about','当前用户组权限介绍'],
         ];
         
         $this->tab_ext['trigger'] = [
@@ -114,7 +115,9 @@ class Group extends AdminBase
 	        ],
 	    ];
 	    
-	    $this->tab_ext['help_msg'] = '会员组才能自由升级，有效期为0则是永久有效，在系统设置那里可以切换升级方式是用积分还是金额';
+	    $this->tab_ext['help_msg'] = '1、会员组才能自由升级，系统组不能随意升级，在系统设置那里可以切换升级方式是用积分还是金额<br>
+                                      2、升级金额仅为数字时，有效期为0则是永久有效。<br>
+                                      3、升级金额设置为“1=2,30=5”即1天只须2元,30天须5元，这种格式代表多个情况就用英文半角逗号隔开。';
 	    
 	    $listdb = GroupModel::where([])->order('type desc,level asc,id asc')->column(true);
 	    return $this -> getAdminTable($listdb);
@@ -134,8 +137,10 @@ class Group extends AdminBase
 	        }
 	        if($data['title']==''){
 	            $this->error('用户组名称不能为空!');
-	        }	        
-	        if(GroupModel::create($data)){	                
+	        }
+	        $data['level'] = str_replace(['，',' ','　'], [',','',''], $data['level']);
+	        if(GroupModel::create($data)){
+	            cache('group_title',null);
 	            $this->success('创建成功 ', url('index') );
 	        } else {
 	            $this->error('创建失败');
@@ -174,7 +179,9 @@ class Group extends AdminBase
 	        $this->check_tpl($data['wap_member']);
 	        $this->check_tpl($data['pc_page']);
 	        $this->check_tpl($data['pc_member']);
+	        $data['level'] = str_replace(['，',' ','　'], [',','',''], $data['level']);
 	        if (GroupModel::update($data)) {
+	            cache('group_title',null);
 	            $this->success('修改成功',url('index'));
 	        } else {
 	            $this->error('修改失败');
@@ -191,7 +198,8 @@ class Group extends AdminBase
 	    $this->form_items = array_merge($this->form_items,$array);
 	    
 	    $this->tab_ext['help_msg'] = '注意,还有另一种不需要在这里修改设置的自定义会员中心及会员主页的模板方法是,直接在风格目录,比如“\template\member_style\default\member\index\”或者目录“\template\member_style\default\member\user\”里边分别新建index3.htm或者是pc_index3.htm即可,其中3就是对应的用户组ID<br>
-                                      分组标志，适用于创建的用户组太多，可以分类给用户选择，而不要全部塞在一起给用户选择。前台可以用类似以下网址引导用户升级“/member.php/member/group/index.html?tag=分组标志”';
+                                      分组标志，适用于创建的用户组太多，可以分类给用户选择，而不要全部塞在一起给用户选择。前台可以用类似以下网址引导用户升级“/member.php/member/group/index.html?tag=分组标志”<br>
+                                      升级金额设置为“1=2,30=5”即1天只须2元,30天须5元，这种格式代表多个情况就用英文半角逗号隔开。此时“有效期(天):”设置就不生效了';
 	    
 	    $info = GroupModel::get($id);
 	    return $this->editContent($info);

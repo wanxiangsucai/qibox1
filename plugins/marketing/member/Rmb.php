@@ -95,8 +95,7 @@ class Rmb extends MemberBase
 	        }
 	    }
 	    
-	    if(IS_POST){
-	        
+	    if(IS_POST){	        
 	        $data = $this->request->post();	        
 	        if($this->user['rmb']<0.3){
 	            $this->error("你当前可用余额小于0.3元,无法提现!");

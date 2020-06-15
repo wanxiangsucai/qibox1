@@ -57,6 +57,10 @@ class Index extends AdminBase
 // 	            },'__data__'],
 	    ];
 	    
+	    if ($this->hytag) {
+	        unset($this->list_items[5]);
+	    }
+	    
 	    $this->tab_ext['top_button'] =[
 	            [
 	                    'type' => 'delete',

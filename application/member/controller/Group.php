@@ -68,7 +68,7 @@ class Group extends MemberBase
      * @param number $gid
      * @return mixed|string
      */
-    public function buy($gid=0)
+    public function buy($gid=0,$day=0)
     {
         if ($gid<1) {
             $this->error('请选择要认证的用户组');
@@ -85,22 +85,36 @@ class Group extends MemberBase
             $this->error('你是管理员,级别很高了,无须认证升级');
         }
         
-        if($this->webdb['up_group_use_rmb']){
-            if($this->user['rmb']<$ginfo['level']){                
-                $payurl = post_olpay([
-                        'money'=>$ginfo['level']-$this->user['rmb'],     //有部分余额的话,就不用充值那么多
-                        'return_url'=>url('buy',['gid'=>$gid]),
-                        'banktype'=>'',
-                        'numcode'=>'g'.date('ymdHis').rands(3),
-                        //'callback_class'=>mymd5('app\\member\\controller\\Group@pay@'.$money),
-                ], false);                
-                $this->error('你的余额不足: '.$ginfo['level'] .'元，不能申请当前认证，你确认要充值吗？',$payurl);
+        
+        $need_money = $ginfo['level'];
+        if (count($ginfo['_level'])>1) {
+            if (empty($day)) {
+                $this->error('你没有选择升级多少天?');
+            }
+            $need_money = $ginfo['_level'][$day];
+            if (!isset($ginfo['_level'][$day])) {
+                $this->error('选择的天数有误!');
             }
         }else{
-            if($this->user['money']<$ginfo['level']){
-                $money = ($ginfo['level'] - $this->user['money']) / ($this->webdb['P__marketing']['money_ratio']?:10);
+            $day = $ginfo['daytime'];
+        }
+        
+        if($this->webdb['up_group_use_rmb']){       //需要RMB
+            if($this->user['rmb']<$need_money){                
+                $payurl = post_olpay([
+                    'money'=>$need_money-$this->user['rmb'],     //有部分余额的话,就不用充值那么多
+                    'return_url'=>url('buy',['gid'=>$gid,'day'=>$day]),
+                    'banktype'=>'',
+                    'numcode'=>'g'.date('ymdHis').rands(3),
+                    //'callback_class'=>mymd5('app\\member\\controller\\Group@pay@'.$money),
+                ], false);                
+                $this->error('你的余额不足: '.$need_money .'元，不能申请当前认证，你确认要充值吗？',$payurl);
+            }
+        }else{  //需要积分
+            if($this->user['money']<$need_money){
+                $money = ($need_money - $this->user['money']) / ($this->webdb['P__marketing']['money_ratio']?:10);
                 $money = ceil($money*100)/100;
-                $payurl = url('pay',['money'=>$money,'gid'=>$gid]);     //提示充值积分
+                $payurl = url('pay',['money'=>$money,'gid'=>$gid,'day'=>$day]);     //提示充值积分
                 if($this->user['rmb']<$money){
                     $payurl = post_olpay([
                             'money'=>$money-$this->user['rmb'],     //有部分余额的话,就不用充值那么多
@@ -110,13 +124,13 @@ class Group extends MemberBase
                             //'callback_class'=>mymd5('app\\member\\controller\\Group@pay@'.$money),
                     ], false);
                 }          
-                $this->error('你的'.jf_name(0).'不足: '.$ginfo['level'] .'个，你仅有 '.$this->user['money'].' 个，需要先充值 '.$money.' 元，才能认证升级，你确认要充值吗？',$payurl);
+                $this->error('你的'.jf_name(0).'不足: '.$need_money .'个，你仅有 '.$this->user['money'].' 个，需要先充值 '.$money.' 元，才能认证升级，你确认要充值吗？',$payurl);
             }
-        }        
+        } 
         
         $this->form_items = Cfgfield::get_form_items($gid,'upgroup');
         if (empty($this->form_items)) { //没有需要填写的项目  , 直接入库处理
-            return $this->post($gid,$ginfo['level']);
+            return $this->post($gid,$need_money,$day);
         }else{
             if ($this->request->isPost()) {
                 $data = $this->request->post();            
@@ -134,7 +148,7 @@ class Group extends MemberBase
                         $this->error('必填项不能为空!');
                     }
                 }
-                return $this->post($gid,$ginfo['level'],$data);
+                return $this->post($gid,$need_money,$day,$data);
             }
             
             if ($this->request->isAjax()) {
@@ -144,7 +158,7 @@ class Group extends MemberBase
             $this->assign('money_name',$this->money_name);
             $this->assign('money_dw',$this->money_dw);
             
-            $this->tab_ext['page_title'] = '申请认证为: '.$ginfo['title'].($ginfo['level'] ? " 本次认证需要消费".$this->money_name." {$ginfo['level']} ".$this->money_dw:' 本次认证免费');
+            $this->tab_ext['page_title'] = '申请认证为: '.$ginfo['title'].($need_money ?($this->webdb['up_group_use_rmb']?" 本次认证需要支付RMB {$need_money} 元":" 本次认证需要消费".$this->money_name." {$need_money} ".$this->money_dw):' 本次认证免费');
             $info = $this->user;
             return $this->editContent($info);
         }
@@ -153,15 +167,19 @@ class Group extends MemberBase
     /**
      * 自动通过审核
      * @param number $gid
+     * @param number $day 升级天数
      * @param array $data
      * @return string|boolean
      */
-    protected function auto_upgroup($gid=0,$data=[]){
-        $gdb = getGroupByid($gid,false);        
+    protected function auto_upgroup($gid=0,$day=0,$data=[]){
+        $gdb = getGroupByid($gid,false);
+        if (count($gdb['_level'])<=1) {
+            $day = $gdb['daytime'];
+        }
         $data['uid'] = $this->user['uid'];        
         $data['old_groupid'] = $this->user['groupid'];  //记录之前的用户组ID,方便到期后,恢复
         $data['groupid'] = $gid;
-        $data['group_endtime'] = $gdb['daytime']?($gdb['daytime']*3600*24+time()):0;
+        $data['group_endtime'] = $day?($day*3600*24+time()):0;
         $content = "恭喜你，成功升级为:“".$gdb['title']."”，将可享受更多权利";
         send_msg($this->user['uid'],"恭喜你，成功升级会员等级",$content);
         send_wx_msg($this->user['uid'], $content); 
@@ -172,9 +190,11 @@ class Group extends MemberBase
     /**
      * 处理修改用户组
      * @param number $gid 新的用户组ID
-     * @param number $money 升级所需的RMB或积分
+     * @param number $money 升级所需财富
+     * @param number $day 升级天数
+     * @param array $data
      */
-    protected function post($gid=0,$money=0,$data=[]){
+    protected function post($gid=0,$money=0,$day=0,$data=[]){
         $array = [
                 'uid'=>$this->user['uid'],
                 'gid'=>$gid,
@@ -196,6 +216,7 @@ class Group extends MemberBase
         }
         
         $array['create_time'] = time();
+        $array['daytime'] = $day;
         $result = GrouplogModel::create($array);
         if ($result) {
             if ($money>0) {
@@ -207,7 +228,7 @@ class Group extends MemberBase
             }
             $this->fx();            
             if (!$this->webdb['forbid_auto_upgroup']) {
-                $this->auto_upgroup($gid,$data);
+                $this->auto_upgroup($gid,$day,$data);
                 $this->success('成功升级!',urls('index'));
             }else{
                 $title = $this->user['username'] . '申请升级用户组为 ' . getGroupByid($gid) . '请尽快进后台审核处理！';

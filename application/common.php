@@ -927,13 +927,27 @@ if (!function_exists('getGroupByid')) {
      */
     function getGroupByid($gid = null , $only_title = true)
     {
-		if($gid===''){
-			return ;
-		}
         $group = cache('group_title');
         if (empty($group)) {
             $group = model('common/group')->getList();
             cache('group_title',$group,3600);
+        }
+        foreach ($group AS $key=>$rs){
+            if ($rs['type']==0) {
+                $rs['_level'] = [];
+                if (strstr($rs['level'],'=')) {
+                    $detail = explode(',', $rs['level']);
+                    foreach ($detail AS $v){
+                        list($day,$money) = explode('=', $v);
+                        if ($day>0 && $money>0) {
+                            $rs['_level'][$day] = $money;
+                        }
+                    }
+                }else{
+                    $rs['_level'][$rs['daytime']] = $rs['level'];
+                }
+            }
+            $group[$key] = $rs;
         }
         if($gid>0){
             return $only_title==true ? $group[$gid]['title'] : $group[$gid];            

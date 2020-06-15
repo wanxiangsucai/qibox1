@@ -166,8 +166,10 @@ class RmbGetout extends AdminBase
 	    if(empty($user)){
 	        $this->error('用户资料不存在!');;
 	    }
+	    
 	    $money = $info['money'];
 	    $real_money = $info['real_money']?:$info['money']; //实际申请金额
+	    
 	    if($type=='weixin'){
 	        if (empty($user['weixin_api'])) {
 	            $this->error('该用户没有绑定过微信!');;
@@ -175,30 +177,36 @@ class RmbGetout extends AdminBase
 	        if($money<0.3){
 	            $this->error('微信转帐不能小于0.3元!');;
 	        }
-	        $array = [
+	    }
+	    
+	    $data = [
+	        'id'=>$id,
+	        'ifpay'=>1,
+	        'admin'=>$this->user['username'].' '.$type,
+	        'replytime'=>time(),
+	    ];
+	    $result = RmbGetoutModel::update($data);
+	    
+	    if ($result) {	        
+	        if($type=='weixin'){
+	            $array = [
 	                'money'=>$money,
 	                'title'=>'提现成功',
 	                'id'=>$user['weixin_api'],
-	        ];
-	        $res = Weixin::gave_moeny($array);
-	        if($res===true){
-	            add_rmb($user['uid'],0,-$real_money,'微信提现成功');
-	            send_wx_msg($user['weixin_api'], "你申请的提现 {$money} 元,已审核通过,并且已成功转帐,请注意查收");
+	            ];
+	            $res = Weixin::gave_moeny($array);
+	            if($res===true){
+	                add_rmb($user['uid'],0,-$real_money,'微信提现成功');
+	                send_wx_msg($user['weixin_api'], "你申请的提现 {$money} 元,已审核通过,并且已成功转帐,请注意查收");
+	            }else{
+	                $data['ifpay'] = 0;
+	                RmbGetoutModel::update($data);
+	                $this->error('微信支付失败:'.$res);
+	            }
 	        }else{
-	            $this->error('微信支付失败:'.$res);;
-	        }
-	    }else{
-	        add_rmb($user['uid'],0,-$real_money,'提现成功,扣除冻结金额');
-	        send_msg($user['uid'],'提现转帐提醒',"你申请的提现 {$money} 元,已审核通过,线下已转帐,请注意查收");
-	    }
-	    $data = [
-	            'id'=>$id,
-	            'ifpay'=>1,
-	            'admin'=>$this->user['username'].' '.$type,
-	            'replytime'=>time(),
-	    ];
-	    $result = RmbGetoutModel::update($data);
-	    if ($result) {
+	            add_rmb($user['uid'],0,-$real_money,'提现成功,扣除冻结金额');
+	            send_msg($user['uid'],'提现转帐提醒',"你申请的提现 {$money} 元,已审核通过,线下已转帐,请注意查收");
+	        }	        
 	        $this->success('操作成功');
 	    }else{
 	        $this->error('数据库执行失败!');

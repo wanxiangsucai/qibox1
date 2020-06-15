@@ -49,10 +49,17 @@ class GroupLog extends AdminBase
 	    $result = GrouplogModel::update($array);
 	    if ($result) {
 	        $gdb = getGroupByid($info['gid'],false);
+	        
+	        if (count($gdb['_level'])<=1) {
+	            $day = $gdb['daytime'];
+	        }else{
+	            $day = $info['daytime'];
+	        }
+	        
 	        $data = [
 	            'uid'=>$info['uid'],
 	            'groupid'=>$info['gid'],
-	            'group_endtime'=>$gdb['daytime']?($gdb['daytime']*3600*24+time()):0,
+	            'group_endtime'=>$day?($day*3600*24+time()):0,
 	        ];
 	        if ($status==1) {
 	            $data['old_groupid'] = get_user($info['uid'])['groupid'];      //记录之前的用户组ID,方便到期后,恢复
