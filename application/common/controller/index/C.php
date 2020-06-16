@@ -306,6 +306,7 @@ abstract class C extends IndexBase
      * @return array|\think\Paginator|number|mixed|string
      */
     private function label_get_list_data($fid=0,$mid=0,$rows=5,$order='list',$by='desc',$map=[]){
+        $fid = intval($fid);
         if (!$fid && !$mid){
             $mid = current(model_config())['id'];   //考虑给其它非列表页调用的时候,不存在fid 也不存在 mid
             if(empty($mid)){
@@ -321,7 +322,7 @@ abstract class C extends IndexBase
         $this->mid = $mid;  //getListData要用到的
         $rows = intval( $rows<1 ? 10 : $rows);
         $map['mid'] = $mid;
-        $order = $order ? filtrate($order) : 'list';
+        $order = $order&&$order!='undefined' ? filtrate($order) : 'list';
 //         if (!in_array($order, ['id','create_time','list','rand()','view'])) {
 //             if(empty($order) || table_field($this->model->getTableByMid($mid),$order)==false){
 //                 $order = 'list';
@@ -435,6 +436,8 @@ abstract class C extends IndexBase
         $getData['by'] && $by = $getData['by'];
         //这里需要对外面传进来的各项参数做一个过滤判断 
         
+        if($fid<1){unset($fid);}
+        if($getData['fid']<1){unset($getData['fid']);}
         $data_type = input('data_type'); 
         $this->mid = $mid;
 
@@ -476,11 +479,11 @@ abstract class C extends IndexBase
         if($cfg['where']){  ///保存在数据库,用户自定义的查询语句
             $_array = fun('label@where',$cfg['where'],$cfg);
             if($_array){
-                $map = array_merge($map,$_array);
+                $map = array_merge($map,$_array?:[]);
             }
         }elseif($where=mymd5($where,'DE')){ //URL中的where语句解密处理,避免用户恶意修改
             $_array = fun('label@where',$where,array_merge(input('route.'),$getData));
-            $map = array_merge($map,$_array);
+            $map = array_merge($map,$_array?:[]);
         }
         
 //         $whereor = [];

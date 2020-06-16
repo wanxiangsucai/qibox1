@@ -400,6 +400,8 @@ loader.define(function(require,exports,module) {
 			});
 		}else if(obj.type=='qun_sync_msg'){	//圈子直播文字  
 			check_new_showmsg(obj);
+		}else if(obj.type=='delete_msg'){	//删除或撤回消息
+			$("#chat_win .chat-box-"+obj.data.id).hide();
 		}else if(obj.type=='connect'){	//建立链接时得到客户的ID
 			clientId = obj.client_id;
 			if(uid==0){
@@ -920,6 +922,14 @@ loader.define(function(require,exports,module) {
 		router.$(".chat-panel .del").click(function(){
 			var id = $(this).data("id");
 			var that = $(this);
+			//通知其它人也要一起删除
+			ws_send({
+				type:'qun_to_alluser',
+				tag:'delete_msg',
+				data:{
+					id:id,
+				},
+			});
 			if(pushIdArray[id]!=undefined){
 				id = pushIdArray[id];
 			}

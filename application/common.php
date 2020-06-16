@@ -2356,7 +2356,11 @@ if (!function_exists('getTemplate')) {
              if ($access_token) {
                  cache('weixin_access_token'.$token_string,$access_token,1800);
              }else{
-                 showerr('获取access_token失败,详情如下：'.$string);
+                 $msg = $is_wxapp?',微信小程序(不是公众号)接口问题':',微信公众号接口问题';
+                 if (strstr($string, '40125')) {
+                     $msg = ',初步判断是 '.($is_wxapp?'微信小程序(不是公众号)':'微信公众号(不是小程序)').' 密钥有误,请重新配置试试';
+                 }
+                 showerr('获取access_token失败'.$msg.',详情如下：'.$string);
              }
          }
          return $access_token;
