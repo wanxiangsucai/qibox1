@@ -125,6 +125,7 @@ class Tabel extends IndexBase{
 	            'icon'  => $attribute['icon'] ?: self::get_right_bottom($type,'icon'),
 	            'class' =>$attribute['class'] ?: self::get_right_bottom($type,'class'),
 	            'href'  => $attribute['href'] ?: self::get_right_bottom($type,'href'),
+	            'type'  =>$type,
 	    ];
 	    return self::$instance;
 	}
