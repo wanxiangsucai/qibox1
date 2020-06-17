@@ -2,7 +2,7 @@
 namespace app\common\field;
 
 /**
- * 列表页的表格自定义字段 
+ * 列表页的表格自定义字段
  */
 class Table extends Base
 {
@@ -18,9 +18,9 @@ class Table extends Base
             return $field;
         }
         $array = [
-                'type'=>$field[2],
-                'name'=>$field[0],
-                'title'=>$field[1],
+            'type'=>$field[2],
+            'name'=>$field[0],
+            'title'=>$field[1],
         ];
         if(is_array($field[3])){
             $array['array'] = $field[3];
@@ -46,24 +46,24 @@ class Table extends Base
     public static function get_tab_field($field=[],$info=[]){
         
         $field = self::num2letter($field);
-
+        
         $name = $field['name'];
         $field_value = $info[$name];
-
+        
         if(empty($info)){   //表格头部标题使用
             return [
-                    'type'=>$field['type'],
-                    'name'=>$name,
-                    'title'=>$field['title'],
-                    'value'=>'',
+                'type'=>$field['type'],
+                'name'=>$name,
+                'title'=>$field['title'],
+                'value'=>'',
             ];
         }
         
         if ( ($show = self::get_item($field['type'],$field,$info)) !='' ) {    //个性定义的表单模板,优先级最高
-        
+            
         }elseif ($field['type'] == 'username') {
             $_ar = get_user($field_value);
-            $show = $_ar?"<a href='".get_url('user',$field_value)."' target='_blank'>{$_ar['username']}</a>":'';        
+            $show = $_ar?"<a href='".get_url('user',$field_value)."' target='_blank'>{$_ar['username']}</a>":'';
         }elseif ($field['type'] == 'link') {
             //$field['url'] = str_replace('__id__', $info['id'], $field['url']);
             $field['url'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $field['url']);
@@ -94,7 +94,7 @@ class Table extends Base
                     $show .="<option value='$key' $select>$v";
                 }
                 $show .= "</select>";
-            }            
+            }
         }elseif($field['type'] == 'checkbox'){  //多选项
             $detail = explode(',',$field_value);
             foreach($detail AS $key=>$value){
@@ -135,17 +135,17 @@ class Table extends Base
                 $qs = $info;
             }else{
                 $qs = isset($info[$field['opt']])?$info[$field['opt']]:$info;
-            }            
+            }
             $show = $field['fun']($field_value,$qs,$field['opt']);
         }else{
             $show = $info[$name];
         }
-
+        
         return [
-                'type'=>$field['type'],
-                'name'=>$name,
-                'title'=>$field['title'],
-                'value'=>$show,
+            'type'=>$field['type'],
+            'name'=>$name,
+            'title'=>$field['title'],
+            'value'=>$show,
         ];
     }
     
@@ -174,13 +174,13 @@ class Table extends Base
                 $rs['href'] || $rs['href']=$rs['url'];
                 //$rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
                 $rs['href'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $rs['href']);
-                $alert = $rs['type']=='delete' ? ' class="_dels" onclick="return confirm(\'你确实要删除吗?不可恢复!\')"' : ' ';
+                $alert = $rs['type']=='delete' ? ' class="_dels" onclick="if(typeof(delete_one)==\'function\'){return delete_one($(this).attr(\'href\').split(\'/ids/\')[1].split(\'.\')[0]);}else{return confirm(\'你确实要删除吗?不可恢复!\')}"' : ' ';
                 $target = $rs['target']?" target='{$rs['target']}' ":'';
                 $data[] = [
                     'title'=>$rs['title'],
                     'value'=>"<a href='{$rs['href']}' title='{$rs['title']}' $alert $target><i class='{$rs['icon']}'></i> ".($show_title?$rs['title']:'')."</a>",
                     ];
-            }            
+            }
         }
         return $data;
     }
@@ -267,10 +267,10 @@ class Table extends Base
                 $array[] = ['title', $rs['title'], 'link',iurl('content/show',['id'=>'__id__']),'_blank'];
             }else{
                 $array[] = [
-                        $rs['name'],
-                        $rs['title'],
-                        $type,
-                        $rs['options'],
+                    $rs['name'],
+                    $rs['title'],
+                    $type,
+                    $rs['options'],
                 ];
             }
         }

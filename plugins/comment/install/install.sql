@@ -1,0 +1,26 @@
+DROP TABLE IF EXISTS `qb_comment_content`;
+CREATE TABLE IF NOT EXISTS `qb_comment_content` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` int(10) NOT NULL COMMENT '引用回复上级ID',
+  `sysid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '插件或模块ID',
+  `aid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '模块的内容页ID',
+  `ispic` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否带组图',
+  `uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `agree` mediumint(7) unsigned NOT NULL DEFAULT '0' COMMENT '支持',
+  `disagree` mediumint(7) NOT NULL COMMENT '反对',
+  `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态：比如审核与否',
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `list` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序值',
+  `picurl` text NOT NULL COMMENT '封面图',
+  `mvurl` varchar(255) NOT NULL,
+  `content` text NOT NULL COMMENT '文章内容',
+  `reply` mediumint(4) NOT NULL COMMENT '回复数',
+  PRIMARY KEY (`id`),
+  KEY `status` (`status`),
+  KEY `list` (`list`),
+  KEY `ispic` (`ispic`),
+  KEY `sysid` (`sysid`),
+  KEY `agree` (`agree`),
+  KEY `aid` (`aid`),
+  KEY `uid` (`uid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='评论内容表' AUTO_INCREMENT=1 ;

@@ -153,7 +153,7 @@ abstract class C extends Model
 //             }
 //         }
         
-        if (isset($info['status']) && (!defined('IN_ADMIN') || $info['status']!=-1)) { //不在后台的话,只能是软删除 在后台的话,要先进回收站,再真正删除
+        if ( !defined('FORCE_DELETE') && isset($info['status']) && (!defined('IN_ADMIN') || $info['status']!=-1)) { //不在后台的话,只能是软删除 在后台的话,要先进回收站,再真正删除
             Db::name(self::$base_table)->where('id',$id)->update(['status'=>-1]);
             Db::name($table)->where('id',$id)->update(['status'=>-1]);
             return 1;

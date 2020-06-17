@@ -76,9 +76,9 @@
 
 {volist name="listdb" id="rs"}
 {php}$tab_ext['id'] && $rs['id']=$rs[$tab_ext['id']];{/php}
-    <tr bgcolor="#FFFFFF" class="trA" onmouseover="this.className='trB'" onmouseout="this.className='trA'"> 
+    <tr bgcolor="#FFFFFF" class="trA list-item-{$rs.id}" onmouseover="$(this).removeClass('trA').addClass('trB')" onmouseout="$(this).removeClass('trB').addClass('trA')"> 
       <td><input type="checkbox" name="ids[]" value="{$rs.id}"> {$rs.id}</td>
-	 <!-- 自定义字段数据列表 -->
+	 <!-- 自定义字段数据列表-->
 	{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"}
       <td class="{eq name='i' value='1'}Left{/eq}">{$vs.value}</td>
 	{/volist}
@@ -90,7 +90,7 @@
 	
 	<!-- 没有特别指定按钮时,就显示默认的修改与删除 -->
 	{if !isset($tab_ext.right_button)}
-      <td><a href="{:auto_url('delete','ids='.$rs.id)}" class="_dels" onclick="return confirm('你确实要删除吗?不可恢复,请慎重!')" title="删除"><i class="fa fa-fw fa-remove"></i></a></td>
+      <td><a href="javascript:" class="_dels" onclick="delete_one({$rs.id})" title="删除"><i class="fa fa-fw fa-remove"></i></a></td>
 	  <td><a href="{:auto_url('edit','id='.$rs.id)}" title="修改"><i class="fa fa-fw fa-edit"></i></td>
 	{/if}
 
@@ -113,6 +113,49 @@
 {/if}
 
 <script type="text/javascript">
+
+function delete_one(id){
+	var url ="{:auto_url('delete')}?ids="+id;	
+	var obj = $(".list-item-"+id+" select[data-name='status']");
+	var status = obj.find("option:selected").val();
+	var btn = ("{$choose_rubbish}"&&status!=-1)?['彻底删除','放入回收站','取消']:['彻底删除','取消'];
+	layer.confirm('请慎重选择操作，彻底删除将不可恢复！',{
+		title:'提醒',
+		btn:btn,
+		btn1:function(i){
+			layer.close(i);
+			if(btn.length==3)url+="&force_delete=1";
+			act(true);
+		},
+		btn2:function(i){
+			layer.close(i);
+			if(btn.length==3){
+				act();
+			}
+		},
+		btn3:function(i){
+			layer.close(i);
+		},
+	});
+
+	function act(is_force){	
+		$.get(url,function(res){
+			if(res.code==0){
+				if(is_force){
+					$(".list-item-"+id).remove();
+					layer.msg('删除成功',{time:1000});
+				}else{
+					obj.find("option[value='-1']").attr("selected",true);
+					layer.msg('已放入回收站',{time:1500});
+				}
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	}
+	return false;
+}
+
 var quickedit_url = "{:auto_url('quickedit')}"; //快速编辑的地址
 
 //全选
@@ -134,8 +177,14 @@ function delete_all(that){
 		layer.alert('你必须选择一项!');
 		return false;
 	}
-	layer.confirm('你要删除吗,不可恢复?',function(){
+	layer.confirm('请慎重选择操作，彻底删除将不可恢复！',{
+			title:'提醒',
+			btn:['彻底删除','取消'],
+		},function(){
 		var url = that.attr('href');
+		if("{$choose_rubbish}"){
+			url += "?force_delete=1";
+		}
 		$.post(url,{'ids':ids},function(res){
 			if(res.code==0){
 				layer.closeAll();

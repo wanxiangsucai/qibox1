@@ -229,6 +229,9 @@ abstract class C extends AdminBase
         $this->assign('sort_array',$sort_array);
         $this->assign('status_array',$this->status_array);
         $this->assign('search_time','create_time');
+        
+        $this->assign('choose_rubbish',1);  //删除的时候选择是否放入回收站
+        
         return $this->getAdminTable($data);
     }
     
@@ -362,6 +365,8 @@ abstract class C extends AdminBase
         $this->assign('sort_array',$sort_array);
         $this->assign('status_array',$this->status_array);
         
+        $this->assign('choose_rubbish',1);  //删除的时候选择是否放入回收站
+        
         $data = self::getListData($fid ? ['fid'=>$fid] : ['mid'=>$mid]);
         $this->tab_ext['id_name'] = $this->get_id_name($mid);
         $this->assign('search_time','create_time');
@@ -443,10 +448,14 @@ abstract class C extends AdminBase
     
     /**
      * 删除内容
-     * @param unknown $ids 内容ID
+     * @param unknown $ids内容ID
+     * @param number $force_delete 是否强制清空
      */
-    public function delete($ids=null)
+    public function delete($ids=null,$force_delete=0)
     {
+        if ($force_delete) {
+            define('FORCE_DELETE',true);
+        }
         if(empty($ids)){
             $this->error('ID有误');
         }        
