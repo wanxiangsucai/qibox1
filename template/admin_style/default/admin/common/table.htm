@@ -1,4 +1,9 @@
 <script type="text/javascript" src="__STATIC__/layui/laydate/laydate.js"></script> 
+<style type="text/css">
+.cktr td{
+	background:#e2e1ba !important;
+}
+</style>
 <form name="form1" method="post" action="">
 <div class="MainContainers">
   <div class="Header"><span class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {else /} 内容管理 {/if}</span></div>
@@ -115,6 +120,7 @@
 <script type="text/javascript">
 
 function delete_one(id){
+	$(".list-item-"+id).addClass('cktr');
 	var url ="{:auto_url('delete')}?ids="+id;	
 	var obj = $(".list-item-"+id+" select[data-name='status']");
 	var status = obj.find("option:selected").val();
@@ -132,9 +138,11 @@ function delete_one(id){
 			if(btn.length==3){
 				act();
 			}
+			$(".list-item-"+id).removeClass('cktr');
 		},
 		btn3:function(i){
 			layer.close(i);
+			$(".list-item-"+id).removeClass('cktr');
 		},
 	});
 
@@ -142,7 +150,7 @@ function delete_one(id){
 		$.get(url,function(res){
 			if(res.code==0){
 				if(is_force){
-					$(".list-item-"+id).remove();
+					$(".list-item-"+id).hide(1000);
 					layer.msg('删除成功',{time:1000});
 				}else{
 					obj.find("option[value='-1']").attr("selected",true);
@@ -177,6 +185,9 @@ function delete_all(that){
 		layer.alert('你必须选择一项!');
 		return false;
 	}
+	ids.forEach(function(id){
+		$(".list-item-"+id).addClass('cktr');
+	});
 	layer.confirm('请慎重选择操作，彻底删除将不可恢复！',{
 			title:'提醒',
 			btn:['彻底删除','取消'],
@@ -189,9 +200,12 @@ function delete_all(that){
 			if(res.code==0){
 				layer.closeAll();
 				layer.msg('删除成功');
-				setTimeout(function(){
-					window.location.reload();
-				},500);
+				ids.forEach(function(id){
+					$(".list-item-"+id).hide(1000);
+				});
+				//setTimeout(function(){
+				//	window.location.reload();
+				//},500);
 			}else{
 				layer.alert('删除失败,详情如下:'+res.msg);
 			}
@@ -199,6 +213,10 @@ function delete_all(that){
 			layer.alert('系统故障,删除失败!!');
 		});
 
+	},function(){
+		ids.forEach(function(id){
+			$(".list-item-"+id).removeClass('cktr');
+		});
 	});
 	return false;
 }
