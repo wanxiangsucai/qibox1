@@ -18,6 +18,7 @@ return array(
                                         array(
                                                 'title'=>'网站配置',
                                                 'link'=>'setting/index',
+                                                'param'=>['group'=>1],    //param很少用到，通过他可以传递多个参数。
                                                 'power'=>[],
                                         ),
                                         array(

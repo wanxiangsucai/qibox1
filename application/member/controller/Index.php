@@ -10,9 +10,9 @@ class Index extends MemberBase
      * 会员中心主页
      * @return mixed|string
      */
-    public function index()
+    public function index($tag='')
     {
-        $menu_array = Menu::make('member');
+        $menu_array = Menu::make('member',$tag);
         foreach($menu_array AS $key1=>$rs1){
             foreach($rs1['sons'] AS $key2=>$rs2){
                 if ($key1=='often') {
@@ -40,10 +40,11 @@ class Index extends MemberBase
                 unset($menu_array[$key1]);
             }
         }
+        $this->assign('tag',$tag);
         $this->assign('info',$this->user);
         $this->assign('user',$this->user);
         $this->assign('menu',$menu_array);
-        $this->assign('url',substr(strstr($this->weburl,'?url='),5)?:url('map'));
+        $this->assign('url',substr(strstr($this->weburl,'?url='),5)?:url('map',['tag'=>$tag]));
         $template = get_group_tpl('member',$this->user['groupid']);
         return $this->fetch($template);
     }
@@ -52,8 +53,9 @@ class Index extends MemberBase
      * 电脑版的欢迎页
      * @return mixed|string
      */
-    public function map()
+    public function map($tag='')
     {
+        $this->assign('tag',$tag);
         $this->assign('user',$this->user);
         $this->assign('userdb',$this->user);
         $this->assign('info',$this->user);

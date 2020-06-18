@@ -46,8 +46,9 @@ return array(
                                         ),
 										array(
 										    'icon'=>'glyphicon glyphicon-circle-arrow-up',
-                                                'title'=>'升级会员等级',
-                                                'link'=>'group/index',
+                                            'title'=>'升级会员等级',
+                                            'link'=>'group/index',
+										    'param'=>['tag'=>input('tag')],  //param很少用到，通过他可以传递多个参数。
                                         ),
                                         array(
                                             'icon'=>'fa fa-drivers-license',

@@ -8,6 +8,7 @@ class Menu{
     protected static $type = 'admin';
     protected static $groupid = null;
     protected static $sysmenu = [] ;
+    protected static $tag = ''; //指定显示哪个模块的菜单,也即频道专属菜单
     
     protected function __construct($type)
     {
@@ -19,7 +20,7 @@ class Menu{
      * @param unknown $type member admin
      * @return string|array
      */
-    public static function make($type){
+    public static function make($type,$tag=''){
         //if (is_null(self::$instance)) {
          //   self::$instance = new static($type);
        // }
@@ -27,6 +28,7 @@ class Menu{
             self::$sysmenu = Menu::member_sys_cache();
         }
         self::$type = $type;
+        self::$tag = $tag;
         return self::get_menu();
     }    
     
@@ -173,7 +175,7 @@ class Menu{
                 'groupid'=>self::$groupid?:login_user('groupid'),
         ];
         $_array = [];
-        $listdb = get_sons( AdminMenu::getTreeList($map) );
+        $listdb = self::$tag ? [] : get_sons( AdminMenu::getTreeList($map) ); //频道专属菜单模式下就不显示会员个性菜单
         foreach ($listdb AS  $key=>$rs) {
             $_array[$key]['title'] = $rs['name'];
             $_array[$key]['icon'] = $rs['icon'];
@@ -229,6 +231,9 @@ class Menu{
     protected static function build_module_menu($base_menu=[]){
         $module_array = modules_config();
         foreach ($module_array AS $model){
+            if (self::$tag!='' && !in_array($model['keywords'], explode(',', self::$tag))) {
+                continue ; //指定显示哪个模块的菜单
+            }
             $file = APP_PATH.$model['keywords'].'/'.self::get_menu_file();
             if(is_file($file)){
                 $array = include($file);

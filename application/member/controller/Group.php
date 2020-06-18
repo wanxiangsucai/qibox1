@@ -28,13 +28,28 @@ class Group extends MemberBase
         }
     }
     
+    /**
+     * 列出可购买的升级用户组
+     * @param string $tag 是否指定只显示某些频道相关的用户组
+     * @return mixed|string
+     */
     public function index($tag='')
     {
         $groupdb = [];
         $data_list = getGroupByid(null,false);
         foreach($data_list AS $gid=>$rs){
-            if ($tag!='' && $rs['tag']!=$tag) {
-                continue;
+            if ($tag!='') {
+                if ( strstr($tag,',') ) {
+                    if( !in_array($rs['tag'], explode(',', $tag)) ){
+                        continue;
+                    }
+                }elseif ( strstr($rs['tag'],',') ) {
+                    if(!in_array($tag, explode(',', $rs['tag']))){
+                        continue;
+                    }
+                }elseif($tag!=$rs['tag']){
+                    continue;
+                }
             }
             if($rs['type']==0&&$gid!=8){
                 $groupdb[] = $rs;
