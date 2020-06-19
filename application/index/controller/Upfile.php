@@ -36,4 +36,12 @@ class Upfile extends IndexBase
         $this->assign('img',$img);
         return $this->fetch();
     }
+    
+    public function file($fn='upfile',$par='',$size=0,$ext=''){
+        $this->assign('fn',$fn);
+        $this->assign('size',$size?$size*1024:0);
+        $this->assign('ext',$ext);
+        $this->assign('par',$par);
+        return $this->fetch();
+    }
 }

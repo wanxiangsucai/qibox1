@@ -197,7 +197,7 @@ class Attachment extends IndexBase{
 	 * @return mixed
 	 */
 	public function upload( $dir = '',$from = '',$module = '' ) {
-		if ( ! $this->user ) {
+		if ( !$this->user ) {
 			return $this->errFile( $from,'请先登录!!' );
 		}
 		//应付大文件的上传
@@ -708,12 +708,15 @@ class Attachment extends IndexBase{
 				$path = realpath( config( 'upload_path' ) . '/images/' );
 		}
 		$allowFiles = substr( str_replace( ".","|",join( "",$allowFiles ) ),1 );
+
 		/* 获取参数 */
 		$size = isset( $_GET['size'] ) ? htmlspecialchars( $_GET['size'] ) : $listSize;
 		$start = isset( $_GET['start'] ) ? htmlspecialchars( $_GET['start'] ) : 0;
 		$end = $start+$size;
 		/* 获取附件列表 */
-		$files = $this->getfiles( $path,$allowFiles );
+		
+		$files = $this->get_db_files( $allowFiles );
+		//$files = $this->getfiles( $path,$allowFiles );
 		if ( ! count( $files ) ) {
 			return json( [
 				"state" => "no match file",
@@ -732,6 +735,7 @@ class Attachment extends IndexBase{
 		//    $list[] = $files[$i];
 		//}
 		/* 返回数据 */
+		rsort($list);
 		$result = [
 			"state" => "SUCCESS",
 			"list"  => $list,
@@ -739,6 +743,25 @@ class Attachment extends IndexBase{
 			"total" => count( $files ),
 		];
 		return json( $result );
+	}
+	
+	/**
+	 * 从数据库获取自己上传的文件,文件太多的话,这样效率反而会更高的.但不能清空数据库记录
+	 * @param string $allowFiles
+	 * @return number[][]|string[][]|unknown[][]
+	 */
+	private function get_db_files($allowFiles = ''){
+	    $files = [];
+	    $array = AttachmentModel::where('uid',$this->user['uid'])->order('id','desc')->column('id,path');
+	    foreach ($array AS $key=>$file){
+	        if ( preg_match( "/\.(" . $allowFiles . ")$/i",$file ) ) {
+	            $files[] = [
+	                'url'   => preg_match("/^(http|https):/i", $file)?$file:PUBLIC_URL.$file,
+	                'mtime' => $key,
+	            ];
+	        }
+	    }
+	    return $files;	    
 	}
 
 	/**
