@@ -307,7 +307,8 @@ function get_code_num(type){
 	$.get("{:urls('getnum')}?type="+type+'&to='+ to +'&'+Math.random(),function(res){
 		layer.close();
 		if(res.code==0){
-			layer.alert('验证码已成功发出,请耐心等候,注意查收!');
+			//layer.alert('验证码已成功发出,请耐心等候,注意查收!');
+			layer.alert(res.msg);
 		}else{
 			layer.alert(res.msg);
 		}			

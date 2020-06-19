@@ -9,33 +9,38 @@ class Getpassword extends IndexBase
 {
     /**
      * 获取邮箱或手机注册码
-     * @param string $type
+     * @param string $type 可选参数 mobphone email
+     * @param string $to 加密后的邮箱或手机号
      */
     public function getnum($type='',$to=''){
-        //邮箱注册码与手机注册码,不建议同时启用,所以这里没分开处理
-        if( time()-get_cookie('send_num') <120 ){
-            return $this->err_js('2分钟后,才能再次获取验证码!');
+        
+        $to = mymd5($to,'DE'); //解密手机或邮箱号
+
+        if (!$to) {
+            return $this->err_js($type=='mobphone'?'没绑定手机':'没绑定邮箱');
         }
-        $to = mymd5($to,'DE');
-        $num = cache(get_cookie('user_sid').'_reg') ?: rand(1000,9999);
-        $send_num = get_md5_num($to.$num,6);
-        $title = '来自《'.config('webdb.webname').'》的验证码,请注册查收';
-        $content = '你的验证码是:'.$send_num;
-        cache(get_cookie('user_sid').'_reg',$num,600);
+        
+        if( time()-cache('send_num'.$to) <60 ){
+            return $this->err_js('1分钟后,才能再次获取验证码!');
+        }
+        
+        $send_num = cache('get_password'.$to) ?: rand(100000,999999);
+        cache('get_password'.$to,$send_num,600);
+        
         if($type=='mobphone'){
             $result = send_sms($to,$send_num);
+            $msg = '验证码已成功发出,请耐心等候,注意查收手机号: '.substr($to,0,8).'***';
         }elseif($type=='email'){
-            if( UserModel::get_info($to,'email') ){
-                $result = send_mail($to,$title,$content);                
-            }else{
-                $result = '当前邮箱不存在!';
-            }
+            $title = '来自《'.config('webdb.webname').'》的验证码,请注册查收';
+            $content = '你的验证码是:'.$send_num;
+            $result = send_mail($to,$title,$content);
+            $msg = '验证码已成功发出,请耐心等候,注意查收邮箱: '.substr($to,0,2).'***'.strstr($to,'@');
         }else{
             $result = '请选择类型!';
         }        
         if($result===true){
-            set_cookie('send_num', time());
-            return $this->ok_js();
+            cache('send_num'.$to, time(),600);
+            return $this->ok_js([],$msg);
         }else{
             return $this->err_js($result);
         }
@@ -43,31 +48,34 @@ class Getpassword extends IndexBase
     
     /**
      * 核对手机或邮箱注册码
-     * @param string $num
+     * @param string $num 验证码
+     * @param string $field 加密后的邮箱或手机号
      * @return void|\think\response\Json
      */
     public function check_num($num='',$field=''){
-        //邮箱注册码与手机注册码,不建议同时启用,所以这里没分开处理
-        $field = mymd5($field,'DE');
-        $_num = cache(get_cookie('user_sid').'_reg');
-        $send_num = get_md5_num($field.$_num,6);
-        if( $num ==  $send_num){
+        $field = mymd5($field,'DE'); //解密手机或邮箱号
+        if (!$num) {
+            return $this->err_js('验证码不能为空');
+        }elseif(!$field){
+            return $this->err_js('参数不全');
+        }
+        if( $num == cache('get_password'.$field) ){
             return $this->ok_js();
         }
         return $this->err_js('验证码不正确');
     }
     
     /**
-     * 校验用户名与密码
+     * 获取用户信息及图形验证码的验证
      */
-    public function check($username='',$password='',$captcha=''){
+    public function check($username=''){
         if($username!=''){
             $info = UserModel::get_info($username,'username');
             if($info){
                 $array = [
-                        'uid'=>$info['uid'],
-                        'email'=>mymd5($info['email']),
-                        'mobphone'=>$info['mobphone']?mymd5($info['mobphone']):'',
+                    'uid'=>$info['uid'],
+                    'email'=>$info['email']?mymd5($info['email']):'',
+                    'mobphone'=>$info['mobphone']?mymd5($info['mobphone']):'',
                 ];
                 return $this->ok_js($array);
             }else{
@@ -118,14 +126,24 @@ class Getpassword extends IndexBase
             $result = $this->validate($data, 'Reg.captcha');
             if(true !== $result) $this->error($result);
             
-            //邮箱注册码与手机注册码,这里只判断只中一种
-            $num = cache(get_cookie('user_sid').'_reg');
-            $send_num = get_md5_num( ($data['num_type']=='mobphone'?$info['mobphone']:$info['email']).$num,6);
-            if( ($data['email_code']!=$send_num&&$data['phone_code']!=$send_num) || empty($num)) {
-                $this->error(($data['num_type']=='mobphone'?'手机':'邮箱').'验证码不对');
+            
+            if (!$data['email_code'] && !$data['phone_code']) {
+                $this->error('验证码不能为空');
             }
-            cache(get_cookie('user_sid').'_reg',null);
-
+            if ($data['num_type']=='mobphone') {                
+                $getcache = cache('get_password'.$info['mobphone']);
+                cache('get_password'.$info['mobphone'],null);
+                if( $getcache != $data['phone_code'] || empty($data['phone_code'])) {
+                    $this->error('手机验证码不对,请重新获取');
+                }                
+            }else{                
+                $getcache = cache('get_password'.$info['email']);
+                cache('get_password'.$info['email'],null);
+                if( $getcache != $data['email_code'] || empty($data['email_code'])) {
+                    $this->error('邮箱验证码不对,请重新获取');
+                }                
+            }
+            
             $array = [
                     'uid'=>$info['uid'],
                     'password'=>$data['password'],
