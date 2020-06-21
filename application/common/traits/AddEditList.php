@@ -191,11 +191,11 @@ trait AddEditList {
      * 保存新增数据
      * @return unknown|boolean
      */
-    protected function saveAddContent() {
+    protected function saveAddContent($data=[]) {
         // 保存数据
         if ($this -> request -> isPost()) {
             // 表单数据
-            $data = $this -> request -> post();
+            $data || $data = $this -> request -> post();
             
             if (!empty($this -> validate)) {
                 // 验证
