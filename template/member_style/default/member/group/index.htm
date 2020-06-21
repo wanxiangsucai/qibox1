@@ -44,7 +44,7 @@
 		  <tr>
             <td>有效期</td>
 {volist name="groupdb" id="rs"}
-           <td> {if !strstr($rs['level'],'=')}<span class="b red">{$rs.daytime?:"365"}</span>天 {/if} </td>
+           <td> {if !strstr($rs['level'],'=')}<span class="b red">{$rs.daytime?:"永久有效"}</span>{$rs.daytime?"天":""}{/if} </td>
 {/volist}
           </tr>
 		<tr>
