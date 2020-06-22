@@ -10,9 +10,10 @@ class Wxapp{
             return '系统没有配置公众号';
         }
         $path = config('upload_path') . '/mp_code/';
-        $img_path  = $path.$id.'.png';
+        $randstr = md5(mymd5($id));
+        $img_path  = $path.$randstr.'.png';
         if (is_file($img_path)) {
-            return tempdir("uploads/mp_code/{$id}.png");
+            return tempdir("uploads/mp_code/{$randstr}.png");
         }
         if (!is_dir($path)) {
             mkdir($path);
@@ -38,10 +39,24 @@ class Wxapp{
         $code = http_Curl("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=$tick");        
         if (strlen($code)>500) {
             write_file($img_path, $code);
-            return tempdir("uploads/mp_code/{$id}.png");
+            return tempdir("uploads/mp_code/{$randstr}.png");
         }else{
             return $code;
         }
+    }
+
+    /**
+     * 强制用户关注公众号,并且绑定该微信登录
+     * @param string $url 关注后提示跳转的地址
+     * @param number $uid 当前用户UID
+     * @return unknown
+     */
+    public static function bind($url='',$uid=0){
+        $uid = $uid ?: login_user('uid');
+        $code = 'bind'.$uid;
+        cache($code,$url?:$uid,300);
+        $img = self::mp_code($code);
+        return $img;        
     }
     
     
