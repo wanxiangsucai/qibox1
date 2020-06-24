@@ -213,7 +213,7 @@ abstract class C extends IndexBase
         
         //栏目配置信息
         //$s_info = $this->sortInfo($info['fid']);
-         $s_info = get_sort($info['fid'],'config');
+         $s_info = get_sort($info['fid'],'config')?:$this->sortInfo($info['fid']);
         
         //如果某个模型有个性模板的话，就不调用母模板
          $template = $this->get_tpl('show',$this->mid,$s_info,$info);

@@ -64,6 +64,9 @@ class Table extends Base
         }elseif ($field['type'] == 'username') {
             $_ar = get_user($field_value);
             $show = $_ar?"<a href='".get_url('user',$field_value)."' target='_blank'>{$_ar['username']}</a>":'';
+        }elseif ($field['type'] == 'image') {
+            $field_value = tempdir($field_value);
+            $show = $field_value?"<a href='".$field_value."' target='_blank'><img class='listimg' src='{$field_value}' width='50' height='50' /></a>":'';
         }elseif ($field['type'] == 'link') {
             //$field['url'] = str_replace('__id__', $info['id'], $field['url']);
             $field['url'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $field['url']);

@@ -55,6 +55,13 @@ class Group extends MemberBase
                 $groupdb[] = $rs;
             }
         }
+        if ($tag!='' && empty($groupdb)) {
+            foreach($data_list AS $gid=>$rs){
+                if($rs['type']==0&&$gid!=8){
+                    $groupdb[] = $rs;
+                }
+            }
+        }
         $this->assign('groupdb',$groupdb);
         $this->assign('money_dw',$this->money_dw);
         $this->assign('money_name',$this->money_name);
@@ -246,6 +253,8 @@ class Group extends MemberBase
                 $this->auto_upgroup($gid,$day,$data);
                 $this->success('成功升级!',urls('index'));
             }else{
+                $data['uid'] = $this->user['uid'];
+                edit_user($data);
                 $title = $this->user['username'] . '申请升级用户组为 ' . getGroupByid($gid) . '请尽快进后台审核处理！';
                 $content = $title."\r\n 申请日期：".date('Y-m-d H:i');
                 send_admin_msg($title,$content);

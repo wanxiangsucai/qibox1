@@ -2472,6 +2472,9 @@ if (!function_exists('getTemplate')) {
       * @return void|boolean|mixed 发送成功则返回true 发送失败会返回相应的错误代码
       */
      function send_wx_msg($openid,$content,$array=[]){
+         if (empty($openid)) {
+             return ;
+         }
          $content = str_replace('target="_blank"', '', $content);   //微信中有这个会暴露出源代码
          if(class_exists("\\plugins\\weixin\\util\\Msg")){
              static $obj=null;             
