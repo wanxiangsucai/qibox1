@@ -13,6 +13,7 @@ abstract class Label extends IndexBase
     protected $model;                 //内容模型
     protected $m_model;            //模块模型
     protected $s_model;              //栏目模型
+    protected $tag_set_form;        //方便不同的频道设置标签的时候,重写表单参数
     
     protected function _initialize()
     {
@@ -104,7 +105,7 @@ abstract class Label extends IndexBase
         
         $cfg = cache('tag_default_'.input('name'));
         
-        $array = [
+        $array = $this->tag_set_form?:[
                 ['hidden','mid',$mid],
                 ['hidden','type',config('system_dirname')],
                 ['radio','fidtype','栏目范围','',['不限','指定栏目','跟随栏目动态变化(仅适合列表页、内容页)'],0],
