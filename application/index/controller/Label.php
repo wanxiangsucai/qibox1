@@ -306,6 +306,9 @@ class Label extends IndexBase
         $width = input('div_width');
         foreach ($array AS $file){
             $info = $this->get_file_cfg($file);
+            if($info['type2']=='quote'){
+                continue ;
+            }
             if(IN_WAP===true){
                 if($info['type1']=='pc'){
                     continue ;
