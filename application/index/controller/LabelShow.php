@@ -666,6 +666,7 @@ class LabelShow extends IndexBase
      * @param array $cfg
      */
     public function get_form_label($tag_name='',$cfg=[]){
+        $this->get_topic_quote($cfg);           //站内引用的主题,这里为的是获取动态mid
         $f_array = $cfg['f_array'];     //程序中定义的字段
         $mod = $cfg['mod'];     //指定频道
         $field = $cfg['field'];     //过滤的字段

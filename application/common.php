@@ -2472,6 +2472,7 @@ if (!function_exists('getTemplate')) {
       * @return void|boolean|mixed 发送成功则返回true 发送失败会返回相应的错误代码
       */
      function send_wx_msg($openid,$content,$array=[]){
+         static $num=0;
          if (empty($openid)) {
              return ;
          }
@@ -2479,13 +2480,24 @@ if (!function_exists('getTemplate')) {
          if(class_exists("\\plugins\\weixin\\util\\Msg")){
              static $obj=null;             
              $obj===null && $obj = new \plugins\weixin\util\Msg;
+             $uid = 0;
              if(is_numeric($openid)){
-                 $array = get_user($openid);
-                 $openid = $array['weixin_api'];
+                 $uid = $openid;
+                 $_array = get_user($openid);
+                 $openid = $_array['weixin_api'];
                  if (empty($openid)) {
                      return '用户WXID不存在';
                  }
              }
+             $num++;
+             if (!defined('IN_TASK') && $num>5 && $uid) { //处理批量发送时,请求微信服务器容易卡死                 
+                 $result = fun('Msg@send',$uid,'队列发送',$content,[
+                     'msgtype'=>'wxmsg',
+                 ]);
+                 if ($result===true) {
+                     return true;
+                 }
+             }             
              return $obj->send($openid,$content,$array);
          }
      }

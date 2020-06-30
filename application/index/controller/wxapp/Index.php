@@ -38,7 +38,7 @@ class Index extends IndexBase{
             }
         }
         foreach ($plugins AS $rs){
-            if( is_file(PLUGINS_PATH.$rs['keywords'].'/model/Quote.php')){
+            if(is_file(PLUGINS_PATH.$rs['keywords'].'/index/Quote.php') || is_file(PLUGINS_PATH.$rs['keywords'].'/model/Quote.php')){
                 $rs['module'] = 'plugin';
                 $p_data[] = $rs;
             }

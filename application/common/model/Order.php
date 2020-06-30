@@ -76,7 +76,7 @@ class Order extends Model
     
     //订单列表,带分页
     public  function getList($map=[],$rows=20){
-        $data_list = self::where($map)->order('id','desc')->paginate($rows);
+        $data_list = self::where($map)->order('id','desc')->paginate($rows,false,['query'=>input('get.')]);
         $data_list->each(function($rs,$key){
             $rs['shop_db'] = [];
             if($rs['shop']!=''){

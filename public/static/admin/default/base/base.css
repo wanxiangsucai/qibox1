@@ -54,17 +54,20 @@ img {vertical-align:middle;}
 	color:#FFF;
 }
 /***/
+body{
+	background:#f9f9f9;
+}
 .MainContainers{
 	clear:both;
 	margin:0 10px 10px 10px;
-	border:#CCC solid 1px;
+	border:#f1f0f0 solid 1px;
+	background:#fff;
 	position:relative;
 }
 .MainContainers .Header{
 	height:40px;
-	background:#EFEFEF;
 	border:#FFF solid 1px;
-	border-bottom:#CCC solid 1px;
+	border-bottom:#dddfec solid 1px;
 	position:relative;
 }
 .MainContainers .Header:after{
@@ -80,8 +83,9 @@ img {vertical-align:middle;}
 .MainContainers .Header .tag{
 	float:left;
 	line-height:40px;
-	padding-left:15px;
+	padding:0px 15px;
 	font-size:16px;
+	border-bottom:1px solid #297eff;
 }
 .MainContainers .Header .more{
 	float:right;
@@ -109,10 +113,10 @@ table.FormTable td,table.ListTable td,table.ListTable th{
 	line-height:25px;
 }
 table.FormTable{
-	border-top:#CCC dotted 1px;
+	border-top:#efeaea dotted 1px;
 }
 table.FormTable td{
-	border-bottom:#CCC dotted 1px;
+	border-bottom:#f0f0f1 dotted 1px;
 }
 table.FormTable tr:hover td{
 	background:#FAFAFA;
@@ -121,7 +125,7 @@ table.FormTable td.tdL{
 	width:300px;
 	font-size:14px;
 	padding:10px;
-	border-right:#CCC dotted 1px;
+	border-right:#efeaea dotted 1px;
 	vertical-align:top;
 }
 table.FormTable td.tdR{
@@ -131,9 +135,9 @@ table.FormTable td.tdR{
 	vertical-align:top;
 }
 table.FormTable td.tdR input[type=text]{
-	border:#019BC4 solid 1px;
-	height:30px;
-	line-height:30px;
+	border:#e5eaef solid 1px;
+	height:35px;
+	line-height:35px;
 	text-indent:5px;
 	border-radius:3px;
 	color:#555;
@@ -142,7 +146,7 @@ table.FormTable td.tdR input[type=radio]{
 	border:0;
 }
 table.FormTable td.tdR textarea{
-	border:#019BC4 solid 1px;
+	border:#e5eaef solid 1px;
 	padding:5px;
 	border-radius:3px;
 }
@@ -211,7 +215,7 @@ table.FormTable td.tdR textarea{
 	font-size:16px;
 }
 table.ListTable th{
-	border-top:#CCC solid 1px;
+	border-top:#efecec solid 1px;
 	border-bottom:#CCC solid 1px;
 	text-align:center;
 	padding:10px 5px;
@@ -221,8 +225,8 @@ table.ListTable th{
 table.ListTable td{
 	text-align:center;
 	padding:10px 5px;
-	line-height:25px;
-	border-bottom:#CCC dotted 1px;
+	line-height:30px;
+	border-bottom:#e8e7e7 dotted 1px;
 	vertical-align:middle;
 	font-size:14px;
 }
@@ -230,11 +234,14 @@ table.ListTable td.Left{
 	text-align:left;
 }
 table.ListTable td input[type=text]{
-	border:#019BC4 solid 1px;
+	border:#e4e9ea solid 1px;
 	height:25px;
 	line-height:25px;
 	text-indent:5px;
 	border-radius:3px;
+}
+table.ListTable td input[type=text]:hover{
+	border:#ccc solid 1px;
 }
 table.ListTable td a.edit,table.ListTable td a.del,table.ListTable td a.see{
 	display:inline-block;

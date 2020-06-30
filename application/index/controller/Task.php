@@ -22,6 +22,9 @@ class Task extends IndexBase
         self::$task_file = RUNTIME_PATH.'Task.txt';
         self::$task_web_file = RUNTIME_PATH.'Task_web.txt';
         self::$task_cfg_file = RUNTIME_PATH.'Task_config.txt';
+        if (!defined('IN_TASK')) {
+            define('IN_TASK',true);
+        }
     }
     
 
