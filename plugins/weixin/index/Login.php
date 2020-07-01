@@ -22,6 +22,7 @@ class Login extends IndexBase
         }elseif($this->user){
             $this->error('你已经登录了',get_url('member'),'',1);
         }elseif(!in_weixin()){
+            $this->assign('fromurl',urlencode($fromurl));
             return $this->fetch();
         }
         

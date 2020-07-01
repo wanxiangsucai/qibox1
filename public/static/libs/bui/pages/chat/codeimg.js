@@ -36,7 +36,7 @@ loader.define(function() {
 							_url = '/index.php/qun/show-'+id+'.html';
 							_wxurl = '/index.php/qun/show-'+id+'.html';
 						}
-						imgs.url = (typeof(web_url)!='undefined'?web_url:'')+'/index.php/index/qrcode/index.html?url='+encodeURIComponent(_url);
+						imgs.url = (typeof(web_url)!='undefined'?web_url:'')+'/index.php/index/qrcode/index.html?url='+encodeURIComponent(_url)+"&logo="+this.quninfo.picurl;
 						imgs.wxapp = (typeof(web_url)!='undefined'?web_url:'')+'/index.php/index/wxapp/img.html?url='+encodeURIComponent(_wxurl);
 						this.url_img = imgs.url;
 						this.wxapp_img = imgs.wxapp;
