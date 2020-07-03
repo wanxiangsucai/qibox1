@@ -25,7 +25,7 @@ class IndexBase extends Base
             $this->assign('auto_tpl_base_layout', APP_PATH.'member/view/default/layout.htm');
         }
       
-        if( isset($this->webdb['web_open']) && empty($this->webdb['web_open']) && empty($this->admin) ){
+        if( isset($this->webdb['web_open']) && empty($this->webdb['web_open']) && empty($this->admin) && ENTRANCE!='admin' ){
             $this->error('网站维护当中,暂停访问!');
         }
         
