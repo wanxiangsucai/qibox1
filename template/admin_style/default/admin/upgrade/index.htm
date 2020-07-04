@@ -50,7 +50,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 	 <tr v-for="rs in listdb" :class="rs.islock?'locktr':''">
 		<td class="b red">
 			 <input v-if="rs.islock==1" type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" onclick="if($(this).is(':checked'))layer.alert('当前文件已锁定,你确认要升级吗?')" /> 
-			 <input v-else type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" checked /> 
+			 <input v-else type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" checked /> {{rs.i}}
 		</td>
 		<td class="Left">{{rs.showfile}}</td>
 		<td>
@@ -153,7 +153,8 @@ var vues = new Vue({
 	methods: {
 		add_data:function(array){
 			$("#contents").remove();
-			array.forEach((rs)=>{
+			array.forEach((rs,i)=>{
+				rs.i = i+1;
 				this.listdb.push(rs);
 			});			
 		}
@@ -239,10 +240,19 @@ function sys_upgrade(){
 	layer.alert('正在升级文件,请耐心稍候...');
 	var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
 	$(".progress_warp").show();
-
+	var time = 0;
 	$(".up_files input[type='checkbox']").each(function(i){
 		if($(this).is(':checked')==true){
-			upgrade_file($(this).val(),$(this).parent().next());	//一个一个的文件升级
+			var file_name = $(this).val();
+			var obj = $(this).parent().next();
+			if( file_name.indexOf('/upgrade/')>0 ){				
+				time += 3000;
+			}else{
+				time += 500;
+			}
+			setTimeout(function(){
+				upgrade_file(file_name,obj);
+			},time);
 		}
 	});
 }
@@ -265,7 +275,7 @@ function end_up(){
 var ckfile_num = 0;	//选中的升级文件个数
 var ok_num = 0;	//成功升级文件个数
 //一个一个的文件升级
-function upgrade_file(filename,obj){	
+function upgrade_file(filename,obj){
 	$.post("{:urls('sysup')}?filename="+filename,upgrade_data).success(function(res){		
 		if(res.code==0){			
 			//layer.msg('文件:'+filename+' 升级成功');

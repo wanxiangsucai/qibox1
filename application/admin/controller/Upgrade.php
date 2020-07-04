@@ -257,6 +257,21 @@ class Upgrade extends AdminBase
 	            ];
 	        }
 	    }
+	    
+	    $array_sql = $array_php = [];
+	    foreach ($data AS $key=>$rs){
+	        if( preg_match("/\/upgrade\/([\w]+\.sql)/i",$rs['file']) ){
+	            unset($data[$key]);
+	            $array_sql[$rs['file']] = $rs;
+	        }elseif( preg_match("/\/upgrade\/([\w]+\.php)/i",$rs['file']) ){
+	            unset($data[$key]);
+	            $array_php[$rs['file']] = $rs;
+	        }
+	    }
+	    ksort($array_php);
+	    ksort($array_sql);
+	    $data = array_values(array_merge($data,$array_sql,$array_php));
+	    
 	    if($data){
 	        return $this->ok_js($data);
 	    }else{

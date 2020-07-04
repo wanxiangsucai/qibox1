@@ -90,23 +90,25 @@
     <div class="cont">
     	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="ListTable">
           <tr>
-            <th width="10%">类型</th>
-            <th width="45%">项目</th>
-            <th width="15%">可用余额变动</th>
+            <th width="10%">类型</th>  
+			<th>用途说明</th>
+            <th width="15%">可用余额</th>
+			<th width="10%">冻结余额</th>
             <th width="20%">发生时间</th>
             <!--th width="10%">删除</th-->
           </tr>
 {volist name="listdb" id="rs"}
           <tr>
             <td>
-{gt name="rs.money" value="0"}
+{if $rs.money>0}
 <font color='#fd8256'>收入</font>
-{else/}
+{elseif $rs.money<0 /}
 支出
-{/gt}
+{/if}
             </td>
             <td class="tL"><div class="onelist">{$rs.title|get_word="60"}</div></td>
-            <td class="b">{$rs.money} 元</td>
+            <td class="b {if $rs.money>0}red{/if}">{if $rs.money!=0}{$rs.money} 元{/if}</td>
+			<td>{if $rs.freeze_money!=0}{$rs.freeze_money} 元{/if}</td>
             <td>{$rs.posttime|format_time}</td>
             <!--td> <a href="{:purl('delete',['id'=>$rs['id']])}" class="del">删除</a></td-->
           </tr>

@@ -2604,11 +2604,12 @@ if (!function_exists('getTemplate')) {
          
          //添加日志
          \plugins\marketing\model\RmbConsume::create([
-                 'uid'=>$uid,
-                 'money'=>$money!=0 ? $money : $freeze_money,
-                 'about'=>$about,
-                 'posttime'=>time(),
-                 'freeze'=>$freeze,
+             'uid'=>$uid,
+             'money'=> $money,
+             'freeze_money'=>$freeze_money,
+             'about'=>$about,
+             'posttime'=>time(),
+             'freeze'=>$freeze,
          ]);
     }
  }

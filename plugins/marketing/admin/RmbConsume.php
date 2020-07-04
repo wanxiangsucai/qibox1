@@ -28,11 +28,14 @@ class RmbConsume extends AdminBase
 		parent::_initialize();
 		$this->model = new RmbConsumeModel();
 		$this->list_items = [
-                ['uid', '用户名','username'],
-                ['money', '数额', 'text'],
+                ['uid', '用户名','username'],                
 				['money', '类型', 'callback', function($value){
-                    return $value>0 ? '<span style="color:red">收入</span>' : '<span style="color:blue">支出</span>';
+				    if($value!=0){
+				        return $value>0 ? '<span style="color:red">收入</span>' : '<span style="color:blue">支出</span>';
+				    }                    
                 }],
+                ['money', '可用余额', 'text'],
+                ['freeze_money', '冻结余额', 'text'],
 				['posttime', '时间', 'datetime'],
                 ['about', '事项', 'text'],                
 			];
