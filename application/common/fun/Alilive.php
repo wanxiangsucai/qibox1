@@ -13,6 +13,9 @@ class Alilive{
      * @return number|string
      */
     public static function add($uid=0,$ext_id=0,$ext_sys='',$data=[]){
+        if ( empty($data['push_url']) && empty($data['rtmp_url']) && empty($data['m3u8_url']) ) {
+            return ;
+        }
         $array = [
             'uid'=>$uid?:0,
             'ext_id'=>abs($ext_id),

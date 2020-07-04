@@ -26,7 +26,7 @@ class IndexBase extends Base
         }
       
         if( isset($this->webdb['web_open']) && empty($this->webdb['web_open']) && empty($this->admin) && ENTRANCE!='admin' ){
-            $this->error('网站维护当中,暂停访问!');
+            $this->error($this->webdb['close_why']?:'网站维护当中,暂停访问!');
         }
         
     }
