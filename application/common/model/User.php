@@ -48,9 +48,10 @@ class User extends Model
      *  获取某个用户的所有信息
      * @param unknown $value 可以是数组
      * @param string $type 可以取任何字段
+     * @param string $format 是否对字段进行转义处理
      * @return array|\app\common\model\NULL[]|\app\common\model\unknown|array
      */
-    public static function get_info($value,$type='uid'){
+    public static function get_info($value,$type='uid',$format=true){
         if(is_array($value)){
             $map = $value;
         }elseif($type=='name'){
@@ -58,8 +59,17 @@ class User extends Model
         }elseif(preg_match('/^[\w]+$/', $type)){
             $map[$type] = $value;
         }
-        $array = self::get($map);
-        return static::format($array);
+        $array = getArray(self::get($map));
+        if ($format) {
+            return static::format($array);
+        }else{
+            $array['sendmsg'] = json_decode($array['sendmsg'],true)?:[];
+            $array['ext_field'] = json_decode($array['ext_field'],true)?:[];
+            if ($array['ext_field']) {
+                $array = array_merge($array['ext_field'],$array);
+            }
+            return $array;
+        }
     }
     
     /**
@@ -68,7 +78,6 @@ class User extends Model
      * @return array|NULL[]|unknown
      */
     protected static function format($array=[]){
-        $array = getArray($array);
         if (empty($array)) {
             return [];
         }
