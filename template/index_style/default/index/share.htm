@@ -45,7 +45,7 @@ var wxShare = {
 	title: '{$share.title}',
 	about: '{$share.about}',
 	timeline: '{$share.timeline?:$share.title}',
-	link: '{$share.link}',
+	link: '{:preg_replace("/token=([\\w]+)/", '', $share.link)}',
 	picurl: '{$share.picurl}',	
 }
 wx.miniProgram.postMessage({ data:{title: wxShare.title , desc:wxShare.about } }); //小程序的分享
