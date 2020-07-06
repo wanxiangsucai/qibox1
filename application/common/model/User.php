@@ -59,10 +59,11 @@ class User extends Model
         }elseif(preg_match('/^[\w]+$/', $type)){
             $map[$type] = $value;
         }
-        $array = getArray(self::get($map));
+        $array = self::get($map);
         if ($format) {
             return static::format($array);
         }else{
+            $array = getArray(self::get($map));
             $array['sendmsg'] = json_decode($array['sendmsg'],true)?:[];
             $array['ext_field'] = json_decode($array['ext_field'],true)?:[];
             if ($array['ext_field']) {
@@ -78,6 +79,7 @@ class User extends Model
      * @return array|NULL[]|unknown
      */
     protected static function format($array=[]){
+        $array = getArray($array);
         if (empty($array)) {
             return [];
         }
