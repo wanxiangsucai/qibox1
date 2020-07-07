@@ -28,7 +28,7 @@ function make_haibao(){
 		},
 		btn2:function(i){
 			layer.close(i);
-			var pic = "{:fun('wxapp@wxapp_codeimg',$info?urls('content/show',['id'=>$id]):get_url('location'),$userdb['uid'])}";
+			var pic = '{:fun('wxapp@wxapp_codeimg',$info?urls('content/show',['id'=>$id]):get_url('location'),$userdb['uid'])}';
 			if($("#haibao_codeimg").length>0){
 				$("#haibao_codeimg").attr('src',pic);
 			}else{
