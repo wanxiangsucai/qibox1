@@ -11,7 +11,7 @@
 {block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/base.css">{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
-{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?f0"></script>{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?fw0"></script>{/block}
 {block name="head_layer_js"}
 <script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 <script type="text/javascript" src="__STATIC__/layui/layui.js"></script>
@@ -40,13 +40,17 @@
 .qb_wap_header .R{
 	float:right;
 }
+.web_menu_btn{
+	margin-left:12px;
+	font-weight:bold;
+}
 </style>
 
 {block name="body_Headcont"}
 <div class="qb_wap_header">
 	<div class="L" onclick="Qibo.goBack('/');"><i class="fa fa-reply"> 返回</i></div>
 	{$header_title?$header_title:(M('name')?:$webdb['webname'])}
-	<div class="R" onclick="window.location.href='{:get_url('member')}'"><i class="fa fa-user-circle-o"> 会员</i></div>
+	<div class="R"><i onclick="window.location.href='{:get_url('member')}'" class="fa fa-user-circle-o"></i> <i class="web_menu_btn fa fa-ellipsis-h"></i></div>
 </div>
 <!--
 <link rel="stylesheet" href="__STATIC__/index/default/header.css">
@@ -104,5 +108,58 @@
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
 
 {include file="index@weixingz" /}<!--若没有关注微信公众号,就做个提醒-->
+
+
+
+
+<!--网站菜单开始-->
+<link rel="stylesheet" href="__STATIC__/libs/menu/menu.css">
+<nav id="webmain-nav">
+	<ul class="first-nav">
+	{volist name="'wap'|get_web_menu" id="rs"}
+		<li>
+			<a href="{$rs.sons?'#':$rs.url}"><i class="{$rs.style?:'fa fa-chevron-right'}"></i> {$rs.name}</a>
+			{notempty name="rs.sons"}
+			<ul>
+				{volist name="rs.sons" id="vs"}
+				<li><a href="{$vs.url}"><i class="{$vs.style?:'fa fa-chevron-right'}"></i> {$vs.name}</a></li>
+				{/volist}
+			</ul>
+			{/notempty}	
+		 </li>
+	{/volist}
+	</ul>
+	<!--<ul class="second-nav"><li class="devices"><a>b一级菜单</a><ul><li class="mobile"><a href="#">二级菜单</a><ul><li><a href="#">三级菜单</a></li><li><a href="#">三级菜单</a></li></ul></li><li class="television"><a href="#">二级菜单</a><ul><li><a href="#">三级菜单</a></li><li><a href="#">三级菜单</a></li></ul></li></ul></li><li class="magazines"><a href="#">c一级菜单</a><ul><li><a href="#">二级菜单</a></li><li><a href="#">二级菜单</a></li></ul></li><li class="store"><a href="#">d一级菜单</a><ul><li><a href="#">二级菜单</a><ul><li><a href="#">三级菜单</a><ul><li><a href="#">四级菜单</a></li><li><a href="#">四级菜单</a></li></ul></li><li><a href="#">三级菜单</a><ul><li><a href="#">四级菜单</a></li><li><a href="#">四级菜单</a></li></ul></li></ul></li><li><a href="#">二级菜单</a></li><li><a href="#">二级菜单</a></li></ul></li><li class="collections"><a href="#">e一级菜单</a></li><li class="credits"><a href="#">f一级菜单</a></li></ul>-->
+</nav>
+<script type="text/javascript" src="__STATIC__/libs/menu/menu.js"></script>
+<script type="text/javascript">
+(function($) {
+	var mainNav = $('#webmain-nav');
+	var menuBtn = $('.web_menu_btn');	//打开菜单的按钮
+	var defaultData = {
+            maxWidth: false,
+            customToggle: menuBtn,
+            navTitle: false,//标题
+            levelTitles: true
+	};
+	var menuObj = null;
+	var data = {};
+	const initNav = function(conf) {
+		if (menuObj) {
+			menuObj.remove();
+		}
+		menuBtn.off('click');
+		menuObj = mainNav.clone();
+		$.extend(data, conf);
+		menuObj.hcMobileNav($.extend({}, defaultData, data));
+	}
+	//  levelOpen: 'expand' 'overlap' false levelSpacing: 25 40  side: 'right' 'left'
+	initNav({levelOpen:'overlap', levelSpacing:25,side:'right'});
+ })(jQuery);
+</script>
+<!--网站菜单结束-->
+
+
+
 </body>
 </html>
