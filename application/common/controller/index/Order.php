@@ -87,6 +87,7 @@ abstract class Order extends IndexBase
         
         if($this -> request -> isPost()){
             $data = $this -> request -> post();
+            unset($data['pay_status'],$data['pay_money'],$data['fewmoney'],$data['few_ifpay'],$data['agree']);
             
             if (empty($this->get_order_field( current(current($listdb)) ))) {   //不存在主题自定义字段才处理
                 $result = $this->check_post_filed($data);
