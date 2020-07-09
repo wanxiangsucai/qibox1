@@ -137,6 +137,7 @@ class LabelShow extends IndexBase
         
         //用户自定义了循环变量,比如listdb
         $val = $_cfg['val'];
+        $cfg = $_cfg;   //方便标签使用
         if(!empty($val)){
             $$val = $__LIST__;
         }
@@ -638,7 +639,7 @@ class LabelShow extends IndexBase
                 continue;
             }elseif($rs['index_hide']==1){  //后台指定了二开字段,不要显示
                 continue;
-            }elseif($_info[$rs['name']]===''||$_info[$rs['name']]===null){  //值为空就不显示,为0的话,还是会显示的
+            }elseif($_info[$rs['name']]===''||$_info[$rs['name']]==='0.00'||$_info[$rs['name']]===null){  //值为空就不显示,为0的话,还是会显示的
                 continue;
             }
             $_val[] = array_merge($rs,

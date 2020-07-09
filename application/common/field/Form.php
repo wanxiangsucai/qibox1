@@ -89,7 +89,7 @@ class Form extends Base
         }elseif ($field['type'] == 'select') {      // 下拉框
             
             //主题的话,有可能是数组,app\common\traits\ModuleContent@options_2array这里处理过了
-            $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : static::options_2array($field['options']);//str_array($field['options']);
             $i = 0;
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' selected ':'';
