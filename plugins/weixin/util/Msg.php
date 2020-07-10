@@ -12,7 +12,7 @@ class Msg
         $token = '';
         $user = get_user($this->wxid,'weixin_api');
         if ($user) {
-            $token = md5( mymd5($this->wxid . $user['lastip']  . $user['lastvist']) );
+            $token = md5( $this->wxid . time() . $user['lastvist'] . rands(5) );
             cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
         }
         //once=1 出于安全考虑,限制只有一次有效
