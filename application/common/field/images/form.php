@@ -143,7 +143,7 @@ jQuery(document).ready(function() {
 			if(j==1){
 				paseImg($(this));
 			}
-			layer.msg("先按住“Ctrl+Alt+A”截图完毕,再点击这个图标,最后按住“Ctrl+V”,即可上传截图",{time:5000});
+			layer.msg("先按住“Ctrl+Alt+A”截图完毕（或者先复制图片网址）,再点击这个图标,最后按住“Ctrl+V”,即可上传图片",{time:9000});
 			$(this).focus();
 			event.stopPropagation();
 			
@@ -201,7 +201,17 @@ jQuery(document).ready(function() {
 					}
 					if (item && item.kind === 'file' && item.type.match(/^image\//i)) {	
 						imgReader(item);	
-					}	
+					}else if(item.kind === "string"){
+						item.getAsString(function (pic_url) {
+							if( pic_url.match(/^(http|https):/i) ){
+								pic_url = pic_url.replace(/,/g,'%2C');
+								//显示与赋值
+								pics.push(pic_url);	//组图
+								that.parent().parent().find(".input_value").val( pics.join(',') );
+								viewpics(pic_url,pics);
+							}
+						});
+					}
 				}	
 			});
 		};
@@ -259,7 +269,7 @@ jQuery(document).ready(function() {
 				var obj = that.find(".ListImgs img");				
 				obj.each(function(e){
 					var img = $(this).attr("src");
-					img = img.replace('/public/','');
+					if(img.indexOf('://') == -1)img = img.replace('/public/','');
 					pics.push(img);
 					that.find(".input_value").val( pics.join(',') );
 				});
