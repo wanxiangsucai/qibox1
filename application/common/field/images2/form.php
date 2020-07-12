@@ -171,7 +171,7 @@ jQuery(document).ready(function() {
 								}
 
 								//显示与赋值
-								//that.find(".input_value").val( pics.join(',') );
+								//that.parent().parent().find(".input_value").val( pics.join(',') );
 								pics.push({"picurl":res.path,"title":"","url":""});	//组图
 								viewpics(pics);
 							}

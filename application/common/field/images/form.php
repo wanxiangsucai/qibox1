@@ -172,7 +172,7 @@ jQuery(document).ready(function() {
 								//显示与赋值
 								pics.push(res.path);	//组图
 								 //pics[0] = res.path;	//单图
-								that.find(".input_value").val( pics.join(',') );
+								that.parent().parent().find(".input_value").val( pics.join(',') );
 								viewpics(res.path,pics);
 							}
 						}	
