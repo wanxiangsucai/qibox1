@@ -28,6 +28,6 @@
 {elseif $rs.type=='file'}
 	<div class="field_{$rs.name} field_field"><a href="{$rs.value}">点击下载</a></div>
 {elseif $rs.type=='bmap'}
-	<div class="field_{$rs.name} field_field"><a href="{:iurl('index/map/nav')}?xy={$rs.value}&title={$info.title}&address=&phone=">一键导航</a></div>
+	<div class="field_{$rs.name} field_field"><a href="{:iurl('index/map/nav')}?xy={$rs.value}&title={:urlencode($_info.title)}&address=&phone=">一键导航</a></div>
 {/if}
 {/notempty}
