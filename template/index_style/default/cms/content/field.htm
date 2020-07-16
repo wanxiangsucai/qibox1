@@ -7,6 +7,7 @@
 			<div class="tag"><span>{$rs.title}</span></div>
 			<div class="cont">
 {switch name="rs.type"}
+	{case value="bmap"} <a href="{:iurl('index/map/nav')}?xy={$rs.value}&title={$info.title}&address=&phone=">一键导航</a> {/case}
 	{case value="image"} <img src="{$rs.value}"> {/case}
 	{case value="file"} <a href="{$rs.value}">点击下载</a> {/case}
 	{case value="images"}{volist name="$rs.value" id="qs"}<img src="{$qs.picurl}">{/volist}{/case}

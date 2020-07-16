@@ -41,7 +41,7 @@ abstract class S extends AdminBase
         ];
         
         $this->form_items = [                
-                ['text', 'name', '栏目名称'],
+                ['textarea', 'name', '栏目名称','若要同时创建多个分类的话,每个分类名称换一行即可'],
                 ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle()],
                 ['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList(),1],
         ];
