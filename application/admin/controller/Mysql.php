@@ -18,8 +18,20 @@ class Mysql extends AdminBase
 
     }
 	
-	public function index()
+    public function index($type='xf',$table='')
     {
+        if ($type=='xf'&&$table) {
+            try {
+                $result = Db::execute("REPAIR TABLE  `$table`");
+                $this->success('修复成功');
+            } catch(\Exception $e) {
+                if (table_field($table,'',false)) {
+                    $this->error('无须修复') ;
+                }else{
+                    $this->error('修复失败') ;
+                }                
+            }
+        }
 		list($totalsize,$listdb2) = $this->db->list_table();
 		
 		$totalsize=number_format($totalsize/(1024*1024),3);
@@ -47,8 +59,11 @@ class Mysql extends AdminBase
 		]);
 	}
 	
-	public function backup()
+	public function backup($type='')
 	{
+	    if ($type=='down') {
+	        return $this->down(input('path'),input('name'));
+	    }
 	    extract(get_post());
         
         if(!$tabledb&&!$tabledbreto){
@@ -66,12 +81,26 @@ class Mysql extends AdminBase
         empty($step) && $step=0;
         empty($rand_dir) && $rand_dir='';
         
-        $rsdb = $this->db->bak_out($tabledb,$rowsnum,$tableid,$page,$step,$rand_dir,$baksize);
+        $rsdb = $this->db->bak_out($tabledb,$rowsnum,$tableid,$page,$step,$rand_dir,$baksize,$isup);
         
         $bakdir = RUNTIME_PATH.'mysql_bak/'.$rand_dir;
         
-        return $this->fetch('backup',['rsdb'=>$rsdb, 'bakdir'=>$bakdir] );
-        
+        return $this->fetch('backup',['rsdb'=>$rsdb, 'bakdir'=>$bakdir] );        
+	}
+	
+	public function down($path='',$name=''){
+	    $file = RUNTIME_PATH."mysql_bak/{$path}/{$name}.sql";
+	    if (!is_file($file)) {
+	        $this->error('文件不存在!');
+	    }
+	    ob_end_clean();
+	    header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
+	    header('Pragma: no-cache');
+	    header('Content-Encoding: none');
+	    header('Content-Disposition: attachment; filename='.$name.'.sql');
+	    header('Content-type: text/sql');
+	    echo file_get_contents($file);
+	    exit;
 	}
 	
 	public function into($goto='')

@@ -62,16 +62,22 @@ class Database {
     }
     
     
-    function create_table($table,$repair=false){
+    function create_table($table,$isup=0){
         //global  $repair;//,$mysqlversion,$Charset;
-        $show="DROP TABLE IF EXISTS `$table`;\n";
-        if($repair){
-            Db::execute("OPTIMIZE TABLE `$table`");
-        }
+        $show = $isup ? '' : "DROP TABLE IF EXISTS `$table`;\n";
+//         if($repair){
+//             Db::execute("OPTIMIZE TABLE `$table`");
+//         }
         $array = Db::query("SHOW CREATE TABLE $table");
         
         //if(!$mysqlversion){
         $show .= $array[0]['Create Table'].";\n\n";
+        if ($isup) {
+            if (!preg_match("/IF NOT EXISTS/i", $show)) {
+                $show = str_replace("CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", $show);
+            }            
+            $show .="TRUNCATE TABLE  `$table`;\n";
+        }
         return $show;
         // }
         /*
@@ -86,7 +92,7 @@ class Database {
     }
     
     
-    function bak_table($table,$start=0,$row=3000){
+    function bak_table($table,$start=0,$row=3000,$isup=0){
         global $db;
         $haystack = [
             config('database.prefix').'redis_index',
@@ -98,7 +104,10 @@ class Database {
         }
         $limit=" limit $start,$row ";
         //$field=show_field($table);
-        $query = Db::query(" SELECT * FROM $table $limit ");
+        $query = Db::query(" SELECT * FROM `$table` $limit ");
+
+        $fields = $isup ? '(`'.implode('`,`', table_field($table,'',false)).'`)' : '';
+        
         //$num=mysql_num_fields($query);
         //$num = count( table_field($table,'',false) );
         //$field_array = table_field($table,'',false);
@@ -120,21 +129,21 @@ class Database {
             //$rows.=")";
             //$rows=str_replace(",)","",$rows);
             //$show.="INSERT INTO `$table` ($field) VALUES ($rows);\n";
-            $show.="INSERT INTO `$table` VALUES ($rows);\n";
+            $show.="INSERT INTO `$table` $fields VALUES ($rows);\n";
         }
         return $show;
     }
     
     
-    function create_table_all($tabledb){
+    function create_table_all($tabledb,$isup){
         foreach($tabledb as $table){
-            $show.=$this->create_table($table)."\n";
+            $show.=$this->create_table($table,$isup)."\n";
         }
         return $show;
     }
     
     //备份数据
-    function bak_out($tabledb,$rowsnum,$tableid,$page,$step,$rand_dir,$baksize){
+    function bak_out($tabledb,$rowsnum,$tableid,$page,$step,$rand_dir,$baksize,$isup){
         //global $rowsnum,$tableid,$page,$step,$rand_dir,$baksize;
         
         //还没有随机生成目录之前
@@ -155,12 +164,12 @@ class Database {
                 }
                 
                 // write_file(RUNTIME_PATH."mysql_bak/mysql/index.php",str_replace('<?php die();','<?php',read_file('mysql_into.php')));
-                $show = $this->create_table_all($tabledb);	//备份数据表结构
+                $show = $this->create_table_all($tabledb,$isup);	//备份数据表结构
                 //$db->query("TRUNCATE TABLE {$pre}bak");
                 //bak_dir('../data{$webdb[web_dir]}/');		//备份缓存
             }else{
-                $rand_dir = date("Y-m-d.",time()).strtolower(rands(8));
-                $show = $this->create_table_all($tabledb);	//备份数据表结构
+                $rand_dir = date("Y-m-d_His_.",time()).strtolower(rands(3));
+                $show = $this->create_table_all($tabledb,$isup);	//备份数据表结构
                 if( !file_exists(RUNTIME_PATH."mysql_bak") ){
                     if( !@mkdir(RUNTIME_PATH."mysql_bak",0777) ){
                         showmsg(RUNTIME_PATH."mysql_bak目录不能创建");
@@ -185,10 +194,10 @@ class Database {
         $min=($page-1)*$rowsnum;
         $tableid=intval($tableid);
         
-        //$show.=$tablerows=bak_table($tabledb[$tableid],$min,$rowsnum);
+        //$show.=$tablerows=bak_table($tabledb[$tableid],$min,$rowsnum,$isup);
         //当前表能取到数据时,继续此表下一页取数据,否则从下一个表的0开始
         
-        if( $tablerows = $this->bak_table($tabledb[$tableid],$min,$rowsnum) )
+        if( $tablerows = $this->bak_table($tabledb[$tableid],$min,$rowsnum,$isup) )
         {
             $show.=$tablerows;
             unset($tablerows);	//释放内存
@@ -219,11 +228,11 @@ class Database {
                 $Table.="$value|";
             }
             //记录下来.防止中途备份失败
-            write_file(RUNTIME_PATH."bak_mysql.txt",mymd5("index.php?lfj=$lfj&action=out&page=$page&rowsnum=$rowsnum&tableid=$tableid&rand_dir=$rand_dir&step=$step&tabledbreto=$Table&baksize=$baksize"));
+            write_file(RUNTIME_PATH."bak_mysql.txt",mymd5("index.php?lfj=$lfj&action=out&page=$page&rowsnum=$rowsnum&tableid=$tableid&rand_dir=$rand_dir&step=$step&tabledbreto=$Table&baksize=$baksize&isup=$isup"));
             
             echo "<CENTER>已备份 <font color=red>$step</font> 卷, 进度条 <font color=blue>{$page}</font> 当前正在备份数据库 <font color=red>$tabledb[$tableid]</font></CENTER>";
             
-            $url = url('backup',"page=$page&rowsnum=$rowsnum&tableid=$tableid&rand_dir=$rand_dir&step=$step&baksize=$baksize");
+            $url = url('backup',"page=$page&rowsnum=$rowsnum&tableid=$tableid&rand_dir=$rand_dir&step=$step&baksize=$baksize&isup=$isup");
             
             //$rowsnum,$tableid,$page,$step,$rand_dir,$baksize
             
