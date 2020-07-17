@@ -607,6 +607,12 @@ abstract class C extends IndexBase
             }
         }
         
+        if (IN_WAP===true && $info['wap_template'] && is_file(TEMPLATE_PATH.'index_style/'.$info['wap_template']) && preg_match("/".config('template.view_suffix')."$/", $info['wap_template'])) {
+            $template = TEMPLATE_PATH.'index_style/'.$info['wap_template'];
+        }elseif (IN_WAP!==true && $info['pc_template'] && is_file(TEMPLATE_PATH.'index_style/'.$info['pc_template']) && preg_match("/".config('template.view_suffix')."$/", $info['pc_template'])) {
+            $template = TEMPLATE_PATH.'index_style/'.$info['pc_template'];
+        }
+        
         
         //频道特别设置了列表或内容页模板,
         //重复提醒!!!!!!!!!!!!!一般只推荐只有一个模型的情况做设置
