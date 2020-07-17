@@ -811,7 +811,7 @@ class LabelShow extends IndexBase
             //if($listpage_filtrate || $cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存或者存在列表筛选
             if(empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){
                 $tag_data = controller('content','index')->label_list_data($cfg_array);
-                $tag_array['cache_time'] && cache2($tag_cache_key,$tag_data,$tag_array['cache_time']);
+                $tag_array['cache_time'] && strlen(serialize($tag_data))<60000 && cache2($tag_cache_key,$tag_data,$tag_array['cache_time']);
             }
         }else{
             $tag_data = controller('content','index')->label_list_data($cfg_array);
@@ -1224,7 +1224,7 @@ class LabelShow extends _LabelShow
                 $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) );
                 if($tag_array){
                     $tag_array['cache_time'] = $this->get_cache_time($tag_array['cache_time']);
-                    $tag_array['cache_time'] && cache2($tag_key,$tag_array,$tag_array['cache_time']);
+                    $tag_array['cache_time'] && strlen(serialize($tag_array))<60000 && cache2($tag_key,$tag_array,$tag_array['cache_time']);
                 }
             }
         }
@@ -1331,7 +1331,7 @@ EOT;
                     $cfg['tag_name'] = $tag_name;
                     $cfg['page_name'] = $pagename;
                     $default_data = self::get_default_data($type,$cfg);                    
-                    $cfg['cache_time'] && cache2($tag_key,$default_data,$cfg['cache_time']);
+                    $cfg['cache_time'] && strlen(serialize($default_data))<60000 && cache2($tag_key,$default_data,$cfg['cache_time']);
                 }
                 
                 if(!empty($val)){
