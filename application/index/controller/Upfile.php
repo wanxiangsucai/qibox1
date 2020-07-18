@@ -32,11 +32,26 @@ class Upfile extends IndexBase
 		return $this->fetch();
     }
     
-    public function images($img=''){
+    /**
+     * 上传图片
+     * @param string $fn
+     * @param string $img
+     * @return mixed|string
+     */
+    public function images($fn='end_upfile_images',$img=''){
         $this->assign('img',$img);
+        $this->assign('fn',$fn);
         return $this->fetch();
     }
     
+    /**
+     * 上传文件
+     * @param string $fn
+     * @param string $par
+     * @param number $size
+     * @param string $ext
+     * @return mixed|string
+     */
     public function file($fn='upfile',$par='',$size=0,$ext=''){
         $this->assign('fn',$fn);
         $this->assign('size',$size?$size*1024:0);

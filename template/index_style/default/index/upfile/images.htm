@@ -45,7 +45,7 @@
 function save_pic(){
 	var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
     parent.layer.close(index);
-	parent.end_upfile_images($("#compressValue").val());
+	parent.{$fn}($("#compressValue").val());
 }
 
 		var severUrl = "{:urls('index/attachment/upload')}?dir=images&from=base64&module=index";
