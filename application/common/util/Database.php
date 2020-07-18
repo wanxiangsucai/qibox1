@@ -330,7 +330,7 @@ EOT;
         unset($readfile); //释放内存
         foreach($detail AS $key=>$value){
             $NewSql.="$value\n";
-            if(strlen($NewSql)>$size){
+            if(strlen($NewSql)>$size && (strstr($value,'INSERT INTO ')||strstr($value,' CHARSET='))){
                 write_file("$filePre/$step.sql",$NewSql);
                 $step++;
                 $NewSql='';
