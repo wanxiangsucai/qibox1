@@ -32,7 +32,7 @@ class Member extends AdminBase
 	/**
 	 * 用户列表
 	 */
-	public function index() {
+	public function index($type='') {
 	    $order = 'uid desc';
 	    $this->list_items = [
 	        //['uid', '用户UID', 'text'],
@@ -104,6 +104,17 @@ EOT;
 	                'title'=>'批量删除用户',	 
 	        ];
 	    }
+	    $weburl = get_url('location');
+	    $this -> tab_ext['top_button'][]=[
+	            'type'=>'excel',
+	            'title'=>'导出excel表格',
+	            'icon'=>'fa fa-table',
+	            'url'=>$weburl . (strstr($weburl,'?')?"&":'?').'type=excel',
+	    ];
+	    
+	    if ($type=='excel') {
+	        return $this->excel();
+	    }
 	    
 	    return $this -> getAdminTable(self::getListData($this->get_search(), $order ));
 	}
@@ -138,6 +149,87 @@ EOT;
 	        $map['groupid'] = $detail['search_groupid'];
 	    }
 	    return $map;
+	}
+	
+	protected function excel(){
+	    $map = $this->get_search();
+	    $order = $order = $this -> getOrder() ? $this -> getOrder() : 'uid desc' ;
+	    
+	    $array = UserModel::where($map)->order($order)->column(true);
+	    if(!$array){
+	        $this->error('没有数据可导出!');
+	    }
+	    
+	    $outstr="<table width=\"100%\" border=\"1\" align=\"center\" cellpadding=\"5\"><tr>";
+	    
+	    $fieldDB = [
+	            'uid'=>'用户UID',
+	            'username'=>'用户帐号',
+	            'nickname'=>'用户昵称',
+	            'qq_api'=>'是否绑定QQ',
+	            'weixin_api'=>'是否绑定绑定',
+	            'wxapp_api'=>'是否登录过小程序',
+	            'groupid'=>'所属用户组',
+	            'money'=>'可用积分',
+	            'rmb'=>'可用余额',
+	            'lastvist'=>'最后访问时间',
+	            'lastip'=>'最后访问IP',
+	            'regdate'=>'注册日期',
+	            'regip'=>'注册IP',
+	            'sex'=>'性别',
+	            'introduce'=>'介绍签名',
+	            'address'=>'联系地址',
+	            'mobphone'=>'手机号',
+	            'idcard'=>'证件号码',
+	            'truename'=>'真实姓名',
+	            'email_yz'=>'验证邮箱与否',
+	            'mob_yz'=>'验证手机与否',
+	            'wx_attention'=>'是否关注公众号',
+	    ];
+	    
+	    foreach($fieldDB AS $title){
+	        $outstr.="<th bgcolor=\"#A5A0DE\">$title</th>";
+	    }
+	    $outstr.="</tr>";
+	    foreach($array  AS $rs){
+	        $outstr.="<tr>";
+	        foreach($fieldDB AS $k=>$v){
+	            $value = $rs[$k];
+	            if (in_array($k, ['qq_api','weixin_api','wxapp_api','email_yz','mob_yz','wx_attention'])) {
+	                $value = $value?'是':'否';
+	            }elseif($k=='sex'){
+	                if($value=='2'){
+	                    $value='女';
+	                }elseif($value=='1'){
+	                    $value='男';
+	                }else{
+	                    $value='未知';
+	                }
+	            }elseif(in_array($k, ['lastvist','regdate'])){
+	                $value=date('Y-m-d H:i',$value);
+	            }
+	            $outstr.="<td align=\"center\">{$value}</td>";
+	        }
+	        $outstr.="</tr>";
+	    }
+	    $outstr.="</table>";
+	    ob_end_clean();
+	    header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
+	    header('Pragma: no-cache');
+	    header('Content-Encoding: none');
+	    header('Content-Disposition: attachment; filename=MicrosoftExce.xls');
+	    header('Content-type: text/csv');
+	    echo "<!doctype html>
+	    <html lang='en'>
+	    <head>
+	    <meta charset='UTF-8'>
+	    <title></title>
+	    </head>
+	    <body>
+	    $outstr
+	    </body>
+	    </html>";
+	    exit;
 	}
 	
 	/**
