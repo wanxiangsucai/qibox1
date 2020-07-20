@@ -2759,7 +2759,7 @@ if (!function_exists('getTemplate')) {
       * @return boolean
       */
      function in_wap(){
-         $regex_match="/(iPad|nokia|iphone|android|motorola|^mot\-|softbank|foma|docomo|kddi|up\.browser|up\.link|";
+         $regex_match="/(WindowsWechat|iPad|nokia|iphone|android|motorola|^mot\-|softbank|foma|docomo|kddi|up\.browser|up\.link|";
          $regex_match.="htc|dopod|blazer|netfront|helio|hosin|huawei|novarra|CoolPad|webos|techfaith|palmsource|";
          $regex_match.="blackberry|alcatel|amoi|ktouch|nexian|samsung|^sam\-|s[cg]h|^lge|ericsson|philips|sagem|wellcom|bunjalloo|maui|";
          $regex_match.="symbian|smartphone|midp|wap|phone|windows ce|iemobile|^spice|^bird|^zte\-|longcos|pantech|gionee|^sie\-|portalmmm|";
@@ -2775,7 +2775,7 @@ if (!function_exists('getTemplate')) {
       * @return boolean
       */
      function in_weixin(){
-         if( strstr($_SERVER['HTTP_USER_AGENT'],"MicroMessenger") ){
+         if( strstr($_SERVER['HTTP_USER_AGENT'],"MicroMessenger") || strstr($_SERVER['HTTP_USER_AGENT'],"WindowsWechat")){
              return true;
          }else{
              return false;
