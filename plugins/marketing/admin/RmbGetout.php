@@ -116,18 +116,18 @@ class RmbGetout extends AdminBase
 	        $this->error('信息不存在');
 	    }
 	    if ($info['ifpay']==1) {
-	        $this->error('已经给用户支付过了!拒绝无效');;
+	        $this->error('已经给用户支付过了!拒绝无效');
 	    }elseif ($info['ifpay']==-1) {
-	        $this->error('已拒绝提现,不能再支付!');;
+	        $this->error('已拒绝提现,不能再拒绝!');
 	    }
 	    $user = get_user($info['uid']);
 	    if(empty($user)){
 	        $this->error('用户资料不存在!');;
 	    }
-	    $money = $info['money'];
+	    //$money = $info['money'];
 	    $real_money = $info['real_money']?:$info['money']; //实际申请金额
 	    add_rmb($user['uid'],0,-$real_money,'拒绝提现,解除冻结金额');
-	    add_rmb($user['uid'],$money,0,'拒绝提现,退回提现金额');
+	    add_rmb($user['uid'],$real_money,0,'拒绝提现,退回提现金额');
 	    $title = '很抱歉,你的提现被拒绝了';
 	    $content = '很抱歉,你申请的提现被 '.$this->user['username'].' 拒绝了，金额已原路返回到你的帐户余额，原因如下:'.$why;
 	    send_msg($user['uid'],$title,$content);
