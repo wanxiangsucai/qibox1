@@ -51,13 +51,12 @@ abstract class Category extends IndexBase
         
         //获取列表数据
         $data_list = $this->getListData(['cid'=>$fid]);
-        
         //模板里要用到的变量值
         $vars = [
-                'listdb'=>$data_list,
-                'fid'=>$fid,
-                'info'=>$this->model->getInfoById($fid),
-                'pages'=>$data_list->render()
+            'listdb'=>getArray($data_list)['data'],
+            'fid'=>$fid,
+            'info'=>$this->model->getInfoById($fid),
+            'pages'=>$data_list->render()
         ];
         
         $template = getTemplate('index');
@@ -90,10 +89,12 @@ abstract class Category extends IndexBase
         
         foreach ($data_list AS $key=>$rs){
             //获取内容的详细数据
-            $info = $this->c_model->getInfoById($rs['aid']);
-            
+            $info = $this->c_model->getInfoById($rs['aid']);            
             if ($info) {
                 $data_list[$key] = array_merge($info,getArray($rs));
+            }else{
+                unset($data_list[$key]);
+                $this->info_model->where('id',$rs['id'])->delete();
             }
         }
         return $data_list;

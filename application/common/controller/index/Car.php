@@ -55,7 +55,7 @@ abstract class Car extends IndexBase
                 $shop['begin_time'] = strtotime($shop['begin_time']);
             }
             if ($shop['begin_time']>time()) {
-                return '还没有开始!';
+                return '活动还没有开始!';
             }
         }
         return true;

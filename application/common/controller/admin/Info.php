@@ -73,6 +73,9 @@ abstract class Info extends AdminBase
             $info = $this->c_model->getInfoById($rs['aid']);
             if ($info) {
                 $data_list[$key] = array_merge($info,getArray($rs));
+            }else{
+                $this->model->where('id',$rs['id'])->delete();
+                unset($data_list[$key]);
             }
         }
         return $data_list;
