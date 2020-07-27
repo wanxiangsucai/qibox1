@@ -44,6 +44,7 @@ function phone_get_pwd(){
 			window.location.href = "{:urls('member/yz/mob')}";
 		});
 	{else /}
+	{php} $userdb['mobphone']=preg_replace("/^([\d]{7})([\d]+)$/",'\\1***',$userdb['mobphone']); {/php}
 		layer.confirm("你确认要重置支付密码吗?请确认你的手机号 {$userdb.mobphone} 能收到信息",{btn:['确认重置','取消']},function(){
 			$.get("{:purl('getpwd')}",function(res){
 				if(res.code==0){
