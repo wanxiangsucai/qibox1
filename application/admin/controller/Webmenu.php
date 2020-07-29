@@ -96,7 +96,7 @@ class Webmenu extends AdminBase
 	    ->addIcon('style','图标','需要模板配合做样式')
 	    ->addColor('fontcolor','字体颜色')
 	    ->addColor('bgcolor','背景颜色')
-	    ->addText('activate','选中,是否高亮显示','需要模板配合做样式,主页就输入index,商城就输入shop以此类推,不过最好是后面加个-横框线因为栏目的话,可以定义为shop-18')
+	    ->addText('activate','选中,是否高亮显示','需要模板配合做样式,主页就输入index,商城就输入shop以此类推,不过对于频道而言最好是后面加个-横杠线因为对于栏目,可以定义为shop-18，另外对于独立页的话，就设置index-alonepage5,其中5就是相应的独立页id值<a href="http://help.php168.com/1841073" target="_blank">点击查看详细教程</a>')
 	    ->addPageTitle('添加菜单');
 	    return $form::fetchs();
 	}
@@ -130,7 +130,7 @@ class Webmenu extends AdminBase
 	    ->addIcon('style','图标')
 	    ->addColor('fontcolor','字体颜色','是否有效果,需要模板配合做样式')
 	    ->addColor('bgcolor','背景颜色','是否有效果,需要模板配合做样式')
-	    ->addText('activate','选中,是否高亮显示','需要模板配合做样式,主页就输入index,商城就输入shop以此类推,不过最好是后面加个-横框线因为栏目的话,可以定义为shop-18')
+	    ->addText('activate','选中,是否高亮显示','需要模板配合做样式,主页就输入index,商城就输入shop以此类推,不过对于频道而言最好是后面加个-横杠线因为对于栏目,可以定义为shop-18，另外对于独立页的话，就设置index-alonepage5,其中5就是相应的独立页id值<a href="http://help.php168.com/1841073" target="_blank">点击查看详细教程</a>')
 	    ->addTextarea('script','脚本事件','要填写的话,需要补齐 &lt;script&gt;&lt;/script&gt;同理,也可以写css或html')
 	    ->addHidden('id',$id);
 
