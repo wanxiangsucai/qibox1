@@ -9,7 +9,7 @@
 {block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/pc_reset.css">{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
-{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?f2"></script>{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?fd2"></script>{/block}
 {block name="head_layer_js"}
 <script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 <script type="text/javascript" src="__STATIC__/layui/layui.js"></script>
@@ -151,7 +151,12 @@ $('.Logo_Menu dl').hover(
 		<ol>
 			<dl>
 				<dt>{$webdb.copyright}</dt>
-				<dd><a href="http://www.beian.miit.gov.cn/" target="_blank">{$webdb.miibeian_gov_cn}</a> Powered by <a href="http://www.php168.com" target="_blank">qibosoft {$webdb.QB_VERSION}</a> Code &copy;2003-2020</dd>
+				<dd>
+				{if $webdb.miibeian_gongan_gov_cn}
+				<img src="https://x1.php168.com/public/static/qibo/beian.png">
+				<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode={:preg_replace('/([^\\d]+)([\\d]+)([^\\d]+)/', '\\\\2', $webdb.miibeian_gongan_gov_cn)}" target="_blank">{$webdb.miibeian_gongan_gov_cn}</a> 
+				{/if}
+				<a href="http://www.beian.miit.gov.cn/" target="_blank">{$webdb.miibeian_gov_cn}</a> Powered by <a href="http://www.php168.com" target="_blank">qibosoft {$webdb.QB_VERSION}</a> Code &copy;2003-2020</dd>
 			</dl>
 		</ol>
 		<li>
