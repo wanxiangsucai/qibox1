@@ -1,5 +1,6 @@
 <form name="form1" method="post" action="">
-<div class="MainContainers"> <div class="Header"><span class="tag">字段管理</span><span class="more">&gt;&gt;</span></div>
+<div class="MainContainers"> 
+  <div class="Header"><span class="tag">字段管理</span><span class="more">&gt;&gt;</span></div>
   <div class="Conter">
       <table class="ListTable">
     <tr> 
@@ -29,6 +30,7 @@
     </tr>
 {/volist}
   </table>
+  	<div class="pages">{$pages}</div>
     <div class='submits'><input type="hidden" name="mid" value="{:input('mid')}"><input type="submit" name="Submit" value="修改字段排序"></div>
   </div>
 </div>
