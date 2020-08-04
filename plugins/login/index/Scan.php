@@ -37,6 +37,9 @@ class Scan extends IndexBase
         if($type=='success'){            
             $this->success('登录成功',iurl('index/index/index'));
         }
+        if ($this->user) {
+            die('ok');
+        }
         $info = getArray( ScanModel::where('sid',self::$sid )->find() );
         if($info['uid']){
             if($info['ip']!=$this->request->ip()){
