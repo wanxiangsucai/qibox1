@@ -31,7 +31,7 @@
 		<!-- 参数 field="pic,tit" 代表过滤哪些字段不显示出来 里边支持TP标签 -->
 		{qb:form field="" f_array="$f_array"}
 		<tr id="form_group_{$rs.name}"> 
-		  <td class='tdL'>{$rs.title}: </td>
+		  <td class='tdL'>{$rs.title} </td>
 		  <td class="tdR {if in_array($rs['type'],['password','number','money','datetime','date','time','color','icon','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
 			<div>{$rs.value}</div>
 			{notempty name="$rs.about"}<div class="layui-form-mid layui-word-aux">{$rs.about}</div>{/notempty}
@@ -58,7 +58,7 @@
 				{if $tab_ext.area&&$i==1}
 				<!-- 这一段是地区选择 -->
 				<tr id="form_group_area"> 
-				  <td class='tdL'>地区选择: </td>
+				  <td class='tdL'>地区选择 </td>
 				  <td class="tdR layui-input-inline"> 
 					<div class="ListArea">
 						<select name='province_id' data-title="请选择省份" lay-ignore></select> 
@@ -72,7 +72,7 @@
 				<!-- 每一组的所有表单 -->
 				{volist name=":fun('field@fields_to_form',fun('field@field_to_table',$array),$info)" id="rs"}
 					<tr id="form_group_{$rs.name}" {if $rs.type=='hidden'}style="display:none;"{/if}> 
-					  <td class='tdL'>{$rs.title}: </td>
+					  <td class='tdL'>{$rs.title} </td>
 					  <td class="tdR {if in_array($rs['type'],['password','number','money','datetime','date','time','color','icon','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
 						<div>{$rs.value}</div>
 						{notempty name="$rs.about"}<div class="layui-form-mid layui-word-aux">{$rs.about}</div>{/notempty}
