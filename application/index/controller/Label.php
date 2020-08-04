@@ -409,7 +409,7 @@ class Label extends IndexBase
         }
         
         if (!is_file($path)) {
-            $this->error('配置文件不存在');
+            $this->error($path.'配置文件不存在');
         }
         $array = include($path);
         if ( empty($array['form']) || !is_array($array['form']) || empty($array['form'][0]) ) {
