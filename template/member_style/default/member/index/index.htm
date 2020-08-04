@@ -103,7 +103,7 @@
                     <li class="bui-btn bui-box-vertical" href="{$rs.url}" {notempty name='$rs.bgcolor'}style="background-color:{$rs.bgcolor};"{/notempty}>
 				{if is_array($rs)}
                         <i {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty} class="{$rs.icon|default='fa fa-gg'}">
-                            <!--<span class="bui-badges">10</span>-->
+                             <span style="display:none;" class="bui-badges">0</span> 
                         </i>
                         <div class="span1" {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty}>
                             {$rs.title}
@@ -116,7 +116,23 @@
             </div>
         </div>
 <!--基础功能结束-->
-
+<script type="text/javascript">
+$(function(){
+	$(".bui-box-vertical").each(function(){
+		var obj = $(this);
+		if(obj.attr('href') && obj.attr('href').indexOf('/member/msg/index')>-1){
+			$.get("{:murl('member/wxapp.msg/checknew')}",function(res){
+				if(res.code==0){
+					if(res.data.num>0){
+						obj.find('.bui-badges').html(res.data.num);	
+						obj.find('.bui-badges').show();
+					}
+				}
+			});
+		}
+	});
+});
+</script>
 <!--独立菜单的频道开始-->
 {volist name="$menu" id="rs2"}
 {php}if(in_array($key,['plugin','base','module']))continue;{/php}

@@ -248,7 +248,8 @@ class Group extends MemberBase
                     add_jifen($this->user['uid'],-$money,'认证升级用户身份');
                 }                
             }
-            $this->fx();            
+            $this->fx($money);  //奖励RMB
+            $this->fx($money,'introduce_reward_jfnum_'); //奖励虚拟币
             if (!$this->webdb['forbid_auto_upgroup']) {
                 $this->auto_upgroup($gid,$day,$data);
                 $this->success('成功升级!',urls('index'));
@@ -267,20 +268,20 @@ class Group extends MemberBase
     
     /**
      * 处理推荐人奖励
+     * @param number $paymoney 当前升级用户消耗的RMB或积分
+     * @param string $type introduce_vip_reward_ 或者是 introduce_reward_jfnum_ 分别是RMB或虚拟币的奖励
      */
-    private function fx(){
+    private function fx($paymoney=0,$type='introduce_vip_reward_'){
         $tzr_uid = $this->user['introducer_1'];
-        if (empty($tzr_uid) || empty($this->webdb['P__propagandize']) || empty($this->webdb['P__propagandize']['introduce_vip_reward_'])){
+        if (empty($tzr_uid) || empty($this->webdb['P__propagandize']) || empty($this->webdb['P__propagandize'][$type])){
             return ;
         }
         $tzr_info = get_user($tzr_uid);
-        $money = $this->webdb['P__propagandize']['introduce_vip_reward_'][$tzr_info['groupid']];
+        $money = $this->webdb['P__propagandize'][$type][$tzr_info['groupid']];
         if(empty($money)){
             return ;
         }
-        if (is_numeric($money)) {
-            $array[1] = $money;            
-        }else{  //这种格式 1=5,10=30,20=50
+        if( strstr($money,'=') ){  //这种格式 1=5,10=30,20=50
             $detail = explode(',',$money);
             $array = [];
             foreach($detail AS $value){
@@ -290,14 +291,25 @@ class Group extends MemberBase
                 }
             }
             krsort($array); //由高到低排序
+        }else{ //可能是数字,也有可能是百分比
+            $array[1] = $money;
         }
 
         $introducer_num = UserModel::where('introducer_1',$tzr_uid)->count('uid');
         foreach($array AS $num=>$money){
             if($introducer_num%$num==0){
-                $title = '每推荐 '.$num.' 个用户升级VIP奖励';
-                $content = '感谢你推荐 '.$this->user['username'].' 成为VIP会员，每推荐 '.$num.' 个用户升级VIP可奖励 '.$money.' 元';
-                add_rmb($tzr_uid,$money,0,$title);
+                if (!is_numeric($money)) {  //百分比
+                    $money = str_replace(['%','％'], '', $money);
+                    $money = ($paymoney * $money/100);
+                    $money = $type=='introduce_vip_reward_' ? number_format($money,2) : ceil($money);
+                }
+                $title = '每推荐 '.$num.' 个用户升级用户组奖励';
+                $content = '感谢你推荐 '.$this->user['username'].' 付费升级用户组，每推荐 '.$num.' 个用户付费升级可奖励 '.$money.($type=='introduce_vip_reward_'?' 元':' 个'.jf_name($this->webdb['P__propagandize']['introduce_reward_jftype']));
+                if($type=='introduce_vip_reward_'){   //奖励RMB
+                    add_rmb($tzr_uid,$money,0,$title);
+                }else{
+                    add_jifen($tzr_uid,$money,$title,$this->webdb['P__propagandize']['introduce_reward_jftype']);
+                }                
                 send_msg($tzr_uid,$title,$content);
                 if ($tzr_info['weixin_api']) {
                     send_wx_msg($tzr_info['weixin_api'],$content);
