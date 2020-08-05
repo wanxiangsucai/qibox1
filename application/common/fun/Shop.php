@@ -125,6 +125,8 @@ class Shop{
                         return $title;
                     }elseif($result_type=='price'){
                         return $price;
+                    }elseif($result_type=='num'){
+                        return is_numeric($num)?intval($num):null;
                     }
                 }
             }else{  //商品详情页,把所有都列出来,供选择
@@ -160,6 +162,29 @@ class Shop{
             }
             
             return $info['price'];
+        }
+    }
+    
+    /**
+     * 获取库存量
+     * @param array $info 商品信息
+     * @param number $key 第几项的库存
+     * @param number $num 是否重新设置库存量
+     * @return void|array|\app\common\fun\unknown[]
+     */
+    public static function get_num($info=[],$key=0,$num=null){
+        if ($num===null) {
+            return self::type_get_title_price('type1',$info,$key,'num');
+        }else{
+            $array = json_decode($info['field_array']['type1']['value']?:$info['type1'],true);  //数据库存放的格式是 ["红","黄","蓝"]
+            foreach ($array AS $_key=>$_value){
+                $detail = explode('|',$_value);    //对于第一项可以定义价格与库存量 比如 ["大号|100","中号|80","小号|50"]
+                if($key==$_key){
+                    $detail[2] = $num;
+                    $array[$_key] = implode('|', $detail);
+                }
+            }
+            return json_encode($array);
         }
     }
     
