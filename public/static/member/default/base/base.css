@@ -184,7 +184,7 @@ input[type=submit]:hover{
 	border:#F30 solid 1px;
 	background: #F60;
 }
-table.FormTable td.tdR input[type=text],table.FormTable td.tdR input[type=password]{
+table.FormTable td.tdR input[type=text],table.FormTable td.tdR input[type=number],table.FormTable td.tdR input[type=password]{
 	border:#DDD solid 1px;
 	height:28px;
 	line-height:28px;

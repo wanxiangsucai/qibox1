@@ -72,9 +72,11 @@ abstract class Order extends MemberBase
      * @param unknown $id
      */
     public function delete($id){
-        $info = $this->model->getInfo($id);
+        $info = getArray($this->model->getInfo($id));
         if ($info['uid']!=$this->user['uid']) {
             $this->error('你没权限');
+        }elseif ( $info['pay_status']!=0 || $info['few_ifpay']!=0 ) {
+            $this->error('已支付的订单不能删除');
         }
         if ($this->model->destroy($id)) {
             $this->success('删除成功');

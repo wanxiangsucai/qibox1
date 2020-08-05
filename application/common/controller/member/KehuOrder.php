@@ -36,6 +36,24 @@ abstract class KehuOrder extends MemberBase
     }
     
     /**
+     * 删除未支付的订单
+     * @param unknown $id
+     */
+    public function delete($id){
+        $info = getArray($this->model->getInfo($id));
+        if ($info['shop_uid']!=$this->user['uid']) {
+            $this->error('你没权限');
+        }elseif ( $info['pay_status']!=0 || $info['few_ifpay']!=0 ) {
+            $this->error('已支付的订单不能删除');
+        }
+        if ($this->model->destroy($id)) {
+            $this->success('删除成功');
+        }else{
+            $this->error('删除失败');
+        }
+    }
+    
+    /**
      * 修改一些基础信息
      * @param unknown $id
      * @return mixed|string

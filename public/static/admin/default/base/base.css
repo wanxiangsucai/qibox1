@@ -134,7 +134,7 @@ table.FormTable td.tdR{
 	color:#666;
 	vertical-align:top;
 }
-table.FormTable td.tdR input[type=text]{
+table.FormTable td.tdR input[type=text],table.FormTable td.tdR input[type=number],table.FormTable td.tdR input[type=password]{
 	border:#e5eaef solid 1px;
 	height:35px;
 	line-height:35px;

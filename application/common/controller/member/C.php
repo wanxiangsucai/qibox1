@@ -164,11 +164,11 @@ abstract class C extends MemberBase
         //接口
         hook_listen('cms_add_begin',$data);
         if (($result=$this->add_check($mid,$fid,$data))!==true) {
-            if (strstr($result,'无权')||strstr($result,'没权')) {
-                $this->error($result.'，你可以选择升级用户组',url('member/group/index'));
-            }else{
+            if ($this -> request -> isPost()) {
                 $this->error($result);
-            }            
+            }else{
+                $this->assign('nopower',$result);   //在页面中处理提示更好些
+            }
         }
         
         // 保存数据

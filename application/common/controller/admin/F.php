@@ -23,7 +23,7 @@ abstract class F extends AdminBase
         $this->model = get_model_class($dirname,'field');
         $this->set_config();
         
-        if ($this->request->action()=='index'){
+        if ($this->request->action()=='index'||$this->request->param()['plugin_action'] =='index'){
             if(!table_field($dirname.'_field','input_width')) {
                 query("ALTER TABLE  `qb_{$dirname}_field` ADD  `input_width` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单宽度',ADD  `input_height` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单高度',ADD  `unit` VARCHAR( 20 ) NOT NULL COMMENT  '单位名称',ADD  `match` VARCHAR( 150 ) NOT NULL COMMENT  '表单正则匹配',ADD  `css` VARCHAR( 20 ) NOT NULL COMMENT  '表单CSS类名';");
             }            
@@ -145,7 +145,7 @@ abstract class F extends AdminBase
                 ],
         ];
        
-		$data = self::getListData(['mid'=>$mid],['list'=>'desc'],50);
+        $data = self::getListData(['mid'=>$mid],'list desc',50);
         return $this->getAdminTable($data);
     }
     

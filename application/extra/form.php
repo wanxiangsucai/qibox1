@@ -25,6 +25,7 @@ return  array(
     //'tags' => '标签',
   'hidden' => '隐藏',
   'array' => '数组',
+  'shop_array' => '商品型号价格库存',
   'usergroup' => '按用户组填数值',
   'usergroup2' => '用户组多选',
   'usergroup3' => '用户组单选',
