@@ -147,8 +147,9 @@
     <div class="cont">
 		<div class="scroll-sort">
 			<div class="swiper-container">
-				<div class="swiper-wrapper" id="choose_mod">
-				</div>
+				<div class="swiper-wrapper" id="choose_mod"> </div>
+				<div class="swiper-button-next"></div>
+				<div class="swiper-button-prev"></div>
 			</div>
 		</div>
 		<div class="list-hack"></div>
@@ -364,7 +365,11 @@ function get_mod(){
 				var swiper = new Swiper('.swiper-container', {
 					spaceBetween: 0,
 					slidesPerView:'auto',
-					freeMode: true
+					freeMode: true,
+					navigation: {
+					nextEl: '.swiper-button-next',
+					prevEl: '.swiper-button-prev',
+				  },
 				});
 			}
 			$("#choose_mod .swiper-slide").click(function(){
