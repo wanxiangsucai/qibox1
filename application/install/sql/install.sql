@@ -1805,3 +1805,5 @@ ALTER TABLE  `qb_group` CHANGE  `level`  `level` VARCHAR( 256 ) NOT NULL DEFAULT
 ALTER TABLE  `qb_group` ADD  `about` TEXT NOT NULL COMMENT  '权限相关介绍';
 ALTER TABLE  `qb_grouplog` ADD  `daytime` MEDIUMINT( 7 ) NOT NULL COMMENT  '升级天数';
 ALTER TABLE  `qb_rmb_consume` ADD  `freeze_money` DECIMAL( 10, 2 ) NOT NULL COMMENT  '不可用余额变动';
+
+ALTER TABLE  `qb_config` CHANGE  `title`  `title` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT  '字段名称标题';

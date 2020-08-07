@@ -1,0 +1,1 @@
+ALTER TABLE  `qb_config` CHANGE  `title`  `title` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT  '字段名称标题';

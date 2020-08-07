@@ -131,9 +131,9 @@ class Shop{
                 }
             }else{  //商品详情页,把所有都列出来,供选择
                 $listdb[] = [
-                        'title'=>$title,
-                        'price'=>$price,
-                        'num'=>$num,
+                    'title'=>$title,
+                    'price'=>$price,
+                    'num'=>is_numeric($num)?$num:null,
                 ];
             }
         }
@@ -173,8 +173,8 @@ class Shop{
      * @return void|array|\app\common\fun\unknown[]
      */
     public static function get_num($info=[],$key=0,$num=null){
-        if ($num===null) {
-            return self::type_get_title_price('type1',$info,$key,'num');
+        if ($num===null) {            
+            return $key<0 ? null : self::type_get_title_price('type1',$info,$key,'num');
         }else{
             $array = json_decode($info['field_array']['type1']['value']?:$info['type1'],true);  //数据库存放的格式是 ["红","黄","蓝"]
             foreach ($array AS $_key=>$_value){
