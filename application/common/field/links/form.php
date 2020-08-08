@@ -269,7 +269,7 @@ return <<<EOT
 	<span class='addmore' style="cursor:pointer;">
 		<i style="font-size:18px;" class=' fa fa-plus-square'></i> 增加一项
 	</span>
-	<textarea style="display:none0;" id="{$name}" name="{$name}">{$info[$name]}</textarea>
+	<textarea style="display:none;" id="{$name}" name="{$name}">{$info[$name]}</textarea>
 	<div class='input-group' style='border:1px dotted #ccc;padding:8px;margin:8px;'>
 			<span class='input-group-addon del' title="删除"><i class='fa fa-fw fa-close'></i></span> 
 			<span class='input-group-addon move' title="移动"><i class='fa fa-arrows'></i></span>
