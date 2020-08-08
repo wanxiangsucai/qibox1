@@ -216,6 +216,7 @@ abstract class Order extends IndexBase
         $this->assign('total_money',$total_money);
         $this->assign('money_array',$money_array);
         $this->assign('listdb',$listdb);
+        $this->assign('shopdb',current(current($listdb))); //第一个商品信息
         
         $address = AddressModel::where('uid',$this->user['uid'])->order('often desc,id desc')->column(true);
         $this->assign('address',$address);

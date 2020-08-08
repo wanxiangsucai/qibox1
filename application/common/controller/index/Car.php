@@ -58,6 +58,19 @@ abstract class Car extends IndexBase
                 return '活动还没有开始!';
             }
         }
+        
+        if( $type1>0 && fun('shop@get_num',$shop,$type1-1)!==null ){
+            if(fun('shop@get_num',$shop,$type1-1)-$num<0){
+                return $num>1?'该类型库存不足!':'该类型没库存了';
+            }
+        }elseif(isset($shop['num'])){
+            if ($shop['num']<1) {
+                return '很抱歉,库存为0,无法购买!';
+            }elseif ($num>$shop['num']) {
+                return '购买数量,不能超过库存量!';
+            }
+        }
+        
         return true;
     }
     
@@ -199,7 +212,14 @@ abstract class Car extends IndexBase
             } else {
                 return 'fail';
             }
-        }elseif(!$info){    //购物车没有的话,就直接加进去
+        }
+        
+        $result = $this->check_status($shopid,$num,$type1,$type2,$type3);
+        if ($result!==true) {
+            return $this->err_js($result);
+        }
+        
+        if(!$info){    //购物车没有的话,就直接加进去
             $num<1 && $num=1;
             $data = [
                     'shopid'=>$shopid,
