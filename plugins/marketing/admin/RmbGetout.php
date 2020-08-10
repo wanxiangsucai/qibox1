@@ -187,7 +187,8 @@ class RmbGetout extends AdminBase
 	    ];
 	    $result = RmbGetoutModel::update($data);
 	    
-	    if ($result) {	        
+	    if ($result) {
+	        $url = ',<a href="'.get_url(purl('marketing/rmb/index',[],'member')).'" target="_blank">点击查看详情</a>';
 	        if($type=='weixin'){
 	            $array = [
 	                'money'=>$money,
@@ -197,7 +198,7 @@ class RmbGetout extends AdminBase
 	            $res = Weixin::gave_moeny($array);
 	            if($res===true){
 	                add_rmb($user['uid'],0,-$real_money,'微信提现成功');
-	                send_wx_msg($user['weixin_api'], "你申请的提现 {$money} 元,已审核通过,并且已成功转帐,请注意查收");
+	                send_wx_msg($user['weixin_api'], "你申请的提现 {$money} 元,已审核通过,并且已成功转帐,请注意查收".$url);
 	            }else{
 	                $data['ifpay'] = 0;
 	                RmbGetoutModel::update($data);
@@ -205,8 +206,8 @@ class RmbGetout extends AdminBase
 	            }
 	        }else{
 	            add_rmb($user['uid'],0,-$real_money,'提现成功,扣除冻结金额');
-	            send_msg($user['uid'],'提现转帐提醒',"你申请的提现 {$money} 元,已审核通过,线下已转帐,请注意查收");
-	        }	        
+	            send_msg($user['uid'],'提现转帐提醒',"你申请的提现 {$money} 元,已审核通过,线下已转帐,请注意查收".$url);
+	        }
 	        $this->success('操作成功');
 	    }else{
 	        $this->error('数据库执行失败!');
