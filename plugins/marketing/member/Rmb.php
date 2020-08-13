@@ -112,6 +112,15 @@ class Rmb extends MemberBase
 	        }elseif($this->user['rmb_pwd'] && $this->user['rmb_pwd']!=md5($data['pwd'])){
 	            $this->error("支付密码不对!");
 	        }
+	        
+	        if ($this->webdb['getout_rmb_tn']>0) {
+	            $time = time()-$this->webdb['getout_rmb_tn']*3600*24;
+	            $total = RmbConsume::where( 'uid',$this->user['uid'] )->where( 'money','>',0 )->where( 'posttime','>',$time)->sum('money');
+	            if ($total > $this->user['rmb']-$data['money'] ) {
+	                $_rmb = $this->user['rmb']-$total;
+	                $this->error('很抱歉，你本次最多只能提现 '.($_rmb>0?$_rmb:0).' 元，系统设置的T+N提现周期是 '.$this->webdb['getout_rmb_tn'].' 天，剩余的款项请过几天后再申请提现！');
+	            }
+	        }
 	        $data['real_money'] = $data['money'];          //标志实际申请提现金额,即没扣手续费前的
 	        if($getout_percent_money>0){    //扣除手续费	            
 	            $data['money'] = $data['money'] - $data['money'] * $getout_percent_money;
