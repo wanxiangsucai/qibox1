@@ -48,7 +48,12 @@
 	{$rs.title|get_word="60"}
 	<ul>
 		<ol>{$rs.posttime|format_time}</ol>
-		<li>{if $rs.money>0}<span>{$rs.money}</span>{elseif ($rs.money<0) /}<em>{$rs.money}</em>{/if} {if $rs.freeze_money!=0}<font color="blue">9</font>{/if}</li>
+		<li>
+		{if $rs.money>0}<span>{$rs.money}</span>
+		{elseif ($rs.money<0) /}<em>{$rs.money}</em>
+		{elseif $rs.freeze_money!=0 /}<font color="blue">{$rs.freeze_money}</font>
+		{/if}
+		</li>
 	</ul>
 </div>
 {/volist}
