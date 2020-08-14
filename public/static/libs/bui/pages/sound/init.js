@@ -40,7 +40,16 @@ mod_class.sound = {
 				that.recMp3 = api.require('recMp3')
 			}
 			if(typeof(wx)=="object" && that.wx_allow_power==null){	//提前申请权限,避免后续操作中断
-				wx_record_start();
+				//wx_record_start();
+				wx.startRecord({
+					success: function() {
+						bui.hint('长按录音,松开结束录音!');
+						wx.stopRecord({});
+					},
+					cancel: function() {
+						layer.alert('你拒绝了授权录音');
+					}
+				});
 			}
 			router.$(".chatbar>div").hide();
 			router.$(".sound_warp").show();
@@ -127,11 +136,12 @@ mod_class.sound = {
 		}
 
 		function wx_record_start(){
+			/*
 			try{
 				wx.stopRecord({});
 			}catch(e){
 				console.log(e);
-			}
+			}*/
 			wx.startRecord({
 				success: function() {
 					that.wx_allow_power = true;
