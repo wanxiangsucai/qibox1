@@ -453,6 +453,11 @@ trait ModuleContent
 	        return '很抱歉,你没有绑定手机,没权限发布,请先进会员中心绑定手机!';
 	    }
 	    
+	    $result = $this->market_check();
+	    if ($result!==true){
+	        return $result;
+	    }
+	    
 	    $result = $this->check_info_num();
 	    if ($result!==true) {  //检查对应用户组的发布数量限制	        
 	        return $result;
@@ -596,6 +601,11 @@ trait ModuleContent
 	    //齐博首创 钩子文件扩展接口
 	    $result = $this->get_hook('cms_edit_begin',$data,$info,['id'=>$id]);
 	    if($result!==null){
+	        return $result;
+	    }
+	    
+	    $result = $this->market_check();
+	    if ($result!==true){
 	        return $result;
 	    }
 	    
@@ -847,7 +857,7 @@ trait ModuleContent
 	 */
 	protected function get_my_qun($info=[]){
 	    $marray = modules_config('qun');
-	    if ( empty($marray) || config('post_need_sort')!==true || config('system_dirname')=='qun') {
+	    if ( empty($marray) || config('system_dirname')=='qun') {
 	        return [];
 	    }
 	    if ($info&&$info['uid']) {
@@ -890,6 +900,33 @@ trait ModuleContent
 	    }else{
 	        return [];
 	    }	    
+	}
+	
+	/**
+	 * 应用市场权限检测
+	 * @param array $info
+	 */
+	protected function market_check($topic=[]){
+		if(ENTRANCE==='admin'){
+			return true;
+		}
+	    if (defined('IN_PLUGIN')) {
+	        $plugin = input('param.plugin_name');
+	        $info = plugins_config($plugin);
+	    }elseif(config('system_dirname')!=''){
+	        $info = modules_config( config('system_dirname') );
+	    }
+	    $uid = $topic?$topic['uid']:$this->user['uid'];
+	    if ($info['is_sell']) {
+	        $groupid = $topic ? get_user($topic['uid'])['groupid'] : $this->user['groupid'];
+	        if($info['admingroup']=='' || !in_array($groupid, explode(',', $info['admingroup'])) ){
+	            $rs = \app\common\model\Module_buyer::where('uid',$uid)->where('mid',defined('IN_PLUGIN')?-$info['id']:$info['id'])->find();
+	            if (!$rs || ($rs['endtime']>0&&$rs['endtime']<time())) {
+	                return $uid==$this->user['uid']?'当前应用需要充值购买后才能使用!':'该用户使用当前应用的有效期已失效!所以无法浏览!';
+	            }
+	        }
+	    }
+	    return true;
 	}
 	
 }

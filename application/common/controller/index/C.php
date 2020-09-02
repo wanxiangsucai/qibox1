@@ -51,7 +51,13 @@ abstract class C extends IndexBase
                 $this->error('你所在用户组无权查看!');
             }
         }
+        
+        $result = $this->market_check($info);
+        if ($result!==true){
+            $this->error($result);
+        }
     }
+    
     
     /**
      * 设置海报

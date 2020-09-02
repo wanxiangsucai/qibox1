@@ -47,7 +47,12 @@ class Menu{
                     $v2['param'] = $v2['link'][1];
                     $v2['link'] = $v2['link'][0];                    
                 }
-                $url = $isplugin ? purl($model.'/'.$v2['link'],$v2['param']) : url($model.'/'.$v2['link'],$v2['param']);
+                if (preg_match("/^[\w]+/", $v2['link'])) {
+                    $url = $isplugin ? purl($model.'/'.$v2['link'],$v2['param']) : url($model.'/'.$v2['link'],$v2['param']);
+                }else{
+                    $url = $v2['link']; //支持站外URL
+                }
+                
                 if (self::$sysmenu[$url]) { //会员中心系统默认菜单被定义过
                     $array = self::$sysmenu[$url];
                     if ($array['ifshow']==0 || ($array['allowgroup']&&!in_array(login_user('groupid'), explode(',', $array['allowgroup'])))) {

@@ -12,7 +12,9 @@ class Index extends IndexBase
 //             set_cookie('wxapp', 1);
 //             $this->redirect(url('cms/index/index'),301);
 //         }
-        if($this->webdb['qun_index_id'] && modules_config('qun')){
+        if($this->webdb['sys_mode_type']==1 && modules_config('qun')){
+            $this->redirect(urls('qun/api/gethome'),[],301);
+        }elseif($this->webdb['qun_index_id'] && modules_config('qun')){
             $this->redirect(url('qun/content/show',['id'=>$this->webdb['qun_index_id']]),[],301);
         }elseif( IN_WAP===true && ($sysname = $this->webdb['set_module_wapindex']) ){
             //return $this->redirect($sysname.'/index/index');

@@ -39,7 +39,7 @@ function SharHiddenMsg() {
 }
 </script>
 <div class="Share_Message" onClick="SharHiddenMsg();"></div>
-<script src="__STATIC__/js/jweixin.js"></script>
+<script src="__STATIC__/js/jweixin.js?f"></script>
 <script type="text/javascript">
 var wxShare = {
 	title: '{$share.title}',
@@ -110,7 +110,8 @@ function wx_share_config(){
 			'onMenuShareAppMessage', 
 			'hideMenuItems',
 			'showMenuItems',
-		  ]
+		  ],
+		openTagList: ['wx-open-launch-weapp'],
 	});
 
 	wx.ready(function () {

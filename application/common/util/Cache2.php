@@ -50,6 +50,11 @@ class Cache2{
 	    return self::init();
 	}
 	
+	protected static function getkey($key=''){
+	    return $key;
+	    //return config('cache.prefix').$key;
+	}
+	
 	
 	/**
 	 * 添加数据
@@ -62,17 +67,17 @@ class Cache2{
 	        self::$redis->multi();
 	        if($value!=='' && $value!==null && isset($key[0])){    //插入一批数据
 	            foreach($key AS $v){
-	                self::$redis->lpush($value,self::_set($v));
+	                self::$redis->lpush(self::getkey($value),self::_set($v));
 	            }
 	        }else{
 	            foreach($key AS $k=>$v){
 	                if ($v===null || $v==='') {
-	                    self::$redis->delete($k);
+	                    self::$redis->delete(self::getkey($k));
 	                }else{
 	                    if ($time>0) {
-	                        self::$redis->setex($k,$time,self::_set($v));
+	                        self::$redis->setex(self::getkey($k),$time,self::_set($v));
 	                    }else{
-	                        self::$redis->set($k,self::_set($v));
+	                        self::$redis->set(self::getkey($k),self::_set($v));
 	                    }	                    
 	                }
 	            }
@@ -80,20 +85,20 @@ class Cache2{
 	        self::$redis->exec();
 	    }elseif($value===null || $value===''){
 	        if( substr($key, -1,1)=='*' ){	            
-	            $detail = self::$redis->keys($key);
+	            $detail = self::$redis->keys(self::getkey($key));
 	            self::$redis->multi();
 	            foreach($detail AS $ks){
 	                self::$redis->delete($ks);
 	            }
 	            self::$redis->exec();
 	        }else{
-	            self::$redis->delete($key);
+	            self::$redis->delete(self::getkey($key));
 	        }	        
 	    }else{
 	        if ($time>0) {
-	            self::$redis->setex($key,$time,self::_set($value));
+	            self::$redis->setex(self::getkey($key),$time,self::_set($value));
 	        }else{
-	            self::$redis->set($key,self::_set($value));
+	            self::$redis->set(self::getkey($key),self::_set($value));
 	        }	        
 	    }
 	}
@@ -107,12 +112,12 @@ class Cache2{
 	public static function get($key='',$type=''){
 	    self::init();
 	    if ($type=='lpop' || $type=='rpop') {
-	        return self::_get(self::$redis->$type($key));
+	        return self::_get(self::$redis->$type(self::getkey($key)));
 	    }
 	    if(substr($key, -1,1)=='*'){
-	        return self::$redis->keys($key);
+	        return self::$redis->keys(self::getkey($key));
 	    }else{
-	        return self::_get(self::$redis->get($key));
+	        return self::_get(self::$redis->get(self::getkey($key)));
 	    }
 	}
 	

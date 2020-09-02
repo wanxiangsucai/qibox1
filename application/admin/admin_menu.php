@@ -26,6 +26,14 @@ return array(
                                                 'link'=>'setting/clearcache',
                                                 'power'=>[],
                                         ),
+                                    array(
+                                        'title'=>'管理用户购买应用',
+                                        'link'=>'buylist/index',
+                                        'power'=>[
+                                            'edit'=>'调整有效日期',
+                                            'delete'=>'删除购买记录',
+                                        ],
+                                    ),
                                         array(
                                                 'title'=>'插件管理',
                                                 'link'=>'plugin/index',

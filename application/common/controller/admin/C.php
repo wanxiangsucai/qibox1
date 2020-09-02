@@ -111,6 +111,11 @@ abstract class C extends AdminBase
                 $this->form_items
                 //$this->getEasyFormItems()
              );
+        }else{
+            $this->form_items = array_merge(
+                $this->get_my_qun(),    //归属圈子及圈子专题
+                $this->form_items
+                );
         }
         
         //联动字段
@@ -427,6 +432,11 @@ abstract class C extends AdminBase
                 //$this->getEasyFormItems()
                 $this->form_items
              );
+        }else{
+            $this->form_items = array_merge(
+                $this->get_my_qun(),    //归属圈子及圈子专题
+                $this->form_items
+                );
         }
         
         //联动字段

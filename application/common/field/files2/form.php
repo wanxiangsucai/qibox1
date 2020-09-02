@@ -98,6 +98,7 @@ jQuery(document).ready(function() {
             auto: true,
             // 去重
             duplicate: true,
+			timeout:0, //不要超时,默认1分钟超时
             // swf文件路径
             swf: server_urls.WebUploader_swf,
             // 文件接收服务端。

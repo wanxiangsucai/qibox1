@@ -185,7 +185,7 @@ class Layim extends IndexBase{
 	 * @param string $sign
 	 * @return \think\response\Json|void
 	 */
-	public function sign($sign=''){
+	public function sign(){
 		if(empty($this->user)){
 			return $this->err_js('请登录后修改您的签名!');
 		}
@@ -193,7 +193,7 @@ class Layim extends IndexBase{
 		$data['introduce']=filtrate($sign['sign']);
 		$data['uid']=$this->user['uid'];
 		if(\app\common\model\User::edit_user($data)){
-			return $this->err_js('修改签名成功');
+			return $this->ok_js('修改签名成功');
 		}else{
 			return $this->err_js('修改签名失败');
 		}

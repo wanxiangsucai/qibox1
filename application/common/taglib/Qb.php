@@ -168,7 +168,7 @@ class Qb extends TagLib{
         $tpl = $tag['tpl']; //指定默认模板
         $js = $tag['js']; //通过AJAX方式获取数据,这样就不影响页面打开速度
         if ($tag['class']==""&&$tag['type']&&$tag['type']!='labelmodel'&&config('system_dirname')=='qun') {
-            $tag['union']=$tag['union']?$tag['union'].'&uid=$info.uid,ext_id=$info.id':'uid=$info.uid,ext_id=$info.id'; //给圈子传变量
+            $tag['union']=$tag['union']?$tag['union'].',uid=$info.uid,ext_id=$info.id':'uid=$info.uid,ext_id=$info.id'; //给圈子传变量
         }
         $union = $this->union_live_parameter($tag['union'],$where);    //动态关联的参数
         $list = $tag['list']?$tag['list']:'rs';
@@ -239,6 +239,7 @@ class Qb extends TagLib{
         if(empty($str) && empty($where)){
             return ;
         }
+        $str = str_replace('&', ',', $str);
         //if (empty($str) && $where!='') {
         if ($where!='') {
             $_str = fun('label@get_union',$where);

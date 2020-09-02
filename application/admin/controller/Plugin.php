@@ -141,6 +141,7 @@ class Plugin extends AdminBase
 	    $info = $this->getInfoData($id);
 	    
 	    if ($this -> request -> isPost()) {
+	        $this -> request -> post(['admingroup'=>implode(',', $this -> request -> post()['admingroup']?:[])]);
 	        if ($this -> saveEditContent()) {
 	            
 	            //钩子要对应的跟着关闭或启用
@@ -156,12 +157,21 @@ class Plugin extends AdminBase
 	    }
 	    
 	    $this->form_items = [	           
-	            ['text','name', '插件名称', ''],
-	            ['static','keywords', '插件关键字', ''],
-	            ['radio','ifopen', '启用或禁用', '',['关闭系统','启用系统']],
-	            ['textarea','about', '介绍', ''],
-	            ['number','list', '排序值', ''],
-	            ['icon','icon', '图标', ''],
+	        ['text','name', '插件名称', ''],
+	        ['static','keywords', '插件关键字', ''],
+	        ['radio','ifopen', '启用或禁用', '',['关闭系统','启用系统']],	            
+	        ['number','list', '排序值', ''],
+	        ['icon','icon', '图标', ''],
+	        ['radio','is_sell', '是否上架应用市场','',['不上架','上架']],
+	        ['number','testday', '可以试用几天'],
+	        ['textarea','money', '售价', '格式如下,第一项是天数,第二项是价格(元),第三项是名称:<br>30|5|一个月<br>180|10|半年'],
+	        ['checkbox','admingroup','免费使用的用户组','管理员的话,长久有效,VIP会员的话,使用期限跟VIP的时效一致.',getGroupByid()],
+	        ['image','picurl', '封面图'],
+	        ['textarea','about', '介绍'],
+	    ];
+	    
+	    $this->tab_ext['trigger'] = [
+	        ['is_sell', '1', 'testday,money,admingroup,picurl,about'],
 	    ];
 	    
 	    return $this->editContent($info);

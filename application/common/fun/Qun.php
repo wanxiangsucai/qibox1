@@ -37,6 +37,7 @@ class Qun{
             }else{
                 MemberModel::where('uid',$uid)->where('aid',$aid)->setDec('money',abs($money));
             }
+            cache('user_'.$uid,null);
             return true;
         }
     }
@@ -133,6 +134,7 @@ class Qun{
             if ($info['end_time']>0 && $info['end_time']<time() && $info['type']==4) {
                 $info['type']=1;
                 MemberModel::where('id',$info['id'])->update(['type'=>1]);
+                cache('user_'.$uid,null);
             }
             return $info;
         }else{
@@ -142,6 +144,7 @@ class Qun{
                 if ($info['end_time']>0 && $info['end_time']<time() && $info['type']==4) {
                     $info['type']=1;
                     MemberModel::where('id',$info['id'])->update(['type'=>1]);
+                    cache('user_'.$uid,null);
                 }
                 if ($data[$info['aid']]) {
                     MemberModel::where('id',$info['id'])->delete();
@@ -351,6 +354,20 @@ class Qun{
         }
         $array[$id] = $info;
         return $info;
+    }
+    
+    /**
+     * 获取圈币名称
+     * @param number|array $id 可以是圈子数据,也可以是圈子ID
+     * @return string
+     */
+    public static function moneyname($id){
+        if (is_numeric($id)) {
+            $info = self::getByid($id);
+        }else{
+            $info = $id;
+        }
+        return $info['moneyname']?:'圈币';
     }
     
     /**

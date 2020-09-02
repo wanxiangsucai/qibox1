@@ -204,6 +204,7 @@ class Module extends AdminBase
 	    $info = $this->getInfoData($id);
 	    
 	    if ($this -> request -> isPost()) {
+	        $this -> request -> post(['admingroup'=>implode(',', $this -> request -> post()['admingroup']?:[])]);
 	        if ($this -> saveEditContent()) {
 	            
 	            //钩子要对应的跟着关闭或启用
@@ -226,12 +227,21 @@ class Module extends AdminBase
 	        ['text','name', '模块名称', ''],
 	        ['static','keywords', '所在目录', ''],	      
 	        ['radio','ifsys', '使用顶部菜单', '',['禁用','启用']],
-	        ['radio','ifopen', '启用或禁用', '',['关闭系统','启用系统']],
-	        ['textarea','about', '介绍', ''],
-	        ['number','list', '排序值', ''],
-	        ['icon','icon', '图标', ''],
+	        ['radio','ifopen', '启用或禁用', '',['关闭系统','启用系统']],	        
+	        ['number','list', '排序值'],
+	        ['icon','icon', '图标'],	        
+	        ['radio','is_sell', '是否上架应用市场','',['不上架','上架']],
+	        ['number','testday', '可以试用几天'],
+	        ['textarea','money', '售价', '格式如下,第一项是天数,第二项是价格(元),第三项是名称:<br>30|5|一个月<br>180|10|半年'],
+	        ['checkbox','admingroup','免费使用的用户组','管理员的话,长久有效,VIP会员的话,使用期限跟VIP的时效一致.',getGroupByid()],
+	        ['image','picurl', '封面图'],
+	        ['textarea','about', '介绍'],
 	        //['text','pc_domain', '二级域名', '没配置好服务器的话，必须留空，否则请输入二级域名比如“bbs”而不是http://bbs.xxx.com也不是bbs.xxx.com'],
 	        //['text','wap_domain', 'WAP版二级域名', '一般留空,如果配置好服务器的话,请输入http://或https://开头'],
+	    ];
+	    
+	    $this->tab_ext['trigger'] = [
+	        ['is_sell', '1', 'testday,money,admingroup,picurl,about'],
 	    ];
 	    
 	    return $this->editContent($info);

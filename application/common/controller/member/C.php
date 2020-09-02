@@ -199,6 +199,11 @@ abstract class C extends MemberBase
                 input('ext_id')?[]:$this->get_my_qun(),
                 $this->form_items
             );
+        }else{
+            $this->form_items = array_merge(
+                input('ext_id')?[]:$this->get_my_qun(),
+                $this->form_items
+                );
         }
         
         //联动字段
@@ -267,6 +272,11 @@ abstract class C extends MemberBase
                 $this->get_my_qun($info),   //归属圈子专题或归属圈子
                 $this->getEasyFormItems()
             );
+        }else{
+            $this->form_items = array_merge(
+                input('ext_id')?[]:$this->get_my_qun(),
+                $this->form_items
+                );
         }
         
         //联动字段
