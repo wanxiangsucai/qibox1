@@ -2,7 +2,6 @@
 namespace app\index\controller;
 
 use app\common\controller\IndexBase;
-use GatewayClient\Gateway;
 
 class Index extends IndexBase
 {
@@ -12,28 +11,25 @@ class Index extends IndexBase
 //             set_cookie('wxapp', 1);
 //             $this->redirect(url('cms/index/index'),301);
 //         }
-        if($this->webdb['sys_mode_type']==1 && modules_config('qun')){
+        if($this->webdb['sys_mode_type']==1 && modules_config('qun') && in_wap()){
             $this->redirect(urls('qun/api/gethome'),[],301);
         }elseif($this->webdb['qun_index_id'] && modules_config('qun')){
-            $this->redirect(url('qun/content/show',['id'=>$this->webdb['qun_index_id']]),[],301);
+            $this->redirect(urls('qun/content/show',['id'=>$this->webdb['qun_index_id']]),[],301);
         }elseif( IN_WAP===true && ($sysname = $this->webdb['set_module_wapindex']) ){
             //return $this->redirect($sysname.'/index/index');
             if(modules_config($sysname)){
-                $this->redirect(url($sysname.'/index/index'),[],301);
+                $this->redirect(urls($sysname.'/index/index'),[],301);
             }
         }elseif( ($sysname = $this->webdb['set_module_index'])!='' ){
             //return $this->redirect($sysname.'/index/index');
             if(modules_config($sysname)){
-                $this->redirect(url($sysname.'/index/index'),[],301);
+                $this->redirect(urls($sysname.'/index/index'),[],301);
             }            
         }
-		return $this->fetch('../index');
+        return $this->fetch('../index');
     }
     
-    public function test($page=1){
-        touch(RUNTIME_PATH.'Task.txt', time()-3600);
-        $ck_time = filemtime(RUNTIME_PATH.'Task.txt');
-        ECHO date('Y-m-d H:i:s',$ck_time);
+    public function test($page=1){send_wx_msg('1', '<a href="'.get_url(iurl('bbs/index/index')).'">你好ff</a>');echo 3;
         /*
         set_time_limit(0);
         $ck = 0;

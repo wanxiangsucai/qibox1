@@ -338,10 +338,6 @@ class Qun{
         }
         $info = cache('qunById'.$id);
         if (empty($info)) {
-            if (empty(modules_config('qun'))) {
-                return [];
-            }
-            //$info = getArray( query('qun_content1')->where('id',$id)->find() );
             $info = ContentModel::getInfoByid($id);
             if (empty($info)) {
                 return ;
@@ -389,8 +385,9 @@ class Qun{
 		$array = Db::name('qun_member')->where('uid',$uid)->where('type','>',0)->order('type desc,update_time desc')->column('aid');
 		$listdb = [];
 		foreach($array AS $aid){
-		    $info = ContentModel::getInfoByid($aid);
-		    unset($info['sncode']);
+		    //$info = ContentModel::getInfoByid($aid);
+		    $info = self::getByid($aid);
+		    //unset($info['sncode']);
 		    if($mid){
 		        if(is_numeric($mid) && $info['mid']!=$mid){
 		            continue;

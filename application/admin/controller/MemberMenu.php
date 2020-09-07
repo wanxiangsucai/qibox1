@@ -68,7 +68,8 @@ class MemberMenu extends AdminBase
 	    $script = "";
 	    if ($gid<1) {
 	        $script = "<script type='text/javascript'>
-$('.quick_edit,.fa-plus,.fa-times,.top_menu').hide();
+//$('.quick_edit,.fa-plus,.fa-times,.top_menu').hide();
+$('.quick_edit,.fa-plus,.top_menu').hide();
 $('._switch').click(function(){
     alert('这里设置不一定会生效,请选择右边菜单修改设置');
     return false;
@@ -77,6 +78,14 @@ $('.trA').each(function(){
     if($(this).html().indexOf('&nbsp;&nbsp;&nbsp;&nbsp;')==-1){
 	   $(this).find('._switch,.glyphicon-ban-circle').hide();
 	}
+});
+</script>";
+	    }else{
+	        $script = "<script type='text/javascript'>
+$('.trA').each(function(){
+    if($(this).html().indexOf('&nbsp;&nbsp;&nbsp;&nbsp;')>-1){
+        $(this).find('.fa-plus').hide();
+    }
 });
 </script>";
 	    }
@@ -91,7 +100,7 @@ $('.trA').each(function(){
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
 	    ->addPageTitle('会员个性菜单管理')
-	    ->addPageTips("系统菜单不能删除,不能添加下级菜单".$script)
+	    ->addPageTips("系统默认菜单请不要删除，不可恢复！这里展示出来，主要是方便重新定义图标或修改文字".$script)
 	    ->addNav($this->group_nav,$gid) ;   
 
         return $table::fetchs();

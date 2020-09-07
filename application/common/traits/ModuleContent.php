@@ -907,7 +907,7 @@ trait ModuleContent
 	 * @param array $info
 	 */
 	protected function market_check($topic=[]){
-		if(ENTRANCE==='admin'){
+	    if(ENTRANCE==='admin'||in_array(config('system_dirname'), ['vote'])){
 			return true;
 		}
 	    if (defined('IN_PLUGIN')) {
@@ -922,7 +922,28 @@ trait ModuleContent
 	        if($info['admingroup']=='' || !in_array($groupid, explode(',', $info['admingroup'])) ){
 	            $rs = \app\common\model\Module_buyer::where('uid',$uid)->where('mid',defined('IN_PLUGIN')?-$info['id']:$info['id'])->find();
 	            if (!$rs || ($rs['endtime']>0&&$rs['endtime']<time())) {
-	                return $uid==$this->user['uid']?'当前应用需要充值购买后才能使用!':'该用户使用当前应用的有效期已失效!所以无法浏览!';
+	                if ($uid==$this->user['uid']) {
+	                    if( $rs['endtime']>0 && $rs['endtime']<time() ){
+	                        return '当前应用有效期已过，请先充值购买后才能继续使用！';
+	                    }elseif($info['testday']>0){
+	                        if ( $this->request->isPost() ) {
+	                            $array = [
+	                                'uid'=>$this->user['uid'],
+	                                'mid'=>defined('IN_PLUGIN')?-$info['id']:$info['id'],
+	                                'create_time'=>time(),
+	                                'endtime'=>time()+$info['testday']*3600*24,
+	                            ];
+	                            \app\common\model\Module_buyer::create($array);
+	                        }else{
+	                           list($day,$rmb,$title)=explode('|',explode("\r\n", $info['money'])[0]);
+	                           return '当前应用可以试用 '.$info['testday'].' 天，你可以先试用！免费体验觉得满意后再考虑续费！<br>注意：试用期结束后，'."{$rmb}元{$title}起售"; 
+	                        }                        
+	                    }else{
+	                        return '当前应用没有试用期，请先充值购买后才使用！';
+	                    }	                    
+	                }else{
+	                    return '该用户使用当前应用的有效期已失效，所以无法访问！';
+	                }
 	            }
 	        }
 	    }

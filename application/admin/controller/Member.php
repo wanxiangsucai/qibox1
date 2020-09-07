@@ -81,7 +81,15 @@ EOT;
 	        }],
 	    ];	    
 	    
-	    $this -> tab_ext['search'] = ['username'=>'用户名','nickname'=>'昵称','truename'=>'真实姓名','mobphone'=>'手机号','regip'=>'注册IP'];    //支持搜索的字段
+	    //支持搜索的字段
+	    $this -> tab_ext['search'] = [
+	        'username'=>'用户名',
+	        'nickname'=>'昵称',
+	        'truename'=>'真实姓名',
+	        'mobphone'=>'手机号',
+	        'regip'=>'注册IP',
+	        'weixin_api'=>'微信API',	        
+	    ];
 	    $this -> tab_ext['order'] = 'money,rmb,uid,regdate,lastvist';   //排序选择
 	    $this -> tab_ext['id'] = 'uid';    //用户数据表非常特殊，没有用id而是用uid ， 这里需要特别指定id为uid
 	    $this -> tab_ext['help_msg'] = '1、这里的权限很大,建议设置为只有超管才能使用<br>2、这里修改财务不会有记录,要有记录的话,请分配财务人员使用插件中心>财务与积分功能><a href="'.purl('marketing/member/index',[],'admin').'" style="color:red;">会员积分财务管理</a> 在那里操作';
@@ -284,6 +292,7 @@ EOT;
 	        ['radio', 'mob_yz', '手机验证与否','',['未验证','已验证']],
 	        ['radio', 'idcard_yz', '证件验证与否','',['未验证','已验证']],
 	        ['radio', 'wx_attention', '是否关注公众号','',['未关注','已关注']],
+	        ['radio', 'yz', '帐号验证','',['未验证','已验证']],
 	        ['number', 'introducer_1', '直接推荐人'],
 	        ['number', 'introducer_2', '2级推荐人'],
 	        ['number', 'introducer_3', '3级推荐人'],
