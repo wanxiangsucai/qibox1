@@ -29,7 +29,7 @@ class Index extends IndexBase
         return $this->fetch('../index');
     }
     
-    public function test($page=1){send_wx_msg('1', '<a href="'.get_url(iurl('bbs/index/index')).'">你好ff</a>');echo 3;
+    public function test($page=1){
         /*
         set_time_limit(0);
         $ck = 0;
