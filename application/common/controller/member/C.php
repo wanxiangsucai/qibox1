@@ -219,6 +219,7 @@ abstract class C extends MemberBase
         
         $this->tab_ext['page_title'] = $this->tab_ext['page_title']?: '发布 '.$this->m_model->getNameById($this->mid);
         $this->assign('fid',$fid);
+        $this->assign('mid',$mid);
         return $this->addContent();
     }
     

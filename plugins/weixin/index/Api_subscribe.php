@@ -43,13 +43,13 @@ class Api_subscribe extends Api
 
 			$result = $this->get_hook('weixin_mp_scan',$array);
             if($result!==null){
-                echo $this->give_text($result);
+                echo is_array($result)?$this->give_news($result):$this->give_text($result);
                 exit;
             }
             
             $result = hook_listen('weixin_mp_scan',$array,'',true);
             if ($result!='') {      //如果钩子有返回数据,就直接在这里输出,要终止掉下面的所有应用
-                echo $this->give_text($result);
+                echo is_array($result)?$this->give_news($result):$this->give_text($result);
                 exit;
             }
             

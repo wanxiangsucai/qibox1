@@ -551,7 +551,7 @@ class Qun{
                 if ($olny_free==true && $rs['money']>0) {
                     continue;
                 }
-                if($type && $rs['type'] && $rs['type']!=$type){
+                if($type!='' && $rs['type']!='' && $rs['type']!=$type){
                     continue;
                 }
                 $rs['keyword'] = $file;

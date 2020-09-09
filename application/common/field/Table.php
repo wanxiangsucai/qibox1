@@ -252,9 +252,9 @@ class Table extends Base
             if(in_array($rs['type'], ['radio','select','checkbox'])){
                 $type = 'select';
             }elseif($rs['type']=='image'){
-                $type = 'picture';
+                $type = 'image';
             }elseif($rs['type']=='images'){
-                $type = 'pictures';
+                $type = 'image';
             }elseif(in_array($rs['type'], ['textarea','ueditor'])){
                 $type = 'textarea';
             }elseif($rs['type']=='datetime'){

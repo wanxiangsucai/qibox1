@@ -192,6 +192,9 @@ class Api extends IndexBase
      */
     protected function give_news($array=[]){
         $timestamp = time();
+        if (!$array[0]) {
+            $array = [$array];
+        }
         $num = count($array);
         foreach( $array AS $rs){
             $rs['picurl'] && $rs['picurl'] = tempdir($rs['picurl']);

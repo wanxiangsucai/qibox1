@@ -37,6 +37,7 @@ class Member extends AdminBase
 	    $this->list_items = [
 	        //['uid', '用户UID', 'text'],
 	        ['uid', '用户名', 'username'],
+	        ['icon', '头像', 'image'],
 	        ['groupid', '用户组', 'select',getGroupByid()],
 	        ['regdate', '注册日期', 'datetime'],
             ['lastvist', '登录日期', 'datetime'],

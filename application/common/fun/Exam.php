@@ -8,7 +8,12 @@ use think\Db;
 class Exam{
     
     private static function get_pre(){
-        return (config('system_dirname')?:'exam') . '_';  //ajax调用的时候,值可能为空,如果是复制的频道会不正常
+        $dirname = config('system_dirname');
+        if ($dirname && $dirname!='exam' && class_exists("app\\".$dirname."\\model\\Answer")) {
+            return $dirname. '_'; //ajax调用的时候,值可能为空,如果是复制的频道会不正常
+        }else{
+            return 'exam_';
+        }
     }
     
     /**
