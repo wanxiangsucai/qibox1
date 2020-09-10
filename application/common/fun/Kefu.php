@@ -24,7 +24,7 @@ class Kefu{
                 'name'=>$user['nickname']?:$user['username'],
                 'icon'=>tempdir($user['icon']),
                 'sign'=>$user['introduce'],                
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
         }
         $userdb = login_user();
         $kefu_id = $array[array_rand($array)];
