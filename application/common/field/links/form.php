@@ -272,7 +272,7 @@ return <<<EOT
 	<textarea style="display:none;" id="{$name}" name="{$name}">{$info[$name]}</textarea>
 	<div class='input-group' style='border:1px dotted #ccc;padding:8px;margin:8px;'>
 			<span class='input-group-addon del' title="删除"><i class='fa fa-fw fa-close'></i></span> 
-			<span class='input-group-addon move' title="移动"><i class='fa fa-arrows'></i></span>
+			<span class='input-group-addon move' style="cursor:move;" title="移动"><i class='fa fa-arrows'></i></span>
 			<span class='input-group-addon down' title="下移"><i class='fa fa-arrow-down'></i></span>
 			<span class='input-group-addon up' title="上移"><i class='fa fa-arrow-up'></i></span>
 			<span class='input-group-addon copy' title="复制一个"><i class='fa fa-copy'></i></span>

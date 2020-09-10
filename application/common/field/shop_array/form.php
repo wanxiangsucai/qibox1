@@ -12,6 +12,10 @@ jQuery(document).ready(function() {
 		var basehtml = base.find('div.input-group:first').prop("outerHTML");
 		//base.append(basehtml);
 		
+		$(document).on("keypress", "input", function(event) { 
+			return event.keyCode != 13;	//回车不能提交表单,请点击提交按钮!
+		});
+
 		//统计数据
 		var count_value = function(){
 			var vals = [];
@@ -23,7 +27,7 @@ jQuery(document).ready(function() {
 		}
 		
 		//输入框鼠标离开事件
-		var get_act = function(){
+		var blur_act = function(){
 			base.find('input.wri').on('blur',function(){
 					count_value();
 				});
@@ -34,12 +38,34 @@ jQuery(document).ready(function() {
 				}
 			});
 		}
-		get_act();
 
+		//下移
+		function down_act(){
+			base.find("span.down").click(function(){
+				var that = $(this).parent();
+				if(that.next().hasClass('input-group')){
+					that.next().after(that.clone());
+					that.remove();
+					init_act();
+				}else{
+					layer.alert('到尽头了');
+				}								
+			});
+		}		
 
-		$(document).on("keypress", "input", function(event) { 
-			return event.keyCode != 13;	//回车不能提交表单,请点击提交按钮!
-		});
+		//上移
+		function up_act(){
+			base.find("span.up").click(function(){
+				var that = $(this).parent();
+				if(that.prev().hasClass('input-group')){
+					that.prev().before(that.clone());
+					that.remove();
+					init_act();
+				}else{
+					layer.alert('到尽头了');
+				}								
+			});
+		}
 		
 		//添加按钮事件
 		var add_act = function(){
@@ -47,16 +73,10 @@ jQuery(document).ready(function() {
 				function(){
 					$(this).parent().after(basehtml);
 					$(this).parent().next().find("input").val('');
-					base.find('span.add').off('click');
-					base.find('span.del').off('click');
-					base.find('input').off('blur');
-					add_act();
-					del_act();
-					get_act();
+					init_act();
 				}
 			);
 		}
-		add_act();
 
 		//移除按钮事件
 		var del_act = function(){
@@ -65,7 +85,19 @@ jQuery(document).ready(function() {
 				count_value();
 			});
 		}
-		del_act();
+
+		var init_act = function(){
+			base.find('span').off('click');
+			base.find('input').off('blur');
+			add_act();
+			del_act();
+			blur_act();
+			down_act();
+			up_act();
+			count_value();
+		}
+		init_act();
+
 	});
 });
 </script>
@@ -94,6 +126,8 @@ if($array){
 			<input class='wri shop_price' type='number' step='0.01' value='{$price}' placeholder='价格'>
 			<input class='wri shop_num' type='number' step='1' min='0' value='{$num}' placeholder='库存'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
+			<span class='input-group-addon down'><i class='fa fa-arrow-down'></i></span>
+			<span class='input-group-addon up'><i class='fa fa-arrow-up'></i></span>
         </div>";
 	}
 }else{
@@ -103,6 +137,8 @@ if($array){
 			<input class='wri shop_price' type='number' step='0.01' min='0' value='' placeholder='价格'>
 			<input class='wri shop_num' type='number' step='1' min='0' value='' placeholder='库存'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
+			<span class='input-group-addon down'><i class='fa fa-arrow-down'></i></span>
+			<span class='input-group-addon up'><i class='fa fa-arrow-up'></i></span>
         </div>";
 }
 

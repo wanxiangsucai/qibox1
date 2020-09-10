@@ -1,6 +1,8 @@
 <?php
 
-return  array(
+//这个是系统的配置文件,请不要修改,不然下次升级会被替换,要修改的话,就修改my_form.php这个文件 教程http://help.php168.com/1915087
+
+$form_array = [
    'text' => '单行文本',
    'textarea' => '多行文本',
     'ueditor' => 'UEditor 百度编辑器',
@@ -45,4 +47,11 @@ return  array(
   //'masked' => '格式文本',
   //'range' => '范围',
 
-);
+];
+
+if (is_file(APP_PATH.'extra/my_form.php')) {
+    $_form_array = include APP_PATH.'extra/my_form.php';
+    $form_array = array_merge($form_array,$_form_array);
+}
+
+return $form_array;
