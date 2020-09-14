@@ -408,6 +408,23 @@ class Qun{
     }
     
     /**
+     * 列出某个圈子的所有管理员,包括圈主与副管理员
+     * @param number $aid
+     * @return mixed|array
+     */
+    public static function admin($aid=0){
+        static $data=[];
+        if (!$aid) {
+            return [];
+        }
+        if ($data[$aid]) {
+            return $data[$aid];
+        }
+        $data[$aid] = Db::name('qun_member')->where('aid',$aid)->where('type','in',[2,3])->order('type desc,update_time desc')->column('uid');
+        return $data[$aid];
+    }
+    
+    /**
      * 某用户最近访问过的圈子
      * @param number $uid
      * @return array|array|mixed

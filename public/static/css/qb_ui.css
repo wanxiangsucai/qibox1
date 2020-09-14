@@ -1342,6 +1342,21 @@ input.layui-input{
 	}
 }
 
+/*下拉菜单*/
+.more-menu-wap{
+	border: 1px solid #bdd4ea;
+	line-height:170%;
+	background:#d2ecff;
+	color:#000;
+	opacity:0.9;
+	box-shadow: 2px 3px 1px 0px #DDD;
+}
+.more-menu-wap>div{
+	padding:5px 3px;
+}
+.more-menu-wap a:hover{
+	color:red;
+}
 /*碎片标签*/
 .c_diypage .headle{
 	background:#5eaef5;

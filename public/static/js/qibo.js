@@ -125,12 +125,180 @@ var Qibo = function () {
 			}
 		}
 	}
+	
+	//下拉菜单开始
+	var moreMenu = {
+		showSonId:null,
+		showObjWidth:0,
+		showObjHeight:0,
+		topObj:null,		
+		init:function(){
+			oo=document.body.getElementsByClassName("more-menu");
+			for(var i=0;i<oo.length;i++){
+				if(oo[i].getAttribute("click")!=null){
+					if(oo[i].getAttribute("href")=="#")oo[i].href='javascript:';
+					if (document.all) { //For IE
+						oo[i].attachEvent("onmousedown",moreMenu.showdiv);
+						oo[i].attachEvent("onmouseover",moreMenu.showstyle);
+						oo[i].attachEvent("onmouseout",moreMenu.hidestyle);
+					}else{ //For Mozilla
+						oo[i].addEventListener("mousedown",moreMenu.showdiv,true);
+						oo[i].addEventListener("mouseover",moreMenu.showstyle,true);
+						oo[i].addEventListener("mouseout",moreMenu.hidestyle,true);
+					}
+				}else if(oo[i].getAttribute("url")!=null){
+					if(oo[i].getAttribute("href")=="#")oo[i].href='javascript:';
+					if (document.all) { //For IE
+						oo[i].attachEvent("onmouseover",this.showdiv);
+					}else{ //For Mozilla
+						oo[i].addEventListener("mouseover",this.showdiv,true);
+					}
+				}
+			}
+		},
+		getposition:function(o){
+			var to=new Object();
+			to.left=to.right=to.top=to.bottom=0;
+			var twidth=o.offsetWidth;
+			var theight=o.offsetHeight;
+			while(o!=document.body){
+				to.left+=o.offsetLeft;
+				to.top+=o.offsetTop;
+				o=o.offsetParent;
+			}
+			to.right=to.left+twidth;
+			to.bottom=to.top+theight;
+			return to;
+		},
+		showstyle:function(evt){
+			var evt = (evt) ? evt : ((window.event) ? window.event : "");
+			if (evt) {
+				 ao = (evt.target) ? evt.target : evt.srcElement;
+			}
+			ao.style.border='1px dotted red';
+			ao.style.cursor='pointer';
+		},
+		hidestyle:function(evt){
+			var evt = (evt) ? evt : ((window.event) ? window.event : "");
+			if (evt) {
+				 ao = (evt.target) ? evt.target : evt.srcElement;
+			}
+			ao.style.border='0px dotted red';
+		},
+		showdiv:function(evt){
+			var evt = (evt) ? evt : ((window.event) ? window.event : "");
+			if (evt) {
+				 ao = (evt.target) ? evt.target : evt.srcElement;
+			}
+			ao.style.cursor='pointer';
+			moreMenu.topObj = ao;
+			position=moreMenu.getposition(ao);	//获取坐标
+			thisurl=ao.getAttribute("url");
+			oid=thisurl.replace(/[^\w|^\-]/g,"").substr(0,200);
+			ao.id = oid;
+			moreMenu.showSonId = DivId = "clickEdit_"+oid;
+			//thisurl=thisurl + "&TagId=" + oid;
+			obj=document.getElementById(DivId);
+			if(obj==null){
+				obj=document.createElement("div");
+				//obj.innerHTML='<table border="0" cellspacing="0" cellpadding="0" id="AjaxEditTable" class="AjaxEditTable"><tr><td class="head"><span onclick="moreMenu.cancel(\''+DivId+'\')">关闭</span></td></tr><tr> <td class="middle"></td></tr></table>';
+				//objs=obj.getElementsByTagName("TD");
+				//objs[1].id=DivId;
+				obj.innerHTML='<div class="more-menu-wap"><div class="more-menu-in" id="'+DivId+'"></div></div>';
+				obj.style.Zindex='9990';
+				obj.style.display='none';	//网速慢的话,就把这行删除掉,直接先显示,再加载其它内容
+				obj.style.position='absolute';
+				obj.style.top=position.bottom+'px';
+				obj.style.left=position.left+'px';
+				//obj.style.height='100px';
+				//obj.style.width=moreMenu.width+'px';
+				document.body.appendChild(obj);
+				//moreMenu.getparent(DivId).show("slow");
+				//obj.innerHTML='以下是显示内容...';
+				if(thisurl.indexOf('<')>-1){
+					$("#"+DivId).html(thisurl);				
+					if($(ao).width()>moreMenu.getparent(DivId).width()){
+						moreMenu.getparent(DivId).css("width",$(ao).width()+"px");
+					}
+					moreMenu.getparent(DivId).show();
+					setTimeout(function(){
+						moreMenu.getparent(DivId).show(); //避免有时不显示
+					},100);
+					moreMenu.autohide(ao);
+				}else{
+					$.get(thisurl+(thisurl.indexOf("?")==-1?"?":"&")+Math.random(),function(res){
+						if(res.code==0){
+							$("#"+DivId).html(res.data);				
+							if($(ao).width()>moreMenu.getparent(DivId).width()){
+								moreMenu.getparent(DivId).css("width",$(ao).width()+"px");
+							}
+							moreMenu.getparent(DivId).show();
+							moreMenu.autohide(ao);
+						}else{
+							moreMenu.getparent(DivId).hide();
+							document.body.removeChild(obj);
+							return ;
+						}						
+					});
+				}
+			}else{
+				//兼容缩放窗口后,要重新定位
+				moreMenu.getparent(DivId).css({"left":position.left+'px',"top":position.bottom+'px'});
+				moreMenu.getparent(DivId).show();
+				setTimeout(function(){
+					moreMenu.getparent(DivId).show(); //避免有时不显示
+				},100);
+				moreMenu.autohide(ao);
+			}
+		},
+		getparent:function(sonId){
+			parentObj = $("#"+sonId).parent().parent();
+			return parentObj;
+		},
+		cancel:function(sonId){
+			moreMenu.getparent(sonId).hide();
+		},
+		autohide:function(eObj){
+			parentObj = moreMenu.getparent(moreMenu.showSonId);
+			//要提前赋值,不然渐变隐藏或显示,会引起宽高的变化
+			w1 = $(eObj).width();
+			w2 = parentObj.width();
+			moreMenu.showObjWidth = w1>w2 ? w1 : w2;
+			moreMenu.showObjHeight = parentObj.height();
+			document.onmousemove = moreMenu.mouseMove;	//不想鼠标离开隐藏的话,就把这行删除掉
+		},
+		mouseMove:function(ev){
+			ev = ev || window.event;
+			var mousePos = moreMenu.mousePosition(ev);
+			var x = mousePos.x;
+			var y = mousePos.y;
+			parentObj = moreMenu.getparent(moreMenu.showSonId);
+			left1 = parseInt(parentObj.css("left"));
+			top1 = parseInt(parentObj.css("top"))-$(moreMenu.topObj).height();
+			left2 = left1 + moreMenu.showObjWidth ;
+			top2 = top1 + moreMenu.showObjHeight+$(moreMenu.topObj).height();
+			if ( x<left1 || x>left2 || y<top1 || y>top2){
+				moreMenu.cancel(moreMenu.showSonId);
+				//document.title=x+"-"+y+" 横 "+left1+"-"+left2+" 高 "+top1+"-"+top2 + "p高"+ parentObj.height();
+			}
+		},
+		mousePosition:function(ev){	//获取鼠标所在坐标
+			if(ev.pageX || ev.pageY){	//FF
+				return {x:ev.pageX, y:ev.pageY};
+			}
+			return {	//IE
+				x:ev.clientX + window.document.documentElement.scrollLeft,// - window.document.documentElement.clientLeft,
+				y:ev.clientY + window.document.documentElement.scrollTop//  - window.document.documentElement.clientTop
+			};
+		}
+	}//下拉菜单结束
 
 	return {
 			init:function(){
 				pop();
 				_confirm();
 				_ajaxget();
+				moreMenu.init();
 			},
 			goBack:function(url){
 				goBack(url);

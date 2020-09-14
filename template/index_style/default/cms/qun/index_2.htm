@@ -22,7 +22,7 @@
 </div>
 
     <div class="ListContent">
-	{qb:tag name="qun_wapindex_model004" union="order,by" where="uid=$info.uid&myfid=$myfid" type="cms" mid="2" rows="5"}
+	{qb:tag name="qun_wapindex_model004" union="order,by" time="-1" where="uid=$info.uid&myfid=$myfid" type="cms" mid="2" rows="5"}
         <ul class='listmsg'>
             <ol><em>{:format_time($rs.create_time,'d')}</em><span>{:format_time($rs.create_time,'y.m')}</span>
             </ol>
@@ -30,12 +30,14 @@
 				<div class='content'><p>{$rs.title}</p></div>
                 <div class='listimgs'>
 					{volist name="$rs.picurls" id="vs"}
+					{if $i<10}
                     <div class='pic2'>
 					<a href="{$rs.url}">
                         <p><span><em><img src="{$vs.picurl}" onerror="this.src='__STATIC__/images/nopic.png'" name="{$vs.picurl}" onclick='showthispic($(this));'/></em></span>
                         </p>
 					</a>
                     </div>
+					{/if}
 					{/volist}
                 </div>
                 <div class='listmsg listmsg3884'>
