@@ -23,6 +23,7 @@ $form_array = [
  //'switch' => '开关',
   'date' => '日期',
   'datetime' => '日期+时间',
+  'daytime' => '多日期',
     'static' => '只读文本',
     //'tags' => '标签',
   'hidden' => '隐藏',

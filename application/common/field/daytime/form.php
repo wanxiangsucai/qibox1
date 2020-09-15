@@ -2,12 +2,17 @@
 function_exists('urls') || die('ERR');
 
 
-$jscode = '';
+$get_time_url = iurl('wxapp.api/get_time_byday');
+$jscode = fun('field@load_js','laydate')?"<script src='$static/layui/layui.js'></script><link rel='stylesheet' href='$static/layui/css/layui.css' media='all'>":'';
 if(fun('field@load_js',$field['type'])){
 	$jscode = <<<EOT
 <script type="text/javascript">
 jQuery(document).ready(function() {
-	$('.list_shoparray').each(function () {
+	var laydate;
+	layui.use('laydate', function(){
+		laydate = layui.laydate;			
+	});
+	$('.list_daytime').each(function () {
 		var base = $(this);
 		var basehtml = base.find('div.input-group:first').prop("outerHTML");
 		//base.append(basehtml);
@@ -19,8 +24,8 @@ jQuery(document).ready(function() {
 		//统计数据
 		var count_value = function(){
 			var vals = [];
-			base.find('input.shop_title').each(function(){
-				if($(this).val()!='')vals.push($(this).val()+'|'+$(this).next().val()+'|'+$(this).next().next().val());
+			base.find('input.day_date').each(function(){
+				if($(this).val()!='')vals.push($(this).val()+'|'+$(this).next().val());
 			});
 			//vals.join(',')
 			base.find('textarea').val( JSON.stringify(vals)  );
@@ -69,8 +74,7 @@ jQuery(document).ready(function() {
 		
 		//添加按钮事件
 		var add_act = function(){
-			base.find('span.add').on('click',
-				function(){
+			base.find('span.add').on('click',function(){
 					$(this).parent().after(basehtml);
 					$(this).parent().next().find("input").val('');
 					init_act();
@@ -85,15 +89,62 @@ jQuery(document).ready(function() {
 				count_value();
 			});
 		}
+		
+		//添加自动获取时间组件
+		var add_getday = function(){
+			base.find('input').off('click');
+			setTimeout(function(){ //页面初始化时,laydate加载需要时间
+				base.find('input.day_date').each(function(){
+					var id = ('day_'+Math.random()).replace('.','');
+					$(this).attr('id',id); 
+					laydate.render({elem: '#'+id,type: 'date',done: function(value, date){
+						count_value();
+					}});
+				});
+			},300);
 
-		var init_act = function(){
+			base.find('input.day_times').click(function(){
+				var that = $(this);
+				var day = that.prev().val();
+				if(day==''){
+					layer.alert('请先选择日期,再设置时间段');
+					return ;
+				}
+				var type = $("#form_group_timesort input[name=timesort]:checked").val();
+				$.get("{$get_time_url}?day="+day+"&type="+(type?type:0),function(res){
+					if(res.code==0){
+						var str = "";
+						res.data.forEach((rs)=>{
+							var is_ck = (','+that.val()+',').indexOf(','+rs.id+',')>-1 ? 'checked' : '';
+							str += '<input type="checkbox" name="time[]" '+is_ck+' value="'+rs.id+'">'+rs.name+'<br>';
+						});
+						var id = ('day_'+Math.random()).replace('.','');
+						$(this).attr('id',id); 
+						layer.alert("<div class='choose_daytime'>"+str+"</div>",{title:'请选择时间段'},function(i){
+							var va = '';
+							$(".choose_daytime input:checked").each(function(){
+								va += ','+$(this).val();
+							});
+							that.val( va.substring(1) );
+							count_value();
+							layer.close(i)
+						});
+					}else{
+						layer.msg('没有时间段可选择!');
+					}
+				});				
+			});
+		}
+
+		var init_act = function(){console.log('长',44);
 			base.find('span').off('click');
-			base.find('input').off('blur');
+			base.find('input').off('blur');			
 			add_act();
 			del_act();
 			blur_act();
 			down_act();
 			up_act();
+			add_getday();
 			count_value();
 		}
 		init_act();
@@ -107,13 +158,11 @@ EOT;
 }
 
 $groups = '<style type="text/css">
-.input-group .shop_title{width:200px;}
-.input-group .shop_price{width:80px;}
-.input-group .shop_num{width:60px;}
+.input-group .day_date{width:130px;}
+.input-group .day_times{width:80px;}
 @media (max-width:600px) {
-	.input-group .shop_title{width:140px;}
-	.input-group .shop_price{width:50px;}
-	.input-group .shop_num{width:40px;}
+	.input-group .day_date{width:110px;}
+	.input-group .day_times{width:50px;}
 }
 </style>';
 $array = json_decode($info[$name],true);
@@ -122,9 +171,8 @@ if($array){
 		list($title,$price,$num) = explode('|',$vo);
 		$groups .= "<div class='input-group'>
 			<span class='input-group-addon add'><i class='fa fa-plus-square'></i></span>
-			<input class='wri shop_title' type='text' value='{$title}' placeholder='型号、尺寸、大小等分类'>
-			<input class='wri shop_price' type='number' step='0.01' value='{$price}' placeholder='价格'>
-			<input class='wri shop_num' type='number' step='1' min='0' value='{$num}' placeholder='库存'>
+			<input class='wri day_date' type='text' value='{$title}' placeholder='格式:2020-09-08'>
+			<input class='wri day_times' type='text' value='{$price}' placeholder='时间段'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
 			<span class='input-group-addon down'><i class='fa fa-arrow-down'></i></span>
 			<span class='input-group-addon up'><i class='fa fa-arrow-up'></i></span>
@@ -133,9 +181,8 @@ if($array){
 }else{
 	$groups .= "<div class='input-group'>
 			<span class='input-group-addon add'><i class='fa fa-plus-square'></i></span>
-			<input class='wri shop_title' type='text' value='' placeholder='型号、尺寸、大小等分类'>
-			<input class='wri shop_price' type='number' step='0.01' min='0' value='' placeholder='价格'>
-			<input class='wri shop_num' type='number' step='1' min='0' value='' placeholder='库存'>
+			<input class='wri day_date' type='text' value='' placeholder='格式:2020-09-08'>
+			<input class='wri day_times' type='text' value='' placeholder='时间段'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
 			<span class='input-group-addon down'><i class='fa fa-arrow-down'></i></span>
 			<span class='input-group-addon up'><i class='fa fa-arrow-up'></i></span>
@@ -146,7 +193,7 @@ if($array){
 return <<<EOT
 
 
-<div class="list_shoparray">
+<div class="list_daytime">
 $groups
 <textarea style="display:none;" id="{$name}" name="{$name}" >{$info[$name]}</textarea>
 </div>
