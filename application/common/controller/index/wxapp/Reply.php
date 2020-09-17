@@ -226,6 +226,13 @@ abstract class Reply extends IndexBase
             return '很抱歉,你的身份还没通过审核验证,没权限发表回复!';
         }
         
+        if(function_exists('allow_reply')){     //在当前频道的目录下common.php定义allow_reply函数判断是否有权限进行评论
+            $result = allow_reply($info,$this->user);
+            if ($result!==true) {
+                return $result;
+            }
+        }
+        
         if (!empty($this -> validate)) {   //验证数据
             $result = $this -> validate($data, $this -> validate);
             if (true !== $result){

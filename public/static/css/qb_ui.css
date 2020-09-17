@@ -1344,9 +1344,9 @@ input.layui-input{
 
 /*下拉菜单*/
 .more-menu-wap{
-	border: 1px solid #bdd4ea;
+	border: 1px solid #cacaca;
 	line-height:170%;
-	background:#d2ecff;
+	background:#f5f7f9;
 	color:#000;
 	opacity:0.9;
 	box-shadow: 2px 3px 1px 0px #DDD;

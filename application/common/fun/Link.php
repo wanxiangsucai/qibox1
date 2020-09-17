@@ -19,7 +19,11 @@ class Link{
     public static function more($title='',$link_array=[]){
         $str = '';
         foreach ($link_array AS $name=>$link){
-            $str .= "<a class='more_links' href=\"javascript:layer.confirm('你确定要{$name}？', { btn: ['确定', '取消'] },function(){ window.location.href='{$link}' });\">{$name}</a>";
+            if (is_array($link)) {
+                $str .= "<a class='more_links' target=\"{$link['target']}\" href=\"{$link['url']}\">{$name}</a>";;
+            }else{
+                $str .= "<a class='more_links' href=\"javascript:layer.confirm('你确定要{$name}？', { btn: ['确定', '取消'] },function(){ window.location.href='{$link}' });\">{$name}</a>";
+            }            
         }
         $code = "<style type='text/css'>
 .more_links{

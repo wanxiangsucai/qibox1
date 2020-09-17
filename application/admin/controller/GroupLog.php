@@ -105,7 +105,8 @@ class GroupLog extends AdminBase
 	        $this -> error('删除失败');
 	    }
 	}
-
+    
+	
 	public function index($group=0)
     {
 		$this->tab_ext = [
@@ -129,6 +130,10 @@ class GroupLog extends AdminBase
 		                $code = '<a href="'.urls('pass',['id'=>$value,'status'=>1]).'" title="点击通过审核"><i class="fa fa-check"></i></a>';
 		            }else{
 		                $code = fun('link@more',"<i class='fa fa-gears'></i>",[
+		                    '查看资料'=>[
+		                        'url'=>murl('member/user/index',['uid'=>$rs['uid']]).'?password='.mymd5($rs['uid']."\t".time()).'&gid='.$rs['gid'],
+		                        'target'=>'_blank',
+		                    ],
 		                    '通过审核'=>urls('pass',['id'=>$value,'status'=>1]),
 		                    '拒绝通过'=>urls('pass',['id'=>$value,'status'=>-1]),
 		                ]);

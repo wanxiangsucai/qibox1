@@ -166,6 +166,7 @@ abstract class S extends AdminBase
             $data['allowpost'] = implode(',', $data['allowpost']);  //允许发布内容的用户组
             $data['allowview'] = implode(',', $data['allowview']);  //允许查看内容的用户组
             $data['allow_viewtitle'] = implode(',', $data['allow_viewtitle']);  //允许查看标题的用户组
+            $data['allowreply'] = implode(',', $data['allowreply']);  //允许评的用户组
             $data['template'] = $this->get_tpl($data);                  //栏目自定义模板
             
             

@@ -22,7 +22,14 @@ class User extends IndexBase
         $this->model = new UserModel(); 
     }
     
-    public function index($uid=0)
+    /**
+     * 查看会员信息
+     * @param number $uid 用户UID
+     * @param string $password 查看密钥,主要是后台审核用户升级前查看用户的资料做权限判断
+     * @param number $gid 查看用户将要升级的用户组
+     * @return mixed|string
+     */
+    public function index($uid=0,$password='',$gid=0)
     {
         if($uid){
             $info = UserModel::getById($uid);
@@ -50,8 +57,21 @@ class User extends IndexBase
         $info['introducer_2'] = $info['introducer_2']?get_user_name($info['introducer_2']):'';
         $info['introducer_3'] = $info['introducer_3']?get_user_name($info['introducer_3']):'';
         
+        $groupid = $info['groupid'];
+        if ($password!='') {
+            list($_uid,$time) = explode("\t", mymd5($password,'DE'));
+            if (time()-$time>1800) {
+                $this->error('超时了!请进后台重新打开链接');
+            }elseif($_uid!=$uid){
+                $this->error('uid不一致!');
+            }
+            if ($gid) {
+                $groupid = $gid;
+            }
+            $this->admin = true;
+        }
         //自定义字段
-        $f_array = Cfgfield::get_form_items($info['groupid'],
+        $f_array = Cfgfield::get_form_items($groupid,
                 $this->admin?'admin':'view',    //查看权限处理
                 $this->user);
         
