@@ -3086,19 +3086,22 @@ if (!function_exists('get_qrcode')) {
      * 获取某个网址的二维码
      * @param string $url 要生成的真实二维码网址
      * @param string $logo 小LOGO地址
+     *  @param string $is_wxapp 是否为小程序码
      * @return string
      */
-    function get_qrcode($url='',$logo=''){
+    function get_qrcode($url='',$logo='',$is_wxapp=false){
         static $domain = '';
         if($domain === ''){
             $domain = request()->domain();
         }
-        if ($url) {
-            $url = preg_match('/:\/\//', $url) ? $url : $domain.$url;
-        }else{
-            $url=request()->url(true);
-        }
-        return iurl('index/qrcode/index') . '?url=' . urlencode($url).($logo?'&logo='.urlencode($logo):'');
+        if (!is_numeric($url)) {
+            if ($url) {
+                $url = preg_match('/:\/\//', $url) ? $url : $domain.$url;
+            }else{
+                $url = request()->url(true);
+            }
+        }        
+        return iurl($is_wxapp?'index/qrcode/wxapp':'index/qrcode/index') . '?url=' . urlencode($url).($logo?'&logo='.urlencode($logo):'');
     }
 }
 
