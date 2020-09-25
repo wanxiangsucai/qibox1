@@ -14,7 +14,7 @@ class Page{
         if ($hyid) {
             $menu = cache('qun_menu_1_'.$hyid);
             if( empty($menu) ){
-                $menu = model('qun/menu')->getTreeList(['aid'=>$hyid,'ifshow'=>1,'type'=>1]);
+                $menu = get_sons(model('qun/menu')->getTreeList(['aid'=>$hyid,'ifshow'=>1,'type'=>1]));
                 cache('qun_menu_1_'.$hyid,$menu);
             }
         }
