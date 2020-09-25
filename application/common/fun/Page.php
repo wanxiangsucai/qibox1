@@ -9,8 +9,8 @@ class Page{
      * @return \app\common\fun\unknown[]|\app\common\fun\unknown
      */
     public function foot_menu(){
-        $hyid = get_cookie('HYID');
         $menu = [];
+        $hyid = config('webdb.sys_mode_type')==1 ? get_cookie('last_qun_id') : get_cookie('HYID');        
         if ($hyid) {
             $menu = cache('qun_menu_1_'.$hyid);
             if( empty($menu) ){

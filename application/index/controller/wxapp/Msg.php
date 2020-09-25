@@ -186,6 +186,7 @@ class Msg extends IndexBase{
         $array = model::where('qun_id','>',0)->order('id desc')->limit(10)->column(true);
         foreach($array AS $rs){
             $rs['username'] = get_user_name($rs['uid']);
+            $rs['icon'] = get_user_icon($rs['uid']);
             $rs['time'] = format_time($rs['create_time'],true);
             $rs['qun_name'] = fun('qun@getByid',$rs['qun_id'])['title'];
             $rs['user_url'] = get_url('user',$rs['uid']);

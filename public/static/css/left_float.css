@@ -35,7 +35,10 @@
     -moz-transition: width 0.4s;
     -webkit-transition: width 0.4s;
     -o-transition: width 0.4s;
+	max-height: calc(80vh);;
+    overflow-y: auto;
 }
+
 .change-type-moremenu .type-left-moremenu ul li {
     line-height: 40px;
     height: 40px;
