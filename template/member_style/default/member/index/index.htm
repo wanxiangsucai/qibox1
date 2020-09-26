@@ -237,21 +237,22 @@
             </li>
         </ul>
     </main>
-    <footer>
+
+	<footer style="height:40px;"></footer>
+	{include file="../../../index_style/default/index/footmenu" /}
+	<!--
+	 <footer>
         <ul class="bui-nav footer-nav">
 		{volist name=":fun('page@foot_menu')" id="rs"}
             <li class="bui-btn bui-box-vertical {:strstr($rs['url'],'/member/index')?'active':''}" href="{$rs.url}">
                 <i class="{$rs.style|default='glyphicon glyphicon-star'}"></i>
                 <div class="span1">{$rs.name}</div>
             </li>
-		{/volist}
-			<!--
-            <li class="bui-btn bui-box-vertical active">
-                <i class="icon-user"></i>
-                <div class="span1">我的</div>
-            </li>-->
+		{/volist} 
         </ul>
     </footer>
+	-->
+   
 </div>
 
 <div id="editmodes"></div>
