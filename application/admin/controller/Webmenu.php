@@ -28,13 +28,20 @@ class Webmenu extends AdminBase
 	            );
 
 	    $tab = [
-	            //['id','ID','text'],
-	            ['style','图标','icon'],
-	            ['title_display','链接名称','text'],
-	            ['type','所属','select2',['头部通用','PC头部菜单','wap头部菜单','wap底部菜单']],
-	            ['list','排序值','text.edit'],
-	            ['ifshow','是否显示','switch'],
-	            ['target','新窗口打开','yesno'],
+	            //['id','ID','text'],	            
+	        ['title_display','链接名称','text'],
+	        ['style','图标','icon'],
+	        ['type','所属','select2',['头部通用','PC头部菜单','wap头部菜单','wap底部菜单']],
+	        ['list','排序值','text.edit'],
+	        ['ifshow','是否显示','switch'],
+	        ['target','新窗口打开','yesno'],
+	        ['id','添加子菜单','callback',function($key,$rs){
+	            $code = ' ';
+	            if(!$rs['pid']){
+	                $code = "<a href='".url('add',['pid'=>$key])."' class='fa fa-plus' title='添加子菜单'></a>";
+	            }
+	            return $code;
+	        }],
 	            //['right_button', '操作', 'btn'],
 // 	            ['right_button', '操作', 'callback',function($value,$rs){
 // 	                if($rs['pid']>0)$value=str_replace('_tag="add"', 'style="display:none;"', $value);
@@ -45,7 +52,7 @@ class Webmenu extends AdminBase
 	    $table = Tabel::make($listdb,$tab)
 	    ->addTopButton('add',['title'=>'添加菜单','href'=>url('add',['type'=>$type])])
 	    ->addTopButton('delete')	    
-	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__'])])
+	    //->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__'])])
 	    ->addRightButton('delete')	    
 	    ->addRightButton('edit')
 	    //->addPageTips('省份管理')
@@ -91,7 +98,7 @@ class Webmenu extends AdminBase
 	    ->addSelect('pid','父级菜单','',$array,$pid)
 	    ->addText('name','菜单名称')
 	    ->addText('url','菜单链接')
-	    ->addRadio('type','使用范围','',['头部通用','PC头部菜单','wap头部菜单','wap底部菜单'],0)
+	    ->addRadio('type','使用范围','',['头部通用','PC头部菜单','wap头部菜单','wap底部菜单'],intval($info['type']))
 	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'],0)
 	    ->addIcon('style','图标','需要模板配合做样式')
 	    ->addColor('fontcolor','字体颜色')
