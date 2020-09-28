@@ -13,13 +13,14 @@ use app\qun\model\Moneylog AS MoneylogModel;
 class Qun{
     
     /**
-     * 圈币消费与赚取日志
-     * @param number $aid
-     * @param number $uid
-     * @param number $money
-     * @param string $about
+     * 圈币或圈豆消费与赚取日志
+     * @param number $aid 圈子ID
+     * @param number $uid 用户UID
+     * @param number $money 圈币或圈豆,正数是加,负数是减
+     * @param string $about 产生原因说明
+     * @param number $type 1是圈币,2是圈豆
      */
-    public static function money($aid=0,$uid=0,$money=0,$about=''){
+    public static function money($aid=0,$uid=0,$money=0,$about='',$type=1){
         if ($money==0||$uid==0||$aid==0) {
             return ;
         }
@@ -29,13 +30,14 @@ class Qun{
             'aid'=>$aid,
             'money'=>$money,
             'about'=>$about,
+            'type'=>$type,
         ]);
         
         if ($result) {
             if ($money>0) {
-                MemberModel::where('uid',$uid)->where('aid',$aid)->setInc('money',$money);
+                MemberModel::where('uid',$uid)->where('aid',$aid)->setInc($type==1?'money':'dou',$money);
             }else{
-                MemberModel::where('uid',$uid)->where('aid',$aid)->setDec('money',abs($money));
+                MemberModel::where('uid',$uid)->where('aid',$aid)->setDec($type==1?'money':'dou',abs($money));
             }
             cache('user_'.$uid,null);
             return true;
@@ -364,6 +366,20 @@ class Qun{
             $info = $id;
         }
         return $info['moneyname']?:'圈币';
+    }
+    
+    /**
+     * 获取圈豆名称
+     * @param number|array $id 可以是圈子数据,也可以是圈子ID
+     * @return string
+     */
+    public static function douname($id){
+        if (is_numeric($id)) {
+            $info = self::getByid($id);
+        }else{
+            $info = $id;
+        }
+        return $info['douname']?:'圈豆';
     }
     
     /**
