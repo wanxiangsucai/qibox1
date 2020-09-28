@@ -1,6 +1,6 @@
 .footmenu_warp{
 	position: fixed;
-	z-index: 3;
+	z-index: 100;
 	bottom: 0px;
 	left: 0;
 	border-top: 1px solid #eee;
@@ -125,4 +125,11 @@
 	border-left: 9px solid transparent;
 	border-right: 9px solid transparent;
 	z-index: 11;
+}
+
+.footmenu_blank{
+	height:50px;
+}
+body{
+	padding-bottom:50px; /*避免菜单档住最底部的内容*/
 }

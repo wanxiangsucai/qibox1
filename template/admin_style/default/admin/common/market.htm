@@ -143,8 +143,50 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 	color:yellow;
 }
 
+ 
+.new_setup div{background:#666; position:absolute;
+left:-800px;top:10px;color:#fff;line-height:20px; padding:5px 10px;border-radius:10px; font-size:14px; z-index:100;height:20px;display: -webkit-box;overflow: hidden;text-overflow: ellipsis;word-wrap: break-word;white-space: normal !important;-webkit-line-clamp: 1;-webkit-box-orient: vertical;}
+.new_setup div img{border-radius:50%; width:20px; height:20px;vertical-align:middle;}
+.new_setup div a{color:yellow;}
 </style>
-<div class="MainContainers">
+
+<script type="text/javascript">
+var total_msg,ii=0;
+$(function (){
+	$.get("https://x1.php168.com/appstore/api/appsetup.html",function(res){
+		if(res.code==0){
+			var str = '';
+			res.data.forEach((rs,j)=>{
+				str += `<div class="son${j}">${rs.domain} 在 ${rs.time} 安装了<a href="https://x1.php168.com/appstore/content/show/id/${rs.id}.html" target="_blank">${rs.title}</a></div>`;
+			});
+			$('.new_setup').html(str);
+			total_msg = res.paginate.total;
+			show_tanmu(500);
+		}
+	});
+});
+
+function show_tanmu(time){	
+	setTimeout(function(){
+		console.log(total_msg,ii)
+		if(ii>=total_msg) ii = 0;
+		$(".new_setup .son"+ii).animate({
+			left:'200px',
+			opacity:'0.9', 
+		},500,'swing',function(){ii++;show_tanmu(4000);}).animate({
+			left:'700px',
+			opacity:'0.7', 
+		},8000).animate({
+			opacity:'0', 
+		},500).animate({
+			left:'-300px',
+		},1);
+	}, time);
+}
+</script>
+
+<div class="MainContainers" style="position:relative;">
+	<div class="new_setup"></div>
   <div class="Header"><span class="tag">{if ($fid==2)}功能插件{elseif in_array($fid,[4,7,8]) /}模板风格{elseif ($fid==3)/}钩子功能{else/}频道模块{/if}应用市场</span><span class="more">::</span></div>
 	<div class="Conter">
 		<div class="choose_btn">
