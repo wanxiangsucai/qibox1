@@ -1952,7 +1952,7 @@ if(!function_exists('tempdir')){
         }
         static $domain = null;
         if($domain === null){
-            $domain = request()->domain() ;
+            $domain = config('webdb.www_url')?:request()->domain() ;
         }
         if(!preg_match('/:\/\//', $path)&&!preg_match('/^\/public\//', $path)){
             $path = $domain . PUBLIC_URL . $path;

@@ -10,6 +10,13 @@ return array(
 								        array(
 								                'title'=>'省份管理',
 								                'link'=>'province/index',
+												'power'=>[
+													'index' =>'首页',
+													'delete'=>'删除',
+													'add'   =>'新增',
+													'edit'  =>'编辑',
+													'readcity' =>'导入地址库',
+												],
 								        ),
 										array(
 								                'title'=>'城市管理',

@@ -35,12 +35,16 @@ class Qun{
         
         if ($result) {
             if ($money>0) {
-                MemberModel::where('uid',$uid)->where('aid',$aid)->setInc($type==1?'money':'dou',$money);
+                $result = MemberModel::where('uid',$uid)->where('aid',$aid)->setInc($type==1?'money':'dou',$money);
             }else{
-                MemberModel::where('uid',$uid)->where('aid',$aid)->setDec($type==1?'money':'dou',abs($money));
+                $result = MemberModel::where('uid',$uid)->where('aid',$aid)->setDec($type==1?'money':'dou',abs($money));
             }
             cache('user_'.$uid,null);
-            return true;
+            if ($result) {                
+                return true;
+            }else{
+                return '你还没加入当前圈子!';
+            }            
         }
     }
     

@@ -48,6 +48,7 @@ class City extends AdminBase
 	    
 	    $table = Tabel::make($listdb,$tab)
 	    ->addTopButton('add',['title'=>'添加'.$this->cfg_name,'href'=>purl('add',['pid'=>$pid])])
+
 	    ->addTopButton('delete')
 	    ->addRightButton('edit')
 	    ->addRightButton('delete')	    
@@ -59,6 +60,9 @@ class City extends AdminBase
 	        
 	        $table->addRightButton('custom',['title'=>'管理下级','href'=>purl($this->cfg_sfile.'/index',['pid'=>'__id__'])]);
 	    }
+	    if($this->cfg_name=='省份'){
+			$table->addTopButton('add',['title'=>'导入系统地址库','href'=>purl('readcity')]);
+		}
         return $table::fetchs();
 	}
 	
@@ -99,7 +103,18 @@ class City extends AdminBase
 	    
 	    return $form::fetchs();
 	}
+	public function readcity(){
+		$sql = @file_get_contents('https://gitee.com/qibo168/codes/mgop2ze0ayn9t6x8klhfv27/raw?blob_name=0.sql');
+		if (strlen($sql)>15) {
+			$result=into_sql($sql,true,0);
+			 if($result){
+				 $this->success('导入成功');
+			 }
+		}else{
+			$this->error('云端地址库下载失败');
+		}
 
+	}
 	public function edit($id=0){
 	    $info = AreaModel::get($id);
 	    if ($this->request->isPost()) {
