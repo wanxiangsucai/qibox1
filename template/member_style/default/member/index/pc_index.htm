@@ -3,7 +3,7 @@
 <head>
 <title>会员中心 </title>
 <link rel="stylesheet" type="text/css" href="__STATIC__/member/default/blue/css.css">
-<link rel="stylesheet" type="text/css" href="__STATIC__/member/default/style7/index.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/member/default/style7/index.css?j">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=8"><!-- 强制ie8,for 360 -->
 <SCRIPT LANGUAGE="JavaScript" src="__STATIC__/js/core/jquery.min.js"></SCRIPT>
@@ -31,7 +31,7 @@ function qb_time(){
 	if(day<=9) day="0"+day;
 	if(minutes<=9) minutes="0"+minutes;
 	if(seconds<=9) seconds="0"+seconds ;
-	myclock="当前时间<em> "+year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds+"</em>";
+	myclock=" <em class='si si-clock'> "+year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds+"</em>";
 	$('#liveclock').html(myclock);
 	setTimeout("qb_time()",1000) 
 } 
@@ -60,7 +60,7 @@ if($menu['often']['sons'] && $key!='often'){continue;}	//如果有个性菜单,�
 	<dd>
 		{volist name="vo.sons" id="ar"}
  		<ul>
- 			<ol><i class="{$ar.icon|default='fa fa-map-o'}"></i>{$ar.title}</ol>
+ 			<ol><i class="{$ar.icon|default='fa fa-map-o'}"></i>{$ar.title|get_word=16}</ol>
 			{volist name="ar.sons" id="rs"}
  			<li onclick="linksthis($(this))"><A HREF="{$rs.url}" title="{$rs.title}" target="member_mainiframe" {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty}>{$rs.title}</A>{$rs.script}</li>
  			{/volist}
@@ -106,6 +106,24 @@ function selectMenu(num){
 	$('.MenuContent dl').eq(num).find('dt').addClass('ck');
 	var leftMenus=$('.MenuContent dl').eq(num).find('dd').html();
 	$('.LeftMenus').html(leftMenus);
+	
+	$(".LeftMenus ul").each(function(){
+		var that = $(this);
+		that.find("ol").click(function(){
+			if(that.find("li").is(':hidden')){
+				that.find('li').show(200);
+				that.find("ol").removeClass('hide');
+			}else{
+				that.find('li').hide(200);
+				that.find("ol").addClass('hide');				
+			}			
+		});
+	});
+
+	if($(".LeftMenus ul").length>=4){	//超过4个就默认隐藏
+		$(".LeftMenus li").hide();
+		$(".LeftMenus ol").addClass('hide');
+	}
 }
 $('.MenuContent dl').click(function(){
 	var thisnum=$(this).index();

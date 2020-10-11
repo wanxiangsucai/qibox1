@@ -364,10 +364,15 @@
 	border-bottom:0;
 	right:15px;
 	top:20px;
+	cursor:pointer;
+}
+.LeftMenus ul ol.hide:after{
+	border-bottom: 8px solid #619aef;
+	border-top:0;
 }
 .LeftMenus ul li{
-	height:50px;
-	line-height:50px;
+	height:40px;
+	line-height:40px;
 	margin:0 10px;
 	overflow:hidden;
 	border-top:#DEDEDE dotted 1px;
