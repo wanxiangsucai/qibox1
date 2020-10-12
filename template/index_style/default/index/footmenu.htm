@@ -22,9 +22,9 @@ $menudb=fun('page@foot_menu');
             <div class="innertiggle"></div>
         </div> 
 		{/if}
-			{if strstr($rs.url,'member.php/member/msg/index.html')&&modules_config('tongji')}
+			{if strstr($rs.url,'member.php/member/msg/index')&&modules_config('tongji')}
 				<dd  style="color:#fff;background:orange;position:absolute;right:5px;top:5px;font-size:10px;line-height:12px;padding:2px;border-radius:4px;display:none;" class="tongji-num">0</dd>
-			{elseif strstr($rs.url,'member.php/member/index.html')}
+			{elseif strstr($rs.url,'member.php/member/index')}
 				<dd  style="color:#fff;background:red;position:absolute;right:5px;top:5px;font-size:10px;line-height:12px;padding:2px;border-radius:4px;display:none;" class="msg-num">0</dd>
 			{/if}
     </div>
