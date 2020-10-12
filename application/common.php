@@ -1952,7 +1952,12 @@ if(!function_exists('tempdir')){
         }
         static $domain = null;
         if($domain === null){
-            $domain = config('webdb.www_url')?:request()->domain() ;
+            if ( config('webdb') && config('webdb.www_url')!='' ) {
+                $domain = config('webdb.www_url');
+            }elseif(!config('webdb')){  //比如app\common\behavior\Init获取缓存时使用;
+                $domain = Db::name('config')->where('c_key','www_url')->where('type','1')->value('c_value');
+            }
+            $domain || $domain = request()->domain();
         }
         if(!preg_match('/:\/\//', $path)&&!preg_match('/^\/public\//', $path)){
             $path = $domain . PUBLIC_URL . $path;
