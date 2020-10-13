@@ -109,7 +109,7 @@ class Member extends AdminBase
 	        }else{
 	            $this->error('未知类型');
 	        }
-	        $title = jf_name($data['type']).'变动通知';	        
+	        $title = $_name.'变动通知';	        
 	        
 	        $content = '你的 '.$_name.' '.($data['num']>0?'增加了':'减少了').' '.abs($data['num']).' '.$_dw.'，原因：'.$data['about'].'，操作员：'.$this->user['username'];
 	        send_msg($data['uid'],$title,$content);

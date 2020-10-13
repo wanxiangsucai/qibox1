@@ -204,19 +204,19 @@ class Label extends IndexBase
             }
             if(empty($_array_path) && !strstr($path,'model_style') && count(explode('/', $path))>2){
                 if(is_file(TEMPLATE_PATH.'index_style/'.$path.'.'.config('template.view_suffix'))){
-                    $_array_path = glob(TEMPLATE_PATH.'index_style/'.dirname($path).'/model_*.htm');
+                    $_array_path = glob(TEMPLATE_PATH.'index_style/'.dirname($path).'/model_*.'.config('template.view_suffix'));
                 }elseif(is_file(TEMPLATE_PATH.$path.'.'.config('template.view_suffix'))){
-                    $_array_path = glob(TEMPLATE_PATH.dirname($path).'/model_*.htm');
+                    $_array_path = glob(TEMPLATE_PATH.dirname($path).'/model_*.'.config('template.view_suffix'));
                 }
             }
         }
         
         //查找私有碎片的公共可选碎片 model_ 开头就列出来
         foreach($_array_path AS $path){
-            $path = str_replace([TEMPLATE_PATH,'.htm'],'', $path);
-            $all_model[$path] = $path;
+            //preg_match("/^<!--(.*?)-->/is", trim(file_get_contents($path)," \r\n\t"),$_ar);
+            $path = str_replace([TEMPLATE_PATH,'.'.config('template.view_suffix')],'', $path);
+            $all_model[$path] =  $path;
         }
-        
         $all_model = $this->get_model_name($all_model);
         ksort($all_model);
         $use_ar = [];
@@ -360,11 +360,12 @@ class Label extends IndexBase
     protected function get_model_name($array=[]){
         foreach($array AS $path=>$name){
             if(strstr($name,'/')){
-                $file = TEMPLATE_PATH."index_style/{$path}.htm";
+                $file = TEMPLATE_PATH."index_style/{$path}.".config('template.view_suffix');
                 if (!is_file($file)) {
-                    $file = TEMPLATE_PATH."{$path}.htm";
+                    $file = TEMPLATE_PATH."{$path}.".config('template.view_suffix');
                 }
-                preg_match("/^<!--(.*?)-->/is", trim(file_get_contents($file)),$data);
+                //试图获取碎片名称,不存在就用路径显示
+                preg_match("/^<!--(.*?)-->/is", trim(file_get_contents($file)," \r\n\t"),$data);
                 $array[$path]=trim($data[1],'-')?:$path;
             }
         }

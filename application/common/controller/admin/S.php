@@ -130,7 +130,7 @@ abstract class S extends AdminBase
             //修改排序
             return $this->edit_order();
         }
-        $listdb = $this->getListData($map = [], $order = '');
+        $listdb = $this->getListData($map = [], $order = 'list desc,id asc');
         return $this -> getAdminTable($listdb);
     }
     

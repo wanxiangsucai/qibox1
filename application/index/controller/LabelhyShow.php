@@ -27,10 +27,11 @@ class LabelhyShow extends LabelShow
         static $hy_tags;
         if ($id) {
             $hy_id = $id;
-        }
-        if ($tags) {
             $hy_tags = $tags;
         }
+//         if ($tags) {
+//             $hy_tags = $tags;
+//         }
         return [$hy_id,$hy_tags];
     }
     

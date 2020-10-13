@@ -1380,3 +1380,13 @@ input.layui-input{
 	.layui-layer-setwin .layui-layer-close1{background-position:-145px  -32px !important;;}.layui-layer-setwin a {width:35px !important;;height:35px !important;;}
 	.layui-layer-setwin{top:7px !important;}
 }
+
+/*标签添加碎片*/
+.diy-page-model-btn{
+	background:#55793e;
+	color:#fff;
+	text-align:center;
+	height:40px;
+	line-height:40px;
+	font-size:18px;
+}
