@@ -23,15 +23,23 @@
 .searchResultPanel{border:1px solid #C0C0C0;width:150px;height:auto;display:none;}
 .baaapsou{width: 10%;float: left;cursor:pointer;height: 28px;line-height: 28px;text-align: center;border: 1px solid #C0C0C0;border-radius: 3px;margin-left: 1%;}
 body{max-width:100%;}
+.WapFormContainer .butter{
+	margin-top:40px;
+}
+.WapFormContainer .butter button{
+	width:100%;
+	
+}
 </style> 
 <div class="WapFormContainer" >	 
 
 	<div class="js-bmap">
-		<input class="bmap-address" style="width:85%;float: left;" id="bmap-address-map" name="map_address" type="text" value="" placeholder="请输入要搜索的地址,或者手工在下面精准定位"> 
-		<div id="baaapsou-map" class="baaapsou">搜索</div>
+		
         <div class="searchResultPanel"></div>
-        <input class="bmap-point" type="text" id="atc_map" name="map" value="{$map}">
-        <div class="bmap" id="bmap-canvas-map"></div>			
+        <input class="bmap-point" type="hidden" id="atc_map" name="map" value="{$map}">
+        <div class="bmap" id="bmap-canvas-map"></div>		
+		<input class="bmap-address" style="width:85%;float: left;" id="bmap-address-map" name="map_address" type="text" value="" placeholder="可输入要搜索的地址,或手工定位"> 
+		<div id="baaapsou-map" class="baaapsou">搜索</div>
 	</div> 
 
 	<div class='butter'><button type="submit" onclick="post()">确认</button></div>
