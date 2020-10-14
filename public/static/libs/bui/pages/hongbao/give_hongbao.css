@@ -49,3 +49,7 @@
 #user_rmb{
 	color:red;
 }
+
+.bbs_warp,.map_warp{
+	display:none;
+}

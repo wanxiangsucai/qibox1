@@ -23,6 +23,19 @@ class Map extends IndexBase
     }
     
     /**
+     * 拾取地图坐标
+     * @param string $xy 默认地址
+     * @return mixed|string
+     */
+    public function point($xy=''){
+        if(empty($xy)){
+            $xy = '113.263661,23.155131';
+        }
+        $this->assign('map',$xy);
+        return $this->fetch();
+    }
+    
+    /**
      * 显示导航
      * @param string $xy 百度坐标
      * @param string $title 地址名称

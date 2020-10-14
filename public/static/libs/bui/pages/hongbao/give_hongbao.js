@@ -1,3 +1,6 @@
+function end_choose_map(map){
+	$(".hongbao_warp input[name='map']").val(map);
+}
 loader.define(function() {
 	var pageview = {};
 	var uid='';
@@ -30,6 +33,17 @@ loader.define(function() {
 				return ;
 			}else if( router.$(".hongbao_warp input[name='num']").val()<1 ){
 				layer.alert("红包个数必须要1个起");
+				return ;
+			}else if( router.$(".hongbao_warp input[name='onlymember']:checked").val()==2 ){
+				if(router.$(".hongbao_warp input[name='map']").val()==''){
+					layer.alert("地图坐标不能为空!");
+					return ;
+				}else if(router.$(".hongbao_warp input[name='distance']").val()<1){
+					layer.alert("距离范围必须1公里以上");
+					return ;
+				}
+			}else if( router.$(".hongbao_warp input[name='onlymember']:checked").val()=='bbsreply' && router.$(".hongbao_warp input[name='bbsnum']").val()<1 ){
+				layer.alert("最低发贴数不能小于1篇");
 				return ;
 			}
 			var total = router.$(".hongbao_warp input[name='num']").val() * router.$(".hongbao_warp input[name='money']").val();
@@ -91,6 +105,24 @@ loader.define(function() {
 		router.$(".hongbao_warp input[name='ifrand']").click(function(){
 			choose_type();
 		});
+
+		router.$(".hongbao_warp input[name='onlymember']").click(function(){
+			choose_limit();
+		});
+
+		router.$(".hongbao_warp input[name='map']").click(function(){
+			layer.open({
+			  type: 2,
+			  title: false,
+			  closeBtn: 0, //不显示关闭按钮
+			  shadeClose: true, //点击遮罩区域是否关闭页面 
+			  shade: 0.5,  //遮罩透明度
+			  area: ['100%', '480px'],
+			  offset: 'b', //右下角弹出
+			  anim: 2,
+			  content: ['/index.php/index/map/point.html?xy='+router.$(".hongbao_warp input[name='map']").val(), 'no'], //iframe的url，no代表不显示滚动条
+			});
+		});
 		
 		//充值
 		router.$("#addrmb").click(function(){
@@ -116,6 +148,26 @@ loader.define(function() {
 				});
 			});
 		});
+	}
+
+	function choose_limit(){
+		var v = router.$(".hongbao_warp input[name='onlymember']:checked").val();
+		if(v==2){
+			router.$(".bbs_warp").hide();
+			router.$(".map_warp").show();
+			router.$(".hongbao_warp input[name='bbsnum']").val('');
+		}else if(v=='bbsreply'){
+			router.$(".map_warp").hide();
+			router.$(".bbs_warp").show();
+			router.$(".hongbao_warp input[name='map']").val('');
+			router.$(".hongbao_warp input[name='distance']").val('');
+		}else{
+			router.$(".map_warp").hide();
+			router.$(".bbs_warp").hide();
+			router.$(".hongbao_warp input[name='map']").val('');
+			router.$(".hongbao_warp input[name='distance']").val('');
+			router.$(".hongbao_warp input[name='bbsnum']").val('');
+		}
 	}
 
 	function choose_type(){
