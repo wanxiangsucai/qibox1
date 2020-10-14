@@ -145,7 +145,7 @@ layui.use('layim', function(layim){
 		console.log(data);
 		var To = data.to;
 		if(To.type === 'friend'){
-		  layim.setChatStatus('<span style="color:#FF5722;">对方正在输入。。。</span>');
+		  //layim.setChatStatus('<span style="color:#FF5722;">对方正在输入。。。</span>');
 		}
 
 		WS.postmsg({
@@ -178,7 +178,7 @@ layui.use('layim', function(layim){
 			return ;
 		}
 		str = str ? str+uid+"," : ","+uid+"," ;
-		$.cookie('layim_msg_id', str, { expires: 3, path: '/' });
+		$.cookie('layim_msg_id', str, { expires: 3, path: '/' });  //expires的COOKIE时间单位是分钟
 
 		$(".layim-"+type+uid+" .layim-msg-status").html(0).hide();
 		
@@ -205,7 +205,7 @@ layui.use('layim', function(layim){
 
 		if(type === 'friend'){			
 		  //模拟标注好友状态
-		  layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
+		  //layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
 		} else if(type === 'group'){
 		  //模拟系统消息
 		  /*
@@ -302,6 +302,12 @@ WS.onmsg(function(obj){
 			,timestamp:data.full_time*1000
 			,is_new:true	//需要声音提醒有新消息
       });
+	}else if(obj.type=='check_online'){
+		if(obj.online==1){
+			LayIm.setChatStatus('<span style="color:red;">对方在线</span>');
+		}else{
+			LayIm.setChatStatus('<span style="color:blue;">对方不在线</span>');
+		}
 	}
 });
 

@@ -35,6 +35,14 @@ WS.onmsg(function(obj){
 			,timestamp:data.full_time*1000
 			,is_new:true	//需要声音提醒有新消息
       });
+
+	}else if(obj.type=='check_online'){
+		if(obj.online==1){
+			$(".layim-chat-status").html('<span style="color:#10ff3a;">对方在线</span>');
+		}else{
+			$(".layim-chat-status").html('<span style="color:#eee;">对方不在线</span>');
+			//LayIm.setChatStatus('<span style="color:blue;">对方不在线</span>');
+		}
 	}
 });
 
@@ -344,7 +352,7 @@ layui.config({
 			return ;
 		}
 		str = str ? str+uid+"," : ","+uid+"," ;
-		$.cookie('wap_layim_msg_id', str, { expires: 3, path: '/' });
+		$.cookie('wap_layim_msg_id', str, { expires: 3, path: '/' });	//expires的COOKIE时间单位是分钟
 
 		$(".layim-"+type+uid+" .layim-msg-status").html(0).hide();
 		
@@ -371,7 +379,7 @@ layui.config({
 
 		if(type === 'friend'){			
 		  //模拟标注好友状态
-		  layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
+		  //layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
 		} else if(type === 'group'){
 		  //模拟系统消息
 		  /*
