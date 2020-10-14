@@ -94,8 +94,8 @@ function btn(){
 						}
 					});
 				}else{ //需要审核或需要验证码才能加入的情况
-					layer.confirm("你还不是本圈子成员,是否先加入本圈子?",{btn:['立即加入','取消']},function(){
-						layer.closeAll();
+					layer.confirm("你还不是本圈子成员,是否先加入本圈子?",{btn:['立即加入','取消']},function(i){
+						layer.close(i);
 						bui.load({url: "/public/static/libs/bui/pages/frame/show.html",param: {"url": "/index.php/qun/content/apply.html?id="+quninfo.id}});
 					});
 				}

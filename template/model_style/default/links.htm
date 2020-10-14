@@ -64,7 +64,7 @@
 	{volist name=":array_chunk($listdb,4,true)" id="array"}
 	<ul>
 		{volist name="$array" id="rs"}
-			<li><a href="{$rs.url}"><span style="{notempty name='$rs.bgcolor'}background-color:{$rs.bgcolor};{/notempty}"><i class="{$rs.icon|default='fa fa-leaf'}"></i></span><em {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty}>{$rs.title}</em></a></li>
+			<li><a href="{$rs.url}"><span style="{notempty name='$rs.bgcolor'}background-color:{$rs.bgcolor};{/notempty}"><i class="{$rs.icon|default='fa fa-leaf'}"></i></span><em {notempty name='$rs.font_color'}style="color:{$rs.font_color};"{/notempty}>{$rs.title}</em></a></li>
 		{/volist}
 	</ul>
 	{/volist}

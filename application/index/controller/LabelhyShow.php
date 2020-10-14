@@ -25,7 +25,7 @@ class LabelhyShow extends LabelShow
     protected function get_hy_id($id=0,$tags=''){
         static $hy_id;
         static $hy_tags;
-        if ($id) {
+        if ($id||$tags) {
             $hy_id = $id;
             $hy_tags = $tags;
         }
