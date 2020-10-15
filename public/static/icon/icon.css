@@ -3886,3 +3886,368 @@
 .si-users:before {
     content: "\e001";
 }
+
+/**************************/
+@font-face {
+    font-family: 'icomoon';
+    src:    url('./fonts/icomoon.eot?uh1wnx');
+    src:    url('./fonts/icomoon.eot?uh1wnx#iefix') format('embedded-opentype'),
+        url('./fonts/icomoon.ttf?uh1wnx') format('truetype'),
+        url('./fonts/icomoon.woff?uh1wnx') format('woff'),
+        url('./fonts/icomoon.svg?uh1wnx#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icons-"], [class*=" icons-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icons-btn__:before {
+    content: "\e941";
+}
+.icons-btn__2:before {
+    content: "\e942";
+}
+.icons-110:before {
+    content: "\e93f";
+}
+.icons-uniE940:before {
+    content: "\e940";
+}
+.icons-uniE96E:before {
+    content: "\e96e";
+}
+.icons-FY_:before {
+    content: "\e96f";
+}
+.icons-uniE96D:before {
+    content: "\e96d";
+}
+.icons-uniE96B:before {
+    content: "\e96b";
+}
+.icons-uniE96C:before {
+    content: "\e96c";
+}
+.icons-uniE967:before {
+    content: "\e967";
+}
+.icons--01:before {
+    content: "\e968";
+}
+.icons-uniE969:before {
+    content: "\e969";
+}
+.icons-113:before {
+    content: "\e96a";
+}
+.icons-uniE966:before {
+    content: "\e966";
+}
+.icons-uniE965:before {
+    content: "\e965";
+}
+.icons-vip0:before {
+    content: "\e95e";
+}
+.icons-vip6:before {
+    content: "\e95f";
+}
+.icons-vip5:before {
+    content: "\e960";
+}
+.icons-vip4:before {
+    content: "\e961";
+}
+.icons-vip3:before {
+    content: "\e962";
+}
+.icons-vip2:before {
+    content: "\e963";
+}
+.icons-vip1:before {
+    content: "\e964";
+}
+.icons-uniE95B:before {
+    content: "\e95b";
+}
+.icons-uniE95C:before {
+    content: "\e95c";
+}
+.icons-112:before {
+    content: "\e95d";
+}
+.icons-uniE95A:before {
+    content: "\e95a";
+}
+.icons-uniE959:before {
+    content: "\e959";
+}
+.icons-uniE956:before {
+    content: "\e956";
+}
+.icons-uniE957:before {
+    content: "\e957";
+}
+.icons-uniE958:before {
+    content: "\e958";
+}
+.icons-uniE951:before {
+    content: "\e951";
+}
+.icons-uniE952:before {
+    content: "\e952";
+}
+.icons-uniE953:before {
+    content: "\e953";
+}
+.icons-uniE954:before {
+    content: "\e954";
+}
+.icons-purchase:before {
+    content: "\e955";
+}
+.icons-uniE949:before {
+    content: "\e949";
+}
+.icons-uniE94A:before {
+    content: "\e94a";
+}
+.icons-uniE94B:before {
+    content: "\e94b";
+}
+.icons-uniE94C:before {
+    content: "\e94c";
+}
+.icons-uniE94D:before {
+    content: "\e94d";
+}
+.icons-icon:before {
+    content: "\e94e";
+}
+.icons-uniE94F:before {
+    content: "\e94f";
+}
+.icons-VIP_2:before {
+    content: "\e950";
+}
+.icons-uniE948:before {
+    content: "\e948";
+}
+.icons-111:before {
+    content: "\e946";
+}
+.icons-uniE947:before {
+    content: "\e947";
+}
+.icons-uniE945:before {
+    content: "\e945";
+}
+.icons-uniE943:before {
+    content: "\e943";
+}
+.icons-uniE944:before {
+    content: "\e944";
+}
+.icons-uniE93D:before {
+    content: "\e93d";
+}
+.icons-uniE93E:before {
+    content: "\e93e";
+}
+.icons-kunzy:before {
+    content: "\e900";
+}
+.icons-uniE901:before {
+    content: "\e901";
+}
+.icons-uniE902:before {
+    content: "\e902";
+}
+.icons-uniE903:before {
+    content: "\e903";
+}
+.icons-uniE904:before {
+    content: "\e904";
+}
+.icons-uniE905:before {
+    content: "\e905";
+}
+.icons-uniE906:before {
+    content: "\e906";
+}
+.icons-QQ:before {
+    content: "\e907";
+}
+.icons-uniE908:before {
+    content: "\e908";
+}
+.icons-uniE909:before {
+    content: "\e909";
+}
+.icons-uniE90A:before {
+    content: "\e90a";
+}
+.icons-uniE90B:before {
+    content: "\e90b";
+}
+.icons-icons-1460187631756:before {
+    content: "\e90c";
+}
+.icons-1:before {
+    content: "\e90d";
+}
+.icons-12:before {
+    content: "\e90e";
+}
+.icons-uniE90F:before {
+    content: "\e90f";
+}
+.icons-13:before {
+    content: "\e910";
+}
+.icons-uniE911:before {
+    content: "\e911";
+}
+.icons-uniE912:before {
+    content: "\e912";
+}
+.icons-uniE913:before {
+    content: "\e913";
+}
+.icons-14:before {
+    content: "\e914";
+}
+.icons-2:before {
+    content: "\e915";
+}
+.icons-3:before {
+    content: "\e916";
+}
+.icons-uniE917:before {
+    content: "\e917";
+}
+.icons-uniE918:before {
+    content: "\e918";
+}
+.icons-uniE919:before {
+    content: "\e919";
+}
+.icons-15:before {
+    content: "\e91a";
+}
+.icons-22:before {
+    content: "\e91b";
+}
+.icons-32:before {
+    content: "\e91c";
+}
+.icons-4:before {
+    content: "\e91d";
+}
+.icons-5:before {
+    content: "\e91e";
+}
+.icons-6:before {
+    content: "\e91f";
+}
+.icons-uniE920:before {
+    content: "\e920";
+}
+.icons-uniE921:before {
+    content: "\e921";
+}
+.icons-uniE922:before {
+    content: "\e922";
+}
+.icons-uniE923:before {
+    content: "\e923";
+}
+.icons-uniE924:before {
+    content: "\e924";
+}
+.icons-uniE925:before {
+    content: "\e925";
+}
+.icons-uniE926:before {
+    content: "\e926";
+}
+.icons-16:before {
+    content: "\e927";
+}
+.icons-23:before {
+    content: "\e928";
+}
+.icons-uniE929:before {
+    content: "\e929";
+}
+.icons-17:before {
+    content: "\e92a";
+}
+.icons-uniE92B:before {
+    content: "\e92b";
+}
+.icons-uniE92C:before {
+    content: "\e92c";
+}
+.icons-uniE92D:before {
+    content: "\e92d";
+}
+.icons-uniE92E:before {
+    content: "\e92e";
+}
+.icons-uniE92F:before {
+    content: "\e92f";
+}
+.icons-uniE930:before {
+    content: "\e930";
+}
+.icons-uniE931:before {
+    content: "\e931";
+}
+.icons-uniE932:before {
+    content: "\e932";
+}
+.icons-18:before {
+    content: "\e933";
+}
+.icons-uniE934:before {
+    content: "\e934";
+}
+.icons-uniE935:before {
+    content: "\e935";
+}
+.icons-19:before {
+    content: "\e936";
+}
+.icons-uniE937:before {
+    content: "\e937";
+}
+.icons-uniE938:before {
+    content: "\e938";
+}
+.icons-uniE939:before {
+    content: "\e939";
+}
+.icons-uniE93A:before {
+    content: "\e93a";
+}
+.icons-uniE93B:before {
+    content: "\e93b";
+}
+.icons-uniE93C:before {
+    content: "\e93c";
+}
+
