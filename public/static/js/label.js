@@ -200,6 +200,8 @@ function layer_label_iframe(url){
 	  shadeClose: true,
 	  shade: false,
 	  maxmin: true, //开启最大化最小化按钮
+	  offset: label_iframe_width=='100%'?'b':'center', //右下角弹出
+	  shade: 0.4,  //遮罩透明度
 	  area: [label_iframe_width, label_iframe_height],
 	  content: url,
 	  end: function(){

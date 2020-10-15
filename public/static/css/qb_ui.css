@@ -1379,14 +1379,8 @@ input.layui-input{
 @media (max-width: 800px) {
 	.layui-layer-setwin .layui-layer-close1{background-position:-145px  -32px !important;;}.layui-layer-setwin a {width:35px !important;;height:35px !important;;}
 	.layui-layer-setwin{top:7px !important;}
+	.layui-layer-setwin .layui-layer-max {width: 17px !important;height: 18px !important;}
 }
 
 /*标签添加碎片*/
-.diy-page-model-btn{
-	background:#55793e;
-	color:#fff;
-	text-align:center;
-	height:40px;
-	line-height:40px;
-	font-size:18px;
-}
+.diy-page-model-btn{background:#55793e;color:#fff;text-align:center;height:40px;line-height:40px;font-size:18px;}

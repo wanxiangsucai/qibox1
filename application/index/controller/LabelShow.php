@@ -353,8 +353,8 @@ class LabelShow extends IndexBase
         self::$label_adminurl[$pagename] = $admin_url;
         
         if(in_wap()){
-            $label_iframe_width = '95%';
-            $label_iframe_height = '80%';
+            $label_iframe_width = '100%';
+            $label_iframe_height = '90%';
         }else{
             $label_iframe_width = '60%';
             $label_iframe_height = '80%';

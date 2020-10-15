@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>选择风格</title>
+<title>碎片管理</title>
 <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -30,12 +30,15 @@ h3{
 }
 .chooseType li{
 	display: inline-block;
-	padding: 10px;
+	padding: 10px 0px;
+	width:100%;
 }
+
 .chooseType li a{
+	text-align:center;
 	display: block;
 	background: #EDEDED;
-	padding: 0 20px;
+	width:100%;
 	color: #666;
 }
 .chooseType li a.ck{
@@ -61,7 +64,7 @@ h3{
 }
 .chooseTpl li dl{
 	margin: 10px;
-	background: #EDEDED;
+	background: #f5f5f5;
 	border-radius: 5px;
 	padding-bottom: 10px;
 }
@@ -110,21 +113,26 @@ h3{
 }
 .chooseTpl li dl dd div{
 	text-align: center;
-	height: 30px;
-	line-height: 30px;
+	height: 20px;
+	line-height: 20px;
 	overflow: hidden;
 	padding: 0 15px;
+	font-size:13px;
 	color: #666;
 }
 </style>
 </head>
 <body>
-<h3>碎片管理</h3>
+<script type="text/javascript">
+$(function(){
+	parent.$(".layui-layer-title").html('碎片管理');
+});
+</script>
  
 <div class="ChooseStyleBox">
 	 
 	<ul class="chooseType">
-		<li><a href="{$recover_url}" class='ck'>恢复默认</a></li> 
+		<li><a href="{$recover_url}" class='ck'>点击恢复默认设置</a></li> 
 	</ul>
 	 
 	<ul class="chooseTpl">
