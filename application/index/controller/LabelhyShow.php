@@ -483,7 +483,7 @@ EOT;
                 $div_bgcolor = '#06a0ce';
             }            
             if ($class_name!='' && ($type=='choose'||$type=='classname')) {
-                $type = str_replace('\\', '--', $class_name);
+                $type = mymd5($class_name);//str_replace('\\', '--', $class_name);
             }
             
             echo "<style type='text/css'>.p8label{filter:alpha(opacity=50);position: absolute; border: 1px solid #ff0000; z-index: 9999; color: rgb(0, 0, 0); text-align: left; opacity: 0.4; width: {$div_w}px; height:{$div_h}px; background-color:$div_bgcolor;}

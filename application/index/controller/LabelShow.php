@@ -383,7 +383,7 @@ class LabelShow extends IndexBase
         $div_h = $tag_array['cfg']['div_height']>10?$tag_array['cfg']['div_height']:30;
         $div_bgcolor = '#A6A6FF';
         if (($type=='choose'||$type=='classname') && $class_name!='') {
-            $type = str_replace('\\', '--', $class_name);
+            $type = mymd5($class_name);//str_replace('\\', '--', $class_name);
         }
         if (empty(self::$label_adminurl[$pagename])) { //模块AJAX使用
             self::$label_adminurl[$pagename] = iurl('index/label/index',"pagename=".$pagename);

@@ -75,10 +75,11 @@ class Labelhy extends Label
             }elseif(preg_match('/^reply_set_/', $type)){
                 $name = str_replace('reply_set_','',$type);
                 $url = url("$name/labelhy/reply_set",$url_array);
-            }elseif(preg_match('/@/', $type)){
-                list($str,$action) = explode('@',$type);
-                list($m_p,$module,$dir,$file) = explode('--',$str);
-                $classname = "\\$m_p\\$module\\index\\Label";
+           // }elseif(preg_match('/@/', $type)){
+            }elseif(($_type=mymd5($type,'DE'))!=''){
+                list($str,$action) = explode('@',$_type);
+                list($m_p,$module,$dir,$file) = explode('\\',$str);//explode('--',$str);
+                $classname = "\\$m_p\\$module\\index\\Labelhy";
                 if (class_exists($classname)) {
                     $method = "{$file}_{$action}";
                     if (!method_exists($classname, $method)) {

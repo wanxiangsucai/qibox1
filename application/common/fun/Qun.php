@@ -127,6 +127,12 @@ class Qun{
         return MemberModel::where($map)->column(true);
     }
     
+    /**
+     * 获取我加入过的圈子个人信息,此方法将弃用,因为用户信息那里有缓存了.
+     * @param number $uid 当前用户UID
+     * @param number $qun_id 是否指定查询某个圈子
+     * @return void|number|number[]|array[]|NULL[][]|unknown[]
+     */
     public static function get_my_group($uid=0,$qun_id=0){
         if (!modules_config('qun')) {
             return ;
@@ -237,34 +243,52 @@ class Qun{
 
     /**
      * 获取群的角色名称
-     * @param unknown $groupid
-     * @param number $mid 可以指定圈子的模型ID或者是关键字,否则就是系统默认的
+     * @param number|string $groupid 可以是当前圈子会员组的ID,此时就得到相应的名称,也可以是name将获取当前用户组的所有名称
+     * @param number|array $qid 可以指定圈子的ID或者是圈子信息
+     * @param number $mid 可以指定圈子的模型ID或者是关键字,否则就是系统默认的 第二个参数存在的话,这个参数其实可以不填的
      * @return number|string|unknown|array|number[][]|string[][]|unknown[][]|array[][]
      */
-    public static function get_group($groupid=null,$mid=0){
+    public static function get_group($groupid=null,$qid=0,$mid=0){
         if (!modules_config('qun')) {
             return [];
         }
-        $array = [];
+        $array = $name_array = [];
         $i = 0;
-        if($mid){
-            if(!is_numeric($mid)){  //不是模型ID,而是关键字的情况,比如是qz hy之类的
-                $mid = self::getid_bykey($mid);
+        if ($qid) {
+            if (is_array($qid)) {
+                $info = $qid;
+            }else{
+                $info = self::getByid($qid);
             }
-            $webdb = model_config($mid,'qun');
+            if ($info['qun_groups']) {
+                $name_array = json_decode($info['qun_groups'],true);
+            }
+            if (!$mid) {
+                $mid = $info['mid'];
+            }
         }
-        if(empty($webdb['qun_groups'])){
-            $webdb = config('webdb.M__qun');
-        }        
-        $str = explode("\n", str_replace("\r", '', $webdb['qun_groups']));
-        foreach($str AS $value){
+        if (empty($name_array)) {
+            if($mid){
+                if(!is_numeric($mid)){  //不是模型ID,而是关键字的情况,比如是qz hy之类的
+                    $mid = self::getid_bykey($mid);
+                }
+                $webdb = model_config($mid,'qun');
+            }
+            if(empty($webdb['qun_groups'])){
+                $webdb = config('webdb.M__qun');
+            }
+            $name_array = explode("\n", str_replace("\r", '', $webdb['qun_groups']));
+        }
+        
+        foreach($name_array AS $value){
             if (empty($value)) {
                 continue;
             }
             list($name,$sysgid) = explode("|", $value);
             $i++;
-            $admin = 0;
-            //1,2,3是保留数字，分别是正式成员、副管理员、管理员
+            $admin = 0; //是否有管理权限
+            
+            //$gid = 1,2,3是保留数字，分别是正式成员、副管理员、管理员
             if ($i==1) {    //管理员
                 $gid = 3;
                 $admin = 1;
@@ -279,13 +303,18 @@ class Qun{
             $array[$gid] = [
                 'gid'=>$gid,
                 'name'=>$name,
-                'sysgid'=>$sysgid,
+                'sysgid'=>$qid?null:$sysgid,  //关联了系统用户组,升级会用到。用户自定义用户组的话,就不给关联,安全考虑
                 'admin'=>$admin,
             ];
         }
         $array[3] || $array[3] = [
             'gid'=>3,
-            'name'=>QUN.'创建人',
+            'name'=>QUN.'管理员',
+            'admin'=>1,
+        ];
+        $array[2] || $array[2] = [
+            'gid'=>2,
+            'name'=>'副管理员',
             'admin'=>1,
         ];
         $array[1] || $array[1] = [
@@ -299,6 +328,12 @@ class Qun{
         ];
         if (is_numeric($groupid)) {
             return $array[$groupid]['name'];
+        }elseif($groupid=='name'){
+            $data = [];
+            foreach ($array AS $rs){
+                $data[$rs['gid']] = $rs['name'];
+            }
+            return $data;
         }
         return $array;
     }
