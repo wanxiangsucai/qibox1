@@ -87,6 +87,27 @@ var Qibo = function () {
 			return false;
 		});
 	}
+	
+	//显示大图片
+	var showimg = function(){
+		$("img.showimg").click(function(){
+			var url = $(this).attr("src");
+			$("<img />").attr("src", url).on("load", function () {
+				var imgw = this.width>$("body").width() ? $("body").width() : this.width ;
+				var imgh = this.height * imgw/this.width;
+				layer.open({
+				  type: 1,
+				  title: false,
+				  shadeClose: true,
+				  maxmin: true,
+				  offset: 'auto', 
+				  shade: 0.4,
+				  area: [imgw+"px", imgh+"px"],
+				  content: "<img src='"+url+"' style='width:"+imgw+"px;height:"+imgh+"px;'>",
+				});
+			});
+		});
+	}
 
 	var check_back = function(url){
 		if(typeof(api)=="object"){	//在APP中打开的情况
@@ -299,6 +320,7 @@ var Qibo = function () {
 				_confirm();
 				_ajaxget();
 				moreMenu.init();
+				showimg();
 			},
 			goBack:function(url){
 				goBack(url);

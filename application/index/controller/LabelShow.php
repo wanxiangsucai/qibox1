@@ -647,11 +647,25 @@ class LabelShow extends IndexBase
             $_val[] = array_merge($rs,
                     [
                             'title' => $rs['title'],
-                            'value' => $_info[$rs['name']],
+                            'value' => $this->format_showpage($_info[$rs['name']],$rs),
                     ]) ;
         }
         $$val = $_val;
         eval('?>'.$tplcode);
+    }
+    
+    /**
+     * 内容页字段的样式处理
+     * @param string $value
+     * @param array $rs
+     */
+    protected function format_showpage($value='',$rs=[]){
+        if ($rs['type']=='image') {
+            $value = "<img width=\"150\" style=\"cursor:pointer\" class=\"showimg {$rs['name']}\" src=\"{$value}\">";
+        }elseif($rs['type']=='file'){
+            $value = "<a href=\"{$value}\" target=\"_blank\" class=\"{$rs['name']} fa fa-download\">点击下载</a>";
+        }
+        return $value;
     }
     
     /**
