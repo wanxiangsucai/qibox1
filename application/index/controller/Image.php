@@ -30,6 +30,14 @@ class Image extends IndexBase
 	public function face(){
 		return $this->fetch();
 	}
+	
+	/**
+	 * 图片缩放
+	 */
+	public function zoom($url=''){
+	    $this->assign('url',$url);
+	    return $this->fetch();
+	}
 
 	/**
 	 * 主要给生成海报使用.解决跨域图片的问题
