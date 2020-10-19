@@ -327,13 +327,13 @@ class LabelShow extends IndexBase
         if($type=='goin'){
             $code = '';
             if(IN_WAP===true){
-                $code = "<a href='{$weburl}label_set=set' class='labelSet'><i class='si si-puzzle' style='position:fixed;left:0;top:50%;opacity:0.5;font-size:2rem;color:orange;z-index:1;'></i></a>";
+                $code = "<a href='{$weburl}label_set=set' class='labelSet'><i class='si si-puzzle' style='position:fixed;left:0;top:50%;opacity:0.5;font-size:30px;color:orange;z-index:1;'></i></a>";
             }
             return "<SCRIPT LANGUAGE='JavaScript'>$('body').dblclick(function(){if(confirm('你确认要进入标签管理吗?')==true){window.location.href='{$weburl}label_set=set';}});
             </SCRIPT>$code";
         }elseif($type=='goout'){
             if(IN_WAP===true){
-                $code = "<a href='{$weburl}label_set=quit' class='labelSet'><i class='fa fa-sign-out' style='position:fixed;left:0;top:50%;opacity:0.5;font-size:2rem;color:#119BB8;z-index:1;'></i></a>";
+                $code = "<a href='{$weburl}label_set=quit' class='labelSet'><i class='fa fa-sign-out' style='position:fixed;left:0;top:50%;opacity:0.5;font-size:30px;color:#119BB8;z-index:1;'></i></a>";
             }
             return "$code<SCRIPT LANGUAGE='JavaScript'>$('body').dblclick(function(){var msg=confirm('你确认要退出标签管理吗?');if(msg==true){window.location.href='{$weburl}label_set=quit';}});</SCRIPT>";
         }
@@ -1382,9 +1382,10 @@ EOT;
             }elseif($type=='link'){     //菜单链接
                 $_tpl = $page_demo_tpl_tags[$tag_name]['tpl'];
                 extract($tag_array['data']);
+                $icon = $tag_array['data']['logo'];
 //                 $url = $tag_array['data']['url'];
 //                 $title = $tag_array['data']['title'];
-//                 $logo = $tag_array['data']['logo'];
+//                 $logo = $icon = $tag_array['data']['logo'];
                 eval('?>'.$_tpl);
                 return $tag_array['data'];
             }elseif($type=='myform'){     //自定义表单
