@@ -220,6 +220,12 @@ var WS = function () {	//类开始
 		allowsend = false;
 		content_obj.push_id = (Math.random()+'').substring(2);
 		content_obj.uid = content_obj.uid ? content_obj.uid : uid;
+
+		if(typeof(msg_from)=='string'&&msg_from!=''){
+			content_obj.content += msg_from; //消息来源于哪个页面
+			$.cookie("msg_from_string", msg_from, { expires: 60, path: '/' });
+			msg_from='';
+		}
 		
 		//发送给WS服务器
 		ws_send({

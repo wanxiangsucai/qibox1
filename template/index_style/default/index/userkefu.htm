@@ -6,16 +6,21 @@
 }
 .userkefu img{
 	width:40px;
+	cursor:pointer;
 }
 .userkefu{
 	position:fixed;
-	top:65%;
+	top:75%;
 	right:10px;
 	z-index:3;
 	opacity:0.8;
 }
 </style>
 <script type="text/javascript">
+{if $info.title!='' && $userdb.uid!=$info.uid}
+var msg_from = '<br><br><a href="{:get_url('location')}" target="_blank" class="from_page" style="color:#7b98ee;">来源：{$info.title}</a>';
+if($.cookie("msg_from_string")==msg_from)msg_from = '';
+{/if}
 $(function(){
 	$(".userkefu").click(function(){
 		KF.chat_win({
