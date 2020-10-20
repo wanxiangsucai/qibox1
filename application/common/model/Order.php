@@ -162,6 +162,7 @@ class Order extends Model
         
         static::send_msg($order_info);
         
+        hook_listen('order_have_pay',$order_info,$array=['dirname'=>self::$model_key]);
         get_hook('order_have_pay',$data=[],$order_info,$array=['dirname'=>self::$model_key],$use_common=true,self::$model_key);   //钩子扩展
     }
     
