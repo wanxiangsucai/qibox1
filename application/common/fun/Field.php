@@ -3,6 +3,43 @@ namespace app\common\fun;
 class Field{
     
     /**
+     * 前台自定义表单的填写字段
+     * @param string $order_filed
+     * @return array|string[][]|unknown[][]|mixed[][]
+     */
+    public static function order_field_post($order_filed=''){
+        if ($order_filed=='') {
+            return [];
+        }
+        $array = json_decode($order_filed,true);
+        if (empty($array)){
+            return [];
+        }
+        $data = [];
+        foreach($array AS $key=>$rs){
+            if ($rs['type']=='select' || $rs['type']=='checkbox') {
+                $detail = explode("\n",$rs['options']);
+                $opt = [];
+                foreach($detail AS $value){
+                    $opt[$value] = $value;
+                }
+            }else{
+                $opt='';
+            }
+            $data[] = [
+                'type'=>$rs['type'],
+                'name'=>'order_field_'.$key,
+                'title'=>$rs['title'],
+                'about'=>'',
+                'options'=>$opt,
+                'ifmust'=>$rs['must'],
+                'customize'=>'customize',
+            ];
+        }
+        return $data;
+    }
+    
+    /**
      * 设置触发表单
      * @param array $array
      * @return void|string

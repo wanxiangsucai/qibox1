@@ -39,10 +39,17 @@
 $(function(){
 
 	{if (IN_WAP!==true)}
-		$("#form_group_order_filed").next().remove();
+		//$("#form_group_order_filed").next().remove();
 	{/if}
 
-	$("#form_group_order_filed").parent().prepend('<div><button class="layui-btn layui-btn-normal" id="add_order_field" type="button">新增表单项目</button></div>');
+	{if (IN_WAP===true)}
+		var btn_str = '<dl class="add_field_btn"><dt><button class="layui-btn layui-btn-normal" id="add_order_field" type="button">新增用户填写表单项目</button></dt></dl>';
+	{else /}
+		var btn_str = ' <tr class="add_field_btn"><td class="tdL"><br></td><td class="tdR"><button class="layui-btn layui-btn-normal" id="add_order_field" type="button">新增用户填写表单项目</button></td></tr>';
+	{/if}
+
+	//$("#form_group_order_filed").hide().parent().prepend('<div><button class="layui-btn layui-btn-normal" id="add_order_field" type="button">新增表单项目</button></div>');
+	$("#form_group_order_filed").hide().before(btn_str);
 
 	$("#add_order_field").click(function(){	
 		layer.open({
@@ -128,7 +135,7 @@ function make_item_html(title,filed_type,options_value,must){
 		</tr>`;
 	{/if}
 
-	$("#form_group_order_filed").parent().append(str);	
+	$("#form_group_order_filed").after(str);	
 }
 
 function add_fun(){
