@@ -3,7 +3,10 @@ $share = is_array($share)?array_merge($info?:[],$share):$info;
 isset($share['about'])||$share['about'] = get_word(str_replace(["'","\r","\n","\t",' ','　'],'',del_html($share['content'])),150);
 isset($share['link'])||$share['link'] = get_url('location');
 $share['link'] = get_url($share['link']);
-if($userdb['uid']&&!strstr($share['link'],'p_uid='))$share['link'].=(strstr($share['link'],'?')?'&':'?').'p_uid='.$userdb['uid'].'&';
+if($userdb['uid']){
+$share['link'] = preg_replace("/(&|\?)p_uid=([\d]*)(\?|&)/is", '\\1', $share['link']);
+$share['link'].=(strstr($share['link'],'?')?'&':'?').'p_uid='.$userdb['uid'].'&';
+}
 $share['picurl'] = get_url($share['picurl']);
 $share['title'] = str_replace(["'","\r","\n","\t",' ','　'],'',$share['title']);
 $share['about'] = str_replace(["'","\r","\n","\t",' ','　'],'',$share['about']);
