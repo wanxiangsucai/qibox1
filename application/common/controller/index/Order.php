@@ -72,8 +72,9 @@ abstract class Order extends IndexBase
      * 成功创建某个商家的订单后做处理
      * @param number $id 订单ID
      * @param array $shop_array 多个商品信息
+     * @param array $data 提交的其它表单数据
      */
-    protected function add_shoper_end($id=0,$shop_array=[]){
+    protected function add_shoper_end($id=0,$shop_array=[],$data=[]){
     }
     
     /**
@@ -111,10 +112,12 @@ abstract class Order extends IndexBase
                     $money += ShopFun::get_price($rs,$rs['_car_']['type1']-1)*$rs['_car_']['num'];
                     $car_ids[] = $rs['_car_']['id'];
                     $car_db[] = $rs['_car_'];
+                    
+                    //商品ID与购买数量 特别提醒!!!只适合单条记录
+                    $data['shopid'] = $rs['_car_']['shopid'];
+                    $data['shopnum'] = $rs['_car_']['num'];
                 }
                 $data['totalmoney'] = $money;   //订单金额,实际需要支付的可能会少一点
-                
-                
                 
                 $cid = $data['cid'][$uid];      //代金券ID
                 if ($cid>0) {
@@ -167,7 +170,7 @@ abstract class Order extends IndexBase
                         $msg = '，使用了一张面额 '.$coupon[$cid]['quan_money'].' 元的代金券，';
                     }
                     $this->send_msg($uid,$result->id,$shop_array,$msg);
-                    $this->add_shoper_end($result->id,$shop_array);     //扩展使用
+                    $this->add_shoper_end($result->id,$shop_array,$data);     //扩展使用
                 }
             }
             

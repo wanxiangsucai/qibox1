@@ -6,11 +6,20 @@ use app\common\controller\MemberBase;
 abstract class KehuOrder extends MemberBase
 {
     protected $model;
+    protected $content_model;
     protected function _initialize(){
         parent::_initialize();        
         preg_match_all('/([_a-z]+)/',get_called_class(),$array);
         $dirname = $array[0][1];
-        $this->model        = get_model_class($dirname,'order');
+        $this->model                = get_model_class($dirname,'order');
+        $this->content_model        = get_model_class($dirname,'content');
+    }
+    
+    /**
+     * 导出订单
+     * @param array $array
+     */
+    public function excel($array=[],$shopid=0){        
     }
 
     /**
@@ -18,20 +27,33 @@ abstract class KehuOrder extends MemberBase
      * @param unknown $type
      * @return mixed|string
      */
-    public function index($type=null){
+    public function index($type=null,$aid=0,$excel=0){
+        $shop_uid = 0;
         $map = [
                 'shop_uid'=>$this->user['uid'],                
         ];
+        if ($aid) {
+            $map['shopid'] = $aid;
+        }
         
         if($type=='ispay'){
             $map['pay_status'] = 1;
         }elseif($type=='nopay'){
             $map['pay_status'] = 0;
         }
-        $list_data = $this->model->getList($map,10);
-        $this->assign('listdb',getArray($list_data)['data']);
-        $this->assign('pages',$list_data->render());
-        $this->assign('type',$type);
+        $shopdb = $this->content_model->getIndexByUid($shop_uid?:$this->user['uid']);
+        
+        $list_data = $this->model->getList($map,10,$excel);
+        if ($excel==1) {
+            $this->excel($list_data,$aid);
+        }
+        
+        $this->assign([
+            'listdb'=>getArray($list_data)['data'],
+            'pages'=>$list_data->render(),
+            'type'=>$type,
+            'shopdb'=>$shopdb,
+        ]);
         return $this->fetch();
     }
     

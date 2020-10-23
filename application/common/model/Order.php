@@ -74,8 +74,18 @@ class Order extends Model
         }
     }
     
-    //订单列表,带分页
-    public  function getList($map=[],$rows=20){
+    /**
+     * 订单列表
+     * @param array $map
+     * @param number $rows
+     * @param number $getall
+     * @return unknown
+     */
+    public  function getList($map=[],$rows=20,$getall=0){
+        if ($getall) { //主要是导出时使用
+            $array = self::where($map)->order('id','desc')->column(true);
+            return $array;
+        }
         $data_list = self::where($map)->order('id','desc')->paginate($rows,false,['query'=>input('get.')]);
         $data_list->each(function($rs,$key){
             $rs['shop_db'] = [];
