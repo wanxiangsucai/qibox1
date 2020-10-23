@@ -17,7 +17,7 @@ class Field{
         }
         $data = [];
         foreach($array AS $key=>$rs){
-            if ($rs['type']=='select' || $rs['type']=='checkbox') {
+            if ($rs['type']=='select' || $rs['type']=='checkbox' || $rs['type']=='radio') {
                 $detail = explode("\n",$rs['options']);
                 $opt = [];
                 foreach($detail AS $value){
@@ -26,17 +26,45 @@ class Field{
             }else{
                 $opt='';
             }
-            $data[] = [
+            $data['order_field_'.$key] = array_merge($rs,[
                 'type'=>$rs['type'],
                 'name'=>'order_field_'.$key,
                 'title'=>$rs['title'],
                 'about'=>'',
                 'options'=>$opt,
                 'ifmust'=>$rs['must'],
-                'customize'=>'customize',
-            ];
+                'customize'=>'customize',  //模板中的自定义字段的标志符
+            ]);
         }
         return $data;
+    }
+    
+    /**
+     * 转义前台自定义表单的可显示的数据
+     * @param string $value 用户提交的原始数据
+     * @param array $f_array 通过order_field_post转义出来的字段格式
+     * @return array|string|\app\common\field\string[]|\app\common\field\unknown[]|\app\common\Field\mixed[]
+     */
+    public static function order_field_format($value='',$f_array=[]){
+        if ($value=='') {
+            return [];
+        }
+        $array = json_decode($value,true);
+        if (empty($array)){
+            return [];
+        }
+        $info = [];
+        $data = [];
+        foreach($array AS $key=>$rs){
+            $data[$rs['title']] = $rs['value'];
+        }
+        foreach($f_array AS $key=>$rs){
+            if (isset($data[$rs['title']])) {
+                $info[$key] = $data[$rs['title']];
+            }            
+        }
+        $info = self::format($info,$field='',$pagetype='show',$sysname='',$f_array);
+        return $info;
     }
     
     /**
@@ -105,6 +133,7 @@ class Field{
         }else{
             $field_array = get_field($info['mid'],$sysname);
         }
+        
         $value = '';
         if($field){
             $value = \app\common\field\Index::get_field($field_array[$field],$info,$pagetype);
@@ -114,7 +143,7 @@ class Field{
                     unset($info[$name]);
                     continue;
                 }
-                if ($rs['index_hide']!=1) {    //满足二开要求,前台不做转义
+                if (isset($info[$name]) && $rs['index_hide']!=1) {    //满足二开要求,前台不做转义
                     $info[$name] = \app\common\field\Index::get_field($rs,$info,$pagetype);
                 }                
             }

@@ -24,6 +24,8 @@ function check_post(){
 				va += "、" + $(this).val();
 			});
 			va = va.substring(1);
+		}else if( $(this).data('name') && $(this).find('input[name='+$(this).data('name')+']').length>0 ){
+			va = $(this).find('input[name='+$(this).data('name')+']').val();
 		}else{
 			va = $(this).find('input').length>0 ? $(this).find('input').val() : $(this).find('textarea').val();
 		}

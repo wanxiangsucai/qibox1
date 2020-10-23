@@ -24,7 +24,7 @@
 	top:5px;
 	color: #999;
 }
-.PostOrder ul{
+.PostOrder > ul{
 	display: table;
 	width: 80%;
 	margin: 0 auto 15px auto;
@@ -50,7 +50,7 @@
 	text-indent: 5px;
 	outline: none;
 }
-.PostOrder dl{
+.PostOrder > dl{
 	display: table;
 	width: 80%;
 	margin: 0 auto 15px auto;

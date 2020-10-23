@@ -3,7 +3,7 @@
 	margin:auto;
 	padding: 30px 0;
 }
-.PostOrder ul{
+.PostOrder > ul{
 	display: table;
 	width: 90%;
 	margin: 0 auto 15px auto;
@@ -25,7 +25,7 @@
 	width: 100%;
 	outline: none;
 }
-.PostOrder dl{
+.PostOrder > dl{
 	display: table;
 	width: 90%;
 	margin: 0 auto 15px auto;

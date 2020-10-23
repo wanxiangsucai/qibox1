@@ -202,7 +202,7 @@ $(function(){
 			//下面这个,如果头部出现过 layui/layui.js 的包含,会导致不生效,所以就弃用了
             //$show .= fun('field@load_js','laydate')?"<script src='$static/layui/laydate/laydate.js'></script>":'';
             //$show .="<script>laydate.render({elem: '#atc_{$name}',type: '{$field['type']}'});</script>";
-			$show .= fun('field@load_js','laydate')?"<script src='$static/layui/layui.js'></script><link rel='stylesheet' href='$static/layui/css/layui.css' media='all'>":'';
+			$show .= fun('field@load_js','laydate')?"<script type='text/javascript'>if(typeof(layui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='$static/layui/layui.js'><\\/script>\");}</script><link rel='stylesheet' href='$static/layui/css/layui.css' media='all'>":'';
 			$show .="<script>$(function(){ layui.use('laydate', function(){var laydate = layui.laydate;laydate.render({elem: '#atc_{$name}',type: '{$field['type']}'});}); });</script>";
 
         }else{      // 全部归为单行文本框

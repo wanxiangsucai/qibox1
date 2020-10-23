@@ -12,42 +12,51 @@ class Format
      */
     public static function form_fields($data=[]){
         $array = [];
-        foreach($data AS $rs){
-            if(in_array($rs['0'], ['select','checkbox','checkboxtree','radio'])){
-                $arr = [
+        if ($data[0][0]) {
+            foreach($data AS $rs){
+                if(in_array($rs['0'], ['select','checkbox','checkboxtree','radio'])){
+                    $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'title'=>$rs['2'],
                         'about'=>$rs['3'],
                         'options'=>$rs['4'],
                         'value'=>$rs['5'],
-                ];
-            }elseif($rs['0']=='hidden'){    //隐藏域有点特殊
-                $arr = [
+                    ];
+                }elseif($rs['0']=='hidden'){    //隐藏域有点特殊
+                    $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'value'=>$rs['2'],
-                ];
-            }elseif($rs['0']=='callback'){  //回调函数
-                $arr = [
+                    ];
+                }elseif($rs['0']=='callback'){  //回调函数
+                    $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'title'=>$rs['2'],
                         'about'=>$rs['3'],
                         'fun'=>$rs['4'],
                         'value'=>$rs['5'],
-                ];
-            }else{
-                $arr = [
+                    ];
+                }else{
+                    $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'title'=>$rs['2'],
                         'about'=>$rs['3'],
                         'value'=>$rs['4'],
-                ];
+                    ];
+                }
+                $array[$rs[1]] = $arr+$rs;
             }
-            $array[$rs[1]] = $arr+$rs;
+        }elseif($data[0]){
+            foreach ($data AS $rs){
+                $array[$rs['name']] = $rs;
+            }
+        }else{
+            $array = $data;
         }
+        
         return $array;
     }
     

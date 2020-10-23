@@ -660,10 +660,21 @@ class LabelShow extends IndexBase
      * @param array $rs
      */
     protected function format_showpage($value='',$rs=[]){
-        if ($rs['type']=='image') {
+        if($rs['type']=='image') {
             $value = "<img width=\"150\" style=\"cursor:pointer\" class=\"showimg {$rs['name']}\" src=\"{$value}\">";
+        }elseif($rs['type']=='images') {
+            $str = '';
+            foreach($value AS $vs){
+                $str.= "<img width=\"100\" style=\"cursor:pointer;float:left;margin:10px;\" class=\"showimg {$rs['name']}\" src=\"{$vs['picurl']}\">";
+            }
+            $value = $str;
         }elseif($rs['type']=='file'){
             $value = "<a href=\"{$value}\" target=\"_blank\" class=\"{$rs['name']} fa fa-download\">点击下载</a>";
+        }elseif($rs['type']=='bmap'){
+            $url = urls('index/map/index').'?xy='.$value;
+            $value = "<iframe src='{$url}' width='100%' height='350' class='showmap' scrolling='no' frameborder='0'></iframe><br><a href=\"{$url}\" target=\"_blank\" class=\"{$rs['name']} fa fa-map\">点击查看大地图</a>";
+        }elseif($rs['type']=='textarea'){
+            $value = str_replace(["\n"," "], ["<br>","&nbsp;"], $value);
         }
         return $value;
     }

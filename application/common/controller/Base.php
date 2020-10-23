@@ -234,7 +234,7 @@ class Base extends Controller
 	        }
 	    }
 	    
-	    $template = $this->get_module_style_template($template);   //频道个性模板的查找
+	    ENTRANCE=='index' && $template = $this->get_module_style_template($template);   //频道个性模板的查找
 	    
 	    if( defined('ENTRANCE')&&in_array(ENTRANCE,['index','member','admin']) ) {
             if($template=='' && $this->route[2]==''){
