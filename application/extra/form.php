@@ -45,6 +45,7 @@ $form_array = [
   'bmap' => '百度地图',
   'color' => '颜色选择',
   'links' => '链接导航',
+  'qun_group_array2' => '圈子用户组复合多选',
   //'masked' => '格式文本',
   //'range' => '范围',
 
