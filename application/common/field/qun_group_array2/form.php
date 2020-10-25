@@ -21,7 +21,7 @@ jQuery(document).ready(function() {
 		var count_value = function(){
 			var vals = [];
 			base.find('input.shop_title').each(function(){
-				if($(this).val()!='')vals.push($(this).val()+'|'+$(this).next().val());
+				if($(this).val()!='')vals.push($(this).val()+'|'+$(this).next().val()+'|'+$(this).next().next().val());
 			});
 			//vals.join(',')
 			base.find('textarea').val( JSON.stringify(vals)  );
@@ -89,8 +89,8 @@ jQuery(document).ready(function() {
 
 
 		//选择用户组事件
-		var del_act = function(){
-			base.find('.shop_groups').on('click',function(){
+		var choosegroup_act = function(){
+			base.find('.choose_group').on('click',function(){
 				var that = $(this);
 				$.get("{$group_url}?id="+($("#atc_ext_id").length>0?$("#atc_ext_id").val():0),function(res){
 					if(res.code==0){
@@ -126,6 +126,7 @@ jQuery(document).ready(function() {
 			down_act();
 			up_act();
 			count_value();
+			choosegroup_act();
 		}
 		init_act();
 
@@ -140,19 +141,22 @@ EOT;
 $groups = '<style type="text/css">
 .input-group .shop_title{width:200px;}
 .input-group .shop_groups{width:150px;}
+.input-group .shop_noticegroups{width:150px;}
 @media (max-width:600px) {
 	.input-group .shop_title{width:140px;}
 	.input-group .shop_groups{width:80px;}
+	.input-group .shop_noticegroups{width:80px;}
 }
 </style>';
 $array = json_decode($info[$name],true);
 if($array){
 	foreach($array AS $key=>$vo){
-		list($title,$gids) = explode('|',$vo);
+		list($title,$gids,$noticegids) = explode('|',$vo);
 		$groups .= "<div class='input-group'>
 			<span class='input-group-addon add'><i class='fa fa-plus-square'></i></span>
 			<input class='wri shop_title' type='text' value='{$title}' placeholder='状态名称、分类'>
-			<input class='wri shop_groups' type='text' readOnly value='{$gids}' placeholder='点击选择用户组'>
+			<input class='wri shop_groups choose_group' type='text' readOnly value='{$gids}' placeholder='有权限的用户组'>
+			<input class='wri shop_noticegroups choose_group' type='text' readOnly value='{$noticegids}' placeholder='通知用户组'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
         </div>";
 	}
@@ -160,7 +164,8 @@ if($array){
 	$groups .= "<div class='input-group'>
 			<span class='input-group-addon add'><i class='fa fa-plus-square'></i></span>
 			<input class='wri shop_title' type='text' value='' placeholder='状态名称、分类'>
-			<input class='wri shop_groups' type='text' readOnly value='' placeholder='点击选择用户组'>
+			<input class='wri shop_groups choose_group' type='text' readOnly value='' placeholder='有权限的用户组'>
+			<input class='wri shop_noticegroups choose_group' type='text' readOnly value='' placeholder='通知用户组'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
         </div>";
 }

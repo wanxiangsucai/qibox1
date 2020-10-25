@@ -519,7 +519,7 @@ class Qun{
         static $array = [];
         $listdb = $array[$uid];
         if (empty($listdb)) {
-            $array = Db::name('qun_content')->where('uid',$uid)->order('id desc')->column(true);
+            $array = Db::name('qun_content')->where('uid',$uid)->where('status','<>',-1)->order('id desc')->column(true);
             $listdb = [];
             foreach($array AS $rs){
                 if($aid){

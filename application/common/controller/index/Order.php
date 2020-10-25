@@ -100,7 +100,7 @@ abstract class Order extends IndexBase
             $data = \app\common\field\Post::format_all_field($data,-1); //对一些特殊的自定义字段进行处理,比如多选项,以数组的形式提交的
             $order_ids = [];    //多条订单数据,多个商家就多个订单
             $car_ids = [];        //购买车里的id数据
-            $car_db = [];        //购买车里的详细数据            
+            $car_db = [];        //购买车里的详细数据
             
             $total_money = 0;   //需要支付的总金额
             foreach ($listdb AS $uid=>$shop_array){     //取每一个商家的数据生成一个订单,不能同家不能混在同一个订单

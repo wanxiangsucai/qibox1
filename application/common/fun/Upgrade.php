@@ -63,7 +63,7 @@ class Upgrade{
             }else{
                 list($time,$version) = explode("\t",$rs['version']);
                 $data[] = $rs['keywords'] . '-' . $version . '-' . $rs['version_id'] . '-'.$rs['type'];
-            }            
+            }
         }
         return implode(',', $data);
     }

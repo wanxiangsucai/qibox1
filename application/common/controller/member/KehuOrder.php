@@ -117,14 +117,28 @@ abstract class KehuOrder extends MemberBase
     }
     
     /**
+     * 权限判断
+     * @param array $info
+     * @return string
+     */
+    protected function check_power($info = []){
+        if ($info['shop_uid']!=$this->user['uid']) {
+            return '你没权限';
+        }
+        
+        return true;
+    }
+    
+    /**
      * 订单详情
      * @param unknown $id
      * @return mixed|string
      */
     public function show($id){
         $info = $this->model->getInfo($id);
-        if ($info['shop_uid']!=$this->user['uid']) {
-            $this->error('你没权限');
+        $result = $this->check_power($info);
+        if ($result!==true) {
+            $this->error($result);
         }
         
         if (count($info['shop_db'])==1 && $info['shop_db'][0]['order_filed']) { //前台自定义字段的处理

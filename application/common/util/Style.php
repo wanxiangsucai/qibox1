@@ -29,6 +29,9 @@ class Style{
                 if(check_bom($path,true)){
                     write_file($path, check_bom($path));
                 }
+                if(substr(file_get_contents($path),0,5)!='<?php'){
+                    write_file($path, strstr(file_get_contents($path),'<?php'));
+                }
                 $ar = include $path;
                 $style_db[str_replace('.php', '', basename($file))] = $ar['name'];
             }
