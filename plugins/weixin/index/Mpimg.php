@@ -12,8 +12,9 @@ class Mpimg extends IndexBase
         }
         $fid = intval($fid);
         $id = intval($id);
-        $name = login_user('uid')."_".substr(md5($url),0,10).'.gif';
-        $imgpath = '/mpimg/'.substr(md5($url),0,2).'/';
+        $_url = preg_replace("/\?(.*)/i", '', $url);
+        $name = login_user('uid')."_".substr(md5($_url),0,10).'.gif';
+        $imgpath = '/weixin_mpimg/'.substr(md5($_url),0,2).'/';
         $path = config('upload_path').$imgpath;
         makepath($path);
         if(!is_file($path.$name)){
