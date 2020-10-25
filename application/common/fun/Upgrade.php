@@ -35,7 +35,7 @@ class Upgrade{
         foreach ($array AS $rs){
             list($time,$version) = explode("\t",$rs['version']);
             $data[] = str_replace('\\', '__', $rs['class_file']) . '-' . $version . '-' . $rs['version_id'] . '-t';
-        }die('fff');
+        }
         $style_array = \app\common\util\Style::get_style('index');
         foreach ($style_array AS $key=>$name){
             $version = $version_id = '';
