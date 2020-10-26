@@ -12,8 +12,9 @@ class Format
      */
     public static function form_fields($data=[]){
         $array = [];
-        if ($data[0][0]) {
-            foreach($data AS $rs){
+        
+        foreach($data AS $key=>$rs){
+            if (is_numeric($key) && $rs[0]) {
                 if(in_array($rs['0'], ['select','checkbox','checkboxtree','radio'])){
                     $arr = [
                         'type'=>$rs['0'],
@@ -48,15 +49,10 @@ class Format
                     ];
                 }
                 $array[$rs[1]] = $arr+$rs;
-            }
-        }elseif($data[0]){
-            foreach ($data AS $rs){
+            }else{
                 $array[$rs['name']] = $rs;
             }
-        }else{
-            $array = $data;
-        }
-        
+        }        
         return $array;
     }
     
