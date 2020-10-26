@@ -16,7 +16,9 @@ class Field{
             return [];
         }
         $data = [];
+        $i=0;
         foreach($array AS $key=>$rs){
+            $i++;
             if ($rs['type']=='select' || $rs['type']=='checkbox' || $rs['type']=='radio') {
                 $detail = explode("\n",$rs['options']);
                 $opt = [];
@@ -26,9 +28,9 @@ class Field{
             }else{
                 $opt='';
             }
-            $data['order_field_'.$key] = array_merge($rs,[
+            $data['order_field_'.$i] = array_merge($rs,[
                 'type'=>$rs['type'],
-                'name'=>'order_field_'.$key,
+                'name'=>'order_field_'.$i,
                 'title'=>$rs['title'],
                 'about'=>'',
                 'options'=>$opt,
