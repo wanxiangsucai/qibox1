@@ -19,7 +19,7 @@ abstract class KehuOrder extends MemberBase
      * 导出订单
      * @param array $array
      */
-    public function excel($array=[],$shopid=0){        
+    protected function excel($array=[],$shopid=0){        
     }
 
     /**

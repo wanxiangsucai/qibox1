@@ -339,11 +339,11 @@ class Label{
         }
         $parameter = ['name'=>$cfg['name'],'pagename'=>$cfg['pagename'],'sysid'=>$sysid,'aid'=>$aid,'rows'=>$rows,'order'=>$order,'by'=>$by,'status'=>$status];
         if($type=='posturl'){
-            return purl('comment/api/add',$parameter);
+            return purl('comment/api/add',$parameter,'index');
         }elseif($type=='pageurl'){
-            return purl('comment/api/ajax_get',$parameter);
+            return purl('comment/api/ajax_get',$parameter,'index');
         }elseif($type=='apiurl'){
-            return purl('comment/api/act',$parameter);
+            return purl('comment/api/act',$parameter,'index');
         }else{
             $data = controller("plugins\\comment\\index\\Api")->get_list($sysid,$aid,$rows,$status,$order,$by,$page);
             //$data = $data ? getArray($data)['data'] : [];

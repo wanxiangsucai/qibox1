@@ -34,6 +34,7 @@ class Api extends IndexBase
         $data_type = $_array['data_type'];
         $pid = $_array['pid'];
         $id = $_array['id'];
+        $tid = intval($_array['tid']);
         
 //         self::$get_children = $pid;
 //         echo self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$type);
@@ -109,6 +110,7 @@ class Api extends IndexBase
             $data['sysid'] = $sysid;
             $data['pid'] = intval($pid);
             $data['uid'] = intval($this->user['uid']);
+            $data['tid'] = $tid;
             $result = contentModel::create($data);
             if ($result) {
 
@@ -133,12 +135,18 @@ class Api extends IndexBase
      * @param array $data
      */
     protected function send_msg($data=[]){
-        $topic = fun('Content@info',$data['aid'],$data['sysid'],false);
+        $topic = fun('Content@info',$data['tid']?:$data['aid'],$data['sysid'],false);
         $mods = modules_config($data['sysid']);
         
         $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
         //if( $this->webdb['comment_send_msg'] ){
-            $content = $mods['name'].' 里的信息: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了评论,<a target="_blank" href="'.get_url(urls($mods['keywords'].'/content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
+            if($data['tid']){
+                $url = get_url(murl($mods['keywords'].'/order/show',['id'=>$data['aid']]));
+            }else{
+                $url = get_url(urls($mods['keywords'].'/content/show',['id'=>$data['aid']]));
+            }
+            
+            $content = $mods['name'].' 里的信息: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了评论,<a target="_blank" href="'.$url.'">你可以点击查看详情</a>';
             $title = $this->user['username'].' 对你评论了!';            
             if($topic['uid']!=$this->user['uid']){
                 //if($this->forbid_remind($topic['uid'])!==true){

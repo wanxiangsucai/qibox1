@@ -1853,3 +1853,5 @@ ALTER TABLE  `qb_memberdata` ADD  `qun_id` INT( 7 ) NOT NULL COMMENT  '圈子ID,
 
 
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 32, '提现周期(T+N)', 'getout_rmb_tn', '0', 'number', '', 0, '', '单位是天,0或留空则不限,类似微信商户号,用户收入冻结几天后才能提现,比如商城防止用户申请退货', 0, '-5');
+
+ALTER TABLE  `qb_comment_content` ADD  `tid` INT( 7 ) NOT NULL COMMENT  '一般为空,个别情况,比如工单的话,要对订单进行评论的时候,就这个为内容的ID';
