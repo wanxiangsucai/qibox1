@@ -138,7 +138,10 @@ class Module extends AdminBase
 	 * 卸载模块
 	 * @param number $ids
 	 */
-	public function delete($ids=0){
+	public function delete($ids=0,$keyword=''){
+	    if (!$ids&&$keyword) {
+	        $ids = $this->model->where('keywords',$keyword)->value('id');
+	    }
 	    $result = $this->uninstall($ids);
 	    if ($result!==true){
 	        $this->error($result);

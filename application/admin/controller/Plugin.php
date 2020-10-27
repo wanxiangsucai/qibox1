@@ -69,7 +69,10 @@ class Plugin extends AdminBase
 	 * 卸载插件
 	 * @param number $ids
 	 */
-	public function delete($ids=0){
+	public function delete($ids=0,$keyword=''){
+	    if (!$ids&&$keyword) {
+	        $ids = $this->model->where('keywords',$keyword)->value('id');
+	    }
 	    $result = $this->uninstall($ids,'p');
 	    if ($result!==true){
 	        $this->error($result);

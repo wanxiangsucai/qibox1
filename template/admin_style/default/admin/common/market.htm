@@ -104,6 +104,13 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 .MarketBox li dl dd .butter a:hover{
 	background: #F30;
 }
+.MarketBox li dl dd .butter .del_app{
+	background: #424141;
+	display:none;
+}
+.MarketBox li dl dd .butter .del_app:hover{
+	background: #af0404;
+}
 
 .choose_btn{
 	float:left;
@@ -282,7 +289,8 @@ function show_tanmu(time){
 								class="fa fa-bolt">
 									装前必读
 								</a>
-								<a class="demo_url" v-if="rs.author_url!=''" :href="''+rs.author_url+''" target="_blank" class="fa fa-bolt">预览效果</a>
+								<a class="demo_url" v-if="rs.author_url!=''" :href="''+rs.author_url+''" target="_blank">预览</a>
+								<a href="javascript:;" @click="dels(rs.id,rs.app_keywords,rs.price,rs.fid)" :data-id="rs.id" class="del_app">卸载</a>
 							</div>
 						</dd>
 					</dl>
@@ -421,6 +429,9 @@ var vues = new Vue({
 		setup: function (id,keywords,price,must_view_about) {
 			setup_app(id,keywords,price,0,must_view_about);
 		},
+		dels: function (id,keywords,price,fid) {
+			delete_app(id,keywords,price,fid);
+		},
 		add_data:function(array){
 			array.forEach((rs)=>{
 				this.listdb.push(rs);
@@ -517,6 +528,7 @@ function check_setup(){
 					app_have_setup[id]= true;
 					//obj.removeAttr('onclick');
 					obj.css({'color':'yellow',});
+					$('.del_app[data-id='+id+']').css('display','inline-block');
 				}else{
 					ids_ck_msg[id] = res.msg;
 					obj.html('购买正版授权');
@@ -555,10 +567,42 @@ function open_setup_win(id){
 		}
 	});
 }
+
+function delete_app(id,keywords,price,fid){
+	if(typeof(app_have_setup[id])=='undefined'){
+		layer.alert('你还没安装当前应用!');
+		return false;
+	}
+	var msg = '应用';
+	if(fid==1){
+		msg = '频道';
+	}else if(fid==2){
+		msg = '插件';
+	}
+	layer.confirm('你确认要卸载当前'+msg+'吗？'+(fid<3?'<br>请慎重操作，会把数据一起清空，不可恢复！！！':''),function(i){
+		layer.close(i);
+		var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
+		var url = "{:urls('market')}" + "?id=" + id + "&domain={:request()->domain()}&appkey={:urlencode(config('webdb.mymd5'))}&keywords=" + keywords + "&type=delete";
+		if(fid==1){
+			url = "{:url('module/delete')}?keyword="+keywords;
+		}else if(fid==2){
+			url = "{:url('plugin/delete')}?keyword="+keywords;
+		}		
+		$.get(url,function(res){
+			layer.close(index);
+			if(res.code==0){
+				layer.msg(res.msg);
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	});	
+}
+
 function setup_app(id,keywords,price,have_open_layer,must_view_about){
 	if(typeof(app_have_setup[id])!='undefined'){
 		layer.alert('当前应用,已经安装过了!');
-		return ;
+		return false;
 	}
 	scroll_top = $(window).scrollTop();
 	if(must_view_about){

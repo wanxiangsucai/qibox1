@@ -21,16 +21,59 @@ class Style extends AdminBase
 	/**
 	 * 应用市场
 	 */
-	public function market($id=0,$page=0,$fid=8){
-	    //执行安装云端模块
+	public function market($id=0,$page=0,$fid=8,$type=''){	    
+	    //执行安装或卸载云端模块
 	    if($id){
-	        return $this->get_style($id,'style');
+	        if ($type=='delete') {
+	            return $this->delete_market_style($id);
+	        }else{
+	            return $this->get_style($id,'style',$type);
+	        }
+	        
 	    }
 	    $this->assign('fid',$fid?:8);	
 	    return $this->fetch();
 	}
 	
-	protected function get_style($id=0,$type='style'){
+	/**
+	 * 卸载应用市场的风格
+	 * @param number $id
+	 * @return void|\think\response\Json|void|unknown|\think\response\Json
+	 */
+	protected function delete_market_style($id=0){
+	    $keywords = input('keywords');
+	    $appkey= input('appkey');
+	    $domain= input('domain');
+	    
+	    $info = MarketModel::where('version_id',$id)->find();
+	    if (empty($info)){
+	        return $this->err_js('你并没有安装当前风格!');
+	    }
+	    
+	    $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
+	    $result = $this->delele_model_file($url);
+	    if ($result!==true) {
+	        return $this->err_js($result);
+	    }
+	    
+	    $data = [
+	        'version_id'=>$id,
+	    ];
+	    $result = MarketModel::where($data)->delete();
+	    if ($result){
+	        return $this->ok_js([],'当前风格卸载成功!');
+	    }else{
+	        return $this->err_js('数据库删除失败');
+	    }
+	}
+	
+	/**
+	 * 下载并安装风格
+	 * @param number $id
+	 * @param string $sort
+	 * @return void|\think\response\Json|void|unknown|\think\response\Json
+	 */
+	protected function get_style($id=0,$sort='style'){
 	    $keywords = input('keywords');
 	    $appkey= input('appkey');
 	    $domain= input('domain');
@@ -43,7 +86,7 @@ class Style extends AdminBase
 	        //return $this->err_js($basepath.'index_style/'.$keywords.'目录已经存在了,无法安装此风格');
 	    }
 	    $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
-	    $result = $this->downModel($url,$keywords,$type);
+	    $result = $this->downModel($url,$keywords,$sort);
 	    if($result!==true){
 	        return $this->err_js($result);
 	    }

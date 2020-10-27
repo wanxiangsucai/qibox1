@@ -6,6 +6,7 @@ use app\common\traits\AddEditList;
 use app\common\model\Hook as HookModel;
 use app\common\model\Hook_plugin as Hook_pluginModel;
 use app\common\model\Plugin;
+use app\common\model\Market AS MarketModel;
 use app\common\traits\Market;
 use think\Db;
 
@@ -208,12 +209,53 @@ class HookPlugin extends AdminBase
     }
     
     /**
+     * 卸载应用市场的钩子
+     * @param number $id
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    protected function delete_market_hook($id=0){
+        $keywords = input('keywords');
+        $appkey= input('appkey');
+        $domain= input('domain');
+        
+//         $info = MarketModel::where('version_id',$id)->find();
+//         if (empty($info)){
+//             return $this->err_js('你并没有安装当前钩子!');
+//         }
+        
+        $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
+        $result = $this->delele_model_file($url);
+        if ($result!==true) {
+            return $this->err_js($result);
+        }
+        
+        $data = [
+            'version_id'=>$id,
+        ];
+        $result = MarketModel::where($data)->delete();
+        if ($result){
+            return $this->ok_js([],'增强包卸载成功');
+        }elseif(\think\Db::name('hook_plugin')->where('hook_class',"app\\common\\hook\\".$keywords)->delete()){
+            cache('hook_plugins', NULL);
+            return $this->ok_js([],'钩子卸载成功');
+        }elseif(\think\Db::name('timed_task')->where('class_file',"app\\common\\task\\".$keywords)->delete()){
+            return $this->ok_js([],'定时任务卸载成功');
+        }else{
+            return $this->err_js('数据库可能需要你手工清除!');
+        }
+    }
+    
+    /**
      * 应用市场
      */
-    public function market($id=0,$page=0){
+    public function market($id=0,$page=0,$type=''){
         //执行安装云端模块
         if($id){
-            return $this->get_app_hook($id,'hook');
+            if ($type=='delete') {
+                return $this->delete_market_hook($id);
+            }else{
+                return $this->get_app_hook($id,'hook');
+            }            
         }
         $this->assign('fid',3);
         return $this->fetch();

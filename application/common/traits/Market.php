@@ -8,6 +8,7 @@ trait Market
 {
     /**
      * 下载云端模块,并执行安装
+     * 注意这里仅安装频道与插件,风格及其它的,不使用此方法
      * @param number $id
      * @return void|\think\response\Json
      */
@@ -75,12 +76,28 @@ trait Market
         cache('hook_plugins',null);
     }
     
+    
     /**
-     * 云端下载模块
-     * @param unknown $url
+     * 递归目录
      * @param unknown $path
+     * @param unknown $arr
      */
-    protected function downModel($url='',$path='',$type='m'){
+    protected function get_dir($path, &$arr) {
+        foreach (glob($path) as $file) {
+            if (is_dir($file)) {
+                $this->get_dir($file . '/*', $arr);
+            } else {
+                $arr[] = realpath($file);
+            }
+        }
+    }
+    
+    /**
+     * 下载远程附件并解压出来
+     * @param string $url
+     * @return string|boolean
+     */
+    protected function getfile($url=''){
         set_time_limit(0); //防止下载超时
         @unlink(RUNTIME_PATH.'temp.zip');
         downFile($url,RUNTIME_PATH.'temp.zip');
@@ -94,9 +111,58 @@ trait Market
             return '你的空间php不支持zip扩展,请安装ZIP扩展,或更换PHP版本';
         }
         Unzip::unzip(RUNTIME_PATH.'temp.zip',RUNTIME_PATH.'model/');
-        if(!is_dir(RUNTIME_PATH.'model/')){
-            return '文件解压失败';
+        if(empty(glob(RUNTIME_PATH.'model/*'))){
+            return file_get_contents(RUNTIME_PATH.'temp.zip')?:'文件解压失败';
         }
+        return true;
+    }
+    
+    /**
+     * 删除已安装的应用文件,仅限文件
+     * @param string $url
+     * @return string|boolean
+     */
+    protected function delele_model_file($url=''){
+        $result = $this->getfile($url);
+        if ($result!==true) {
+            return $result;
+        }
+        $array = [];
+        $this->get_dir(RUNTIME_PATH.'model', $array);
+        
+        $path_array = [];
+        foreach($array AS $file){
+            $file = str_replace(["\\runtime\\model\\",'/runtime/model/'], '/', $file);
+            @unlink($file);
+            $path = dirname($file);
+            $path_array[$path] = $path;
+            
+        }
+        arsort($path_array);
+        sleep(1);
+        foreach($path_array AS $path){
+            if (empty(glob($path.'/*'))) {
+                rmdir($path);
+            }
+        }
+        delete_dir(RUNTIME_PATH.'model');
+        unlink(RUNTIME_PATH.'temp.zip');
+        return true;
+    }
+    
+    /**
+     * 云端下载模块
+     * @param string $url 远程附件
+     * @param string $path 模块目录名
+     * @param string $type 频道或插件
+     * @return string|boolean
+     */
+    protected function downModel($url='',$path='',$type='m'){
+        $result = $this->getfile($url);
+        if ($result!==true) {
+            return $result;
+        }
+        
         $ck = 0;
         $dir = opendir(RUNTIME_PATH.'model/');
         while(($file=readdir($dir))!==false){
