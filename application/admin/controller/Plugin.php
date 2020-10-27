@@ -210,6 +210,9 @@ class Plugin extends AdminBase
 	    if (!plugin_action_exists($plugin, $controller, $action)) {
 	            $this->error("找不到类及方法：plugins\\{$plugin}\\admin\\".format_class_name($controller));
 	    }
+	    if(is_file(PLUGINS_PATH.$plugin.'/common.php')){
+	        include_once(PLUGINS_PATH.$plugin.'/common.php');
+	    }
 	    return plugin_action($plugin, $controller, $action, $params);
 	}
 	

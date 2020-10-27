@@ -119,19 +119,32 @@ trait Market
     
     /**
      * 删除已安装的应用文件,仅限文件
-     * @param string $url
+     * @param string $url 附件的下载地址
+     * @param string $url2 附件的文件列表,并不包含附件
      * @return string|boolean
      */
-    protected function delele_model_file($url=''){
-        $result = $this->getfile($url);
-        if ($result!==true) {
-            return $result;
-        }
+    protected function delele_model_file($url='',$url2=''){
         $array = [];
-        $this->get_dir(RUNTIME_PATH.'model', $array);
+        if ($url2!='') {
+            $string = http_curl($url2);
+            if ($string!='') {
+                $ar = json_decode($string,true);
+                foreach ($ar AS $rs){
+                    $array[] = ROOT_PATH.$rs['file'];
+                }
+            }
+        }
+        if (!$array) {
+            $result = $this->getfile($url);
+            if ($result!==true) {
+                return $result;
+            }
+            $this->get_dir(RUNTIME_PATH.'model', $array);
+        }        
+        
         $path_array = [];
         foreach($array AS $file){
-            $file = str_replace(["\\runtime\\model\\",'/runtime/model/'], '/', $file);
+            $file = str_replace(["\\runtime\\model\\",'/runtime/model/',"\\/","//"], '/', $file);
             @unlink($file);
             $path = dirname($file);
             $path_array[$path] = $path;
@@ -140,6 +153,12 @@ trait Market
         arsort($path_array);
         sleep(1);
         foreach($path_array AS $path){
+            if ($url2!='') {
+                foreach(glob($path.'/*.txt') AS $file){
+                    @unlink($file);
+                }
+            }
+            
             if (empty(glob($path.'/*'))) {
                 rmdir($path);
             }
@@ -416,7 +435,8 @@ trait Market
         
         if ($info['version_id']) {  //为的是删除图片目录
             $url = "https://x1.php168.com/appstore/getapp/down.html?id=".$info['version_id']."&domain=".request()->domain()."&appkey=".urlencode(config('webdb.mymd5'));
-            $this->delele_model_file($url);
+            $url2 = "https://x1.php168.com/appstore/Version/get.html?id=".$info['version_id']."&keyword=".$info['keywords']."&type=$type";
+            $this->delele_model_file($url,$url2);
         }
         
         return true;

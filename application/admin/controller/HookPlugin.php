@@ -224,7 +224,8 @@ class HookPlugin extends AdminBase
 //         }
         
         $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
-        $result = $this->delele_model_file($url);
+        $url2 = "https://x1.php168.com/appstore/Version/get.html?id=$id&keyword=$keywords&type=hook";
+        $result = $this->delele_model_file($url,$url2);
         if ($result!==true) {
             return $this->err_js($result);
         }
