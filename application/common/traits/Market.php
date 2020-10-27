@@ -129,7 +129,6 @@ trait Market
         }
         $array = [];
         $this->get_dir(RUNTIME_PATH.'model', $array);
-        
         $path_array = [];
         foreach($array AS $file){
             $file = str_replace(["\\runtime\\model\\",'/runtime/model/'], '/', $file);
@@ -366,6 +365,8 @@ trait Market
         
         $id = intval($ids);
         $info = $this->getInfoData($id);
+        
+        
         if (empty($info)) return '缺少参数';
         if (empty($info['keywords'])) return '目录名不存在';
         
@@ -378,7 +379,22 @@ trait Market
         }        
         
         //删除频道模型记录表
-        $this->model->destroy($id);        
+        $this->model->destroy($id); 
+        
+        //删除数据表
+        $oldpre = config('database.prefix').$info['keywords'].'_';
+//         $query=Db::query("SHOW TABLE STATUS");
+//         foreach($query AS $rs){
+//             if(!preg_match("/^$oldpre/i", $rs['Name'])){
+//                 continue;
+//             }
+//             Db::execute("DROP TABLE IF EXISTS {$rs['Name']}");
+//         }
+        $string = file_get_contents($basepath.$info['keywords'].'/install/install.sql');
+        preg_match_all("/(`| )".$oldpre."([\w]+)(`|;| )/is", $string,$tb_array);
+        foreach($tb_array[0] AS $table){
+            Db::execute("DROP TABLE IF EXISTS ".$table);
+        }
         
         //删除程序目录
         delete_dir($basepath.$info['keywords']);
@@ -388,21 +404,20 @@ trait Market
         $this->delete_template_file($info['keywords'],'admin',$type);    //后台模板
         $this->delete_template_file($info['keywords'],'member',$type);    //会员中心模板
         
-        //删除数据表
-        $oldpre = config('database.prefix').$info['keywords'].'_';
-        $query=Db::query("SHOW TABLE STATUS");
-        foreach($query AS $rs){
-            if(!preg_match("/^$oldpre/i", $rs['Name'])){
-                continue;
-            }
-            Db::execute("DROP TABLE IF EXISTS {$rs['Name']}");
-        }
-        
         $_id = $type=='m' ? $id : -$id ;
         //删除参数配置
         Db::name('config_group')->where(['sys_id'=> $_id])->delete();
         
         Db::name('config')->where(['sys_id'=>$_id])->delete();
+        
+        $path = $type=='m' ? 'app' : 'plugins';
+        Db::name('hook_plugin')->where('hook_class','like',$path."\\\\".$info['keywords'].'\\\\%')->delete();
+        Db::name('timed_task')->where('class_file','like',$path."\\\\".$info['keywords'].'\\\\%')->delete();
+        
+        if ($info['version_id']) {  //为的是删除图片目录
+            $url = "https://x1.php168.com/appstore/getapp/down.html?id=".$info['version_id']."&domain=".request()->domain()."&appkey=".urlencode(config('webdb.mymd5'));
+            $this->delele_model_file($url);
+        }
         
         return true;
     }
