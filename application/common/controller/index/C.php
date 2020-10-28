@@ -595,8 +595,41 @@ abstract class C extends IndexBase
     protected function get_tpl($type='show',$mid=0,$sort=[],$info=[]){
         $template = '';
         
-        //栏目若自定义了列表及内容页的模板，优先级是最高的
-        if($sort['template']){
+        if ($type=='show' && $info['qun']['style']!='') {   //圈子个性模板,可以不存在母模板
+            $base_path = TEMPLATE_PATH.'qun_style/'.$info['qun']['style'].'/'.config('system_dirname').'/';
+            if (IN_WAP===true) {
+                $path = $base_path.'wap_show';
+                if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
+                    $template = $path.$mid.'.'.config('template.view_suffix');
+                }elseif( is_file($path.'.'.config('template.view_suffix')) ){
+                    $template = $path.'.'.config('template.view_suffix');
+                }
+            }else{
+                $path = $base_path.'pc_show';
+                if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
+                    $template = $path.$mid.'.'.config('template.view_suffix');
+                }elseif( is_file($path.'.'.config('template.view_suffix')) ){
+                    $template = $path.'.'.config('template.view_suffix');
+                }
+            }
+            if (empty($template)) {
+                $path = $base_path.'show';
+                if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
+                    $template = $path.$mid.'.'.config('template.view_suffix');
+                }elseif( is_file($path.'.'.config('template.view_suffix')) ){
+                    $template = $path.'.'.config('template.view_suffix');
+                }
+            }
+        }
+        
+        if (empty($template) && IN_WAP===true && $info['wap_template'] && is_file(TEMPLATE_PATH.'index_style/'.$info['wap_template']) && preg_match("/".config('template.view_suffix')."$/", $info['wap_template'])) {
+            $template = TEMPLATE_PATH.'index_style/'.$info['wap_template'];
+        }elseif (empty($template) && IN_WAP!==true && $info['pc_template'] && is_file(TEMPLATE_PATH.'index_style/'.$info['pc_template']) && preg_match("/".config('template.view_suffix')."$/", $info['pc_template'])) {
+            $template = TEMPLATE_PATH.'index_style/'.$info['pc_template'];
+        }
+        
+        //检查栏目是否自定义了列表及内容页的模板
+        if(empty($template) && $sort['template']){
             $ar = unserialize($sort['template']);
             if(IN_WAP===true){
                 if($type=='list' && $ar['waplist']){
@@ -614,12 +647,6 @@ abstract class C extends IndexBase
             if(!is_file($template)){
                 $template = '';
             }
-        }
-        
-        if (IN_WAP===true && $info['wap_template'] && is_file(TEMPLATE_PATH.'index_style/'.$info['wap_template']) && preg_match("/".config('template.view_suffix')."$/", $info['wap_template'])) {
-            $template = TEMPLATE_PATH.'index_style/'.$info['wap_template'];
-        }elseif (IN_WAP!==true && $info['pc_template'] && is_file(TEMPLATE_PATH.'index_style/'.$info['pc_template']) && preg_match("/".config('template.view_suffix')."$/", $info['pc_template'])) {
-            $template = TEMPLATE_PATH.'index_style/'.$info['pc_template'];
         }
         
         
