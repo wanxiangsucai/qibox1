@@ -286,8 +286,8 @@ function show_tanmu(time){
 									在线安装
 								</a>
 								<a :href="'https://x1.php168.com/appstore/content/show/id/'+rs.id+'.html'" target="_blank"
-								class="fa fa-bolt">
-									装前必读
+								class="fa fa-file-text-o">
+									介绍
 								</a>
 								<a class="demo_url" v-if="rs.author_url!=''" :href="''+rs.author_url+''" target="_blank">预览</a>
 								<a href="javascript:;" @click="dels(rs.id,rs.app_keywords,rs.price,rs.fid)" :data-id="rs.id" class="del_app">卸载</a>

@@ -39,6 +39,9 @@ abstract class C extends IndexBase
      * @param array $info
      */
     protected function view_check(&$info=[]){
+        if (!defined('PAGE_TYPE')) {
+            define('PAGE_TYPE', 'show');
+        }
         if (empty(get_cookie('first_view'))) {
             set_cookie('first_view',$info['uid'].','.$info['ext_id']); //给定义为网站工具的圈子使用app\qun\index\Api那里用到;
         }
@@ -107,6 +110,7 @@ abstract class C extends IndexBase
      */
     public function index($fid=0,$mid=0)
     {
+        define('PAGE_TYPE', 'list');
         if(!$mid && !$fid){
             //$this->error('参数不存在！');
             $mid = 1;
@@ -169,6 +173,7 @@ abstract class C extends IndexBase
      */
     public function show($id=0)
     {
+        define('PAGE_TYPE', 'show');
         $this->mid = $this->model->getMidById($id);
         
         if(empty($this->mid)){

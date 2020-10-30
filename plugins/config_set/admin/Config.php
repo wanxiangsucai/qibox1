@@ -219,8 +219,17 @@ class Config extends AdminBase
 	    return $tab_list;
 	}
 
-	public function index($group=0,$sys_id=null)
+	public function index($group=0,$sys_id=null,$excel=0)
     {
+	    
+        $map = $group!==null ? ['type'=>$group] : ['sys_id'=>$sys_id];
+        
+        if($excel==1){
+            $data = $this->model->where($map)->order('list desc,id asc')->column(true);
+            $this->down($data);
+        }
+        $data = $this->model->where($map)->order('list','desc')->paginate(50);
+        
 		$this->tab_ext = [
 				'nav'=>[ self::nav() , $group],
 				'help_msg'=>'系统字段管理',
@@ -237,15 +246,43 @@ class Config extends AdminBase
 		$this->tab_ext['top_button'] =[
 		        [
 		                'title' => '新增字段',
-		                'icon'  => 'fa fa-fw fa-th-list',
+		                'icon'  => 'fa fa-plus-circle',
 		                'class' => 'btn btn-primary',
 		                'href'  => auto_url('add',['group'=>$group])
 		        ],
-		];
-		
-		$map = $group!==null ? ['type'=>$group] : ['sys_id'=>$sys_id];
-		$data = $this->model->where($map)->order('list','desc')->paginate(50);		
+		    [
+		        'title' => '导出下列字段',
+		        'icon'  => 'fa fa-table',
+		        'class' => 'btn btn-primary',
+		        'href'  => auto_url('index',['group'=>$group,'excel'=>1])
+		    ],
+		];		
+				
 		return $this->getAdminTable( $data );
+    }
+    
+    protected function down($array=[]){
+        
+        if(!$array){
+            $this->error('没有数据可导出!');
+        }
+        $outstr = '';
+        foreach($array AS $rs){
+            $rs['c_descrip'] = str_replace("\r\n", "\\r\\n", addslashes($rs['c_descrip']));
+            $rs['title'] = addslashes($rs['title']);
+            $rs['c_value'] = str_replace("\r\n", "\\r\\n", addslashes($rs['c_value']));
+            $rs['htmlcode'] = str_replace("\r\n", "\\r\\n", addslashes($rs['htmlcode']));
+            $rs['options'] = str_replace("\r\n", "\\r\\n", addslashes($rs['options']));
+            $outstr .="INSERT INTO `qb_config` (`type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('{$rs['type']}','{$rs['title']}','{$rs['c_key']}','{$rs['c_value']}','{$rs['form_type']}','{$rs['options']}','{$rs['ifsys']}','{$rs['htmlcode']}','{$rs['c_descrip']}','{$rs['list']}','-1');\r\n";
+        }
+        ob_end_clean();
+        header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
+        header('Pragma: no-cache');
+        header('Content-Encoding: none');
+        header('Content-Disposition: attachment; filename=配置文件.sql');
+        header('Content-type: text/sql');
+        echo $outstr;
+        exit;
     }
 
 }

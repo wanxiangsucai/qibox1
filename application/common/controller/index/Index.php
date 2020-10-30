@@ -7,6 +7,7 @@ use app\common\controller\IndexBase;
 class Index extends IndexBase
 {
     public function index(){
+        define('PAGE_TYPE', 'index');
         $template = '';
         $this->assign('mid',current(model_config())['id']);
         

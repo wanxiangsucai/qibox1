@@ -6,8 +6,8 @@
 		<li>
 			<h3><a href="<?php echo $rs['url']; ?>" target="_blank"><?php echo $rs['title']; ?></a></h3>
 			<section>
-				<?php foreach($rs['picurls'] AS $picurl):  ?>
-				<a href="<?php echo $rs['url']; ?>" target="_blank"><span><img src="<?php echo $picurl; ?>" onerror="this.src='<?php echo STATIC_URL;?>/images/nopic.png'"/></span></a>
+				<?php foreach($rs['picurls'] AS $value):  ?>
+				<a href="<?php echo $rs['url']; ?>" target="_blank"><span><img src="<?php echo is_array($value)?$value['picurl']:$value; ?>" onerror="this.src='<?php echo STATIC_URL;?>/images/nopic.png'"/></span></a>
 				<?php  endforeach;  ?>
 			</section>
 		</li>
