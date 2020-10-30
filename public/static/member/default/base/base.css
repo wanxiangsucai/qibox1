@@ -153,7 +153,7 @@ table.FormTable td{
 	line-height:30px;
 }
 table.FormTable td.tdL{
-	width:120px;
+	width: 23%;
 	text-align:right; 
 	vertical-align:top;
 }
@@ -298,4 +298,14 @@ table.FormTable td.tdR input[type=submit]:hover,table.FormTable td.tdR input[typ
 }
 .listshorts li.ck{
 	background:#EFEFEF;
+}
+
+.MainCont .head .tag a{
+	background:orange;
+	color:#fff;
+	padding:3px 8px;
+	border-radius: 3px;
+}
+.MainCont .head .tag a:hover{
+	background:#e09b1c;
 }
