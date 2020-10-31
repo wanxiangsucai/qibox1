@@ -76,10 +76,11 @@ class Content{
             return [];
         }
         $data = [];
-        $oss = config('webdb')['P__oss']['oss_point'];
+        $oss_point = config('webdb')['P__oss']['oss_point'];
+        $oss_url = config('webdb')['P__oss']['oss_host'];
         $type===true || $type = str_replace(',', '|', $type);
         foreach ($array[2] AS $url){
-            if ( preg_match("/^\/public\/uploads\//i", $url) || ($oss&&strstr($url,$oss)) ) {
+            if ( preg_match("/^\/public\/uploads\//i", $url) || ($oss_url&&strstr($url,$oss_url)) || ($oss_point&&strstr($url,$oss_point)) ) {
                 if ($type===true || preg_match("/($type)$/i", $url)) {
                     $data[] = $url;
                 }

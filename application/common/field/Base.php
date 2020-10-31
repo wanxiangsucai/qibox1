@@ -99,7 +99,7 @@ class Base
             }
             
             $array = [];            
-            foreach(explode(',',$f_value) AS $v){
+            foreach(explode(strstr($f_value,',')?',':'、',$f_value) AS $v){
                 if($v===''){
                     continue ;
                 }

@@ -2,6 +2,31 @@
 
 jQuery(document).ready(function() {
 	
+	if(typeof(nopower)=='string' && nopower!=''){
+		layer.alert(nopower,{title:'提示'},function(index){
+			layer.close(index);
+			if(nopower.indexOf('手机')>-1){
+				layer.open({
+						type: 2,
+						title:'绑定手机',
+						area: in_wap ? ['95%', '80%'] : ['800px', '600px'],
+						shade: 0.4,
+						content:bind_phone_url,
+				});
+			}else if( nopower.indexOf('公众号')>-1 ){
+				layer.alert("<img width='300' src='"+mp_img_url+"'><br>请用微信扫码关注上面的公众号",{title:'请扫码关注下面的公众号',});
+			}else if(nopower.indexOf('用户组')>-1){
+				layer.open({
+						type: 2,
+						title:'升级用户组',
+						area: ['95%', '80%'],
+						shade: 0.4,
+						content:upgroup_url,
+				});
+			}
+		});
+	}
+
 	//ajax无刷新提交表单
 	$("form.ajax_post").each(function(){
 		var form = $(this);
@@ -32,7 +57,23 @@ jQuery(document).ready(function() {
 					if( typeof(post_err)=='function' ){	//接口回调
 						post_err(res);
 					}else{
-						layer.open({title: '提交失败',content:res.msg});
+						//layer.open({title: '提交失败',content:res.msg});
+						layer.alert(res.msg,{title:'提交失败'},function(index){
+							layer.close(index);
+							if(res.msg.indexOf('手机')>-1){
+								layer.open({
+									type: 2,
+									title:'绑定手机',
+									area: in_wap ? ['95%', '80%'] : ['800px', '600px'],
+									shade: 0.4,
+									content:bind_phone_url,
+								});
+							}else if( res.msg.indexOf('公众号')>-1 ){
+								layer.alert("<img width='300' src='"+mp_img_url+"'><br>请用微信扫码关注上面的公众号",{title:'请扫码关注下面的公众号',});
+							}else if(res.data.paymoney){
+								pay_money(res.data.paymoney)
+							}
+						});
 					}					
 				}
 			}).fail(function (res) {
@@ -44,6 +85,42 @@ jQuery(document).ready(function() {
 			return false;
 		});
 	});
+
+
+	function pay_money(money){
+		jQuery.getScript("/public/static/js/pay.js").done(function() {			
+		}).fail(function() {
+			layer.msg('public/static/js/pay.js加载失败',{time:800});
+		});
+		layer.confirm("是否立即充值 "+money+" 元",{btn:['充值','取消']},function(i){
+			layer.close(i);
+			if( navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i) ){
+				Pay.mobpay( money,'充值',function(type,index){
+					layer.close(index);
+					if(type=='ok'){
+						layer.msg('充值成功');
+						if( typeof(endpay_ok)=='function' ){	//接口回调
+							endpay_ok();
+						}
+					}else{
+						layer.alert('充值失败');
+					}
+				});
+			}else{
+				Pay.pcpay( money,'充值',function(type,index){
+					layer.close(index);
+					if(type=='ok'){
+						layer.msg('充值成功');
+						if( typeof(endpay_ok)=='function' ){	//接口回调
+							endpay_ok();
+						}
+					}else{
+						layer.alert('充值失败');
+					}
+				});
+			}
+		});
+	}
 
 	//联动触显 不能跟layer表单事件一起用
     if (typeof(trigger_config)=='object' && typeof(trigger_config.triggers) != 'undefined') {

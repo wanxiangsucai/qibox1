@@ -96,7 +96,7 @@ class Module extends AdminBase
 	                return '<a title="安装当前模块" icon="fa fa-plus" class="btn btn-xs btn-default" href="'.url('add',['keywords'=>$rs['keywords']]).'" target="_self"><i class="fa fa-plus"></i></a>';
 	            },'__data__'],
         ];
-	    $array = modules_config();
+	    $array = ModuleModel::getList();
 	    foreach($array AS $key=>$rs){
 	        $exists_modules[$rs['keywords']] = $rs;
 	    }

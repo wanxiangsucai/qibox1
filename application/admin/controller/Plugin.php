@@ -107,7 +107,7 @@ class Plugin extends AdminBase
                 return '<a title="安装当前插件" icon="fa fa-plus" class="btn btn-xs btn-default" href="'.url('add',['keywords'=>$rs['keywords']]).'" target="_self"><i class="fa fa-plus"></i></a>';
             },'__data__'],
             ];
-        $array = plugins_config();
+        $array = PluginModel::getList();
         foreach($array AS $key=>$rs){
             $exists_modules[$rs['keywords']] = $rs;
         }
