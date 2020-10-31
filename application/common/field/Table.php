@@ -98,14 +98,15 @@ class Table extends Base
                 }
                 $show .= "</select>";
             }
-        }elseif($field['type'] == 'checkbox'){  //多选项
+        }elseif($field['type'] == 'checkbox' && !strstr($field_value,'、')){  //多选项
+            $field['array'] || $field['array'] = $field['options'];
             $detail = explode(',',$field_value);
             foreach($detail AS $key=>$value){
                 if ($value=='') {
                     unset($detail[$key]);
                     continue;
                 }
-                $detail[$key] = $field['array'][$value];
+                $detail[$key] = $field['array'][strip_tags($value)];
             }
             $show = implode('、', $detail);
         }elseif($field['type'] == 'yesno'){
