@@ -197,7 +197,9 @@ class Api extends IndexBase
         
         if(self::$get_children!==null){
             $string = stristr($view_tpl,'<?php if(is_array($rs[\'children\'])'); //变量名必须是 $rs['children']
-            $num =  stripos($string,'<?php endforeach; endif; else: echo "" ;endif; ?>');
+            $num =  strripos($string,'<?php endforeach; endif; else: echo "" ;endif; ?>');
+            $string= substr($string,0,$num);
+            $num =  strripos($string,'<?php endforeach; endif; else: echo "" ;endif; ?>');
             $view_tpl = substr($string,0,$num).'<?php endforeach; endif; else: echo "" ;endif; ?>';
         }else{
             //截取循环那段模板，其它不需要
@@ -235,7 +237,7 @@ class Api extends IndexBase
         $id = $aid;
         
         $view_tpl = self::get_tpl($name,$pagename);        
-        
+
         if(empty($view_tpl)){
             return $this->err_js('not_tpl');
             //die('tpl not exists !');
@@ -332,23 +334,25 @@ class Api extends IndexBase
         if(!is_object($listdb)){
             return $listdb;
         }
-        $listdb->each(function($rs,$key){
-            $rs['time'] = format_time(strtotime($rs['create_time']),true);
-            $rs['username'] = get_user_name($rs['uid']);
-            $rs['icon'] = get_user_icon($rs['uid']);            
-            if($rs['reply']){
-                $_children = contentModel::where('pid',$rs['id'])->column(true);
-                foreach ($_children AS $k=>$v){
-                    $_children[$k]['username'] = get_user_name($v['uid']);
-                }
-                $rs['children'] = $_children;
-            }
-            return $rs;
+        $listdb->each(function($rs,$key){            
+            return $this->format_content($rs);
         });
         return $listdb;
     }
     
-
+    protected function format_content($rs=[]){
+        $rs['time'] = format_time(strtotime($rs['create_time']),true);
+        $rs['username'] = get_user_name($rs['uid']);
+        $rs['icon'] = get_user_icon($rs['uid']);
+        if($rs['reply']){
+            $_children = contentModel::where('pid',$rs['id'])->column(true);
+            foreach ($_children AS $k=>$v){
+                $_children[$k]['username'] = get_user_name($v['uid']);
+            }
+            $rs['children'] = $_children;
+        }
+        return $rs;
+    }
 	
     public function delete($ids){
         if (empty($ids)) {
