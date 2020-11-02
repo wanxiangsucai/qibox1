@@ -60,10 +60,10 @@ class Player{
             }
             static $array_id = 0;
             $array_id++;
-            $url = str_replace('.','x1x1',urlencode($url));
+            $url = str_replace('.','x@01x@01',urlencode($url));
             return "<iframe class='play_iframe player_{$array_id}' src='about:blank' height='$height' width='$width' frameborder='0' allowfullscreen></iframe>
                     <script type='text/javascript'>
-                    $('.player_{$array_id}').attr('src', decodeURIComponent('{$url}'.replace(/x1x1/g,'.')).replace(/\+/g,' ') );
+                    $('.player_{$array_id}').attr('src', decodeURIComponent('{$url}'.replace(/x@01x@01/g,'.')).replace(/\+/g,' ') );
                     </script>";
         }
     }
@@ -102,7 +102,7 @@ class Player{
         if($array_id==1){
             $js = '<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/ckplayer/ckplayer.js"></script>';
         }
-        $url = str_replace('.','x1x1',urlencode($url));
+        $url = str_replace('.','x@01x@01',urlencode($url));
         return "{$js}<center><div class='video{$array_id} video-player' style='width: {$width};height: {$height};'></div></center>
                 <script type='text/javascript'>
                 	var videoObject = {
@@ -110,7 +110,7 @@ class Player{
                 		variable: 'player{$array_id}',  //该属性必需设置，值等于下面的new chplayer()的对象
                 		//poster:'pic/wdm.jpg',//封面图片
                         loaded: 'loadedHandler{$array_id}', //当播放器加载后执行的函数	
-                		video:decodeURIComponent('{$url}'.replace(/x1x1/g,'.')).replace(/\+/g,' ')   //视频地址
+                		video:decodeURIComponent('{$url}'.replace(/x@01x@01/g,'.')).replace(/\+/g,' ')   //视频地址
                 	};
                 	var player{$array_id} = new ckplayer(videoObject);
                 </script>";

@@ -116,7 +116,7 @@ class Content{
      * @return void|unknown
      */
     public static function info($aid = 0 , $sysid = '' , $format = true){
-        $mods = modules_config($sysid);
+        $mods = modules_config($sysid?:config('system_dirname'));
         $dirname = $mods['keywords'];
         if (empty($dirname)) {
             return ;

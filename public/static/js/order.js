@@ -1,4 +1,4 @@
-function check_post(){
+function check_post(form_obj){
 	var ck = true;
 	$(".must-choose").each(function(){
 		var obj = $(this).find('input');
@@ -40,7 +40,27 @@ function check_post(){
 	if(array.length>0){
 		$("#order_field").val( JSON.stringify(array)  );
 	}
-	return ck;
+
+	if( ck && form_obj && form_obj.hasClass('ajax_post') ){
+		var formData = form_obj.serialize();
+		var url = form_obj.attr('action');
+		$.post(url,formData,function(res){
+			if(res.code==0){
+				layer.msg("你的表单已成功提交!");
+				if(typeof(post_order)=='function'){
+					post_order('ok');
+				}
+			}else{
+				layer.alert(res.msg);
+				if(typeof(post_order)=='function'){
+					post_order('err');
+				}
+			}
+		});
+		return false;
+	}else{
+		return ck;
+	}
 }
 
 $(function(){

@@ -700,10 +700,15 @@ class LabelShow extends IndexBase
         $field = $cfg['field'];     //过滤的字段
         $mid = $cfg['mid'] ? $cfg['mid'] : 1;       //哪个模型
         $info = $cfg['info'] ? $cfg['info'] : [];       //内容信息
+        $val = $cfg['val'];
         $page_demo_tpl_tags = self::get_page_demo_tpl($cfg['dirname']);
         $tplcode = $page_demo_tpl_tags[$tag_name]['tpl'] ;
         $tplcode = $this->replace_field($tplcode);
-        $__LIST__ = $this->get_form_field($info,$mid,$field,$mod,$f_array);
+        
+        if(empty($val)){
+            $__LIST__ = $this->get_form_field($info,$mid,$field,$mod,$f_array);
+        }
+        
         eval('?>'.$tplcode);
     }
     
@@ -717,23 +722,23 @@ class LabelShow extends IndexBase
      * @return string|mixed
      */
     protected function get_form_field($info=[],$mid=0,$field='',$mod='',$f_array=[]){
-        $filtrate_field = explode(',',$field);  //过滤的字段
-        if(is_array($f_array)&&!empty($f_array)){
-            $array = isset($f_array[0][0])?\app\common\field\Format::form_fields($f_array):$f_array;  //把程序中定义的表单字段 转成跟数据库取出的格式一样
-        }else{
-            $array = get_field($mid,$mod);
-        }
-        $obj = new \app\common\field\Form;      //目标是把字段转成对应的各种输入样式
-        $data = [];
-        foreach ($array AS $rs){
-            if(in_array($rs['name'], $filtrate_field)){ //过滤的字段
-                continue;
-            }elseif($rs['group_post']!='' && !in_array(login_user('groupid'),explode(',',$rs['group_post']))){ //指定用户组才能使用的字段
-                continue;
-            }
-            $data[] = array_merge($rs,$obj->get_field($rs,$info));      //取得每一项表单的最终转义后的效果
-        }
-        return $data;
+//         $filtrate_field = explode(',',$field);  //过滤的字段
+//         if(is_array($f_array)&&!empty($f_array)){
+//             $array = isset($f_array[0][0])?\app\common\field\Format::form_fields($f_array):$f_array;  //把程序中定义的表单字段 转成跟数据库取出的格式一样
+//         }else{
+//             $array = get_field($mid,$mod);
+//         }
+//         $obj = new \app\common\field\Form;      //目标是把字段转成对应的各种输入样式
+//         $data = [];
+//         foreach ($array AS $rs){
+//             if(in_array($rs['name'], $filtrate_field)){ //过滤的字段
+//                 continue;
+//             }elseif($rs['group_post']!='' && !in_array(login_user('groupid'),explode(',',$rs['group_post']))){ //指定用户组才能使用的字段
+//                 continue;
+//             }
+//             $data[] = array_merge($rs,$obj->get_field($rs,$info));      //取得每一项表单的最终转义后的效果
+//         }
+        return \app\common\fun\Field::get_form($info,$f_array,$mid,$mod,$field);
     }
     
 

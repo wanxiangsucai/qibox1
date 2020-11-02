@@ -3,6 +3,35 @@ namespace app\common\fun;
 class Field{
     
     /**
+    * 用户要填写的表单字段
+    * @param array $info 信息内容
+    * @param array $f_array 程序中定义的字段数组
+    * @param number $mid 模型ID
+    * @param string $mod 频道目录名
+    * @param string $field 过滤的字段
+    * @return string|mixed
+    */
+    public static function get_form($info=[],$f_array=[],$mid=0,$mod='',$field=''){
+        $filtrate_field = explode(',',$field);  //过滤的字段
+        if(is_array($f_array)&&!empty($f_array)){
+            $array = isset($f_array[0][0])?\app\common\field\Format::form_fields($f_array):$f_array;  //把程序中定义的表单字段 转成跟数据库取出的格式一样
+        }else{
+            $array = get_field($mid,$mod);
+        }
+        $obj = new \app\common\field\Form;      //目标是把字段转成对应的各种输入样式
+        $data = [];
+        foreach ($array AS $rs){
+            if(in_array($rs['name'], $filtrate_field)){ //过滤的字段
+                continue;
+            }elseif($rs['group_post']!='' && !in_array(login_user('groupid'),explode(',',$rs['group_post']))){ //指定用户组才能使用的字段
+                continue;
+            }
+            $data[] = array_merge($rs,$obj->get_field($rs,$info));      //取得每一项表单的最终转义后的效果
+        }
+        return $data;
+    }
+    
+    /**
      * 前台自定义表单的填写字段
      * @param string $order_filed
      * @return array|string[][]|unknown[][]|mixed[][]

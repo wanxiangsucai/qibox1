@@ -2191,6 +2191,7 @@ p {
 	right: 0
 }
 
+/*
 input,select,textarea {
 	font-family: 'Helvetica Neue',Helvetica,sans-serif;
 	font-size: 17px;
@@ -2254,6 +2255,7 @@ select {
 select:focus {
 	-webkit-user-modify: read-only
 }
+*/
 
 .mui-input-group {
 	position: relative;
