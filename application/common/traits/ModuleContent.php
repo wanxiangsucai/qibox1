@@ -235,11 +235,12 @@ trait ModuleContent
 	
 	/**
 	 * 发表与修改表页面的自定义字段信息
+	 * @param array $info 内容信息
 	 * @return unknown[][]|array[][]
 	 */
-	protected function getEasyFormItems()
+	protected function getEasyFormItems($info=[])
 	{
-	    return \app\common\field\Form::get_all_field($this->mid);
+	    return \app\common\field\Form::get_all_field($this->mid,$info);
 	}
 	
 	/**

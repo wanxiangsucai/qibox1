@@ -121,7 +121,9 @@ abstract class Category extends AdminBase
             ];
         }
         
-        $form_field =  \app\common\field\Form::get_all_field(-3);
+		$info = $this->getInfoData($id);
+
+        $form_field =  \app\common\field\Form::get_all_field(-3,$info);
         if ($form_field) {  //把用户自定义字段,追加到基础设置那里
             $this->form_items = array_merge($this->form_items,$form_field);
         }
@@ -129,8 +131,6 @@ abstract class Category extends AdminBase
         //联动字段,比如点击哪项就隐藏或者显示哪一项
         $this->tab_ext['trigger'] = \app\common\field\Form::getTrigger(-3);
 
-        $info = $this->getInfoData($id);
-        
         return $this->editContent($info);
     }
 }

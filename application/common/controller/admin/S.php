@@ -181,16 +181,16 @@ abstract class S extends AdminBase
         
         $this->form_items = []; //销毁掉,使用下面分组的形式                
         $this -> tab_ext['group'] = $this->set_field_form($id);
+
+		$info = $this->getInfoData($id);
         
-        $form_field =  \app\common\field\Form::get_all_field(-2);
+        $form_field =  \app\common\field\Form::get_all_field(-2,$info);
         if ($form_field) {  //把用户自定义字段,追加到基础设置那里,不过也可以另起一个分组的
             $this -> tab_ext['group']['基础设置'] = array_merge($this -> tab_ext['group']['基础设置'],$form_field);
         }
         
         //联动字段,比如点击哪项就隐藏或者显示哪一项
         $this->tab_ext['trigger'] = \app\common\field\Form::getTrigger($this->mid);
-        
-        $info = $this->getInfoData($id);
         
         if($info['template']){
             $array = unserialize($info['template']);

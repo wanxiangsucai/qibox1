@@ -147,7 +147,7 @@ abstract class KehuOrder extends MemberBase
             $order_info = fun('field@order_field_format',$info['order_field'],$f_array);
             $info = array_merge($info,$order_info);
         }else{
-            $form_items = \app\common\field\Form::get_all_field(-1);    //自定义字段
+            $form_items = \app\common\field\Form::get_all_field(-1,$info);    //自定义字段
             $info = fun('field@format',$info,'','show','',$form_items);      //数据转义
         }
         

@@ -43,7 +43,6 @@ class Base
      * @return string[]|unknown[]|mixed[]
      */
     public static function format_field($field=[],&$info=[],$pagetype='list'){
-        
         $name = $field['name'];
         $f_value = $info[$name];
         if($info[$name]===''||$info[$name]===null){
@@ -74,7 +73,7 @@ class Base
                 static $options_array = [];     //避免反复执行
                 $array = $options_array[md5($field['options'])];
                 if ($f_value && empty($array)) {
-                    $array = $options_array[md5($field['options'])] = static::options_2array($field['options']);
+                    $array = $options_array[md5($field['options'])] = static::options_2array($field['options'],$info);
                 }
                 $show = $array?$array[$f_value]:'';				
             }else{
@@ -92,7 +91,7 @@ class Base
                 static $options_array = [];     //避免反复执行
                 $detail = $options_array[md5($field['options'])];
                 if ( $f_value && empty($detail) ) {
-                    $detail = $options_array[md5($field['options'])] = static::options_2array($field['options']);
+                    $detail = $options_array[md5($field['options'])] = static::options_2array($field['options'],$info);
                 }                
             }else{
                 $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
@@ -189,9 +188,10 @@ class Base
     /**
      * 把单选\多选\下拉框架的参数转义为可选项数组
      * @param string $str 可以是类 app\bbs\model\Sort@getTitleList
+     * @param array $info 内容信息
      * @return void|string|array|unknown[]
      */
-    protected static function options_2array($str=''){
+    protected static function options_2array($str='',$info=[]){
         if($str==''){
             return ;
         }
@@ -212,7 +212,7 @@ class Base
             preg_match('/^qb_/i',$table_name) && $table_name = str_replace('qb_', '', $table_name);
             if($params=='uid'){ //特殊属性uid指定用户
                 $map = [
-                        'uid'=>intval(login_user('uid'))
+                    'uid'=>intval(($info&&$info['uid'])?$info['uid']:login_user('uid')) //修改的时候,就用回作者的UID
                 ];
             }elseif ($params!='') {
                 $map = json_decode($params,true)?:fun('label@where',$params);

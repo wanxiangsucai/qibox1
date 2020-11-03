@@ -420,7 +420,8 @@ abstract class C extends AdminBase
         //发表时可选择的栏目
         $sort_array = $this->s_model->getTreeTitle(0,$this->mid);
         //发布页要填写的字段
-        $this->form_items = $this->getEasyFormItems();     //发布表单里的自定义字段
+        $this->form_items = $this->getEasyFormItems($info);     //发布表单里的自定义字段
+
         //如果栏目存在才显示栏目选择项
         if(config('post_need_sort')){
             $this->form_items = array_merge(
@@ -429,7 +430,7 @@ abstract class C extends AdminBase
                 ],
                 $this->get_category_select($id),   //辅栏目
                 $this->get_my_qun($info),   //圈子及圈子专题
-                //$this->getEasyFormItems()
+                //$this->getEasyFormItems($info)
                 $this->form_items
              );
         }else{

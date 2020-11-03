@@ -87,9 +87,8 @@ class Form extends Base
             $show = "<textarea $ifmust name='{$name}' id='atc_{$name}' placeholder='请输入".preg_replace('/<([^>]+)>(.*?)<\/([^>]+)>/i', '', $field['title'])."' class='layui-textarea c_{$name}  {$field['css']}' style='{$field['input_width']}{$field['input_height']}'>{$info[$name]}</textarea>";
             
         }elseif ($field['type'] == 'select') {      // 下拉框
-            
             //主题的话,有可能是数组,app\common\traits\ModuleContent@options_2array这里处理过了
-            $detail = is_array($field['options']) ? $field['options'] : static::options_2array($field['options']);//str_array($field['options']);
+            $detail = is_array($field['options']) ? $field['options'] : static::options_2array($field['options'],$info);//str_array($field['options']);
             $i = 0;
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' selected ':'';
@@ -309,11 +308,14 @@ $(function(){
         return $tri;
     }
     
+
     /**
      * 发表与修改表页面的自定义字段信息
-     * @return unknown[][]|array[][]
+     * @param number $mid
+     * @param array $info 内容信息
+     * @return array[]
      */
-    public static function get_all_field($mid=0)
+    public static function get_all_field($mid=0,$info=[])
     {
         $array=[];
         $field_array = get_field($mid);
@@ -322,7 +324,7 @@ $(function(){
             if($rs['type'] == 'usergroup2'||$rs['type'] == 'usergroup3'){    //用户组多选 及单选
                 $rs['options'] = 'app\common\model\Group@getTitleList';
             }
-            $rs['options'] = static::options_2array($rs['options']);
+            $rs['options'] = static::options_2array($rs['options'],$info);
             if($rs['type']=='hidden'){   //隐藏域比较特别些
                 $rs['title'] = $rs['value'];
             }
