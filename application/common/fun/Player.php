@@ -9,10 +9,13 @@ class Player{
      * @param string $url
      * @param number $width
      * @param number $height
-     * @param string $autoplay
+     * @param string $bgpic 背景图
+     * @param string $autoplay 是否自动播放 false true
+     * @param string $video_type 视频格式 auto 自动识别 mp4 m3m8 flv
+     * @param string $payertype 哪种播放器
      * @return string
      */
-    public function play($url='',$width=600,$height=400,$autoplay=false){
+    public function play($url='',$width=600,$height=400,$bgpic='',$autoplay=false,$video_type='auto',$payertype=''){
         $width || $width=600;
         $height || $height=400;
         if(IN_WAP===true && $width>=400){
@@ -34,14 +37,14 @@ class Player{
             $url = tempdir($url);
         }
         
-        if (strstr($url,'.swf')) {
+        if (strstr($url,'.swf') || $payertype=='swf' || $payertype=='flash') {
             return $this->swfpay($url,$width,$height);
-        }elseif(strstr($url,'.m3u8')){
+        }elseif( $payertype=='aliplayer' ){
             return $this->aliplayer($url,$width,$height);
+        }elseif($video_type!=='m3u8' && !strstr($url,'.m3u8') && $payertype=='ckplayer' ){
+            return $this->ckplayer($url,$width,$height,$bgpic,$autoplay);
         }
-        
-        $content = $this->ckplayer($url,$width,$height);
-        return $content;
+        return $this->dplayer($url,$width,$height,$bgpic,$autoplay,$video_type);
     }
     
     /**
@@ -89,18 +92,21 @@ class Player{
     }
     
     /**
-     * 默认使用CK播放器
+     * CK播放器
      * @param string $url
      * @param string $width
      * @param string $height
      * @return string
      */
-    private function ckplayer($url='',$width='',$height=''){
+    private function ckplayer($url='',$width='',$height='',$bgpic='',$autoplay=false){
         static $array_id = 0;
         $array_id++;
         $js = '';
         if($array_id==1){
             $js = '<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/ckplayer/ckplayer.js"></script>';
+        }
+        if(!$bgpic){
+            $bgpic = config('webdb.video_player_bgpic');
         }
         $url = str_replace('.','x@01x@01',urlencode($url));
         return "{$js}<center><div class='video{$array_id} video-player' style='width: {$width};height: {$height};'></div></center>
@@ -108,12 +114,64 @@ class Player{
                 	var videoObject = {
                 		container: '.video{$array_id}', //“#”代表容器的ID，“.”或“”代表容器的class
                 		variable: 'player{$array_id}',  //该属性必需设置，值等于下面的new chplayer()的对象
-                		//poster:'pic/wdm.jpg',//封面图片
+                		poster:'{$bgpic}',//封面图片
                         loaded: 'loadedHandler{$array_id}', //当播放器加载后执行的函数	
                 		video:decodeURIComponent('{$url}'.replace(/x@01x@01/g,'.')).replace(/\+/g,' ')   //视频地址
+                        
                 	};
                 	var player{$array_id} = new ckplayer(videoObject);
+                	".($autoplay?"$(function(){player{$array_id}.videoPlay();});":""). "
                 </script>";
+    }
+    
+    /**
+     * DPlayer播放器
+     * @param string $url
+     * @param string $width
+     * @param string $height
+     * @param string $bgpic 背景图
+     * @param string $autoplay 是否自动播放
+     * @param string $video_type 是否自动获取视频格式,还是特别指定格式
+     * @return string
+     */
+    private function dplayer($url='',$width='',$height='',$bgpic='',$autoplay=false,$video_type=true){
+        static $array_id = 0;
+        $array_id++;
+        $js = '';
+        if(!$bgpic){
+            $bgpic = config('webdb.video_player_bgpic');
+        }
+        if($video_type===true||$video_type==='auto'){
+            if (strstr($url,'.m3u8')) {
+                $video_type='hls';
+            }elseif(strstr($url,'.flv')){
+                $video_type='flv';
+            }else{
+                $video_type='mp4';
+            }
+        }        
+        $autoplay = $autoplay?'true':'false';
+        if($array_id==1){
+            $js = '<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/flv.min.js"></script> 
+<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/hls.min.js"></script>
+<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.js?v=f32"></script>
+<link rel="stylesheet" href="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">';
+        }
+        $url = str_replace('.','x@01x@01',urlencode($url));
+        return "{$js}<center><div class='video{$array_id} video-player' style='width: {$width};height: {$height};'><div id='d_player{$array_id}' style='width:100%;height:100%;'></div></div></center>
+        <script type='text/javascript'>
+            var Dplayer{$array_id} = new DPlayer({
+                    container: document.getElementById('d_player{$array_id}'),
+                    live: false,
+                    volume: 1,
+                    autoplay: {$autoplay},
+                    video: {
+                        url: decodeURIComponent('{$url}'.replace(/x@01x@01/g,'.')).replace(/\+/g,' '),
+                        type: '{$video_type}',
+                        pic: '{$bgpic}',
+                    },
+           });
+    </script>";
     }
     
     /**
@@ -135,7 +193,7 @@ var ali_player = new Aliplayer({
 		"width": "$width",
 		"height": "$height",
 		"autoplay": true,
-		"isLive": true,	//直播与点播的开关
+		"isLive": false,	//直播与点播的开关
 		"rePlay": false,
 		"playsinline": true,
 		"preload": true,
