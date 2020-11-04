@@ -70,9 +70,14 @@ abstract class Index extends IndexBase
      * @param number $uid
      * @param number $mid
      * @param number $rows
+     * @param string $keyword
+     * @param string $quote 默认都是站内引用调用
      * @return void|unknown|\think\response\Json
      */
-    public function listbyuid($uid=0,$mid=0,$rows=20,$keyword=''){
+    public function listbyuid($uid=0,$mid=0,$rows=20,$keyword='',$quote=true){
+        if ($quote && get_model_class(config('system_dirname'), 'putin') ) { //兼容考试与答题系统
+            return $this->listmypaper($uid,$rows,$keyword);
+        }
         if (empty($uid)) {
             $uid = $this->user['uid'];
         }
@@ -106,6 +111,35 @@ abstract class Index extends IndexBase
             }
             $rs['time'] = date('Y-m-d H:i',$rs['create_time']);
             $rs['url'] = iurl(config('system_dirname').'/content/show',['id'=>$rs['id']]);
+            unset($rs['_content'],$rs['full_content'],$rs['sncode']);
+            $array['data'][$key] = $rs;
+        }
+        return $this->ok_js($array);
+    }
+    
+    
+    public function listmypaper($uid=0,$rows=20,$keyword=''){
+        if (empty($uid)) {
+            $uid = $this->user['uid'];
+        }
+        if (empty($uid)) {
+            return $this->err_js('UID不存在');
+        }
+        $map=[
+            'uid'=>$uid,
+        ];
+        if ($keyword!='') {
+            $map['name'] = ['like','%'.$keyword.'%'];
+        }
+        $data = get_model_class(config('system_dirname'), 'category')->where($map)->order("id desc") -> paginate();
+        
+        $array = getArray($data);
+        foreach ($array['data'] AS $key=>$rs){
+            $rs['title'] =  $rs['name'];
+            $rs['picurl'] = tempdir($rs['picurl']);
+            $rs['content'] = get_word(del_html($rs['content']), 100);
+            $rs['time'] = $rs['create_time'] ? format_time($rs['create_time'],'Y-m-d H:i') :'';
+            $rs['url'] = iurl(config('system_dirname').'/category/index',['fid'=>$rs['id']]);
             unset($rs['_content'],$rs['full_content'],$rs['sncode']);
             $array['data'][$key] = $rs;
         }

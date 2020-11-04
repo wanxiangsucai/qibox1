@@ -32,7 +32,7 @@ class Index extends IndexBase{
         $data = [];
         $p_data = [];
         foreach ($array AS $rs){
-            if( is_file(APP_PATH.$rs['keywords'].'/model/Content.php')&&!in_array($rs['keywords'],['exam']) ){
+            if( is_file(APP_PATH.$rs['keywords'].'/model/Content.php') ){
                 $rs['module'] = 'module';
                 $data[] = $rs;
             }
