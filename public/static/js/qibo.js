@@ -98,6 +98,16 @@ var Qibo = function () {
 			navbar:true,
 			title:false,
 		});
+		$(".contentinfo").viewer('destroy').viewer({
+			//url: 'big-img',
+			navbar:true,
+			title:false,
+		});
+		$(".qb_ui_ShowContent").viewer('destroy').viewer({
+			//url: 'big-img',
+			navbar:true,
+			title:false,
+		});			
 		/*
 		$("img.showimg").click(function(){
 			var url = $(this).attr("src");
