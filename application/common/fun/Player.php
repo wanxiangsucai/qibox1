@@ -18,7 +18,7 @@ class Player{
     public function play($url='',$width=600,$height=400,$bgpic='',$autoplay=false,$video_type='auto',$payertype=''){
         $width || $width=600;
         $height || $height=400;
-        if(IN_WAP===true && $width>=400){
+        if(IN_WAP===true && is_numeric($width) && $width>=400){
             $width = '100%';
             $height = '250';
         }
@@ -40,9 +40,12 @@ class Player{
         if (strstr($url,'.swf') || $payertype=='swf' || $payertype=='flash') {
             return $this->swfpay($url,$width,$height);
         }elseif( $payertype=='aliplayer' ){
-            return $this->aliplayer($url,$width,$height);
-        }elseif($video_type!=='m3u8' && !strstr($url,'.m3u8') && $payertype=='ckplayer' ){
-            return $this->ckplayer($url,$width,$height,$bgpic,$autoplay);
+            return $this->aliplayer($url,$width,$height,$bgpic,$autoplay);
+        }elseif( 
+            ( ($video_type==='flv' || strstr($url,'.flv')) && !in_wap() && $payertype!=='dplayer') //PC中如果没有强制指定dplayer的话,FLV用CKplayer兼容性更好
+            || ($video_type!=='m3u8' && !strstr($url,'.m3u8') && $payertype=='ckplayer') //ckplayer不能播放m3u8
+        ){
+            return $this->ckplayer($url,$width,$height,$bgpic,$autoplay); 
         }
         return $this->dplayer($url,$width,$height,$bgpic,$autoplay,$video_type);
     }
@@ -103,10 +106,13 @@ class Player{
         $array_id++;
         $js = '';
         if($array_id==1){
-            $js = '<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/ckplayer/ckplayer.js"></script>';
+            $js = '<script type="text/javascript">if(typeof(ckplayer)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/ckplayer/ckplayer.js"><\/script>\');}</script>';
         }
         if(!$bgpic){
             $bgpic = config('webdb.video_player_bgpic');
+        }
+        if ($bgpic!='') {
+            $bgpic=tempdir($bgpic);
         }
         $url = str_replace('.','x@01x@01',urlencode($url));
         return "{$js}<center><div class='video{$array_id} video-player' style='width: {$width};height: {$height};'></div></center>
@@ -141,6 +147,9 @@ class Player{
         if(!$bgpic){
             $bgpic = config('webdb.video_player_bgpic');
         }
+        if ($bgpic!='') {
+            $bgpic=tempdir($bgpic);
+        }
         if($video_type===true||$video_type==='auto'){
             if (strstr($url,'.m3u8')) {
                 $video_type='hls';
@@ -152,10 +161,7 @@ class Player{
         }        
         $autoplay = $autoplay?'true':'false';
         if($array_id==1){
-            $js = '<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/flv.min.js"></script> 
-<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/hls.min.js"></script>
-<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.js?v=f32"></script>
-<link rel="stylesheet" href="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">';
+            $js = '<script type="text/javascript">if(typeof(DPlayer)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/flv.min.js"><\/script><script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/hls.min.js"><\/script><script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.js?v=f32"><\/script><link rel="stylesheet" href="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">\');}</script>';
         }
         $url = str_replace('.','x@01x@01',urlencode($url));
         return "{$js}<center><div class='video{$array_id} video-player' style='width: {$width};height: {$height};'><div id='d_player{$array_id}' style='width:100%;height:100%;'></div></div></center>
@@ -181,18 +187,30 @@ class Player{
      * @param string $height
      * @return string
      */
-    private function aliplayer($url='',$width='',$height=''){
+    private function aliplayer($url='',$width='',$height='',$bgpic='',$autoplay=false){
+        static $array_id = 0;
+        $array_id++;
+        if(!$bgpic){
+            $bgpic = config('webdb.video_player_bgpic');
+        }
+        if ($bgpic!='') {
+            $bgpic=tempdir($bgpic);
+        }
+        $autoplay = $autoplay?'true':'false';
+        if($array_id==1){
+            $js = '<script type="text/javascript">if(typeof(Aliplayer)=="undefined"){document.write(\'<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.9.1/skins/default/aliplayer-min.css" /><script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.9.1/aliplayer-min.js"><\/script>\');}</script>';
+        }
         return <<<EOT
-<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.7/skins/default/aliplayer-min.css" />
-<script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.8.7/aliplayer-min.js"></script>
-<div class="prism-player" id="player-con"></div>
+$js
+<center><div class="prism-player" id="player-con{$array_id}"></div></center>
 <script type="text/javascript">
-var ali_player = new Aliplayer({
-		"id": "player-con",
+var ali_player{$array_id} = new Aliplayer({
+		"id": "player-con{$array_id}",
 		"source": "$url",
 		"width": "$width",
 		"height": "$height",
-		"autoplay": true,
+		"autoplay": $autoplay,
+        "cover": "$bgpic",
 		"isLive": false,	//直播与点播的开关
 		"rePlay": false,
 		"playsinline": true,
