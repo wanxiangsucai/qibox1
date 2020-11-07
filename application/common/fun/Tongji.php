@@ -169,7 +169,11 @@ class Tongji{
         }
         
         $data = [];
-        foreach($listdb AS $uid){
+        foreach($listdb AS $key=>$uid){
+            if (empty($uid)) {
+                unset($listdb[$key]);
+                continue ;
+            }
             $data['id'.$uid] = $uid;    //使用array_merge过滤重复,键必须是字符串才行,所以加个id,数字的话,不能过滤,只会增加
         }
         
