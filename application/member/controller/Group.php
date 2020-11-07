@@ -7,6 +7,7 @@ use app\common\traits\AddEditList;
 use app\common\fun\Cfgfield;
 use app\common\field\Post AS FieldPost;
 use app\common\model\Grouplog AS GrouplogModel;
+use app\common\util\Weixin;
 
 class Group extends MemberBase
 {
@@ -307,6 +308,17 @@ class Group extends MemberBase
                 $content = '感谢你推荐 '.$this->user['username'].' 付费升级用户组，每推荐 '.$num.' 个用户付费升级可奖励 '.$money.($type=='introduce_vip_reward_'?' 元':' 个'.jf_name($this->webdb['P__propagandize']['introduce_reward_jftype']));
                 if($type=='introduce_vip_reward_'){   //奖励RMB
                     add_rmb($tzr_uid,$money,0,$title);
+                    if($money>=0.3 && $tzr_info['weixin_api'] && $this->webdb['P__propagandize']['propagandize_wx_group'] && in_array($tzr_info['groupid'], $this->webdb['P__propagandize']['propagandize_wx_group'])){
+                        $array = [
+                            'money'=>$money,
+                            'title'=>'推荐人佣金',
+                            'id'=>$tzr_info['weixin_api'],
+                        ];
+                        $res = Weixin::gave_moeny($array);
+                        if($res===true){
+                            add_rmb($tzr_uid,-$money,0,'推荐人佣金提现');
+                        }
+                    }
                 }else{
                     add_jifen($tzr_uid,$money,$title,$this->webdb['P__propagandize']['introduce_reward_jftype']);
                 }                
