@@ -675,6 +675,8 @@ class LabelShow extends IndexBase
             $value = "<iframe src='{$url}' width='100%' height='350' class='showmap' scrolling='no' frameborder='0'></iframe><br><a href=\"{$url}\" target=\"_blank\" class=\"{$rs['name']} fa fa-map\">点击查看大地图</a>";
         }elseif($rs['type']=='textarea'){
             $value = str_replace(["\n"," "], ["<br>","&nbsp;"], $value);
+        }elseif(preg_match("/^http(s?):\/\/([^ ]+)$/i", $value)){
+            $value = '<a href="'.$value.'" target="_blank">'.$value.'</a>';
         }
         return $value;
     }

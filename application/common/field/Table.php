@@ -141,6 +141,8 @@ class Table extends Base
                 $qs = isset($info[$field['opt']])?$info[$field['opt']]:$info;
             }
             $show = $field['fun']($field_value,$qs,$field['opt']);
+        }elseif(preg_match("/^http(s?):\/\/([^ ]+)$/i", $info[$name])){
+            $show = '<a href="'.$info[$name].'" target="_blank">'.$info[$name].'</a>';
         }else{
             $show = $info[$name];
         }
