@@ -135,6 +135,9 @@ class Api extends IndexBase
      * @param array $data
      */
     protected function send_msg($data=[]){
+        if (defined('HOOK_SEND_MSG')) { //如果钩子里发过消息,这里就不发送了
+            return ;
+        }
         $topic = fun('Content@info',$data['tid']?:$data['aid'],$data['sysid'],false);
         $mods = modules_config($data['sysid']);
         
