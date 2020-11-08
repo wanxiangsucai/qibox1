@@ -89,29 +89,73 @@ class Form extends Base
         }elseif ($field['type'] == 'select') {      // 下拉框
             //主题的话,有可能是数组,app\common\traits\ModuleContent@options_2array这里处理过了
             $detail = is_array($field['options']) ? $field['options'] : static::options_2array($field['options'],$info);//str_array($field['options']);
-            $i = 0;
-            foreach ($detail as $key => $value) {
-                $cked = $info[$name]==$key?' selected ':'';
-                $i++;
-                if($i==1&&!empty($key)){
-                    $_show .= "<option value=''>请选择...</option>";
+            
+            if (count($detail)>30) {
+                foreach ($detail as $key => $value) {
+                    if(strstr($value,'选择') && !$key){
+                        continue;
+                    }
+                    $cked = $info[$name]==$key?' true ':'false';
+                    $_show .= "{name: '$value', value: '$key',selected:$cked},";
                 }
-                $_show .= "<option value='$key' $cked>$value</option>";
+                $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
+
+                $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
+                        var xm_{$name} = xmSelect.render({
+                        el: '#xm-{$name}',
+                        theme: {color: '#5FB878',},
+                        toolbar: {
+                        		show: true,
+                        		list: ['CLEAR']
+                        	},
+                        radio: true,
+	                    clickClose: true,
+                 model: {
+            		label: {
+            			type: 'count',
+            			count: {
+            				template: function(data, sels){
+            					return Object.keys(sels).map(key => {
+            						return sels[key].name.replace(/(&nbsp;|┝ )/g,'');
+            					}).join('，');
+            				}
+            			},
+            		}
+            	},
+            	filterable: true, paging: true,pageSize:30,
+                    on: function(data){
+                    setTimeout(function(){
+                    $('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
+                    },100);
+                    },
+                    data: [{$_show}]
+                    })
+                    </script><input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
+            }else{
+                $i = 0;
+                foreach ($detail as $key => $value) {
+                    $cked = $info[$name]==$key?' selected ':'';
+                    $i++;
+                    if($i==1&&!empty($key)){
+                        $_show .= "<option value=''>请选择...</option>";
+                    }
+                    $_show .= "<option value='$key' $cked>$value</option>";
+                }
+                $show = "<select $ifmust name='{$name}' id='atc_{$name}' lay-filter='{$name}'>$_show</select>
+                <script type='text/javascript'>
+                $(function(){
+                    if(typeof(layui)=='object'){
+                    layui.use(['form'], function(){
+                    var form = layui.form;
+                    form.on('select({$name})', function(data){
+                    $(data.elem).selectedIndex=data.elem.selectedIndex;
+                    $(data.elem).trigger('change');
+                })
+                });
+                }
+                });
+                </script>";
             }            
-            $show = "<select $ifmust name='{$name}' id='atc_{$name}' lay-filter='{$name}'>$_show</select>
-<script type='text/javascript'>
-$(function(){
-	if(typeof(layui)=='object'){
-		layui.use(['form'], function(){
-		  var form = layui.form;	 
-		  form.on('select({$name})', function(data){
-		      $(data.elem).selectedIndex=data.elem.selectedIndex;
-		      $(data.elem).trigger('change');
-		  })
-		});
-	}	
-});
-</script>";
         
         }elseif ($field['type'] == 'radio' || $field['type'] == 'jftype' || $field['type'] == 'jftype2' || $field['type'] == 'usergroup3' ) {    // 单选按钮 或虚拟币种 及用户组单选
             if($field['type'] == 'jftype'){ //虚拟币种
@@ -139,7 +183,7 @@ $(function(){
 </script>
 ";
        
-        }elseif ($field['type'] == 'checkbox'||$field['type'] == 'usergroup2') {    // 多选按钮  及用户组多选
+        }elseif ($field['type'] == 'checkbox2') {    // 传统的复选项多选按钮
             
             $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
@@ -149,17 +193,57 @@ $(function(){
             }            
             $show = "$_show "; 
             
-        }elseif ($field['type'] == 'checkboxtree') {    // 树状多选按钮
+        }elseif ($field['type'] == 'checkbox' || $field['type'] == 'usergroup2'||$field['type'] == 'checkboxtree') {    //下拉选择的复选项
             
             $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
-                $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
-                $_show .= " <input $ifmust type='checkbox' name='{$name}[]' id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span><br>";
+                $cked = in_array((string)$key, $_detail)?' true ':'false';    //强制转字符串是避免0会出问题
+                $_show .= "{name: '$value', value: '$key',selected:$cked},";
             }
-            $show = "<div style='height:100px;overflow-x:auto;'>$_show <div>"; 
+            $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
+            if($field['type'] == 'checkboxtree'){
+                $model = "	model: {
+            		label: {
+            			type: 'count',
+            			count: {
+            				template: function(data, sels){
+            					return Object.keys(sels).map(key => {
+            						return sels[key].name.replace(/(&nbsp;|┝ )/g,'');
+            					}).join('，');
+            				}
+            			},
+            		}
+            	},";
+            }else{
+                $model = '';
+            }
+            $search = count($detail)>10?'filterable: true,':'';
+            $showpage = count($detail)>30?'paging: true,pageSize: 30,':'';
+            $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
+                var xm_{$name} = xmSelect.render({
+                	el: '#xm-{$name}',                
+                    theme: {color: '#5FB878',},{$model} {$search} {$showpage}
+                	on: function(data){
+                		setTimeout(function(){
+                			$('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
+                		},100);
+                	},
+                	data: [{$_show}]
+                })
+                </script><input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
             
-            $field['about'] && $field['about'] = '<br>'.$field['about'];
+//         }elseif ($field['type'] == 'checkboxtree') {    // 树状多选按钮
+            
+//             $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
+//             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
+//             foreach ($detail as $key => $value) {
+//                 $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
+//                 $_show .= " <input $ifmust type='checkbox' name='{$name}[]' id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span><br>";
+//             }
+//             $show = "<div style='height:100px;overflow-x:auto;'>$_show <div>"; 
+            
+//             $field['about'] && $field['about'] = '<br>'.$field['about'];
 
 		}elseif ($field['type'] == 'color') {	//选择颜色
 

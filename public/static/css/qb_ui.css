@@ -1267,7 +1267,7 @@ input.layui-input{
 		width:500px;
 		height:100px;
 	}
-	input.layui-input{
+	input.layui-input,.xm-select-warp{
 		width:500px;
 	}
 }
