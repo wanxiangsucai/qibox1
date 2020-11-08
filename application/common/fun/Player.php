@@ -75,13 +75,13 @@ class Player{
     }
     
     /**
-     * 把普通网址转为播放器的框架网址
+     * 把普通网址转为播放器的框架网址https://v.youku.com/v_show/id_XMzk1NjM1MjAw.html
      * @param unknown $url
      * @return mixed
      */
     public static function get_iframe_url($url){
         $array_a = [
-            "/v\.youku\.com\/v_show\/id_([\w=]+)\.html\?([^\?]+)/",
+            "/v\.youku\.com\/v_show\/id_([\w=]+)\.html(\?[^\?]+|)/",
             "/v\.qq\.com\/([\w]+)\/([\w]+)\/([\w]+)\.html/",
             "/v\.qq\.com\/([\w]+)\/([\w]+)\/([\w]+)\/([\w]+)\.html/",
         ];
