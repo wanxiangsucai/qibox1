@@ -91,7 +91,18 @@ class Form extends Base
             $detail = is_array($field['options']) ? $field['options'] : static::options_2array($field['options'],$info);//str_array($field['options']);
             
             if (count($detail)>30) {
+                $i = 0;
+                $_s = '';
                 foreach ($detail as $key => $value) {
+                    
+                    $cked = $info[$name]==$key?' selected ':'';
+                    $i++;
+                    if($i==1&&!empty($key)){
+                        $_s .= "<option value=''>请选择...</option>";
+                    }
+                    $_s .= "<option value='$key' $cked>$value</option>";
+                    
+                    
                     if(strstr($value,'选择') && !$key){
                         continue;
                     }
@@ -124,13 +135,13 @@ class Form extends Base
             	},
             	filterable: true, paging: true,pageSize:30,
                     on: function(data){
-                    setTimeout(function(){
-                    $('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
-                    },100);
+                        setTimeout(function(){
+                            $('#atc_{$name}').val(xm_{$name}.getValue('valueStr')).trigger('change');
+                        },100);
                     },
                     data: [{$_show}]
                     })
-                    </script><input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
+                    </script><div style='display:none;'><select $ifmust name='{$name}' id='atc_{$name}' lay-ignore>$_s</select></div>";
             }else{
                 $i = 0;
                 foreach ($detail as $key => $value) {

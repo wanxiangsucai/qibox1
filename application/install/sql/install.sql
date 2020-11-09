@@ -1857,3 +1857,5 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 ALTER TABLE  `qb_comment_content` ADD  `tid` INT( 7 ) NOT NULL COMMENT  '一般为空,个别情况,比如工单的话,要对订单进行评论的时候,就这个为内容的ID';
 
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '视频播放器默认背景图', 'video_player_bgpic', '', 'image', '', 1, '', '', 0, 0);
+
+INSERT INTO `qb_hook` (`name`, `about`, `ifopen`, `list`) VALUES( 'comment_add_end', '评论回复接口', 1, 0);

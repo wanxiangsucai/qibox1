@@ -1,0 +1,1 @@
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '视频播放器默认背景图', 'video_player_bgpic', '', 'image', '', 1, '', '', 0, 0);
