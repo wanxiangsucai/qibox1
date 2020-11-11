@@ -1262,6 +1262,9 @@ input.layui-input{
 	width:100%;
 }
 
+.xm-select-warp{
+	min-width:250px;
+}
 @media (min-width: 1024px) {
 	textarea.layui-textarea{
 		width:500px;
@@ -1269,6 +1272,9 @@ input.layui-input{
 	}
 	input.layui-input,.xm-select-warp{
 		width:500px;
+	}
+	.xm-select-warp{
+		min-width:350px;
 	}
 }
 
@@ -1384,3 +1390,4 @@ input.layui-input{
 
 /*标签添加碎片*/
 .diy-page-model-btn{background:#55793e;color:#fff;text-align:center;height:40px;line-height:40px;font-size:18px;}
+

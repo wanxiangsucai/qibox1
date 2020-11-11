@@ -3,7 +3,7 @@ function_exists('urls') || die('ERR');
 
 
 $get_time_url = iurl('wxapp.api/get_time_byday');
-$jscode = fun('field@load_js','laydate')?"<script type='text/javascript'>if(typeof(layui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='$static/layui/layui.js'><\\/script>\");}</script><link rel='stylesheet' href='$static/layui/css/layui.css' media='all'>":'';
+$jscode = fun('field@load_js','layui')?"<script type='text/javascript'>if(typeof(layui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='__STATIC__/layui/layui.js'><\\/script>\");}</script><link rel='stylesheet' href='__STATIC__/layui/css/layui.css' media='all'>":'';
 if(fun('field@load_js',$field['type'])){
 	$jscode = <<<EOT
 <script type="text/javascript">

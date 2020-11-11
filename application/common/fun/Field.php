@@ -3,6 +3,23 @@ namespace app\common\fun;
 class Field{
     
     /**
+     * 获取树状分类的数值ID与名称标题的对应数组
+     * @param string $str
+     * @return array|unknown[]
+     */
+    public static function get_tree_title($str=''){
+        $array = is_array($str) ? $str : json_decode($str,true);
+        $data = [];
+        foreach ($array AS $rs){
+            $data[$rs['id']] = $rs['title'];
+            if ($rs['children']) {
+                $data = $data+self::get_tree_title($rs['children']);
+            }
+        }
+        return $data;
+    }
+    
+    /**
     * 用户要填写的表单字段
     * @param array $info 信息内容
     * @param array $f_array 程序中定义的字段数组
@@ -55,7 +72,7 @@ class Field{
                     $opt[$value] = $value;
                 }
             }else{
-                $opt='';
+                $opt=$rs['options'];
             }
             $data['order_field_'.$i] = array_merge($rs,[
                 'type'=>$rs['type'],

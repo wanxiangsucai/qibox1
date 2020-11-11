@@ -112,7 +112,9 @@ class Form extends Base
                 $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
 
                 $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
-                        var xm_{$name} = xmSelect.render({
+                        var xm_{$name};
+				$(function(){
+					xm_{$name} = xmSelect.render({
                         el: '#xm-{$name}',
                         theme: {color: '#5FB878',},
                         toolbar: {
@@ -140,7 +142,8 @@ class Form extends Base
                         },100);
                     },
                     data: [{$_show}]
-                    })
+                    });
+						});
                     </script><div style='display:none;'><select $ifmust name='{$name}' id='atc_{$name}' lay-ignore>$_s</select></div>";
             }else{
                 $i = 0;
@@ -232,17 +235,55 @@ $(function(){
             $search = count($detail)>10?'filterable: true,':'';
             $showpage = count($detail)>30?'paging: true,pageSize: 30,':'';
             $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
-                var xm_{$name} = xmSelect.render({
-                	el: '#xm-{$name}',                
-                    theme: {color: '#5FB878',},{$model} {$search} {$showpage}
-                	on: function(data){
-                		setTimeout(function(){
-                			$('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
-                		},100);
-                	},
-                	data: [{$_show}]
-                })
+                var xm_{$name};
+				$(function(){
+					xm_{$name} = xmSelect.render({
+						el: '#xm-{$name}',                
+						theme: {color: '#5FB878',},{$model} {$search} {$showpage}
+						on: function(data){
+							setTimeout(function(){
+								$('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
+							},100);
+						},
+						data: [{$_show}]
+					});
+				});
                 </script><input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
+            
+        }elseif ($field['type'] == 'treeone'||$field['type'] == 'treemore') {    //树状单选与多选
+            $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
+            $detail = is_array($field['options']) ? $field['options'] : json_decode($field['options'],true);
+            self::format_tree_data($detail,$_detail);
+            $check = implode(',', $_detail);
+            $_data = json_encode($detail);
+            $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
+            
+            $isradio = $field['type'] == 'treemore'?'false':'true';
+            $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
+            var xm_{$name};
+			$(function(){
+			var xm_{$name} = xmSelect.render({
+            el: '#xm-{$name}',
+            radio: {$isradio},
+            clickClose: {$isradio},
+        	tree: {
+        		show: true,
+                expandedKeys: true, //默认展开节点的数组[4354,54354], 为 true 时, 展开所有节点
+        		strict: false, //是否严格遵守父子模式
+                simple: false,
+        	},
+            initValue: [{$check}],
+        	height: 'auto',
+        	theme: {color: '#5FB878',},  filterable: true,paging: true,pageSize: 30,
+            on: function(data){
+            setTimeout(function(){
+            $('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
+        },100);
+        },
+        data(){ return JSON.parse( '$_data' );}
+        });
+			});
+        </script><input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
             
 //         }elseif ($field['type'] == 'checkboxtree') {    // 树状多选按钮
             
@@ -296,7 +337,7 @@ $(function(){
 			//下面这个,如果头部出现过 layui/layui.js 的包含,会导致不生效,所以就弃用了
             //$show .= fun('field@load_js','laydate')?"<script src='$static/layui/laydate/laydate.js'></script>":'';
             //$show .="<script>laydate.render({elem: '#atc_{$name}',type: '{$field['type']}'});</script>";
-			$show .= fun('field@load_js','laydate')?"<script type='text/javascript'>if(typeof(layui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='$static/layui/layui.js'><\\/script>\");}</script><link rel='stylesheet' href='$static/layui/css/layui.css' media='all'>":'';
+			$show .= fun('field@load_js','layui')?"<script type='text/javascript'>if(typeof(layui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='$static/layui/layui.js'><\\/script>\");}</script><link rel='stylesheet' href='$static/layui/css/layui.css' media='all'>":'';
 			$show .="<script>$(function(){ layui.use('laydate', function(){var laydate = layui.laydate;laydate.render({elem: '#atc_{$name}',type: '{$field['type']}'});}); });</script>";
 
         }else{      // 全部归为单行文本框
@@ -330,6 +371,23 @@ $(function(){
                 'about'=>$field['about'],
                 'ifhide'=>$field['type'] == 'hidden' ? true : false,
         ];        
+    }
+    
+    /**
+     * POST表单中用到对树状分类进行转义处理
+     * @param array $array
+     * @param array $data
+     */
+    protected static function format_tree_data(&$array=[],$data=[]){
+        foreach ($array as $key => $rs) {            
+            $array[$key]['value'] = $rs['id'];
+            $array[$key]['name'] = $rs['title'];
+            $array[$key]['selected'] = in_array($rs['id'], $data)?'true':'false';
+            unset($array[$key]['id'],$array[$key]['title']);
+            if ($rs['children']) {
+                self::format_tree_data($array[$key]['children'],$data);
+            }
+        }
     }
     
     /**

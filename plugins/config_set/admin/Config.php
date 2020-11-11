@@ -46,6 +46,7 @@ class Config extends AdminBase
 	            ['radio', 'type', '所属分组','',$array,$group],
 	            ['select', 'form_type', '表单类型','',config('form'),'text'],
 	            ['textarea', 'options', '表单参数项','每条参数换一行,参数与名称用“|”线隔开，比如“1|正确”<br>如果取数据表的数据,格式如下:cms_sort@id,name@mid=1&pid=0 <a href="http://help.php168.com/1579362" target="_blank">点击查看教程</a>'],
+	            ['textarea', 'addsorts', '添加分类数据'],
 	            ['text', 'c_descrip', '介绍描述'],
 	            ['radio', 'ifsys', '是否属于系统全局参数字段','变量值全站通用,不局限于某个插件模块',['否','是'],intval($info['ifsys'])],
 	            //['textarea', 'htmlcode', '额外HTML代码'],
@@ -56,6 +57,7 @@ class Config extends AdminBase
 	    
 	    $this->tab_ext['trigger'] = [
 	            ['form_type','checkbox,checkboxtree,radio,select','options'],
+	        ['form_type','treeone,treemore','addsorts','',''],
 	            ['type',implode(',',$plugin_array),'ifsys'],
 	    ];
 	}
@@ -136,7 +138,7 @@ class Config extends AdminBase
 	        }
 	    }
 	    
-	    $info = $this->model->where('id',$id)->find();
+	    $info = getArray($this->model->where('id',$id)->find());
 	    
 	    $info['form_type'] || $info['form_type']='text';    
 	    

@@ -47,6 +47,9 @@ $form_array = [
   'links' => '链接导航',
   'qun_group_array' => '圈子用户组多选',
   'qun_group_array2' => '圈子用户组复合多选',
+  'treeone' => '无限级分类(单选)',
+  'treemore' => '无限级分类(多选)',
+  'treemake' => '无限级分类(构建)',
   //'masked' => '格式文本',
   //'range' => '范围',
 

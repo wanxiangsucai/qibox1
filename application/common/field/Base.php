@@ -60,7 +60,8 @@ class Base
             
         }elseif ($field['type'] == 'textarea') {    // 多行文本框
             
-            $show = str_replace([' ',"\r\n"], ['&nbsp;','<br>'], $f_value);
+            $show = str_replace([' ',"\r\n"], ['&nbsp;','<br>'], $f_value);            
+        
             
         }elseif ($field['type'] == 'select' || $field['type'] == 'radio' || $field['type'] == 'usergroup3') {      // 下拉框 或 单选按钮 及用户组单选
             
@@ -81,7 +82,14 @@ class Base
                 $show = $detail[$f_value];
             }
             
-        }elseif ($field['type'] == 'checkbox'||$field['type'] == 'usergroup2') {    //复选框 及用户组多选
+        }elseif ($field['type'] == 'treeone') {
+            
+            $info["_$name"] = $f_value;         //为了保留原始值
+            $detail = is_array($field['options']) ? $field['options'] : json_decode($field['options'],true);
+            $data = \app\common\fun\Field::get_tree_title($detail);
+            $show = $data[$f_value];
+            
+        }elseif ($field['type'] == 'checkbox'||$field['type'] == 'usergroup2'||$field['type'] == 'treemore') {    //复选框 及用户组多选
             
             $info["_$name"] = $f_value;         //为了保留原始值
             $field['type'] == 'usergroup2' && $field['options'] = 'app\common\model\Group@getTitleList'; //用户组多选
@@ -92,7 +100,9 @@ class Base
                 $detail = $options_array[md5($field['options'])];
                 if ( $f_value && empty($detail) ) {
                     $detail = $options_array[md5($field['options'])] = static::options_2array($field['options'],$info);
-                }                
+                }
+            }elseif($field['type'] == 'treemore'){
+                $detail = \app\common\fun\Field::get_tree_title($field['options']);
             }else{
                 $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             }

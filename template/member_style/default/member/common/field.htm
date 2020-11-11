@@ -1,3 +1,13 @@
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css"  media="all">
+<script type="text/javascript">
+if(typeof(layui)=='undefined'){
+	document.write('<script type="text/javascript" src="__STATIC__/layui/layui.js"><\/script>');
+}
+var Tree;
+layui.use('tree', function(){
+	Tree = layui.tree;
+});
+</script>
 <style type="text/css">
 .filed_box li{
 	line-height:30px;
@@ -37,6 +47,8 @@
 		<li data-type="image"><input type="radio">单图</li>
 		<li data-type="images"><input type="radio">多图</li>
 		<li data-type="bmap"><input type="radio">地图</li>
+		<li data-type="treeone"><input type="radio">无限级分类单选项</li>
+		<li data-type="treemore"><input type="radio">无限级分类多选项</li>
 		<!--<li data-type="file"><input type="radio">自定义附件</li>-->
 	</ul>
 	<div class="ctitle">以下是快速选择</div>
@@ -110,12 +122,21 @@ function set_filed_click(){
 	});
 }
 
+var tree_o = {};
 function make_item_html(title,filed_type,options_value,must,listshow){
 	layer.closeAll();
 	var str2 = '';
 	if(filed_type=='select'||filed_type=='radio'||filed_type=='checkbox'){
 		if(options_value==undefined)options_value='';
 		str2 = '<dd><textarea placeholder="请输入选项,每个选项换一行" class="layui-textarea" onblur="check_item()">'+options_value+'</textarea></dd>';
+	}else if(filed_type=='treeone'||filed_type=='treemore'){
+		if(options_value==undefined)options_value='[{"id":"80348","title":"分类一"},{"id":"80349","title":"分类二"}]';
+		var tag = 'trees'+(new Date()).getTime().toString().substring(8,13);
+		tree_o[tag] = options_value!='' ? JSON.parse( options_value ) : [];
+		str2 = '<dd><textarea id="atc_'+tag+'" style="display:none;">'+options_value+'</textarea><a style="background:orange;color:#fff;padding:5px 15px;" onclick="add_top_sort(\''+tag+'\')">添加一级分类</a><div id="elem_'+tag+'"></div></dd>';
+		setTimeout(function(){
+			create_tree(tag,tree_o[tag]);
+		},typeof(Tree)=='undefined'?800:0);
 	}
 	var ck = ['checked',''];
 	if(must==1){
@@ -234,7 +255,7 @@ function check_item(){
 	$(".field_item_box").each(function(){
 		var options_value = '';
 		var field_type = $(this).data('type');
-		if(field_type=='select'||field_type=='checkbox'||field_type=='radio'){
+		if(field_type=='select'||field_type=='checkbox'||field_type=='radio'||field_type=='treeone'||field_type=='treemore'){
 			options_value = $(this).find("textarea").val();
 		}
 		items.push({
@@ -261,5 +282,75 @@ function jsonToHtml(){
 		//make_item_html(rs.title,rs.type,rs.options,rs.must,rs.listshow);
 	//});
 	add_fun();
+}
+
+function add_top_sort(tag){
+	//var tree_data = tree_o[tag];
+			layer.prompt({
+					title: '请输入分类名称',
+					formType: 0
+			   }, function(value){
+				 if(value==''){
+					return ;
+				 }
+				 layer.closeAll();
+				 tree_o[tag].push({title:value});
+				 Tree.reload('Id_'+tag, {data: tree_o[tag]});
+
+				 tree_o[tag] = get_tree_value($('#elem_'+tag+" .layui-tree"));
+				 $("#atc_"+tag).val( JSON.stringify(tree_o[tag]) );
+				 check_item();
+				 //console.log( JSON.stringify( get_tree_value($("#test1 .layui-tree")) , null, 2) )
+			});
+}
+
+function create_tree(tag,tree_data){
+	Tree.render({
+		elem: '#elem_'+tag  //绑定元素 '#test1'
+	    ,id: 'Id_'+tag //定义索引 'demoId'
+		,showCheckbox:false
+		,edit:['add','update', 'del' ]
+		,accordion:false  //手风琴效果
+        ,data: tree_data  //数据
+	    ,operate: function(obj){
+			setTimeout(function(){
+				tree_o[tag] = get_tree_value($('#elem_'+tag+" .layui-tree"));
+				$("#atc_"+tag).val( JSON.stringify(tree_o[tag]) );  //监听更新数据
+				check_item();
+				//console.log( JSON.stringify( get_tree_value($('#elem_'+tag+" .layui-tree")) , null, 2) );
+			},200);
+			var type = obj.type; //得到操作类型：add、edit、del
+			var data = obj.data; //得到当前节点的数据
+			var elem = obj.elem; //得到当前节点元素			
+			var id = data.id; //得到节点索引			
+			if(type === 'add'){ //增加节点
+				elem.children(".layui-tree-pack").show(200);
+			} else if(type === 'update'){ //修改节点
+				//if(elem.attr('data-id')=='undefined' || elem.attr('data-id')<10000){elem.attr('data-id',create_num());}
+			} else if(type === 'del'){ //删除节点
+			}
+		}
+    });
+	//var checkData = tree.getChecked('demoId');
+}
+
+function get_tree_value(obj){
+	var ar = [];
+	obj.children(".layui-tree-set").each(function(){
+		var id = $(this).attr("data-id");
+		if(id=='undefined' || id<10000){
+			id = (new Date()).getTime().toString().substring(8,13);
+			if(id<10000){
+				id = parseInt(id) + 10000;
+			}
+			$(this).attr("data-id",id);
+		}
+		var o ={id:id,title:$(this).find(".layui-tree-entry .layui-tree-main .layui-tree-txt").html()};
+		if($(this).children(".layui-tree-pack").length>0){
+			o.children = get_tree_value( $(this).children(".layui-tree-pack").eq(0) );
+		}
+		ar.push(o);	
+	});
+	return ar;
 }
 </script>
