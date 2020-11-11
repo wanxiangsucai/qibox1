@@ -162,11 +162,11 @@ abstract class S extends AdminBase
                     }
                 }
             }
-            
-            $data['allowpost'] = implode(',', $data['allowpost']);  //允许发布内容的用户组
-            $data['allowview'] = implode(',', $data['allowview']);  //允许查看内容的用户组
-            $data['allow_viewtitle'] = implode(',', $data['allow_viewtitle']);  //允许查看标题的用户组
-            $data['allowreply'] = implode(',', $data['allowreply']);  //允许评的用户组
+
+            $data['allowpost'] = is_array($data['allowpost']) ? implode(',', $data['allowpost']) : $data['allowpost'].'';  //允许发布内容的用户组
+            $data['allowview'] = is_array($data['allowview']) ? implode(',', $data['allowview']) : $data['allowview'].'';  //允许查看内容的用户组
+            $data['allow_viewtitle'] = is_array($data['allow_viewtitle']) ? implode(',', $data['allow_viewtitle']) : $data['allow_viewtitle'].'';  //允许查看标题的用户组
+            $data['allowreply'] = is_array($data['allowreply']) ? implode(',', $data['allowreply']) : $data['allowreply'].'';  //允许评的用户组
             $data['template'] = $this->get_tpl($data);                  //栏目自定义模板
             
             

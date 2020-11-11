@@ -144,7 +144,9 @@ class Plugin extends AdminBase
 	    $info = $this->getInfoData($id);
 	    
 	    if ($this -> request -> isPost()) {
-	        $this -> request -> post(['admingroup'=>implode(',', $this -> request -> post()['admingroup']?:[])]);
+	        $this -> request -> post([
+				'admingroup'=>is_array($this -> request -> post()['admingroup'])?implode(',', $this -> request -> post()['admingroup']):$this -> request -> post()['admingroup'].''
+			]);
 	        if ($this -> saveEditContent()) {
 	            
 	            //钩子要对应的跟着关闭或启用

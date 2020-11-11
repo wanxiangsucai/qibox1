@@ -200,7 +200,7 @@ $('.trA').each(function(){
 	public function edit($id=0){	    
 	    if ($this->request->isPost()) {
 	        $data = $this -> request -> post();
-	        $data['allowgroup'] = $data['allowgroup']?implode(',',$data['allowgroup']):'';
+	        $data['allowgroup'] = $data['allowgroup']?implode(',',$data['allowgroup']):''.$data['allowgroup'];
 	        if (!empty($this -> validate)) {   //验证数据
 	            $result = $this -> validate($data, $this -> validate);
 	            if (true !== $result) $this -> error($result);

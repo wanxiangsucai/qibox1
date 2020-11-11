@@ -197,27 +197,25 @@ $(function(){
 </script>
 ";
        
-        }elseif ($field['type'] == 'checkbox2') {    // 传统的复选项多选按钮
+            
+        }elseif ($field['type'] == 'checkbox' || $field['type'] == 'checkbox2' || $field['type'] == 'usergroup2'||$field['type'] == 'checkboxtree') {    //复选项
             
             $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
-            foreach ($detail as $key => $value) {
-                $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
-                $_show .= " <input $ifmust type='checkbox' name='{$name}[]'  id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span>";
-            }            
-            $show = "$_show "; 
-            
-        }elseif ($field['type'] == 'checkbox' || $field['type'] == 'usergroup2'||$field['type'] == 'checkboxtree') {    //下拉选择的复选项
-            
-            $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
-            $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
-            foreach ($detail as $key => $value) {
-                $cked = in_array((string)$key, $_detail)?' true ':'false';    //强制转字符串是避免0会出问题
-                $_show .= "{name: '$value', value: '$key',selected:$cked},";
-            }
-            $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
-            if($field['type'] == 'checkboxtree'){
-                $model = "	model: {
+            if (count($detail)<7 || $field['type'] == 'checkbox2') {
+                foreach ($detail as $key => $value) {
+                    $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
+                    $_show .= " <input $ifmust type='checkbox' name='{$name}[]'  id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span>";
+                }
+                $show = "$_show "; 
+            }else{
+                foreach ($detail as $key => $value) {
+                    $cked = in_array((string)$key, $_detail)?' true ':'false';    //强制转字符串是避免0会出问题
+                    $_show .= "{name: '$value', value: '$key',selected:$cked},";
+                }
+                $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
+                if($field['type'] == 'checkboxtree'){
+                    $model = "	model: {
             		label: {
             			type: 'count',
             			count: {
@@ -229,26 +227,27 @@ $(function(){
             			},
             		}
             	},";
-            }else{
-                $model = '';
-            }
-            $search = count($detail)>10?'filterable: true,':'';
-            $showpage = count($detail)>30?'paging: true,pageSize: 30,':'';
-            $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
-                var xm_{$name};
-				$(function(){
-					xm_{$name} = xmSelect.render({
-						el: '#xm-{$name}',                
-						theme: {color: '#5FB878',},{$model} {$search} {$showpage}
-						on: function(data){
-							setTimeout(function(){
-								$('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
-							},100);
-						},
-						data: [{$_show}]
-					});
-				});
+                }else{
+                    $model = '';
+                }
+                $search = count($detail)>10?'filterable: true,':'';
+                $showpage = count($detail)>30?'paging: true,pageSize: 30,':'';
+                $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
+                    var xm_{$name};
+                    $(function(){
+                    xm_{$name} = xmSelect.render({
+                    el: '#xm-{$name}',
+                    theme: {color: '#5FB878',},{$model} {$search} {$showpage}
+                    on: function(data){
+                    setTimeout(function(){
+                    $('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
+                },100);
+                },
+                data: [{$_show}]
+                });
+                });
                 </script><input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
+            }
             
         }elseif ($field['type'] == 'treeone'||$field['type'] == 'treemore') {    //树状单选与多选
             $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
