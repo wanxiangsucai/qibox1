@@ -200,10 +200,13 @@ $(function(){
             
         }elseif ($field['type'] == 'checkbox' || $field['type'] == 'checkbox2' || $field['type'] == 'usergroup2'||$field['type'] == 'checkboxtree') {    //复选项
             
-            $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
+            $_detail = is_array($info[$name])?$info[$name]:explode(',',trim($info[$name],','));
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             if (count($detail)<7 || $field['type'] == 'checkbox2') {
                 foreach ($detail as $key => $value) {
+                    if($value===''){
+                        continue;
+                    }
                     $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
                     $_show .= " <input $ifmust type='checkbox' name='{$name}[]'  id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span>";
                 }
