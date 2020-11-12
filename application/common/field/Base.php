@@ -122,6 +122,12 @@ class Base
             foreach($array AS $value){
                 $show .= "<div class='array_field $name'>$value</div>";
             }
+        }elseif($field['type']=='array2'){
+            
+            $array = json_decode($info[$name],true);
+            foreach($array AS $vs){
+                $show .= "<div class='array_field $name'><span>{$vs['title1']}：</span><span>{$vs['title2']}</span></div>";
+            }
             
         }elseif($field['type']=='date'){
             
