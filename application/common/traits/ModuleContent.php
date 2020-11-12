@@ -792,7 +792,8 @@ trait ModuleContent
 	        return [];
 	    }
 	    $array = [];
-	    foreach($data['category_fids'] AS $fid){
+	    $detail = is_array($data['category_fids'])?:explode(",", $data['category_fids']);
+	    foreach($detail AS $fid){
 	        $array[] = [
 	            'aid'=>$id,
 	            'cid'=>$fid,
@@ -811,14 +812,15 @@ trait ModuleContent
 	    if (empty(config('use_category')) ) {
 	        return [];
 	    }
+	    $detail = is_array($data['category_fids'])?:explode(",", $data['category_fids']);
 	    $cid_array = $this->info_model->where('aid',$id)->column('id,cid');
 	    foreach($cid_array AS $k=>$fid){
-	        if (!in_array($fid, $data['category_fids'])) {
+	        if (!in_array($fid, $detail)) {
 	            $this->info_model->where('id',$k)->delete();
 	        }
 	    }
 	    $array = [];
-	    foreach($data['category_fids'] AS $fid){
+	    foreach($detail AS $fid){
 	        if (!in_array($fid, $cid_array)) {
 	            $array[] = [
 	                'aid'=>$id,

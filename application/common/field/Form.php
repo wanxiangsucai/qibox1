@@ -202,7 +202,7 @@ $(function(){
             
             $_detail = is_array($info[$name])?$info[$name]:explode(',',trim($info[$name],','));
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
-            if (count($detail)<7 || $field['type'] == 'checkbox2') {
+            if ( ($field['type']!='checkboxtree'&&count($detail)<7) || $field['type'] == 'checkbox2') {
                 foreach ($detail as $key => $value) {
                     if($value===''){
                         continue;
