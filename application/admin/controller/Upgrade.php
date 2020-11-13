@@ -240,18 +240,33 @@ class Upgrade extends AdminBase
 	        return $this->err_js('获取云端文件列表数据失败,请晚点再偿试');
 	    }
 	    $data = [];
+	    
 	    foreach($array AS $rs){
 	        $showfile = $this->format_filename($rs['file']);
 	        $file = ROOT_PATH.$showfile;
 // 	        if(is_file($file.'.lock')){
 // 	            continue;          //用户不想升级的文件
 // 	        }
-	        if(!is_file($file) || md5_file($file)!=$rs['md5']){
+	        $change = false;
+	        if (!is_file($file)) {
+	            $change = true;
+	        }elseif(md5_file($file)!=$rs['md5']){
+	            $change = true;
+	            if ( check_bom($file,true) ) {
+	                file_put_contents($file, check_bom($file));
+	                if (md5_file($file)==$rs['md5']) {
+	                    $change = false;
+	                }//elseif(preg_match("/(\/|\\\)upgrade(\/|\\\)([\w]+)(\.sql|\.php)$/i", $file)){
+	                    //$change = false;
+	               //}
+                }
+            }
+            if($change){
 	            $data[]=[
 	                'file'=>$rs['file'],
 	                'showfile'=>$showfile,
 	                'id'=>$rs['id'],
-	                'islock'=>is_file($file.'.lock')?1:0,
+	                'islock'=>(is_file($file.'.lock')||(is_file($file)&&preg_match("/(\/|\\\)upgrade(\/|\\\)([\w]+)(\.sql|\.php)$/i", $file)))?1:0,
 	                'ctime'=>is_file($file)?date('Y-m-d H:i',filemtime($file)):'缺失的文件',
 	                'time'=>date('Y-m-d H:i',$rs['time']),
 	            ];
