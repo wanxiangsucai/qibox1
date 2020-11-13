@@ -1,4 +1,4 @@
-﻿	<link rel="stylesheet" href="__STATIC__/css/wapcomment.css"> 
+	<link rel="stylesheet" href="__STATIC__/css/wapcomment.css"> 
 	<div class="WapCommentBox">
 		<div class="head">
 			<div class="tag">全部评论({$total})</div>
@@ -17,7 +17,7 @@
 						<div class="repalyinfs repalyinfs{$rs.id}">
 							{volist name="rs.children" id="vo"}
 							<div id="comment_cnt_{$vo.id}"><a href="{:get_url('user',$vo.uid)}" target="_blank">{$vo.username}：</a>{$vo.content}
-								{if $rs.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$vo.id})" style="float:right;"><i class="fa fa-close"></i></span>{/if}
+								{if $vo.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$vo.id})" style="float:right;"><i class="fa fa-close"></i></span>{/if}
 							</div>
 							{/volist}
 						</div>

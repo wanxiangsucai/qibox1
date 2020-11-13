@@ -1,4 +1,4 @@
-﻿
+
 <link rel="stylesheet" href="__STATIC__/css/pccomment.css"> 
 <div class="WapCommentBox">
 	<ul class="PostCommentBox1">
@@ -27,7 +27,7 @@
 					<div id="comment_cnt_{$vo.id}">
 						<a href="{:get_url('user',$vo.uid)}" target="_blank">{$vo.username|default='游客'}：</a>
 						{$vo.content} 
-						{if $rs.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$vo.id})" style="float:right;"><a href="javascript:"><i class="fa fa-close"></i> 删除</a></span>{/if}
+						{if $vo.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$vo.id})" style="float:right;"><a href="javascript:"><i class="fa fa-close"></i> 删除</a></span>{/if}
 					</div>
 					{/volist}
 				</div>
