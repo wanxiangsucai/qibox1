@@ -204,11 +204,13 @@ class Upgrade extends AdminBase
 	 * 升级前,可以查看任何一个文件的源代码
 	 * @param string $filename
 	 */
-	public function view_file($filename='',$id=0){
+	public function view_file($filename='',$id=0,$oldfile=''){
 	    $str = $this->get_server_file($filename,$id);
-	    $str = str_replace(['<','>'], ['&lt;','&gt;'], $str);
-	    echo '<textarea style="width:100%;height:100%;">'.$str.'</textarea>';
-	    die();
+	    
+	    $this->assign('new_code',str_replace(['<','>'], ['&lt;','&gt;'], $str));
+	    $this->assign('old_code', str_replace(['<','>'], ['&lt;','&gt;'], file_get_contents(str_replace('//', '/', ROOT_PATH.$oldfile)) ) );
+	    
+	    return $this->fetch();
 	}
 	
 	/**

@@ -38,7 +38,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
         <th width='32%'>文件名称</th>
       <th width='17%'>升级前时间</th>
       <th width='21%'>更新时间</th>
-      <th width='19%'>查看新文件</th>
+      <th width='19%'>对比差异</th>
     </tr>
 
 	  <tr id="contents">
@@ -57,7 +57,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 			<div align="center">{{rs.ctime}}</div>
 		</td>
 		<td>{{rs.time}}</td>
-		<td><a :href="'{:urls('view_file')}?filename='+rs.file+'&id='+rs.id" target="_blank">查看</a>
+		<td><a :href="'{:urls('view_file')}?filename='+rs.file+'&oldfile='+rs.showfile+'&id='+rs.id" target="_blank">对比差异</a>
 		</td>
 	</tr>
  
