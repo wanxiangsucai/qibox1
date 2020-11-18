@@ -7,7 +7,7 @@ if($userdb['uid']){
 $share['link'] = preg_replace("/(&|\?)p_uid=([\d]*)(\?|&)/is", '\\1', $share['link']);
 $share['link'].=(strstr($share['link'],'?')?'&':'?').'p_uid='.$userdb['uid'].'&';
 }
-$share['picurl'] = get_url($share['picurl']);
+$share['picurl'] && $share['picurl'] = get_url($share['picurl']);
 $share['title'] = str_replace(["'","\r","\n","\t",' ','　'],'',$share['title']);
 $share['about'] = str_replace(["'","\r","\n","\t",' ','　'],'',$share['about']);
 {/php}
@@ -42,7 +42,7 @@ function SharHiddenMsg() {
 }
 </script>
 <div class="Share_Message" onClick="SharHiddenMsg();"></div>
-<script src="__STATIC__/js/jweixin.js?f"></script>
+<script src="__STATIC__/js/jweixin.js"></script>
 <script type="text/javascript">
 var wxShare = {
 	title: '{$share.title}',
@@ -51,7 +51,21 @@ var wxShare = {
 	link: '{:preg_replace("/token=([\\w]+)/", '', $share.link)}',
 	picurl: '{$share.picurl}',	
 }
-wx.miniProgram.postMessage({ data:{title: wxShare.title , desc:wxShare.about } }); //小程序的分享
+
+wx.miniProgram.getEnv(function (res) { 
+	if (res.miniprogram==true) { 
+		var info = { 
+			title: wxShare.title,
+			picurl: wxShare.picurl,
+			url: wxShare.link,
+		}; 
+		//var json = JSON.stringify(info); 
+		wx.miniProgram.postMessage({ 
+			data: info, 
+		}); 
+	} 
+});
+//wx.miniProgram.postMessage({ data:{title: wxShare.title , desc:wxShare.about } }); //小程序的分享
 function ShareTimeline(){
     wx.onMenuShareTimeline({
       title: wxShare.title,

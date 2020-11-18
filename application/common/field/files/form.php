@@ -1,6 +1,10 @@
 <?php
 function_exists('urls') || die('ERR');
 
+$file_ext = trim( $field['options'][0] ? $field['options'][0] : str_replace(['.',' '],[',',''],config('webdb.upfileType')),', ');
+$file_size =  $field['options'][1]?:config('webdb.upfileMaxSize');
+$file_size = $file_size>0 ? $file_size*1024*1024 : 0;
+
 $jscode = '';
 if(fun('field@load_js',$field['type'])){
 	$upload_check_url = urls('index/ajax/check');
@@ -244,7 +248,7 @@ return <<<EOT
         <ul class="list-group uploader-list" id="file_list_{$name}">
 		$show
          </ul>
-        <input type="hidden" name="{$name}" data-multiple="true" data-size="0" data-ext='' id="atc_{$name}" value="{$info[$name]}">
+        <input type="hidden" name="{$name}" data-multiple="true" data-size="{$file_size}" data-ext='{$file_ext}' id="atc_{$name}" value="{$info[$name]}">
         <div id="picker_{$name}">上传多文件</div>                
 </div>
  

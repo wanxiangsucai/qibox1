@@ -87,6 +87,14 @@
       </td>
     </tr>
 
+    <tr id="form_file_tr"> 
+      <td class='tdL'>上传文件类型与大小限制:  <br>(留空则以系统设置为主,设置的话只限于系统限制的格式以内) </td>
+      <td class='tdR'> 
+	   仅允许哪些类型：<input type="text" name="" id="file_type">比如:rar,zip,pdf多个用逗号隔开<br>
+	   不能超过几M：<input type="text" name="" id="file_size">单位M
+      </td>	 
+    </tr>
+
     <tr> 
       <td class='tdL'>表单默认值:<br>
         (一般为空,如多选框多个的话,用<font color="#FF0000">,</font>逗号隔开) </td>
@@ -455,6 +463,16 @@ function get_tree_value(obj){
 
 <SCRIPT LANGUAGE="JavaScript">
 <!--
+
+$(function(){
+	var ar = $("#atc_options").val().split("\n");
+	$("#file_type").val(ar[0]);
+	$("#file_size").val(ar[1]);
+	$("#form_file_tr input").blur(function(){
+		$("#atc_options").val( $("#file_type").val()+"\n"+$("#file_size").val());
+	});
+});
+
 function field_choose(va){
 	$("input[name='field_type']").val(va);	
 }
@@ -472,6 +490,12 @@ function form_choose(t){
 		$('#form_tree_tr').show();
 	}else{
 		$('#form_tree_tr').hide();
+	}
+
+	if(t=='file'||t=='files'||t=='files2'){
+		$('#form_file_tr').show();
+	}else{
+		$('#form_file_tr').hide();
 	}
 	
 	if(t=='checkbox'){
