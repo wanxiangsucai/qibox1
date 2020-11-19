@@ -121,6 +121,8 @@ abstract class Labelhy extends IndexBase
                 ['hidden','type',config('system_dirname')],
                 //['radio','fidtype','栏目范围','',['不限','指定栏目'],0],
                 //['checkboxtree','fids','指定栏目','不选择将显示所有栏目，要显示子栏目的话，必须全选中',$this->s_model->getTreeTitle(0,$mid,false)],
+                ['radio','area_type','地区范围','',['不限','指定地区']],
+                ['area','area_ids','地区范围'],
                 ['radio','choose_type','条件筛选','',['uid'=>'所有我的','ext_id'=>'圈内成员的','uid-ext_id'=>'圈内我的'],'uid'],
                 ['number','rows','显示条数','',5],
                 ['number','leng','标题显示字数','',70],
@@ -136,6 +138,8 @@ abstract class Labelhy extends IndexBase
                 ['hidden','type',config('system_dirname')],
                 ['radio','fidtype','栏目范围','',['不限','指定栏目','跟随栏目动态变化(仅适合列表页、内容页)'],0],
                 ['checkboxtree','fids','指定栏目','不选择将显示所有栏目，要显示子栏目的话，必须全选中',$this->s_model->getTreeTitle(0,$mid,false)],
+                ['radio','area_type','地区范围','',['不限','指定地区']],
+                ['area','area_ids','地区范围'],
                 ['number','rows','显示条数','',5],
                 ['number','leng','标题显示字数','',70],
                 ['number','cleng','内容显示字数','',250],
@@ -146,6 +150,15 @@ abstract class Labelhy extends IndexBase
                 ['radio','onlymy','指定用户数据','当前登录用户,适合在会员中心调用',['不限','当前登录用户','指定用户'],'0'],
                 ['text','uids','指定用户uid','多个用户用半角逗号隔开'],
             ];
+        }
+        
+        if(!config('use_area')&&!config('webdb.use_area')){
+            foreach($array AS $key=>$rs){
+                if($rs[1]=='area_type'||$rs[1]=='area_ids'){
+                    unset($array[$key]);
+                }
+            }
+            $array = array_values($array);
         }
         
         $self_form = $this->self_form();
@@ -181,6 +194,7 @@ abstract class Labelhy extends IndexBase
         $this->tab_ext['trigger'] = [
             ['fidtype', '1', 'fids'],
             ['onlymy', '2', 'uids'],
+            ['area_type', '1', 'area_ids'],
         ];
         
         $self_form['page_title'] && $this -> tab_ext['page_title'] = $array['page_title'];

@@ -924,7 +924,19 @@ abstract class C extends Model
             }elseif($fids && count($fids)==1){
                 $map['fid'] = $fids[0];
             }
-        }        
+        }
+        
+        if($cfg['area_type']==1){
+            if ($cfg['street_id']) {
+                $map['street_id'] = $cfg['street_id'];
+            }elseif ($cfg['zone_id']) {
+                $map['zone_id'] = $cfg['zone_id'];
+            }elseif ($cfg['city_id']) {
+                $map['city_id'] = $cfg['city_id'];
+            }elseif ($cfg['province_id']) {
+                $map['province_id'] = $cfg['province_id'];
+            }
+        }
         
         //只调用自己的数据,一般只适合用在会员中心
         static $uid = null;
