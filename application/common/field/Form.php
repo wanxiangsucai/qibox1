@@ -109,7 +109,7 @@ class Form extends Base
                     $cked = $info[$name]==$key?' true ':'false';
                     $_show .= "{name: '$value', value: '$key',selected:$cked},";
                 }
-                $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
+                $show = fun('field@load_js','xm-select')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
 
                 $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
                         var xm_{$name};
@@ -216,7 +216,7 @@ $(function(){
                     $cked = in_array((string)$key, $_detail)?' true ':'false';    //强制转字符串是避免0会出问题
                     $_show .= "{name: '$value', value: '$key',selected:$cked},";
                 }
-                $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
+                $show = fun('field@load_js','xm-select')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
                 if($field['type'] == 'checkboxtree'){
                     $model = "	model: {
             		label: {
@@ -258,7 +258,7 @@ $(function(){
             self::format_tree_data($detail,$_detail);
             $check = implode(',', $_detail);
             $_data = json_encode($detail);
-            $show = fun('field@load_js','layui_css')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
+            $show = fun('field@load_js','xm-select')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
             
             $isradio = $field['type'] == 'treemore'?'false':'true';
             $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
