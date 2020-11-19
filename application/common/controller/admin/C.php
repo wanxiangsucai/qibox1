@@ -121,7 +121,7 @@ abstract class C extends AdminBase
         //联动字段
         $this->tab_ext['trigger'] = $this->getEasyFieldTrigger();
         
-        $this->tab_ext['area'] = config('use_area'); //是否启用地区
+        $this->tab_ext['area'] = config('use_area') || config('webdb.use_area'); //是否启用地区
         
         //分组显示
         $this->tab_ext['group'] = $this->get_group_form($this->form_items);
@@ -450,7 +450,7 @@ abstract class C extends AdminBase
         
         $this->tab_ext['page_title'] = $this->m_model->getNameById($this->mid);
         
-        $this->tab_ext['area'] = config('use_area'); //是否启用地区        
+        $this->tab_ext['area'] = config('use_area') || config('webdb.use_area'); //是否启用地区        
         
         //修改内容后，最好返回到模型列表页，因为有可能修改了栏目
         return $this->editContent($info);

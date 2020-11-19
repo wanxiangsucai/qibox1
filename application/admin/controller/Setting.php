@@ -204,6 +204,15 @@ class Setting extends AdminBase
                         'ifsys'=>0,
                         'list'=>-2,
                 ],
+                [
+                    'c_key'=>'use_area',
+                    'title'=>'是否启用地区字段',
+                    'c_value'=>'0',
+                    'form_type'=>'radio',
+                    'options'=>"0|禁用\r\n1|启用",
+                    'ifsys'=>0,
+                    'list'=>-2,
+                ],
         ];
     }
     
