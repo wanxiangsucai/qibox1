@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -9,7 +9,7 @@
 {block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/pc_reset.css">{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
-{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?fd2"></script>{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>{/block}
 {block name="head_layer_js"}
 <script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 <script type="text/javascript" src="__STATIC__/layui/layui.js"></script>
@@ -24,8 +24,8 @@
 <div class="qb_pc_topBox">
 	<ul>		
 {notempty name="$userdb"}
-		<ol>{$userdb.username} 您好！欢迎来到{$webdb.webname}</ol>
-		<li><a href="{:get_url('member')}" target="_blank"><dd class="glyphicon glyphicon-user"></dd>会员中心</a> {if modules_config('weibo')}<a href="#" onclick="pc_open_weibo()"><dd class="fa fa-fw fa-weibo"></dd>微博动态</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:orange;font-size:10px;display:none;" class="weibo_msg_num">0</span> {/if}<a href="#" onclick="pc_open_msg()"><dd class="fa fa-envelope-o"></dd>短消息</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:red;font-size:10px;display:none;" class="msg-num">0</span> <a href="{:get_url('quit')}" target="_blank"><dd class="fa fa-sign-in"></dd>退出</a> </li>
+		<ol><a href="{:get_url('user',$userdb.uid)}" target="_blank">{$userdb.username}</a> 您好！欢迎来到 {$webdb.webname}</ol>
+		<li><a href="{:get_url('member')}" target="_blank"><dd class="glyphicon glyphicon-user"></dd>会员中心</a> <a href="#" onclick="pc_open_msg()"><dd class="fa fa-envelope-o"></dd>短消息</a><span style="color:#fff;margin-left:3px;padding:0 4px 0 4px;background:red;font-size:10px;display:none;" class="msg-num">0</span> <a href="{:get_url('quit')}" target="_blank"><dd class="fa fa-sign-in"></dd>退出</a> </li>
 {else /}
 		<ol>您好！欢迎来到{$webdb.webname}</ol>
 		<li>
@@ -57,54 +57,16 @@ function pc_open_msg(){
 	  },
 	});
 }
-function pc_open_weibo(){
-	layer.open({
-	  type: 2,
-	  title: '微博动态消息',
-	  shade: [0.3,'#333'], 
-	  area: ['1000px', '700px'],
-	  anim: 2,
-	  content: '{:urls("weibo/api/weibo")}',
-	  end: function(){ //关闭事件	
-	  }
-	});
-}
 </script>
-<div class="Logo_Menu">
-	<ul>
-		<ol><a href="/"><img src="{$webdb.logo?tempdir($webdb.logo):'__STATIC__/index/default/logo.png'}"></a></ol>
-		<li>
-{php}$menu_choose=config('system_dirname')?config('system_dirname'):'index';{/php}
-{volist name="pc|get_web_menu" id="rs"}
-			<dl {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}class="ck"{/if}>
-				<dt {notempty name="$rs.bgcolor"}style="background-color:{$rs.bgcolor};"{/notempty}><a href="{$rs.url}" {notempty name="$rs.fontcolor"}style="color:{$rs.fontcolor};"{/notempty} {notempty name="$rs.target"}target="_blank"{/notempty}><i class="{$rs.style|default=''}"></i>{$rs.name}</a>{$rs.script}</dt>
-	{notempty name="rs.sons"}
-				<span></span>
-				<dd>
-			{volist name="rs.sons" id="vs"}
-					<div><a href="{$vs.url}" {notempty name="$rs.target"}target="_blank"{/notempty}><i class="{$rs.style|default=''}"></i>{$vs.name}</a></div>
-			{/volist}
-				</dd>
-	{/notempty}
-			</dl>
-{/volist}
-
-		</li>
-	</ul>
-</div>
-<script>
-$('.Logo_Menu dl').hover(
-	function(){
-		$(this).find('dd').show(300);
-		$(this).find('span').css({"transform":"rotate(180deg)",'border-top':'6px solid #FFF'});
-	},
-	function(){
-		$(this).find('dd').hide(300);
-		$(this).find('span').css({"transform":"rotate(0deg)",'border-top':'6px solid #666'});
-	}
-);
-</script>
+<style type="text/css">.head_logo_warp{width:1200px;margin:auto;}</style>
+	<div class="head_logo_warp">
+	<!--引用碎片-->
+	{qb:hy name="pc_layout_002" where="index_style/default/index/index_pc/headmenu" val="datas" type="labelmodel"}
+		{$datas}
+	{/qb:hy}
+	</div>
 {/block}
+
 {block name="body_AllScorllSlide"}<!---通栏幻灯片----->{/block}
 {block name="body_LeftMenu"}<!---左边类京东菜单----->{/block}
 {block name="body_ContactSearch"}

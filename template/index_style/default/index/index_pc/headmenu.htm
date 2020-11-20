@@ -1,0 +1,35 @@
+<!--头部LOGO及菜单-->
+<div class="Logo_Menu">
+	<ul>
+		<ol><a href="/"><img src="{$webdb.logo?tempdir($webdb.logo):'__STATIC__/index/default/logo.png'}"></a></ol>
+		<li>
+{php}$menu_choose=config('system_dirname')?config('system_dirname'):'index';{/php}
+{volist name="pc|get_web_menu" id="rs"}
+			<dl {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}class="ck"{/if}>
+				<dt {notempty name="$rs.bgcolor"}style="background-color:{$rs.bgcolor};"{/notempty}><a href="{$rs.url}" {notempty name="$rs.fontcolor"}style="color:{$rs.fontcolor};"{/notempty} {notempty name="$rs.target"}target="_blank"{/notempty}><i class="{$rs.style|default=''}"></i>{$rs.name}</a>{$rs.script}</dt>
+	{notempty name="rs.sons"}
+				<span></span>
+				<dd>
+			{volist name="rs.sons" id="vs"}
+					<div><a href="{$vs.url}" {notempty name="$rs.target"}target="_blank"{/notempty}><i class="{$rs.style|default=''}"></i>{$vs.name}</a></div>
+			{/volist}
+				</dd>
+	{/notempty}
+			</dl>
+{/volist}
+
+		</li>
+	</ul>
+</div>
+<script type="text/javascript">
+$('.Logo_Menu dl').hover(
+	function(){
+		$(this).find('dd').show(300);
+		$(this).find('span').css({"transform":"rotate(180deg)",'border-top':'6px solid #FFF'});
+	},
+	function(){
+		$(this).find('dd').hide(300);
+		$(this).find('span').css({"transform":"rotate(0deg)",'border-top':'6px solid #666'});
+	}
+);
+</script>
