@@ -243,8 +243,9 @@ $(function(){
                     theme: {color: '#5FB878',},{$model} {$search} {$showpage}
                     on: function(data){
                     setTimeout(function(){
-                    $('#atc_{$name}').val(xm_{$name}.getValue('valueStr'))
-                },100);
+                        var str = xm_{$name}.getValue('valueStr');
+                        $('#atc_{$name}').val(str!=''?','+str+',':'');
+                    },100);
                 },
                 data: [{$_show}]
                 });

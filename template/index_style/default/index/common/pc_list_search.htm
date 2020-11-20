@@ -1,0 +1,75 @@
+<!--列表字段筛选-->
+<style type="text/css">
+.SearchType{
+	border:#eee solid 1px;
+	margin-bottom:15px;
+	padding:10px;
+}
+.SearchType dl{
+	display:table;
+	width:100%;
+}
+.SearchType dl dt,.SearchType dl dd{
+	display:table-cell;
+	vertical-align:top;
+}
+.SearchType dl dt{
+	width:50px;
+	line-height:20px;
+	padding:5px 0 5px 0;
+	color:#888;
+}
+.SearchType dl dd{
+	padding:5px 0 0 0;
+}
+.SearchType dl dd a{
+	display:block;
+	line-height:20px;
+	float:left;
+	margin:0 5px 0 0;
+	padding:0 5px;
+}
+.SearchType dl dd div{
+	width:100%;
+	clear:both;
+	padding-top:5px;
+}
+.SearchType .ck{
+	background:#379BE9;
+	color:#FFF;
+	border-radius:3px;
+}
+</style>
+		<div class="SearchType">
+{if $webdb.use_area||config('use_area')}
+		<dl><dt>区域:</dt><dd>
+					<a href='{:urls("index",fun("field@make_filter_url","street_id,zone_id,page"))}' {if input('zone_id')===null} class="ck"{/if}>不限</a>  
+				{volist name=":get_area('','',input('city_id')?:($webdb['city_id']?:6))" id="name"}
+					<a href='{:urls("index","zone_id=$key&".fun("field@make_filter_url","zone_id,page"))}' {if input('zone_id')==$key} class="ck"{/if}>{$name}</a>
+				{/volist}
+				{if input('zone_id')}
+					<div>
+					{volist name=":get_area('','',input('zone_id'))" id="name"}
+						<a href='{:urls("index","street_id=$key&".fun("field@make_filter_url","street_id,page"))}' {if input('street_id')==$key}style="color:red;"{/if}>{$name}</a>
+					{/volist}
+					</div>
+				{/if}
+			</dd>
+		</dl>
+{/if}
+{volist name=":fun('field@list_filter',$mid)" id="rs"}
+			<dl><dt>{$rs.title}:</dt><dd>
+					<a href='{:urls("index","fid=$fid&$rs[opt_url]")}' {if input($rs['name'])===null}class="ck"{/if}>不限</a>  
+				{volist name="$rs.opt" id="vs"}
+					<a href='{:urls("index","fid=$fid&$vs[url]")}' {if input($rs['name'])==$vs['key']}class="ck"{/if}>{$vs.title}</a>
+				{/volist}
+			</dd></dl>
+{/volist}
+		</div>
+<script type="text/javascript">
+$(function(){
+	if($(".SearchType dl").length<1){
+		$(".SearchType").remove();
+	}
+});
+</script>

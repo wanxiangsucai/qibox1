@@ -1,0 +1,122 @@
+<!--列表字段筛选-->
+<!-- 滑动按钮要用到的CSS与JS文件,他涉及到三个class类 swiper-container swiper-wrapper swiper-slide
+<link href="__STATIC__/libs/swiper/swiper.min.css" rel="stylesheet">
+<script src="__STATIC__/libs/swiper/swiper.min.js"></script>
+ -->
+<script type="text/javascript">
+if(typeof(Swiper)=='undefined'){
+	document.write('<link href="__STATIC__/libs/swiper/swiper.min.css" rel="stylesheet"><script src="__STATIC__/libs/swiper/swiper.min.js"><\/script>');
+}
+</script>
+
+<style type="text/css">
+.scroll-sort{
+	margin-bottom:10px;
+	padding-right:8px; 
+	border-bottom:1px solid #F1F1F1;
+	font-size:13px;
+}
+.scroll-sort span a{
+	color:#666;
+}
+.scroll-sort span{ 
+	margin-right:10px; 
+	line-height:30px;
+	display:block;
+	float:left;
+}
+
+.scroll-sort span:hover a{
+	font-weight:bold;
+	color:orange;
+}
+.scroll-sort .choose{
+	border-bottom:1px solid #62B3E7;
+}
+.scroll-sort .choose a{
+	color:orange;
+} 
+.scroll-sort .stitle{
+	float:left;
+	line-height:30px;
+	padding-left:8px;
+	padding-right:10px;
+	color:#62B3E7;
+}
+.swiper-slide_filtrate{width: auto!important;}
+</style>
+
+	<!--自定义字段开始-->
+	{volist name=":fun('field@list_filter',$mid)" id="rs"}
+	<div class="scroll-sort">
+		<div class="stitle">{$rs.title}：</div>
+		<div class="swiper-container more_{$rs.name}">
+			<div class="swiper-wrapper">
+				<span class='swiper-slide swiper-slide_filtrate {if input($rs.name)===null}choose{/if}'>
+				<a href='{:urls("index","fid=$fid&$rs[opt_url]")}'>不限</a></span>
+			{volist name="$rs.opt" id="vs"}
+				<span class='swiper-slide swiper-slide_filtrate {if input($rs.name)==$vs.key}choose{/if}'><a href='{:urls("index","fid=$fid&$vs[url]")}'>{$vs.title}</a></span>
+			{/volist}
+			</div>
+		</div>
+	</div> 
+	<script>
+		$(function () {
+			var swiper = new Swiper('.more_{$rs.name}', {
+				spaceBetween: 0,
+				slidesPerView:'auto',
+				freeMode: true
+			});
+		})
+	</script>
+	{/volist}
+	<!--自定义字段结束-->
+	
+{if $webdb.use_area||config('use_area')}
+	<!--城市开始-->
+	<div class="scroll-sort">
+		<div class="stitle">区域：</div>
+		<div class="swiper-container more_city">
+			<div class="swiper-wrapper">
+				<span class='swiper-slide swiper-slide_filtrate {if input("zone_id")===null}choose{/if}'><a href='{:urls("index",fun("field@make_filter_url","street_id,zone_id,page"))}'>全部</a></span>
+			{volist name=":get_area('','',input('city_id')?:($webdb['city_id']?:6))" id="name"}
+				<span class='swiper-slide swiper-slide_filtrate {if input("zone_id")==$key}choose{/if}'><a href='{:urls("index","zone_id=$key&".fun("field@make_filter_url","zone_id,page"))}'>{$name}</a></span>
+			{/volist}
+			</div>
+		</div>
+	</div> 
+	<script>
+		$(function () {
+			var swiper = new Swiper('.more_city', {
+				spaceBetween: 0,
+				slidesPerView:'auto',
+				freeMode: true
+			});
+		})
+	</script>
+	<!--城市结束-->
+
+	<!--镇街开始-->
+	{if input('zone_id')&&$array=get_area('','',input('zone_id'))}
+	<div class="scroll-sort">
+		<div class="stitle">街镇：</div>
+		<div class="swiper-container more_zone">
+			<div class="swiper-wrapper">				 
+			{volist name="$array" id="name"}
+				<span class='swiper-slide swiper-slide_filtrate {if input("street_id")==$key}choose{/if}'><a href='{:urls("index","street_id=$key&".fun("field@make_filter_url","street_id,page"))}'>{$name}</a></span>
+			{/volist}
+			</div>
+		</div>
+	</div> 
+	<script>
+		$(function () {
+			var swiper = new Swiper('.more_zone', {
+				spaceBetween: 0,
+				slidesPerView:'auto',
+				freeMode: true
+			});
+		})
+	</script>
+	{/if}
+	<!--镇街结束-->
+{/if}
