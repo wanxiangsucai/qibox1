@@ -309,32 +309,33 @@ abstract class Order extends IndexBase
         if (empty($info)||empty($info['order_filed'])) {
             return ;
         }
-        $array = json_decode($info['order_filed'],true);
-        if (empty($array)){
-            return ;
-        }
-        $data = [];
-        foreach($array AS $key=>$rs){
-            if ($rs['type']=='select' || $rs['type']=='checkbox') {
-                $detail = explode("\n",$rs['options']);
-                $opt = [];
-                foreach($detail AS $value){
-                    $opt[$value] = $value;
-                }
-            }else{
-                $opt='';
-            }
-            $data[] = [
-                'type'=>$rs['type'],
-                'name'=>'order_field_'.$key,
-                'title'=>$rs['title'],
-                'about'=>'',
-                'options'=>$opt,
-                'ifmust'=>$rs['must'],
-                'customize'=>'customize',
-            ];
-        }
-        return $data;
+        return fun('field@order_field_post',$info['order_filed']);
+//         $array = json_decode($info['order_filed'],true);
+//         if (empty($array)){
+//             return ;
+//         }
+//         $data = [];
+//         foreach($array AS $key=>$rs){
+//             if ($rs['type']=='select' || $rs['type']=='checkbox') {
+//                 $detail = explode("\n",$rs['options']);
+//                 $opt = [];
+//                 foreach($detail AS $value){
+//                     $opt[$value] = $value;
+//                 }
+//             }else{
+//                 $opt='';
+//             }
+//             $data[] = [
+//                 'type'=>$rs['type'],
+//                 'name'=>'order_field_'.$key,
+//                 'title'=>$rs['title'],
+//                 'about'=>'',
+//                 'options'=>$opt,
+//                 'ifmust'=>$rs['must'],
+//                 'customize'=>'customize',
+//             ];
+//         }
+//         return $data;
     }
     
 }
