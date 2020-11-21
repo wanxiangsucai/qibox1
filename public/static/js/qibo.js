@@ -332,7 +332,44 @@ var Qibo = function () {
 				y:ev.clientY + window.document.documentElement.scrollTop//  - window.document.documentElement.clientTop
 			};
 		}
-	}//下拉菜单结束
+	}
+	//下拉菜单结束
+
+	var login = function(login_callback){
+		var in_pc = navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i) ? false : true ;
+		var url = '/index.php/index/login/index.html?fromurl='+ encodeURIComponent(window.location.href);
+		in_pc ? pc_login(url) : wap_login(url);
+		
+		function wap_login(url){
+			window.location.href = url;
+		}
+
+		function pc_login(url){
+			var index = layer.open({
+			  type: 2,
+			  title: '用户登录',
+			  shadeClose: true,
+			  shade: false,
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ["750px", "780px"],
+			  content: url+"&type=iframe",
+			  end: function(){
+					//window.location.reload();
+					$.get("/index.php/index/wxapp.login/web_login_check.html?" + Math.random(),function(res){
+						layer.close(index);
+						if(res.code==0){
+							layer.msg("登录成功",{time:1500});
+						}else{
+							layer.msg("登录失败");
+						}
+						if(typeof(login_callback)=='function'){
+							login_callback(res.code==0?'ok':'fail');
+						}
+					});
+				}
+			});
+		}
+	}
 
 	return {
 			init:function(){
@@ -344,6 +381,9 @@ var Qibo = function () {
 			},
 			goBack:function(url){
 				goBack(url);
+			},
+			login:function(login_callback){
+				login(login_callback);
 			},
 	};
 }();
