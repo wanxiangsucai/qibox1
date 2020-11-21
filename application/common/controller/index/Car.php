@@ -190,10 +190,10 @@ abstract class Car extends IndexBase
      */
     public function act($shopid=0,$type=''){
         if (!$shopid) {
-            return 'fail';
+            return $this->err_js('商品ID不存在');
         }
 		if (!$this->user) {
-            return 'fail';
+		    return $this->err_js('你还没登录');
         }
         
         if(config('car_one')===true){   //购物车只保留一件商品
@@ -210,7 +210,7 @@ abstract class Car extends IndexBase
             if ($this -> model -> destroy($info['id'])) {
                 return 'ok';
             } else {
-                return 'fail';
+                return $this->err_js('删除失败');
             }
         }
         
@@ -232,7 +232,7 @@ abstract class Car extends IndexBase
             if ($this -> model -> create($data)) {
                 return 'ok';
             } else {
-                return 'fail';
+                return $this->err_js('数据库执行失败');
             }
         }else{
             
@@ -267,7 +267,7 @@ abstract class Car extends IndexBase
             if ($this -> model -> update($data)) {
                 return 'ok';
             } else {
-                return 'fail';
+                return $this->err_js('更新失败');
             }
         }
     }
