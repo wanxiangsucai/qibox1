@@ -263,9 +263,10 @@ class Upgrade extends AdminBase
             // 	        }
             $ispic = false;
             $change = false;
+            $md5_size = '';
             if (!is_file($file)) {
                 $change = true;
-            }elseif(md5_file($file)!=$rs['md5']){
+            }elseif( ($md5_size=md5_file($file)) != $rs['md5'] ){
                 $change = true;
                 if ( preg_match("/(\.jpg|\.png|\.jpeg|\.gif)$/i", $file) ) {
                     $ispic = true;
@@ -282,8 +283,9 @@ class Upgrade extends AdminBase
                 $data[]=[
                     'file'=>$rs['file'],
                     'showfile'=>$showfile,
+                    'md5'=>$md5_size,
                     'id'=>$rs['id'],
-                    'islock'=>($ispic||is_file($file.'.lock')||(is_file($file)&&preg_match("/(\/|\\\)upgrade(\/|\\\)([\w]+)(\.sql|\.php)$/i", $file)))?1:0,
+                    'islock'=>(is_file($file.'.lock')||(is_file($file)&&preg_match("/(\/|\\\)upgrade(\/|\\\)([\w]+)(\.sql|\.php)$/i", $file)))?1:0,
                     'ctime'=>is_file($file)?date('Y-m-d H:i',filemtime($file)):'缺失的文件',
                     'time'=>date('Y-m-d H:i',$rs['time']),
                 ];

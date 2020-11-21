@@ -49,7 +49,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 
 	 <tr v-for="rs in listdb" :class="rs.islock?'locktr':''">
 		<td class="b red">
-			 <input v-if="rs.islock==1" type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" onclick="if($(this).is(':checked'))layer.alert('当前文件已锁定,你确认要升级吗?')" /> 
+			 <input v-if="rs.islock==1||rs.md5!=''" :data-islock="rs.islock" :data-showfile="rs.showfile" :data-md5="rs.md5" type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" onclick="if($(this).is(':checked'))layer.alert('你修改过当前文件,你确认要升级覆盖现有的文件吗?')" /> 
 			 <input v-else type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" checked /> {{rs.i}}
 		</td>
 		<td class="Left">{{rs.showfile}}</td>
@@ -149,6 +149,21 @@ var vues = new Vue({
 	el: '#upgradeTR',
 	data: {
 		listdb: [],
+	},
+	watch:{
+		listdb: function() {
+			this.$nextTick(function(){	//数据渲染完毕才执行
+				$("input[data-islock=0]:not(:checked)").each(function(){
+					var that = $(this);
+					var url = "https://x1.php168.com/appstore/upgrade/check_md5.html?path="+that.attr('data-showfile')+"&md5="+that.attr('data-md5');
+					$.get(url,function(res){
+						if(res.code==0){
+							that.attr('checked',true);
+						}
+					});
+				});
+			});
+		}
 	},
 	methods: {
 		add_data:function(array){
