@@ -153,14 +153,18 @@ var vues = new Vue({
 	watch:{
 		listdb: function() {
 			this.$nextTick(function(){	//数据渲染完毕才执行
+				var time = 100;
 				$("input[data-islock=0]:not(:checked)").each(function(){
+					time += 200;
 					var that = $(this);
 					var url = "https://x1.php168.com/appstore/upgrade/check_md5.html?path="+that.attr('data-showfile')+"&md5="+that.attr('data-md5');
-					$.get(url,function(res){
-						if(res.code==0){
-							that.attr('checked',true);
-						}
-					});
+					setTimeout(function(){
+						$.get(url,function(res){
+							if(res.code==0){
+								that.attr('checked',true);
+							}
+						});
+					},time);					
 				});
 			});
 		}
