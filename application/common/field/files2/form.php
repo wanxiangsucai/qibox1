@@ -243,7 +243,7 @@ jQuery(document).ready(function() {
                     layer.alert('文件类型不正确，只允许上传后缀名为：'+f_ext+'，请重新上传！');
                     break;
                 case 'F_EXCEED_SIZE':
-                    layer.alert('文件不得超过'+ (f_size/1024) +'kb，请重新上传！');
+                    layer.alert('文件不得超过'+ (f_size/1048576) +'MB，请重新上传！');
                     break;
             }
         });
