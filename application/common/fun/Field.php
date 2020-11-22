@@ -209,6 +209,9 @@ class Field{
         $type_array = explode(',',$type);
         $array = input();
         foreach ($array AS $key=>$value){
+            if ($key=='tags') {
+                continue;
+            }
             if(!in_array($key, $type_array)){
                 $url .= $key.'='.urlencode($value) . '&' ;
             }
