@@ -34,8 +34,8 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
   <div class="Conter">
 <table class="ListTable" id="upgradeTR">
    <tr> 
-        <th width='11%'>选中升级</th>
-        <th width='32%'>文件名称</th>
+      <th width='8%'>选中升级</th>
+      <th>文件名称</th>
       <th width='17%'>升级前时间</th>
       <th width='21%'>更新时间</th>
       <th width='19%'>对比差异</th>
@@ -52,7 +52,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 			 <input v-if="rs.islock==1||rs.md5!=''" :data-islock="rs.islock" :data-showfile="rs.showfile" :data-md5="rs.md5" type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" onclick="if($(this).is(':checked'))layer.alert('你修改过当前文件,你确认要升级覆盖现有的文件吗?')" /> 
 			 <input v-else type="checkbox" name="filedb[]" :value="rs.file+','+rs.id" checked /> {{rs.i}}
 		</td>
-		<td class="Left">{{rs.showfile}}</td>
+		<td class="Left listfile" :data-id="rs.id">{{rs.showfile}}</td>
 		<td>
 			<div align="center">{{rs.ctime}}</div>
 		</td>
@@ -144,6 +144,7 @@ function check_upgrade(){
 check_upgrade();
 
 
+var app_ids = {};
 
 var vues = new Vue({
 	el: '#upgradeTR',
@@ -164,7 +165,27 @@ var vues = new Vue({
 								that.attr('checked',true);
 							}
 						});
-					},time);					
+					},time);
+				});
+				
+				var times = 500;
+				$(".listfile").each(function(){
+					var that = $(this);
+					if(that.attr("data-id")){
+						var id = that.attr("data-id");
+						if(app_ids[id]==undefined){
+							app_ids[id] = {};
+							times += 500;
+							setTimeout(function(){
+								$.get("https://x1.php168.com/appstore/wxapp.show/index.html?id="+id,function(res){
+									if(res.code==0){
+										//app_ids[id] = res.data;
+										$(".listfile[data-id="+id+"]").append("　<a href='https://x1.php168.com/appstore/content/show/id/"+id+".html' target='_blank'>"+res.data.title+"</a>");
+									}
+								});
+							},times);
+						}
+					}
 				});
 			});
 		}
