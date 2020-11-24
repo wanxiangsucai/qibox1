@@ -40,13 +40,43 @@ body{
 	border-bottom: #EEE solid 1px;
 }
 </style>
-<div class="ChooseSort">
+
+<!--超过30个栏目的话,默认就只显示一级分类-->
+{if count($sort_list)>30}
+<style type="text/css">
+.level-2,.level-3,.level-4,.level-5,.level-6,.level-7{display:none;}
+</style>
+<script type="text/javascript">
+$(function(){
+	$(".ListTable .TR").each(function(){
+		if($(this).next().hasClass("pid-"+$(this).data("id"))){
+			$(this).find('.Left').append(" <i title='展开或收缩子分类' style='cursor:pointer;' class='showsons fa fa-plus-circle' onclick='show_sons("+$(this).data("id")+")'></i>");
+		}		
+	});
+});
+function show_sons(id,type){
+	var o = $(".TR[data-id="+id+"] .showsons");
+	if(o.hasClass('fa-plus-circle') && type!='close'){
+		$(".pid-"+id).show(300);
+		o.removeClass('fa-plus-circle').addClass('fa-minus-circle');
+	}else{
+		$(".pid-"+id).hide(100);
+		o.removeClass('fa-minus-circle').addClass('fa-plus-circle');
+		$(".pid-"+id).each(function(){
+			show_sons($(this).data('id'),'close');
+		});
+	}
+}
+</script>
+{/if}
+
+<div class="ChooseSort ListTable">
 	<dl>
 		<dt><i class="fa fa-arrow-right"></i> 选择栏目</dt>
 		<dd>
 			<ul>
-			{volist name='sort_list' id='vo'}		
-				<li><a href="{:auto_url('add',['fid'=>$vo['id']])}">{$vo.title_display}</a></li>				 
+			{volist name='sort_list' id='rs'}		
+				<li class="level-{$rs.level} pid-{$rs.pid} TR" data-id="{$rs.id}"><a href="{:auto_url('add',['fid'=>$rs['id']])}">{$rs.title_display}</a><span class="Left"></span></li>
 			{/volist}
 			</ul>
 		</dd>

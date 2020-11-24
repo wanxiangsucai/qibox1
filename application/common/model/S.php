@@ -115,6 +115,7 @@ abstract class S extends Model
         foreach ($data_list as $item) {
             if($mid!=0 && $item['mid']!=$mid){
                 continue;
+                //$item['title_display'] = '跨模型,不能选择('.$item['title_display'].')';//跨模型,不要让用户选择
             }
             $result[$item['id']] = $item['title_display'];
             $ck = true;

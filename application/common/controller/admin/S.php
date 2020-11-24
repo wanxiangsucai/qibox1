@@ -126,6 +126,7 @@ abstract class S extends AdminBase
      * @return mixed|string
      */
     public function index() {
+        define('PAGE_TYPE', 'admin_sort_index');
         if ($this->request->isPost()) {
             //修改排序
             return $this->edit_order();

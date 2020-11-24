@@ -29,6 +29,51 @@ class Form extends Base
         }
     }
     
+    protected static function get_father(&$data=[],$step=1,$array=[]){
+        $pid = 0;
+        $total_level = 0;
+        foreach($array AS $key=>$value){
+            if ($step==1&&$key==0&&strstr($value,'请选择')) {
+                continue;
+            }
+            $level = count(explode('&nbsp;&nbsp;&nbsp;&nbsp;', $value));    //第几级分类
+            if ($level==$step) {
+                $data[$pid][$key] = [
+                    'id'=>$key,
+                    'pid'=>$pid,
+                    'name'=>preg_replace("/^(&nbsp;)+┝ /", '', $value),
+                ];                
+            }elseif($level<$step){
+                $pid = $key;
+            }
+            if ($level>$total_level) {
+                $total_level = $level;
+            }
+        }
+        if ($total_level<2) {
+            $data = [];
+            return ;   //不是树状栏目
+        }
+        $step++;
+        if ($step<=$total_level){
+            self::get_father($data,$step,$array);
+        }
+    }
+    
+    protected static function get_tree_array($array=[],$pid=0,$ck=0){
+        $data = [];
+        foreach($array[$pid] AS $id=>$rs){
+            $ar = [
+                'name'=>$rs['name'],
+                'value'=>$rs['id'],
+                'selected'=>($rs['id']==$ck || (is_array($ck)&&in_array($rs['id'], $ck)))?true:false,
+            ];
+            $array[$id] && $ar['children'] = self::get_tree_array($array,$id,$ck);
+            $data[] = $ar;
+        }
+        return $data;
+    }
+    
     /**
      * 取得某个字段的表单HTML代码
      * @param array $field 具体某个字段的配置参数, 只能是数据库中的格式,不能是程序中定义的数字下标的格式
@@ -89,8 +134,48 @@ class Form extends Base
         }elseif ($field['type'] == 'select') {      // 下拉框
             //主题的话,有可能是数组,app\common\traits\ModuleContent@options_2array这里处理过了
             $detail = is_array($field['options']) ? $field['options'] : static::options_2array($field['options'],$info);//str_array($field['options']);
-            
-            if (count($detail)>30) {
+
+            self::get_father($array,1,$detail);
+            if($array){ //树状多级分类栏目
+                $_show = json_encode(self::get_tree_array($array,0,$info[$name]),JSON_UNESCAPED_UNICODE);
+                $show = fun('field@load_js','xm-select')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
+                
+                $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
+                        var xm_{$name};
+                        $(function() {
+                            xm_{$name} = xmSelect.render({
+                                el: '#xm-{$name}',
+                                theme: {
+                                    color: '#5FB878',
+                                },
+                        		autoRow: true,
+                        		tree: {
+                        			show: true,
+                        			showFolderIcon: true,
+                        			showLine: true,
+                        			indent: 20,
+                        			expandedKeys: [ -3 ],
+                                    strict: false, //是否严格遵守父子模式
+                        		},
+                                toolbar: {
+                                    show: true,
+                                    list: ['CLEAR']
+                                },
+                                radio: true,
+                                clickClose: true,
+                                filterable: true,
+                        		height: '400px',
+                                on: function(data) {
+                                    setTimeout(function() {
+                                        $('#atc_{$name}').val(xm_{$name}.getValue('valueStr'));//.trigger('change');
+                                    },
+                                    100);
+                                },
+                                data: {$_show}
+                            });
+                        });</script><input type='hidden' name='{$name}' id='atc_{$name}' value='{$info[$name]}'>";
+                
+            }elseif (count($detail)>30) {
                 $i = 0;
                 $_s = '';
                 foreach ($detail as $key => $value) {
@@ -123,7 +208,7 @@ class Form extends Base
                         	},
                         radio: true,
 	                    clickClose: true,
-                 model: {
+                 /*model: {
             		label: {
             			type: 'count',
             			count: {
@@ -134,7 +219,7 @@ class Form extends Base
             				}
             			},
             		}
-            	},
+            	},*/
             	filterable: true, paging: true,pageSize:30,
                     on: function(data){
                         setTimeout(function(){
@@ -199,7 +284,7 @@ $(function(){
        
             
         }elseif ($field['type'] == 'checkbox' || $field['type'] == 'checkbox2' || $field['type'] == 'usergroup2'||$field['type'] == 'checkboxtree') {    //复选项
-            
+
             $_detail = is_array($info[$name])?$info[$name]:explode(',',trim($info[$name],','));
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             if ( ($field['type']!='checkboxtree'&&count($detail)<7) || $field['type'] == 'checkbox2') {
@@ -216,9 +301,13 @@ $(function(){
                     $cked = in_array((string)$key, $_detail)?' true ':'false';    //强制转字符串是避免0会出问题
                     $_show .= "{name: '$value', value: '$key',selected:$cked},";
                 }
+                $_show = "[{$_show}]";
                 $show = fun('field@load_js','xm-select')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
-                if($field['type'] == 'checkboxtree'){
-                    $model = "	model: {
+                
+                self::get_father($array,1,$detail);
+                if($field['type'] == 'checkboxtree'&&$array){ //树状多级分类栏目
+                    $_show = json_encode(self::get_tree_array($array,0,$_detail),JSON_UNESCAPED_UNICODE);
+                    $model = "/*	model: {
             		label: {
             			type: 'count',
             			count: {
@@ -229,12 +318,22 @@ $(function(){
             				}
             			},
             		}
-            	},";
+            	},*/";
+                    $search = 'filterable: true,' ;
+                    $showpage =  'tree: {
+                			show: true,
+                			showFolderIcon: true,
+                			showLine: true,
+                			indent: 20,
+                			expandedKeys: [ -3 ],
+                            strict: false, //是否严格遵守父子模式
+                		},';
                 }else{
                     $model = '';
+                    $search = count($detail)>10?'filterable: true,':'';
+                    $showpage = count($detail)>30?'paging: true,pageSize: 30,':'';
                 }
-                $search = count($detail)>10?'filterable: true,':'';
-                $showpage = count($detail)>30?'paging: true,pageSize: 30,':'';
+                
                 $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
                     var xm_{$name};
                     $(function(){
@@ -247,10 +346,10 @@ $(function(){
                         $('#atc_{$name}').val(str!=''?','+str+',':'');
                     },100);
                 },
-                data: [{$_show}]
+                data: {$_show}
                 });
                 });
-                </script><input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='{$info[$name]}' />";
+                </script><input type='hidden' name='{$name}' id='atc_{$name}' class='c_{$name}' value='".($_detail?','.implode(',', $_detail).',':'')."' />";
             }
             
         }elseif ($field['type'] == 'treeone'||$field['type'] == 'treemore') {    //树状单选与多选
