@@ -146,11 +146,12 @@ class Yz extends MemberBase
             ];
             
             if (UserModel::edit_user($array)) {
-                $this->success('验证成功','index');
+                $this->success('验证成功',get_cookie('frompage')?:'index');
             }else{
                 $this->error('数据写入失败');
             }
-        }        
+        }
+        set_cookie('frompage',$_SERVER['HTTP_REFERER']);
         return $this->fetch();
     }    
 

@@ -210,12 +210,14 @@ class Rmb extends MemberBase
 	                'uid'=>$this->user['uid'],
 	                'rmb_pwd'=>md5($data['pay_pwd']),
 	        ];
+	        $url = get_cookie('frompage')?:auto_url('index');
 	        if ( edit_user($array) ) {
-	            $this->success('更新成功');
+	            $this->success('更新成功',$url);
 	        } else {
 	            $this->error('更新失败');
 	        }
 	    }
+	    set_cookie('frompage',$_SERVER['HTTP_REFERER']);
 	    return $this->pfetch();
 	}
 	

@@ -93,7 +93,9 @@ EOT;
 	    ];
 	    $this -> tab_ext['order'] = 'money,rmb,uid,regdate,lastvist';   //排序选择
 	    $this -> tab_ext['id'] = 'uid';    //用户数据表非常特殊，没有用id而是用uid ， 这里需要特别指定id为uid
-	    $this -> tab_ext['help_msg'] = '1、这里的权限很大,建议设置为只有超管才能使用<br>2、这里修改财务不会有记录,要有记录的话,请分配财务人员使用插件中心>财务与积分功能><a href="'.purl('marketing/member/index',[],'admin').'" style="color:red;">会员积分财务管理</a> 在那里操作';
+	    $this -> tab_ext['help_msg'] = '1、这里的权限很大,建议设置为只有超管才能使用
+<br>2、这里修改财务不会有记录,要有记录的话,请分配财务人员使用插件中心>财务与积分功能><a href="'.purl('marketing/member/index',[],'admin').'" style="color:red;">会员积分财务管理</a> 在那里操作
+<br>3、excel导出注意事项,鉴于负载效率考虑,每次只能导出2000条记录，要导出更多的话，请点击下一页再重复导出。';
 	    
 	    //筛选字段
 	    $this -> tab_ext['filter_search'] = [
@@ -163,8 +165,11 @@ EOT;
 	protected function excel(){
 	    $map = $this->get_search();
 	    $order = $order = $this -> getOrder() ? $this -> getOrder() : 'uid desc' ;
-	    
-	    $array = UserModel::where($map)->order($order)->column(true);
+	    set_time_limit(0);
+	    $page = input('page')?:1;
+	    $rows = 2000;
+	    $min = ($page-1)*$rows;
+	    $array = UserModel::where($map)->order($order)->limit($min,$rows)->column(true);
 	    if(!$array){
 	        $this->error('没有数据可导出!');
 	    }
@@ -172,6 +177,7 @@ EOT;
 	    $outstr="<table width=\"100%\" border=\"1\" align=\"center\" cellpadding=\"5\"><tr>";
 	    
 	    $fieldDB = [
+	            'i'=>'序号',
 	            'uid'=>'用户UID',
 	            'username'=>'用户帐号',
 	            'nickname'=>'用户昵称',
@@ -194,13 +200,18 @@ EOT;
 	            'email_yz'=>'验证邮箱与否',
 	            'mob_yz'=>'验证手机与否',
 	            'wx_attention'=>'是否关注公众号',
+	            'introducer_1'=>'直接推荐人',
+	            'introducer_2'=>'二级推荐人',
+	            'introducer_3'=>'三级推荐人',
 	    ];
 	    
 	    foreach($fieldDB AS $title){
 	        $outstr.="<th bgcolor=\"#A5A0DE\">$title</th>";
 	    }
+	    $i=$min;
 	    $outstr.="</tr>";
 	    foreach($array  AS $rs){
+	        $i++;
 	        $outstr.="<tr>";
 	        foreach($fieldDB AS $k=>$v){
 	            $value = $rs[$k];
@@ -216,12 +227,25 @@ EOT;
 	                }
 	            }elseif(in_array($k, ['lastvist','regdate'])){
 	                $value=date('Y-m-d H:i',$value);
+	            }elseif(in_array($k, ['introducer_1','introducer_2','introducer_3'])){
+	                if ($value) {
+	                    $user = get_user($value);
+	                    $value = $user['username'].'('.$user['nickname'].'/'.$value.')';
+	                }else{
+	                    $value = '';
+	                }
+	            }elseif(($k=='mobphone'||$k=='idcard')&&$value){
+	                $value = '&nbsp;'.$value.'&nbsp;';//避免数字变成负数
+	            }elseif($k=='introduce'&&$value!=''){
+	                $value = filtrate(del_html($value));
+	            }elseif($k=='i'){
+	                $value = $i;
 	            }
 	            $outstr.="<td align=\"center\">{$value}</td>";
 	        }
-	        $outstr.="</tr>";
+	        $outstr.="</tr>\n";
 	    }
-	    $outstr.="</table>";
+	    $outstr.="</table>";//die($outstr);
 	    ob_end_clean();
 	    header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
 	    header('Pragma: no-cache');
@@ -252,6 +276,14 @@ EOT;
 	    }else{
 	        return $this->error('登录失败');
 	    }
+	}
+	
+	private function get_user($uid=0){
+	    if ($uid) {
+	        $user = get_user($uid);
+	        return "<a href=\"".get_url('user',$uid)."\" target=\"_blank\">帐号:{$user['username']} 昵称:{$user['nickname']}</a>";
+	    }
+	    return '';
 	}
 	
 	/**
@@ -294,9 +326,9 @@ EOT;
 	        ['radio', 'idcard_yz', '证件验证与否','',['未验证','已验证']],
 	        ['radio', 'wx_attention', '是否关注公众号','',['未关注','已关注']],
 	        ['radio', 'yz', '帐号验证','',['未验证','已验证']],
-	        ['number', 'introducer_1', '直接推荐人'],
-	        ['number', 'introducer_2', '2级推荐人'],
-	        ['number', 'introducer_3', '3级推荐人'],
+	        ['number', 'introducer_1', '直接推荐人',$this->get_user($info['introducer_1'])],
+	        ['number', 'introducer_2', '2级推荐人',$this->get_user($info['introducer_2'])],
+	        ['number', 'introducer_3', '3级推荐人',$this->get_user($info['introducer_3'])],
 	    ];
 	    
 	    //某用户组下面的所有参数选项
