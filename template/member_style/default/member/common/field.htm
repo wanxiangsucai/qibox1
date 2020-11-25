@@ -4,8 +4,10 @@ if(typeof(layui)=='undefined'){
 	document.write('<script type="text/javascript" src="__STATIC__/layui/layui.js"><\/script>');
 }
 var Tree;
-layui.use('tree', function(){
-	Tree = layui.tree;
+$(function(){
+	layui.use('tree', function(){
+		Tree = layui.tree;
+	});
 });
 </script>
 <style type="text/css">

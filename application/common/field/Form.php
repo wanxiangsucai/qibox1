@@ -452,12 +452,27 @@ $(function(){
             }
             $field['input_width'] && $field['input_width']="width:{$field['input_width']};";
             $static = config('view_replace_str.__STATIC__');
-            $show = " <input placeholder='点击选择时间'  style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' />";
-			//下面这个,如果头部出现过 layui/layui.js 的包含,会导致不生效,所以就弃用了
-            //$show .= fun('field@load_js','laydate')?"<script src='$static/layui/laydate/laydate.js'></script>":'';
-            //$show .="<script>laydate.render({elem: '#atc_{$name}',type: '{$field['type']}'});</script>";
-			$show .= fun('field@load_js','layui')?"<script type='text/javascript'>if(typeof(layui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='$static/layui/layui.js'><\\/script>\");}</script><link rel='stylesheet' href='$static/layui/css/layui.css' media='all'>":'';
-			$show .="<script>$(function(){ layui.use('laydate', function(){var laydate = layui.laydate;laydate.render({elem: '#atc_{$name}',type: '{$field['type']}'});}); });</script>";
+            $show = " <input placeholder='点击选择时间' data-type='{$field['type']}' style='{$field['input_width']}' $ifmust type='text' name='{$name}' id='atc_{$name}'  class='layui-input get_pick_time c_{$name} {$field['css']}' value='{$info[$name]}' />";
+
+			if(IN_WAP===true){
+				$show .= fun('field@load_js','mui_time')?"<link rel='stylesheet' href='$static/mui/css/mui.min.css' type='text/css'><link rel='stylesheet' href='$static/mui/css/mui.picker.min.css' type='text/css'><script type='text/javascript'>if(typeof(mui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='$static/mui/js/mui.min.js'><\\/script>\");}if(typeof(mui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='$static/mui/js/mui.picker.min.js'><\\/script>\");}
+$(function(){
+	$('.get_pick_time').click(function(){
+		var that = $(this);
+		var picker = new mui.DtPicker({'type':that.data('type'),'value':that.val(),'beginYear':1900,'endYear':2050}); 
+		picker.show(function(rs) {
+			that.val(rs.text+(that.data('type')=='datetime'?':00':''))
+			picker.dispose();
+		}); 
+	});
+});</script>":'';
+			}else{
+				//下面这个,如果头部出现过 layui/layui.js 的包含,会导致不生效,所以就弃用了
+				//$show .= fun('field@load_js','laydate')?"<script src='$static/layui/laydate/laydate.js'></script>":'';
+				//$show .="<script>laydate.render({elem: '#atc_{$name}',type: '{$field['type']}'});</script>";
+				$show .= fun('field@load_js','layui')?"<script type='text/javascript'>if(typeof(layui)=='undefined'){document.write(\"<script LANGUAGE='JavaScript' src='$static/layui/layui.js'><\\/script>\");}</script><link rel='stylesheet' href='$static/layui/css/layui.css' media='all'>":'';
+				$show .="<script>$(function(){ layui.use('laydate', function(){var laydate = layui.laydate;laydate.render({elem: '#atc_{$name}',type: '{$field['type']}'});}); });</script>";
+			}	
 
         }else{      // 全部归为单行文本框
             
