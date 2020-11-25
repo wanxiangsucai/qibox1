@@ -29,11 +29,18 @@ class Form extends Base
         }
     }
     
-    protected static function get_father(&$data=[],$step=1,$array=[]){
+    /**
+     * 根据多级树状栏目,重新组合成父、子、孙的结构
+     * 如果不存在二级以上分类,就返回空
+     * @param array $data
+     * @param number $step
+     * @param array $array
+     */
+    protected static function get_children(&$data=[],$step=1,$array=[]){
         $pid = 0;
         $total_level = 0;
         foreach($array AS $key=>$value){
-            if ($step==1&&$key==0&&strstr($value,'请选择')) {
+            if ( $step==1 && !$key ) {  //过滤第一项,请选择内容为空的那项
                 continue;
             }
             $level = count(explode('&nbsp;&nbsp;&nbsp;&nbsp;', $value));    //第几级分类
@@ -56,11 +63,18 @@ class Form extends Base
         }
         $step++;
         if ($step<=$total_level){
-            self::get_father($data,$step,$array);
+            self::get_children($data,$step,$array);
         }
     }
     
-    protected static function get_tree_array($array=[],$pid=0,$ck=0){
+    /**
+     * xm-select下拉框UI要用到的数据结构
+     * @param array $array
+     * @param number $pid
+     * @param number $ck
+     * @return boolean[][]|unknown[][]|boolean[][][][]|unknown[][][][]|NULL[][][][]
+     */
+    protected static function get_xm_select_data($array=[],$pid=0,$ck=0){
         $data = [];
         foreach($array[$pid] AS $id=>$rs){
             $ar = [
@@ -68,7 +82,7 @@ class Form extends Base
                 'value'=>$rs['id'],
                 'selected'=>($rs['id']==$ck || (is_array($ck)&&in_array($rs['id'], $ck)))?true:false,
             ];
-            $array[$id] && $ar['children'] = self::get_tree_array($array,$id,$ck);
+            $array[$id] && $ar['children'] = self::get_xm_select_data($array,$id,$ck);
             $data[] = $ar;
         }
         return $data;
@@ -134,12 +148,13 @@ class Form extends Base
         }elseif ($field['type'] == 'select') {      // 下拉框
             //主题的话,有可能是数组,app\common\traits\ModuleContent@options_2array这里处理过了
             $detail = is_array($field['options']) ? $field['options'] : static::options_2array($field['options'],$info);//str_array($field['options']);
-
-            self::get_father($array,1,$detail);
+            
+            $array = [];
+            self::get_children($array,1,$detail);
             if($array){ //树状多级分类栏目
-                $_show = json_encode(self::get_tree_array($array,0,$info[$name]),JSON_UNESCAPED_UNICODE);
+                $_show = json_encode(self::get_xm_select_data($array,0,$info[$name]),JSON_UNESCAPED_UNICODE);
                 $show = fun('field@load_js','xm-select')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
-                
+                $expandedKeys = count($detail)>50?'[-1]':'true';
                 $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
                         var xm_{$name};
                         $(function() {
@@ -154,7 +169,7 @@ class Form extends Base
                         			showFolderIcon: true,
                         			showLine: true,
                         			indent: 20,
-                        			expandedKeys: [ -3 ],
+                        			expandedKeys: {$expandedKeys},
                                     strict: false, //是否严格遵守父子模式
                         		},
                                 toolbar: {
@@ -304,9 +319,10 @@ $(function(){
                 $_show = "[{$_show}]";
                 $show = fun('field@load_js','xm-select')?'<script type="text/javascript">if(typeof(xmSelect)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/xm-select/xm-select.js"><\/script>\');}</script>':'';
                 
-                self::get_father($array,1,$detail);
+                $array = [];
+                self::get_children($array,1,$detail);
                 if($field['type'] == 'checkboxtree'&&$array){ //树状多级分类栏目
-                    $_show = json_encode(self::get_tree_array($array,0,$_detail),JSON_UNESCAPED_UNICODE);
+                    $_show = json_encode(self::get_xm_select_data($array,0,$_detail),JSON_UNESCAPED_UNICODE);
                     $model = "/*	model: {
             		label: {
             			type: 'count',
@@ -319,13 +335,14 @@ $(function(){
             			},
             		}
             	},*/";
+                    $expandedKeys = count($detail)>50?'[-1]':'true';
                     $search = 'filterable: true,' ;
                     $showpage =  'tree: {
                 			show: true,
                 			showFolderIcon: true,
                 			showLine: true,
                 			indent: 20,
-                			expandedKeys: [ -3 ],
+                			expandedKeys: '.$expandedKeys.',
                             strict: false, //是否严格遵守父子模式
                 		},';
                 }else{
