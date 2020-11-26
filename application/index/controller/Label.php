@@ -432,7 +432,7 @@ class Label extends IndexBase
         //         ];
         $this->tab_ext['hidebtn'] = 'back';
         
-        return $this -> get_form_table($info, $form_items);
+        return $this -> get_form_table($info, $form_items,false);
     }
     
     /**

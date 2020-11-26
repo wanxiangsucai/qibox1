@@ -7,51 +7,36 @@
 		<link rel="stylesheet" href="__STATIC__/libs/bui/css/bui.css">
 		<link rel="stylesheet" href="__STATIC__/icon/icon.css">
 		<link rel="stylesheet" href="__STATIC__/member/default/wapindex/index.css">
-		<script src="__STATIC__/js/core/jquery.min.js"></script>
-		<script src="__STATIC__/libs/bui/js/bui.js"></script>
-		<style></style>
+		<script src="__STATIC__/js/core/jquery.min.js"></script>		
+		<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 	</head>
 	<body>
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展  -->
 {:hook_listen('layout_member_body_head',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
-<div class="bui-page">
-    <header>
+
+<!--控制是否固定头部的开关-->
+{qb:tag name="wapmemberindex001set" type="myform" conf="member_style/default/member/index/wapmodel/set"}
+{if $_cfg.overflowY}
+<style type="text/css">html, body {overflow: auto;}</style>
+{php}define('ROLL_HEADER',true);{/php}
+{/if}
+{/qb:tag}
+{if defined('LABEL_SET')}
+<style type="text/css">.headle,.diy-page-model-btn{background:#fff;}</style>
+<ul style="background:#eee;padding:10px;">
+控制是否固定头部的开关
+</ul>
+{/if}
+<!--控制是否固定头部的开关-->
+
+<div class="{if !defined('ROLL_HEADER')}bui-page{/if}">
+    {if !defined('ROLL_HEADER')}<header>{/if}
         <div class="wrap-user-header">
-            <ul class="bui-list user-pic">
-                <li class="bui-btn bui-box user-btn">
-                    <div class="thumbnail a" href="{:get_url('user',$info.uid)}"><img src="{$info.icon|tempdir}" class="pic"  onerror="this.src='__STATIC__/images/nobody.gif'" /></div>
-                    <div class="span1">
-                        <h3 class="item-title" style="line-height:20px;" title="昵称：{$info.nickname}">{$info.username}
-						{volist name=":get_user($info.uid)['qun_group']" id="rs"}
-									{if $rs.type==4}<a href="{:iurl('qun/content/show',['id'=>$rs['aid']])}" title="归属于 {:fun('qun@getByid',$rs['aid'])['title']} 的VIP会员"  style="margin:0 5px;"><img src="{:tempdir(fun('qun@getByid',$rs['aid'])['vip_img'])}" onerror="this.src='__STATIC__/images/vip.png'" height="16"></a>{/if}
-							   {/volist}
-						</h3>
-                        <p class="item-text">级别：{$info.groupid|getGroupByid} UID：{$info.uid}</p>
-                        <div class="account-address">
-                            <i class="user-right fa fa-clock-o"></i> 注册日期 {$info.regdate|format_time}
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            <ul class="bui-nav user-nav">
-                <li class="bui-btn" href="{:purl('marketing/rmb/index')}">
-                    <span>{$info.rmb}</span>
-                    <div class="span1">可用余额</div>
-                </li>
-                <li class="bui-btn" href="{:purl('marketing/rmb/index')}">
-                    <span>{$info.rmb_freeze}</span>
-                    <div class="span1">冻结余额</div>
-                </li>
-                <li class="bui-btn" href="{:purl('marketing/jifen/index')}">
-                    <span>{$info.money}</span>
-                    <div class="span1">积分(个)</div>
-                </li>
-            </ul>
+		{qb:hy name="wap_memberindex001" val="datas" type="labelmodel"  where="member_style/default/member/index/wapmodel/head,headmoney"} {$datas} {/qb:hy}
         </div>
-    </header>
+    {if !defined('ROLL_HEADER')}</header>{/if}
    
    <main>
-
 {if $menu['often']['sons']}	<!--会员组个性菜单开始-->
 	{volist name="menu.often.sons" id="vo"}
 		<div class="bui-panel panel-usercenter">
@@ -229,13 +214,9 @@
             </div>
         </div>
 
-        <ul class="bui-list menu-list" >
-            <li class="bui-btn bui-box" href="{:iurl('index/login/quit')}">
-                <i class="icon-guess"><span class="fa fa-sign-out"></span></i>
-                <div class="span1">退出登录</div>
-                <i class="icon-listright"></i>
-            </li>
-        </ul>
+		{qb:hy name="wap_memberindex002" val="datas" type="labelmodel"  where="member_style/default/member/index/wapmodel/loginout"}
+		{$datas} 
+		{/qb:hy}        
     </main>
 
 	<footer style="height:40px;"></footer>
@@ -257,8 +238,9 @@
 
 <div id="editmodes"></div>
 <div class="fullbg"></div>
-<script src="__STATIC__/member/default/wapindex/index.js"></script>
 
+<script src="__STATIC__/libs/bui/js/bui.js"></script>
+<script src="__STATIC__/member/default/wapindex/index.js"></script>
 <script type="text/javascript">
 $(function(){
 	$(".bui-box-vertical").each(function(){
