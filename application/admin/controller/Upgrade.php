@@ -258,9 +258,9 @@ class Upgrade extends AdminBase
         foreach($array AS $rs){
             $showfile = $this->format_filename($rs['file']);
             $file = ROOT_PATH.$showfile;
-            // 	        if(is_file($file.'.lock')){
-            // 	            continue;          //用户不想升级的文件
-            // 	        }
+            if (is_file($file.'.lock') && file_get_contents($file.'.lock')=='hide') {
+                continue;   //用户不想升级的文件,也不想提示升级
+            }
             $ispic = false;
             $change = false;
             $md5_size = '';
@@ -279,7 +279,7 @@ class Upgrade extends AdminBase
                     //}
                 }
             }
-            if($change){
+            if($change){                
                 $data[]=[
                     'file'=>$rs['file'],
                     'showfile'=>$showfile,

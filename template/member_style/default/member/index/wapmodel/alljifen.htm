@@ -1,0 +1,18 @@
+<!--虚拟财富列表-->
+		<div class="bui-panel panel-usercenter">
+            <div class="bui-panel-head bui-box-align-middle">
+                <i class="icon-money">&#xe63a;</i>
+                <div class="span1">虚拟财富</div>
+                <div class="panel-head-right a" href="{:purl('marketing/money/index')}">兑换互换<i class="icon-listright"></i></div>
+            </div>
+            <div class="bui-panel-main">
+                <ul class="bui-nav nav-list">
+{volist name=":jf_name()" id="name"}
+                    <li class="bui-btn bui-box-vertical">
+                        <span>{:get_user_money($key,$info.uid)}</span>
+                        <div class="span1">{$name}</div>
+                    </li>
+{/volist}
+                </ul>
+            </div>
+        </div>
