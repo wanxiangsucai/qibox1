@@ -18,12 +18,27 @@ function check_post(form_obj){
 		var va = '';
 		var tp = $(this).data('type');
 		if(tp=="select"){
-			va = $(this).find('select').val();
-		}else if(tp=="checkbox"){			
-			$(this).find('input:checked').each(function(){
-				va += "、" + $(this).val();
-			});
-			va = va.substring(1);
+			if( $(this).find('select').length>0 ){
+				va = $(this).find('select').val();
+			}else{
+				va = $(this).find('input[name='+$(this).data('name')+']').val();
+			}
+			
+		}else if(tp=="radio"){
+			if( $(this).find('input[type="radio"]').length>0  ){
+				va = $(this).find('input:checked').val();
+			}else{
+				va = $(this).find('input[name='+$(this).data('name')+']').val();
+			}			
+		}else if(tp=="checkbox"){
+			if( $(this).find('input[type="checkbox"]').length>0  ){
+				$(this).find('input:checked').each(function(){
+					va += "、" + $(this).val();
+				});
+				va = va.substring(1);
+			}else{
+				va = $(this).find('input[name='+$(this).data('name')+']').val();
+			}			
 		}else if( $(this).data('name') && $(this).find('input[name='+$(this).data('name')+']').length>0 ){
 			va = $(this).find('input[name='+$(this).data('name')+']').val();
 		}else{
