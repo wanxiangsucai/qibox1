@@ -300,7 +300,7 @@ $(function(){
             
         }elseif ($field['type'] == 'checkbox' || $field['type'] == 'checkbox2' || $field['type'] == 'usergroup2'||$field['type'] == 'checkboxtree') {    //复选项
 
-            $_detail = is_array($info[$name])?$info[$name]:explode(',',trim($info[$name],','));
+            $_detail = is_array($info[$name]) ? $info[$name] : ($info[$name]?explode(',',trim($info[$name],',')):[]);
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             if ( ($field['type']!='checkboxtree'&&count($detail)<7) || $field['type'] == 'checkbox2') {
                 foreach ($detail as $key => $value) {
@@ -349,8 +349,7 @@ $(function(){
                     $model = '';
                     $search = count($detail)>10?'filterable: true,':'';
                     $showpage = count($detail)>30?'paging: true,pageSize: 30,':'';
-                }
-                
+                }                
                 $show .= "<div id='xm-{$name}' class='xm-select-warp'></div><script type='text/javascript'>
                     var xm_{$name};
                     $(function(){
@@ -370,7 +369,7 @@ $(function(){
             }
             
         }elseif ($field['type'] == 'treeone'||$field['type'] == 'treemore') {    //树状单选与多选
-            $_detail = is_array($info[$name])?$info[$name]:explode(',',$info[$name]);
+            $_detail = is_array($info[$name])? $info[$name] : ($info[$name]?explode(',',trim($info[$name],',')):[]);
             $detail = is_array($field['options']) ? $field['options'] : json_decode($field['options'],true);
             self::format_tree_data($detail,$_detail);
             $check = implode(',', $_detail);
