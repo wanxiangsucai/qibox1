@@ -1,0 +1,88 @@
+<!--关注等相关功能-->
+<div class="OtherInfos">
+	<ul>
+		{if modules_config('qun')}
+		<li class="myqunzi">
+			<div><i class="fa fa-connectdevelop"></i></div>
+			<span>Ta的圈子</span> 
+		</li>
+		{/if}
+
+		<li class="middle gzfans">
+			<div class="icon"><i class="glyphicon glyphicon-heart-empty"></i></div>
+			<span><font>关注Ta</font>(<em class="num">{:fun('Count@Info','friend',['suid'=>$info['uid']])}</em>)</span> 
+		</li>
+
+		<li>
+			<div><i class="fa fa-twitch"></i></div>
+			<span onclick="KF.chat_win({uid:'{$info.uid}',username:'{$info.uid|get_user_name}',icon:'{$info.uid|get_user_icon}'});">私信Ta</span> 
+		</li>		
+	</ul>
+</div>
+<script type="text/javascript">
+$(function(){
+	var that = $(".gzfans");
+	//检查是否已关注
+	$.get("{:murl('member/wxapp.friend/ckgz',['uid'=>$uid])}",function(res){
+		if(res.code==1){	//还没关注
+			that.click(function(){	//添加关注点击事件
+				$.get("{:murl('member/wxapp.friend/add',['uid'=>$uid])}",function(res){
+					if(res.code==0){	//关注成功
+						that.find('.num').html( parseInt(that.find('.num').html())+1);
+						that.find('.icon').addClass('gz');
+						layer.msg('关注成功');
+						that.unbind("click");
+					}else{	//关注失败
+						layer.alert(res.msg);
+					} 
+				});						
+			});
+		}else if(res.code==0){	//已关注
+			that.find('.icon').addClass('gz');
+			that.find('font').html('取消关注');
+			that.click(function(){
+				$.get("{:murl('member/wxapp.friend/del',['uid'=>$uid])}",function(res){
+					if(res.code==0){	//取消关注
+						that.find('.num').html( parseInt(that.find('.num').html())-1);
+						that.find('.icon').removeClass('gz');
+						layer.msg('成功取消关注');
+						that.unbind("click");
+					}else{	//取消失败
+						layer.alert(res.msg);
+					} 
+				});
+			})
+		}
+	});
+
+
+	var obj = $(".myqunzi");
+	$.get("{:iurl('qun/wxapp.qun/mycreate')}?uid={$info.uid}",function(res){
+		if(res.code==0){
+			var qunurl = "{:iurl('qun/content/show')}?id=";
+			if(res.data.length==1){
+				//obj.attr("target","_blank");
+				//obj.attr("href",qunurl+res.data[0].id);
+				obj.click(function(){
+					window.location.href = qunurl+res.data[0].id;
+				});	
+				return ;
+			}else{
+				if(res.data.length>0){					
+					obj.click(function(){
+						var qun = new Array();
+						$.each(res.data,function(i,rs){
+							qun.push("<a style='color:#fff;' target='_blank' href='" + qunurl + rs.id + "'>"+rs.title+"</a>");
+						});
+						layer.tips( qun.join('<br>'), obj , {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });
+					});
+					return ;
+				}
+			}
+		}
+		obj.click(function(){
+			layer.alert('TA还没有创建任何圈子!');
+		});
+	});
+})
+</script>

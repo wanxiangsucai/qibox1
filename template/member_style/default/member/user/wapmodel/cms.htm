@@ -1,0 +1,7 @@
+<!--CMS文章-->
+<div class="SideInfos">
+	<h3><i class="fa fa-fw fa-book"></i>{$uid==$userdb.uid?'我':'Ta'}发的文章</h3>
+{qb:tag name="wap_member_homepage_001" union="uid" type="cms" rows="5" mid="1" order="id" by="desc"}
+	<ul> <ol style="width:80%;">{$i}、<a href="{$rs.url}">{$rs.title|get_word=24}</a></ol><li>{:date("m-d",$rs.create_time)}</li></ul>
+{/qb:tag}
+</div>

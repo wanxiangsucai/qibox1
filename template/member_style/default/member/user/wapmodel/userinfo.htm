@@ -1,0 +1,15 @@
+<!--会员信息-->
+<div class="SideInfos">
+	<h3><i class="fa fa-user"></i>基本信息</h3>
+	<ul><ol>昵称</ol><li>{$info.nickname}</li></ul>
+	<ul><ol>我的ID</ol><li>{$info.uid}</li></ul>
+	<ul><ol>注册日期</ol><li>{:date("Y-m-d H:i:s",$info.regdate)}</li></ul>
+	<ul><ol>最后登录</ol><li>{:date("Y-m-d H:i:s",$info.lastvist)}</li></ul>
+
+	<!-- field过滤显示的字段,多个用逗号隔开,$f_array跟form表单一样的数组 -->
+{if $f_array}
+{qb:showpage field="regdate,lastvist" f_array="$f_array"}
+		<ul><ol>{$rs.title}</ol><li>{$rs.value}</li></ul>
+{/qb:showpage}
+{/if}
+</div>

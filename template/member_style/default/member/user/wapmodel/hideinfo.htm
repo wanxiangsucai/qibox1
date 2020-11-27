@@ -1,0 +1,13 @@
+<!--用户私密资料-->
+{if ($userdb.uid==$info.uid||$userdb.groupid==3)}
+<div class="SideInfos">
+	<h3><i class="si si-lock"></i>{$uid==$userdb.uid?'我':'Ta'}的私密资料</h3>
+	<ul><ol>可用{$webdb.MoneyName}</ol><li>{$info.money}</li></ul>
+	<ul><ol>可用余额</ol><li>{$info.rmb}</li></ul>
+
+	<ul><ol>真实姓名</ol><li>{$info.truename}</li></ul>
+	<ul><ol>联系电话</ol><li>{$info.mobphone}</li></ul>
+	<ul><ol>联系地址</ol><li>{$info.address}</li></ul>
+	<div class="note">私密资料只有本人与管理员才可查看,其它人无法查看!</div>	
+</div>
+{/if}

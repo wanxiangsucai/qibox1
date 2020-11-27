@@ -1,0 +1,10 @@
+<!--头部-->
+<div class="BaseInfos">
+	<ul>
+		<ol><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></ol>
+		<li>
+			<div>{$info.username} ({$info.groupid|getGroupByid})</div>
+			<p>注册日期 {$info.regdate|format_time}</p>
+		</li>
+	</ul>
+</div>
