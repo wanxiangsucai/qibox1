@@ -1,0 +1,160 @@
+<!--会员菜单-->
+
+{if $menu['often']['sons']}	<!--会员组个性菜单开始-->
+	{volist name="menu.often.sons" id="vo"}
+		<div class="bui-panel panel-usercenter">
+            <div class="bui-panel-head bui-box-align-middle">
+                <i class="icon-member" style="color:#8CC9FD;"><span class="{$vo.icon|default='fa fa-sun-o'}"></span></i>
+                <div class="span1">{$vo.title}</div>
+                <div class="panel-head-right"><i class="icon-listright"></i></div>
+            </div>
+            <div class="bui-panel-main">
+		{volist name=":array_chunk($vo['sons'], 4)" id="rs1"}
+                <ul class="bui-nav nav-list">
+
+		{php}while(count($rs1)<4)$rs1[]='';	/*为的是生成占位符*/{/php}
+
+              {volist name="rs1" id="rs"}
+                    <li class="bui-btn bui-box-vertical" href="{$rs.url}" {notempty name='$rs.bgcolor'}style="background-color:{$rs.bgcolor};"{/notempty}>
+				{if is_array($rs)}
+                        <i {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty} class="{$rs.icon|default='fa fa-gg'}">
+                            <span style="display:none;" class="bui-badges">0</span> 
+                        </i>
+                        <div class="span1" {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty}>
+                            {$rs.title}
+                        </div>
+				{/if} {$rs.script}
+                    </li>
+			{/volist}
+                </ul>
+		{/volist}
+            </div>
+        </div>
+	{/volist}
+
+{else /}<!--会员组个性菜单结束，默认菜单开始标签-->
+
+<!--基础功能开始-->
+        <div class="bui-panel panel-usercenter">
+            <div class="bui-panel-head bui-box-align-middle">
+                <i class="icon-service"><span style="color:{$menu['base']['sons'][0]['fontcolor']?:''}" class="{$menu['base']['sons'][0]['icon']?:'glyphicon glyphicon-star-empty'}"></span></i>
+                <div class="span1">{$menu['base']['sons'][0]['title']}</div>
+                <div class="panel-head-right a" href="{:get_url('user',$info.uid)}">我的主页<i class="icon-listright"></i></div>
+            </div>
+            <div class="bui-panel-main">
+{volist name=":array_chunk($menu['base']['sons'][0]['sons'], 4)" id="rs1"}
+				<ul class="bui-nav nav-list">
+
+{php}while(count($rs1)<4)$rs1[]='';	/*为的是生成占位符*/{/php}
+
+              {volist name="rs1" id="rs"}
+                    <li class="bui-btn bui-box-vertical" href="{$rs.url}" {notempty name='$rs.bgcolor'}style="background-color:{$rs.bgcolor};"{/notempty}>
+				{if is_array($rs)}
+                        <i {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty} class="{$rs.icon|default='fa fa-gg'}">
+                             <span style="display:none;" class="bui-badges">0</span> 
+                        </i>
+                        <div class="span1" {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty}>
+                            {$rs.title}
+                        </div>
+				{/if} {$rs.script}
+                    </li>
+			{/volist}
+                </ul>
+{/volist}
+            </div>
+        </div>
+<!--基础功能结束-->
+
+<!--独立菜单的频道开始-->
+{volist name="$menu" id="rs2"}
+{php}if(in_array($key,['plugin','base','module']))continue;{/php}
+		<div class="bui-panel panel-usercenter">
+            <div class="bui-panel-head bui-box-align-middle">
+                <i class="icon-member" style="color:{$rs2.fontcolor?:'#8CC9FD'};"><span class="{$rs2.icon}"></span></i>
+                <div class="span1">{$rs2.title}{$rs2.script}</div>
+                <div class="panel-head-right a" href="{:iurl($key.'/index/index')}">浏览前台<i class="icon-listright"></i></div>
+            </div>
+            <div class="bui-panel-main">
+{volist name=":array_chunk($rs2['sons'][0]['sons'], 4)" id="rs1"}
+                <ul class="bui-nav nav-list">
+
+{php}while(count($rs1)<4)$rs1[]='';	/*为的是生成占位符*/{/php}
+
+              {volist name="rs1" id="rs"}
+                    <li class="bui-btn bui-box-vertical" href="{$rs.url}" {notempty name='$rs.bgcolor'}style="background-color:{$rs.bgcolor};"{/notempty}>
+				{if is_array($rs)}
+                        <i {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty} class="{$rs.icon|default='fa fa-gg'}">
+                            <!--<span class="bui-badges">10</span>-->
+                        </i>
+                        <div class="span1" {notempty name='$rs.fontcolor'}style="color:{$rs.fontcolor};"{/notempty}>
+                            {$rs.title}
+                        </div>
+				{/if} {$rs.script}
+                    </li>
+			{/volist}
+                </ul>
+{/volist}
+            </div>
+        </div>
+{/volist}
+<!--独立菜单的频道结束-->
+
+<style type="text/css">
+.morelink{width:100%;text-align:left;}
+</style>
+<!--功能插件开始-->
+		<div class="bui-panel panel-usercenter">
+            <div class="bui-panel-head bui-box-align-middle">
+                <i class="icon-member" style="color:#e8a4cb;"><span class="fa fa-gears"></span></i>
+                <div class="span1">功能插件</div>
+                <div class="panel-head-right"></div>
+            </div>
+            <div class="bui-panel-main">
+{volist name=":array_chunk($menu['plugin']['sons'], 4)" id="rs1"}
+                <ul class="bui-nav nav-list">
+
+{php}while(count($rs1)<4)$rs1[]='';	/*为的是生成占位符*/{/php}
+
+              {volist name="rs1" id="rs"}
+                    <li class="bui-btn bui-box-vertical show-more-menu">
+				{if is_array($rs)}
+                        <i class="{$rs.icon}" {if $rs.fontcolor!=''}style="color:{$rs.fontcolor};"{/if}>
+                            <!--<span class="bui-badges">10</span>-->
+                        </i>
+                        <div class="span1" {if $rs.fontcolor!=''}style="color:{$rs.fontcolor};"{/if}>
+                            {$rs.title}
+                        </div>{$rs.script}
+				{/if}
+                    </li>
+					<div class="list-sons">
+					{volist name="$rs.sons" id="rs1"}
+						<li><a href="{$rs1.url}" class="morelink {$rs1.icon|default='fa fa-chevron-right'}" {notempty name='$rs1.fontcolor'}style="color:{$rs1.fontcolor};"{/notempty}> {$rs1.title}</a>{$rs1.script}</li>
+					{/volist}
+					</div>
+			{/volist}
+                </ul>
+{/volist}
+            </div>
+        </div>
+<!--功能插件结束-->
+
+
+<!--非独立菜单的频道开始-->
+        <ul class="bui-list menu-list">
+{volist name="$menu['module']['sons']" id="rs"}
+            <li class="bui-btn bui-box show-more-menu">
+                <i class="icon-service"><dd {if $rs.fontcolor!=''}style="color:{$rs.fontcolor};"{/if} class="{$rs.icon}"></dd></i>
+                <div class="span1" >{$rs.title}{$rs.script}</div>
+                <span class="tips"></span>
+                <i class="icon-listright"></i>
+            </li>
+			<div class="list-sons">
+			{volist name="$rs.sons" id="rs1"}
+                <li><a href="{$rs1.url}" class="morelink {$rs1.icon|default='fa fa-chevron-right'}" {notempty name='$rs1.fontcolor'}style="color:{$rs1.fontcolor};"{/notempty}> {$rs1.title}</a>{$rs1.script}</li>
+			{/volist}
+            </div>
+{/volist}
+        </ul>
+<!--非独立菜单的频道结束-->
+
+{/if}<!--默认菜单结束标签-->
