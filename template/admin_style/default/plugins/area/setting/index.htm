@@ -1,0 +1,18 @@
+{extend name="index:layout" /}
+
+
+{block name="content"}
+	{include file="common/form" /}
+
+<script type="text/javascript">
+var str = `			<div class="ListArea">
+				<select name='province_id' data-title="请选择省份" lay-ignore></select> 
+				<select name='city_id' data-title="请选择城市" lay-ignore></select> 
+				<select name='zone_id' data-title="请选择区域" lay-ignore></select> 
+				<!--<select name='street_id' data-title="请选择街道" lay-ignore></select>-->
+			</div>`;
+$("#atc_city_id").parent().html(str);
+$("#form_group_province_id").remove();
+$("#form_group_zone_id").remove();
+</script>
+{/block}

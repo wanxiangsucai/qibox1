@@ -7,6 +7,11 @@ return array(
 							array(
 								'title'=>'城市地区管理',
 								'sons'=>array(
+								    array(
+								        'title'=>'参数设置',
+								        'link'=>'setting/index',
+								        'power'=>[],
+								    ),
 								        array(
 								                'title'=>'省份管理',
 								                'link'=>'province/index',

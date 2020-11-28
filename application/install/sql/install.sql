@@ -1859,3 +1859,12 @@ ALTER TABLE  `qb_comment_content` ADD  `tid` INT( 7 ) NOT NULL COMMENT  '一般�
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '视频播放器默认背景图', 'video_player_bgpic', '', 'image', '', 1, '', '', 0, 0);
 
 INSERT INTO `qb_hook` (`name`, `about`, `ifopen`, `list`) VALUES( 'comment_add_end', '评论回复接口', 1, 0);
+
+UPDATE `qb_chatmod` SET `status`=0 WHERE `keywords`='p2pvideo';
+
+DELETE FROM `qb_config`  WHERE c_key IN ('reg_group00','RegHongBao');
+INSERT INTO `qb_config_group` (`id`, `title`, `list`, `sys_id`, `ifshow`, `ifsys`) VALUES(6, '参数设置', 0, -7, 0, 1);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 6, '默认省份', 'province_id', '440000', 'number', '', 1, '', '', 0, -7);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 6, '默认城市', 'city_id', '440100', 'number', '', 1, '', '', 0, -7);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 6, '默认区域(县城)', 'zone_id', '0', 'number', '', 1, '', '', 0, -7);
+
