@@ -30,7 +30,7 @@ class City extends AdminBase
 	    }
 	    
 	    //特意不要调取level字段,避免跟模板中的level字段有冲突
-	    $listdb = AreaModel::where($map)->field('id,pid,name,list,lng,lat,logo,content')->order( $this->getOrder('list desc') )->paginate(50,false,['query'=>request()->param()]);
+	    $listdb = AreaModel::where($map)->field('id,pid,name,list')->order( $this->getOrder('list desc') )->paginate(50,false,['query'=>request()->param()]);
 	    foreach ($listdb AS $rs){
 	        $ids[] = $rs['pid'];
 	    }
