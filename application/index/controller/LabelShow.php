@@ -361,7 +361,7 @@ class LabelShow extends IndexBase
         }
         return "<SCRIPT LANGUAGE='JavaScript'>var admin_url='$admin_url',fromurl='/',label_iframe_width='$label_iframe_width',label_iframe_height='$label_iframe_height';</SCRIPT>
         <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."libs/jquery-ui/jquery-ui.min.js'></SCRIPT>
-        <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."js/label.js'></SCRIPT>";
+        <SCRIPT LANGUAGE='JavaScript' src='".STATIC_URL."js/label.js'></SCRIPT><link rel='stylesheet' type='text/css' href='".STATIC_URL."css/qb_ui.css'>";
     }
     
     /**
