@@ -26,6 +26,7 @@ class Labelhy extends Label
     
     public function index()
     {
+        set_cookie('frompage',$_SERVER['HTTP_REFERER']);
         $url_array = [
                 'pagename'=>input('pagename'),
                 'name'=>input('name'),

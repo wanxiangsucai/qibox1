@@ -33,6 +33,7 @@ class Label extends IndexBase
      */
     public function index()
     {
+        set_cookie('frompage',$_SERVER['HTTP_REFERER']);
         $url_array = [
                 'pagename'=>input('pagename'),
                 'name'=>input('name'),
@@ -165,8 +166,7 @@ class Label extends IndexBase
      * 碎片模块管理
      * @return mixed|string
      */
-    public function labelmodel(){
-        
+    public function labelmodel(){//get_cookie('frompage')
         $info = $this->getTagInfo();
         $cfg = unserialize($info['cfg']);
         
@@ -323,6 +323,9 @@ class Label extends IndexBase
                 }elseif ($info['type3']=='big' && $width<500) {
                     continue ;
                 }
+            }
+            if ( strstr($info['type3'],'/') && get_cookie('frompage')!='' && !strstr(get_cookie('frompage'),$info['type3']) ) {
+                continue ;  //指定了碎片的使用页面地址
             }
             if ($hyid>0) {
                 if($info['type2']=='www'){
