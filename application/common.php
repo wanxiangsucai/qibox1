@@ -1330,6 +1330,14 @@ if(!function_exists('sort_config')){
             $sort_array[$sys_type] = $array;
         }
         
+        foreach($array AS $id=>$rs){
+            if($rs['allow_viewtitle']!='' && trim($rs['allow_viewtitle'],',')!=''){ //没有权限查看标题,也即隐藏栏目
+                if (!login_user('groupid')||!in_array(login_user('groupid'), explode(',',trim($rs['allow_viewtitle'],',')))) {
+                    unset($array[$id]);
+                }
+            }
+        }
+        
         if($pid!==null){    //取子栏目
             $_array = [];
             foreach ($array AS $id=>$rs){
@@ -3061,10 +3069,10 @@ if (!function_exists('get_model_class')) {
         if(class_exists($classname)==false){
             $_path =  $path=='app'?'plugins':'app';
             $classname = "$_path\\$dirname\\model\\".ucfirst($type);
-        }
-        if(class_exists($classname)==false){
-            return false;
-        }
+            if(class_exists($classname)==false){
+                return false;
+            }
+        }        
         $obj = new $classname;
         return $obj;
     }    
