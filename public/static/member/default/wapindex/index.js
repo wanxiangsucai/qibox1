@@ -6,6 +6,8 @@ bui.ready(function(){
 
 		bui.btn({id:".bui-page",handle:".bui-btn,.a"}).load();
 
+		bui.btn({id:".rolltype",handle:".bui-btn,.a"}).load();
+
 		$(".fullbg").click(function(){
 			hide_nav($('#editmodes'),$('.fullbg'));
 		});

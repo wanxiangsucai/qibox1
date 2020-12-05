@@ -25,6 +25,7 @@
 	<ul style="background:#eee;padding:10px;">
 	控制是否固定头部的开关
 	</ul>
+	<style type="text/css">.p8label{left:60px !important;}</style>
 {/if}
 <!--控制是否固定头部的开关-->
 
@@ -35,7 +36,7 @@
         </div>
     {if !defined('ROLL_HEADER')}</header>{/if}
    
-   <main>
+   <main {if defined('ROLL_HEADER')}class="rolltype"{/if}>
 		{qb:hy name="wap_memberindex002" val="datas" type="labelmodel"  where="member_style/default/member/index/wapmodel/menu,alljifen,loginout"}
 		{$datas} 
 		{/qb:hy}        
@@ -62,7 +63,7 @@
 <div class="fullbg"></div>
 
 <script src="__STATIC__/libs/bui/js/bui.js"></script>
-<script src="__STATIC__/member/default/wapindex/index.js"></script>
+<script src="__STATIC__/member/default/wapindex/index.js?s"></script>
 <script type="text/javascript">
 $(function(){
 	$(".bui-box-vertical").each(function(){
