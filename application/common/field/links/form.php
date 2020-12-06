@@ -4,6 +4,7 @@ function_exists('urls') || die('ERR');
 
 $jscode = '';
 $jscode .= fun('field@load_js','jquiS')?'<SCRIPT LANGUAGE="JavaScript" src="'.STATIC_URL.'libs/jquery-ui/jquery-ui.min.js'.'"></SCRIPT>':'';
+$jscode .= fun('field@load_js','color')?"<script src='".STATIC_URL."libs/jscolor/jscolor.js'></script>":'';
 if(fun('field@load_js',$field['type'])){
 	
 	if(empty(input('hy_id'))){
@@ -39,17 +40,20 @@ jQuery(document).ready(function() {
 		base.find('.addmore').click(function(){
 			copy_item().find("input").val('');
 		});
-		function copy_item(default_color){
+		function copy_item(is_init){
 			base.append( base.find('.input-group').first().clone() );
 			var that = base.find('.input-group').last();
-			set_init(that,default_color);
+			set_init(that,is_init);
 			return that;
 		}
 		
-		//添加事件
-		function set_init(that,default_color){
+		//添加事件 
+		function set_init(that,is_init){
 			init_icon(that);
-			init_color(that,default_color);
+			if(is_init!==true){
+				jscolor.install();
+			}
+			//init_color(that,default_color);
 			init_link(that);
 			init_count(that);
 			init_delete(that);
@@ -129,7 +133,7 @@ jQuery(document).ready(function() {
 				});			
 			});
 		}
-		init_color(base);
+		//init_color(base);
 		
 		//选择链接
 		function init_link(o){
@@ -194,7 +198,7 @@ jQuery(document).ready(function() {
 		if(str!=''){
 			var ar = JSON.parse(str);
 			ar.forEach((rs)=>{
-					var that = copy_item({font_color:rs.font_color,bgcolor:rs.bgcolor});
+					var that = copy_item(true/*{font_color:rs.font_color,bgcolor:rs.bgcolor}*/);
 					that.find(".url input").val(rs.url);
 					that.find(".icon input").val(rs.icon);
 					that.find(".title input").val(rs.title);
@@ -281,11 +285,11 @@ return <<<EOT
 				<div class='title'>标题:<input type='text' placeholder='必填'></div>				
 				<div class='icon'>图标:<input type='text' placeholder='必选'> <span class="get-icon fa fa-smile-o" style="width:50px"> 选择</span></div>				
 				<div class='font_color'>
-					<ul class='layui-input-inline'>颜色:<input type='text' placeholder='字体颜色,非必选' /></ul>
+					<ul class='layui-input-inline'>颜色:<input type='text' placeholder='字体颜色,非必选' data-jscolor='' /></ul>
 					<ul class='layui-inline' style='left: -44px;'><li class='get-color'></li></ul>
 				</div>
 				<div class='bgcolor'>
-					<ul class='layui-input-inline'>背景:<input type='text' placeholder='背景颜色,非必选' /></ul>
+					<ul class='layui-input-inline'>背景:<input type='text' placeholder='背景颜色,非必选' data-jscolor='' /></ul>
 					<ul class='layui-inline' style='left: -44px;'><li class='get-color'></li></ul>
 				</div>
 				<div class='about'>描述:<input type='text' placeholder='描述介绍,一般留空'></div>

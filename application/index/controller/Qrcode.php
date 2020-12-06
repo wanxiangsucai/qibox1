@@ -31,8 +31,14 @@ class Qrcode extends IndexBase
             $url = Wxapp::qun_code($url, $logo);
         }else{
             $url = Wxapp::wxapp_codeimg($url,$this->user['uid'], $logo);
+        }
+        $str = preg_match("/^http/is", $url)?file_get_contents($url):'';
+        if ($str) {
+            header('Content-type: image/png');
+            echo $str;
+        }else{
+            header("location:".$url);
         }        
-        header("location:".$url);
         exit;
     }
     
