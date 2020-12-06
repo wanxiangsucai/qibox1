@@ -3434,6 +3434,25 @@ if(!function_exists('cache2')){
     }
 }
 
+if(!function_exists('val')){
+    /**
+     * 函数内外之间传递变量
+     * @param array|string $array 变量或字符串
+     * @param string $k 标志符,默认是label不设置的话,也可以,但会被最后的替换
+     * @return unknown
+     */
+    function val($array='',$k='label'){
+        static $data=[];
+        if (is_array($array)) {
+            $data[$k] = $array;
+        }elseif(is_string($array) && $array!=''){
+            return $data[$k]?$data[$k][$array]:'';
+        }else{
+            return $data[$k];
+        }
+    }
+}
+
 if(!function_exists('showerr')){
     function showerr($msg = '', $url = null, $data = '', $wait = 60, array $header = []){
         $obj = new Base;
