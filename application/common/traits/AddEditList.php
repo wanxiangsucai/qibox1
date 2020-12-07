@@ -467,8 +467,8 @@ trait AddEditList {
 	            'edit'=>'fa fa-pencil',
 	    ];
 	    $class = [
-	            'delete'=>'btn btn-xs btn-default',
-	            'edit'=>'btn btn-xs btn-default',
+//	            'delete'=>'btn btn-xs btn-default',
+//	            'edit'=>'btn btn-xs btn-default',
 	    ];
 	    $href = [
 	            'delete'=>auto_url('delete',['ids' => '__id__']),

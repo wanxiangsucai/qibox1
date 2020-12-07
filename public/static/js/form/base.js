@@ -49,6 +49,7 @@ jQuery(document).ready(function() {
 						post_ok(res);
 					}else{
 						setTimeout(function(){
+							parent.layer.close(parent.layer.getFrameIndex(window.name));							
 							window.location.href = res.url;
 						},500);
 					}				

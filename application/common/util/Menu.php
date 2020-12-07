@@ -143,28 +143,96 @@ class Menu{
     }
     
     /**
-     * 系统默认所有会员的菜单
+     * 会员中心菜单排序,同时有可能增加后台新加的菜单
+     * @param array $array
+     */
+    public static function order_member_menu($array=[]){
+        foreach($array AS $key1=>$rs1){
+            foreach($rs1['sons'] AS $key2=>$rs2){
+                $array[$key1]['sons'][$key2]['sons'] = self::order_sons($rs2['sons'],$rs2['title']);
+            }            
+        }
+        return $array;
+    }
+    
+    /**
+     * 子菜单排序,同时有可能增加后台新加的菜单
+     * @param array $array 子菜单
+     * @param string $title 父分类名称
+     * @return unknown|unknown[]
+     */
+    protected static function order_sons($array=[],$title=''){
+        static $db_menu = null;
+        if ($db_menu===null) {
+            $db_menu = self::member_sys_cache(1);
+        }
+        $d_menu = $db_menu[$title];
+        if (!$d_menu){
+            return $array;
+        }
+        $data_1 = [];
+        foreach($array AS $rs){
+            $data_1[$rs['url']] = $rs;
+        }
+        
+        $data_new = [];
+        foreach($d_menu AS $key=>$rs){
+            if ($data_1[$rs['url']]) {
+                $data_new[] = $data_1[$rs['url']];
+                unset($data_1[$rs['url']],$d_menu[$key]);
+            }else{  //有可能是数据库新增加了菜单
+                if (!$rs['allowgroup'] ||in_array(login_user('groupid'), explode(',', $rs['allowgroup']))) {
+                    $data_new[] = $rs;
+                }                
+                unset($d_menu[$key]);
+            }
+        }
+        if ($data_1) { //有可能是数据库不存在的菜单,程序文件新增的菜单.
+            foreach($data_1 AS $rs){
+                $data_new[] = $rs;
+            }
+        }
+//         if ($d_menu) {  //有可能是数据库新增加了菜单
+//             foreach($d_menu AS $rs){
+//                 $data_new[] = $rs;
+//             }
+//         }
+        return $data_new;
+    }
+    
+    /**
+     * 系统默认会员菜单
+     * @param number $type true代表强制生成缓存,0或1的话,获取相应的缓存数据
      * @return mixed|\think\cache\Driver|boolean
      */
-    public static function member_sys_cache($make=false){
+    public static function member_sys_cache($type=0){
         $listdb = cache('member_sys_menu');
-        if (empty($listdb)||$make) {
+        if (empty($listdb)||$type===true) {
             $map = ['type'=>1,'groupid'=>0];
-            if (is_file(APP_PATH.'common/upgrade/96.sql')) {    //避免升级不成功导致数据库报错进不了后台
-                $map['is_use'] = 1;
-            }
-            $data = AdminMenu::where($map)->column(true);
-            $listdb = [];
+            $listdb = $array = [];
+            $data = AdminMenu::where($map)->order('list desc,id asc')->column(true);         
             foreach($data AS $rs){
-                if ($rs['pid']) {
-                    $listdb[$rs['url']] = $rs;
-                }else{
-                    $listdb[$rs['title']] = $rs;
+                if ($rs['is_use']==1||$rs['ifshow']==0) { //启用个性菜单,或者是禁止显示
+                    if ($rs['pid']) {
+                        $listdb[0][$rs['url']] = $rs;
+                    }else{
+                        $listdb[0][$rs['title']] = $rs;
+                    }
                 }
+                if ($rs['ifshow']==1) {
+                    $rs['title']=='' && $rs['title']=$rs['name'];
+                    $array[$rs['pid']][$rs['id']] = $rs;
+                }                
+            }
+            
+            foreach($array[0] AS $ar){
+                $listdb[1][$ar['name']] = $array[$ar['id']];
             }
             cache('member_sys_menu',$listdb);
         }
-        return $listdb;
+        if ($type!==true) {
+            return $listdb[$type];
+        }        
     }
     
     /**

@@ -184,7 +184,7 @@ class Table extends Base
                 $target = $rs['target']?" target='{$rs['target']}' ":'';
                 $data[] = [
                     'title'=>$rs['title'],
-                    'value'=>"<a href='{$rs['href']}' title='{$rs['title']}' $alert $target><i class='{$rs['icon']}'></i> ".($show_title?$rs['title']:'')."</a>",
+                    'value'=>"<a href='{$rs['href']}' class='{$rs['class']}' title='{$rs['title']}' $alert $target><i class='{$rs['icon']}'></i> ".($show_title?$rs['title']:'')."</a>",
                     ];
             }
         }

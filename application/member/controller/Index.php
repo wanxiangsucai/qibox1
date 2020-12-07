@@ -13,7 +13,7 @@ class Index extends MemberBase
      */
     public function index($tag='')
     {
-        $menu_array = Menu::make('member',$tag);
+        $menu_array = Menu::order_member_menu(Menu::make('member',$tag));
         foreach($menu_array AS $key1=>$rs1){
             foreach($rs1['sons'] AS $key2=>$rs2){
                 $info = [];

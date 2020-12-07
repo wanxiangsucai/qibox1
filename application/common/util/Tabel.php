@@ -115,7 +115,7 @@ class Tabel extends IndexBase{
 	public static function addRightButton($type = '', $attribute = [], $blank = false){
 	    if($type=='add'){
 	        $attribute = array_merge(
-	                ['title' => '添加','icon' => 'fa fa-plus', 'data-tips' => '删除后无法恢复。','class' => 'btn', 'href' => url('add', ['id' => '__id__']),],
+	                ['title' => '添加','icon' => 'fa fa-plus', 'data-tips' => '删除后无法恢复。','class' => '', 'href' => url('add', ['id' => '__id__']),],
 	                $attribute
 	                );
 	    }

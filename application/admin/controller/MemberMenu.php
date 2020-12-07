@@ -54,9 +54,9 @@ class MemberMenu extends AdminBase
 	    $tab = [
 	            //['id','ID','text'],
 	            ['title_display','链接名称','text'],
-	            ['groupid','所属用户组','select2',getGroupByid()],
+	            //['allowgroup','所属用户组','checkbox',getGroupByid()],
 	            ['list','排序值','text.edit'],
-	            ['ifshow','是否显示','switch'],
+	            ['ifshow','显示/隐藏','switch'],
 	            ['target','新窗口打开','yesno'],
 	            //['right_button', '操作', 'btn'],
 // 	            ['right_button', '操作', 'callback',function($value,$rs){
@@ -65,14 +65,14 @@ class MemberMenu extends AdminBase
 // 	            },'__data__'],
 	    ];
 	    if (!$gid) {
-	        $tab[] = ['is_use','后台个性设置','switch'];
+	        $tab[] = ['is_use','个性/默认','switch'];
 	    }
 	    
 	    $script = "";
 	    if ($gid<1) {
 	        $script = "<script type='text/javascript'>
 //$('.quick_edit,.fa-plus,.fa-times,.top_menu').hide();
-$('.quick_edit,.fa-plus').hide();
+$('.quick_edit').hide();
 $('.top_menu a').eq(1).hide();
 $('.top_menu a').eq(0).hide();
 $('._switch').click(function(){
@@ -82,8 +82,11 @@ $('._switch').click(function(){
 $('.trA').each(function(){
     if($(this).html().indexOf('&nbsp;&nbsp;&nbsp;&nbsp;')==-1){
 	   $(this).find('._switch').eq(0).hide();
-       $(this).find('.glyphicon-ban-circle').hide();
-	}
+       $(this).find('.glyphicon-ban-circle').hide();       
+	}else{
+        $(this).find('.quick_edit').show();
+        $(this).find('.fa-plus').hide();
+    }
 });
 </script>";
 	    }else{
@@ -100,9 +103,9 @@ $('.trA').each(function(){
 	    ->addTopButton('add',['title'=>'手工添加菜单','url'=>url('add',['gid'=>$gid])])
 	    ->addTopButton('custom',['title'=>'快速导入会员所有菜单','url'=>url('copy',['gid'=>$gid]),'icon'=>'fa fa-copy'])
 	    ->addTopButton('delete')
-	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])])
+	    ->addRightButton('add',['title'=>'添加下级菜单','class'=>'_pop','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])])
 	    ->addRightButton('delete')
-	    ->addRightButton('edit')
+	    ->addRightButton('edit',['title'=>'修改菜单','class'=>'_pop'])
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
 	    ->addPageTitle('会员个性菜单管理')
@@ -173,20 +176,25 @@ $('.trA').each(function(){
 	        if($data['name']==''){
 	            $this->error('名称不能为空!');
 	        }
-	        
+	        $data['allowgroup'] = is_array($data['allowgroup'])?implode(',', $data['allowgroup']):$data['allowgroup'].'';
+	        $data['is_use'] = 1;
 	        if(MenuModel::create($data)){	                
 	            $this->success('创建成功 ', url('index',['gid'=>$data['groupid']]) );
 	        } else {
 	            $this->error('创建失败');
 	        }
 	    }
-	    $gid || $gid=3;
+	    !$gid || $gid=3;
 
 	    $array = MenuModel::where(['groupid'=>$gid,'pid'=>0,'type'=>1])->column('id,name');
 	    $form = Form::make()
-	    ->addPageTips('父菜单为PC或WAP的话,子菜单设置通用无效')
-	    ->addSelect('groupid','所属用户组','',getGroupByid(),$gid)
-	    ->addSelect('pid','父级菜单','',$array,$pid)
+	    ->addPageTips('父菜单为PC或WAP的话,子菜单设置通用无效');
+	    if(!$gid){
+	        $form->addCheckbox('allowgroup','哪些用户组可用','',getGroupByid(),[3,8,11]);
+	    }else{
+	        $form->addSelect('groupid','所属用户组','',getGroupByid(),$gid);
+	    }
+	    $form->addSelect('pid','父级菜单','',$array,$pid)
 	    ->addText('name','菜单名称')
 	    ->addText('url','菜单链接')
 	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'],0)
@@ -226,6 +234,9 @@ $('.trA').each(function(){
 	        $form->addSelect('pid','父级菜单','',$array)->addText('url','菜单链接');
 	    }
 	    $form->addText('name','名称');
+	    if($info['groupid']==0 && $info['pid']>0){
+	        $form->addText('url','菜单链接');
+	    }
 	    if($info['pid']>0){
 	        $form->addCheckbox('allowgroup','指定用户组使用','不设置则按默认为准,即有权限',getGroupByid())
 	        ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'])
