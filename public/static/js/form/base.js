@@ -49,7 +49,11 @@ jQuery(document).ready(function() {
 						post_ok(res);
 					}else{
 						setTimeout(function(){
-							parent.layer.close(parent.layer.getFrameIndex(window.name));							
+							try{
+								parent.layer.close(parent.layer.getFrameIndex(window.name));
+							}catch(err){
+								console.log(err);
+							}														
 							window.location.href = res.url;
 						},500);
 					}				
