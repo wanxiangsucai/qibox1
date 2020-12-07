@@ -1,4 +1,6 @@
 <!--底部菜单-->
+{if defined('LABEL_SET')}<ul style="padding:5px;">底部菜单</ul>{/if}
+
 <link rel="stylesheet" href="__STATIC__/css/footmenu.css"> 
 
 {php}
@@ -8,7 +10,7 @@ $menudb=fun('page@foot_menu');
 
 <div class="footmenu_warp">
 	{volist name="$menudb" id="rs"}
-    <div class="menu1 {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}ck{/if}" {if $rs.bgcolor}style="background-color:red;"{/if}>
+    <div class="menu1 {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}ck{/if}" {if $rs.bgcolor}style="background-color:{$rs.bgcolor};"{/if}>
         <div class="bt-name"><a href="{$rs.sons?'javascript:;':$rs.url}" {if $rs.fontcolor}style="color:{$rs.fontcolor}"{/if}>{if $rs.style}<i class="{$rs.style}"></i>{/if}{$rs.name}</a></div>		
 		{if $rs.sons}
         <div class="icons"></div>

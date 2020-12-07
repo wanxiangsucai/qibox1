@@ -11,7 +11,7 @@
 {block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/base.css">{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
-{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?fw0"></script>{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>{/block}
 {block name="head_layer_js"}
 <script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 <script type="text/javascript" src="__STATIC__/layui/layui.js"></script>
@@ -21,30 +21,7 @@
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body_head',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
-<style type="text/css">
-.qb_wap_header{
-	padding:8px;
-	background:#62B3E7;
-	color:#fff;
-	height:26px;
-}
-.qb_wap_header a{
-	color:#fff;
-}
-.qb_wap_header div{
-	float:left;
-}
-.qb_wap_header{
-	text-align:center;
-}
-.qb_wap_header .R{
-	float:right;
-}
-.web_menu_btn{
-	margin-left:12px;
-	font-weight:bold;
-}
-</style>
+<style type="text/css">.qb_wap_header{padding:8px;background:#62B3E7;color:#fff;height:26px;} .qb_wap_header a{color:#fff;} .qb_wap_header div{float:left;} .qb_wap_header{text-align:center;} .qb_wap_header .R{float:right;} .web_menu_btn{margin-left:12px;font-weight:bold;}</style>
 
 {block name="body_Headcont"}
 <div class="qb_wap_header">
@@ -100,7 +77,11 @@
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 {block name="body_Footcont"}
-	{include file="index@footmenu" /}
+	<!--引用碎片-->
+	{qb:hy name="wap_layout_002" where="index_style/default/index/footmenu" val="datas" type="labelmodel"}
+		{$datas}
+	{/qb:hy}
+	<!--可以删除这一行{// include file="index@footmenu" /}-->
 {/block}
 
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
@@ -158,8 +139,6 @@
  })(jQuery);
 </script>
 <!--网站菜单结束-->
-
-
 
 </body>
 </html>

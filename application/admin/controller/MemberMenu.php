@@ -109,7 +109,7 @@ $('.trA').each(function(){
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
 	    ->addPageTitle('会员个性菜单管理')
-	    ->addPageTips("系统默认菜单请不要删除，不可恢复！这里展示出来，主要是方便重新定义图标或修改文字".$script)
+	    ->addPageTips("提示：系统默认菜单删除后还会自动创建的，你只能选择隐藏不显示！".$script)
 	    ->addNav($this->group_nav,$gid) ;   
 
         return $table::fetchs();
