@@ -38,7 +38,7 @@ class MemberMenu extends AdminBase
      */
     public function index($gid=null)
     {
-        if ($gid==null) {
+        if ($gid===null) {
             $gid=0;
             $this->copy_menu($gid);
             Menu::member_sys_cache(true);
@@ -64,19 +64,25 @@ class MemberMenu extends AdminBase
 // 	                return $value;
 // 	            },'__data__'],
 	    ];
+	    if (!$gid) {
+	        $tab[] = ['is_use','后台个性设置','switch'];
+	    }
 	    
 	    $script = "";
 	    if ($gid<1) {
 	        $script = "<script type='text/javascript'>
 //$('.quick_edit,.fa-plus,.fa-times,.top_menu').hide();
-$('.quick_edit,.fa-plus,.top_menu').hide();
+$('.quick_edit,.fa-plus').hide();
+$('.top_menu a').eq(1).hide();
+$('.top_menu a').eq(0).hide();
 $('._switch').click(function(){
     alert('这里设置不一定会生效,请选择右边菜单修改设置');
     return false;
 });
 $('.trA').each(function(){
     if($(this).html().indexOf('&nbsp;&nbsp;&nbsp;&nbsp;')==-1){
-	   $(this).find('._switch,.glyphicon-ban-circle').hide();
+	   $(this).find('._switch').eq(0).hide();
+       $(this).find('.glyphicon-ban-circle').hide();
 	}
 });
 </script>";
@@ -110,8 +116,8 @@ $('.trA').each(function(){
 	    $num1 = $num2 = 0;
 	    foreach(Menu::make('member') AS $m_name=>$array1){
 	        foreach($array1['sons'] AS $key1=>$array2){
-	            $title1 = $array2['title'];
-	            $data1 = ['type'=>1,'groupid'=>$gid,'title'=>$title1];
+	            $title1 = $array2['old_name']?:$array2['title'];
+	            $data1 = ['type'=>1,'pid'=>0,'groupid'=>$gid,'title'=>$title1];
 	            $info1 = MenuModel::get($data1);
 	            if (empty($info1)) {
 	                $num1++;

@@ -217,11 +217,12 @@ class Menu{
     protected static function get_member_set($array=[]){
         if (self::$sysmenu[$array['title']]) {
             $ar = self::$sysmenu[$array['title']];
-            if($ar['name']!=''){
+            if($ar['name']!='' && $ar['name']!=$array['title']){ //新的菜单名
                 $ar['title'] = $ar['name'];
+                $ar['old_name'] = $array['title'];
             }else{
-                unset($ar['title']);
-            }            
+//                 unset($ar['title']);
+            }
             return array_merge($array,$ar);
         }else{
             return $array;

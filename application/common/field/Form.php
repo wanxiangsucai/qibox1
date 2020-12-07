@@ -300,7 +300,7 @@ $(function(){
             
         }elseif ($field['type'] == 'checkbox' || $field['type'] == 'checkbox2' || $field['type'] == 'usergroup2'||$field['type'] == 'checkboxtree') {    //复选项
 
-            $_detail = is_array($info[$name]) ? $info[$name] : ($info[$name]?explode(',',trim($info[$name],',')):[]);
+            $_detail = is_array($info[$name]) ? $info[$name] : (trim($info[$name],',')?explode(',',trim($info[$name],',')):[]);
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             if ( ($field['type']!='checkboxtree'&&count($detail)<7) || $field['type'] == 'checkbox2') {
                 foreach ($detail as $key => $value) {
@@ -369,7 +369,7 @@ $(function(){
             }
             
         }elseif ($field['type'] == 'treeone'||$field['type'] == 'treemore') {    //树状单选与多选
-            $_detail = is_array($info[$name])? $info[$name] : ($info[$name]?explode(',',trim($info[$name],',')):[]);
+            $_detail = is_array($info[$name])? $info[$name] : (trim($info[$name],',')?explode(',',trim($info[$name],',')):[]);
             $detail = is_array($field['options']) ? $field['options'] : json_decode($field['options'],true);
             self::format_tree_data($detail,$_detail);
             $check = implode(',', $_detail);
@@ -419,7 +419,7 @@ $(function(){
 
 			$field['input_width'] = "width:110px;";
             $static = config('view_replace_str.__STATIC__');
-            $show = "<div class='layui-input-inline' style='width: 120px;'><input data-jscolor='' placeholder='点击选择颜色' style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' /></div>
+            $show = "<div class='layui-input-inline' style='width: 120px;'><input data-jscolor='{required:false}' placeholder='点击选择颜色' style='{$field['input_width']}' $ifmust  type='text' name='{$name}' id='atc_{$name}'  class='layui-input c_{$name} {$field['css']}' value='{$info[$name]}' /></div>
 			<div class='layui-inline' style='left: -11px;'><div id='color_{$name}'></div></div>
 			";
 			$color=$info[$name]?:'#999999';
