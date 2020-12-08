@@ -30,6 +30,12 @@
 <!--控制是否固定头部的开关-->
 
 <div class="{if !defined('ROLL_HEADER')}bui-page{/if}">
+	
+	<!--把底部菜单的碎片移动上面来,是避免在下面的话.找不到设置.被挡住了-->
+	{qb:hy name="wap_memberindex003" where="index_style/default/index/footmenu" val="datas" type="labelmodel"}		
+		{$datas}
+	{/qb:hy}
+
     {if !defined('ROLL_HEADER')}<header>{/if}
         <div class="wrap-user-header">
 		{qb:hy name="wap_memberindex001" val="datas" type="labelmodel"  where="member_style/default/member/index/wapmodel/head,headmoney"} {$datas} {/qb:hy}
@@ -43,7 +49,7 @@
     </main>
 
 	<footer style="height:40px;"></footer>
-	{include file="../../../index_style/default/index/footmenu" /}
+
 	<!--
 	 <footer>
         <ul class="bui-nav footer-nav">
