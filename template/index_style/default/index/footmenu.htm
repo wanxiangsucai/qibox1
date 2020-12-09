@@ -1,23 +1,42 @@
 <!--底部菜单-->
+{qb:hy name="footermenu001" type="links" val="listdb"}
+<!--<a href="#">点击这里,可以重新定义底部菜单</a>-->
+{php}
+$_menudb=[];
+foreach($listdb AS $key=>$rs){
+	$vs=['name'=>$rs['title'],'style'=>$rs['icon'],'url'=>$rs['url'],'fontcolor'=>$rs['font_color'],'bgcolor'=>$rs['bgcolor'],];
+	if($rs['tagid']&&is_numeric($rs['tagid'])){
+		$rs['tagid'] = 'a'.$rs['tagid'];
+	}
+	if($rs['tagid']&&$_menudb[$rs['tagid']]){
+		$_menudb[$rs['tagid']]['sons'][] = $vs;
+	}else{
+		$_menudb[$rs['tagid']?:$key] = $vs;
+	}
+}
+val(['footlink'=>$_menudb]);
+{/php}
+{/qb:hy}
+
 {if defined('LABEL_SET')}<ul style="padding:5px;">底部菜单</ul>{/if}
 
 <link rel="stylesheet" href="__STATIC__/css/footmenu.css"> 
 
 {php}
 $menu_choose=config('system_dirname')?:(ENTRANCE==='member'?'member':'index');
-$menudb=fun('page@foot_menu');
+$menudb=val('footlink')?:fun('page@foot_menu');
 {/php}
 
 <div class="footmenu_warp">
-	{volist name="$menudb" id="rs"}
-    <div class="menu1 {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}ck{/if}" {if $rs.bgcolor}style="background-color:{$rs.bgcolor};"{/if}>
+	{volist name="$menudb" id="rs"} <!-- {if $rs.bgcolor}style="background-color:{$rs.bgcolor};"{/if} 强制加背景颜色很不协调,所以禁用了-->
+    <div class="menu1 {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}ck{/if}">
         <div class="bt-name"><a href="{$rs.sons?'javascript:;':$rs.url}" {if $rs.fontcolor}style="color:{$rs.fontcolor}"{/if}>{if $rs.style}<i class="{$rs.style}"></i>{/if}{$rs.name}</a></div>		
 		{if $rs.sons}
         <div class="icons"></div>
         <div class="menu2" style="display: none;">
             <ul>
                 {volist name="rs.sons" id="vs"}
-				<li><a href="{$vs.url}">{if $vs.style}<i class="{$vs.style}"></i>{/if}{$vs.name}</a></li>
+				<li><a href="{$vs.url}" {if count($menudb)>3}style="font-size:14px;overflow:hidden;"{/if}>{if $vs.style}<i class="{$vs.style}"></i>{/if}{$vs.name}</a></li>
 				{/volist}
             </ul>
             <div class="tiggle"></div>

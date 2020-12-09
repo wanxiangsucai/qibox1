@@ -283,13 +283,13 @@ return <<<EOT
 			<span class="mc">
 				<div class='url'>链接:<input type='text' placeholder='必填'> <span class="get-link fa fa-chain">选择</span></div>
 				<div class='title'>标题:<input type='text' placeholder='必填'></div>				
-				<div class='icon'>图标:<input type='text' placeholder='必选'> <span class="get-icon fa fa-smile-o" style="width:50px"> 选择</span></div>				
+				<div class='icon'>图标:<input type='text' placeholder='必选'> <span class="get-icon fa fa-smile-o" style="width:50px"></span></div>				
 				<div class='font_color'>
-					<ul class='layui-input-inline'>颜色:<input type='text' placeholder='字体颜色,非必选' data-jscolor='' /></ul>
+					<ul class='layui-input-inline'>颜色:<input type='text' placeholder='字体颜色,非必选' data-jscolor='{required:false}' /></ul>
 					<ul class='layui-inline' style='left: -44px;'><li class='get-color'></li></ul>
 				</div>
 				<div class='bgcolor'>
-					<ul class='layui-input-inline'>背景:<input type='text' placeholder='背景颜色,非必选' data-jscolor='' /></ul>
+					<ul class='layui-input-inline'>背景:<input type='text' placeholder='背景颜色,非必选' data-jscolor='{required:false}' /></ul>
 					<ul class='layui-inline' style='left: -44px;'><li class='get-color'></li></ul>
 				</div>
 				<div class='about'>描述:<input type='text' placeholder='描述介绍,一般留空'></div>
