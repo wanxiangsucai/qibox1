@@ -68,7 +68,7 @@ abstract class S extends AdminBase
                                 'href'  => auto_url('content/add', ['fid' => '__id__'])
                         ],                        
                         ['type'=>'delete'],
-                        ['type'=>'edit'],
+                        ['type'=>'edit','class'=>'_pop'],
                 ],
         ];
     }

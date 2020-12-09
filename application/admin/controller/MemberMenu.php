@@ -100,7 +100,7 @@ $('.trA').each(function(){
 	    }
 	    
 	    $table = Tabel::make($listdb,$tab)
-	    ->addTopButton('add',['title'=>'手工添加菜单','url'=>url('add',['gid'=>$gid])])
+	    ->addTopButton('add',['title'=>'手工添加菜单','class'=>'_pop','url'=>url('add',['gid'=>$gid])])
 	    ->addTopButton('custom',['title'=>'快速导入会员所有菜单','url'=>url('copy',['gid'=>$gid]),'icon'=>'fa fa-copy'])
 	    ->addTopButton('delete')
 	    ->addRightButton('add',['title'=>'添加下级菜单','class'=>'_pop','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])])
@@ -184,8 +184,7 @@ $('.trA').each(function(){
 	            $this->error('创建失败');
 	        }
 	    }
-	    !$gid || $gid=3;
-
+	    //$gid || $gid=3;
 	    $array = MenuModel::where(['groupid'=>$gid,'pid'=>0,'type'=>1])->column('id,name');
 	    $form = Form::make()
 	    ->addPageTips('父菜单为PC或WAP的话,子菜单设置通用无效');
