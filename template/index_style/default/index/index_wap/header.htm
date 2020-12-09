@@ -1,0 +1,40 @@
+<!--头部导航-->
+<div class="qb_wap_header">
+	<div class="L" onclick="Qibo.goBack('/');"><i class="fa fa-reply"> 返回</i></div>
+	{$header_title?$header_title:(M('name')?:$webdb['webname'])}
+	<div class="R"><i onclick="window.location.href='{:get_url('member')}'" class="fa fa-user-circle-o"></i> <i class="web_menu_btn fa fa-ellipsis-h"></i></div>
+</div>
+<!--
+<link rel="stylesheet" href="__STATIC__/index/default/header.css">
+<div class="body_Hearcont">
+	<ul>
+		<ol><a href="/"><img src="{$webdb.logo|tempdir|default='__STATIC__/index/default/logo.png'}"></a></ol>
+		<li>
+		<form method="post" action="{:urls('search/index/lists')}">
+		<dl>
+			<dt><input type="text" name="keyword" placeholder="请输关键字" required/></dt>
+			<dd><button type="submit"><i class="fa fa-search"></i></button></dd>
+		</dl>
+		</form>
+			<div class="HeadMoreMenu">
+				<div class="tag"><i class="si si-list" onclick="$('.HeadMoreMenu .lists').fadeIn();$('.HeadMoreMenu .lists div').animate({'width':'50%'},300);"></i></div>
+				<div class="lists">
+					<label onclick="$('.HeadMoreMenu .lists div').animate({'width':'0%'},300,function(){$('.HeadMoreMenu .lists').fadeOut();});"></label>
+					<div>
+{volist name="'wap'|get_web_menu" id="rs"}
+			<a href="{$rs.url}">{$rs.name}</a>
+	{notempty name="rs.sons"}
+			{volist name="rs.sons" id="vs"}
+					<a href="{$vs.url}">|-- {$vs.name}</a>
+			{/volist}				
+	{/notempty}		
+{/volist}
+						
+					</div>
+				</div>
+			</div>
+		</li>
+	</ul>
+</div>
+-->
+

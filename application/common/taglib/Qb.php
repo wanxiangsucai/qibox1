@@ -167,7 +167,7 @@ class Qb extends TagLib{
         $class = $tag['class']; //调取数据执行的类
         $tpl = $tag['tpl']; //指定默认模板
         $js = $tag['js']; //通过AJAX方式获取数据,这样就不影响页面打开速度
-        if ($tag['class']==""&&$tag['type']&&$tag['type']!='labelmodel'&&config('system_dirname')=='qun') {
+        if ($tag['class']==""&&$tag['type']&&$tag['type']!='labelmodel'&&defined('IN_QUN_PAGE')&&IN_QUN_PAGE===true) {
             $tag['union']=$tag['union']?$tag['union'].',uid=$info.uid,ext_id=$info.id':'uid=$info.uid,ext_id=$info.id'; //给圈子传变量
         }
         $union = $this->union_live_parameter($tag['union'],$where);    //动态关联的参数
@@ -186,7 +186,7 @@ class Qb extends TagLib{
         $where = addslashes($where);
         $whereor = addslashes($whereor);
         $_info =$tag['type']=='labelmodel'?"'Info'=>\$info,'Id'=>\$id,'Fid'=>\$fid,'Mid'=>\$mid,":''; //传递缓存
-        $parse .= '<?php '."\$$name = fun('label@run_hy','$name',[$union $_info 'hy_id'=>intval(\$info['id']&&config('system_dirname')=='qun'?\$info['id']:\$hy_id),'hy_tags'=>\$tags,'val'=>'$val',$conf'list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
+        $parse .= '<?php '."\$$name = fun('label@run_hy','$name',[$union $_info 'hy_id'=>intval(\$info['id']&&defined('IN_QUN_PAGE')&&IN_QUN_PAGE===true?\$info['id']:\$hy_id),'hy_tags'=>\$tags,'val'=>'$val',$conf'list'=>'$list','systype'=>'$type','tpl'=>'$tpl','ifdata'=>1,'dirname'=>__FILE__,'rows'=>'$rows','class'=>'$class','order'=>'$order','by'=>'$by',$status'where'=>'$where','whereor'=>'$whereor','sql'=>\"$sql\",'js'=>'$js','cache_time'=>'$cache_time' $str_mid $str_fid]);".' ?>';
         return $parse;
     }
     

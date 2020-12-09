@@ -25,7 +25,7 @@ class Labelmodels extends IndexBase
         $basename = end(explode('___',$_path));
         $div = $js = '';
         $id = intval(input('id'));
-        $hyid = config('system_dirname')=='qun'?$id:0; //避免CMS内容页也当作圈子处理        
+        $hyid = defined('IN_QUN_PAGE')&&IN_QUN_PAGE===true?$id:0; //避免CMS内容页也当作圈子处理        
         if (SHOW_SET_LABEL===true || (LABEL_SET===true&&$this->synchronize)) {
             $div = "
                 <div class='headle'>
@@ -124,7 +124,7 @@ class Labelmodels extends IndexBase
             }
         }
         
-        $id = config('system_dirname')=='qun'?intval(input('id')):0; //避免CMS内容页也当作圈子处理
+        $id = defined('IN_QUN_PAGE')&&IN_QUN_PAGE===true?intval(input('id')):0; //避免CMS内容页也当作圈子处理
         
         $code = $edit_css = '';
         if (SHOW_SET_LABEL===true || (LABEL_SET===true&&$this->synchronize)) {

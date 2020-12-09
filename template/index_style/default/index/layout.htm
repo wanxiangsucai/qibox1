@@ -22,46 +22,11 @@
 {:hook_listen('layout_body_head',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
 <style type="text/css">.qb_wap_header{padding:8px;background:#62B3E7;color:#fff;height:26px;} .qb_wap_header a{color:#fff;} .qb_wap_header div{float:left;} .qb_wap_header{text-align:center;} .qb_wap_header .R{float:right;} .web_menu_btn{margin-left:12px;font-weight:bold;}</style>
-
 {block name="body_Headcont"}
-<div class="qb_wap_header">
-	<div class="L" onclick="Qibo.goBack('/');"><i class="fa fa-reply"> 返回</i></div>
-	{$header_title?$header_title:(M('name')?:$webdb['webname'])}
-	<div class="R"><i onclick="window.location.href='{:get_url('member')}'" class="fa fa-user-circle-o"></i> <i class="web_menu_btn fa fa-ellipsis-h"></i></div>
-</div>
-<!--
-<link rel="stylesheet" href="__STATIC__/index/default/header.css">
-<div class="body_Hearcont">
-	<ul>
-		<ol><a href="/"><img src="{$webdb.logo|tempdir|default='__STATIC__/index/default/logo.png'}"></a></ol>
-		<li>
-		<form method="post" action="{:urls('search/index/lists')}">
-		<dl>
-			<dt><input type="text" name="keyword" placeholder="请输关键字" required/></dt>
-			<dd><button type="submit"><i class="fa fa-search"></i></button></dd>
-		</dl>
-		</form>
-			<div class="HeadMoreMenu">
-				<div class="tag"><i class="si si-list" onclick="$('.HeadMoreMenu .lists').fadeIn();$('.HeadMoreMenu .lists div').animate({'width':'50%'},300);"></i></div>
-				<div class="lists">
-					<label onclick="$('.HeadMoreMenu .lists div').animate({'width':'0%'},300,function(){$('.HeadMoreMenu .lists').fadeOut();});"></label>
-					<div>
-{volist name="'wap'|get_web_menu" id="rs"}
-			<a href="{$rs.url}">{$rs.name}</a>
-	{notempty name="rs.sons"}
-			{volist name="rs.sons" id="vs"}
-					<a href="{$vs.url}">|-- {$vs.name}</a>
-			{/volist}				
-	{/notempty}		
-{/volist}
-						
-					</div>
-				</div>
-			</div>
-		</li>
-	</ul>
-</div>
--->
+	<!--引用碎片-->
+	{qb:hy name="wap_layout_003" where="index_style/default/index/index_wap/header" val="datas" type="labelmodel"}
+		{$datas}
+	{/qb:hy}
 {/block}
 
 {block name="nav"}{// qb:nav title="" url="" /}{/block}
@@ -73,9 +38,11 @@
 	{/qb:hy}
 {/block}
 
-{block name="body_content"}页面主体部分内容{/block}	
+{block name="body_content"}页面主体部分内容{/block}
+
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
+
 {block name="body_Footcont"}
 	<!--引用碎片-->
 	{qb:hy name="wap_layout_002" where="index_style/default/index/footmenu" val="datas" type="labelmodel"}
@@ -89,8 +56,6 @@
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
 
 {include file="index@weixingz" /}<!--若没有关注微信公众号,就做个提醒-->
-
-
 
 
 <!--网站菜单开始-->
