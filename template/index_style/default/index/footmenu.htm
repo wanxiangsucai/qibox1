@@ -1,24 +1,23 @@
 <!--底部菜单-->
 {qb:hy name="footermenu001" type="links" val="listdb"}
-<!--<a href="#">点击这里,可以重新定义底部菜单</a>-->
-{php}
-$_menudb=[];
-foreach($listdb AS $key=>$rs){
-	$vs=['name'=>$rs['title'],'style'=>$rs['icon'],'url'=>$rs['url'],'fontcolor'=>$rs['font_color'],'bgcolor'=>$rs['bgcolor'],];
-	if($rs['tagid']&&is_numeric($rs['tagid'])){
-		$rs['tagid'] = 'a'.$rs['tagid'];
+	{php}
+	$_menudb=[];
+	foreach($listdb AS $key=>$rs){
+		$vs=['name'=>$rs['title'],'style'=>$rs['icon'],'url'=>$rs['url'],'fontcolor'=>$rs['font_color'],'bgcolor'=>$rs['bgcolor'],];
+		if($rs['tagid']&&is_numeric($rs['tagid'])){
+			$rs['tagid'] = 'a'.$rs['tagid'];
+		}
+		if($rs['tagid']&&$_menudb[$rs['tagid']]){
+			$_menudb[$rs['tagid']]['sons'][] = $vs;
+		}else{
+			$_menudb[$rs['tagid']?:$key] = $vs;
+		}
 	}
-	if($rs['tagid']&&$_menudb[$rs['tagid']]){
-		$_menudb[$rs['tagid']]['sons'][] = $vs;
-	}else{
-		$_menudb[$rs['tagid']?:$key] = $vs;
-	}
-}
-val(['footlink'=>$_menudb]);
-{/php}
+	val(['footlink'=>$_menudb]);
+	{/php}
 {/qb:hy}
 
-{if defined('LABEL_SET')}<ul style="padding:5px;">底部菜单</ul>{/if}
+{if defined('LABEL_SET')}<ul style="padding:5px;">底部菜单,点击可重定义链接</ul>{/if}
 
 <link rel="stylesheet" href="__STATIC__/css/footmenu.css"> 
 
