@@ -1,5 +1,8 @@
 <!--头部导航-->
-<div class="qb_wap_header">
+{qb:tag name="header001" type="myform" conf="index_style/default/index/index_wap/header.php"}
+{:val($_cfg?:[])}
+{/qb:tag}
+<div class="qb_wap_header" style="{if val('bgcolor')}background:{:val('bgcolor')};{/if}{if val('fontcolor')}color:{:val('fontcolor')};{/if}">
 	<div class="L" onclick="Qibo.goBack('/');"><i class="fa fa-reply"> 返回</i></div>
 	{$header_title?$header_title:(M('name')?:$webdb['webname'])}
 	<div class="R"><i onclick="window.location.href='{:get_url('member')}'" class="fa fa-user-circle-o"></i> <i class="web_menu_btn fa fa-ellipsis-h"></i></div>
