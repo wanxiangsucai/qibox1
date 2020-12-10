@@ -107,7 +107,9 @@ class Reg extends IndexBase
             $this->error('系统关闭了手工注册功能,你可以选择QQ登录或微信登录!!');
         }
         if ($this->user) {
-            $this->error('你已经注册过了!');
+            if (!defined('LABEL_SET')) {
+                $this->error('你已经注册过了!');
+            }
         }
         
         $data = get_post('post');

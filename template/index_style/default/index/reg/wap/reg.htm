@@ -1,0 +1,273 @@
+<!--注册页主体-->
+{qb:tag name="waplogin001" type="myform" conf="index_style/default/index/login/wap/login.php"}
+{:val($_cfg?:[])}
+{/qb:tag}
+<style>
+header{
+	background:#E94726;
+	color:#FFF;
+	margin-bottom:50px;
+}
+header ul{
+	display:table;
+	width:100%;
+	height:50px;	
+}
+header ul ol,header ul li{
+	display:table-cell;
+	vertical-align:middle;
+	text-align:center;
+}
+header ul ol{
+	width:40px;
+}
+.LogoContainer{
+	max-width:640px;
+	margin:auto;
+	position:relative;
+}
+.LogoContainer:before{
+	content:'';
+	display:block;
+	padding-top:60%;
+}
+.LogoContainer ul{
+	width:30%;
+	position:absolute;
+	left:50%;
+	top: 50%;
+  -webkit-transform: translate3D(-50%, -50%, 0);
+      -ms-transform: translate3D(-50%, -50%, 0);
+          transform: translate3D(-50%, -50%, 0);
+}
+.LogoContainer ul ol img{
+	width:100%;
+}
+.LogoContainer ul li{
+	text-align:center;
+	padding-top:5%;
+	color:#D43B1B;
+}
+.FormContainer{
+	padding:0 20px;
+}
+.FormContainer ul{
+	display:table;
+	width:100%;
+	border-bottom:#DDD solid 1px;
+}
+.FormContainer ul ol,.FormContainer ul li{
+	display:table-cell;
+	vertical-align:middle;
+	height:40px;	
+}
+.FormContainer ul ol{
+	width:30px;
+	font-size:20px;
+}
+.FormContainer ul li input{
+	width:99%;
+	border:0;
+	text-indent:5px;
+	outline:none;
+	background:none;
+}
+.FormContainer ul li input.error{
+	border:#F30 solid 1px;
+	border-radius:5px;
+}
+.FormContainer dl{
+	display:table;
+	width:100%;
+	margin-top:20px;
+}
+.FormContainer dl dt,.FormContainer dl dd{
+	display:table-cell;
+	vertical-align:middle;
+	height:30px;
+	width:50%;
+}
+.FormContainer dl dd{
+	text-align:right;
+}
+.OtherLogin .h{
+	line-height:30px;
+	margin-top:30px;
+	position:relative;
+	color:#888;
+	text-align:center;
+}
+.OtherLogin .h:before{
+	content:'';
+	display:block;
+	position:absolute;
+	width:100%;
+	height:1px;
+	background:#DDD;
+	left:0;
+	top:14px;
+}
+.OtherLogin .h span{
+	display:inline-block;
+	position:relative;
+	background:#FFF;
+	padding:0 20px;
+}
+.OtherLogin .c{
+	text-align:center;
+	padding:15px 0;
+}
+.OtherLogin .c a{
+	display:inline-block;
+	background:#333BDD;
+	padding:8px;
+	margin:0 20px;
+	color:#FFF;
+	font-size:20px;
+	border-radius:5px;
+}
+.OtherLogin .c a.wx{
+	background:#41BD16;
+}	
+@media (max-width: 2000px) and (min-width:601px) {
+	header ul{
+		height:70px;
+		font-size:24px;	
+	}	
+}
+@media (max-width: 600px) and (min-width:501px) { 
+	header ul{
+		height:60px;
+		font-size:20px;	
+	}	
+}
+@media (max-width: 500px) and (min-width:401px) { 
+	header ul{
+		height:55px;
+		font-size:18px;	
+	}
+}
+@media (max-width: 400px) {
+	header ul{
+		height:50px;
+		font-size:16px;	
+	}
+}
+.butterBox{
+	text-align:center;
+	padding:20px 0;
+	word-spacing:20px;
+}
+.mui-btn{
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.42;
+	position: relative;
+	display: inline-block;
+	margin-bottom: 0;
+	padding: 6px 12px;
+	cursor: pointer;
+	-webkit-transition: all;
+	transition: all;
+	-webkit-transition-timing-function: linear;
+	transition-timing-function: linear;
+	-webkit-transition-duration: .2s;
+	transition-duration: .2s;
+	text-align: center;
+	vertical-align: top;
+	white-space: nowrap;
+	color: #333;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+	border-bottom-left-radius: 3px;
+	background-color: #fff;
+	background-clip: padding-box
+}
+.mui-btn-danger{
+	color: #fff;
+	border: 1px solid #dd524d;
+	background-color: #dd524d
+}
+.mui-btn-back{
+	color: #fff;
+	border: 1px solid #999;
+	background-color: #AAA
+}
+.fa-mobile-phone{
+	font-size:25px;
+}
+.OtherLogin .c a.phone{
+	background:orange;
+}
+</style>
+<header>
+	<ul>
+		<ol><i class="fa fa-angle-left" onclick="window.history.back()"></i></ol>
+		<li>注册帐户</li>
+		<ol><br/></ol>
+	</ul>
+</header>
+<div class="FormContainer">
+<form class="mui-input-group" action="{:urls('reg/index')}" method="post">
+	<ul><ol><i class="fa fa-fw fa-user-o"></i></ol><li><input type="text" name="username" minlength="3" maxlength="20" placeholder="请输入帐号" onBlur="checkinput($(this),'username')" required/></li></ul>
+	<ul><ol><i class="si si-lock"></i></ol><li><input type="password" name="password" minlength="5" maxlength="30" placeholder="请输入密码" onBlur="checkinput($(this),'password')" required/></li></ul>
+	<ul><ol><i class="si si-lock"></i></ol><li><input type="password" name="password2" minlength="5" maxlength="30" placeholder="请重复输入密码" onBlur="checkpassword($(this))" required/></li></ul>
+	<ul><ol><i class="fa fa-envelope"></i></ol><li><input type="text" name="email" placeholder="可不填" onBlur="checkinput($(this),'email')" /></li></ul>
+	<!--
+	<ul><ol><i class="fa fa-weixin"></i></ol><li><input type="text" name="weixin_id" placeholder="必填"/></li></ul>
+	-->
+
+					{eq name="webdb.reg_email_num" value="1"}
+					<ul>
+						<ol><i class="glyphicon glyphicon-question-sign"></i></ol>
+						<li><input type="text" name="email_code" placeholder="请点击右边文字获取验证码" onBlur="check_num($(this),'email')" required/></li>
+						<li><a href="#" onclick="get_code_num('email')">获取验证码</a></li>
+					</ul>
+					{/eq}
+					{eq name="webdb.reg_phone_num" value="1"}
+					<ul>
+						<ol><i class="fa fa-fw fa-mobile-phone"></i></ol>
+						<li><input type="text" name="mobphone" placeholder="手机号不能留空" required/></li>
+						<li>&nbsp;</li>
+					</ul>
+					<ul>
+						<ol><i class="glyphicon glyphicon-question-sign"></i></ol>
+						<li><input type="text" name="phone_code" placeholder="请点击右边文字获取验证码" onBlur="check_num($(this),'mobphone')" required/></li>
+						<li><a href="#" onclick="get_code_num('mobphone')">获取验证码</a></li>
+					</ul>
+					{/eq}
+
+
+	{eq name="webdb.yzImgReg" value="1"}
+	<ul>
+		<ol><i class="glyphicon glyphicon-question-sign"></i></ol>
+		<li><input type="text" name="captcha" placeholder="请输入右边验证码" onBlur="checkinput($(this),'captcha')" required/></li>
+		<li><img src="{:captcha_src()}" style="cursor: pointer;" onclick="this.src='{:captcha_src()}?d='+Math.random();" title="点击刷新"/></li>
+	</ul>
+	{/eq}
+
+	{eq name="webdb.reg_weixin_num" value="1"}
+	<ul>
+		<ol><i class="glyphicon glyphicon-question-sign"></i></ol>
+		<li><input type="text" name="weixin_code" placeholder="请点击右边文字获取验证码" onBlur="check_num($(this),'weixin')" required/></li>
+		<li><a href="#" onclick="weixin_mp()">获取验证码</a></li>
+	</ul>
+	{/eq}
+
+
+	<div class="butterBox">
+		<a href="{:urls('login/index')}"><button type="button" class="mui-btn mui-btn-back">返回登录</button></a>
+		<button type="submit" class="mui-btn mui-btn-danger">立即注册</button>
+	</div>
+	<div class="OtherLogin">
+		<div class="h"><span>推荐使用第三方一键注册登录</span></div>
+		<div class="c">
+			{if !in_array('qq',val('hidelogin'))}<a href="#" onclick="qq_login()"><i class="fa fa-fw fa-qq"></i></a>{/if}
+			{if !in_array('wx',val('hidelogin'))}<a href="#" class="wx" onclick="weixin_login()"><i class="fa fa-fw fa-weixin"></i></a>{/if}
+			{if !in_array('phone',val('hidelogin'))}<a class="phone" href="{:urls('index/login/phone')}?fromurl={$fromurl}"><i class="fa fa-fw fa-mobile-phone"></i></a>{/if}
+		</div>
+	</div>
+</form>

@@ -89,7 +89,9 @@ class Login extends IndexBase
             if($type=='iframe'){
                 return $this->fetch('ok');
             }
-            $this->error('你已经登录了','index/index','',1);
+            if (!defined('LABEL_SET')) {
+                $this->error('你已经登录了','index/index','',1);
+            }
         }
         if(IS_POST){
             $data= get_post('post');
@@ -126,6 +128,11 @@ class Login extends IndexBase
      * 手机登录或注册
      */
     public function phone(){
+        if (!empty($this->user)) {
+            if (!defined('LABEL_SET')) {
+                $this->error('你已经登录了','index/index','',1);
+            }
+        }
         $url = iurl('index/index/index');
         if($this->fromurl && !strstr($this->fromurl,'index/login') && !strstr($this->fromurl,'index/reg')){
             $url = filtrate($this->fromurl);

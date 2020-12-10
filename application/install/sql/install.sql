@@ -1868,3 +1868,10 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 6, '默认城市', 'city_id', '440100', 'number', '', 1, '', '', 0, -7);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 6, '默认区域(县城)', 'zone_id', '0', 'number', '', 1, '', '', 0, -7);
 
+
+INSERT INTO `qb_admin_menu` (`id`, `pid`, `type`, `name`, `title`, `url`, `target`, `ifshow`, `list`, `style`, `groupid`, `tier`, `icon`, `fontcolor`, `bgcolor`, `script`, `allowgroup`) VALUES(0, 11, 0, 'WAP注册页标签', '', '/index.php/index/reg/index.html?label_set=set&in=wap', 0, 1, 0, '', 3, 0, '', '', '', '', '');
+INSERT INTO `qb_admin_menu` (`id`, `pid`, `type`, `name`, `title`, `url`, `target`, `ifshow`, `list`, `style`, `groupid`, `tier`, `icon`, `fontcolor`, `bgcolor`, `script`, `allowgroup`) VALUES(0, 11, 0, 'WAP登录页标签', '', '/index.php/index/login/index.html?label_set=set&in=wap', 0, 1, 0, '', 3, 0, '', '', '', '', '');
+INSERT INTO `qb_admin_menu` (`id`, `pid`, `type`, `name`, `title`, `url`, `target`, `ifshow`, `list`, `style`, `groupid`, `tier`, `icon`, `fontcolor`, `bgcolor`, `script`, `allowgroup`) VALUES(0, 11, 0, 'WAP手机登录注册页', '', '/index.php/index/login/phone.html?label_set=set&in=wap', 0, 1, 0, '', 3, 0, '', '', '', '', '');
+UPDATE `qb_admin_menu` SET list='-1' WHERE id='14';
+
+
