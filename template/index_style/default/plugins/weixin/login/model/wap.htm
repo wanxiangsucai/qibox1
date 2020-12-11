@@ -1,0 +1,14 @@
+<!--扫码登录-->
+<link rel="stylesheet" href="__STATIC__/index/default/wxlogin.css"> 
+<div class="UserLoginCont">	 
+	<div class="LoginCont">	
+		<div class="Left">
+			<ul>
+				<ol><em>微信扫码注册/登录</em></ol>
+				<li><img src="{:purl('login/scan/qrcode',['type'=>'wx'])}"/></li>
+				<ol style="margin-top:20px;"><a href="{:urls('index/login/index')}?fromurl={$fromurl}"><span>帐号登录</span></a> <a href="{:urls('index/login/phone')}?fromurl={$fromurl}"><span>手机登录</span></a></ol>
+			</ul>
+			
+		</div> 
+	</div>
+</div>

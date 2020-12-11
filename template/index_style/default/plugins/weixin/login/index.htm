@@ -3,19 +3,10 @@
 {block name="head_title"}用户登录{/block}
 
 {block name="body_content"}
-<link rel="stylesheet" href="__STATIC__/index/default/wxlogin.css"> 
-<div class="UserLoginCont">	 
-	<div class="LoginCont">	
-		<div class="Left">
-			<ul>
-				<ol><em>微信扫码注册/登录</em></ol>
-				<li><img src="{:purl('login/scan/qrcode',['type'=>'wx'])}"/></li>
-				<ol style="margin-top:20px;"><a href="{:urls('index/login/index')}?fromurl={$fromurl}"><span>帐号登录</span></a> <a href="{:urls('index/login/phone')}?fromurl={$fromurl}"><span>手机登录</span></a></ol>
-			</ul>
-			
-		</div> 
-	</div>
-</div>
+
+{qb:hy name="wap_wxlogin_001" where="index_style/default/plugins/weixin/login/model/wap" val="datas" type="labelmodel"}
+	{$datas}
+{/qb:hy}
 
 <script type="text/javascript">
 
@@ -28,8 +19,9 @@ function countSecond(){　
 		}
 	});	
 }
+{if !defined('LABEL_SET')}
 countSecond()
-
+{/if}
 </script>
 
 {/block}

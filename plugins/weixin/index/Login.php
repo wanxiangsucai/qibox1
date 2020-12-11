@@ -19,8 +19,8 @@ class Login extends IndexBase
             if(cache('bind_'.$sid)==''){
                 $this->error('信息有误!');
             }
-        }elseif($this->user){
-            $this->error('你已经登录了',get_url('member'),'',1);
+        }elseif($this->user && !defined('LABEL_SET') ){
+            $this->error('你已经登录了',$fromurl?urlencode($fromurl):get_url('member'),'',1);
         }elseif(!in_weixin()){
             $this->assign('fromurl',urlencode($fromurl));
             return $this->fetch();
