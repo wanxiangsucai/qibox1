@@ -396,7 +396,11 @@ EOT;
     
     
     protected  function pri_jsfile($pagename='', $hy_id=0,$hy_tags=''){
-        
+        if (empty($this->user) && (get_cookie('labelhy_set')||get_cookie('label_set'))) {
+            set_cookie('labelhy_set','');
+            set_cookie('label_set', '');
+            return ;
+        }
         if(self::$pri_hy_js === null){
             self::$pri_hy_js = true;
             if (input('get.label_set')=='quit') {
