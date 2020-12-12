@@ -3,6 +3,7 @@ namespace app\common\controller\admin;
 
 use app\common\controller\AdminBase;
 use app\common\traits\AdminSort;
+use think\Db;
 
 
 //主栏目管理
@@ -49,12 +50,32 @@ abstract class S extends AdminBase
         $this->tab_ext = [
                 'page_title'=>'栏目管理',
                 'top_button'=>[
-                        [
-                                'title' => '创建栏目',
-                                'icon'  => 'fa fa-fw fa-th-list',
-                                'class' => '',
-                                'href'  => auto_url('add')
-                        ],
+                    [
+                        'title' => '创建栏目',
+                        'icon'  => 'fa fa-fw fa-th-list',
+                        'class' => '',
+                        'href'  => auto_url('add')
+                    ],                        
+                    [
+                        'type'       => 'delete',
+                        'title' => '批量删除',
+                    ],
+                    [
+                        'title'       => '批量修改',
+                        'icon'        => '',
+                        'class'       => 'ajax-post confirm',
+                        'target-form' => 'ids',
+                        'icon'        => 'fa fa-cogs',
+                        'href'        => auto_url('edit')
+                    ],
+                    [
+                        'title'       => '批量合并',
+                        'icon'        => '',
+                        'class'       => 'ajax-post confirm',
+                        'target-form' => 'ids',
+                        'icon'        => 'fa fa-random',
+                        'href'        => auto_url('edit',['action'=>'together'])
+                    ],
                 ],
                 'right_button'=>[
                         [
@@ -136,12 +157,73 @@ abstract class S extends AdminBase
     }
     
     /**
-     * 修改栏目信息
-     * @param unknown $id
+     * 创建栏目
      * @return mixed|string
      */
-    public function edit($id = null)
+    public function add() {
+        return $this -> addContent();
+    }
+    
+    /**
+     * 合并栏目
+     * @param array $ids
+     */
+    public function together($ids=[]){
+        if( empty($ids) ){
+            $this->error('至少要选择一个栏目');
+        }
+        
+        if($this->request->isPost()){
+            $data = $this -> request -> post();
+            if (!$data['id']) {
+                $this->error('请选择目标栏目');
+            }
+            $num_array = [];
+            $mid = get_sort($data['id'],'mid');
+            foreach($ids AS $_id){
+                $num = Db::name($this->c_model->getTable())->where(['fid'=>$_id])->count('id');
+                if ($num>0) {
+                    if (get_sort($_id,'mid')!=$mid) {
+                        $this -> error(get_sort($_id,'name').'，该栏目下面有内容了,但其所属模型与目标栏目的模型不一致,不能合并!');
+                    }
+                    $num_array[] = $_id;
+                }
+            }
+            foreach ($num_array AS $_id){
+                Db::name($this->c_model->getTable())->where(['fid'=>$_id])->update(['fid'=>$data['id']]);
+                Db::name($this->c_model->getTable().$mid)->where(['fid'=>$_id])->update(['fid'=>$data['id']]);
+            }
+            
+            foreach($ids AS $_id){
+                if ($_id!=$data['id']) {
+                    $this -> model ->where('id',$_id)->delete();
+                }
+            }
+            $this->success('操作成功!','index');
+        }
+        
+        $this->form_items = [
+            ['select', 'id', '目标分类','',$this->model->getTreeTitle()],
+        ];
+        
+        $this->tab_ext['help_msg'] = '合并栏目,会把原栏目删除掉,原栏目的内容会移到目标栏目那里去。如果有内容的话，原栏目的模型必须跟目标栏目的模型一致！';
+        
+        return $this -> addContent();
+    }
+    
+
+    /**
+     * 修改栏目信息
+     * @param number $id 修改单个栏目的ID
+     * @param array $ids 批量修改栏目的数组ID
+     * @param string $action 其它操作
+     * @return unknown|mixed|string
+     */
+    public function edit($id = 0,$ids=[],$action='')
     {
+        if ($action=='together') {  //合并栏目
+            return $this->together($ids);
+        }
         if($this->request->isPost()){
             $data = $this -> request -> post();
             $data = \app\common\field\Post::format_all_field($data,-2); //对一些特殊的字段进行处理,比如多选项,以数组的形式提交的
@@ -170,15 +252,56 @@ abstract class S extends AdminBase
             $data['allowreply'] = is_array($data['allowreply']) ? implode(',', $data['allowreply']) : $data['allowreply'].'';  //允许评的用户组
             $data['template'] = $this->get_tpl($data);                  //栏目自定义模板
             
-            
-            if ($this -> model -> update($data)) {
-                $this -> success('修改成功', 'index');
-            } else {
-                $this -> error('修改失败');
+            if ($ids) { //批量修改
+                if (!$data['batch_name']) {
+                    $this -> error('你至少要设置一项作为批量修改的项目!');
+                }
+                if ($data['batch_name']['pid'] && in_array($data['pid'], $ids)) {
+                    $this -> error('不能设置当前批量修改中的任何栏目作为父栏目!');
+                }
+                if ($data['batch_name']['mid']){
+                    foreach($ids AS $_id){
+                        $num = Db::name($this->c_model->getTable())->where(['fid'=>$_id])->count('id');
+                        if ($num>0) {
+                            $this -> error(get_sort($_id,'name').'该栏目下面有内容了,不能更改其所属模型');
+                        }
+                    }
+                }
+                $array = [];
+                foreach($data['batch_name'] AS $name){
+                    $array[$name] = $data[$name];
+                }
+                if ($this -> model ->where('id','in',$ids)-> update($array)) {
+                    $this -> success('批量修改成功', 'index');
+                } else {
+                    $this -> error('批量修改无效');
+                }
+            }else{
+                if ($this -> model -> update($data)) {
+                    $this -> success('修改成功', 'index');
+                } else {
+                    $this -> error('修改失败');
+                }
             }
+            
         }
         
-        if(empty($id)) $this->error('栏目ID不存在');
+        if(empty($id) && empty($ids)){
+            $this->error('栏目ID不存在');
+        }
+        if ($ids) {     //批量修改优先
+            $mid = 0;
+            foreach($ids AS $_id){
+                $_mid = get_sort($_id,'mid');
+                if ($mid!=0 && $mid!=$_mid) {
+                    //$this->error(get_sort($_id,'name').'该分类所属性模型不一致，只有相同模型的分类才能一起批量修改!');
+                }
+                $mid = $_mid;
+                if (!$id) {
+                    $id = $_id;
+                }
+            }
+        }
         
         $this->form_items = []; //销毁掉,使用下面分组的形式                
         $this -> tab_ext['group'] = $this->set_field_form($id);
@@ -206,6 +329,17 @@ abstract class S extends AdminBase
             $dirname = $array[0][1];
             into_sql("ALTER TABLE  `qb_".$dirname."_sort` ADD  `allow_viewtitle` VARCHAR( 255 ) NOT NULL COMMENT  '允许查看标题的用户组'");
         }
+        
+        if ($ids) {
+            $this->tab_ext['help_msg'] = '<script type="text/javascript">
+$(function(){
+	$(".ajax_post .tdL").each(function(){
+        var name = $(this).parent().attr("id").replace("form_group_","");
+		$(this).prepend(\'<input type="checkbox" name="batch_name[\'+name+\']" lay-ignore value="\'+name+\'"> \');
+	});
+})
+</script>注意：只有把每个选项前面的复选框勾选中，才会把当前项批量修改，否则就不会修改。';
+        }        
         
         return $this->editContent($info);
     }

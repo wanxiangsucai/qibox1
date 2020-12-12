@@ -1330,10 +1330,12 @@ if(!function_exists('sort_config')){
             $sort_array[$sys_type] = $array;
         }
         
-        foreach($array AS $id=>$rs){
-            if($rs['allow_viewtitle']!='' && trim($rs['allow_viewtitle'],',')!=''){ //没有权限查看标题,也即隐藏栏目
-                if (!login_user('groupid')||!in_array(login_user('groupid'), explode(',',trim($rs['allow_viewtitle'],',')))) {
-                    unset($array[$id]);
+        if(ENTRANCE!=='admin'){
+            foreach($array AS $id=>$rs){
+                if($rs['allow_viewtitle']!='' && trim($rs['allow_viewtitle'],',')!=''){ //没有权限查看标题,也即隐藏栏目
+                    if (!login_user('groupid')||!in_array(login_user('groupid'), explode(',',trim($rs['allow_viewtitle'],',')))) {
+                        unset($array[$id]);
+                    }
                 }
             }
         }
