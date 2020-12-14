@@ -148,6 +148,9 @@ class Menu{
      */
     public static function order_member_menu($array=[]){
         foreach($array AS $key1=>$rs1){
+            if ($key1=='often') {
+                continue ; //个性菜单就不要修改他的排序及其它属性
+            }
             foreach($rs1['sons'] AS $key2=>$rs2){
                 $array[$key1]['sons'][$key2]['sons'] = self::order_sons($rs2['sons'],$rs2['title']);
             }            
