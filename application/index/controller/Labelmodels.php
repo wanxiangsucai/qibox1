@@ -203,6 +203,21 @@ class Labelmodels extends IndexBase
         $content = $this->fetch($path);
         return $this->ok_js(['content'=>$content]);
     }
+    
+    /**
+     * 检查碎片是.php还是.htm后缀
+     * @param string $path
+     * @return string|boolean
+     */
+    protected static function get_file_ext($path=''){
+        if ( is_file(TEMPLATE_PATH.$path.'.'.config('template.view_suffix')) ) {
+            return TEMPLATE_PATH.$path.'.'.config('template.view_suffix');
+        }elseif ( is_file(TEMPLATE_PATH.$path.'.php') ) {
+            return TEMPLATE_PATH.$path.'.php';
+        }else{
+            return false;
+        }
+    }
 
     /**
      * 获取模板的真实路径
@@ -212,21 +227,21 @@ class Labelmodels extends IndexBase
     protected function get_path(&$path=''){
         if(preg_match('/^[\w\-]+$/', $path)){
             if (!strstr($path,'___')) {
-                $path = TEMPLATE_PATH.'model_style/default/'.$path.'.'.config('template.view_suffix');
+                $_path = 'model_style/default/'.$path;
+                $path = self::get_file_ext($_path);
             }else{
-                $path = str_replace('___', '/', $path).'.'.config('template.view_suffix');
-                if (is_file(TEMPLATE_PATH.'index_style/'.$path)) {
-                    $path = TEMPLATE_PATH.'index_style/'.$path;
-                }else{
-                    $path = TEMPLATE_PATH.$path;
+                $_path = str_replace('___', '/', $path);
+                $path = self::get_file_ext('index_style/'.$_path);
+                if ($path===false) {
+                    $path = self::get_file_ext($_path);
                 }
             }
         }else{
             return $path.'碎片模板路径有误!';
         }
         
-        if(!is_file($path)){
-            return str_replace(TEMPLATE_PATH, '', $path).'碎片模板不存在!';
+        if($path===false){
+            return $_path.'碎片模板不存在!';
         }
         return true;
     }
