@@ -209,11 +209,8 @@ class Field{
         $type_array = explode(',',$type);
         $array = input();
         foreach ($array AS $key=>$value){
-            if ($key=='tags') {     //避免跟标签那里冲突
-                $key = 'qb_tags';
-            }
-            if ($key=='id') {   //避免跟标签那里冲突
-                $key = 'qb_id';
+            if ($key=='tags'||$key=='id') {     //避免跟标签那里冲突
+                continue ;
             }
             if(!in_array($key, $type_array)){
                 $url .= $key.'='.urlencode($value) . '&' ;
