@@ -57,7 +57,7 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
 			<div align="center">{{rs.ctime}}</div>
 		</td>
 		<td>{{rs.time}}</td>
-		<td><a :href="'{:urls('view_file')}?filename='+rs.file+'&oldfile='+rs.showfile+'&id='+rs.id" target="_blank">对比差异</a>
+		<td><a :href="'{:urls('view_file')}?filename='+rs.file+'&oldfile='+rs.showfile.replace('#','%23')+'&id='+rs.id" target="_blank">对比差异</a>
 		</td>
 	</tr>
  

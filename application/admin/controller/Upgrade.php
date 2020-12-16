@@ -182,7 +182,6 @@ class Upgrade extends AdminBase
         if($filename==''){
             return $this->err_js('文件不存在!');
         }
-        
         $str = $this->get_server_file($filename,$id);
         if($str){
             $filename = $this->format_filename($filename); //针对模块或插件的升级做替换处理
@@ -281,7 +280,7 @@ class Upgrade extends AdminBase
             }
             if($change){                
                 $data[]=[
-                    'file'=>$rs['file'],
+                    'file'=>str_replace('#', '%23', $rs['file']),
                     'showfile'=>$showfile,
                     'md5'=>$md5_size,
                     'id'=>$rs['id'],
@@ -322,6 +321,7 @@ class Upgrade extends AdminBase
      */
     protected function get_server_file($filename='',$id=0){
         @set_time_limit(600);  //防止超时
+        $filename = str_replace('#', '%23', $filename);
         $str = http_curl('https://x1.php168.com/appstore/upgrade/make_client_file.html?filename='.$filename.'&id='.$id.'&appkey='.urlencode($this->webdb['mymd5']).'&domain='.urlencode($this->request->domain()));
         if(substr($str,0,2)=='QB'){    //文件核对,防止网络故障,抓取一些出错信息
             $str = substr($str,2);
