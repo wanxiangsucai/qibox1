@@ -134,6 +134,14 @@ abstract class Label extends IndexBase
             ],                
         ];
         
+        if (!config('webdb.use_label_tplcode')) {
+            foreach($array AS $key=>$rs){
+                if ($rs[1]=='view_tpl'||$rs[1]=='choose_style') {
+                    unset($array[$key]);
+                }
+            }
+        }        
+        
         if(!config('use_area')&&!config('webdb.use_area')){
             foreach($array AS $key=>$rs){
                 if($rs[1]=='area_type'||$rs[1]=='area_ids'){

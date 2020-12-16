@@ -165,7 +165,10 @@ trait LabelEdit {
      * @param array $array 覆盖默认设置的数据
      * @return array
      */
-    protected function get_post_data($array=[]){        
+    protected function get_post_data($array=[]){     
+        if ($this->tag_view_tpl!='' && !config('webdb.use_label_tplcode')) {
+            $this -> error('<a href="http://help.php168.com/2074671" target="_blank">系统未启用自定义模板功能,请把模板代码清空才能提交保存数据,你若需要启用的话,点击查看设置方法</a>');
+        }
         $_array = [
                 'id'=>$this->tag_id,
                 'extend_cfg'=>$this->tag_extend_cfg,

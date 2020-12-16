@@ -61,6 +61,10 @@ class Label extends IndexBase
                         'a'
                 ],
         ];
+        if (!config('webdb.use_label_tplcode')) {
+            $num  = count($this->form_items);
+            unset($this->form_items[$num-1],$this->form_items[$num-2]);
+        }
         $this->tab_ext['page_title']='评论设置';
         return $this->editContent(unserialize($info['cfg']));
     }
