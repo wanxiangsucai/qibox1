@@ -14,6 +14,9 @@ class Label extends IndexBase
     protected function _initialize()
     {
         parent::_initialize();
+        if ($this->check_power() !== true) {
+            $this->error('你没权限!');
+        }
     }
     
     private function get_cache_tpl(){
