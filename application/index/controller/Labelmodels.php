@@ -212,6 +212,8 @@ class Labelmodels extends IndexBase
     protected static function get_file_ext($path=''){
         if ( is_file(TEMPLATE_PATH.$path.'.'.config('template.view_suffix')) ) {
             return TEMPLATE_PATH.$path.'.'.config('template.view_suffix');
+        }elseif ( is_file(TEMPLATE_PATH.dirname($path).'/#'.basename($path).'.'.config('template.view_suffix')) ) {
+            return TEMPLATE_PATH.dirname($path).'/#'.basename($path).'.'.config('template.view_suffix');
         }elseif ( is_file(TEMPLATE_PATH.$path.'.php') ) {
             return TEMPLATE_PATH.$path.'.php';
         }else{
