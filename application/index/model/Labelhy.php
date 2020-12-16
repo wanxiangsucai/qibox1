@@ -76,7 +76,9 @@ class Labelhy extends Label
         if(empty($tag_config)){
             return ;    //新标签，不存在配置参数，所以也不用执行下面的数据取值
         }
-        
+        if (!config('webdb.use_label_tplcode')) {
+            $tag_config['view_tpl'] = '';
+        }
         $array = unserialize($tag_config['cfg']);
         $array = array_merge($cfg,$array);
         if($live_parameter){    //跟随页面变化的动态参数            
