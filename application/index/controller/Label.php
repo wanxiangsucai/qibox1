@@ -358,19 +358,36 @@ class Label extends IndexBase
     }
     
     /**
+     * 检查碎片是.php还是.htm后缀
+     * @param string $path
+     * @return string|boolean
+     */
+    protected static function get_file_ext($path=''){
+        if ( is_file(TEMPLATE_PATH.$path.'.'.config('template.view_suffix')) ) {
+            return TEMPLATE_PATH.$path.'.'.config('template.view_suffix');
+        }elseif ( is_file(TEMPLATE_PATH.dirname($path).'/#'.basename($path).'.'.config('template.view_suffix')) ) {
+            return TEMPLATE_PATH.dirname($path).'/#'.basename($path).'.'.config('template.view_suffix');
+        }elseif ( is_file(TEMPLATE_PATH.$path.'.php') ) {
+            return TEMPLATE_PATH.$path.'.php';
+        }else{
+            return false;
+        }
+    }
+    
+    /**
      * 获取风格模块名称
      * @param array $array
      */
     protected function get_model_name($array=[]){
         foreach($array AS $path=>$name){
             if(strstr($name,'/')){
-                $file = TEMPLATE_PATH."index_style/{$path}.".config('template.view_suffix');
-                if (!is_file($file)) {
-                    $file = TEMPLATE_PATH."{$path}.".config('template.view_suffix');
+                $file = self::get_file_ext('index_style/'.$path);
+                if (!$file) {
+                    $file = self::get_file_ext($path);
                 }
                 //试图获取碎片名称,不存在就用路径显示
-                preg_match("/^<!--(.*?)-->/is", trim(file_get_contents($file)," \r\n\t"),$data);
-                $array[$path]=trim($data[1],'-')?:$path;
+                $file && preg_match("/^<!--(.*?)-->/is", trim(file_get_contents($file)," \r\n\t"),$data);
+                $array[$path] = ($file && $data) ? trim($data[1],'-') : $path;
             }
         }
         return $array;
