@@ -1,4 +1,4 @@
-﻿/*****定义元素左右下下居中******/
+/*****定义元素左右下下居中******/
 .qb_ui_center{
 	position: absolute;
 　　　top: 50%;
@@ -944,6 +944,8 @@
 /******页内菜单按钮开始*****/
 .qb_ui_page_menu{
 	padding: 5px 0;
+	background: #fff;
+    margin-bottom: 1px;
 }
 .qb_ui_page_menu:after{
 	content: '';

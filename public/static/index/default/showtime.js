@@ -1,4 +1,4 @@
-﻿function format_time(time){
+function format_time(time){
 	var show_time='';
 	if(time>0){
 		if(Math.floor(time/31536000)>0){
