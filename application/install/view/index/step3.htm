@@ -61,6 +61,13 @@
             </div>
             <div class="layui-form-mid layui-word-aux">选择覆盖的话,就会替换之前的</div>
         </div>
+		<div class="layui-form-item">
+            <label class="layui-form-label">网站密钥</label>
+            <div class="layui-input-inline w200">
+                <input type="text" class="layui-input" name="mymd5" value="{:rands(20)}">
+            </div>
+            <div class="layui-form-mid layui-word-aux">安装后还可修改</div>
+        </div>
         <div class="layui-form-item">
             <button type="submit" class="layui-btn fl" style="margin-left:120px;" lay-submit="" lay-filter="formTest">点击测试数据库连接</button>
         </div>
