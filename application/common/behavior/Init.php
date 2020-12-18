@@ -14,6 +14,7 @@ class Init{
 		if(defined('BIND_MODULE')&&BIND_MODULE=='install') return;
 		if(empty(get_cookie('user_sid'))){    //分配每个用户一个唯一字串
 			set_cookie('user_sid',rands(10));
+			define('FIRST_LOAD',true);   //首次访问
 		}
 		if(input('get.in')!=''){
 			set_cookie('browser_type',input('get.in'));
@@ -36,8 +37,8 @@ class Init{
 		define('TEMPLATE_PATH',ROOT_PATH.'template/');
 		define('IS_POST',request()->isPost()?true:false);
 		// 获取前台访问网址，是否放在根目录
-		$base_file=request()->baseFile();
-		$web_path=substr($base_file,0,strripos($base_file,'/')+1);
+		//$base_file = request()->baseFile();
+		$web_path =  '/'; // substr($base_file,0,strripos($base_file,'/')+1);
 		define('PUBLIC_URL',$web_path.'public/');                          //静态文件访问网址,是浏览器访问的网址,不是硬盘路径
 		define('PUBLIC_PATH',ROOT_PATH.'public'.DS);                       //静态文件硬盘路径,是磁盘路径,不是浏览器的访问路径
 		define('UPLOAD_URL',PUBLIC_URL.'uploads/');                         //上传的附件访问网址,是浏览器访问的网址,不是硬盘路径
