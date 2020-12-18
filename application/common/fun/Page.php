@@ -13,9 +13,9 @@ class Page{
         $hyid = config('webdb.sys_mode_type')==1 ? get_cookie('last_qun_id') : get_cookie('HYID');        
         if ($hyid) {
             $menu = cache('qun_menu_1_'.$hyid);
-            if( empty($menu) ){
+            if( !is_array($menu) ){
                 $menu = get_sons(model('qun/menu')->getTreeList(['aid'=>$hyid,'ifshow'=>1,'type'=>1]));
-                cache('qun_menu_1_'.$hyid,$menu);
+                cache('qun_menu_1_'.$hyid,$menu?:[]);
             }
         }
         $menu || $menu = $this->get_web_menu('wapfoot');
