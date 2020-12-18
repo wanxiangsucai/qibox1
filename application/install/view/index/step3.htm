@@ -120,10 +120,14 @@ layui.define(['element', 'form'], function(exports) {
             url: _form.attr('action'),
             data: _form.serialize(),
             success: function(res) {
-                layer.msg(res.msg);
-                //操作测试数据库链接后
-                $('.step-btns button').attr("disabled",false);
-				$('.step-btns button').css({'background':'#F60'});
+				if(res.code==1){
+					layer.alert(res.msg);
+				}else{
+					layer.msg(res.msg);
+					//操作测试数据库链接后
+					$('.step-btns button').attr("disabled",false);
+					$('.step-btns button').css({'background':'#F60'});
+				}                
             }
         });
         return false;

@@ -89,6 +89,7 @@ class Error extends Controller
             $cover = $data['cover'];
             unset($data['cover']);
             $config = include APP_PATH.'database.php';
+            $config['mymd5'] = '';
             foreach ($data as $k => $v) {
                 if (array_key_exists($k, $config) === false) {
                     return $this->error('参数'.$k.'不存在！');
@@ -118,7 +119,7 @@ class Error extends Controller
             }
 
             if (!$cover && in_array($data['prefix'].'config', $table_array)) {
-                $this->error($data['prefix'].' 当前数据表前缀已经存在,请更换一个数据表前缀,非得要使用当前数据表前缀的话,请选择“覆盖”,即代表替换之前安装过的X1系统.');
+                $this->success($data['prefix'].' 当前数据表前缀已经存在,请更换一个数据表前缀,非得要使用当前数据表前缀的话,请选择“覆盖”,即代表替换之前安装过的X1系统.');
             }
             $data['database'] = $database;
             // 生成配置文件
