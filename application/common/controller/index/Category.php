@@ -59,7 +59,7 @@ abstract class Category extends IndexBase
             'pages'=>$data_list->render()
         ];
         
-        $template = getTemplate('index');
+        $template = 'index';//getTemplate('index');
         
         return $this->fetch($template,$vars);
     }
