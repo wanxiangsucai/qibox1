@@ -29,7 +29,7 @@ class SortField extends F
             }
             $this->success('修改成功');
         }
-        $this->tab_ext['nav'] = [
+        isset($this->tab_ext['nav']) || $this->tab_ext['nav'] = [
                 [
                         '-2'=>[
                                 'title'=>'栏目字段管理',
@@ -45,7 +45,7 @@ class SortField extends F
         if (empty(config('use_category'))) {    //没启用辅栏目
             unset($this->tab_ext['nav'][0]['-3']);
         }
-        $this->tab_ext['page_title'] = ($mid==-2?'栏目':'辅栏目') . '字段管理';
+        $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = ($mid==-2?'栏目':'辅栏目') . '字段管理';
         
         $this->tab_ext['top_button']=[
                 [

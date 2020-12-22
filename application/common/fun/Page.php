@@ -6,11 +6,26 @@ class Page{
     
     /**
      * wap底部菜单 有可能是 商铺的菜单.
+     * @param array $menu_array 频道强制的底部菜单
      * @return \app\common\fun\unknown[]|\app\common\fun\unknown
      */
-    public function foot_menu(){
+    public function foot_menu($menu_array=[]){
+        //频道强制的底部菜单开始
+        if (defined('FIRST_LOAD') && FIRST_LOAD===true && $menu_array && is_array($menu_array)) {
+            set_cookie('foot_menu',json_encode($menu_array));
+            return ;
+        }
+        $foot_menu = get_cookie('foot_menu');
+        if ($foot_menu) {
+            $menu = json_decode($foot_menu,true);
+            if ($menu) {
+                return $menu;
+            }
+        }
+        //频道强制的底部菜单结束
+        
         $menu = [];
-        $hyid = config('webdb.sys_mode_type')==1 ? get_cookie('last_qun_id') : get_cookie('HYID');        
+        $hyid = config('webdb.sys_mode_type')==1 ? get_cookie('last_qun_id') : get_cookie('HYID');
         if ($hyid) {
             $menu = cache('qun_menu_1_'.$hyid);
             if( !is_array($menu) ){
