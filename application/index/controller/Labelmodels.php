@@ -70,10 +70,10 @@ class Labelmodels extends IndexBase
         $this->assign('tags',$tags);
         
         //下面的可以弃用了
-        $this->assign('info',$this->info);
-        $this->assign('id',$this->id);
-        $this->assign('fid',$this->fid);
-        $this->assign('mid',$this->mid);
+//         $this->assign('info',$this->info);
+//         $this->assign('id',$this->id);
+//         $this->assign('fid',$this->fid);
+//         $this->assign('mid',$this->mid);
         
         $content = $this->fetch($path,val('','template'));
         return $content;
