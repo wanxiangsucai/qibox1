@@ -4425,6 +4425,30 @@
       $target.css('float', value);
     });
 
+	//齐博新增
+	this.qbCallback = this.wrapCommand(function (callback) {
+      var $target = $(this.restoreTarget());
+	  callback($target);
+    });
+	
+	//齐博新增
+	this.qbImgAddLink = this.wrapCommand(function (callback) {
+      var $target = $(this.restoreTarget());
+	  var i = layer.prompt({
+					title: '请输入网址',
+					value:$($target).parent().get(0).tagName=='A'?$($target).parent().attr("href"):'',
+					formType: 0
+			   }, function(value){
+				 layer.close(i);				 
+				 if($($target).parent().get(0).tagName=='A'){
+					 $($target).parent().attr("href",value);
+				 }else{
+					 var str = '<a href="'+value+'" target="_blank">'+$($target).get(0).outerHTML+'</a>';
+					 $($target).get(0).outerHTML=str;
+				 }				 
+			});
+    });
+
     /**
      * resize overlay element
      * @param {String} value
@@ -5667,6 +5691,15 @@
           click: context.createInvokeHandler('editor.removeMedia')
         }).render();
       });
+
+	  context.memo('button.addlink', function () {
+        return ui.button({
+          contents: ui.icon("note-icon-link"),
+          tooltip: "添加链接",
+          click: context.createInvokeHandler('editor.qbImgAddLink')
+        }).render();
+      });
+
     };
 
     this.addLinkPopoverButtons = function () {
@@ -6242,10 +6275,11 @@
     this.update = function (target) {
       if (dom.isImg(target)) {
         var pos = dom.posFromPlaceholder(target);
+		var editor_height = $(".note-editor").offset().top + $(".note-editor").height();
         this.$popover.css({
           display: 'block',
           left: pos.left,
-          top: pos.top
+          top: pos.top>editor_height?editor_height: pos.top,
         });
       } else {
         this.hide();
@@ -6859,7 +6893,7 @@
         image: [
           ['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
           ['float', ['floatLeft', 'floatRight', 'floatNone']],
-          ['remove', ['removeMedia']]
+          ['remove', ['removeMedia','addlink']]
         ],
         link: [
           ['link', ['linkDialogShow', 'unlink']]

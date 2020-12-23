@@ -159,7 +159,7 @@ $jscode_wap = <<<EOT
 				<link rel="stylesheet" href="__STATIC__/libs/summernote/bootstrap.min.css" />
 				<script type="text/javascript" src="__STATIC__/libs/summernote/bootstrap.min.js"></script>
 				<link rel="stylesheet" href="__STATIC__/libs/summernote/summernote.css">
-				<script type="text/javascript" src="__STATIC__/libs/summernote/summernote.js"></script>
+				<script type="text/javascript" src="__STATIC__/libs/summernote/summernote.js?f"></script>
 				<script type="text/javascript" src="__STATIC__/libs/summernote/lang/summernote-zh-CN.js"></script>
 				<script type="text/javascript">
 				var editor_a = [];

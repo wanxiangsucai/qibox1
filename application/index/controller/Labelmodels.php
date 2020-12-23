@@ -66,12 +66,16 @@ class Labelmodels extends IndexBase
             return "$result<script>layer.alert('".$result."')</script>";
         }
         $this->request->get(['tags'=>$tags]);
+        
         $this->assign('tags',$tags);
+        
+        //下面的可以弃用了
         $this->assign('info',$this->info);
         $this->assign('id',$this->id);
         $this->assign('fid',$this->fid);
         $this->assign('mid',$this->mid);
-        $content = $this->fetch($path);
+        
+        $content = $this->fetch($path,val('','template'));
         return $content;
     }
     
