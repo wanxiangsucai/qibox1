@@ -39,6 +39,27 @@ abstract class Category extends IndexBase
     }
     
     /**
+     * 获取模板路径
+     * @param array $ar 辅栏目信息
+     * @return string
+     */
+    protected function get_tpl($ar=[]){
+        if(IN_WAP===true){
+            if($ar['wap_list']!=''){
+                $template = TEMPLATE_PATH.'index_style/'.$ar['wap_list'];
+            }
+        }else{
+            if($ar['pc_list']!=''){
+                $template = TEMPLATE_PATH.'index_style/'.$ar['pc_list'];
+            }
+        }
+        if(!is_file($template)){
+            $template = 'index';
+        }
+        return $template;
+    }
+    
+    /**
      * 辅栏目列表页
      * @param number $fid
      * @return mixed|string
@@ -51,15 +72,16 @@ abstract class Category extends IndexBase
         
         //获取列表数据
         $data_list = $this->getListData(['cid'=>$fid]);
+        $info = $this->model->getInfoById($fid);
         //模板里要用到的变量值
         $vars = [
             'listdb'=>getArray($data_list)['data'],
             'fid'=>$fid,
-            'info'=>$this->model->getInfoById($fid),
+            'info'=>$info,
             'pages'=>$data_list->render()
         ];
         
-        $template = 'index';//getTemplate('index');
+        $template = $this->get_tpl($info);
         
         return $this->fetch($template,$vars);
     }

@@ -127,10 +127,10 @@ abstract class S extends AdminBase
                 ],
                 '模板设置'=>[
                         ['text', 'haibao', '海报模板路径',fun('haibao@get_haibao_list').'可留空,多个用逗号隔开,需要补全路径(其中haibao_style不用填):比如:“xxx/show.htm”'],
-                        ['text', 'templates[waplist]', 'wap列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
-                        ['text', 'templates[wapshow]', 'wap内容页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
-                        ['text', 'templates[pclist]', 'PC列表页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<i class="fa fa-plus-square" onclick="alert(9)"></i>']],
-                        ['text', 'templates[pcshow]', 'PC内容页模板[:可留空，将用默认的。点击右边图片选择模板]',$msg,'',['','<a class="fa fa-plus-square pop" href="/"></a>']],
+                        ['text', 'templates[waplist]', 'wap列表页模板(可留空，将用默认的)',$msg],
+                        ['text', 'templates[wapshow]', 'wap内容页模板(可留空，将用默认的)',$msg],
+                        ['text', 'templates[pclist]', 'PC列表页模板(可留空，将用默认的)',$msg],
+                        ['text', 'templates[pcshow]', 'PC内容页模板(可留空，将用默认的)',$msg],
                         
                 ],
                 'SEO优化设置'=>[

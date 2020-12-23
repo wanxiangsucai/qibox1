@@ -29,17 +29,25 @@ abstract class Category extends AdminBase
         $this->set_config();
     }
     
+    protected function check_tpl($value=''){
+        if($value!='' && !is_file(TEMPLATE_PATH.'index_style/'.$value)){
+            $this->error('模板不存在，或者路径有误！请确认把模板放在以下目录'.TEMPLATE_PATH.'index_style/'.$value);
+        }
+    }
+    
     protected function set_config(){
         $this->list_items = [
                 ['name', '辅栏目名称', 'link',iurl('category/index',['fid'=>'__id__']),'_blank'],
                 //['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
         ];
         
+        $msg = '请把模板放在此目录下: '.TEMPLATE_PATH.'index_style/ 然后输入相对路径,比如 default/abc.htm';
         $this->form_items = [
-                
-                ['textarea', 'name', '辅栏目名称','同时添加多个栏目的话，每个换一行'],
-                ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle()],
-                //['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
+            ['textarea', 'name', '辅栏目名称','同时添加多个栏目的话，每个换一行'],
+            ['select', 'pid', '归属上级分类','不选择，则为顶级分类',$this->model->getTreeTitle()],
+            //['select', 'mid', '所属模型','创建后不能随意修改',$this->m_model->getTitleList()],
+            ['text', 'wap_list', 'wap列表页模板(可留空，将用默认的)',$msg],
+            ['text', 'pc_list', 'PC列表页模板(可留空，将用默认的)',$msg],
         ];
         
         $this->tab_ext = [
@@ -82,8 +90,10 @@ abstract class Category extends AdminBase
     }
     
     public function add() {
-        if($this->request->isPost()){
+        if($this->request->isPost()){            
             $data = $this -> request -> post();
+            $this->check_tpl($data['pc_list']);
+            $this->check_tpl($data['wap_list']);
             $data = \app\common\field\Post::format_all_field($data,-3); //对一些特殊的字段进行处理,比如多选项,以数组的形式提交的
             $this -> request -> post($data);
         }
@@ -102,7 +112,14 @@ abstract class Category extends AdminBase
     public function edit($id = null)
     {
         if($this->request->isPost()){
+            if (!table_field(config('system_dirname').'_category','wap_list')) {
+                into_sql("ALTER TABLE `qb_".config('system_dirname')."_category` ADD `wap_list` VARCHAR( 100 ) NOT NULL COMMENT 'WAP列表页模板',ADD `pc_list` VARCHAR( 100 ) NOT NULL COMMENT 'PC列表页模板';");
+            }
             $data = $this -> request -> post();
+            
+            $this->check_tpl($data['pc_list']);
+            $this->check_tpl($data['wap_list']);
+            
             $data = \app\common\field\Post::format_all_field($data,-3); //对一些特殊的字段进行处理,比如多选项,以数组的形式提交的
             
             if ($this -> model -> update($data)) {
