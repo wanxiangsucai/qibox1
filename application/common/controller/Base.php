@@ -222,20 +222,24 @@ class Base extends Controller
      */
     protected function assign($name, $value = '')
     {
-        //碎片模板要用到
-        $array = val('','template')?:[];
-        $array[$name] = $value;
-        val($array,'template');
+        if (function_exists('val')) {
+            //碎片模板要用到
+            $array = val('','template')?:[];
+            $array[$name] = $value;
+            val($array,'template');
+        }
         
         return parent::assign($name, $value);
     }
 
 	protected function fetch($template = '', $vars = [], $replace = [], $config = [])
 	{
-	    //碎片模板要用到
-	    $array = val('','template')?:[];
-	    $array = array_merge($array,$vars);
-	    val($array,'template');
+	    if (function_exists('val')) {
+	        //碎片模板要用到
+	        $array = val('','template')?:[];
+	        $array = array_merge($array,$vars);
+	        val($array,'template');
+	    }	    
 	    
 	    if($this->route[1]=='plugin' && $this->route[2]=='execute' && !strstr($template,substr(ROOT_PATH,0,-2))){
 	        $plugin_name = input('param.plugin_name');
