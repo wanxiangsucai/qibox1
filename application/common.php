@@ -2776,6 +2776,7 @@ if (!function_exists('getTemplate')) {
          if($only_delhide){
              return $content;
          }
+         $content = preg_replace("/<script([^>]*)>(.*?)<\/script>/is",'',$content);
          $content = str_replace("\r",'',$content);
          $content = str_replace("\n",'',$content);
          $content = str_replace('　',' ',$content);  //全角空格换成半角空格
