@@ -242,7 +242,7 @@ class Upgrade extends AdminBase
      * 这里的升级文件列表,即有系统的,也有频道插件与风格的
      * @return void|\think\response\Json
      */
-    public function check_files($upgrade_edition=''){
+    public function check_files($upgrade_edition='',$is_show=''){
         set_time_limit(0); //防止超时
         $array = $this->getfile();
         if(empty($array)){
@@ -257,7 +257,7 @@ class Upgrade extends AdminBase
         foreach($array AS $rs){
             $showfile = $this->format_filename($rs['file']);
             $file = ROOT_PATH.$showfile;
-            if (is_file($file.'.lock') && file_get_contents($file.'.lock')=='hide') {
+            if ($is_show!='show_lock_hide' && is_file($file.'.lock') && file_get_contents($file.'.lock')=='hide') {
                 continue;   //用户不想升级的文件,也不想提示升级
             }
             $ispic = false;

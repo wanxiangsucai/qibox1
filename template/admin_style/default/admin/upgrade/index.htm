@@ -125,9 +125,15 @@ function check_upgrade(){
 				var msg = typeof(res.data.upgrade_msg) != "undefined" ? res.data.upgrade_msg : '你的系统需要升级<br>云端更新日期:'+res.data.time;
 				$(".upgrade_msg").html(msg);
 				layer.confirm(msg, {
-					btn : [ '查看需要升级的文件', '晚点再升级' ]
-				}, function(index) {
-					down_file_list();
+					title:'升级信息',
+					btn : [ '查看升级文件(不含隐藏文件)','查看升级文件(含隐藏文件)','取消' ],
+					area: ['700px', '600px'],
+					btn1:function(){
+						down_file_list('');
+					},
+					btn2:function(){
+						down_file_list('show_lock_hide');
+					}
 				});
 			}else{
 				$(".upgrade_msg").html('已经是最新了,无须升级');
@@ -202,10 +208,10 @@ var vues = new Vue({
 });
 
 //下载文件列表,核对需要哪些更新
-function down_file_list(){
+function down_file_list(is_show){
 	layer.alert('需要一点时间,请稍候,正在从云端下载升级文件列表');
 	var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
-	$.post("{:urls('check_files')}?upgrade_edition="+upgrade_edition,upgrade_data).success(function(res){
+	$.post("{:urls('check_files')}?upgrade_edition="+upgrade_edition+"&is_show="+is_show,upgrade_data).success(function(res){
 		layer.closeAll();
 		if(res.code==0){			
 			vues.add_data(res.data);
