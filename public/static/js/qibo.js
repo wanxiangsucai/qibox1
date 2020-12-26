@@ -371,6 +371,41 @@ var Qibo = function () {
 		}
 	}
 
+	var pay_money = function(money,callback){
+		jQuery.getScript("/public/static/js/pay.js").done(function() {			
+		}).fail(function() {
+			layer.msg('public/static/js/pay.js加载失败',{time:800});
+		});
+		layer.confirm("是否立即充值 "+money+" 元",{btn:['充值','取消']},function(i){
+			layer.close(i);
+			if( navigator.userAgent.match(/(iPhone|iPod|Android|ios|iPad)/i) ){
+				Pay.mobpay( money,'充值',function(type,index){
+					layer.close(index);
+					if(type=='ok'){
+						layer.msg('充值成功');
+						if( typeof(callback)=='function' ){	//接口回调
+							callback();
+						}
+					}else{
+						layer.alert('充值失败');
+					}
+				});
+			}else{
+				Pay.pcpay( money,'充值',function(type,index){
+					layer.close(index);
+					if(type=='ok'){
+						layer.msg('充值成功');
+						if( typeof(callback)=='function' ){	//接口回调
+							callback();
+						}
+					}else{
+						layer.alert('充值失败');
+					}
+				});
+			}
+		});
+	}
+
 	return {
 			init:function(){
 				pop();
@@ -384,6 +419,9 @@ var Qibo = function () {
 			},
 			login:function(login_callback){
 				login(login_callback);
+			},
+			pay:function(money,callback){
+				pay_money(money,callback);
 			},
 	};
 }();
