@@ -28,6 +28,9 @@ jQuery.getScript("/public/static/js/exif.js")
         }
 
         function processfile(file,compressValue,pics,callback) {
+			if(file.type=='image/png'||file.type=='image/gif'){
+				return post_png(file,compressValue,pics,callback);
+			}
 			var Orientation = 0;
 			var alltags = {};
 			//获取图片的参数信息
@@ -69,6 +72,39 @@ jQuery.getScript("/public/static/js/exif.js")
             };
             reader.readAsArrayBuffer(file);
         }
+
+		function post_png(file,compressValue,pics,callback){
+			var url = severUrl;
+			url = url.replace('/from/base64','');
+			url = url.replace('from=base64','');
+			if(severUrl.indexOf('?')==-1){
+				url += "?";
+			}else{
+				url += "&";
+			}
+			url += "from=base64png&action=uploadimage";
+			var formData = new FormData();
+			formData.append("file", file);
+			$.ajax({
+				url: url,
+				data: formData,
+				cache: false,
+				contentType: false,
+				processData: false,
+				type: 'POST',
+				success: function (res) {
+					if(res.code==1){
+						pics.push(res.path);
+						compressValue.value = pics.join(',');
+						if(typeof callback == 'function'){
+							callback(res.path,pics);
+						}
+					}else{
+						alert(res.info);
+					}
+				}
+			});
+		}
 
         function resizeUpImages(img) {
             //压缩的大小

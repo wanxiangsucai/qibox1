@@ -64,7 +64,8 @@ if (navigator.userAgent.indexOf("MSIE") >= 0) {
     <tr bgcolor='#FFFFFF' align="center" class="up_btn" style="display:none;"> 
       <td colspan='5'>
         <div class='submits'>
-          <!--<input type='button' onclick="CheckAll(this.form)" name='Submit' value='全选'>-->
+           <input type='button' onclick="CheckAll(this.form)" name='Submit' value='反选'> 
+		   <input type='button' onclick="CheckAll(this.form,'no')" name='Submit' value='全不选'> 
           <input type='button' style="background:red;" onclick="sys_upgrade();" name='Submit' value='立刻升级'>          
         </div>
         </td>
@@ -166,6 +167,9 @@ var vues = new Vue({
 					var that = $(this);
 					var url = "https://x1.php168.com/appstore/upgrade/check_md5.html?path="+that.attr('data-showfile')+"&md5="+that.attr('data-md5');
 					setTimeout(function(){
+						if(notcheck===true){
+							return ;
+						}
 						$.get(url,function(res){
 							if(res.code==0){
 								that.attr('checked',true);
@@ -346,11 +350,16 @@ function upgrade_file(filename,obj){
 }
 
 
-
-function CheckAll(form){
+var notcheck = false;
+function CheckAll(form,type){
 	for (var i=0;i<form.elements.length;i++){
 		var e = form.elements[i];
-		e.checked == true ? e.checked = false : e.checked = true;
+		if(type=='no'){
+			notcheck = true;
+			if(e.checked == true)e.checked = false;
+		}else{
+			e.checked == true ? e.checked = false : e.checked = true;
+		}		
 	}
 }
 

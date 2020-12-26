@@ -1,5 +1,8 @@
 <?php
-
+echo json_encode(array(
+            'state'=> '禁止访问!!'
+        ));
+exit;
 /**
  * Created by JetBrains PhpStorm.
  * User: taoqili

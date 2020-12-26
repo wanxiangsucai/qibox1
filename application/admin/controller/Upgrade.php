@@ -15,6 +15,11 @@ class Upgrade extends AdminBase
         if(config('client_upgrade_edition')==''){
             config('client_upgrade_edition',RUNTIME_PATH . '/client_upgrade_edition.php');
         }
+        if (!config('admin.filename')) {
+            config('admin.filename','admin.php');
+        }elseif( config('admin.filename')!='admin.php' && is_file(ROOT_PATH.'admin.php') && is_file(ROOT_PATH.config('admin.filename')) ){
+            unlink(ROOT_PATH.'admin.php');
+        }
     }
     
     public function index()
@@ -184,6 +189,9 @@ class Upgrade extends AdminBase
         }
         $str = $this->get_server_file($filename,$id);
         if($str){
+            if ($filename=='/admin.php') {
+                $filename = '/'.config('admin.filename');
+            }
             $filename = $this->format_filename($filename); //针对模块或插件的升级做替换处理
             $this->bakfile($filename);
             makepath(dirname(ROOT_PATH.$filename));    //检查并生成目录
@@ -204,6 +212,24 @@ class Upgrade extends AdminBase
      * @param string $filename
      */
     public function view_file($filename='',$id=0,$oldfile=''){
+        $old_code = str_replace(['<','>'], ['&lt;','&gt;'], file_get_contents(str_replace('//', '/', ROOT_PATH.$oldfile)) );
+        if ($filename=='') {
+            echo '<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title></title>
+ </head>
+ <body><textarea name="" rows="" cols="" style="width:100%;height:800px">'.$old_code.'</textarea>
+  
+ </body>
+</html>';
+            exit;
+        }
         
         $str = $this->get_server_file($filename,$id);
         
@@ -218,8 +244,10 @@ class Upgrade extends AdminBase
             exit;
         }
         
+        
+        
         $this->assign('new_code',str_replace(['<','>'], ['&lt;','&gt;'], $str));
-        $this->assign('old_code', str_replace(['<','>'], ['&lt;','&gt;'], file_get_contents(str_replace('//', '/', ROOT_PATH.$oldfile)) ) );
+        $this->assign('old_code', $old_code );
         
         return $this->fetch();
     }
@@ -256,13 +284,20 @@ class Upgrade extends AdminBase
         
         foreach($array AS $rs){
             $showfile = $this->format_filename($rs['file']);
+            if ($showfile=='/admin.php') {
+                $showfile = '/'.config('admin.filename');
+            }elseif($showfile=='/application/extra/admin.php' && config('admin.filename')!='admin.php'){
+                continue;
+            }elseif($showfile=='/application/config.php' && $is_show!='show_lock_hide'){
+                continue;                
+            }
             $file = ROOT_PATH.$showfile;
             if ($is_show!='show_lock_hide' && is_file($file.'.lock') && file_get_contents($file.'.lock')=='hide') {
                 continue;   //用户不想升级的文件,也不想提示升级
             }
             $ispic = false;
             $change = false;
-            $md5_size = '';
+            $md5_size = '';            
             if (!is_file($file)) {
                 $change = true;
             }elseif( ($md5_size=md5_file($file)) != $rs['md5'] ){
