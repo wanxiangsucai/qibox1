@@ -402,7 +402,7 @@ class Attachment extends IndexBase{
 		if ( $info ) {
 			$path = 'uploads/' . $dir . '/' . str_replace( '\\','/',$info->getSaveName() );
 			//对于一些相机拍摄的原始图大于1M的进行压缩
-			if ( in_array( $file_ext,[ 'jpeg','jpg','png','bmp' ] ) && $file->getInfo( 'size' ) > 1000000 ) {
+			if ( in_array( $file_ext,[ 'jpeg','jpg','bmp' ] ) && $file->getInfo( 'size' ) > 1000000 ) {
 				$this->compress_image( PUBLIC_PATH . $path );
 			}
 			
