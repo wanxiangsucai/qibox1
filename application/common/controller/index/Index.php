@@ -33,16 +33,28 @@ class Index extends IndexBase
         return $this->fetch($template?:'index');
     }
     
+
+//     public function sort($fid=0,$mid=0){
+//         define('PAGE_TYPE', 'sort');
+//         $mid && $this->assign('mid',$mid);
+//         $fid && $this->assign('fid',$fid);
+//         return $this->fetch();
+//     }
+    
     /**
-     * 分类的另一种展示形式
-     * @param number $fid
-     * @param number $mid
+     * 空方法 ,自适应
+     * @param unknown $action
      * @return mixed|string
      */
-    public function sort($fid=0,$mid=0){
-        define('PAGE_TYPE', 'sort');
-        $mid && $this->assign('mid',$mid);
-        $fid && $this->assign('fid',$fid);
+    public function _empty($action)
+    {
+        if (!preg_match('/^[\w]+$/i', $action)) {
+            $this->error('方法名有误!');
+        }
+        $mid = input('mid');
+        $fid = input('fid');
+        $mid && $this->assign('mid',intval($mid));
+        $fid && $this->assign('fid',intval($fid));
         return $this->fetch();
     }
 }

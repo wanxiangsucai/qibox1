@@ -29,6 +29,21 @@ class Index extends IndexBase
         return $this->fetch('../index');
     }
     
+    /**
+     * 空方法 ,自适应
+     * @param unknown $action
+     * @return mixed|string
+     */
+    public function _empty($action)
+    {
+        if (!preg_match('/^[\w]+$/i', $action)) {
+            $this->error('方法名有误!');
+        }
+        $id = input('id');
+        $id && $this->assign('id',intval($id));
+        return $this->fetch();
+    }
+    
     public function test($page=1){
         /*
         set_time_limit(0);

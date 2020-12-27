@@ -271,7 +271,13 @@ class Base extends Controller
                 $this->assign('uid',$this->user['uid']);    //默认把当前用户的UID放进模板,方便标签调用
             }
             if (empty($template)) {
-                die('严重警告!!<br><br>当前模板文件不存在:<br><br>'.getTemplate($_template,false));
+				$template = getTemplate($_template,false);
+				if (!$this->admin) {
+				    $template = str_replace(ROOT_PATH, '/', $template);
+				}
+				header('HTTP/1.1 404 Not Found');
+				header("status: 404 Not Found");
+                die('严重错误提示!!<br><br>当前模板文件不存在:<br><br>'.$template);
             }
 	    }
 	    if (empty($this->index_style_layout)) {
