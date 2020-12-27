@@ -12,19 +12,17 @@ class Index extends IndexBase
 //             $this->redirect(url('cms/index/index'),301);
 //         }
         if($this->webdb['sys_mode_type']==1 && modules_config('qun') && in_wap()){
-            $this->redirect(urls('qun/api/gethome'),[],301);
+            $this->redirect(iurl('qun/api/gethome'),[],301);
         }elseif($this->webdb['qun_index_id'] && modules_config('qun')){
-            $this->redirect(urls('qun/content/show',['id'=>$this->webdb['qun_index_id']]),[],301);
+            $this->redirect(iurl('qun/content/show',['id'=>$this->webdb['qun_index_id']]),[],301);
         }elseif( IN_WAP===true && ($sysname = $this->webdb['set_module_wapindex']) ){
-            //return $this->redirect($sysname.'/index/index');
             if(modules_config($sysname)){
-                $this->redirect(urls($sysname.'/index/index'),[],301);
+                $this->redirect(iurl($sysname.'/index/index'),[],301);
             }
         }elseif( ($sysname = $this->webdb['set_module_index'])!='' ){
-            //return $this->redirect($sysname.'/index/index');
             if(modules_config($sysname)){
-                $this->redirect(urls($sysname.'/index/index'),[],301);
-            }            
+                $this->redirect(iurl($sysname.'/index/index'),[],301);
+            }
         }
         return $this->fetch('../index');
     }
