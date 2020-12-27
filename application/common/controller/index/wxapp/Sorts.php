@@ -21,8 +21,15 @@ abstract class Sorts extends IndexBase
      * 获取栏目数据
      * @return \think\response\Json
      */
-    public function index(){
-        $_array = $this->model->getTitleList();
+    public function index($fid=0){
+        $map = [];
+        if ($fid===0) {
+            $fid = input('fid');
+        }
+        if($fid){
+            $map['pid'] = $fid;
+        }
+        $_array = $this->model->getTitleList($map);
         $array = [];
         foreach ($_array AS $key=>$value){
             $array[] = [
