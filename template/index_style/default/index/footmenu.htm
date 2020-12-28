@@ -5,7 +5,7 @@
 	{:val($_cfg?:[])}
 {/qb:tag}
 {if defined('LABEL_SET')}<ul style="padding:10px;">修改底部菜单相关功能设置</ul>{/if}
-{if val('bgcolor')!=''}<style type="text/css">.footmenu_warp .menu1.centers .bt-name em:first-child{ background:{:val('bgcolor')} }</style>{/if}
+{if val('pointbgcolor')!=''}<style type="text/css">.footmenu_warp .menu1.centers .bt-name em:first-child{ background:{:val('pointbgcolor')} }</style>{/if}
 
 <!--重新定义底部菜单链接开始-->
 {qb:hy name="footermenu001" type="links" val="listdb"}
