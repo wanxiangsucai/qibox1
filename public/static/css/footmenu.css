@@ -6,17 +6,18 @@
 .footmenu_warp .menu1 {position:relative; float:left; height:50px; line-height:50px; background: #f9f9f9; border-right:1px solid #ebebeb; box-sizing:border-box; -webkit-box-sizing: border-box;-webkit-flex:1; flex:1;}
 .footmenu_warp .menu1:last-child {border-right: none;}
 .footmenu_warp .menu2 {position:absolute; bottom:60px; z-index:10; width:100%; padding:0px 5px; background:#fff; box-sizing:border-box; -webkit-box-sizing:border-box; border:1px solid #dad8d8; border-radius:5px; display:none;}
-.footmenu_warp .menu2 li {width:100%; background:#fff; float:none; box-sizing:border-box; -webkit-box-sizing:border-box; border-top:1px solid #f2f2f2;}
+.footmenu_warp .menu2 li {width:100%; background:#fff; float:none; box-sizing:border-box; -webkit-box-sizing:border-box; border-top:1px dotted #c3c2c2;}
 .footmenu_warp .menu2 li a {display:block; height:30px; line-height:15px; text-align:left; background:#fff; color:#777; border:none; text-align:center; font-size:13px;}
-.footmenu_warp .menu2 li.icon_li a {height:50px;}
 .footmenu_warp .icons {position:absolute; bottom:5px; right:5px; width:0; height:0; border:5px solid transparent; border-right:5px solid #929292; border-bottom:5px solid #929292; opacity:.5;}
 .footmenu_warp .bt-name {font-size:12px; color: #000;}
 .footmenu_warp .bt-name a{display:block; font-size:12px; color:#777;}
 .footmenu_warp .menu1 .bt-name em{display:block; height:25px; line-height:18px; width:100%; font-style:normal;}
 .footmenu_warp .menu1 .bt-name .no_a em{height:50px; line-height:50px; font-size:15px;}
 .footmenu_warp .menu1 .bt-name .iconimg{font-size:18px; height:18px; padding-top:7px; color:#777;}
-.footmenu_warp .menu2 .iconimg{font-size:16px; color:#777;}
-.footmenu_warp .menu2 em{display:block; height:20px; line-height:25px; width:100%;}
+.footmenu_warp .menu2 li.icon_li a {height:40px;}
+.footmenu_warp .menu2 li.icon_li a.noimg {height:25px;padding-top:5px;}
+.footmenu_warp .menu2 .iconimg{font-size:16px; color:#777; height:20px; line-height:20px;}
+.footmenu_warp .menu2 em{display:block; height:20px; line-height:20px; width:100%;overflow:hidden;}
 .footmenu_warp .menu2 .tiggle {width:0px; height:0px; position:absolute; left:50%; margin-left:-10px; bottom:-10px; border-top:10px solid #EEEEEE; border-left:10px solid transparent; border-right:10px solid transparent; z-index:10;}
 .footmenu_warp .menu2 .innertiggle {width:0px; height:0px; position:absolute; left:50%; margin-left:-9px; bottom:-10px; border-top:9px solid #e6e6e6; border-left:9px solid transparent; border-right:9px solid transparent; z-index: 11;}
 .footmenu_warp .menu1.centers .bt-name{position:absolute; top:-20px; padding-top:0; width:100%; z-index:11;}
