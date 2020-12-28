@@ -50,7 +50,7 @@ $menudb=val('footlink','footermenu')?:fun('page@foot_menu');
 			<ul>
 			{volist name="rs.sons" id="vs"}
 				<li class="icon_li">
-					<a href="{$vs.url}">
+					<a href="{$vs.url}" class="{$vs.style?'haveimg':'noimg'}">
 						{if $vs.style}<em class="iconimg {$vs.style}"></em>{/if}
 						<em class="titles">{$vs.name}</em>
 					</a>
@@ -79,6 +79,7 @@ $menudb=val('footlink','footermenu')?:fun('page@foot_menu');
 
 
 <!--弹窗开始-->
+{if !val('hidelay')}
 <div class="footer_tc_dc"></div>
 <div class="footer_tc_show">
   <div class="shuoming">
@@ -106,12 +107,10 @@ $menudb=val('footlink','footermenu')?:fun('page@foot_menu');
 	  {/volist}
   </ul>
   <div onclick="window.location.href='{:val('appurl')?tempdir(val('appurl')):'/app.apk'}'" class="footer_app_xz">
-	 {:val('title4')?:'点击下载APP，可以享受更多的权益'}
+	 {:val('title4')?:'点击下载APP，可享受更多权益'}
   </div>
   <div class="guanbi"><i class="si si-close"></i></div>
 </div>
-<!--弹窗结束-->
-
 <script type="text/javascript">
 var center_obj = $(".footmenu_warp .centers");
 if( center_obj.length>0 && center_obj.find(".icons").length>0 ){
@@ -133,6 +132,8 @@ if(typeof(window.inApk)=='object' || typeof(api)=='object'){	//在APP中就隐�
 	 $('.footer_app_xz').hide();
 }
 </script>
+{/if}
+<!--弹窗结束-->
 
 <script type="text/javascript">
 if(window.self!=window.top){
