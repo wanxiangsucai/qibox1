@@ -5,7 +5,7 @@
 	{:val($_cfg?:[])}
 {/qb:tag}
 {if defined('LABEL_SET')}<ul style="padding:10px;">修改底部菜单相关功能设置</ul>{/if}
-
+{if val('bgcolor')!=''}<style type="text/css">.footmenu_warp .menu1.centers .bt-name em:first-child{ background:{:val('bgcolor')} }</style>{/if}
 
 <!--重新定义底部菜单链接开始-->
 {qb:hy name="footermenu001" type="links" val="listdb"}
@@ -49,6 +49,7 @@ $menudb=val('footlink','footermenu')?:fun('page@foot_menu');
         <div class="menu2" style="display: none;">
 			<ul>
 			{volist name="rs.sons" id="vs"}
+			{php}if(val('hidelay')&&val('hide2icon'))$vs['style']='';{/php}
 				<li class="icon_li">
 					<a href="{$vs.url}" class="{$vs.style?'haveimg':'noimg'}">
 						{if $vs.style}<em class="iconimg {$vs.style}"></em>{/if}
@@ -106,9 +107,11 @@ $menudb=val('footlink','footermenu')?:fun('page@foot_menu');
 	  </li>
 	  {/volist}
   </ul>
+ {if !val('hidedownapp')}
   <div onclick="window.location.href='{:val('appurl')?tempdir(val('appurl')):'/app.apk'}'" class="footer_app_xz">
 	 {:val('title4')?:'点击下载APP，可享受更多权益'}
   </div>
+  {/if}
   <div class="guanbi"><i class="si si-close"></i></div>
 </div>
 <script type="text/javascript">
