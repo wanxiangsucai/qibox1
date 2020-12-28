@@ -254,6 +254,7 @@ return <<<EOT
 	padding-right:10px;
 	border-radius:3px;
 }
+.js-upload-file{display:table;}
 </style>
 <div class="col-sm-12 js-upload-file">
         <ul class="list-group uploader-list" id="file_list_{$name}">

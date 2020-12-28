@@ -1,4 +1,13 @@
 <!--底部菜单-->
+<link rel="stylesheet" href="__STATIC__/css/footmenu.css?f"> 
+
+{qb:tag name="footermenu002" type="myform" conf="index_style/default/index/footmenu.php"}
+	{:val($_cfg?:[])}
+{/qb:tag}
+{if defined('LABEL_SET')}<ul style="padding:10px;">修改底部菜单相关功能设置</ul>{/if}
+
+
+<!--重新定义底部菜单链接开始-->
 {qb:hy name="footermenu001" type="links" val="listdb"}
 	{php}
 	$_menudb=[];
@@ -13,50 +22,122 @@
 			$_menudb[$rs['tagid']?:$key] = $vs;
 		}
 	}
-	val(['footlink'=>$_menudb]);
+	$_menudb && val(['footlink'=>$_menudb],'footermenu');/*加个footermenu标志,避免跟上面的标签冲突*/
 	{/php}
 {/qb:hy}
-
-{if defined('LABEL_SET')}<ul style="padding:5px;">底部菜单,点击可重定义链接</ul>{/if}
-
-<link rel="stylesheet" href="__STATIC__/css/footmenu.css"> 
+{if defined('LABEL_SET')}<ul style="padding:10px;">重新定义底部菜单链接</ul>{/if}
+<!--重新定义底部菜单链接结束-->
 
 {php}
 $menu_choose=config('system_dirname')?:(ENTRANCE==='member'?'member':'index');
-$menudb=val('footlink')?:fun('page@foot_menu');
+$menudb=val('footlink','footermenu')?:fun('page@foot_menu');
 {/php}
 
 <div class="footmenu_warp">
-	{volist name="$menudb" id="rs"} <!-- {if $rs.bgcolor}style="background-color:{$rs.bgcolor};"{/if} 强制加背景颜色很不协调,所以禁用了-->
-    <div class="menu1 {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)}ck{/if}">
-        <div class="bt-name"><a href="{$rs.sons?'javascript:;':$rs.url}" {if $rs.fontcolor}style="color:{$rs.fontcolor}"{/if}>{if $rs.style}<i class="{$rs.style}"></i>{/if}{$rs.name}</a></div>		
-		{if $rs.sons}
+	{volist name="$menudb" id="rs" offset="0" length='5' key="k"}
+    <!-- 一级菜单开始 -->
+	<div class="menu1   {if (count($menudb)>4&&$k==3)||(count($menudb)==3&&$k==2)} centers {/if}     {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)} ck {/if}">
+        <div class="bt-name">
+			<a href="{$rs.sons?'javascript:;':$rs.url}" style="{if $rs.fontcolor}color:{$rs.fontcolor};{/if} {if $rs.bgcolor}background-color:{$rs.bgcolor};{/if}">
+				<em class="iconimg {$rs.style|default='fa fa-leaf'}" {if $rs.fontcolor}style="color:{$rs.fontcolor}"{/if}></em>
+				<em class="titles">{$rs.name}</em>
+			</a>
+        </div>
+        {if $rs.sons}
+        <!-- 二级菜单开始 -->
         <div class="icons"></div>
         <div class="menu2" style="display: none;">
-            <ul>
-                {volist name="rs.sons" id="vs"}
-				<li><a href="{$vs.url}" {if count($menudb)>3}style="font-size:14px;overflow:hidden;"{/if}>{if $vs.style}<i class="{$vs.style}"></i>{/if}{$vs.name}</a></li>
-				{/volist}
-            </ul>
-            <div class="tiggle"></div>
-            <div class="innertiggle"></div>
+			<ul>
+			{volist name="rs.sons" id="vs"}
+				<li class="icon_li">
+					<a href="{$vs.url}">
+						{if $vs.style}<em class="iconimg {$vs.style}"></em>{/if}
+						<em class="titles">{$vs.name}</em>
+					</a>
+				</li>
+			{/volist}
+			</ul>
+			<div class="tiggle"></div>
+			<div class="innertiggle"></div>
         </div> 
+        <!-- 二级菜单结束 -->
+        {/if}
+        
+        {if strstr($rs.url,'member.php/member/msg/index')&&modules_config('tongji')}
+		<!-- 角标开始 -->
+        <dd  style="color:#fff;background:orange;position:absolute;right:5px;top:2px;font-size:10px;line-height:12px;padding:2px 3px;border-radius:4px;display:none;" class="tongji-num">0</dd>
+        {elseif strstr($rs.url,'member.php/member/index')}
+        <dd  style="color:#fff;background:red;position:absolute;right:5px;top:2px;font-size:10px;line-height:12px;padding:2px 3px;border-radius:4px;display:none;" class="msg-num">0</dd>
+        <!-- 角标结束 -->
 		{/if}
-			{if strstr($rs.url,'member.php/member/msg/index')&&modules_config('tongji')}
-				<dd  style="color:#fff;background:orange;position:absolute;right:5px;top:5px;font-size:10px;line-height:12px;padding:2px;border-radius:4px;display:none;" class="tongji-num">0</dd>
-			{elseif strstr($rs.url,'member.php/member/index')}
-				<dd  style="color:#fff;background:red;position:absolute;right:5px;top:5px;font-size:10px;line-height:12px;padding:2px;border-radius:4px;display:none;" class="msg-num">0</dd>
-			{/if}
     </div>
 	{$rs.script}
+	<!-- 一级菜单结束 -->
 	{/volist}    
 </div>
+
+
+
+<!--弹窗开始-->
+<div class="footer_tc_dc"></div>
+<div class="footer_tc_show">
+  <div class="shuoming">
+    {:val('title1')?:'随时随地交流，掌控身边动态！'}
+  </div>
+  {qb:tag name="wap_ruzhu" type="text"}
+  <div class="ruzhu" onclick="window.location.href='{:val('link1')?:murl('qun/content/add',['mid'=>1])}'">
+    <p><i class="fa fa-asl-interpreting"></i></p>
+    <p>
+        <span>{:val('title2')?:'创建属于自己的圈子！'}</span>
+        <span>{:val('title3')?:'发现生活乐圈，绽放精彩人生'}</span>
+    </p>
+    <p><i class="fa fa-fw fa-angle-right"></i></p>
+  </div>
+  {/qb:tag}
+  <div class="fabu_title"><span>快捷菜单</span></div>
+  <ul class="fabu_cd">
+      {volist name=":array_values($menudb)[count($menudb)>4?2:1]['sons']" id="rs"}
+	  <li>
+	    <a href="{$rs.sons?'javascript:;':$rs.url}">
+		  <span><i class="{$rs.style|default='fa fa-leaf'}"></i></span>
+		  <em>{$rs.name}</em>
+		</a>
+	  </li>
+	  {/volist}
+  </ul>
+  <div onclick="window.location.href='{:val('appurl')?tempdir(val('appurl')):'/app.apk'}'" class="footer_app_xz">
+	 {:val('title4')?:'点击下载APP，可以享受更多的权益'}
+  </div>
+  <div class="guanbi"><i class="si si-close"></i></div>
+</div>
+<!--弹窗结束-->
+
+<script type="text/javascript">
+var center_obj = $(".footmenu_warp .centers");
+if( center_obj.length>0 && center_obj.find(".icons").length>0 ){
+	center_obj.click(function(){
+		if($(".footer_tc_dc").is(':hidden')){
+			$('.footer_tc_show,.footer_tc_dc').fadeIn();
+		}else{
+			$('.footer_tc_show,.footer_tc_dc').fadeOut();
+		}
+	}).find(".menu2").remove();
+}
+
+$(document).ready(function(){
+    $('.footer_tc_show .guanbi,.footer_tc_dc').on('click', function(){
+        $('.footer_tc_show,.footer_tc_dc').fadeOut();
+    })
+});
+if(typeof(window.inApk)=='object' || typeof(api)=='object'){	//在APP中就隐藏下载APP的提示
+	 $('.footer_app_xz').hide();
+}
+</script>
 
 <script type="text/javascript">
 if(window.self!=window.top){
 	$(".footmenu_warp").hide();	//在框架里，就不要显示底部菜单
 }
-
 $(".footmenu_warp .menu1").click(function() {
     if ($(this).hasClass("showSons")) {
         $(this).children(".menu2").hide(); //当前菜单下的二级菜单隐藏
