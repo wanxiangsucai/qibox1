@@ -9,6 +9,15 @@ class LabelShow extends IndexBase
     public static $pri_js=null;
     public static $list_page_cfg = [];   //列表页的标签参数，主要是给AJAX传输数据用
     public static $label_adminurl = [];
+    
+    protected $beforeActionList = [
+        'check_run'  =>  ['except'=>'app_get,ajax_get'],
+    ];
+    protected function check_run(){
+        if (!defined('IN_TEMPLATE')) {
+            $this->error('只能在模板中调用!!');
+        }
+    }
 
     /**
      * 同一个标签,动态更换系统 type 参数,为的是给分页URL使用

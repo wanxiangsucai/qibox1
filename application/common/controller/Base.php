@@ -234,6 +234,9 @@ class Base extends Controller
 
 	protected function fetch($template = '', $vars = [], $replace = [], $config = [])
 	{
+	    if (!defined('IN_TEMPLATE')) {
+	        define('IN_TEMPLATE',true);
+	    }
 	    if (function_exists('val')) {
 	        //碎片模板要用到
 	        $array = val('','template')?:[];
