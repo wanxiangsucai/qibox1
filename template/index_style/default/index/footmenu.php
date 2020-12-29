@@ -9,6 +9,7 @@ return [
 		['text','title2','第二行标题','','创建属于自己的圈子'],
 		['text','title3','第三行标题','','发现生活乐圈，绽放精彩人生'],
 		['text','title4','第四行标题','','点击下载APP，可享受更多权益'],
+		['icon','iconqun','小图标'],
 		['text','link1','链接一','',murl('qun/content/add',['mid'=>1])],		
 		['radio','hidedownapp','是否提示APP下载','',['显示','隐藏']],
 		['file','appurl','app下载地址',''],

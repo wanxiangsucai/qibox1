@@ -98,6 +98,7 @@ class Tabel extends IndexBase{
 	            'icon'  => $attribute['icon'] ?: self::get_top_bottom($type,'icon'),
 	            'class' => $attribute['class'] ?: self::get_top_bottom($type,'class'),
 	            'href'  => $attribute['href'] ?: self::get_top_bottom($type,'href'),
+	            'target-form'  => $attribute['target-form'],
 	            'type'  => $type,
 	    ];
 	    return self::$instance;
@@ -172,7 +173,7 @@ class Tabel extends IndexBase{
      * @return $this
      */
 	public static function addFilter($columns = [], $options = [], $default = [], $type = 'radio'){
-	    self::$instance -> tab_ext['filter_search'][] = $columns;
+	    self::$instance -> tab_ext['filter_search'] = $columns;
 	    return self::$instance;
 	}
 	

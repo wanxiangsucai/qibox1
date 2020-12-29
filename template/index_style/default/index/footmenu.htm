@@ -88,7 +88,7 @@ $menudb=val('footlink','footermenu')?:fun('page@foot_menu');
   </div>
   {qb:tag name="wap_ruzhu" type="text"}
   <div class="ruzhu" onclick="window.location.href='{:val('link1')?:murl('qun/content/add',['mid'=>1])}'">
-    <p><i class="fa fa-asl-interpreting"></i></p>
+    <p><i class="{:val('iconqun')?:'fa fa-asl-interpreting'}"></i></p>
     <p>
         <span>{:val('title2')?:'创建属于自己的圈子！'}</span>
         <span>{:val('title3')?:'发现生活乐圈，绽放精彩人生'}</span>

@@ -86,6 +86,7 @@ return array(
 										array(
                                                 'title'=>'网站菜单设置',
                                                 'link'=>'webmenu/index',
+										        'power'=>['add'=>'手工添加菜单','edit'=>'修改菜单','delete'=>'删除菜单','copy'=>'复制菜单'],
                                         ),
                                         array(
                                             'title'=>'群聊菜单设置',

@@ -2988,12 +2988,19 @@ if (!function_exists('get_field')) {
      */
     function get_field($mid=0,$dirname=''){
         $dirname || $dirname = config('system_dirname');
+        if (!$dirname) {
+            return [];
+        }
         static $field_array = [];
         $list_f = $field_array[$dirname];
         if(empty($list_f)){
             $list_f = cache($dirname.'__field');
             if (empty($list_f)) {
-                $array = get_model_class($dirname,'field')->getFields([]);
+                $obj = get_model_class($dirname,'field');
+                if ($obj==false) {
+                    return [];
+                }
+                $array = $obj->getFields([]);
                 foreach($array AS $rs){
                     $list_f[$rs['mid']][$rs['name']] = $rs;
                 }

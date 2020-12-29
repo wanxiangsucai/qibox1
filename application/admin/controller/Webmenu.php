@@ -18,18 +18,31 @@ class Webmenu extends AdminBase
     
     public function index($type=0)
     {
+        $m_array = ['_sys_'=>'系统全局'];
+        foreach (modules_config() AS $rs){
+            $m_array[$rs['keywords']] = $rs['name'];
+        }
+        
 	    $type = intval($type);
-	    $map = [];
+	    $map = $sysname_array = [];
 	    if ($type>0) {
 	        $map = ['type'=>['in',[0,$type]]];
+	        $_ar = WebmenuModel::where($map)->group('sysname')->column('sysname');
+	        foreach($_ar AS $key){
+	            $sysname_array[$key] = $m_array[$key];
+	        }
+	    }
+	    if (input('search_field')!='' && input('keyword')!='') {
+	        $map[input('search_field')] = input('keyword');
 	    }
 	    $listdb = Tree::config(['title' => 'name'])->toList(
 	            WebmenuModel::where($map)->order('list desc,id desc')->column(true)
 	            );
-
+	    
 	    $tab = [
 	            //['id','ID','text'],	            
 	        ['title_display','链接名称','text'],
+	        ['sysname','归属频道','select2',$m_array],
 	        ['style','图标','icon'],
 	        ['type','所属','select2',['头部通用','PC头部菜单','wap头部菜单','wap底部菜单']],
 	        ['list','排序值','text.edit'],
@@ -38,7 +51,7 @@ class Webmenu extends AdminBase
 	        ['id','添加子菜单','callback',function($key,$rs){
 	            $code = ' ';
 	            if(!$rs['pid']){
-	                $code = "<a href='".url('add',['pid'=>$key])."' class='fa fa-plus' title='添加子菜单'></a>";
+	                $code = "<a href='".url('add',['pid'=>$key,'sysname'=>$rs['sysname']])."' class='fa fa-plus _pop' title='添加子菜单'></a>";
 	            }
 	            return $code;
 	        }],
@@ -50,11 +63,28 @@ class Webmenu extends AdminBase
 	    ];
 
 	    $table = Tabel::make($listdb,$tab)
-	    ->addTopButton('add',['title'=>'添加菜单','href'=>url('add',['type'=>$type])])
-	    ->addTopButton('delete')	    
+	    ->addTopButton('add',[
+	        'title'=>'添加菜单',
+	        'href'=>url('add',[
+	            'type'=>$type,
+	            'sysname'=>input('search_field')=='sysname'?input('keyword'):''
+	        ]),
+	        'class'=>'_pop',	        
+	    ])
+	    ->addTopButton('delete');
+	    if ($type) {
+	        $table->addTopButton('copy',[
+	            'title'       => '复制',
+	            'icon'        => '',
+	            'class'       => 'ajax-post confirm',
+	            'target-form' => 'ids',
+	            'icon'        => 'fa fa-clone',
+	            'href'        => auto_url('copy',['type'=>$type])
+	        ]);
+	    }
 	    //->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__'])])
-	    ->addRightButton('delete')	    
-	    ->addRightButton('edit')
+	    $table->addRightButton('delete')	    
+	    ->addRightButton('edit',['class'=>'_pop'])
 	    //->addPageTips('省份管理')
 	    //->addOrder('id,list')
 	    ->addPageTitle('网站菜单管理')
@@ -65,11 +95,54 @@ class Webmenu extends AdminBase
 	            3=>['title' => 'wap底部菜单', 'url' =>url('index',['type'=>3])],
 	            
 	    ],$type);
+	    
+	    //添加列筛选项
+	    if ($sysname_array) {
+	        $table->addFilter([
+	            'sysname'=>$sysname_array,
+	        ]);
+	    }
 
         return $table::fetchs();
 	}
 	
-	public function add($pid=0,$type=0){
+	public function copy($type=0,$ids=[]){
+	    if (!$type) {
+	        $this->error('分类不存在!');
+	    }elseif (count($ids)<1){
+	        $this->error('必须选择一个链接!');
+	    }
+	    if ($this->request->isPost()) {
+	        $data = $this->request->post();
+	        if (empty($data['sysname'])) {
+	            $this->error('请必须选择归属频道!');
+	        }
+	        $p_array = [];
+	        foreach($ids AS $id){
+	            $info = getArray(WebmenuModel::get($id));
+	            $array = $info;
+	            unset($array['id']);
+	            $array['sysname'] = $data['sysname'];
+	            $array['pid'] = ($info['pid']&&$p_array[$info['pid']]) ? $p_array[$info['pid']] : 0;
+	            $result = WebmenuModel::create($array);
+	            $_id = $result->id;
+	            if (!$info['pid']) { //一级分类的情况
+	                $p_array[$id] = $_id;
+	            }
+	        }
+	        $this->success("操作成功",urls('index',['type'=>$type]));
+	    }
+	    $m_array = ['_sys_'=>'系统全局'];
+	    foreach (modules_config() AS $rs){
+	        $m_array[$rs['keywords']] = $rs['name'];
+	    }
+	    $form = Form::make()
+	    ->addSelect('sysname','归属频道','',$m_array)
+	    ->addPageTitle('复制菜单');
+	    return $form::fetchs();
+	}
+	
+	public function add($pid=0,$type=0,$sysname=''){
 	    if ($this->request->isPost()) {
 	        $data = $this->request->post();
 	        if (!empty($this -> validate)) {   //验证数据
@@ -91,14 +164,25 @@ class Webmenu extends AdminBase
 	    }else{
 	        $info['type'] = intval($type);
 	    }
-	    $array = WebmenuModel::where('type','in',[0,$info['type']])->where('pid',0)->column('id,name');
+	    $m_array = ['_sys_'=>'系统全局'];
+	    foreach (modules_config() AS $rs){
+	        $m_array[$rs['keywords']] = $rs['name'];
+	    }
+	    //$array = WebmenuModel::where('type','in',[0,$info['type']])->where('pid',0)->column('id,name');
+	    //$father_name = '';
 	    
-	    $form = Form::make()
-	    ->addPageTips('父菜单为PC或WAP的话,子菜单设置通用无效')
-	    ->addSelect('pid','父级菜单','',$array,$pid)
+	    $form = Form::make();
+	    if($pid){
+	        $form->addHidden('sysname',$info['sysname']);
+	    }else{
+	        $form->addSelect('sysname','归属频道','',$m_array,$sysname?:'_sys_');
+	    }
+	    $form->addPageTips('父菜单为PC或WAP的话,子菜单设置通用无效')
+	    //->addSelect('pid','父级菜单','',$array,$pid)
+	    ->addHidden('pid',$pid)
 	    ->addText('name','菜单名称')
 	    ->addText('url','菜单链接')
-	    ->addRadio('type','使用范围','',['头部通用','PC头部菜单','wap头部菜单','wap底部菜单'],intval($info['type']))
+	    ->addRadio('type','使用范围','',[1=>'PC头部菜单',2=>'wap头部菜单',3=>'wap底部菜单'],intval($info['type']?:3))
 	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'],0)
 	    ->addIcon('style','图标','需要模板配合做样式')
 	    ->addColor('fontcolor','字体颜色')
@@ -122,15 +206,21 @@ class Webmenu extends AdminBase
 	            $this->error('修改失败');
 	        }
 	    }
-	    $info = WebmenuModel::get($id);
-	    $array = WebmenuModel::where('type','in',[0,$info['type']])->where('pid',0)->column('id,name');
+	    $info = getArray(WebmenuModel::get($id));
+	    $array = [];
+	    if ($info['pid']) {
+	        $array = WebmenuModel::where('type','in',[0,$info['type']])->where('pid',0)->where('sysname',$info['sysname'])->column('id,name');
+	    }
+	    
 	    $form = Form::make([],$info)
 	    ->addPageTips('父菜单为PC或WAP的话,子菜单设置通用无效')
-	    ->addPageTitle('修改菜单')
-	    ->addSelect('pid','父级菜单','',$array)
-	    ->addText('name','名称')	    
+	    ->addPageTitle('修改菜单');
+	    if ($array) {
+	        $form->addSelect('pid','父级菜单','',$array);
+	    }	    
+	    $form->addText('name','名称')	    
 	    ->addText('url','菜单链接')
-	    ->addRadio('type','使用范围','',['头部通用','PC头部菜单','wap头部菜单','wap底部菜单'])
+	    //->addRadio('type','使用范围','',[1=>'PC头部菜单',2=>'wap头部菜单',3=>'wap底部菜单'])
 	    ->addRadio('target','是否新窗口打开','',['本窗口打开','新窗口打开'])
 	    ->addRadio('ifshow','是否隐藏','',['隐藏','显示(不隐藏)'])
 	    ->addNumber('list','排序值')

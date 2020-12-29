@@ -51,12 +51,28 @@ class Page{
             $type = 'pc';
             $_type = [0,1];
         }
+        $sysname = config('system_dirname');
+        if ($sysname) { //查找频道菜单
+            $array = cache('web_menu_'.$type.'_'.$sysname);
+            if (!is_array($array)) {
+                $array = model('admin/webmenu')->getTreeList([
+                    'ifshow'=>1,
+                    'type'=>['in',$_type],
+                    'sysname'=>$sysname,
+                ]);
+                cache('web_menu_'.$type.'_'.$sysname,$array?get_sons($array):[]);
+            }
+            if ($array) { //存在频道菜单
+                return $array;
+            }
+        }
+        
         $array = cache('web_menu_'.$type);
         if (empty($array)) {
-            $array = model('admin/webmenu')->getTreeList(['ifshow'=>1,'type'=>['in',$_type]]);
-            cache('web_menu_'.$type,$array);
+            $array = model('admin/webmenu')->getTreeList(['ifshow'=>1,'type'=>['in',$_type],'sysname'=>'_sys_']);
+            cache('web_menu_'.$type,get_sons($array));
         }
-        return get_sons($array);
+        return $array;
     }
     
     /**
