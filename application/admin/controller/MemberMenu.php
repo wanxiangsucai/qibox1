@@ -100,9 +100,17 @@ $('.trA').each(function(){
 	    }
 	    
 	    $table = Tabel::make($listdb,$tab)
-	    ->addTopButton('add',['title'=>'手工添加菜单','class'=>'_pop','url'=>url('add',['gid'=>$gid])])
+	    ->addTopButton('add',['title'=>'手工添加菜单','class'=>'_pop','url'=>url('add',['gid'=>$gid]),'class'=>'_pop',])
 	    ->addTopButton('custom',['title'=>'快速导入会员所有菜单','url'=>url('copy',['gid'=>$gid]),'icon'=>'fa fa-copy'])
 	    ->addTopButton('delete')
+	    ->addTopButton('copy',[
+	        'title'       => '复制',
+	        'icon'        => '',
+	        'class'       => 'ajax-post confirm',
+	        'target-form' => 'ids',
+	        'icon'        => 'fa fa-clone',
+	        'href'        => auto_url('copy',['gid'=>$gid,'type'=>'more'])
+	    ])
 	    ->addRightButton('add',['title'=>'添加下级菜单','class'=>'_pop','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])])
 	    ->addRightButton('delete')
 	    ->addRightButton('edit',['title'=>'修改菜单','class'=>'_pop'])
@@ -115,6 +123,11 @@ $('.trA').each(function(){
         return $table::fetchs();
 	}
 	
+	/**
+	 * 批量导入菜单
+	 * @param number $gid
+	 * @return unknown[]|number[]
+	 */
 	protected function copy_menu($gid=0){
 	    $num1 = $num2 = 0;
 	    foreach(Menu::make('member') AS $m_name=>$array1){
@@ -150,14 +163,55 @@ $('.trA').each(function(){
 	/**
 	 * 快速批量复制会员所有菜单
 	 * @param number $gid
+	 * @param string $type
 	 */
-	public function copy($gid=0){
-	    list($num1,$num2) = $this->copy_menu($gid);
-	    if ($num1 || $num2) {
-	        $this->success("本次共创建一级菜单 {$num1} 个,二级菜单 {$num2} 个");
+	public function copy($gid=0,$type='',$ids=[]){
+	    if ($type=='more') {
+	        return $this->copy_more($ids);
 	    }else{
-	        $this->error('已经导入过了,重复导入无效');
+	        list($num1,$num2) = $this->copy_menu($gid);
+	        if ($num1 || $num2) {
+	            $this->success("本次共创建一级菜单 {$num1} 个,二级菜单 {$num2} 个");
+	        }else{
+	            $this->error('已经导入过了,重复导入无效');
+	        }
 	    }
+	    
+	}
+	
+	/**
+	 * 复制多个指定菜单
+	 * @param array $ids
+	 * @return unknown
+	 */
+	public function copy_more($ids=[]){
+	    if (count($ids)<1){
+	        $this->error('必须选择一个链接!');
+	    }
+	    if ($this->request->isPost()) {
+	        $data = $this->request->post();
+	        if (empty($data['groupid'])) {
+	            $this->error('请必须选择归属会员组!');
+	        }
+	        $p_array = [];
+	        foreach($ids AS $id){
+	            $info = getArray(MenuModel::get($id));
+	            $array = $info;
+	            unset($array['id']);
+	            $array['groupid'] = $data['groupid'];
+	            $array['pid'] = ($info['pid']&&$p_array[$info['pid']]) ? $p_array[$info['pid']] : 0;
+	            $result = MenuModel::create($array);
+	            $_id = $result->id;
+	            if (!$info['pid']) { //一级分类的情况
+	                $p_array[$id] = $_id;
+	            }
+	        }
+	        $this->success("操作成功",urls('index',['type'=>$type]));
+	    }
+	    $form = Form::make()
+	    ->addSelect('groupid','归属会员组','',getGroupByid())
+	    ->addPageTitle('复制菜单');
+	    return $form::fetchs();
 	}
 	
 	/**

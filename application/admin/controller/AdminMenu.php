@@ -55,8 +55,16 @@ class AdminMenu extends AdminBase
 	    ];
 	    
 	    $table = Tabel::make($listdb,$tab)
-	    ->addTopButton('add',['title'=>'添加菜单','url'=>url('add',['gid'=>$gid])])
+	    ->addTopButton('add',['title'=>'添加菜单','url'=>url('add',['gid'=>$gid]),'class'=>'_pop',])
 	    ->addTopButton('delete')
+	    ->addTopButton('copy',[
+	        'title'       => '复制',
+	        'icon'        => '',
+	        'class'       => 'ajax-post confirm',
+	        'target-form' => 'ids',
+	        'icon'        => 'fa fa-clone',
+	        'href'        => auto_url('copy',['gid'=>$gid])
+	    ])
 	    ->addRightButton('add',['title'=>'添加下级菜单','href'=>url('add',['pid'=>'__id__','gid'=>'__groupid__'])])
 	    ->addRightButton('delete')
 	    ->addRightButton('edit')
@@ -67,6 +75,46 @@ class AdminMenu extends AdminBase
 
         return $table::fetchs();
 	}
+	
+	/**
+	 * 复制多个指定菜单
+	 * @param array $ids
+	 * @return unknown
+	 */
+	public function copy($ids=[]){
+	    if (count($ids)<1){
+	        $this->error('必须选择一个链接!');
+	    }
+	    if ($this->request->isPost()) {
+	        $data = $this->request->post();
+	        if (empty($data['groupid'])) {
+	            $this->error('请必须选择归属会员组!');
+	        }
+	        $p_array = [];
+	        foreach($ids AS $id){
+	            $info = getArray(MenuModel::get($id));
+	            $array = $info;
+	            unset($array['id']);
+	            $array['groupid'] = $data['groupid'];
+	            $array['pid'] = ($info['pid']&&$p_array[$info['pid']]) ? $p_array[$info['pid']] : 0;
+	            $result = MenuModel::create($array);
+	            $_id = $result->id;
+	            if (!$info['pid']) { //一级分类的情况
+	                $p_array[$id] = $_id;
+	            }
+	        }
+	        $this->success("操作成功",urls('index',['type'=>$type]));
+	    }
+	    $garray = [];
+	    foreach ($this->group_nav AS $id=>$rs){
+	        $garray[$id] = $rs['title'];
+	    }
+	    $form = Form::make()
+	    ->addSelect('groupid','归属会员组','',$garray)
+	    ->addPageTitle('复制菜单');
+	    return $form::fetchs();
+	}
+	    
 	
 	public function add($pid=0,$gid=0){
 	    if ($this->request->isPost()) {
