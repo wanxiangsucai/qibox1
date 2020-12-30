@@ -129,11 +129,15 @@ if( center_obj.length>0 && center_obj.find(".icons").length>0 ){
 $(document).ready(function(){
     $('.footer_tc_show .guanbi,.footer_tc_dc').on('click', function(){
         $('.footer_tc_show,.footer_tc_dc').fadeOut();
-    })
+    });
+
+	setTimeout(function(){	//仿原生APP, 获取API需要时间的
+		if(typeof(window.inApk)=='object' || typeof(api)=='object'){	//在APP中就隐藏下载APP的提示
+			 $('.footer_app_xz').hide();
+		}
+	},1000);
 });
-if(typeof(window.inApk)=='object' || typeof(api)=='object'){	//在APP中就隐藏下载APP的提示
-	 $('.footer_app_xz').hide();
-}
+
 </script>
 {/if}
 <!--弹窗结束-->
