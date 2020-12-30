@@ -74,7 +74,7 @@ class Post
                     //$data[$name] = json_encode(array_values($data['images2'][$name]));
                     break;
                     // 日期时间
-                case 'date':
+                //case 'date':
                 //case 'time':
                 case 'datetime':
                     $data[$name] = strtotime($data[$name]);

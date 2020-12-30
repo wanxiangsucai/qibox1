@@ -95,6 +95,9 @@ class User extends IndexBase
             $this->error('你还没登录!');
         }
         $info = $this->model->get_info($this->user['uid'],'uid',false);
+        if ($info['bday']<1) {
+            $info['bday']='';
+        }
         
         $this->form_items = [
                 ['hidden', 'uid'],
@@ -103,6 +106,7 @@ class User extends IndexBase
                 ['text', 'nickname', '昵称'],
                // ['text', 'email', '邮箱'],
                 ['radio', 'sex', '性别','',[0=>'保密',1=>'男',2=>'女']],
+                ['date', 'bday', '生日'],
                 ['jcrop', 'icon', '头像'],
                 ['textarea', 'introduce', '自我介绍(签名)'],
         ];
