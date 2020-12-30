@@ -8,18 +8,50 @@
 <!--超过30个栏目的话,默认就只显示一级分类-->
 {if count($listdb)>30}
 <style type="text/css">
-.level-2,.level-3,.level-4,.level-5,.level-6,.level-7{display:none;}
+.levels{display:none;}
 </style>
 <script type="text/javascript">
+var page_key = "showson_{:md5(get_url('location'))}_";
+var level_idArray = [];
+var showids = $.cookie(page_key)?$.cookie(page_key):',';
+function set_show(id,type){
+	if(type===null){
+		showids = showids.replace(id+',','');
+		$.cookie(page_key,showids,60*24*360);
+	}else if(type===true){
+		if(showids.indexOf(id+',')==-1){
+			showids = showids+id+',';
+			$.cookie(page_key,showids,60*24*360);
+		}
+	}else{
+		return showids.indexOf(id+',')==-1?false:true;
+	}
+}
+
 $(function(){
 	$(".ListTable .TR").each(function(){
-		if($(this).next().hasClass("pid-"+$(this).data("id"))){
-			$(this).find('.Left').append(" <i title='展开或收缩子分类' style='cursor:pointer;' class='showsons fa fa-plus-circle' onclick='show_sons("+$(this).data("id")+")'></i>");
-		}		
+		var id = $(this).data("id");
+		if($(this).next().hasClass("pid-"+id)){
+			level_idArray.push(id);			
+			$(this).find('.Left').append(" <i title='展开或收缩子分类' style='cursor:pointer;' class='showsons fa fa-plus-circle' onclick='show_sons("+id+")'></i>");
+		}
 	});
 	$(".ListTable tr").eq(0).find("th").eq(1).append(" <i title='展开子分类' style='cursor:pointer;' class='fa fa-plus-circle' onclick='show_allsons(true)'></i> <i title='收缩子分类' style='cursor:pointer;' class='fa fa-minus-circle' onclick='show_allsons(false)'></i>");
+	level_idArray.forEach((id)=>{
+		if(set_show(id)===true){
+			show_sons(id,'load');
+		}
+	});
 });
+
 function show_sons(id,type){
+	if(type==undefined){
+		if( set_show(id)===true ){
+			set_show(id,null);
+		}else{
+			set_show(id,true);
+		}
+	}
 	var o = $(".TR[data-id="+id+"] .showsons");
 	if(o.hasClass('fa-plus-circle') && type!='close'){
 		$(".pid-"+id).show(300);
@@ -34,9 +66,15 @@ function show_sons(id,type){
 }
 function show_allsons(type){
 	if(type==true){
+		level_idArray.forEach((id)=>{
+			set_show(id,true);
+		});
 		$(".ListTable .TR").show();
 		$(".ListTable .showsons").removeClass('fa-plus-circle').addClass('fa-minus-circle');
 	}else{
+		level_idArray.forEach((id)=>{
+			set_show(id,null);
+		});
 		$(".ListTable .TR").hide();
 		$(".ListTable .level-1").show();
 		$(".ListTable .showsons").removeClass('fa-minus-circle').addClass('fa-plus-circle');
@@ -122,7 +160,7 @@ function show_allsons(type){
 
 {volist name="listdb" id="rs"}
 {php}$tab_ext['id'] && $rs['id']=$rs[$tab_ext['id']];{/php}
-    <tr bgcolor="#FFFFFF" class="trA list-item-{$rs.id} level-{$rs.level} pid-{$rs.pid} TR" data-id="{$rs.id}" onmouseover="$(this).removeClass('trA').addClass('trB')" onmouseout="$(this).removeClass('trB').addClass('trA')"> 
+    <tr bgcolor="#FFFFFF" class="trA list-item-{$rs.id} {$rs.level>1?'levels':''} level-{$rs.level} pid-{$rs.pid} TR" data-id="{$rs.id}" onmouseover="$(this).removeClass('trA').addClass('trB')" onmouseout="$(this).removeClass('trB').addClass('trA')"> 
       <td><input type="checkbox" name="ids[]" value="{$rs.id}"> {$rs.id}</td>
 	 <!-- 自定义字段数据列表-->
 	{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"}
