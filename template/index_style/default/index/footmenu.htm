@@ -35,10 +35,10 @@ $menudb=val('footlink','footermenu')?:fun('page@foot_menu');
 
 <div class="footmenu_warp">
 	{volist name="$menudb" id="rs" offset="0" length='5' key="k"}
-    <!-- 一级菜单开始 -->
+    <!-- 一级菜单开始 {if $rs.bgcolor}background-color:{$rs.bgcolor};{/if} -->
 	<div class="menu1   {if (count($menudb)>4&&$k==3)||(count($menudb)==3&&$k==2)} centers {/if}     {if ($rs['activate']==$menu_choose||$rs['activate']==$menu_choose.'-'.$fid)} ck {/if}">
         <div class="bt-name">
-			<a href="{$rs.sons?'javascript:;':$rs.url}" style="{if $rs.fontcolor}color:{$rs.fontcolor};{/if} {if $rs.bgcolor}background-color:{$rs.bgcolor};{/if}">
+			<a href="{$rs.sons?'javascript:;':$rs.url}" style="{if $rs.fontcolor}color:{$rs.fontcolor};{/if} ">
 				<em class="iconimg {$rs.style|default='fa fa-leaf'}" {if $rs.fontcolor}style="color:{$rs.fontcolor}"{/if}></em>
 				<em class="titles">{$rs.name}</em>
 			</a>
