@@ -90,6 +90,21 @@ class Content{
     }
     
     /**
+     * 获取内容中的视频
+     * @param string $content
+     * @param string $not_use_hide 隐藏的内容,就不要提取他的数据
+     * @return array[][]|\app\common\fun\unknown[][][]
+     */
+    public static function get_videos($content='',$not_use_hide=false){
+        if ($not_use_hide) {
+            $content = del_html($content,$not_use_hide);
+        }
+        $array = [];
+        Ueditor::get_mvurl($content,$array);
+        return $array;
+    }
+    
+    /**
      * 获取内容中的图片
      * @param string $content
      * @param string $not_use_hide 隐藏的内容,就不要提取他的图片
