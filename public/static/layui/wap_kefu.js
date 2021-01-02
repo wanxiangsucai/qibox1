@@ -335,7 +335,7 @@ layui.config({
 		uid = res.data.id;
 		
 		if(uid>0){
-			$.get("/index.php/index.php/index/wxapp.layim/set_read.html?uid="+uid,function(res){}); //标注已读
+			$.get("/index.php/index/wxapp.layim/set_read.html?uid="+uid,function(res){}); //标注已读
 		}else{
 			WS.link({"uid":uid,"kefu":0});	//跟圈子建立连接通道,才能收到那边新的即时消息
 		}
