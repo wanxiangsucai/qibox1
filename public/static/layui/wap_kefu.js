@@ -357,7 +357,7 @@ layui.config({
 		$(".layim-"+type+uid+" .layim-msg-status").html(0).hide();
 		
 		//var index = layer.msg("请稍候,正在加载数据...",{time:500});
-		$.get("/index.php/index.php/index/wxapp.layim/get_more_msg.html?rows=20&uid="+uid,function(res){
+		$.get("/index.php/index/wxapp.layim/get_more_msg.html?rows=20&uid="+uid,function(res){
 			//layer.close(index);
 			if(res.code==0){
 				for(var i=res.data.length-1;i>=0;i--){
