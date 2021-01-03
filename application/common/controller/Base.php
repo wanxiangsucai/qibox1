@@ -242,7 +242,33 @@ class Base extends Controller
 	        $array = val('','template')?:[];
 	        $array = array_merge($array,$vars);
 	        val($array,'template');
-	    }	    
+	    }
+	    
+	    //自定义模板
+	    if ($template=='' || !strstr($template,substr(ROOT_PATH,0,-2))) {
+	        if ($this->route[1]=='plugin' && $this->route[2]=='execute') {
+	            $tp_module = input('param.plugin_name');
+	            $tp_controller = input('param.plugin_controller');
+	            $tp_action = input('param.plugin_action');
+	        }else{
+	            $tp_module = $this->route[0];
+	            $tp_controller = $this->route[1]?:'index';
+	            $tp_action = $this->route[2]?:'index';
+	        }
+	        $tp_name = (defined('IN_WAP')&&IN_WAP===true)?'wap_':'pc_';
+	        $tp_name .= defined('ENTRANCE') ? ENTRANCE.'_' : 'other_';
+	        $tp_name .= $tp_module.'_'.$tp_controller.'_'.$tp_action;
+	        if (($this->admin||strstr($tp_controller,'login')||strstr($tp_controller,'reg')) && input('get.get_template_name')==1) {
+	            die('当前页面的自定义模板变量名如下<br>'.$tp_name.'<br>'.str_replace('pc_', 'wap_', $tp_name));
+	        }
+	        if ($this->webdb[$tp_name]) {
+	            if (is_file(TEMPLATE_PATH.$this->webdb[$tp_name])) {
+	                $template = TEMPLATE_PATH.$this->webdb[$tp_name];
+	            }elseif(is_file(ROOT_PATH.$this->webdb[$tp_name])){
+	                $template = ROOT_PATH.$this->webdb[$tp_name];
+	            }
+	        }
+	    }
 	    
 	    if($this->route[1]=='plugin' && $this->route[2]=='execute' && !strstr($template,substr(ROOT_PATH,0,-2))){
 	        $plugin_name = input('param.plugin_name');
