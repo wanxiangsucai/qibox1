@@ -28,6 +28,9 @@ class Player{
         if(is_numeric($height)){
             $height .= 'px';
         }
+        if ((defined('LABEL_SET')&&LABEL_SET===true)||(defined('SHOW_SET_LABEL')&&SHOW_SET_LABEL===true)) {
+            return "<img src=\"".STATIC_URL."images/hidevideo.jpg\" style=\"width:{$width};height:{$height};\" onerror=\"this.src='https://x1.php168.com/public/static/images/hidevideo.jpg'\">";
+        }
         $_url = $this->iframe_player($url,$width,$height);
         if ($_url!='') {
             return $_url;
