@@ -50,11 +50,16 @@ class Config extends Model
     /**
      * 与系统雷同的变量名全删除
      */
-    public function check_system_key_repeat(){
+    public function check_system_key_repeat($group=0){
         //$array = getArray( $this->where('ifsys',1)->field('id,c_key,count(c_key) as num')->group('c_key')->order('num desc')->select() );
         $array = getArray( $this->where('ifsys',1)->field('c_key,sys_id,id,count(c_key) AS num')->group('c_key')->having('count(c_key)>1')->select() );
         foreach ($array AS $key=>$rs){
             $this->where('c_key','=',$rs['c_key'])->where('sys_id','<>','0')->limit($rs['num']-1)->delete();
+        }
+        //删除重复的字段
+        $array = getArray( $this->where('type',$group)->field('c_key,id,count(c_key) AS num')->group('c_key')->having('count(c_key)>1')->select() );
+        foreach ($array AS $key=>$rs){
+            $this->where('c_key','=',$rs['c_key'])->where('type',$group)->limit($rs['num']-1)->delete();
         }
     }
     
@@ -65,7 +70,7 @@ class Config extends Model
      * @return string|array|\think\false
      */
     public function save_group_data($data=[],$group=0){        
-        $this->check_system_key_repeat();   //与系统雷同的变量名全删除
+        $this->check_system_key_repeat($group);   //与系统雷同的变量名全删除
         $array = [];
         $config_data = $this->where('type' , $group)->column('c_key,form_type,id');
         foreach ($config_data as $name => $rs) {
