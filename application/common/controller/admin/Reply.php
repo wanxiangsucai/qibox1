@@ -12,10 +12,7 @@ class Reply extends AdminBase
     protected $c_model;
     protected $list_items;
     protected $form_items;
-    protected $tab_ext = [
-            'page_title'=>'评论回复管理',
-            'top_button'=>[ ['type'=>'delete']],
-    ];
+    protected $tab_ext;
     
     protected function _initialize()
     {
@@ -42,6 +39,20 @@ class Reply extends AdminBase
                 ['create_time', '发布日期', 'text'],
         ];
         
+        $this -> tab_ext = [
+            'page_title'=>'评论回复管理',
+            'top_button'=>[
+                ['type'=>'delete'],
+                [
+                    'title'       => '审核',
+                    'icon'        => '',
+                    'class'       => 'ajax-post confirm',
+                    'target-form' => 'ids',
+                    'icon'        => 'fa fa-check-circle-o',
+                    'href'        => auto_url('batch',['action'=>'yz'])
+                ],
+            ],
+        ];
         $this -> tab_ext['search'] = ['uid'=>'用户uid','aid'=>'主题id'];
         
         //筛选字段
@@ -64,6 +75,21 @@ class Reply extends AdminBase
         
         $listdb = self::getListData($map = [], $order = []);
         return $this -> getAdminTable($listdb);
+    }
+    
+    /**
+     * 批量处理
+     * @param string $action
+     * @param array $ids
+     */
+    public function batch($action='',$ids=[]){
+        if (!$ids) {
+            $this->error('内容不存在!');
+        }
+        if ($action=='yz'){
+            $this->model->where('id','IN',$ids)->update(['status'=>1]);
+            $this->success('操作完成!');
+        }
     }
     
     /**

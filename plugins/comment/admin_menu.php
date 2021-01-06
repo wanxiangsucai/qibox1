@@ -10,7 +10,7 @@ return array(
 								        array(
 								                'title'=>'评论内容管理',
 								                'link'=>'content/index',
-								            'power'=>['delete','edit'=>'审核'],
+								                'power'=>['delete','edit'=>'审核','batch'=>'批量处理'],
 								            ),
 								        array(
 								                'title'=>'评论参数设置',

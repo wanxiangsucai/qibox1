@@ -325,8 +325,8 @@ abstract class C extends IndexBase
             $mid = current(model_config())['id'];   //考虑给其它非列表页调用的时候,不存在fid 也不存在 mid
             if(empty($mid)){
                 return [];
-            }            
-        }        
+            }
+        }
         $by = $by == 'asc' ? 'asc' : 'desc';
         if($fid){
             $fids = get_sort($fid,'sons') ;
@@ -342,7 +342,19 @@ abstract class C extends IndexBase
 //                 $order = 'list';
 //             }
 //         }
-        $listdb = $this->getListData($map, "$order $by",  $rows , [] ,true);
+        if ($mid==-1) {
+            unset($map['mid']);
+            preg_match_all("/[\w]+/i", "$order $by",$array);
+            foreach($array[0] AS $v){
+                if(!in_array(strtolower($v), ['rand','asc','desc','view','id','status','list','create_time'])){
+                    $order = 'list desc,id desc';
+                    $by = '';
+                }
+            }
+            $listdb = $this->model->getAll($map,"$order $by",$rows,$pages=[],$format=true);
+        }else{
+            $listdb = $this->getListData($map, "$order $by",  $rows , [] ,true);
+        }        
         $listdb->each(function($rs,$key){
             if( $rs['status']==0 && (empty($this->user)||($rs['uid']!=$this->user['uid']&&fun('admin@sort',$rs['fid'])!==true)) ){
                 return [];

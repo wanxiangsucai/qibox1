@@ -483,12 +483,21 @@ abstract class C extends Model
      * @return \think\Paginator|array|\think\db\false|PDOStatement|string|\think\Model
      */
     public static function getAll($map=[],$order="id desc",$rows=0,$pages=[],$format=FALSE){
-        static::check_model();
-        $array = Db::name(self::$base_table)->where(static::map())->where($map)->order($order)->paginate(
+        static::check_model();        
+        if (stristr($order,'rand()')) {
+            $array = Db::name(self::$base_table)->where(static::map())->where($map)->orderRaw('rand()')->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
                 empty($pages[1])?['query'=>input('get.')]:$pages[1]
-            );
+                );
+        }else{
+            $array = Db::name(self::$base_table)->where(static::map())->where($map)->order($order)->paginate(
+                empty($rows)?null:$rows,    //每页显示几条记录
+                empty($pages[0])?false:$pages[0],
+                empty($pages[1])?['query'=>input('get.')]:$pages[1]
+                );
+        }
+        
         foreach ($array AS $key=>$ar){
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();

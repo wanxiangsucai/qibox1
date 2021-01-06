@@ -17,7 +17,15 @@ class Content extends AdminBase
         
         //顶部菜单
         $this->tab_ext['top_button'] = [
-                ['type'=>'delete'],
+            ['type'=>'delete'],
+            [
+                'title'       => '审核',
+                'icon'        => '',
+                'class'       => 'ajax-post confirm',
+                'target-form' => 'ids',
+                'icon'        => 'fa fa-check-circle-o',
+                'href'        => auto_url('batch',['action'=>'yz'])
+            ],
         ];
         
         //右边菜单
@@ -67,5 +75,20 @@ class Content extends AdminBase
                         return "<a href='{$url}' target='_blank' class='si si-link' title='查看来源于哪个主题'></a>";
                     }],
                 ];
+    }
+    
+    /**
+     * 批量处理
+     * @param string $action
+     * @param array $ids
+     */
+    public function batch($action='',$ids=[]){
+        if (!$ids) {
+            $this->error('内容不存在!');
+        }
+        if ($action=='yz'){
+            $this->model->where('id','IN',$ids)->update(['status'=>1]);
+            $this->success('操作完成!');
+        }
     }
 }

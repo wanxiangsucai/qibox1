@@ -214,6 +214,16 @@ class Content{
     }
     
     /**
+     * 上一页的数组
+     * @param array $info
+     * @param string $order
+     * @return unknown
+     */
+    public function prev_info($info=[],$order='id'){
+        return $this->prev_next($info,true,'>',$order);
+    }
+    
+    /**
      * 下一页与下一页的用法 {:fun('content@next',$info,20)}
      * @param array $info 当前页的内容主题内容,里边必须要包含有id fid mid
      * @param string $title 可以设置下一页也可以设置数字,截取标题数
@@ -235,11 +245,21 @@ class Content{
             return $array[1];
         }         
     }
+    
+    /**
+     * 下一页的内容数组
+     * @param array $info
+     * @param string $order
+     * @return unknown
+     */
+    public function next_info($info=[],$order='id'){
+        return $this->prev_next($info,true,'<',$order);
+    }
    
     /**
      * 上一页,下一页
      * @param array $info 当前页的内容主题内容,里边必须要包含有id fid mid
-     * @param number $title 可以设置下一页也可以设置数字,截取标题数
+     * @param number $title 可以设置下一页也可以设置数字,截取标题数 为true时,就直接返回数据内容数组
      * @param string $type 大于或小于当前页的ID
      * @return string
      */
@@ -274,7 +294,7 @@ class Content{
                }else{
                    $by='asc';
                }
-               $rsdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],'id'=>[$type,$info['id']],])->order('id',$by)->field('id,title')->find();
+               $rsdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],'id'=>[$type,$info['id']],])->order('id',$by)->field($title===true?true:'id,title')->find();
            }
            $array[$_key] = $rsdb;
        }
@@ -286,7 +306,23 @@ class Content{
            $title = get_word($rsdb['title'], $title);
        }
        $url = urls('content/show',['id'=>$rsdb['id']]);
-       return "<a href='{$url}' title='{$rsdb['title']}'>{$title}</a>";
+       if ($title===true) {
+           $rsdb['url'] = $url;
+           if (strstr($rsdb['picurl'],',')) {   //组图
+               $rsdb['picurls'] = $rsdb['picurl'];
+               $rsdb['picurl'] = explode(',', $rsdb['picurl'])[0];
+           }elseif(!$rsdb['picurl'] && $rsdb['pics']){  //CMS图库
+               $rsdb['picurl'] = json_decode($rsdb['pics'],true)[0]['picurl'];
+           }
+           $rsdb['picurl'] = tempdir($rsdb['picurl']);
+           if ($rsdb['content']) {
+               $rsdb['full_content'] = $rsdb['content'];
+               $rsdb['content'] = del_html(del_html($rsdb['content'],true));
+           }
+           return $rsdb;
+       }else{
+           return "<a href='{$url}' title='{$rsdb['title']}'>{$title}</a>";
+       }       
    }
    
    /**
