@@ -60,13 +60,53 @@ abstract class C extends AdminBase
     }
     
     /**
+     * 储存数据互转
+     * @param number $page
+     * @return string
+     */
+    public function movedata($page=0){
+        define('MOVEDATE',true);
+        if (!$page) {
+            $url = auto_url('add').'?type=movedata&page=1';
+            return "<a href=\"$url\">你确认要转移数据储存吗?点击开始</a>";
+        }
+        $rows = 100;
+        $min = ($page-1)*$rows;
+        $listdb = $this->model->getAll($map=[],$order="id asc",$rows);
+        $array = getArray($listdb)['data'];
+        foreach ($array AS $rs){
+            if ($this->webdb['is_file_content']) {
+                \app\common\fun\Content::put_content($this->model->getKey(),$rs['id'],$rs['content']);
+            }else{
+                $this->model->editData($rs['mid'],['id'=>$rs['id'],'content'=>$rs['content']]);
+            }
+        }
+        if (!$array) {
+            if ($this->webdb['is_file_content']) {
+                foreach(model_config() AS $rs){
+                    \think\Db::name($this->model->getKey().'_content'.$rs['id'])->where('status','<>',-1)->update(['content'=>'']);
+                }
+            }
+            die('转换完毕!!');
+        }
+        $page++;
+        $url = auto_url('add').'?type=movedata&page='.$page;
+        echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL=$url'><a href='$page'>$page</a>";
+        exit;
+    }
+    
+    /**
      * 发布页，可以根据栏目ID或者模型ID，但不能为空，不然不知道调用什么字段
      * @param number $fid
      * @param number $mid
      * @return unknown
      */
-    public function add($fid=0,$mid=0)
+    public function add($fid=0,$mid=0,$type='')
     {
+        if ($type=='movedata') {
+            $page = input('page');
+            return $this->movedata($page);
+        }
         $data = $this->request->post();
         isset($data['fid']) && $fid = $data['fid'];
         
@@ -181,12 +221,12 @@ abstract class C extends AdminBase
                         'target-form' => 'ids',
                         'href'        => auto_url('info/add')
                 ],
-                [
-                        'title' => '返回栏目列表',
-                        'icon'  => 'fa fa-reply',
-                        'class' => '',
-                        'href'  => auto_url('sort/index')
-                ],
+//                 [
+//                         'title' => '栏目管理',
+//                         'icon'  => 'fa fa-reply',
+//                         'class' => '',
+//                         'href'  => auto_url('sort/index')
+//                 ],
         ];
         
         //比如万能表单是不需要栏目的，就不要显示栏目
@@ -195,6 +235,15 @@ abstract class C extends AdminBase
         }
         if(empty(config('use_category'))){
             unset($this->tab_ext['top_button'][2]);
+        }
+        
+        if ($this->webdb['is_file_content']) {
+            $this->tab_ext['top_button'][] = [
+                'title' => '内容存储转移',
+                'icon'  => 'fa fa-soundcloud',
+                'class' => '',
+                'href'  => auto_url('add',['type'=>'movedata'])
+            ];
         }
         
         if(empty($this->list_items)){
@@ -309,7 +358,7 @@ abstract class C extends AdminBase
                             'href'        => auto_url('info/add')
                     ],
                     [
-                            'title' => '返回栏目列表',
+                            'title' => '栏目管理',
                             'icon'  => 'fa fa-reply',
                             'class' => '',
                             'href'  => auto_url('sort/index')

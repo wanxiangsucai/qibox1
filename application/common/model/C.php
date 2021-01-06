@@ -177,6 +177,9 @@ abstract class C extends Model
             return false;
         }
         if ($result) {
+            
+            self::del_content($id);
+            
 			//删除信息后的钩子,可以做一些记录,或者做附件删除处理
 			get_hook('cms_model_delete_end',$array=[],$info,['id'=>$id],true);
             hook_listen('cms_model_delete_end',$info,$id);
@@ -238,7 +241,12 @@ abstract class C extends Model
 			get_hook('cms_model_edit_begin',$data,$info=[],['mid'=>$mid],true);
             hook_listen('cms_model_edit_begin',$data,$mid);
             
-            $result = Db::name($table)->where('id',$data['id'])->update($data);            
+            $array = $data;
+            if (isset($data['content']) && self::put_content($data['content'],$data['id'])===true) {    //存入文本内容成功
+                $array['content'] = '';
+            }
+            
+            $result = Db::name($table)->where('id',$data['id'])->update($array);            
        // } catch(\Exception $e) {
         //    return false;
        // }
@@ -291,7 +299,11 @@ abstract class C extends Model
         
         $table = self::getTableByMid($mid); //内容主表
         
-        $result = Db::name($table)->insert($data);  //insert 成功只返回true 不会返回ID值 insertGetId才返回ID值,或者给insert补全其它参数
+        $array = $data;
+        if (isset($data['content']) && self::put_content($data['content'],$data['id'])===true) {    //存入文本内容成功
+            $array['content'] = '';
+        }
+        $result = Db::name($table)->insert($array);  //insert 成功只返回true 不会返回ID值 insertGetId才返回ID值,或者给insert补全其它参数
         
 //         try {
             
@@ -502,7 +514,7 @@ abstract class C extends Model
             //因为是跨表，所以一条一条的读取，效率不太高
             $info = Db::name(self::getTableByMid($ar['mid']))->where('id','=',$ar['id'])->find();
             if ($info) {
-                $array[$key] = $format?static::format_data($info,$cfg=[],self::$model_key,$sort_array=[]):$info;
+                $array[$key] = $format?static::format_data($info,$cfg=[],self::$model_key,$sort_array=[]):self::get_content($info);
             }
         }
         return $array;
@@ -560,7 +572,7 @@ abstract class C extends Model
         }
         $info = Db::name(self::getTableByMid($mid))->where(static::map())->where('id','=',$id)->find();
         if($info){
-            return $format ? static::format_data($info) : $info;
+            return $format ? static::format_data($info) : self::get_content($info);
         }        
     }
     
@@ -681,6 +693,10 @@ abstract class C extends Model
             $data_list->each(function($rs,$key){
                 return static::format_data($rs);
             });
+        }else{
+            $data_list->each(function($rs,$key){
+                return static::get_content($rs);
+            });
         }
         return $data_list;
     }
@@ -714,6 +730,10 @@ abstract class C extends Model
             $data_list->each(function($rs,$key){
                 return static::format_data($rs);
             });
+        }else{
+            $data_list->each(function($rs,$key){
+                return static::get_content($rs);
+            });
         }
         return $data_list;
     }
@@ -728,7 +748,7 @@ abstract class C extends Model
      * @param array $pages 
      * @return \think\Paginator
      */    
-    public static function getListByMid($mid=0,$map=[],$order='',$rows=0,$pages=[],$format=true)
+    public static function getListByMid($mid=0,$map=[],$order='',$rows=0,$pages=[],$format=true,$field=true)
     {
         //static::check_model();
         $order  = trim($order);
@@ -738,13 +758,13 @@ abstract class C extends Model
             $order .= ',id desc';
         }
         if(strstr($order,'rand()')){    //随机排序不能用 order() 方法
-            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->orderRaw('rand()')->paginate(
+            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->field($field)->orderRaw('rand()')->paginate(
                     empty($rows)?null:$rows,    //每页显示几条记录
                     empty($pages[0])?false:$pages[0],
                     empty($pages[1])?['query'=>input('get.')]:$pages[1]
                     );            
         }else{
-            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->order($order)->paginate(
+            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->field($field)->order($order)->paginate(
                     empty($rows)?null:$rows,    //每页显示几条记录
                     empty($pages[0])?false:$pages[0],
                     empty($pages[1])?['query'=>input('get.')]:$pages[1]
@@ -755,9 +775,64 @@ abstract class C extends Model
             $data_list->each(function($rs,$key){
                 return static::format_data($rs);
             });
+        }else{
+            $data_list->each(function($rs,$key){
+                return static::get_content($rs);
+            });
         }
         return $data_list;
     }
+    
+    /**
+     * 获取内容数据,有可能是存放在文本那里
+     * @param array $info
+     * @param string $sysname
+     * @return void|string
+     */
+    protected static function get_content($info=[],$sysname=''){
+        $sysname || $sysname=self::$model_key;
+        $webdb = config('webdb')['M__'.$sysname];
+        if($webdb['is_file_content']){
+            $content = \app\common\fun\Content::get_content(self::$model_key,$info['id']);
+            if (defined('MOVEDATE') && $content=='') {   //后台调试模式
+                $content = $info['content'];
+            }
+            $info['content'] = $content;
+        }elseif(defined('MOVEDATE') && $info['content']==''){   //后台调试模式
+            $info['content'] = \app\common\fun\Content::get_content(self::$model_key,$info['id']);
+        }
+        return $info;
+    }
+    
+
+    /**
+     * 写入文本数据
+     * @param string $content
+     * @param number $id
+     * @return boolean
+     */
+    protected static function put_content($content='',$id=0){
+        $webdb = config('webdb')['M__'.self::$model_key];
+        if($webdb['is_file_content']){
+            $result = \app\common\fun\Content::put_content(self::$model_key,$id,$content);
+            if ($result) {
+                return true;
+            }
+        }
+    }
+    
+    /**
+     * 删除文本数据
+     * @param number $id
+     */
+    protected static function del_content($id=0){
+        $webdb = config('webdb')['M__'.self::$model_key];
+        if($webdb['is_file_content']){
+            \app\common\fun\Content::del_content(self::$model_key,$id);
+        }
+    }
+    
+    
     
     /**
      * 取出的数据进行转义处理
@@ -768,12 +843,13 @@ abstract class C extends Model
      * @return unknown
      */
     protected static function format_data($info=[] , $cfg=[] , $_dirname='' , $_sort_array=[]) {
-        //self::InitKey(); //2018-5-19日修改,有的服务器会报错Cannot instantiate abstract class app\common\model\C 同时也无法正常使用 get_called_class 
+        //self::InitKey(); //2018-5-19日修改,有的服务器会报错Cannot instantiate abstract class app\common\model\C 同时也无法正常使用 get_called_class         
         if($_dirname){
             $dirname = $_dirname;
         }else{
             $dirname = static::$m_name ?: self::$model_key;   //$m_name防止 format_data里边重新实例化其它类 导致 $model_key 发生变化
-        }        
+        }
+        $info = self::get_content($info,$dirname);   //试图获取文本内容数据
         static $m_or_p = [];
         if( empty($m_or_p[$dirname]) ){
             $m_or_p[$dirname] = modules_config($dirname) ? 'module' : 'plugin';
@@ -1052,7 +1128,7 @@ abstract class C extends Model
                 //             });
             }                        
 
-            $array = getArray($data);//print_r($array) ;exit;
+            $array = getArray($data);
             foreach($array['data'] AS $key=>$rs){
                 unset($map['id']);
                 $vs = Db::name(self::getTableByMid($rs['mid'])) ->where(static::map()) ->where(['id'=>$rs['id']])->where($map)->find();
