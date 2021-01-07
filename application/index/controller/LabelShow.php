@@ -854,7 +854,7 @@ class LabelShow extends IndexBase
             //if($listpage_filtrate || $cfg['page']>1 || empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){     //第2页以上不用缓存或者存在列表筛选
             if(empty($tag_data) || $filemtime!=$label_tags_tpl['_filemtime_']){
                 $tag_data = controller('content','index')->label_list_data($cfg_array);
-                $tag_array['cache_time'] && strlen(serialize($tag_data))<60000 && cache2($tag_cache_key,$tag_data,$tag_array['cache_time']);
+                $tag_array['cache_time'] && cache2($tag_cache_key,$tag_data,$tag_array['cache_time']);
             }
         }else{
             $tag_data = controller('content','index')->label_list_data($cfg_array);
@@ -1267,7 +1267,7 @@ class LabelShow extends _LabelShow
                 $tag_array = LabelModel::get_tag_data_cfg($tag_name , $pagename , 1 , self::union_live_parameter($cfg) );
                 if($tag_array){
                     $tag_array['cache_time'] = $this->get_cache_time($tag_array['cache_time']);
-                    $tag_array['cache_time'] && strlen(serialize($tag_array))<60000 && cache2($tag_key,$tag_array,$tag_array['cache_time']);
+                    $tag_array['cache_time'] && cache2($tag_key,$tag_array,$tag_array['cache_time']);
                 }
             }
         }
@@ -1374,7 +1374,7 @@ EOT;
                     $cfg['tag_name'] = $tag_name;
                     $cfg['page_name'] = $pagename;
                     $default_data = self::get_default_data($type,$cfg);                    
-                    $cfg['cache_time'] && strlen(serialize($default_data))<60000 && cache2($tag_key,$default_data,$cfg['cache_time']);
+                    $cfg['cache_time'] && cache2($tag_key,$default_data,$cfg['cache_time']);
                 }
                 
                 if(!empty($val)){
@@ -1473,7 +1473,13 @@ EOT;
      */
     protected function get_cache_time($time=0){
         if( empty($time) ){ //强制使用缓存,只有设置负数的时候,才不使用缓存
-            $time = 600;
+            if ($this->webdb['label_cache_time']>0) {
+                $time = $this->webdb['label_cache_time']*60;
+            }elseif($this->webdb['label_cache_time'] && $this->webdb['label_cache_time']<0){
+                $time = 0;
+            }else{
+                $time = 600;
+            }            
         }
         if ($time>0) {
             $time += rand(0,60);   //避免同时生成缓存,加大服务器压力
@@ -1490,6 +1496,8 @@ EOT;
      */
     protected function get_default_data($type='',$cfg,$page_num=1,$onlyData=true){
         static $class_array = [];   //同一个类就没必要重复实例化
+        $speed_headtime=explode(' ',microtime());
+        $speed_headtime=$speed_headtime[0]+$speed_headtime[1];
         $action = '';
         if($cfg['class']){
             list($class_name,$_action) = explode('@',$cfg['class']);
@@ -1542,6 +1550,15 @@ EOT;
                 }
             }
         }
+        $endtime_headtime=explode(' ',microtime());
+        $endtime_headtime=$endtime_headtime[0]+$endtime_headtime[1];
+        if ( $endtime_headtime-$speed_headtime>0.5) {
+            if (filesize(RUNTIME_PATH.'label_runtime.txt')>1024*1024*3) {
+                unlink(RUNTIME_PATH.'label_runtime.txt');
+            }
+            file_put_contents(RUNTIME_PATH.'label_runtime.txt', date('Ymd H:i:s')."\t".($endtime_headtime-$speed_headtime)."\t".$cfg['tag_name']."\r\n",FILE_APPEND );
+        }
+        
         $data = getArray($data);
         if($onlyData){
             return is_array($data['data']) ? $data['data'] : $data; //不是数组的时候,就是那些单张图或HTML代码

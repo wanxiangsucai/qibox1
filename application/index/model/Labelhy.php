@@ -53,7 +53,10 @@ class Labelhy extends Label
      * @return void|void|unknown|array|NULL[]
      */
     public static function get_tag_data_cfg($tag_name='' , $page_name='' , $page_num=0 , $live_parameter=[], $hy_id=0, $hy_tags='',$cfg=[]){
-
+        
+        $speed_headtime=explode(' ',microtime());
+        $speed_headtime=$speed_headtime[0]+$speed_headtime[1];
+        
         //获取当前页面的所有标签的数据库配置参数，如果一个页面有很多标签的时候，比较有帮助，如果标签只有一两个就帮助不太大。
         $page_tags = cache('hyconfig_page_tags_'.$page_name.'-'.$hy_id.'-'.$hy_tags);
         if(empty($page_tags)||SHOW_SET_LABEL===true||LABEL_SET===true){
@@ -125,6 +128,16 @@ class Labelhy extends Label
                 }               
             }
         }
+        
+        $endtime_headtime=explode(' ',microtime());
+        $endtime_headtime=$endtime_headtime[0]+$endtime_headtime[1];
+        if ($endtime_headtime-$speed_headtime>0.5) {
+            if (filesize(RUNTIME_PATH.'label_runtime.txt')>1024*1024*3) {
+                unlink(RUNTIME_PATH.'label_runtime.txt');
+            }
+            file_put_contents(RUNTIME_PATH.'label_runtime.txt', date('Ymd H:i:s')."\t".($endtime_headtime-$speed_headtime)."\t".$tag_name."\r\n",FILE_APPEND );
+        }
+        
         return $tag_config;
     }
     

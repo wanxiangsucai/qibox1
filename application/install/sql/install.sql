@@ -649,7 +649,7 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(323, 1, '网站名称', 'webname', '齐博X1.0', 'text', '', 1, '', '', 1000, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(333, 2, '图片水印透明度', 'waterAlpha', '62', 'range', '', 1, '', '请输入数值，80代表80%', 0, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(335, 4, '微信公众号AppSecret（应用密钥）', 'weixin_appsecret', '', 'text', '', 1, '', '', 99, -2);
-INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(339, 4, '微信公众号TOKEN', 'weixin_token', '', 'text', '', 1, '', '微信服务器地址(URL)那里输入的网址是 http://你的域名/p/weixin-api-index.html', 98, -2);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(339, 4, '微信公众号TOKEN', 'weixin_token', '', 'text', '', 1, '', '微信服务器地址(URL)那里输入的网址是 http://你的域名/index.php/p/weixin-api-index.html', 98, -2);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(340, 11, 'PC版支付宝交易安全校验码（key）', 'alipay_key', '', 'text', '', 1, '', '', 87, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(347, 12, '新用户关注微信时回复的纯文本内容', 'weixin_welcome', '', 'text', '', 1, '', '下面4项填写了，这一项就无效', 100, 0);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(348, 12, '新用户关注微信时图文标题', 'weixin_welcome_title', '感谢你关注齐博微信营销系统！', 'text', '', 1, '', '', 99, 0);
@@ -1747,7 +1747,7 @@ CREATE TABLE IF NOT EXISTS `qb_redis_list` (
   `v` text NOT NULL COMMENT 'value值',
   PRIMARY KEY (`id`),
   KEY `k` (`k`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='解决没有安装radis的兼容处理,相当于redis的列表' AUTO_INCREMENT=7 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='解决没有安装redis的兼容处理,相当于redis的列表' AUTO_INCREMENT=7 ;
 
 
 INSERT INTO `qb_cms_field` (`id`, `name`, `title`, `type`, `field_type`, `value`, `options`, `about`, `show`, `mid`, `ajax_url`, `next_items`, `param`, `format`, `table`, `level`, `key`, `option`, `pid`, `list`, `listshow`, `ifsearch`, `ifmust`, `nav`, `input_width`, `input_height`, `unit`, `match`, `css`, `script`, `trigger`, `range_opt`, `group_view`, `index_hide`) VALUES(0, 'myfid', '我的分类', 'select', 'int(7) NOT NULL DEFAULT ''0''', '', 'cms_mysort@id,name@uid', '<script>if($("#atc_myfid").children().length<1)$("#form_group_myfid").hide();</script>', 1, 3, '', '', '', '', '', 2, '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', '', 0);
@@ -1879,3 +1879,7 @@ ALTER TABLE `qb_webmenu` ADD `sysname` VARCHAR( 30 ) NOT NULL COMMENT '归属频
 ALTER TABLE `qb_webmenu` ADD INDEX ( `sysname` , `type` );
 ALTER TABLE `qb_webmenu` CHANGE `sysname` `sysname` VARCHAR( 30 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '_sys_' COMMENT '归属频道,留空则是系统专用';
 UPDATE `qb_webmenu` SET `sysname`='_sys_';
+
+
+ALTER TABLE  `qb_redis_index` CHANGE  `v`  `v` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT  'value值';
+ALTER TABLE  `qb_redis_list` CHANGE  `v`  `v` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT  'value值';

@@ -72,7 +72,7 @@ abstract class C extends AdminBase
         }
         $rows = 100;
         $min = ($page-1)*$rows;
-        $listdb = $this->model->getAll($map=[],$order="id asc",$rows);
+        $listdb = $this->model->getAll($map=[],$order="id desc",$rows);
         $array = getArray($listdb)['data'];
         foreach ($array AS $rs){
             if ($this->webdb['is_file_content']) {

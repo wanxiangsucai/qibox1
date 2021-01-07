@@ -491,9 +491,14 @@ class User extends Model
 	 * 用户登录状态的信息
 	 * @return void|mixed|\think\cache\Driver|boolean
 	 */
-	public static function login_info(){        
+	public static function login_info(){
+	    static $usr_info = null;
+	    if($usr_info!==null){
+	        return $usr_info;
+	    }
 	    if(!$token=self::get_token()){
-	        return false;
+	        $usr_info = false;
+	        return $usr_info;
 	    }	    
 	    $usr_info = cache('user_'.$token['uid']);
 	    if(empty($usr_info['password'])){
@@ -502,7 +507,8 @@ class User extends Model
 	    }
 	    if( mymd5($usr_info['password'],'EN') != $token['password'] ){
 	        static::quit($usr_info['uid']);
-	        return false;
+	        $usr_info = false;
+	        return $usr_info;
 	    }
 		return $usr_info;
 	}

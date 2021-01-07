@@ -791,14 +791,19 @@ abstract class C extends Model
      */
     protected static function get_content($info=[],$sysname=''){
         $sysname || $sysname=self::$model_key;
-        $webdb = config('webdb')['M__'.$sysname];
+        static $array = [];
+        if ($array[$sysname]) {
+            $webdb = $array[$sysname];
+        }else{
+            $webdb = $array[$sysname] = config('webdb')['M__'.$sysname];
+        }
         if($webdb['is_file_content']){
             $content = \app\common\fun\Content::get_content(self::$model_key,$info['id']);
-            if (defined('MOVEDATE') && $content=='') {   //后台调试模式
+            if ($content=='') { //以防有些采集的数据,有可能直接入库到数据库了
                 $content = $info['content'];
             }
             $info['content'] = $content;
-        }elseif(defined('MOVEDATE') && $info['content']==''){   //后台调试模式
+        }elseif(defined('MOVEDATE') && $info['content']==''){   //后台转移数据
             $info['content'] = \app\common\fun\Content::get_content(self::$model_key,$info['id']);
         }
         return $info;

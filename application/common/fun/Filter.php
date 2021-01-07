@@ -49,18 +49,30 @@ class Filter{
     /**
      * 安全检查
      */
-    public static function check_safe(){
-        $array = input();
+    public static function check_safe($data=''){
+        $array = is_array($data) ? $data : input();
         foreach($array AS $key=>$value){
-            if (is_array($value) || is_numeric($value) || preg_match('/^([-\w]*)$/', $value)) {
+            if (is_array($value)) {
+                self::check_safe($value);
+            }elseif (preg_match('/^([-\w]*)$/', $value)) {
                 continue;
             }
-            if (preg_match("/([ \r\t\n]+)eval([ \r\t\n]*)\(/is", urldecode($value))) {
-                die('内容中有非法字符eval(');
-            }elseif (preg_match("/<\?php([ \r\t\n]+)/is", urldecode($value))) {
-                die('内容中有非法字符?php');
+            $danger_word = config('webdb.php_danger_word') ? trim(config('webdb.php_danger_word'),'| ') : 'eval|file_put_contents';
+            if (preg_match("/([ ;\r\t\n]+)(".$danger_word.")([ \r\t\n]*)\(/is", $value,$ar)) {
+                self::err('内容中有非法字符'.$ar[2]);
+            }elseif (preg_match("/<\?php([ \r\t\n]+)/is", $value)) {
+                self::err('内容中有非法字符?php');
             }
         }
+    }
+    
+    private static function err($msg=''){
+        header('content-type:application/json');
+        $msg = [
+            'code'=>1,
+            'msg'=>$msg,
+        ];
+        die(json_encode($msg));
     }
     
     
