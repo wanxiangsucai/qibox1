@@ -183,7 +183,7 @@ class Label extends Model
             if (filesize(RUNTIME_PATH.'label_runtime.txt')>1024*1024*3) {
                 unlink(RUNTIME_PATH.'label_runtime.txt');
             }
-            file_put_contents(RUNTIME_PATH.'label_runtime.txt', date('Ymd H:i:s')."\t".($endtime_headtime-$speed_headtime)."\t".$tag_name."\r\n",FILE_APPEND );
+            file_put_contents(RUNTIME_PATH.'label_runtime.txt', date('Ymd H:i:s')."\t".($endtime_headtime-$speed_headtime)."\t".$tag_name."\t".get_ip()."\t".get_url('location')."\r\n",FILE_APPEND );
         }
         
         return $tag_config;

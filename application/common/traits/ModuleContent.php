@@ -689,6 +689,7 @@ trait ModuleContent
 	    $this->add_post_money($data);
 	    $this->add_post_category($id,$data);
 	    $this->send_admin_msg($id,$data);
+	    $this->send2fans_postnew_msg($id,$data);
 	    set_cookie('cms_title', md5($data['title']));
 	    set_cookie('cms_content', md5($data['content']));
 	}
@@ -711,6 +712,21 @@ trait ModuleContent
 	            send_wx_msg($_uid, $content);
 	        }
 	    }
+	}
+	
+	/**
+	 * 给关注的粉丝群发消息,通知他们浏览新主题
+	 * @param number $id
+	 * @param array $data
+	 */
+	protected function send2fans_postnew_msg($id=0,$data=[]){
+	    if (!$this->webdb['postnew_msg2fans']) {
+	        return ;
+	    }
+	    $uid_array = \app\common\model\Friend::where('suid',$this->user['uid'])->column('uid');
+	    $title = '你关注的好友在 '.M('name').' 发布了新主题';
+	    $content = '你关注的好友“'.$this->user['username'].'” 刚刚在 '.M('name').' 发布了新主题: 《' . $data['title'] . '》，点击围观！<a href="'.get_url(iurl('content/show',['id'=>$id])).'" target="_blank">点击查看详情</a>';
+	    fun('Msg@send',$uid_array,$title,$content);
 	}
 	
 	/**

@@ -44,7 +44,11 @@ class LabelhyShow extends LabelShow
      * @param string $pagename 标签所在哪个页面
      */    
     public function ajax_get($tagname='' , $page='' , $pagename='' , $hy_id=0 , $hy_tags=''){
-        
+        if (!preg_match("/^([-\w]+)$/i", $tagname)) {
+            return $this->err_js('标签名有误!');
+        }elseif (!preg_match("/^([-\w]+)$/i", $pagename)) {
+            return $this->err_js('标签文件名有误!');
+        }
         //对应fetch方法,传入一些常用的参数
         $admin = $this->admin;
         $userdb = $this->user;

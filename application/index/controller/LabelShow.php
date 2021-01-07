@@ -87,7 +87,11 @@ class LabelShow extends IndexBase
      * @param string $pagename 标签所在哪个页面
      */
     public function ajax_get($tagname='' , $page='' , $pagename=''){
-        
+        if (!preg_match("/^([-\w]+)$/i", $tagname)) {
+            return $this->err_js('标签名有误!');
+        }elseif (!preg_match("/^([-\w]+)$/i", $pagename)) {
+            return $this->err_js('标签文件名有误!');
+        }
         //对应fetch方法,传入一些常用的参数
         $admin = $this->admin;
         $userdb = $this->user;
@@ -1556,7 +1560,7 @@ EOT;
             if (filesize(RUNTIME_PATH.'label_runtime.txt')>1024*1024*3) {
                 unlink(RUNTIME_PATH.'label_runtime.txt');
             }
-            file_put_contents(RUNTIME_PATH.'label_runtime.txt', date('Ymd H:i:s')."\t".($endtime_headtime-$speed_headtime)."\t".$cfg['tag_name']."\r\n",FILE_APPEND );
+            file_put_contents(RUNTIME_PATH.'label_runtime.txt', date('Ymd H:i:s')."\t".($endtime_headtime-$speed_headtime)."\t".$cfg['tag_name']."\t".get_ip()."\t".get_url('location')."\r\n",FILE_APPEND );
         }
         
         $data = getArray($data);
