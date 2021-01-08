@@ -70,7 +70,7 @@ class Init{
 		}
 		
 		//定义根目录访问频道二级页
-		if (empty($module) && $this->webdb['set_module_index']==$this->webdb['set_module_wapindex'] && config('default_module')==$this->webdb['set_module_index']) {
+		if (ENTRANCE==='index' && empty($module) && $this->webdb['set_module_index']==$this->webdb['set_module_wapindex'] && config('default_module')==$this->webdb['set_module_index']) {
 		    $module = $this->webdb['set_module_index'];
 		    $dispatch = [
 		        'type'=>'module',
