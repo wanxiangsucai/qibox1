@@ -318,6 +318,25 @@ class Setting extends AdminBase
         }
     }
     
+    /**
+     * 改写配置文件
+     * @param array $data
+     */
+    protected function rename_config($data=[]){
+        $model = '';
+        if ($data['set_module_index'] && $data['set_module_index']==$data['set_module_wapindex'] && config('default_module')!=$data['set_module_index'] ) {
+            $model = $data['set_module_index'];
+        }elseif( ($data['set_module_index']!=$data['set_module_wapindex'] || empty($data['set_module_index'])) && config('default_module')!='index'){
+            $model = 'index';
+        }
+        if ($model) {
+            $str = file_get_contents(APP_PATH.'config.php');
+            $str = preg_replace("/'default_module'([ \t]*)=>([ \t]*)('|\")([\w]+)('|\")/", "'default_module'         => '{$model}'",$str);
+            file_put_contents(APP_PATH.'config.php', $str);
+        }
+        
+    }
+    
     
     /**
      * 参数设置
@@ -333,6 +352,7 @@ class Setting extends AdminBase
             if( $this->model->save_group_data($data,$data['group']?$data['group']:$group) ){
                 if ($group==1) {
                     $this->rename_adminfile($data['admin_filename']);
+                    $this->rename_config($data);
                 }
                 cache('webdb',null);
                

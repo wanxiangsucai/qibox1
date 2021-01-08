@@ -68,6 +68,19 @@ class Init{
 			$this->webdb=ConfigModel::getConfig();
 			cache('webdb',$this->webdb);
 		}
+		
+		//定义根目录访问频道二级页
+		if (empty($module) && $this->webdb['set_module_index']==$this->webdb['set_module_wapindex'] && config('default_module')==$this->webdb['set_module_index']) {
+		    $module = $this->webdb['set_module_index'];
+		    $dispatch = [
+		        'type'=>'module',
+		        'module'=>[
+		            $this->webdb['set_module_index'],'','',
+		        ],
+		    ];
+		    request()->dispatch($dispatch);
+		}
+		
 		if($this->webdb['www_url']){
 			request()->domain($this->webdb['www_url']); //解决有的服务器无法识别https的问题,需要在后台定义域名网址
 		}else{
