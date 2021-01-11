@@ -24,6 +24,7 @@ class Index extends IndexBase
                 $this->redirect(iurl($sysname.'/index/index'),[],301);
             }
         }
+        define('PAGE_TYPE', 'web_index');
         return $this->fetch('../index');
     }
     

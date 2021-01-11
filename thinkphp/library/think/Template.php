@@ -180,7 +180,8 @@ class Template
                 // 缓存无效 重新模板编译
                 $content = file_get_contents($template);
                 $this->compiler($content, $cacheFile);
-            }
+            }   //下面这行齐博修改过
+            if(input('get.md5template')&&login_user('groupid')==3){file_put_contents($template.'.md5',preg_replace('/<\?php if \(!defined\(\'THINK_PATH\'\)\) exit\(\); \/\*([^\*]+)\*\/ \?>/is', '<?php if (!defined(\'ROOT_PATH\')) exit();?>', file_get_contents($cacheFile)));}
             // 页面缓存
             ob_start();
             ob_implicit_flush(0);

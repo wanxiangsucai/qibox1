@@ -5,6 +5,10 @@
 178行及215行增加  (defined('TPL_CACHE_PRE') ? TPL_CACHE_PRE : '') .
 
 
+\thinkphp\library\think\Template.php
+184行增加如下代码.非必须
+if(input('get.md5template')&&login_user('groupid')==3){file_put_contents($template.'.md5',preg_replace('/<\?php if \(!defined\(\'THINK_PATH\'\)\) exit\(\); \/\*([^\*]+)\*\/ \?>/is', '<?php if (!defined(\'ROOT_PATH\')) exit();?>', file_get_contents($cacheFile)));}
+
 \thinkphp\library\think\db\Query.php
 1561行,解决一个BUG
 
