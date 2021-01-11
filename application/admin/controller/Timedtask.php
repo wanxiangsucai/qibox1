@@ -54,7 +54,7 @@ class Timedtask extends AdminBase
             ['number','days','每隔几天执行'],
             ['number','hours','每隔几小时执行'],
             ['number','minutes','每隔几分钟执行'],
-            ['time','his','几时几分开始执行','比如：10:30:00'],
+            ['times','his','几时几分开始执行','比如：10:30:00'],
             ['text','class_file','脚本程序类的路径','比如:“app\common\task\Qsend”'],
             ['text','class_method','类的方法名','留空则默认用run'],
         ];
