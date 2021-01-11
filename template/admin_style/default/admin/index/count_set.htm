@@ -6,7 +6,7 @@
 
 <script type="text/javascript">
 var select_table = $("#atc_table_name2").get(0).outerHTML;
-$("#form_group_table_name2").remove();
+$("#form_group_table_name2").hide().find("#atc_table_name2").remove();
 function show_choose(){
 	$("#atc_table_name").after(select_table+"<span></span>");
 	$("#atc_table_name2").show().height(30).next().next().remove();
