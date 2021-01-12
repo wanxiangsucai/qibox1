@@ -707,7 +707,7 @@ trait ModuleContent
 	                continue;
 	            }
 	            $title = '请及时审核 '.M('name').' 新主题';
-	            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 发布了: 《' . $data['title'] . '》，请尽快审核！<a href="'.get_url(urls('content/show',['id'=>$id])).'" target="_blank">点击查看详情</a>';
+	            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 发布了: 《' . $data['title'] . '》，请尽快审核！<a href="'.get_url(iurl('content/show',['id'=>$id])).'" target="_blank">点击查看详情</a>';
 	            send_msg($_uid, $title, $content);
 	            send_wx_msg($_uid, $content);
 	        }
