@@ -14,13 +14,13 @@ class Format
         $array = [];
         foreach($data AS $key=>$rs){
             if (is_numeric($key) && $rs[0]) {
-                if(in_array($rs['0'], ['select','checkbox','checkboxtree','radio'])){
+                if($rs['0']=='callback'){  //回调函数
                     $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'title'=>$rs['2'],
                         'about'=>$rs['3'],
-                        'options'=>$rs['4'],
+                        'fun'=>$rs['4'],
                         'value'=>$rs['5'],
                     ];
                 }elseif($rs['0']=='hidden'){    //隐藏域有点特殊
@@ -29,13 +29,14 @@ class Format
                         'name'=>$rs['1'],
                         'value'=>$rs['2'],
                     ];
-                }elseif($rs['0']=='callback'){  //回调函数
+                //}elseif(in_array($rs['0'], ['select','checkbox','checkboxtree','radio'])){
+                }elseif(is_array($rs['4']) || (strstr($rs['4'],'"')&&json_decode($rs['4'],true)) ){
                     $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
                         'title'=>$rs['2'],
                         'about'=>$rs['3'],
-                        'fun'=>$rs['4'],
+                        'options'=>$rs['4'],
                         'value'=>$rs['5'],
                     ];
                 }else{

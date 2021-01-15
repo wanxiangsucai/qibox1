@@ -60,7 +60,8 @@ class Page{
                     'type'=>['in',$_type],
                     'sysname'=>$sysname,
                 ]);
-                cache('web_menu_'.$type.'_'.$sysname,$array?get_sons($array):[]);
+                $array = $array?get_sons($array):[];
+                cache('web_menu_'.$type.'_'.$sysname,$array);
             }
             if ($array) { //存在频道菜单
                 return $array;
@@ -69,8 +70,8 @@ class Page{
         
         $array = cache('web_menu_'.$type);
         if (empty($array)) {
-            $array = model('admin/webmenu')->getTreeList(['ifshow'=>1,'type'=>['in',$_type],'sysname'=>'_sys_']);
-            cache('web_menu_'.$type,get_sons($array));
+            $array = get_sons(model('admin/webmenu')->getTreeList(['ifshow'=>1,'type'=>['in',$_type],'sysname'=>'_sys_']));
+            cache('web_menu_'.$type,$array);
         }
         return $array;
     }

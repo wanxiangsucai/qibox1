@@ -258,7 +258,17 @@ class Config extends AdminBase
 		        'class' => 'btn btn-primary',
 		        'href'  => auto_url('index',['group'=>$group,'excel'=>1])
 		    ],
-		];		
+		];	
+		
+		$this->tab_ext['right_button'] =[
+		    [
+		        'type'=>'delete'
+		    ],
+		    [
+		        'type'=>'edit',
+		        'class' => '_pop',
+		    ],
+		];
 				
 		return $this->getAdminTable( $data );
     }

@@ -85,8 +85,10 @@ table.ListTable td{
 	text-align:center;
 	vertical-align:middle;
 }
-table.ListTable td.tL{
+
+table.ListTable td.tL,table.ListTable td.Left{
 	text-align:left;
+	max-width:500px;
 }
 table.ListTable td .onelist{
 	height:30px;
