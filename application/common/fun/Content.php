@@ -294,69 +294,43 @@ class Content{
            }else{ //上一页
                $this_num--;
                if ($this_num<1) {
-                   return $array[$_key] = $title===true?[]:'没有了';
+                   return $array[$_key] = [];
                }
            }
            $result = Db::query($sql." WHERE no=".$this_num)[0];
            if (!$result['id']) {
-               return $array[$_key] = $title===true?[]:'没有了';
+               return $array[$_key] = [];
            }
            $obj = new $class;
            $rsdb = $obj->getInfoByid($result['id']);
-//            if ($order=='list'||$order=='create_time'||$order=='update_time') {
-//                if (!is_numeric($info[$order])) {
-//                    $info[$order] = strtotime($info[$order]);
-//                }
-//                $listdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],$order=>["$type=",$info[$order]],])->order("$order desc,id desc")->column('id,title,uid');
-//                $listdb = array_values($listdb);
-//                $ckdb = $rsdb = [];
-//                foreach($listdb as $key=>$rs){
-//                    if ($rs['id']==$info['id']) {
-//                        if($type=='>'){
-//                            $rsdb = $ckdb;
-//                        }else{
-//                            $rsdb = $listdb[++$key];
-//                        }
-//                        break;
-//                    }
-//                    $ckdb = $rs;
-//                }
-//            }else{
-//                if ($type=='<') {
-//                    $by='desc';
-//                }else{
-//                    $by='asc';
-//                }
-//                $rsdb = Db::name($sys.'_content'.$info['mid'])->where(['fid'=>$info['fid'],'id'=>[$type,$info['id']],])->order('id',$by)->field($title===true?true:'id,title')->find();
-//                $rsdb = self::get_content($sys,$rsdb['id'],true);
-//            }
-           $array[$_key] = $rsdb;
+           $array[$_key] = $rsdb?:[];
        }
        
-       if ($title!==true && empty($rsdb)) {
-           return '没有了';
-       }
-       if (is_numeric($title) && $title>2) {
-           $title = get_word($rsdb['title'], $title);
-       }
-       $url = urls('content/show',['id'=>$rsdb['id']]);
-       if ($title===true) {
-           $rsdb['url'] = $url;
-           if (strstr($rsdb['picurl'],',')) {   //组图
-               $rsdb['picurls'] = $rsdb['picurl'];
-               $rsdb['picurl'] = explode(',', $rsdb['picurl'])[0];
-           }elseif(!$rsdb['picurl'] && $rsdb['pics']){  //CMS图库
-               $rsdb['picurl'] = json_decode($rsdb['pics'],true)[0]['picurl'];
-           }
-           $rsdb['picurl'] = tempdir($rsdb['picurl']);
-           if ($rsdb['content']) {
-               $rsdb['full_content'] = $rsdb['content'];
-               $rsdb['content'] = del_html(del_html($rsdb['content'],true));
-           }
-           return $rsdb;
+       if ( empty($rsdb) ) {
+           return $title===true?[]:'没有了';
        }else{
-           return "<a href='{$url}' title='{$rsdb['title']}'>{$title}</a>";
-       }       
+           if (is_numeric($title) && $title>2) {
+               $title = get_word($rsdb['title'], $title);
+           }
+           $url = urls('content/show',['id'=>$rsdb['id']]);
+           if ($title===true) {
+               $rsdb['url'] = $url;
+               if (strstr($rsdb['picurl'],',')) {   //组图
+                   $rsdb['picurls'] = $rsdb['picurl'];
+                   $rsdb['picurl'] = explode(',', $rsdb['picurl'])[0];
+               }elseif(!$rsdb['picurl'] && $rsdb['pics']){  //CMS图库
+                   $rsdb['picurl'] = json_decode($rsdb['pics'],true)[0]['picurl'];
+               }
+               $rsdb['picurl'] = tempdir($rsdb['picurl']);
+               if ($rsdb['content']) {
+                   $rsdb['full_content'] = $rsdb['content'];
+                   $rsdb['content'] = del_html(del_html($rsdb['content'],true));
+               }
+               return $rsdb;
+           }else{
+               return "<a href='{$url}' title='{$rsdb['title']}'>{$title}</a>";
+           }
+       }              
    }
    
    /**
