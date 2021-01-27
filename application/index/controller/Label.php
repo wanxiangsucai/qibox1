@@ -221,14 +221,21 @@ class Label extends IndexBase
         $all_model = $this->get_model_name($all_model);
         ksort($all_model);
         $use_ar = [];
-        $use_model = json_decode($info['extend_cfg'],true)?:[];//最近设置的模块
+        $use_model = json_decode($info['extend_cfg'],true)?:[];//最近设置的模块        
         foreach($use_model AS $rs){
             $path =  str_replace('___', '/', $rs['path']);
             $use_ar[$path] = $path;
         }
-        
         if(IS_POST){
             $data = $this->request->post();
+            if (!$use_model) {
+                foreach($default_model AS $path){
+                    $use_model[] = [
+                        'path'=>str_replace( '/', '___', $path),
+                        'tags'=>$this->str2num($tag_name),
+                    ];
+                }
+            }
             foreach($use_model AS $key=>$rs){
                 $path = str_replace(  '___','/', $rs['path']);
                 if(!in_array($path, $data['extend_cfg'])){
@@ -246,7 +253,7 @@ class Label extends IndexBase
             }
             
             $this->setTag_value("app\\index\\controller\\Labelmodels@get_label")
-            ->setTag_extend_cfg(json_encode($use_model))
+            ->setTag_extend_cfg(json_encode(array_values($use_model)))
             ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
             $_array = $this->get_post_data();
             $this->save($_array);
