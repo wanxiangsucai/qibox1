@@ -1038,6 +1038,12 @@ if (!function_exists('get_user_money')) {
      */
     function get_user_money($type=0,$uid=0)
     {
+        if (!$uid) {
+            $uid = login_user('uid');
+        }
+        if (!$uid) {
+            return 0;
+        }
         if ($type==0) {
             return get_user($uid)['money'];
         }elseif($type==-1){
