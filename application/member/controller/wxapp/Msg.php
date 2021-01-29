@@ -203,7 +203,7 @@ class Msg extends IndexBase
             return '下载微信语音文件失败!';
         }
         $mp3 = str_replace('.amr', '.mp3', $amr);
-        $data = $this->curl_postfile('http://svn.php168.com/mp3.php',$amr);
+        $data = $this->curl_postfile('http://mp3.soyixia.net/mp3.php',$amr);
         write_file($mp3, $data);
         if (filesize($mp3)>1024) {
             $fileurl = 'uploads/files/' . date('Ymd') . '/' . basename($mp3);
