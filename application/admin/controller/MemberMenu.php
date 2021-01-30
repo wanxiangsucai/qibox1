@@ -232,6 +232,7 @@ $('.trA').each(function(){
 	        }
 	        $data['allowgroup'] = is_array($data['allowgroup'])?implode(',', $data['allowgroup']):$data['allowgroup'].'';
 	        $data['is_use'] = 1;
+	        $data['role'] = is_array($data['role']) ? implode(',', $data['role']) : ''.$data['role'];
 	        if(MenuModel::create($data)){	                
 	            $this->success('创建成功 ', url('index',['gid'=>$data['groupid']]) );
 	        } else {
@@ -254,6 +255,7 @@ $('.trA').each(function(){
 	    ->addIcon('icon','小图标')
 	    ->addColor('fontcolor','字体颜色')
 	    ->addColor('bgcolor','背景颜色')
+	    ->addCheckbox('role','指定角色使用','不设置,都有权限使用',get_role())
 	    ->addHidden('type','1')
 	    ->addPageTitle('添加会员个性菜单');
 	    return $form::fetchs();
@@ -273,6 +275,7 @@ $('.trA').each(function(){
 	            if (true !== $result) $this -> error($result);
 	        }
 	        if(!isset($data['is_use']))$data['is_use'] = 1;   //会员个性菜单才用到
+	        $data['role'] = is_array($data['role']) ? implode(',', $data['role']) : ''.$data['role'];
 	        if (MenuModel::update($data)) {
 	            Menu::member_sys_cache(true);
 	            $this->success('修改成功',url('index',['gid'=>$data['groupid']]));
@@ -280,7 +283,7 @@ $('.trA').each(function(){
 	            $this->error('修改失败');
 	        }
 	    }
-	    $info = MenuModel::get($id);
+	    $info = getArray(MenuModel::get($id));
 	    $array = MenuModel::where('groupid',$info['groupid'])->where('pid','=',0)->column('id,name');
 	    $form = Form::make([],$info)->addPageTitle('修改菜单');
 	    if($info['groupid']>0 && $info['pid']>0){
@@ -299,6 +302,7 @@ $('.trA').each(function(){
 	    $form->addIcon('icon','小图标')
 	    ->addColor('fontcolor','字体颜色','是否有效果,需要模板配合做样式')
 	    ->addColor('bgcolor','背景颜色','是否有效果,需要模板配合做样式')
+	    ->addCheckbox('role','指定角色使用','不设置,都有权限使用',get_role())
 	    ->addTextarea('script','脚本事件','要填写的话,需要补齐 &lt;script&gt;&lt;/script&gt;同理,也可以写css或html')
 	    ->addHidden('groupid')
 	    ->addPageTips("系统菜单不能修改链接")

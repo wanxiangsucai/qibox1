@@ -1,0 +1,135 @@
+<!--个人基础信息-->
+<div class="SideContainer">
+	<div class="BaseInfos">
+		<ul>
+			<ol>
+				<dl>
+					<dt>
+						<div><img src="{$info.icon|tempdir}" onerror="this.src='__STATIC__/images/nobody.gif'"/></div>
+						<p>{$info.username}</p>
+						<button onclick="send_msg()"><i class="fa fa-child"></i> {$info.groupid|getGroupByid}</button>
+					</dt>
+					<dd>
+						<h3>个人基本信息</h3>
+						<div>昵称：{$info.nickname}</div>
+						<div>级别：{$info.groupid|getGroupByid}</div>
+						<div>角色：{:get_role($info.grouptype)}</div>
+						<div>UID：{$info.uid}</div>
+						<div>性别：{switch $info.sex}{case 1}男{/case}{case 2}女{/case}{default /}保密{/switch}</div>
+						{if $info.bday}<div>生日：{$info.bday|format_time="Y-m-d"}</div>{/if}
+						<div>注册日期：{:date("Y-m-d H:i:s",$info.regdate)}</div>
+						<div>最后登录：{:date("Y-m-d H:i:s",$info.lastvist)}</div>
+
+					</dd>
+				</dl>
+			</ol>
+			<li>
+				<dl class="morebtn">
+					<dt><span>与Ta互动</span></dt>
+					<dd>
+						<div onclick="KF.chat_win({uid:'{$info.uid}',username:'{$info.uid|get_user_name}',icon:'{$info.uid|get_user_icon}'});"><i class="fa fa-twitch"></i>私信他 </div>
+						<div class="gzfans"><i class="glyphicon glyphicon-heart-empty"></i><font>关注他</font>(<em class="num" style="color:yellow;">{:fun('Count@Info','friend',['suid'=>$info['uid']])}</em>) </div>
+						{if modules_config('qun')}<div class="myqunzi"><i class="fa fa-connectdevelop"></i>他的圈子</div>{/if}
+					</dd>
+				</dl>				
+				<br>
+				<dl>
+					<dt><span>用户组扩展信息</span></dt>
+					<dd>
+<!-- field过滤显示的字段,多个用逗号隔开,$f_array跟form表单一样的数组 -->
+{if $f_array}
+{qb:showpage field="money,regdate,lastvist,bday" f_array="$f_array"}
+		<div>{$rs.title}：{$rs.value}</div>
+{/qb:showpage}
+{/if}		 
+					</dd>
+				</dl>
+
+			</li>			
+		</ul>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+$(function(){
+	var that = $(".gzfans");
+	//检查是否已关注
+	$.get("{:murl('member/wxapp.friend/ckgz',['uid'=>$uid])}",function(res){
+		if(res.code==1){	//还没关注
+			that.click(function(){	//添加关注点击事件
+				$.get("{:murl('member/wxapp.friend/add',['uid'=>$uid])}",function(res){
+					if(res.code==0){	//关注成功
+						that.find('.num').html( parseInt(that.find('.num').html())+1);
+						that.addClass('gz');
+						layer.msg('关注成功');
+						that.unbind("click");
+					}else{	//关注失败
+						layer.alert(res.msg);
+					} 
+				});						
+			});
+		}else if(res.code==0){	//已关注
+			that.addClass('gz');
+			that.find('font').html('取消关注');
+			that.click(function(){
+				$.get("{:murl('member/wxapp.friend/del',['uid'=>$uid])}",function(res){
+					if(res.code==0){	//取消关注
+						that.find('.num').html( parseInt(that.find('.num').html())-1);
+						that.removeClass('gz');
+						layer.msg('成功取消关注');
+						that.unbind("click");
+					}else{	//取消失败
+						layer.alert(res.msg);
+					} 
+				});
+			})
+		}
+	});
+
+
+	var obj = $(".myqunzi");
+	$.get("{:iurl('qun/wxapp.qun/mycreate')}?uid={$info.uid}",function(res){
+		if(res.code==0){
+			var qunurl = "{:iurl('qun/content/show')}?id=";
+			if(res.data.length==1){
+				//obj.attr("target","_blank");
+				//obj.attr("href",qunurl+res.data[0].id);
+				obj.click(function(){
+					window.location.href = qunurl+res.data[0].id;
+				});	
+				return ;
+			}else{
+				if(res.data.length>0){					
+					obj.click(function(){
+						var qun = [];
+						$.each(res.data,function(i,rs){
+							qun.push("<div class='morelink'><a target='_blank' href='" + qunurl + rs.id + "'>"+rs.title+"</a></div>");
+						});
+						layer.tips( qun.join(''), obj , {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });
+					});
+					return ;
+				}
+			}
+		}
+		obj.click(function(){
+			layer.alert('TA还没有创建任何圈子!');
+		});
+	});
+})
+</script>
+
+
+<script type="text/javascript">
+function send_msg(){
+	layer.open({
+	  type: 2,
+	  title: '给他发消息',
+	  shadeClose: true,
+	  shade: false,
+	  maxmin: true, //开启最大化最小化按钮
+	  area: ["850px", "650px"],
+	  content: "{:url('member/msg/add',['uid'=>$info['uid']])}",
+	});
+}
+</script>

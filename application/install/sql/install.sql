@@ -1444,3 +1444,6 @@ INSERT INTO `qb_weixinmenu` (`id`,`uid`,`fid`,`name`,`keyword`,`linkurl`,`type`,
 INSERT INTO `qb_weixinmenu` (`id`,`uid`,`fid`,`name`,`keyword`,`linkurl`,`type`,`hide`,`list`) VALUES ('4','0','1','子菜单','','http://www.php168.com','0','0','0');
 INSERT INTO `qb_weixinword` (`id`,`ask`,`answer`,`list`,`type`) VALUES ('2','价格','门户系统价格分别是6800元、9500元，分类系统价格分类别3500元、4500元等','10','0');
 INSERT INTO `qb_weixinword` (`id`,`ask`,`answer`,`list`,`type`) VALUES ('3','产品 商品','我们的产品有地方门户系统，CMS系统，B2B电子商务系统，分类信息系统等','11','0');
+
+ALTER TABLE  `qb_admin_menu` ADD  `role` VARCHAR( 80 ) NOT NULL COMMENT  '可以使用的角色,多个用逗号隔开,留空不限';
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 1, '用户角色名称', 'role_name', '个人\r\n政企', 'textarea', '', 1, '', '每个名称换一行', -10, 0);

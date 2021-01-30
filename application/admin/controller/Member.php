@@ -39,6 +39,7 @@ class Member extends AdminBase
 	        ['uid', '用户名', 'username'],
 	        ['icon', '头像', 'image'],
 	        ['groupid', '用户组', 'select',getGroupByid()],
+	        ['grouptype', '角色', 'select',get_role()],
 	        ['regdate', '注册日期', 'datetime'],
             ['lastvist', '登录日期', 'datetime'],
 	        ['regip', '注册IP', 'text'],
@@ -100,6 +101,7 @@ EOT;
 	    //筛选字段
 	    $this -> tab_ext['filter_search'] = [
 	            'groupid'=>getGroupByid(),
+	            'grouptype'=>get_role(),
 	            'wx_attention'=>['未关注','已关注'],
 	            'yz'=>['未审核','已审核'],
 	    ];
@@ -185,6 +187,7 @@ EOT;
 	            'weixin_api'=>'是否绑定绑定',
 	            'wxapp_api'=>'是否登录过小程序',
 	            'groupid'=>'所属用户组',
+	            'grouptype'=>'用户角色',
 	            'money'=>'可用积分',
 	            'rmb'=>'可用余额',
 	            'lastvist'=>'最后访问时间',
@@ -217,6 +220,10 @@ EOT;
 	            $value = $rs[$k];
 	            if (in_array($k, ['qq_api','weixin_api','wxapp_api','email_yz','mob_yz','wx_attention'])) {
 	                $value = $value?'是':'否';
+	            }elseif($k=='groupid'){
+	                $value=getGroupByid($value);
+	            }elseif($k=='grouptype'){
+	                $value=get_role($value);
 	            }elseif($k=='sex'){
 	                if($value=='2'){
 	                    $value='女';
@@ -305,6 +312,7 @@ EOT;
 	            ['text', 'username', '用户名','用户名请不要随意修改'],
 	            ['text', 'password', '密码','留空则代表不修改密码,之前加密后的密码是：'.$info['password']],
 	            ['select', 'groupid', '用户组','',getGroupByid()],
+	        ['radio', 'grouptype', '用户角色','',get_role()],
 	        ['datetime', 'group_endtime', '用户组有效期','留空则长期有效,除普通用户组外其它任何用户组（包括超管及黑名单）都可以设置有效期，过期后统一归为普通用户组'],
 	            ['text', 'nickname', '昵称'],
 	            ['text', 'email', '邮箱'],

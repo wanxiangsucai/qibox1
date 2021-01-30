@@ -965,6 +965,22 @@ if (!function_exists('getGroupByid')) {
     }
 }
 
+if (!function_exists('get_role')) {
+    /**
+     * 获取用户角色名称
+     * @param unknown $id 非数字的话,就获取所有名称,指定数字的话, 就是对应的角色名称
+     * @return mixed|array
+     */
+    function get_role($id=null){
+        $array = explode("\r\n", trim(config('webdb.role_name')?:"个人\r\n企业","\r\n"));
+        if (is_numeric($id)) {
+            return $array[$id];
+        }else{
+            return $array;
+        }
+    }
+}
+
 if (!function_exists('get_user')) {
     /**
      * 一般是根据UID获取用户的信息.
