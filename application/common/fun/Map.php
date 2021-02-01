@@ -16,16 +16,16 @@ class Map{
         13： 距离较短（不考虑路况）：路线同以上，但计算耗时时，不考虑路况对耗时的影响，可理解为在路况完全通畅时预计耗时。 
         注：除13外，其他偏好的耗时计算都考虑实时路况
      */
-    public static function distance($map_a='113.264315,23.155475',$map_b='113.342504,23.07331',$type='car',$tactics='11'){        
-        if($type=='car'){
+    public static function distance($map_a='113.264315,23.155475',$map_b='113.342504,23.07331',$type='car',$tactics='11'){
+        list($a_x,$a_y) = explode(',',$map_a);
+        list($b_x,$b_y) = explode(',',$map_b);
+        if($type=='car' || abs($a_x*100-$b_x*100)>5 || abs($a_y*100-$b_y*100)>5){
             $url = "https://api.map.baidu.com/routematrix/v2/driving?";
         }elseif($type=='bike'){
             $url = "https://api.map.baidu.com/routematrix/v2/riding?";
         }else{
             $url = "https://api.map.baidu.com/routematrix/v2/walking?";
-        }
-        list($a_x,$a_y) = explode(',',$map_a);
-        list($b_x,$b_y) = explode(',',$map_b);
+        }        
         $url .= "output=json&tactics=11&origins=$a_y,$a_x&destinations=$b_y,$b_x&ak=MGdbmO6pP5Eg1hiPhpYB0IVd";
         $array = json_decode(file_get_contents($url),true);
         if ($array['status']==0 && $array['result'][0]['distance']) {
