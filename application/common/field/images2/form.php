@@ -380,7 +380,7 @@ jQuery(document).ready(function() {
 					$.post(severUrl, {'imgBase64':event.target.result,'Orientation':Orientation,'tags':alltags}).done(function (res) {
 							layer.closeAll();
 							 if(res.code==1){
-								 pics.push({"picurl":res.path,"title":"","url":""});	//组图
+								 pics.push({"picurl":res.path,"title":file.name.replace(/\.([a-z]+)$/ig,""),"url":""});	//组图
 								 //pics[0] = res.path;	//单图
 								 //textObj.val( pics.join(',') );
 								 if(typeof callback == 'function'){
