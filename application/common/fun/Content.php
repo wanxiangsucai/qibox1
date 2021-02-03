@@ -294,12 +294,12 @@ class Content{
            }else{ //上一页
                $this_num--;
                if ($this_num<1) {
-                   return $array[$_key] = [];
+                   return $array[$_key] = $title===true?[]:'没有了';
                }
            }
            $result = Db::query($sql." WHERE no=".$this_num)[0];
            if (!$result['id']) {
-               return $array[$_key] = [];
+               return $array[$_key] = $title===true?[]:'没有了';
            }
            $obj = new $class;
            $rsdb = $obj->getInfoByid($result['id']);
