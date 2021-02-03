@@ -30,7 +30,7 @@ class Format
                         'value'=>$rs['2'],
                     ];
                 //}elseif(in_array($rs['0'], ['select','checkbox','checkboxtree','radio'])){
-                }elseif(is_array($rs['4']) || (strstr($rs['4'],'"')&&json_decode($rs['4'],true)) ){
+                }elseif(is_array($rs['4']) || (!in_array($rs['0'], ['images2','files2','array','array2','ueditor','text','textarea','shop_array','links','links','treeone','treemore','treemake'])&&strstr($rs['4'],'"')&&json_decode($rs['4'],true)) ){
                     $arr = [
                         'type'=>$rs['0'],
                         'name'=>$rs['1'],
@@ -46,6 +46,7 @@ class Format
                         'title'=>$rs['2'],
                         'about'=>$rs['3'],
                         'value'=>$rs['4'],
+                        'options'=>$rs['5'],
                     ];
                 }
                 $array[$rs[1]] = $arr+$rs;
