@@ -4,7 +4,7 @@ function_exists('urls') || die('ERR');
 $cuturl = iurl('index/image/cutimg');
 $width = IN_WAP===true?'95%':'900px';
 $height = IN_WAP===true?'100%':'800px';
-$display = IN_WAP===true?'':'display:none;';
+//$display = IN_WAP===true?'':'display:none;';
 
 $jscode = '';
 if(fun('field@load_js',$field['type'])){
@@ -105,9 +105,10 @@ if(fun('field@load_js',$field['type'])){
 .ListImgs div em:hover{
 	background:rgba(255,60,0,0.6);
 }
+/*
 .ListImgs div em{
 	{$display}
-}
+}*/
 </style>
 <script src="__STATIC__/libs/jquery-ui/jquery-ui.min.js"></script>  
 <script type="text/javascript" src="__STATIC__/js/exif.js"></script>
