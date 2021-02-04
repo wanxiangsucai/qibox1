@@ -370,6 +370,15 @@ $(function(){
         }elseif ($field['type'] == 'treeone'||$field['type'] == 'treemore') {    //树状单选与多选
             $_detail = is_array($info[$name])? $info[$name] : (trim($info[$name],',')!==''?explode(',',trim($info[$name],',')):[]);
             $detail = is_array($field['options']) ? $field['options'] : json_decode($field['options'],true);
+			$i=count($detail);
+			foreach($detail AS $_rs){
+				$i+=$_rs['children']?count($_rs['children']):0;
+			}
+			if($i>15){
+				$expande = '[-1]';
+			}else{
+				$expande = 'true';
+			}
             self::format_tree_data($detail,$_detail);
             $check = implode(',', $_detail);
             $_data = json_encode($detail);
@@ -385,7 +394,7 @@ $(function(){
             clickClose: {$isradio},
         	tree: {
         		show: true,
-                expandedKeys: true, //默认展开节点的数组[4354,54354], 为 true 时, 展开所有节点
+                expandedKeys: {$expande}, //默认展开节点的数组[4354,54354], 为 true 时, 展开所有节点
         		strict: false, //是否严格遵守父子模式
                 simple: false,
         	},
