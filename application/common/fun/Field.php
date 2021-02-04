@@ -7,13 +7,13 @@ class Field{
      * @param string $str
      * @return array|unknown[]
      */
-    public static function get_tree_title($str=''){
+    public static function get_tree_title($str='',$father_name=''){
         $array = is_array($str) ? $str : json_decode($str,true);
         $data = [];
         foreach ($array AS $rs){
-            $data[$rs['id']] = $rs['title'];
+            $data[$rs['id']] = $father_name.($father_name!==''?' &gt; ':'').$rs['title'];
             if ($rs['children']) {
-                $data = $data+self::get_tree_title($rs['children']);
+                $data = $data+self::get_tree_title($rs['children'],$rs['title']);
             }
         }
         return $data;
