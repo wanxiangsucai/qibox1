@@ -336,17 +336,25 @@ function create_tree(tag,tree_data){
 	//var checkData = tree.getChecked('demoId');
 }
 
+var array_ids = {};
 function get_tree_value(obj){
 	var ar = [];
 	obj.children(".layui-tree-set").each(function(){
 		var id = $(this).attr("data-id");
 		if(id=='undefined' || id<10000){
-			id = (new Date()).getTime().toString().substring(8,13);
+			id = parseInt( (new Date()).getTime().toString().substring(8,13) ) + Math.round(Math.random()*10000);
 			if(id<10000){
-				id = parseInt(id) + 10000;
+				id = id + 10000;
 			}
 			$(this).attr("data-id",id);
 		}
+		if(array_ids[id]){
+			layer.msg('修复一个重复ID');
+			id = parseInt(id)+Math.round(Math.random()*10000);
+			$(this).attr("data-id",id);
+		}
+		array_ids[id] = id;
+
 		var o ={id:id,title:$(this).find(".layui-tree-entry .layui-tree-main .layui-tree-txt").html()};
 		if($(this).children(".layui-tree-pack").length>0){
 			o.children = get_tree_value( $(this).children(".layui-tree-pack").eq(0) );
