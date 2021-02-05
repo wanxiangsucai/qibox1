@@ -44,7 +44,7 @@ WS.onmsg(function(obj){
 			//LayIm.setChatStatus('<span style="color:blue;">对方不在线</span>');
 		}
 	}
-});
+},'layui');
 
 //根据游客或者是登录用户获取不同的配置参数
 function get_config(obj){

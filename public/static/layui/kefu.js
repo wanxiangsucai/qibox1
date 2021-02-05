@@ -309,7 +309,7 @@ WS.onmsg(function(obj){
 			LayIm.setChatStatus('<span style="color:blue;">对方不在线</span>');
 		}
 	}
-});
+},'layui');
 
 
 //重置会话窗口
