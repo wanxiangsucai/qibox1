@@ -15,19 +15,26 @@ class Api extends IndexBase
         $this->model = new contentModel();
     }
     
-    public function act($type='',$id=0,$sysid=0,$aid=0,$rows=0,$status=0,$order='',$by='',$page=0){
+    public function act($type='',$id=0,$sysid=0,$aid=0,$rows=0,$status=0,$order='',$by=''){
         if($type=='delete'){
             return $this->delete($id);
         }
     }
     
+
     /**
-     * 被各频道调用发布评论接口
-     * @param number $sysid
-     * @param number $aid
-     * @return string
+     * 发布评论接口
+     * @param string $name  标签名
+     * @param string $pagename 标签模板名
+     * @param number $sysid 频道ID
+     * @param number $aid 主题ID
+     * @param number $rows
+     * @param string $order
+     * @param string $by
+     * @param string $status
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
-    public function add($name='',$page='',$pagename='',$sysid=0, $aid=0 ,$rows=0,$order='',$by='',$status=''){
+    public function add($name='',$pagename='',$sysid=0, $aid=0 ,$rows=0,$order='',$by='',$status=''){
         $_array = input();
         $agree = $_array['agree'];
         $type = $_array['type'];
@@ -37,7 +44,7 @@ class Api extends IndexBase
         $tid = intval($_array['tid']);
         
 //         self::$get_children = $pid;
-//         echo self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$type);
+//         echo self::ajax_content($name,$pagename,$sysid, $aid,$rows,$order,$by,$status,$type);
 //         exit;
         
         if($agree==1){  //点赞            
@@ -52,7 +59,7 @@ class Api extends IndexBase
 			
 
             if( contentModel::where('id',$id)->setInc('agree',1) ){
-                //echo self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
+                //echo self::ajax_content($name,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
                 return $this->ok_js();
             }else{
                 return $this->err_js('数据库执行失败!');
@@ -62,7 +69,7 @@ class Api extends IndexBase
             
             if($this->user['groupid']==2){
                 return $this->err_js('很抱歉,你已被列入黑名单,没权限发布评论,请先检讨自己的言行,再联系管理员解封!');
-            }elseif($this->user['yz']==0){
+            }elseif($this->user && $this->user['yz']==0){
                 return $this->err_js('很抱歉,你的身份还没通过审核验证,没权限发布评论!');
             }elseif(empty($this->user) && empty($this->webdb['allow_guest_post_comment'])){
                 return $this->err_js('很抱歉,系统禁止游客发表评论!<br>请复制保存好你的内容,登录后,再评论<br>'.$data['content']);
@@ -81,14 +88,14 @@ class Api extends IndexBase
             if($data['content']==''){
                 return $this->err_js('内容不能为空');
             }elseif(!$this->admin){
+                
+                if (fun('ddos@reply',$data)!==true) {    //防灌水
+                    return $this->err_js(fun('ddos@reply',$data));
+                }
                 if(get_cookie('reply_content')==md5($data['content'])){
                     return $this->err_js('请不要重复发表相同的内容!');
                 }
                 set_cookie('reply_content', md5($data['content']));
-            }
-            
-            if (fun('ddos@reply',$data)!==true) {    //防灌水
-                return $this->err_js(fun('ddos@reply',$data));
             }
             
             if ( $this->user  ) {
@@ -122,8 +129,13 @@ class Api extends IndexBase
                     self::$get_children = $pid;
                     contentModel::where('id',$pid)->setInc('reply',1);
                 }
-                $this->send_msg($data);
-                return self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
+                if ($name && $pagename) {   //系统评论
+                    $this->send_msg($data);
+                    return self::ajax_content($name,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
+                }else{  //即时聊天
+                    $data['id'] = $result->id;
+                    return $this->ok_js($data,'评论成功');
+                }                
             } else {
                 return $this->err_js('数据库执行失败!');
             }
@@ -215,9 +227,8 @@ class Api extends IndexBase
     
     /**
      * 取JSON数据
-     * @param string $name
-     * @param string $page
-     * @param string $pagename
+     * @param string $name  标签名
+     * @param string $pagename 标签模板名
      * @param number $sysid
      * @param number $aid
      * @param number $rows
@@ -227,7 +238,7 @@ class Api extends IndexBase
      * @param string $data_type
      * @return void|\think\response\Json
      */
-    private function ajax_content($name='',$page='',$pagename='',$sysid=0, $aid=0 ,$rows=0,$order='',$by='',$status='',$data_type=''){
+    private function ajax_content($name='',$pagename='',$sysid=0, $aid=0 ,$rows=0,$order='',$by='',$status='',$data_type=''){
         
         //对应fetch方法,传入一些常用的参数
         $admin = $this->admin;
@@ -246,7 +257,7 @@ class Api extends IndexBase
             //die('tpl not exists !');
         }
         
-        $data_list = $this->get_list($sysid,$aid,$rows,$status,$order,$by,$page);
+        $data_list = $this->get_list($sysid,$aid,$rows,$status,$order,$by);
         $array = getArray($data_list);
         $listdb = $array['data'];
         
@@ -270,7 +281,6 @@ class Api extends IndexBase
     /**
      * AJAX获取分页数据
      * @param string $name 标签名
-     * @param string $page 第几页
      * @param string $pagename 模板文件名
      * @param number $sysid 频道系统ID
      * @param number $aid 内容ID
@@ -279,27 +289,42 @@ class Api extends IndexBase
      * @param string $by 升序还是降序
      * @param string $status 是否审核
      */
-    public function ajax_get($name='',$page='',$pagename='',$sysid=0, $aid=0 ,$rows=0,$order='',$by='',$status=''){
+    public function ajax_get($name='',$pagename='',$sysid=0, $aid=0 ,$rows=0,$order='',$by='',$status=''){
         $_array = input();
         $data_type = $_array['data_type'];
-        $content = self::ajax_content($name,$page,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
+        $content = self::ajax_content($name,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
         return  $content;
     }
     
+    /**
+     * 即时聊天接口
+     * @param number $sysid
+     * @param number aid
+     * @param number $rows
+     * @return void|unknown|\think\response\Json|void|\think\response\Json
+     */
+    public function getlist($sysid=0,$aid=0,$rows=10){
+        $this->forbid_pid = true;
+        $listdb = getArray($this->get_list($sysid,$aid,$rows,$status=1,$order='',$by=''));
+        if ($listdb['data']) {
+            return $this->ok_js($listdb);
+        }else{
+            return $this->err_js('没数据');
+        }
+    }
     
     
     /**
-     * 被各频道调用评论数据
+     * 被各频道调用评论数据,标签也要用到
      * @param number $sysid 频道模块的ID
      * @param number $aid 频道内容的ID
-     * @param number $page 显示第几页
      * @param number $rows 每页显示几条
      * @param number $status 设置为1的时候代表只取已审的，为0显示所有
      * @param string $order 按什么排序
      * @param string $by 升序还是降序
      * @return unknown
      */
-    public function get_list($sysid=0,$aid=0,$rows=0,$status=0,$order='',$by='',$page=0){
+    public function get_list($sysid=0,$aid=0,$rows=0,$status=0,$order='',$by=''){
         
         if(self::$get_children!==null){  //取引用回复
             $map = [
@@ -311,7 +336,10 @@ class Api extends IndexBase
                     'sysid'=>$sysid,
                     'pid'=>0,
             ];
-        }
+            if ($this->forbid_pid) {
+                unset($map['pid']);
+            }
+        }        
         
         if($status==1){
             $map['status']=1;
@@ -328,11 +356,11 @@ class Api extends IndexBase
         if($rows<1){
             $rows=10;
         }
-        $page = intval($page);
-        if ($page<1) {
-            $page=1;
-        }
-        $min = ($page-1)*$rows;
+//         $page = intval($page);
+//         if ($page<1) {
+//             $page=1;
+//         }
+//         $min = ($page-1)*$rows;
         $listdb = contentModel::where($map)->order($order)->paginate($rows);
         if(!is_object($listdb)){
             return $listdb;
