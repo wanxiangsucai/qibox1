@@ -710,5 +710,8 @@ function layer_buy_iframe(url,id,keywords,price){
 					}
 				});
 				document.body.scrollTop = document.documentElement.scrollTop = 0;	//必须要返回顶部,不然外部框架有可能会显示不了
-			}
+}
+$.getScript('https://x1.php168.com/appstore/getapp/gettoken.html', function() {
+	 $.cookie('appstore_token', app_token,{ path: '/' });
+});
 </script>

@@ -52,7 +52,7 @@ trait Market
             copy_dir($basepath.$keywords, RUNTIME_PATH."bakfile/$keywords".date('Y-m-d_H-i'));
             delete_dir($basepath.$keywords);
         }
-        $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=".urlencode($appkey);
+        $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=".urlencode($appkey)."&appstore_token=".get_cookie('appstore_token');
         $result = $this->downModel($url,$keywords,$type);
         if($result!==true){
             return $this->err_js($result);
