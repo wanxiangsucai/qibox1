@@ -79,6 +79,21 @@ abstract class F extends AdminBase
                         ['type', 'text,money,number', 'range_opt'],
                         ['ifsearch', '1', 'range_opt'],
                 ],
+            'help_msg'=>'1.部分字段的功能设置需要二次开发才有效!<br>2.字段变量名创建后,请不要随意修改,否则会影响某些功能<script type="text/javascript">
+function field_choose(va){
+	$("input[name=field_type]").val(va);	
+}
+var string = `  <select lay-ignore name="postdb[field_type]"  id="field_typeid" onChange="field_choose(this.options[this.selectedIndex].value)">
+		 <option value="">快速选择</option>
+          <option value="varchar(255) NOT NULL">255个字符串以内</option>
+          <option value="int(10) NOT NULL DEFAULT 0">10位以内纯数字</option>
+		  <option value="tinyint(2) NOT NULL DEFAULT 0">2位以内纯数字</option>
+		  <option value="text NOT NULL" >常用文本文档</option>
+		  <option value="decimal(10,2) unsigned NOT NULL">价格</option>
+          <option value="mediumtext NOT NULL">巨型文本文档</option>
+  </select>`;
+$("#atc_field_type").after(string);
+</script>',
         ];
         
     }
