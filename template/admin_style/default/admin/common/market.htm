@@ -622,7 +622,12 @@ function setup_app(id,keywords,price,have_open_layer,must_view_about){
 			btn2: function() {
 				layer.close(index);
 			},
+			end: function(){
+				$(window).scrollTop(scroll_top);
+				//setup_app(id,keywords,price,1);
+			}
 		});
+		document.body.scrollTop = document.documentElement.scrollTop = 0;	//必须要返回顶部,不然外部框架有可能会显示不了
 		return ;
 	}	
 	open_setup_win(id);
