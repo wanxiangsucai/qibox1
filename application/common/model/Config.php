@@ -224,7 +224,7 @@ class Config extends Model
                     break;
                 case  'checkbox':
                     if ($rs['c_value'] != '') {
-                        $rs['c_value'] = explode(',', $rs['c_value']);
+                        $rs['c_value'] = explode(',', trim($rs['c_value'],','));
                     } else {
                         $rs['c_value'] = [];
                     }
