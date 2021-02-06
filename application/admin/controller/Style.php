@@ -50,7 +50,7 @@ class Style extends AdminBase
 	        return $this->err_js('你并没有安装当前风格!');
 	    }
 	    
-	    $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
+	    $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=".urlencode($appkey)."&appstore_token=".get_cookie('appstore_token');
 	    $url2 = "https://x1.php168.com/appstore/Version/get.html?id=$id&keyword=$keywords&type=style";
 	    $result = $this->delele_model_file($url,$url2);
 	    if ($result!==true) {
@@ -86,7 +86,7 @@ class Style extends AdminBase
 	    }elseif ( is_dir($basepath.'index_style/'.$keywords) ){
 	        //return $this->err_js($basepath.'index_style/'.$keywords.'目录已经存在了,无法安装此风格');
 	    }
-	    $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=$appkey";
+	    $url = "https://x1.php168.com/appstore/getapp/down.html?id=$id&domain=$domain&appkey=".urlencode($appkey)."&appstore_token=".get_cookie('appstore_token');
 	    $result = $this->downModel($url,$keywords,$sort);
 	    if($result!==true){
 	        return $this->err_js($result);
