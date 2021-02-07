@@ -429,6 +429,7 @@ class Base extends Controller
             if (in_array($search_field, ['id','uid']) || (is_numeric($keyword)&&$keyword<999999)) {
                 $map[$search_field] = ['=', $keyword];
             }else{
+                $keyword = str_replace("\\", "\\\\", $keyword);
                 $map[$search_field] = ['like', "%$keyword%"];
             }
         }

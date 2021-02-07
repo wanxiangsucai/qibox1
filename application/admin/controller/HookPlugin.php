@@ -20,6 +20,67 @@ class HookPlugin extends AdminBase
     protected $tab_ext;
     protected static $type = 'hook';
     
+    protected function _initialize()
+    {
+        parent::_initialize();
+        $this->model = new Hook_pluginModel();
+        $this->form_items = [
+            ['text', 'hook_class', '钩子类名'],
+            ['select', 'hook_key', '归属接口','',HookModel::getTitleListByKey(),input('hook_key')],
+            ['select', 'plugin_key', '归属插件','',Plugin::getTitleListByKey()],
+            ['text', 'about', '功能描述'],
+            ['radio', 'ifopen', '是否启用', '', ['禁用','启用'], 1],
+        ];
+        $this->tab_ext = [
+            'page_title'=>'钩子管理(实现接口功能)',
+            'top_button'=>[
+                [
+                    'title'=>'手工添加钩子',
+                    'url'=>url('add',['hook_key'=>(input('search_field')=='hook_key'?input('keyword'):'')]),
+                    'icon'  => 'fa fa-plus-circle',
+                    'class' => '_pop',
+                ],
+                [
+                    'title'=>'钩子云市场',
+                    'url'=>url('market'),
+                    'icon'  => 'fa fa-cloud-download',
+                    'class' => '',
+                ],
+                [
+                    'title'=>'返回接口列表',
+                    'url'=>url('hook/index'),
+                    'icon'  => 'fa fa-microchip',
+                    'class' => '',
+                ],
+            ],
+        ];
+        
+        $this -> tab_ext['search'] = [
+            'hook_class'=>'钩子类名',
+            'hook_key'=>'钩子接口',
+            'about'=>'钩子功能描述',
+        ];
+        //筛选字段
+        $this -> tab_ext['filter_search'] = [
+            'ifopen'=>['未启用','已启用'],
+        ];
+        
+        $this->list_items = [
+            ['hook_class', '钩子类名', 'callback',function($key,$rs){
+                return '<a href="'.url('index').'?search_field=hook_class&keyword='.$key.'">'.$key.'</a>';
+            },'__data__'],
+            ['about', '钩子功能描述', 'text'],
+            ['hook_key', '归属接口', 'callback',function($key,$rs){
+                return '<a href="'.url('index','search_field=hook_key&keyword='.$key).'">'.$key.' ('. HookModel::where('name',$rs['hook_key'])->value('about') .')</a>';
+            },'__data__'],
+            ['plugin_key', '归属插件', 'callback',function($key,$rs){
+                return $key?plugins_config($key)['name']:'';
+            },'__data__'],
+            ['author', '开发者', 'link','__author_url__','_blank'],
+            ['ifopen', '是否启用', 'switch'],
+            ];
+    }
+    
     public function index($hook_key='') {
         $map = [];
         if ($hook_key) {
@@ -260,53 +321,5 @@ class HookPlugin extends AdminBase
         }
         $this->assign('fid',3);
         return $this->fetch();
-    }
-    
-    protected function _initialize()
-    {
-        parent::_initialize();
-        $this->model = new Hook_pluginModel();
-        $this->form_items = [
-                ['text', 'hook_class', '钩子类名'],
-                ['select', 'hook_key', '归属接口','',HookModel::getTitleListByKey()],
-                ['select', 'plugin_key', '归属插件','',Plugin::getTitleListByKey()],
-                ['text', 'about', '功能描述'],                
-                ['radio', 'ifopen', '是否启用', '', ['禁用','启用'], 1],
-        ];
-        $this->tab_ext = [
-                'page_title'=>'钩子管理(实现接口功能)',
-                'top_button'=>[
-                        [
-                                'title'=>'手工添加钩子',
-                                'url'=>url('add'),
-                                'icon'  => 'fa fa-plus-circle',
-                                'class' => '',
-                        ],
-                        [
-                                'title'=>'钩子云市场',
-                                'url'=>url('market'),
-                                'icon'  => 'fa fa-cloud-download',
-                                'class' => '',
-                        ],
-                        [
-                                'title'=>'返回接口列表',
-                                'url'=>url('hook/index'),
-                                'icon'  => 'fa fa-microchip',
-                                'class' => '',
-                        ],
-                ],
-        ];
-        $this->list_items = [
-                ['hook_class', '钩子类名', 'text'],
-                ['about', '钩子功能描述', 'text'],          
-                ['hook_key', '归属接口', 'callback',function($key,$rs){
-                    return $key.' ('. HookModel::where('name',$rs['hook_key'])->value('about') .')';
-                },'__data__'],
-                ['plugin_key', '归属插件', 'callback',function($key,$rs){
-                    return $key?plugins_config($key)['name']:'';
-                },'__data__'],
-                ['author', '开发者', 'link','__author_url__','_blank'],
-                ['ifopen', '是否启用', 'switch'],
-        ];
     }
 }

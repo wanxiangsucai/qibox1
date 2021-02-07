@@ -32,7 +32,7 @@ class Hook extends AdminBase
 		                        'title'=>'添加接口',
 		                        'url'=>url('add'),
 		                        'icon'  => 'fa fa-plus-circle',
-		                        'class' => '',
+		                        'class' => '_pop',
 		                ],
 		                [
 		                        'title'=>'钩子管理(实现接口的功能)',
@@ -42,8 +42,16 @@ class Hook extends AdminBase
 		                ],
 		        ],
 		];
+		
+		$this -> tab_ext['search'] = [
+		    'name'=>'接口标志',
+		    'about'=>'接口描述',
+		];
+		
 		$this->list_items = [
-				['name', '接口标志', 'text'],
+		    ['name', '接口标志', 'callback',function($key,$rs){
+		        return '<a href="'.url('hook_plugin/index','search_field=hook_key&keyword='.$key).'">'.$key.'</a>';
+		    },'__data__'],
 		        ['about', '接口描述', 'text'],
 		        ['num', '实现接口的钩子个数', 'callback',function($key,$rs){
 		            $num = Hook_pluginModel::where('hook_key',$rs['name'])->count('id');
