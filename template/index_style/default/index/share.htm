@@ -52,6 +52,13 @@ var wxShare = {
 	picurl: '{$share.picurl}',	
 }
 
+function wxapp_share(){
+	var url = escape(wxShare.link);
+	var title = escape(wxShare.title);
+	var picurl = escape(wxShare.picurl);
+	wx.miniProgram.navigateTo( { url: "/pages/share/index?url="+url+"&title="+title+"&image="+picurl } );
+}
+
 wx.miniProgram.getEnv(function (res) { 
 	if (res.miniprogram==true) { 
 		var info = { 
@@ -63,7 +70,10 @@ wx.miniProgram.getEnv(function (res) {
 		wx.miniProgram.postMessage({ 
 			data: info, 
 		}); 
-	} 
+		$(".in-wxapp").show();	//页面中如果设置了小程序分享按钮的话,就给他设置这个类名.
+	}else{
+		$(".in-wxapp").hide();
+	}
 });
 //wx.miniProgram.postMessage({ data:{title: wxShare.title , desc:wxShare.about } }); //小程序的分享
 function ShareTimeline(){

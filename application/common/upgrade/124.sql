@@ -1,0 +1,1 @@
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '提示关注公众号的文章', 'weixin_mpurl', '', 'text', '', 1, '', '请进公众号发布一篇提示用户关注公众号的文章,方便小程序关注公众号', -3, -2);

@@ -154,6 +154,12 @@ class Label extends Model
                 if (strstr($err_msg,'Unknown column')) {
                     $msg = '当前标签《'.$tag_name.'》调用的数据库缺少字段<br>'.filtrate($err_msg)."<br>".filtrate($err_sql);
                     echo $msg."<script>layer.alert(`".str_replace('`', '', $msg)."`);</script>";
+                }elseif(strstr($err_msg,'Table ') && strstr($err_msg,' doesn')){
+                    $msg = '当前标签《'.$tag_name.'》调用的数据表不存在<br>'.filtrate($err_msg)."<br>".filtrate($err_sql);
+                    echo $msg."<script>layer.alert(`".str_replace('`', '', filtrate($err_msg))."`);</script>";
+                }else{
+                    $msg = '当前标签《'.$tag_name.'》调用的数据库出错了!';
+                    echo $msg."<script>layer.alert(`".str_replace('`', '', filtrate($err_msg))."`);</script>";
                 }
             }
         }

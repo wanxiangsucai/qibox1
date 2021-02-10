@@ -1441,3 +1441,5 @@ INSERT INTO `qb_weixinmenu`  VALUES ('3','0','0','菜单三','','http://www.php1
 INSERT INTO `qb_weixinmenu`  VALUES ('4','0','1','子菜单','','http://www.php168.com','0','0','0');
 INSERT INTO `qb_weixinword`  VALUES ('2','价格','门户系统价格分别是6800元、9500元，分类系统价格分类别3500元、4500元等','10','0');
 INSERT INTO `qb_weixinword`  VALUES ('3','产品 商品','我们的产品有地方门户系统，CMS系统，B2B电子商务系统，分类信息系统等','11','0');
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '提示关注公众号的文章', 'weixin_mpurl', '', 'text', '', 1, '', '请进公众号发布一篇提示用户关注公众号的文章,方便小程序关注公众号', -3, -2);

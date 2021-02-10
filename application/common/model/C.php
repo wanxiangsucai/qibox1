@@ -971,8 +971,7 @@ abstract class C extends Model
      */
     public static function labelGetList($tag_array=[] , $page=0){
         static::check_model();
-        $cfg = unserialize($tag_array['cfg']);
-
+        $cfg = unserialize($tag_array['cfg']);        
         $mid = $cfg['mid'];     //self::$model_key
         if ($mid>1&&empty(model_config($mid,self::$model_key))) {   //模型不存在,可能已被删除
             $mid = 1;
@@ -992,6 +991,48 @@ abstract class C extends Model
         }
         $data = [];
         $map = [];
+        //只调用自己的数据,一般只适合用在会员中心
+        static $my_uid = null;
+        if($cfg['onlymy']==1){
+            if($my_uid===null){
+                $my_uid = login_user('uid');
+            }
+            $map['uid'] = intval($my_uid);
+        }elseif($cfg['onlymy']==2 && $cfg['uids']){ //指定多个用户UID,全站使用的情况,圈子暂时没用
+            $map['uid'] = ['in',str_array($cfg['uids'])];
+        }elseif($cfg['uid']>0){
+            $map['uid'] = $cfg['uid'];
+        }
+        
+        $cfg['status'] && $map['status'] = ['>=',$cfg['status']];       //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
+        
+        if ($cfg['table']) {    //指定了模型
+            $mod = str_replace('Content', ucfirst($cfg['table']), get_called_class());
+            if (class_exists($mod)) {
+                $obj = new $mod;
+                if (method_exists($obj, 'get_label')) {
+                    return $obj->get_label($tag_array,'c');
+                }
+            }
+            if($cfg['where']){  //用户自定义的查询语句
+                $_array = fun('label@where',$cfg['where'],$cfg);
+                if($_array){
+                    $map = array_merge($_array,$map);
+                }
+            }
+            if (preg_match('/^qb_([\w]+)/', $cfg['table'],$array)) {
+                $table = $array[1];
+            }else{
+                $table = self::$model_key.'_'.$cfg['table'];
+            }
+            if(strstr($order,'rand()')){
+                $data = Db::name($table)->where($map)->orderRaw('rand()')->paginate($rows,false,['page'=>$page]);
+            }else{
+                $data = Db::name($table)->where($map)->order($order,$by)->paginate($rows,false,['page'=>$page]);
+            }
+            return $data?getArray($data):[];
+        }
+        
 //         preg_match_all('/([_a-z]+)/',get_called_class(),$array);
 //         $dirname = $array[0][1];
         $dirname = self::$model_key;
@@ -1028,20 +1069,7 @@ abstract class C extends Model
             }
         }
         
-        //只调用自己的数据,一般只适合用在会员中心
-        static $uid = null;
-        if($cfg['onlymy']==1){
-            if($uid===null){
-                $uid = login_user('uid');
-            }
-            $map['uid'] = intval($uid);
-        }elseif($cfg['onlymy']==2 && $cfg['uids']){ //指定多个用户UID,全站使用的情况,圈子暂时没用
-            $map['uid'] = ['in',str_array($cfg['uids'])];
-        }elseif($cfg['uid']>0){
-            $map['uid'] = $cfg['uid'];
-        }
         
-        $cfg['status'] && $map['status'] = ['>=',$cfg['status']];       //1是已审,2是推荐,已审要把推荐一起调用,所以要用>=
         $cfg['ispic'] && $map['ispic'] = 1; //只取有图片的数据,如果没有指定模型的话,不能处理
 //         static $model_list = null;
 //         if($mid && $model_list === null){
@@ -1073,7 +1101,7 @@ abstract class C extends Model
                 unset($map['uid']);
             }
             $whereor = [];
-            if($cfg['whereor']){  //用户自定义的查询语句
+            if($cfg['whereor']){  //用户自定义的查询语句 whereor不建议使用,并没有完善好
                 $_array = fun('label@where',$cfg['whereor'],$cfg);
                 if($_array){
                     $whereor = $_array;
