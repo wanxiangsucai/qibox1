@@ -238,7 +238,7 @@ class Tongji{
                 continue;
             }
             //$this->add_newmsgnum($_uid);    //给他们都加一条新消息数量
-            $array[] = array_merge($data,['uid'=>$_uid,'from_uid'=>$login_uid]);
+            $array[] = array_merge($data,['uid'=>intval($_uid),'from_uid'=>$login_uid]);
         }
         
         $obj = new Feed();
