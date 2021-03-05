@@ -1631,16 +1631,15 @@ if(!function_exists('mymd5')){
      * 站点私有的加密与解密函数.
      * @param unknown $string
      * @param string $action 默认EN加密,DE解密
-     * @param string $rand 加密混淆码
+     * @param string $rand 自定义加密混淆码
      * @return string|mixed|string|NULL|boolean
      */
 	function mymd5($string,$action="EN",$rand=''){ //字符串加密和解密 
-		//global $webdb;
 		if($action=="DE"){//处理+号在URL传递过程中会异常
 			$string = str_replace('QIBOADD','+',$string);
 			$string = str_replace('QIBOEDD','=',$string);
 		}
-		$secret_string = config('webdb.mymd5').md5_file(APP_PATH.'database.php').ROOT_PATH.$rand.'5*j,.^&;?.%#@!'; //绝密字符串,可以任意设定 
+		$secret_string = ( $rand ?: (config('webdb.mymd5').md5_file(APP_PATH.'database.php').ROOT_PATH) ).'5*j,.^&;?.%#@!'; //绝密字符串,可以任意设定 
 		if(!is_string($string)){
 			$string=strval($string);
 		}
@@ -1659,7 +1658,7 @@ if(!function_exists('mymd5')){
 			$k = $i%$len; 
 			$code .= $string[$i]^$key[$k]; 
 		}
-		$code = ($action == "DE" ? (substr(md5($code),8,10)==$md5code?$code:NULL) : base64_encode($code)."$md5code");
+		$code = ($action == "DE" ? (substr(md5($code),8,10)==$md5code?$code:NULL) : base64_encode($code).$md5code);
 		if($action=="EN"){//处理+号在URL传递过程中会异常
 			$code = str_replace('+','QIBOADD',$code);
 			$code = str_replace('=','QIBOEDD',$code);
@@ -2411,6 +2410,12 @@ if (!function_exists('getTemplate')) {
              $access_token = $res->access_token;
              if ($access_token) {
                  cache('weixin_access_token'.$token_string,$access_token,1800);
+                 //设置了共享公众号资料,同步通知更新 access_token
+                 if ($token_string=='' && config('webdb.wxmp_share_url') && config('webdb.wxmp_share_key') ) {
+                     http_curl(config('webdb.wxmp_share_url').url('index/wxapp.weixin/sys_token'),[
+                         'code'=>mymd5(time()."\t\t".$access_token,'EN',config('webdb.wxmp_share_key'))
+                     ]);
+                 }
              }else{
                  $msg = $is_wxapp?',微信小程序(不是公众号)接口问题':',微信公众号接口问题';
                  if (strstr($string, '40125')) {

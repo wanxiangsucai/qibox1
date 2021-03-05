@@ -1,0 +1,2 @@
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '共享公众号资料给其它站点域名', 'wxmp_share_url', '', 'text', '', 1, '', '当前公众号若有其它站点使用的话,请输入其它站点的域名,https://开头,比如https://x1.php168.com 主要是为了同步推送access_token', -3, -2);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '共享公众号资料通信公钥', 'wxmp_share_key', '', 'text', '', 1, '', '可以是何意字符串,彼此共享的网站需要设置为一样', -3, -2);

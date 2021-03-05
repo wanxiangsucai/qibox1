@@ -68,6 +68,12 @@ class Weixin_share
             $ticket = $res->ticket;
             if ($ticket) {
                 cache('weixin_jsdk_ticket'.substr($accessToken,0,5), $ticket, 1800);
+                //设置了共享公众号资料,同步通知更新 access_token
+                if (config('webdb.wxmp_share_url') && config('webdb.wxmp_share_key') ) {
+                    http_curl(config('webdb.wxmp_share_url').url('index/wxapp.weixin/sys_token'),[
+                        'code'=>mymd5(time()."\t".'jsdk'."\t".$ticket,'EN',config('webdb.wxmp_share_key'))
+                    ]);
+                }
             }
         }
         return $ticket;

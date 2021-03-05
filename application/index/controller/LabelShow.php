@@ -1190,7 +1190,7 @@ class LabelShow extends _LabelShow
         if($cfg['union']){
             $detail = explode(',',$cfg['union']);
             foreach($detail AS $v){
-                $array[$v] = $cfg[$v];
+                $array[$v] = isset($cfg[$v])?$cfg[$v]:$cfg[str_replace('.', '_', $v)];
             }
             $array['union'] = $cfg['union'];
             isset($cfg['where']) && $array['where'] = $cfg['where'];    //标签里设置的条件也要关联进去做限制

@@ -1443,3 +1443,7 @@ INSERT INTO `qb_weixinword`  VALUES ('2','价格','门户系统价格分别是68
 INSERT INTO `qb_weixinword`  VALUES ('3','产品 商品','我们的产品有地方门户系统，CMS系统，B2B电子商务系统，分类信息系统等','11','0');
 
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '提示关注公众号的文章', 'weixin_mpurl', '', 'text', '', 1, '', '请进公众号发布一篇提示用户关注公众号的文章,方便小程序关注公众号', -3, -2);
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '共享公众号资料给其它站点域名', 'wxmp_share_url', '', 'text', '', 1, '', '当前公众号若有其它站点使用的话,请输入其它站点的域名,https://开头,比如https://x1.php168.com 主要是为了同步推送access_token', -3, -2);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '共享公众号资料通信公钥', 'wxmp_share_key', '', 'text', '', 1, '', '可以是何意字符串,彼此共享的网站需要设置为一样', -3, -2);
+
