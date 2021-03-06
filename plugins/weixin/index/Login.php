@@ -14,39 +14,56 @@ class Login extends IndexBase
      * @param string $sid 设置为bind的时候的用户字串
      */
     public function index($fromurl='',$type='',$sid=''){
-        
-        if($type=='bind'){
-            if(cache('bind_'.$sid)==''){
-                $this->error('信息有误!');
+        if ($fromurl && preg_match("/^http/i", $fromurl) && get_site_key($fromurl)) {   //子站点请求的登录
+        }else{
+            if($type=='bind'){
+                if(cache('bind_'.$sid)==''){
+                    $this->error('信息有误!');
+                }
+            }elseif($this->user && !defined('LABEL_SET') ){
+                $this->error('你已经登录了',$fromurl?:get_url('member'),'',1);
+            }elseif(!in_weixin()){
+                $this->assign('fromurl',urlencode($fromurl));
+                return $this->fetch();
             }
-        }elseif($this->user && !defined('LABEL_SET') ){
-            $this->error('你已经登录了',$fromurl?urlencode($fromurl):get_url('member'),'',1);
-        }elseif(!in_weixin()){
-            $this->assign('fromurl',urlencode($fromurl));
-            return $this->fetch();
-        }
+        }        
         
         $state = input('state');
         $code = input('code');
+        $kcode = input('kcode');
         
-        if($state==1){
+        if($state==1||$kcode){
             
-            if(!$code){
-                $this->error('code 值不存在！');
-            }
+            $fromurl = urldecode(get_cookie('From_url'));
             
-            $string = file_get_contents('https://api.weixin.qq.com/sns/oauth2/access_token?appid='.config('webdb.weixin_appid').'&secret='.config('webdb.weixin_appsecret').'&code='.$code.'&grant_type=authorization_code');
-            
-            $array = json_decode($string,true);
-            
-            $openid = $array['openid'];
-            $unionid = $array['unionid'];
-            if(!$openid){
-                if($string == ''){
-                    $this->error('获取微信接口内容失败，请确认你的服务器已打开 extension=php_openssl.dll ');
+            if ($kcode && $this->webdb['wxlogin_url'] && $this->webdb['wxlogin_key']) { //请求了第三方站点实现微信登录
+                list($time,$openid,$unionid) = explode("\t", mymd5($kcode,'DE',$this->webdb['wxlogin_key']));
+                if(!$time||!$openid){
+                    $this->error('资料有误!');
+                }elseif (time()-$time>600) {
+                    $this->error('登录超时了!');
                 }
-                $this->error('openid 值不存在！错误详情如下：'.$string);
+            }else{
+                if(!$code){
+                    $this->error('code 值不存在！');
+                }
+                $string = file_get_contents('https://api.weixin.qq.com/sns/oauth2/access_token?appid='.config('webdb.weixin_appid').'&secret='.config('webdb.weixin_appsecret').'&code='.$code.'&grant_type=authorization_code');
+                $array = json_decode($string,true);
+                $openid = $array['openid'];
+                $unionid = $array['unionid'];
+                if(!$openid){
+                    if($string == ''){
+                        $this->error('获取微信接口内容失败，请确认你的服务器已打开 extension=php_openssl.dll ');
+                    }
+                    $this->error('openid 值不存在！错误详情如下：'.$string);
+                }
+                if ($fromurl && preg_match("/^http/i", $fromurl) && get_site_key($fromurl)) {   //子站点请求的登录
+                    $str = mymd5(time()."\t".$openid."\t".$unionid,'EN',get_site_key($fromurl));
+                    header('location:'.$fromurl.(strstr($fromurl,'?')?'&':'?').'kcode='.$str);
+                    exit;
+                }
             }
+            
             
             $rs = UserModel::get_info(['weixin_api'=>$openid]);
             if (empty($rs) && $unionid) {
@@ -100,15 +117,12 @@ class Login extends IndexBase
                 
                 UserModel::login($rs['username'], '', 3600*24*30,true);
             }
-            
-
 
             set_cookie('WeiXin_AccessToken',$array['access_token'],7200); //可用于后续 获取共享收货地址
 
-            $fromurl = get_cookie('From_url');
             if( $fromurl ){
                 set_cookie('From_url',null);
-                $jumpto = urldecode($fromurl);
+                $jumpto = $fromurl;
             }else{
                 $jumpto = get_url('member');
             }
@@ -120,19 +134,21 @@ class Login extends IndexBase
                 exit;
             }
         }else{
-            set_cookie('From_url',input('get.fromurl'));
-            //跳转到微信服务器再返回来，将会得到一个有效的code值。
+            set_cookie('From_url',input('get.fromurl')?:null);
             $url = urlencode($this->weburl);
-            if($this->webdb['wxopen_appid'] && $this->webdb['wxopen_appkey']){
+            
+            if($this->webdb['wxlogin_url'] && $this->webdb['wxlogin_key']){    //跳转到第三方站点实现微信登录
+                header('location:'.$this->webdb['wxlogin_url'].purl('login/index').'?fromurl='.$url);
+                exit;
+            }
+            
+            if($this->webdb['wxopen_appid'] && $this->webdb['wxopen_appkey']){  //配置了微信认证开放平台统一帐号
                 $type = "snsapi_userinfo";
             }else{
-                $type = "snsapi_base";
+                $type = "snsapi_base";  //这种方式得不到unionid
             }
-            //snsapi_base方式无法获取unionid
-            //header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope=snsapi_base&state=1#wechat_redirect');
             header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope='.$type.'&state=1#wechat_redirect');
             exit;
         }
-        
     }
 }

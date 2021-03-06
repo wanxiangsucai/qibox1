@@ -9,24 +9,39 @@ class Reg extends IndexBase
 {
     public function index(){
         
-        if(!in_weixin()){
-            $this->error('当前页面只能用手机微信访问！');
-        }elseif($this->user){
-            $this->error('你已经登录了,不能注册!');
+        $fromurl = urldecode(get_cookie('From_url'));
+        
+        if ($fromurl && preg_match("/^http/i", $fromurl) && get_site_key($fromurl)) {   //子站点请求的登录
+        }else{
+            if(!in_weixin()){
+                $this->error('当前页面只能用手机微信访问！');
+            }elseif($this->user){
+                $this->error('你已经登录了,不能注册!');
+            }
         }
+        
         
         $state = input('state');
         $code = input('code');
         $openid = input('openid');
+        $kcode = input('kcode');
         
         $check_attention = 0;
-        if($openid){
+        if( $openid && (!$this->webdb['wxlogin_url']||!$this->webdb['wxlogin_key']) ){
             $check_attention = wx_check_attention($openid);	//检查一下是否已关注过的老用户但系统里还没有注册
         }
         
-        if($state==1 || $check_attention){
+        if($state==1 || $check_attention || $kcode){            
             
-            if($state && !$check_attention){
+            if ($kcode && $this->webdb['wxlogin_url'] && $this->webdb['wxlogin_key']) { //请求了第三方站点实现微信登录
+                list($time,$openid,$string2) = explode("\t", mymd5($kcode,'DE',$this->webdb['wxlogin_key']));
+                if(!$time||!$openid){
+                    $this->error('资料有误!!');
+                }elseif (time()-$time>600) {
+                    $this->error('登录超时了!!');
+                }
+                $data = json_decode($string2,true);
+            }elseif($state && !$check_attention){
                 if(!$code){
                     $this->error('code 值不存在！');
                 }
@@ -47,6 +62,24 @@ class Reg extends IndexBase
                 if($data['nickname']=='' || $data['openid']==''){
                     $this->error('nickname 值不存在！');
                 }
+                
+                if ($fromurl && preg_match("/^http/i", $fromurl) && get_site_key($fromurl)) {   //子站点请求的登录
+                    $str = mymd5(time()."\t".$data['openid']."\t".json_encode($data),'EN',get_site_key($fromurl));
+                    $url = str_replace('weixin-login-index', 'weixin-reg-index', $fromurl);
+                    echo "<!doctype html>
+                        <html lang='en'>
+                         <head>
+                          <meta charset='UTF-8'>
+                         </head>
+                         <body onload='document.getElementById(\"form\").submit()'>
+                          <form method='post' action='$url' id='form'>
+                        	<input type='hidden' name='kcode' value='$str' />
+                          </form>
+                         </body>
+                        </html>";
+                    exit;
+                }
+                
                 $check_attention = wx_check_attention($data['openid']);
                 $openid = $data['openid'];
             }else{
@@ -86,8 +119,7 @@ class Reg extends IndexBase
             UserModel::login($userdb['username'],'',3600*24,true);
             
             $jumpto = input('jumpto');
-            $jumpto && $jumpto=urldecode($jumpto);
-            $fromurl = get_cookie('From_url');
+            $jumpto && $jumpto=urldecode($jumpto);            
             if( $fromurl ){
                 set_cookie('From_url','');
                 $jumpto = $fromurl;
@@ -98,8 +130,13 @@ class Reg extends IndexBase
             $this->success('恭喜你，注册成功',$jumpto);
             
         }else{
-            //跳转到微信服务器再返回来，将会得到一个有效的code值。
             $url = urlencode($this->weburl);
+            
+            if($this->webdb['wxlogin_url'] && $this->webdb['wxlogin_key']){    //跳转到第三方站点实现微信登录
+                header('location:'.$this->webdb['wxlogin_url'].purl('reg/index'));
+                exit;
+            }
+            
             header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect');
             exit;
         }
