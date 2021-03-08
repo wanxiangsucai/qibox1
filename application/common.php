@@ -2537,6 +2537,7 @@ if (!function_exists('getTemplate')) {
          if (empty($openid)) {
              return ;
          }
+         $user_db = [];
          $content = str_replace('target="_blank"', '', $content);   //微信中有这个会暴露出源代码
          if(class_exists("\\plugins\\weixin\\util\\Msg")){
              static $obj=null;             
@@ -2544,11 +2545,13 @@ if (!function_exists('getTemplate')) {
              $uid = 0;
              if(is_numeric($openid)){
                  $uid = $openid;
-                 $_array = get_user($openid);
-                 $openid = $_array['weixin_api'];
+                 $user_db = get_user($openid);
+                 $openid = $user_db['weixin_api'];
                  if (empty($openid)) {
                      return '用户WXID不存在';
                  }
+             }else{
+                 $user_db = get_user($openid,'weixin_api');
              }
              $num++;
              if (!defined('IN_TASK') && $num>5 && $uid) { //处理批量发送时,请求微信服务器容易卡死                 
@@ -2559,7 +2562,7 @@ if (!function_exists('getTemplate')) {
                      return true;
                  }
              }             
-             return $obj->send($openid,$content,$array);
+             return $obj->send($openid,$content,$array,$user_db);
          }
      }
  }

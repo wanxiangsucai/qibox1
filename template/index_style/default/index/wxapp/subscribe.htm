@@ -1,0 +1,93 @@
+{extend name="index@layout" /}
+{block name="head_title"}订阅消息{/block}
+{block name="nav"}{/block}
+
+{block name="body_content"}
+<style type="text/css">
+.helpmsg{
+	padding:10px;	
+}
+</style>
+<div class="helpmsg">
+	{qb:tag name="wap_mp_subscribe" type="text"}请点击下面按钮订阅消息,即可接收到网站给你发送的重要通知.{/qb:tag}
+</div>
+<div style="text-align:center;">
+	<wx-open-subscribe template="{$template?:config('webdb.mp_subscribe_template_id')}" id="subscribe-btn">
+	  <template slot="style">
+		<style>
+		  .subscribe-btn {
+			color: #fff;
+			border:0;
+			width:250px;
+			margin:auto;
+			margin-top:30px;
+			text-align:center;
+			padding: 10px 0 10px 0;
+			border-radius:5px;
+			background-color: #1bbd1a;
+			display:block;
+		  }
+		</style>
+	  </template>
+	  <template>
+		<button class="subscribe-btn">
+		  订阅消息
+		</button>
+	  </template>
+	</wx-open-subscribe>
+</div>
+
+<script type="text/javascript">
+var msg_array = {
+'10001':'参数传空了',
+'10002':'网络问题，请求消息列表失败',
+'10003':'网络问题，订阅请求发送失败',
+'10004':'参数类型错误',
+'20001':'没有模板数据，一般是模板 ID 不存在 或者和模板类型不对应所导致订阅不成功',
+'20002':'模板消息类型 既有一次性的又有永久的',
+'20003':'模板消息数量超过上限',
+'20004':'用户关闭了主开关，无法进行订阅',
+'20005':'服务号被封禁',
+};
+var btn = document.getElementById('subscribe-btn');
+btn.addEventListener('success', function (e) {            
+  console.log('success', e.detail);
+  if(e.detail.errMsg=='subscribe:ok'){
+	  layer.msg('订阅成功!');
+	  $.post("{:murl('member/wxapp.user/edit_subscribe')}?type=mp",{},function(res){
+		  if(res.code==0){
+			  layer.msg('订阅成功了!');
+			  window.location.href="{$fromurl}";
+		  }else{
+			 layer.alert('订阅成功,但入库失败');
+		  }
+	  });
+  }
+});   
+btn.addEventListener('error',function (e) {             
+  console.log('fail', e.detail);
+  layer.alert('订阅失败:<br>'+e.detail.errMsg + (msg_array[e.detail.errCode]?"<br>原因如下："+msg_array[e.detail.errCode]:"，错误代码如下："+e.detail.errCode) ,{title:'订阅失败!'});
+});
+</script>
+
+<!-- 必须要用到的 -->
+{php}$share['title']="欢迎订阅消息!";$share['about']="你将可以第一时间接收到与你密切相关的信息!";{/php}
+{include file="index@share" /}
+
+<script type="text/javascript">
+function goto_wxapp(){
+	wx.miniProgram.navigateTo({ url: "/pages/subscribe/index?template={$template?:config('webdb.wxapp_subscribe_template_id')}&uids={:mymd5($userdb['uid'].','.time())}&url={:urlencode($fromurl)}"});
+}
+wx.miniProgram.getEnv(function(res) {	
+	if(res.miniprogram==true){		//在小程序中访问
+		if("{$userdb.uid}">0){
+			goto_wxapp();
+		}else{
+			layer.alert("请先登录!!");
+		}		
+	}
+});
+
+</script>
+
+{/block}

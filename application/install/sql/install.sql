@@ -1450,3 +1450,8 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '共享微信登录子站点配置', 'wxmp_share_site', '[{"title1":"http://www.test.com","title2":"sfdgf5634543"}]', 'array2', '', 1, '', '第一项是域名,比如http://xxx.com 第二项是通信公钥。多个站点就分别添加多项', -4, -2);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 20, '第三方微信登录域名', 'wxlogin_url', '', 'text', '', 1, '', '如果要借助第三方站点的微信登录接口,请输入相应的域名,比如 http://x1.php168.com', 0, -9);
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 20, '第三方微信登录公钥', 'wxlogin_key', '', 'text', '', 1, '', '可以是任意字符,必须保持跟第三方微信登录接口的站点设置一样', 0, -9);
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '公众号订阅消息模型ID', 'mp_subscribe_template_id', '', 'text', '', 1, '', '<a href="https://www.kancloud.cn/php168/x1_of_qibo/2184587" target="_blank">点击查看设置方法</a>', 0, -2);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '小程序订阅消息模型ID', 'wxapp_subscribe_template_id', '', 'text', '', 1, '', '<a href="https://www.kancloud.cn/php168/x1_of_qibo/2184587" target="_blank">点击查看设置方法</a>', 0, -2);
+
+ALTER TABLE  `qb_memberdata` ADD  `subscribe_mp` TINYINT( 1 ) NOT NULL COMMENT  '是否订阅公众号消息',ADD  `subscribe_wxapp` TINYINT( 1 ) NOT NULL COMMENT  '是否订阅小程序消息';
