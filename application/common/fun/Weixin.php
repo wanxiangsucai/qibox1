@@ -24,4 +24,28 @@ class Weixin{
         }        
     }
     
+    /**
+     * 检查是否需要提醒订阅消息
+     * @param array $userdb 用户信息
+     * @return void|boolean
+     */
+    public function remind_subscribe($userdb=[]){
+        if ($userdb['subscribe_wxapp'] || $userdb['subscribe_mp']) {
+            return ;    //订阅过其中一种就可以了,没必要两个都要订阅
+        }
+        if (in_wxapp()) {   //在小程序里访问
+            if (config('webdb.wxapp_subscribe_template_id') && $userdb['wxapp_api']) {
+                return true;
+            }
+        }elseif(in_weixin()){   //在微信H5中访问
+            if (config('webdb.mp_subscribe_template_id') && $userdb['weixin_api']) {
+                return true;
+            }
+        }elseif(!in_wap()){ //在PC中访问
+            if ( (config('webdb.wxapp_subscribe_template_id')||config('webdb.mp_subscribe_template_id')) && ($userdb['wxapp_api']||$userdb['weixin_api'])) {
+                return true;
+            }
+        }
+    }
+    
 }

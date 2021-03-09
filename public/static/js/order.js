@@ -63,12 +63,12 @@ function check_post(form_obj){
 			if(res.code==0){
 				layer.msg("你的表单已成功提交!");
 				if(typeof(post_order)=='function'){
-					post_order('ok');
+					post_order('ok',res);
 				}
 			}else{
 				layer.alert(res.msg);
 				if(typeof(post_order)=='function'){
-					post_order('err');
+					post_order('err',res);
 				}
 			}
 		});

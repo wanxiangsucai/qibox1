@@ -88,7 +88,7 @@ abstract class Order extends IndexBase
         
         if($this -> request -> isPost()){
             $data = $this -> request -> post();
-            unset($data['pay_status'],$data['pay_money'],$data['fewmoney'],$data['few_ifpay'],$data['agree']);
+            unset($data['pay_status'],$data['pay_money'],$data['fewmoney'],$data['few_ifpay'],$data['agree'],$data['hx_uid']);
             
             if (empty($this->get_order_field( current(current($listdb)) ))) {   //不存在主题自定义字段才处理
                 $result = $this->check_post_filed($data);
@@ -193,7 +193,7 @@ abstract class Order extends IndexBase
                                     'callback_class'=>mymd5('app\\'.config('system_dirname').'\\model\\Order@pay@'.$order_ids),
                             ]);
                 }
-                $this -> success('订单提交成功', $url,[],1);
+                $this -> success('订单提交成功,请选择支付方式', $url,['needpay'=>1],1);
             } else {
                 $this -> error('订单提交失败');
             }

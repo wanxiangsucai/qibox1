@@ -110,8 +110,13 @@ class Member extends AdminBase
 	            $this->error('未知类型');
 	        }
 	        $title = $_name.'变动通知';	        
-	        
-	        $content = '你的 '.$_name.' '.($data['num']>0?'增加了':'减少了').' '.abs($data['num']).' '.$_dw.'，原因：'.$data['about'].'，操作员：'.$this->user['username'];
+	        if ($data['type']=='rmb'||$data['type']=='rmb_freeze') {
+	            $url = purl('marketing/rmb/index',[],'member');
+	        }else{
+	            $url = purl('marketing/jifen/index',[],'member');
+	        }
+	        $url = get_url($url);
+	        $content = '你的 '.$_name.' '.($data['num']>0?'增加了':'减少了').' '.abs($data['num']).' '.$_dw.'，原因：'.$data['about'].'，操作员：'.$this->user['username']."<a href=\"{$url}\" target=\"_blank\">点击查看详情</a>";
 	        send_msg($data['uid'],$title,$content);
 	        send_wx_msg($data['uid'], $content);
 	        $this->success('修改成功', 'index');

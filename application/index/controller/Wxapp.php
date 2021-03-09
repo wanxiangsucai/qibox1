@@ -47,6 +47,8 @@ class Wxapp extends IndexBase
         $this->assign('template',$type);
         if (!$url) {
             $url = $this->fromurl;
+        }elseif(!preg_match("/^http/i", $url)){
+            $url = $this->request->domain().$url;
         }
         $this->assign('fromurl',$url?:$this->request->domain());
         return $this->fetch();

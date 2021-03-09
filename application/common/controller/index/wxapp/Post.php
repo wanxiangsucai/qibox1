@@ -109,7 +109,7 @@ abstract class Post extends IndexBase
             hook_listen('cms_edit_end',$data,['result' =>$result, 'module' =>$this->request->module(),'info'=>$info]);
             $this->end_edit($data['id'],$data,$info);
             
-            return $this->ok_js(['id'=>$id],'修改成功');
+            return $this->ok_js(['id'=>$id,'url'=>iurl('content/show',['id'=>$id])],'修改成功');
         }else{
             return $this->err_js('修改失败');
         }    
@@ -169,7 +169,7 @@ abstract class Post extends IndexBase
             hook_listen('cms_add_end',$id,['data' =>$data, 'module' =>$this->request->module()]);
             $this->end_add($id,$data);
             
-            return $this->ok_js(['id'=>$id],'提交成功');
+            return $this->ok_js(['id'=>$id,'url'=>iurl('content/show',['id'=>$id])],'提交成功');
         }else{
             return $this->err_js('添加内容失败,详情如下:'.$id);
         }
