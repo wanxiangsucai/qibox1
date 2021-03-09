@@ -230,6 +230,8 @@ class Label extends IndexBase
             $data = $this->request->post();
             if (!$use_model) {
                 foreach($default_model AS $path){
+                    $path;
+                    $use_ar[$path] = $path;
                     $use_model[] = [
                         'path'=>str_replace( '/', '___', $path),
                         'tags'=>$this->str2num($tag_name),
@@ -242,7 +244,6 @@ class Label extends IndexBase
                     unset($use_model[$key]);
                 }
             }
-            
             foreach($data['extend_cfg'] AS $path){
                 if (!in_array($path, $use_ar)) {
                     $use_model[] = [
@@ -250,8 +251,7 @@ class Label extends IndexBase
                         'tags'=>$this->str2num($tag_name),
                     ];
                 }
-            }
-            
+            }            
             $this->setTag_value("app\\index\\controller\\Labelmodels@get_label")
             ->setTag_extend_cfg(json_encode(array_values($use_model)))
             ->setTag_type(  substr(strstr(__METHOD__,'::'),2)  );
