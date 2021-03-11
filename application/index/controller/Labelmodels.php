@@ -205,7 +205,22 @@ class Labelmodels extends IndexBase
         $this->assign('hy_id',$id); //不在圈子目录的话,就必须要指定hy_id
         $this->assign('tags',$tags);
         $content = $this->fetch($path);
-        return $this->ok_js(['content'=>$content]);
+        
+        //处理document.write('<script src=""></script>');这种,避免页面白屏
+        $urldb = [];
+        $content = preg_replace_callback("/document\.write\((\"|')<script([^>]+)src=(\"|')([^'\"]+)(\"|')([^>]*)><\\\\\/script>(\"|')\);/is",function($array)use(&$urldb){
+            $urldb[] = $array[4];
+            return '/*内容被处理过了，否则页面有可能白屏*/';
+        }, $content);
+        $js_string = '';
+        foreach($urldb AS $url){
+            if(preg_match("/(layui\.js)$/i", $url)){    //一般页面都会有
+                continue ;
+            }
+            $js_string .= "<script LANGUAGE='JavaScript' src='$url'></script>";
+        }
+        
+        return $this->ok_js(['content'=>$js_string.$content]);
     }
     
     /**
