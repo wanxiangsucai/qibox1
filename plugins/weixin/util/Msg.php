@@ -24,7 +24,7 @@ class Msg
         return $array[1].':'.$array[2].$array[3];
     }
     
-    protected function stringLength($string){
+    protected static function stringLength($string){
         $re   = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
         preg_match_all($re, $string, $match);
         return count($match[0]);
@@ -37,7 +37,7 @@ class Msg
      * @param string $access_token
      * @param array $array
      */
-    public function mp_subscribe($openid,$content,$array=[],$access_token=''){
+    public static function mp_subscribe($openid,$content,$array=[],$access_token=''){
         $first = "你好!";
         $subject = "来自《".config('webdb.webname')."》的消息";
         
@@ -45,10 +45,10 @@ class Msg
         preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
         $url = $array[2] ? "$array[1]:$array[2]" : request()->url(true);
         $content = preg_replace('/<([^<]*)>/is',"",$content);
-        if ($this->stringLength($content)>20) {
+        if (self::stringLength($content)>20) {
             $content = mb_substr($content,0,17,'utf-8').'...';
         }
-        if ($this->stringLength($subject)>20) {
+        if (self::stringLength($subject)>20) {
             $subject = mb_substr($subject,0,17,'utf-8').'...';
         }
         
@@ -94,7 +94,7 @@ class Msg
      * @param string $access_token
      * @return boolean
      */
-    public function wxapp_subscribe($openid,$content,$array=[],$access_token=''){
+    public static function wxapp_subscribe($openid,$content,$array=[],$access_token=''){
         $first = "你好!";
         $subject = "来自《".config('webdb.webname')."》的消息";
         
@@ -102,10 +102,10 @@ class Msg
         preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
         $url = $array[2] ? "$array[1]:$array[2]" : request()->url(true);
         $content = preg_replace('/<([^<]*)>/is',"",$content);
-        if ($this->stringLength($content)>20) {
+        if (self::stringLength($content)>20) {
             $content = mb_substr($content,0,17,'utf-8').'...';
         }
-        if ($this->stringLength($subject)>20) {
+        if (self::stringLength($subject)>20) {
             $subject = mb_substr($subject,0,17,'utf-8').'...';
         }
         $url = urlencode($url);

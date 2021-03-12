@@ -209,7 +209,7 @@ class Labelmodels extends IndexBase
         //处理document.write('<script src=""></script>');这种,避免页面白屏
         $urldb = [];
         $content = preg_replace_callback("/document\.write\((\"|')<script([^>]+)src=(\"|')([^'\"]+)(\"|')([^>]*)><\\\\\/script>(\"|')\);/is",function($array)use(&$urldb){
-            $urldb[] = $array[4];
+            $urldb[$array[4]] = $array[4];
             return '/*内容被处理过了，否则页面有可能白屏*/';
         }, $content);
         $js_string = '';

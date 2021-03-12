@@ -3,6 +3,7 @@ namespace app\member\controller\wxapp;
 
 
 use app\common\controller\MemberBase;
+use plugins\weixin\util\Msg;
 
 //小程序 
 class User extends MemberBase
@@ -34,10 +35,18 @@ class User extends MemberBase
             $array = [
                 'uid'=>$this->user['uid'],
             ];
-            if ($type=='mp') {
-                $array['subscribe_mp'] = $sub;
-            }else{
-                $array['subscribe_wxapp'] = $sub;
+            $result = false;
+            $content = '感谢订阅,<a href="'.get_url(murl('member/index/index')).'">系统后续仅发送与你相关的消息</a>';
+            if ($type=='mp') {                
+                if ($sub) {
+                    $result = Msg::mp_subscribe($this->user['weixin_api'], $content,[],wx_getAccessToken());
+                }
+                $array['subscribe_mp'] = $result===true ? 1 : 0;
+            }else{                
+                if ($sub) {
+                    $result = Msg::wxapp_subscribe($this->user['wxapp_api'], $content,[],wx_getAccessToken(false,true));
+                }
+                $array['subscribe_wxapp'] = $result===true ? 1 : 0;
             }
             edit_user($array);
             return $this->ok_js([],'设置成功');

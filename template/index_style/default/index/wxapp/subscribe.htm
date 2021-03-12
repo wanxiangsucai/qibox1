@@ -26,6 +26,7 @@
 			border-radius:5px;
 			background-color: #1bbd1a;
 			display:block;
+			font-size:14px;
 		  }
 		</style>
 	  </template>
@@ -52,14 +53,14 @@ var msg_array = {
 var btn = document.getElementById('subscribe-btn');
 btn.addEventListener('success', function (e) {            
   console.log('success', e.detail);
-  if(e.detail.errMsg=='subscribe:ok'){
+  if(e.detail.errMsg=='subscribe:ok' &&JSON.stringify(e.detail).indexOf('accept')>0){
 	  layer.msg('订阅成功!');
 	  $.post("{:murl('member/wxapp.user/edit_subscribe')}?type=mp",{},function(res){
 		  if(res.code==0){
 			  layer.msg('订阅成功了!');
 			  window.location.href="{$fromurl}";
 		  }else{
-			 layer.alert('订阅成功,但入库失败');
+			 layer.alert('订阅失败,'+res.msg);
 		  }
 	  });
   }

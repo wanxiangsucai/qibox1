@@ -38,7 +38,7 @@ class Wxapp extends IndexBase
      * @return mixed|string
      */
     public function subscribe($type='',$url=''){
-        if (!$this->user) {
+        if (!$this->user && in_wap()) {
             $this->error('请先登录');
         }
 //         if (!$type && !$this->webdb['mp_subscribe_template_id']) {
@@ -47,6 +47,9 @@ class Wxapp extends IndexBase
         $this->assign('template',$type);
         if (!$url) {
             $url = $this->fromurl;
+            if(strstr($url,'index/login/index')||strstr($url,'index/reg/index')){
+                $url = $this->request->domain();
+            }
         }elseif(!preg_match("/^http/i", $url)){
             $url = $this->request->domain().$url;
         }
