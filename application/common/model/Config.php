@@ -127,9 +127,9 @@ class Config extends Model
      * @param unknown $group
      * @return unknown
      */
-    public function getListByGroup($group)
+    public function getListByGroup($group,$key='id')
     {
-        return $this->where('type',$group)->order('list','desc')->column(true);
+        return $this->where('type',$group)->order('list','desc')->column(true,$key);
     }
     
     //只获取两个关键字段的信息

@@ -245,7 +245,7 @@ class Base extends Controller
 	    }
 	    
 	    //自定义模板
-	    if ($template=='' || $this->route[1]=='plugin' || !strstr($template,substr(ROOT_PATH,0,-2))  ) {
+	    if ( !strstr($template,substr(ROOT_PATH,0,-2))  ) {
 	        if ($this->route[1]=='plugin' && $this->route[2]=='execute') {
 	            $tp_module = input('param.plugin_name');
 	            $tp_controller = input('param.plugin_controller');

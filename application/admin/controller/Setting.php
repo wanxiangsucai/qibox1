@@ -367,7 +367,7 @@ class Setting extends AdminBase
         $this->add_config($group);      //补全字段
         
         //某分类下的所有参数选项
-        $list_data = empty($group) ? [] : $this->model->getListByGroup($group);
+        $list_data = empty($group) ? [] : $this->model->getListByGroup($group,'c_key');
         
         
         //联动字段
