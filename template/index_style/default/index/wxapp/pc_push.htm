@@ -1,0 +1,28 @@
+{extend name="$index_style_layout" /}
+{block name="head_title"}小程序推流{/block}
+{block name="nav"}{/block}
+{block name="body_content"}
+<link rel="stylesheet" href="__STATIC__/index/default/wxlogin.css"> 
+<div class="UserLoginCont">
+	<div class="head"><i class="fa fa-bell"></i> 小程序推流</div>
+	<div class="LoginCont">	
+		<div class="Left">
+			<ul>
+				<ol><span> 直播间 </span><em>请用微信扫一扫进入直播推流</em></ol>
+				<li><img src="{:fun('wxapp@wxapp_codeimg',get_url('location'),$userdb.uid)}"/></li>
+			</ul>
+		</div>
+		<div class="Right {if config('webdb.wxapp_appid')&&config('webdb.wxapp_appsecret')}Left{/if}">
+ 
+			<dl>
+				<dt>提示</dt>
+				<dd>你也可以点击下载APP进行直播推流,<a href="{:purl('android_iframe/index/index',[],'index')}">点击下载APP</a></dd>
+			</dl>
+ 
+			
+
+			<!--<div><a href="#">订阅消息</a></div>-->
+		</div>
+	</div>
+</div>
+{/block}

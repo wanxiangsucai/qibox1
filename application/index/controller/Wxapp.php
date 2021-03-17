@@ -56,6 +56,23 @@ class Wxapp extends IndexBase
         $this->assign('fromurl',$url?:$this->request->domain());
         return $this->fetch();
     }
+	
+	/**
+     * 进入小程序直播
+	 * @param string $rtmp 推流地址
+     * @param string $url 返回网址,留空的话,就返回来源页.不存在来源页的话,就返回主页
+     * @return mixed|string
+     */
+    public function push($rtmp='',$url=''){
+        if (!$this->user) {
+            $this->error('请先登录');
+        }elseif(!$rtmp){
+			 $this->error('推流地址不存在！');
+		}
+        $this->assign('fromurl',$url?:$this->request->domain());
+		$this->assign('rtmp',$rtmp);
+        return $this->fetch();
+    }
     
     /**
      * 小程序调用订阅消息模板

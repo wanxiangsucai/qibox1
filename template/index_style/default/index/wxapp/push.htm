@@ -1,0 +1,102 @@
+{extend name="index@layout" /}
+{block name="head_title"}小程序推流{/block}
+{block name="nav"}{/block}
+
+{block name="body_content"}
+
+{include file="index@share" /}
+
+{if in_wxapp()}
+<script type="text/javascript">
+wx.miniProgram.getEnv(function(res) {	
+	if(res.miniprogram==true){		//在小程序中访问
+		wx.miniProgram.navigateTo({ url: "/pages/push/index?url={:urlencode($fromurl)}&rtmp={:urlencode($rtmp)}"});	
+	}
+});
+
+</script>
+{else /}
+<!-----提示进入小程序----->
+<style type="text/css">
+.MoreInfoBox {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 1000;
+	left: 0px;
+	top: 0px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	display: none;
+}
+
+.MoreInfoBox .BackBox {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.8);
+	left: 0;
+	top: 0
+}
+
+.MoreInfoBox .ShowinfoBox {
+	background: #FFF;
+	position: relative;
+	border-radius: 5px;
+	text-align:center;
+}
+
+.MoreInfoBox .ShowinfoBox img {
+	width: 200px;
+	margin: 10px
+}
+</style>
+<div class="MoreInfoBox">
+	<div class="BackBox" onclick="window.history.back();$('.MoreInfoBox').fadeOut();$('.wxapp_btn').css({'top':'-100px'});"></div>
+	<div class="ShowinfoBox">
+		<img src="{:fun('wxapp@wxapp_codeimg',get_url('location'),$userdb.uid)}" /><br>
+		长按识别进入小程序<br>或点击下面按钮进小程序
+	</div>
+</div>
+<!-----提示进入小程序----->
+<script type="text/javascript">
+function goto_wxapp(){
+	$('.MoreInfoBox').fadeIn();
+	$('.MoreInfoBox').css({'display':'flex'});
+	$(".wxapp_btn").css({'top':'75%'});
+}
+goto_wxapp()
+</script>
+<style type="text/css">
+.wxapp_btn {
+	text-align:center;
+	position: fixed;
+	top:75%;
+	width:100%;
+	z-index: 1001;
+}
+</style>
+<div class="wxapp_btn">
+<wx-open-launch-weapp
+	id="launch-btn"
+	 username="{:config('webdb.wxapp_ghid')}"
+	path="/pages/push/index?url={:urlencode($fromurl)}&rtmp={:urlencode($rtmp)}">
+	<template>
+		<style>.btn { padding: 14px ;background:orange;font-weight:bold;color:#fff;padding:9px 0 9px 0;width:300px;border-radius:5px;border:0;}</style>
+		<button class="btn">点击进入小程序直播</button>
+	</template>
+</wx-open-launch-weapp>
+</div>
+<script type="text/javascript">
+		  var btn = document.getElementById('launch-btn');
+		  btn.addEventListener('launch', function (e) {
+			console.log('success');
+		  });
+		  btn.addEventListener('error', function (e) {
+			console.log('fail', e.detail);
+		  });
+</script>
+{/if} 
+
+{/block}

@@ -200,15 +200,34 @@ mod_class.zhibo = {
 					if(!in_pc){	//手机端
 						show_str  = `
 							<div class="live_video_warp">
-							<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>其它手机扫码推流</div>
-							推流地址：<input class="push_url" type="text"><br>
+							<div class="codeimg"><img src="" onerror="this.src='http://www.qibosoft.com/images/showad/h_wei.png'"><br>手机扫码获取推流地址</div>
+							复制推流地址：<input class="push_url" type="text"><br>
 							<!--播流地址：<input class="m3u8_url" type="text"><br>
 							播流地址FLV(只能PC播放)：<input class="flv_url" type="text"><br>	
 							播流地址rtmp(只能PC/APP能播放)：<input class="rtmp_url" type="text"><br>-->
 							</div>
 							`;
 					}
-					layer.alert("提醒：只有在app中或者用其它第三方推流工具才能直播<br>请点击确定，可以获取推流码及推流地址给第三方工具使用",function(index){
+					var index = layer.confirm("推流码地址如下："+show_str,{
+						title:'只能在app、小程序、OBS直播',
+						btn:['进小程序直播','取消'],
+						area:$('body').width()<800 ?['98%','400px']:['600px','400px'],
+						btn1:function(){
+							var url = "/index.php/index/wxapp/push.html?rtmp="+encodeURIComponent(res.data.rtmp_url);
+							if(parent.$('body').width()>800){
+								parent.window.location.href = url
+							}else{
+								window.location.href = url
+							}
+						}
+					});
+						$(".live_video_warp").last().find(".codeimg img").attr('src',res.data.push_img);
+						$(".live_video_warp").last().find(".push_url").val(res.data.push_url);
+						$(".live_video_warp").last().find(".m3u8_url").val(res.data.m3u8_url);
+						$(".live_video_warp").last().find(".rtmp_url").val(res.data.rtmp_url);
+						$(".live_video_warp").last().find(".flv_url").val(res.data.flv_url);
+						/*
+					layer.alert("提醒：只有在app及小程序中或者用其它第三方推流工具才能直播<br>请点击确定，可以获取推流码及推流地址给第三方工具使用",function(index){
 						layer.close(index);
 						layer.open({
 								type: 1,
@@ -222,7 +241,7 @@ mod_class.zhibo = {
 						$(".live_video_warp").last().find(".m3u8_url").val(res.data.m3u8_url);
 						$(".live_video_warp").last().find(".rtmp_url").val(res.data.rtmp_url);
 						$(".live_video_warp").last().find(".flv_url").val(res.data.flv_url);
-					});
+					});*/
 				}else if(res.code==2){
 					layer.alert(res.msg,{
 						title:false,
