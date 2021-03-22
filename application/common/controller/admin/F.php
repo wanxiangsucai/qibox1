@@ -63,11 +63,12 @@ abstract class F extends AdminBase
                 ['textarea', 'range_opt', '列表页范围筛选参数', '(每个值换一行)<br>如下示例:<br>-1,0|免费<br>0,100|100元以下<br>100,500|100元-500元 <br>默认搜索的条件“&gt;=,&lt;=”是大于或等于第一项并且小于或等于第二项,如果要调整的话,就需要加多一项参数,比如“0,100|一百元以下|&gt;,&lt;=”代表大于0而不包含0,小于100包含100'],
                 ['radio', 'ifmust', '是否属于必填项', '', ['可不填', '必填'], 0],
                 ['checkbox', 'group_view', '仅限哪些用户组查看', '', getGroupByid()],
+            ['checkbox', 'group_post', '仅限哪些用户组填写', '', getGroupByid()],
                 ['radio', 'index_hide', '详情页是否隐藏', '二次开发才会用到隐藏', ['显示', '隐藏'], 0],
                 ['text', 'about', '描述说明'],
+                ['textarea', 'script', 'JS脚本:(一般留空)','若不为空的话，&lt;script&gt; &lt;/script&gt; 也要一起写上'],
                 ['text', 'list', '排序值'],
-                ['text', 'nav', '分组名[:对于不重要的字段,你可以添加组名,让他在更多那里显示]'],
-                
+                ['text', 'nav', '分组名[:对于不重要的字段,你可以添加组名,让他在更多那里显示]'],                
         ];
         
         $this->tab_ext = [
@@ -178,8 +179,9 @@ $("#atc_field_type").after(string);
                 if(true !== $result) $this->error($result);
             }
             $data['group_view'] = is_array($data['group_view']) ? implode(',', $data['group_view']) : $data['group_view'].'';   //强制变成字符串,避免数组的时候没东西提交导致修改不成功
+            $data['group_post'] = is_array($data['group_post']) ? implode(',', $data['group_post']) : $data['group_post'].'';   //强制变成字符串,避免数组的时候没东西提交导致修改不成功
             
-            $this -> request -> post(['group_view'=>$data['group_view']]);
+            $this -> request -> post(['group_view'=>$data['group_view'],'group_post'=>$data['group_post']]);
             
             $result = $this->model->updateField($id,$data); // 更新字段信息
             if ($result===true) {

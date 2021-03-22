@@ -378,11 +378,16 @@ abstract class C extends AdminBase
         }
         
         //排序方式
-        $this -> tab_ext['order'] = 'view,list,create_time';
+        isset($this -> tab_ext['order']) || $this -> tab_ext['order'] = 'view,list,create_time';
         //搜索字段
-        $this -> tab_ext['search'] = array_merge(['title'=>'标题','uid'=>'用户uid'],$this->getEasySearchItems());
+        $this -> tab_ext['search'] = array_merge(
+            isset($this -> tab_ext['search']) ? $this -> tab_ext['search'] : ['title'=>'标题','uid'=>'用户uid'],
+            $this->getEasySearchItems()
+            );
         //筛选字段
-        $this->tab_ext['filter_search'] = array_merge( $this->getEasyfiltrateItems(),[
+        $this->tab_ext['filter_search'] = array_merge( 
+            $this->getEasyfiltrateItems(),
+            isset($this->tab_ext['filter_search']) ? $this->tab_ext['filter_search'] : [
             'fid'=>get_sort(0,'all'),
             'status'=>$this->status_array,
             //'delete_time'=>['正常','回收站'],
@@ -421,7 +426,7 @@ abstract class C extends AdminBase
         
         $this->assign('choose_rubbish',1);  //删除的时候选择是否放入回收站
         
-        $data = self::getListData($fid ? ['fid'=>$fid] : ['mid'=>$mid]);
+        $data = static::getListData($fid ? ['fid'=>$fid] : ['mid'=>$mid]);
         $this->tab_ext['id_name'] = $this->get_id_name($mid);
         $this->assign('search_time','create_time');
         return $this->getAdminTable($data);
