@@ -49,7 +49,7 @@ trait AdminSort
 	    $map = array_merge($this->getMap(),$map);
 
         // 数据列表
-	    $data_list = $this->model->where($map)->order($order)->column(true);
+	    $data_list = $this->model->where($map)->order($this -> getOrder() ? $this -> getOrder() : $order )->column(true);
         
         //树状重新排序处理
         if (!empty($data_list)) {

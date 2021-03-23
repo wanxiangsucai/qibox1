@@ -19,6 +19,16 @@ class Wxapp extends IndexBase
     }
     
     /**
+     * 显示腾讯的图片，解决防盗链的问题
+     * @param string $url 腾讯的图片地址
+     */
+    public function wximg($url=''){
+        header('Content-Type: image/jpeg');
+        echo sockOpenUrl($url);
+        exit;
+    }
+    
+    /**
      * 生成小程序二维码
      * @param string $url
      */
@@ -59,19 +69,30 @@ class Wxapp extends IndexBase
 	
 	/**
      * 进入小程序直播
-	 * @param string $rtmp 推流地址
+	 * @param string $rtmp 推流地址 设置为test就是使用默认的测试推流网址
      * @param string $url 返回网址,留空的话,就返回来源页.不存在来源页的话,就返回主页
+     * @param string $roomid 直播间ID
      * @return mixed|string
      */
-    public function push($rtmp='',$url=''){
+    public function push($rtmp='',$url='',$roomid=0){
         if (!$this->user) {
             $this->error('请先登录');
-        }elseif(!$rtmp){
+        }elseif(!$roomid && !$rtmp){
 			 $this->error('推流地址不存在！');
 		}
-        $this->assign('fromurl',$url?:$this->request->domain());
-		$this->assign('rtmp',$rtmp);
-        return $this->fetch();
+		
+		$fromurl = urlencode($url?:$this->request->domain());
+		
+		if ($roomid&&!$rtmp) {
+		    $url = 'plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id='.$roomid.'&custom_params=';	
+		}else{
+		    $url = '/pages/push/index?url='.$fromurl.'&rtmp='.urlencode($rtmp).($roomid?'&roomid='.$roomid:'');	
+		}			
+		
+		$this->assign('url',$url);
+		$this->assign('codeimg', fun('wxapp@wxapp_codeimg',get_url('location'),$this->user['uid']) );
+		
+		return $this->fetch();
     }
     
     /**

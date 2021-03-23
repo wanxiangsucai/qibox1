@@ -291,7 +291,16 @@ trait ModuleContent
 	    }elseif($order == 'list desc'){
 	        $order .= ',id desc';
 	    }
-	    return $this->model->getListByMid($this->mid,$map,$order,$rows,$pages,$format);
+	    return $this->format_list_data($this->model->getListByMid($this->mid,$map,$order,$rows,$pages,$format));
+	}
+	
+	/**
+	 * 对列表数据进行自定义处理
+	 * @param array $data
+	 * @return unknown
+	 */
+	protected function format_list_data($data=[]){
+	    return $data;
 	}
 		
 	/**

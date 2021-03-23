@@ -1759,23 +1759,28 @@ if(!function_exists('write_file')){
      * @return number
      */
 	function write_file($filename,$data,$method="rb+",$iflock=1){
-		@touch($filename);
-		$handle=@fopen($filename,$method);
-		if(!$handle){
-			return "此文件不可写:$filename";
-		}
-		if($iflock){
-			@flock($handle,LOCK_EX);
-		}
-		@fputs($handle,$data);
-		if($method=="rb+") @ftruncate($handle,strlen($data));
-		@fclose($handle);
-		@chmod($filename,0777);	
-		if( is_writable($filename) ){
-			return true;
-		}else{
-			return false;
-		}
+	    if ($method=='a'||$method=='a+') {
+	        file_put_contents($filename, $data,FILE_APPEND );
+	    }else{
+	        file_put_contents($filename, $data);
+	    }	    
+// 		@touch($filename);
+// 		$handle=@fopen($filename,$method);
+// 		if(!$handle){
+// 			return "此文件不可写:$filename";
+// 		}
+// 		if($iflock){
+// 			@flock($handle,LOCK_EX);
+// 		}
+// 		@fputs($handle,$data);
+// 		if($method=="rb+") @ftruncate($handle,strlen($data));
+// 		@fclose($handle);
+// 		@chmod($filename,0777);	
+// 		if( is_writable($filename) ){
+// 			return true;
+// 		}else{
+// 			return false;
+// 		}
 	}
 }
 
@@ -2332,6 +2337,41 @@ if (!function_exists('getTemplate')) {
           }
       }
   }
+  
+ if (!function_exists('http_postfile')) {
+     /**
+      * 上传文件
+      * @param string $url 服务器网址
+      * @param string $path 本地文件路径
+      * @return mixed
+      */
+     function http_postfile($url='',$path=''){
+         $curl = curl_init();
+         if (class_exists('\CURLFile')) {
+             curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
+             $data = array('file' => new \CURLFile(realpath($path)));//>=5.5
+         } else {
+             if (defined('CURLOPT_SAFE_UPLOAD')) {
+                 curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
+             }
+             $data = array('file' => '@' . realpath($path));//<=5.5
+         }
+         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+         curl_setopt($curl, CURLOPT_URL, $url);
+         curl_setopt($curl, CURLOPT_POST, 1 );
+         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+         curl_setopt($curl, CURLOPT_USERAGENT,"TEST");
+         $result = curl_exec($curl);
+         $error = curl_error($curl);
+         if (curl_errno($curl)) {
+             echo 'Errno'.curl_error($curl);
+         }
+         curl_close($curl);
+         return $result;
+     }
+ }
  
  if (!function_exists('http_curl')) {
      /**
@@ -2380,7 +2420,7 @@ if (!function_exists('getTemplate')) {
          if($is_wxapp){    //针对微信小程序
              if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
                  if($check==TRUE){
-                     showerr('系统没有设置小程序的AppID或者AppSecret');
+                     return '系统没有设置小程序的AppID或者AppSecret';
                  }
                  return ;
              }

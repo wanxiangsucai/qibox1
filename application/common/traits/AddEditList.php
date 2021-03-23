@@ -324,12 +324,26 @@ trait AddEditList {
         if (empty($ids)) {
             return false;
         }
+        $listdb = $this -> model -> where('id','in',$ids)->column(true);
+        $result = $this->delete_check($listdb);
+        if ($result!==true) {
+            $this -> error($result);
+        }
         if ($this -> model -> destroy($ids)) {
-            $this->end_act('delete',$ids);
+            $this->end_act('delete',$listdb);
             return true;
         } else {
             return false;
         }
+    }
+    
+    /**
+     * 删除前做检验
+     * @param array $listdb 多条数据
+     * @return boolean
+     */
+    protected function delete_check($listdb=[]){
+        return true;
     }
     
     /**
