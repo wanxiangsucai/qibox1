@@ -1,3 +1,19 @@
+<style type="text/css">
+.MainCont .form_about{
+	color:#a9a9a9;
+	line-height:150%;
+	font-size:13px;
+	padding-top:5px;
+}
+.help_msg{
+	border:1px solid #ececec;
+	border-top:30px solid #fff6ea;
+	margin-top:30px;	
+}
+.help_msg .cont{
+	padding:10px 10px 10px 10px;
+}
+</style>
 <form name="" method="post" action="{:request()->url(true)}" class="ajax_post {notempty name='$tab_ext.trigger'} form-trigger {/notempty}  layui-form">
 <div class="MainCont mtop10">
 	<div class="head"><div class="tag">{if ($tab_ext['page_title'])} {$tab_ext.page_title} {elseif (empty($info))}添加{else /}修改{/if}</div></div>
@@ -29,7 +45,7 @@
             <td class="tdL">{$rs.title} </td>
             <td class="tdR {if in_array($rs['type'],['password','number','money','datetime','date','time','color','icon','select'])}layui-input-inline{else /}layui-input-block{/if}">
 			<div>{$rs.value}</div>
-			{notempty name="$rs.about"}<div>{$rs.about}</div>{/notempty}
+			{notempty name="$rs.about"}<div class="form_about">{$rs.about}</div>{/notempty}
 			</td>
           </tr>
 		{/qb:form}
@@ -77,7 +93,7 @@
 					  <td class='tdL'>{$rs.title} </td>
 					  <td class="tdR {if in_array($rs['type'],['password','number','money','datetime','date','time','color','icon','select'])}layui-input-inline{else /}layui-input-block{/if}"> 
 						<div>{$rs.value}</div>
-						{notempty name="$rs.about"}<div class="layui-form-mid layui-word-aux">{$rs.about}</div>{/notempty}
+						{notempty name="$rs.about"}<div class="layui-form-mid layui-word-aux form_about">{$rs.about}</div>{/notempty}
 					  </td>
 					</tr>
 				{/volist}
@@ -104,6 +120,13 @@
     </div>
 </div>
 </form>
+
+{if $tab_ext.help_msg}
+<div class="MainCont help_msg">
+    <div class="cont">{$tab_ext.help_msg}</div>
+</div>
+{/if}
+
 <div style="height:50px;"></div>
 
 

@@ -24,7 +24,7 @@
 	{/volist}
 	</div>
 {elseif $rs.type=='image'}
-	<div class="field_{$rs.name} field_image"><a href="{$rs.value}"><img src="{$rs.value}"></a></div>
+	 {$rs.value}
 {elseif $rs.type=='file'}
 	<div class="field_{$rs.name} field_field"><a href="{$rs.value}">点击下载</a></div>
 {elseif $rs.type=='bmap'}

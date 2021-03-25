@@ -52,21 +52,23 @@ var Qibo = function () {
 			if(res.code==0){	//成功提示
 				layer.msg(res.msg);
 				setTimeout(function(){
-					if(res.url!=''){
+					if(res.url){
 						window.location.href = res.url;
+					}else if(typeof(ajax_get)=='function'){
+						ajax_get(res,id,true);
 					}else{
 						window.location.reload();
 					}						
 				},500);
 			}else{	//错误提示
-				if(res.url!=''){
+				if(res.url){
 					layer.confirm(res.msg, {title:'提示', btn : [ '确定', '取消' ]}, function(index) {
 						window.location.href = res.url;
 					});
 				}else{
 					layer.open({title: '提示!',content:res.msg});
 					if(typeof(ajax_get)=='function'){
-						ajax_get(res,id);		//页面里定义的函数
+						ajax_get(res,id,false);		//页面里定义的函数
 					}
 				}
 			}

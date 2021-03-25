@@ -17,7 +17,7 @@
 
 			<dd>
 				{notempty name="$rs.title"}<!--标题单独显示-->
-					<div class="t"><a href="{:iurl('show',['id'=>$rs.id])}" target="_blank">{$rs.title}</a></div>
+					<div class="t"><a href="{:request()->controller()=='Content'?iurl('show',['id'=>$rs.id]):'#'}">{$rs.title}</a></div>
 				{/notempty}
 					
 				<div class="f">
@@ -25,7 +25,9 @@
 						<a href="{:iurl('index',['fid'=>$rs.fid])}" target="_blank">{$rs.fid|get_sort='name'}</a>
 					{/if}
 					{if isset($rs.status)}	 <!--状态单独显示-->
+						<span  class="sys-info">
 						{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status>1) /} 推荐 {elseif($rs.status==1) /} 已审核 {elseif($rs.status==-1) /} <i style="color:green;">回收站</i> {/if}
+						</span>
 					{/if}
 					<br>
 					{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"} <!--自定义字段-->

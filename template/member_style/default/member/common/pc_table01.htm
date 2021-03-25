@@ -50,9 +50,9 @@
 	font-size:16px;
 }
 .list_item .info{
-	height:20px;
+	/*height:20px;*/
 	line-height:25px;
-	overflow:hidden;
+	/*overflow:hidden;*/
 	color:#888;
 	font-size:14px;
 }
@@ -90,7 +90,7 @@
 		{/if}
 
 		{notempty name="$rs.create_time"}<!--日期单独显示-->
-			<div class="info">
+			<div class="info sys-info">
 			{notempty name="$rs.fid"} 分类：<a href="{:iurl('index',['fid'=>$rs.fid])}" target="_blank">{$rs.fid|get_sort='name'}</a>{/notempty} 
 			日期：<span>{$rs.create_time|format_time="Y-m-d H:i"}</span> 
 			{notempty name="$rs.view"} 浏览：<span>{$rs.view}</span>{/notempty}

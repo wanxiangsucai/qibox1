@@ -13,7 +13,9 @@
 		{/volist}
 
 			{if isset($rs.status)}	 <!--状态单独显示-->
+				<span  class="sys-info">
 				{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status>1) /} 推荐 {elseif($rs.status==1) /} 已审核 {elseif($rs.status==-1) /} <i style="color:green;">回收站</i> {/if}
+				</span>
 			{/if}
 		</ol>
 

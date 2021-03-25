@@ -66,7 +66,7 @@ body{
 <div class="sideBox" data-status="{$rs.status}" data-id="{$rs.id}">
 	
 	{notempty name="$rs.title"}<!--标题单独显示-->
-		<ul><a href="{:iurl('show',['id'=>$rs.id])}">{$rs.title}</a><ol>&nbsp;</ol></ul>
+		<ul><a href="{:request()->controller()=='Content'?iurl('show',['id'=>$rs.id]):'#'}">{$rs.title}</a><ol>&nbsp;</ol></ul>
 	{/notempty}
 
 	{notempty name="$rs.picurl"}<!--图片单独显示-->
@@ -94,7 +94,7 @@ body{
 		{/if}
 
 		{if isset($rs.status)}	
-		<ul>
+		<ul class="sys-info">
 			<ol>状态</ol>
 			<li>{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status>1) /} 推荐 {elseif($rs.status==1) /} 已审核 {elseif($rs.status==-1) /} <i style="color:green;">回收站</i> {/if}<div></div></li>		
 		</ul>
