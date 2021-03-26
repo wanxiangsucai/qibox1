@@ -42,11 +42,12 @@ class Category{
      * @param number $fid 父ID
      * @param string $dir 频道目录名
      * @param string $fomat 默认要转义字段
+     * @param string $order 排序方式
      * @return array|void|mixed|array|\think\db\false|PDOStatement|string|\think\Model
      */
-    public static function sortlist($fid=0,$dir='',$fomat=true){
+    public static function sortlist($fid=0,$dir='',$fomat=true,$order='list desc,id desc'){
         $dir || $dir = config('system_dirname');
-        $listdb = Db::name($dir.'_category')->where('pid',$fid)->column(true);
+        $listdb = Db::name($dir.'_category')->where('pid',$fid)->order($order)->column(true);
         if ($fomat) {
             foreach($listdb AS $key=>$rs){
                 $rs['mid'] = -3;
