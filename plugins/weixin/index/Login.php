@@ -13,7 +13,7 @@ class Login extends IndexBase
      * @param string $type 设置为bind的时候,就是绑定帐号
      * @param string $sid 设置为bind的时候的用户字串
      */
-    public function index($fromurl='',$type='',$sid=''){
+    public function index($fromurl='',$type='',$sid=''){        
         if ($fromurl && preg_match("/^http/i", $fromurl) && get_site_key($fromurl)) {   //子站点请求的登录
         }else{
             if($type=='bind'){
@@ -25,6 +25,15 @@ class Login extends IndexBase
             }elseif(!in_weixin()){
                 $this->assign('fromurl',urlencode($fromurl));
                 return $this->fetch();
+            }elseif (in_wxapp() && $this->webdb['weixin_type']!=3) {  //没有认证服务号的话，就选择小程序登录
+                $fromurl = $fromurl ? get_url($fromurl) : $this->request->domain();
+                $url = '/pages/login/index?url='.urlencode(
+                    '/pages/wap/iframe/index?url='.urlencode(
+                        $fromurl .(strstr($fromurl,'?')?'&':'?').'token='
+                        )
+                    );
+                $this->assign('url',$url);
+                return $this->fetch('wxapp');
             }
         }        
         

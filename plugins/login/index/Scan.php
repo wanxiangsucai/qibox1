@@ -23,7 +23,11 @@ class Scan extends IndexBase
      */
     public function qrcode($type='wx'){
         $url = $this->request->domain() . purl('login/scan/in_app') . '?type=' . $type . '&code=' . mymd5(time() . "\t" . self::$sid ."\t" .get_ip());        
-        $url = iurl('index/qrcode/index') . '?url=' . urlencode($url);
+        if ($type=='wx' && $this->webdb['weixin_type']!=3 && $this->webdb['wxapp_appid'] && $this->webdb['wxapp_appsecret']) {
+            $url = fun('wxapp@wxapp_codeimg',$url,$this->user['uid']);
+        }else{
+            $url = iurl('index/qrcode/index') . '?url=' . urlencode($url);
+        }        
         header('location:'.$url);
         exit;
     }

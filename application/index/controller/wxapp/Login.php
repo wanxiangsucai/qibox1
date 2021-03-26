@@ -195,6 +195,38 @@ class Login extends IndexBase
     }
     
     /**
+     * 通过code获取用户登录信息
+     * @param string $code
+     * @return void|\think\response\Json
+     */
+    public function wxapp_getuser_bycode($code=''){
+        if (!$code) {
+            return $this->err_js('CODE为空');
+        }
+        $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.$this->webdb['wxapp_appid'].'&secret='.$this->webdb['wxapp_appsecret'].'&js_code='.$code.'&grant_type=authorization_code');
+        $array = json_decode($string,true);
+        if ($array['unionid'] || $array['openid']){
+            if ($array['unionid']) {
+                $user = get_user($array['unionid'],'unionid');
+            }else{
+                $user = get_user($array['openid'],'wxapp_api');
+            }
+            if ($user) {
+                cache($code,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN'),3600);
+                $array = [
+                    'token'=>$code,
+                    'userInfo'=>$user,
+                ];
+                return $this->ok_js($array);
+            }else{
+                return $this->err_js('用户不存在！');
+            }            
+        }else{
+            return $this->err_js($string);
+        }
+    }
+    
+    /**
      * 小程序或APP客户端检查登录状态
      * @param string $token
      * @return \think\response\Json
