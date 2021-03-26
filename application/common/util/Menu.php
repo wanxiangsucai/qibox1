@@ -42,6 +42,10 @@ class Menu{
     {
         foreach($ar['sons'] AS $key1=>$v){
             foreach($v['sons'] AS $key2=>$v2){
+                if(!$v2['title']&&!$v2['url']){ //商业模块，菜单为空
+                    unset($ar['sons'][$key1]['sons'][$key2]);
+                    continue;
+                }
                 $ar['sons'][$key1]['sons'][$key2]['model'] = $model;
                 if (is_array($v2['link'])) {
                     $v2['param'] = $v2['link'][1];
@@ -315,11 +319,10 @@ class Menu{
             if(is_file($file)){
                 $array = include($file);
                 self::get_ext_menu($array,$file);
-                foreach($array AS $key=>$ar){
-                    
+                foreach($array AS $key=>$ar){                    
                     //打上标志是哪个模块的系统，方便处理URL指向
                     self::menu_make_url($ar,$model['keywords']);
-                    
+
                     if($model['ifsys']){    // 使用顶部菜单的频道
                         $ar['sons'][0]['title'] = $model['name'];
                         $ar['sons'][0]['icon'] = $model['icon'];
