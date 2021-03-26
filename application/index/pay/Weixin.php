@@ -82,14 +82,16 @@ class Weixin extends Pay{
             $array = $this->olpay_send();
             return $this->weixin_pay_inpc($array);
         }else{
-            if (input('client_type')=='') { //判断是不是在小程序中				
-                return $this->fetch('choose_mp_wxapp');
-            }
-			$weixin_openid = $this->get_openid();    //获取当前微信的真实openid
+//             if (input('client_type')=='') { //判断是不是在小程序中				
+//                 return $this->fetch('choose_mp_wxapp');
+//             }
+            if (!in_wxapp()) {
+                $weixin_openid = $this->get_openid();    //获取当前微信的真实openid
+            }			
             
             $array = $this->olpay_send();
             
-            if (input('client_type')=='wxapp') {    //在微信小程序中支付
+            if (in_wxapp() || input('client_type')=='wxapp') {    //在微信小程序中支付
                 $this->assign('array',$array);
                 $this->assign('in_app',input('in_app')?1:0);    //是否在APP中访问
                 return $this->fetch('wxapp_pay');
