@@ -2,7 +2,7 @@
 mod_class.menu = {
 	vid:0,
 	init:function(res){	//init()只做界面渲染与页面元素的事件绑定,若做逻辑的话,更换圈子时PC端不执行,执行的话,会导致界面重复渲染。logic_init()做逻辑处理,满足更换圈子房间的需要
-		if(in_pc==true||uid>0){
+		if(in_pc==true||uid>=0){
 			return ;
 		}
 		var that = this;
