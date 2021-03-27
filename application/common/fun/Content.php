@@ -45,7 +45,7 @@ class Content{
      */
     public static function bbscode($content=''){
         $content = preg_replace_callback("/\[face(\d+)\]/is",array(self,'get_face'),$content);
-        $content = preg_replace_callback("/([^br]?|<br>)(http|https):\/\/([\w\.\?\/=\-_]+)/is",array(self,'get_link'),$content);
+        $content = preg_replace_callback("/([^br]?|<br>)(http|https):\/\/([\w\.\?\/=\-_&#]+)/is",array(self,'get_link'),$content);
         return $content;
     }
     
