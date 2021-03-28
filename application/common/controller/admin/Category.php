@@ -38,7 +38,7 @@ abstract class Category extends AdminBase
     protected function set_config(){
         $this->list_items = [
                 ['name', '辅栏目名称', 'link',iurl('category/index',['fid'=>'__id__']),'_blank'],
-                //['mid', '所属模型', 'select2',$this->m_model->getTitleList()],
+                ['list', '排序值', 'text.edit'],
         ];
         
         $msg = '请把模板放在此目录下: '.TEMPLATE_PATH.'index_style/ 然后输入相对路径,比如 default/abc.htm';
@@ -85,7 +85,7 @@ abstract class Category extends AdminBase
                 $this->list_items,
                 $array
                 ); 
-        $listdb = $this->getListData($map = [], $order = '');
+        $listdb = $this->getListData($map = [], 'list desc,id desc');
         return $this -> getAdminTable($listdb);
     }
     

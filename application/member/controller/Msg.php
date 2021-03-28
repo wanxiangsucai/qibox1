@@ -384,6 +384,9 @@ class Msg extends MemberBase
         if(!is_array($info)){
             $this->error($info);
         }
+        if (preg_match("/(http|https):([^ ]+)(\"|')/i",$info['content'],$array)) {
+            $this->assign('url',$array[1].':'.$array[2]);
+        }
 		//$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
         $this->assign('info',$info);
         $this->assign('touid',$info['uid']);

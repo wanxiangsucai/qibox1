@@ -1,18 +1,22 @@
 <?php
 namespace plugins\weixin\util;
 
+use app\common\model\Msg AS MsgModel;
+
 class Msg
 {
-    protected $wxid;
+    protected static $wxid;
+    protected static $user;
+    protected static $content;
     
-    protected function getUrl($array=[]){
+    protected static function getUrl($array=[]){
         if (empty($array[1])) {
             return ;
         }
         $token = '';
-        $user = get_user($this->wxid,'weixin_api');
+        $user = self::$user;
         if ($user) {
-            $token = md5( $this->wxid . time() . $user['lastvist'] . rands(5) );
+            $token = md5( self::$wxid . time() . $user['lastvist'] . rands(5) );
             cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
         }
         //once=1 出于安全考虑,限制只有一次有效
@@ -30,6 +34,30 @@ class Msg
         return count($match[0]);
     }
     
+    
+    protected static function sendmsg($content=''){
+        $content = MsgModel::where('uid',self::$user['uid'])->order('id desc')->value('content');
+        if (!self::$content) {
+            self::$content = $content;
+        }
+        if ($content!=self::$content){
+            $data = [
+                'touid'=>self::$user['uid'],
+                'title'=>'微信消息',
+                'content'=>self::$content,
+                'create_time'=>time(),
+            ];
+            $result = MsgModel::create($data);
+            $id = $result->id;
+            $user = self::$user;
+            $token = md5( self::$wxid . time() . $user['lastvist'] . rands(5) );
+            cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
+            $url = get_url(murl('member/msg/show',['id'=>$id])).'?token='.$token;
+            return $url;
+        }
+    }
+     
+    
     /**
      * 公众号订阅消息
      * @param unknown $openid
@@ -43,7 +71,7 @@ class Msg
         
         $content = stripslashes($content);
         preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
-        $url = $array[2] ? "$array[1]:$array[2]" : request()->url(true);
+        $url = $array[2] ? "$array[1]:$array[2]" : request()->domain();
         $content = preg_replace('/<([^<]*)>/is',"",$content);
         if (self::stringLength($content)>20) {
             $content = mb_substr($content,0,17,'utf-8').'...';
@@ -103,9 +131,13 @@ class Msg
         $url = $array[2] ? "$array[1]:$array[2]" : request()->url(true);
         $content = preg_replace('/<([^<]*)>/is',"",$content);
         if (self::stringLength($content)>20) {
+            $_url = self::sendmsg($content);
+            if ($_url) {
+                $url = $_url;
+            }
             $content = mb_substr($content,0,17,'utf-8').'...';
         }
-        if (self::stringLength($subject)>20) {
+        if (self::stringLength($subject)>20) {            
             $subject = mb_substr($subject,0,17,'utf-8').'...';
         }
         $url = urlencode($url);
@@ -143,14 +175,25 @@ class Msg
         }
     }
     
+    /**
+     * 给用户发送公众号或者是小程序消息
+     * @param unknown $openid 有可能是公众号，也有可能是小程序的ID，将要弃用
+     * @param unknown $content
+     * @param array $array
+     * @param array $user 用户的信息
+     * @return void|boolean|mixed
+     */
     public function send($openid,$content,$array=[],$user=[]){
         
         if($openid==''){
             return ;
         }
         
-        $this->wxid = $openid;
-        $content = preg_replace_callback("/(http|https):([^ ]+)(\"|')/is",array($this,'getUrl'),$content);  //加入用户登录信息,让用户直接登录
+        self::$wxid = $openid;
+        self::$user = $user;
+        self::$content = $content;
+        
+        $content = preg_replace_callback("/(http|https):([^ ]+)(\"|')/is",array(self,'getUrl'),$content);  //加入用户登录信息,让用户直接登录
         
         if($array['type']=='image'){
             $data="{
@@ -196,10 +239,10 @@ class Msg
         }
         $ac = wx_getAccessToken();
 
-        if($user['subscribe_wxapp'] && $this->wxapp_subscribe($user['wxapp_api'], $content,$array,wx_getAccessToken(false,true))===true){
-            
-        }elseif($user['subscribe_mp'] && $this->mp_subscribe($openid, $content,$array,$ac)===true){
-            
+        if($user['subscribe_wxapp'] && self::wxapp_subscribe($user['wxapp_api'], $content,$array,wx_getAccessToken(false,true))===true){
+            return true;
+        }elseif($user['subscribe_mp'] && self::mp_subscribe($user['weixin_api'], $content,$array,$ac)===true){
+            return true;
         }elseif(strstr( http_curl("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=$ac",$data) ,'ok')){
             return true;
         }else{

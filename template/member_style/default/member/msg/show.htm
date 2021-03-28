@@ -1,1 +1,51 @@
-{include file="msg/index" /}
+{extend name="$member_style_layout" /}
+
+{block name="title"}微消息{/block}
+{block name="content"}
+
+ 
+<style type="text/css">
+.layadmin-message-fluid{
+	padding:0;
+}
+.layui-col-md12{ 
+	padding:10px;
+	border-bottom:1px solid #eee;
+}
+.media-body{
+	padding-bottom:35px;
+	margin-bottom:20px;
+	margin-top:10px;
+}
+.message-text a{
+	color:red;
+}
+.msg_title{color:#03A9F4;font-size:16px;}
+.gotobtn{
+	background:#0fbb0f;
+	color:#fff;
+	text-align:center;
+	font-size:17px;
+	padding:8px 0;
+	line-height:30px;
+	height:30px;
+	width:90%;
+	margin:auto;
+	border-radius:5px;
+	margin-bottom:35px;
+}
+</style>
+<div class="layui-fluid layadmin-message-fluid">
+  <div class="layui-row">
+    <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content">
+		<div class="media-body">
+          <p class='msg_title'>{$info.create_time}</p>
+          <p class="message-text">{$info.content}</p>
+       </div>
+{if $url}
+	   <div class="gotobtn" onclick="window.location.href='{$url}'">点击进入查看详情</div>
+{/if}
+    </div>
+  </div>
+</div>
+{/block}
