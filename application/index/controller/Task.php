@@ -46,6 +46,7 @@ class Task extends IndexBase
         write_file(self::$task_web_file, date('Y-m-d H:i:s'));
         set_time_limit(0);
         $this->run_task();
+        unlink(self::$task_web_file);
         $this->ok_js('定时任务，执行完毕！');
     }
     
@@ -111,7 +112,7 @@ class Task extends IndexBase
      * 执行所有定时任务
      * @return number
      */
-    public function run_task(){
+    protected function run_task(){
         $taskdb = task_config();
         if (self::$client=='dos'){
             $cache_time = filemtime(self::$task_cfg_file);    //计划任务被调整过

@@ -98,6 +98,22 @@ class Init{
 		}elseif($dispatch['module'][0]&&$this->webdb['M__'.$dispatch['module'][0]]){
 			$this->webdb=array_merge($this->webdb,$this->webdb['M__'.$dispatch['module'][0]]);
 		}
+		
+		if( isset($_GET['qun_wxapp_appid'])&&empty($_GET['qun_wxapp_appid']) ){
+		    cookie('qun_wxapp_appid',null);
+		}elseif ( ($qun_wxapp_appid = input('qun_wxapp_appid')?:cookie('qun_wxapp_appid'))!=false ) {
+			$ar = wxapp_cfg($qun_wxapp_appid);
+		    if ($ar) {
+		        foreach($ar AS $_key=>$rs){
+		            $this->webdb['_'.$_key] = $this->webdb[$_key];
+		        }
+		        $this->webdb = array_merge($this->webdb,$ar);
+		    }else{
+		        $qun_wxapp_appid = '';
+		    }
+		    cookie('qun_wxapp_appid',$qun_wxapp_appid?:null);
+		}
+		
 		$this->webdb['QB_VERSION']='X1.0';   //系统版本号
 		config('webdb',$this->webdb);
 		

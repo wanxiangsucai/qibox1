@@ -44,9 +44,26 @@ class User extends MemberBase
                 $array['subscribe_mp'] = $result===true ? 1 : 0;
             }else{                
                 if ($sub) {
-                    $result = Msg::wxapp_subscribe($this->user['wxapp_api'], $content,[],wx_getAccessToken(false,true));
+                    if (get_wxappAppid()) {
+                        $openid = \app\qun\model\Weixin::get_openid_by_uid($this->user['uid']);
+                        $result = Msg::wxapp_subscribe($openid, $content,[],wx_getAccessToken(false,true,get_wxappAppid()));
+                        \app\qun\model\Weixin::where('uid',$this->user['uid'])->where('wxapp_api',$openid)->update([
+                            'if_dy'=>$result===true ? 1 : 0,
+                        ]);
+                    }else{
+                        $result = Msg::wxapp_subscribe($this->user['wxapp_api'], $content,[],wx_getAccessToken(false,true));
+                    }
                 }
-                $array['subscribe_wxapp'] = $result===true ? 1 : 0;
+                if (get_wxappAppid()) {
+                    if ($result===true) {
+                        $array['subscribe_qun_wxapp'] = 1;
+                    }else{
+                        $num = \app\qun\model\Weixin::where('uid',$this->user['uid'])->where('if_dy',1)->count('id');
+                        $array['subscribe_qun_wxapp'] = $num ? 1 : 0;
+                    }
+                }else{
+                    $array['subscribe_wxapp'] = $result===true ? 1 : 0;
+                }                
             }
             edit_user($array);
             return $this->ok_js([],'设置成功');

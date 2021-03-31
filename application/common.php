@@ -2410,13 +2410,47 @@ if (!function_exists('getTemplate')) {
      }
  }
  
+ if (!function_exists('get_wxappAppid')) {
+     /**
+      * 获取商家小程序的APPID
+      * @return mixed|void|boolean|NULL|unknown[]
+      */
+     function get_wxappAppid(){
+         static $appid = null;
+         if($appid!==null){
+             return $appid;
+         }
+         $appid = input('qun_wxapp_appid')?:cookie('qun_wxapp_appid');
+         if ( empty($appid) || empty(wxapp_cfg($appid)) ) {
+             $appid = '';
+         }
+         return $appid;
+     }
+ }
+ 
+ if (!function_exists('wxapp_cfg')) {
+     /**
+      * 获取某个小程序的参数配置
+      * @param string $appid 设置为true的时候，就是获取所有非纯套壳的小程序配置参数
+      * @return array|array
+      */
+     function wxapp_cfg($appid=true){
+         if (!modules_config('qun')||!class_exists("\\app\\qun\\model\\Wxset")) {
+             return [];
+         }
+         return app\qun\model\Wxset::get_set($appid);
+     }
+ }
+ 
  if (!function_exists('wx_getAccessToken')) {
      /**
       * 获取微信的权限通信密钥
       * @param string $check 设置为true的话，提示相关错误
-      * @return void|mixed|\think\cache\Driver|boolean
+      * @param string $is_wxapp  设置为true的话就是小程序，否则就是公众号
+      * @param string $wxapp_id 方便PC修改不同的小程序相关内容
+      * @return void|string|mixed|\think\cache\Driver|boolean
       */
-     function wx_getAccessToken($check=false,$is_wxapp=false){
+     function wx_getAccessToken($check=false,$is_wxapp=false,$wxapp_id=''){
          if($is_wxapp){    //针对微信小程序
              if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
                  if($check==TRUE){
@@ -2426,7 +2460,15 @@ if (!function_exists('getTemplate')) {
              }
              $appid = config('webdb.wxapp_appid');
              $secret = config('webdb.wxapp_appsecret');
-             $token_string = '_wxapp';
+             $token_string = '_wxapp'.get_wxappAppid();
+             if ($wxapp_id!='') {   //主要是PC后台修改用户的直播或商品之类的东西
+                 $ar = wxapp_cfg($wxapp_id);
+                 if ($ar) {
+                     $appid = $ar['wxapp_appid'];
+                     $secret = $ar['wxapp_appsecret'];
+                     $token_string = '_wxapp'.$wxapp_id;
+                 }
+             }
          }else{     //针对公众号
              if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
                  if($check==TRUE){
@@ -3255,7 +3297,9 @@ if (!function_exists('weixin_login')) {
      */
     function weixin_login($url='',$jump=true){
         $url = $url=='' ? request()->url(true) : $url;
-        if( in_weixin() && config('webdb.weixin_type')==3 ){    //在微信端并且是认证服务号的情况下
+        if( (in_weixin()&&config('webdb.weixin_type')==3) //在微信端并且是认证服务号的情况下
+            || (in_wxapp()&&config('webdb.wxapp_appid')&&config('webdb.wxapp_appsecret'))    //在小程序中
+            ){    
             $url = purl('weixin/login/index',[],'index') . '?fromurl=' . urlencode($url);
         }else{            
             $url = iurl('index/login/index').'?fromurl='.urlencode($url);

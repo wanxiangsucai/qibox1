@@ -385,7 +385,12 @@ class Msg extends MemberBase
             $this->error($info);
         }
         if (preg_match("/(http|https):([^ ]+)(\"|')/i",$info['content'],$array)) {
+            if (preg_match("/member\/msg\/show\/id\/([\d]+)\.html/i",$array[2],$ar)) {
+                return $this->redirect(murl('member/msg/index').'#/public/static/libs/bui/pages/chat/chat?uid='.$ar[1]);
+            }
             $this->assign('url',$array[1].':'.$array[2]);
+        }elseif($info['uid']){
+            return $this->redirect(murl('member/msg/index').'#/public/static/libs/bui/pages/chat/chat?uid='.$info['uid']);
         }
 		//$info['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($info['content']));
         $this->assign('info',$info);

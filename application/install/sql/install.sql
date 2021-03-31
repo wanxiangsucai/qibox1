@@ -1455,3 +1455,6 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, '小程序订阅消息模型ID', 'wxapp_subscribe_template_id', '', 'text', '', 1, '', '<a href="https://www.kancloud.cn/php168/x1_of_qibo/2184587" target="_blank">点击查看设置方法</a>', 0, -2);
 
 ALTER TABLE  `qb_memberdata` ADD  `subscribe_mp` TINYINT( 1 ) NOT NULL COMMENT  '是否订阅公众号消息',ADD  `subscribe_wxapp` TINYINT( 1 ) NOT NULL COMMENT  '是否订阅小程序消息';
+
+ALTER TABLE  `qb_rmb_infull` ADD  `wxapp_appid` VARCHAR( 25 ) NOT NULL COMMENT  '小程序API';
+ALTER TABLE  `qb_memberdata` ADD  `subscribe_qun_wxapp` TINYINT( 1 ) NOT NULL COMMENT  '是否订阅圈子小程序消息';

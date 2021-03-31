@@ -74,6 +74,10 @@ class Msg
         $url = $array[2] ? "$array[1]:$array[2]" : request()->domain();
         $content = preg_replace('/<([^<]*)>/is',"",$content);
         if (self::stringLength($content)>20) {
+            $_url = self::sendmsg($content);
+            if ($_url) {
+                $url = $_url;
+            }
             $content = mb_substr($content,0,17,'utf-8').'...';
         }
         if (self::stringLength($subject)>20) {
@@ -128,7 +132,7 @@ class Msg
         
         $content = stripslashes($content);
         preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
-        $url = $array[2] ? "$array[1]:$array[2]" : request()->url(true);
+        $url = $array[2] ? "$array[1]:$array[2]" : request()->domain();
         $content = preg_replace('/<([^<]*)>/is',"",$content);
         if (self::stringLength($content)>20) {
             $_url = self::sendmsg($content);
@@ -238,6 +242,13 @@ class Msg
         }";
         }
         $ac = wx_getAccessToken();
+        
+        if ($user['subscribe_qun_wxapp']) {
+            $info = \app\qun\model\Weixin::where('uid',$user['uid'])->where('if_dy',1)->find();
+            if ($info && self::wxapp_subscribe($info['wxapp_api'], $content,$array,wx_getAccessToken(false,true,$info['wxapp_appid']))===true) {
+                return true;
+            }
+        }
 
         if($user['subscribe_wxapp'] && self::wxapp_subscribe($user['wxapp_api'], $content,$array,wx_getAccessToken(false,true))===true){
             return true;

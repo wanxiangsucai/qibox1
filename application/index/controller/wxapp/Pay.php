@@ -23,8 +23,8 @@ class Pay extends IndexBase
                 ($this->webdb['weixin_appid'] && $this->webdb['weixin_appsecret'] && $this->webdb['weixin_payid'] && $this->webdb['weixin_paykey'])
                 ||
                 ($this->webdb['wxapp_appid'] && $this->webdb['wxapp_appsecret'] && $this->webdb['wxapp_payid'] && $this->webdb['wxapp_paykey'])
-                ){
-                    if($this->user['weixin_api']=='' && $this->user['wxapp_api']=='' && $this->user['wxopen_api']==''){
+                ){            
+                    if(empty(get_wxappAppid()) && $this->user['weixin_api']=='' && $this->user['wxapp_api']=='' && $this->user['wxopen_api']==''){
                         $this->err_js('你的当前帐号还没有绑定微信，不能使用微信支付');
                     }
         }else{
@@ -33,29 +33,46 @@ class Pay extends IndexBase
    
         $numcode || $numcode = 'w'.date('ymdHis').rands(3);
         if($type=='wxapp'){
-            $openId = $this->user['wxapp_api'];
+            $openId = get_wxappAppid() ?  \app\qun\model\Weixin::get_openid_by_uid($this->user['uid']) : $this->user['wxapp_api'] ;
         }elseif($type=='wxopen'){
             $openId = $this->user['wxopen_api'];
         }else{
             $openId = $this->user['weixin_api'];
         }
+        
+        $wxapp_appid = '';
+        if (get_wxappAppid()) {
+            $_info = \app\qun\model\Wxset::get_info_by_appid();
+            if($_info['status']==2){
+                $wxapp_appid = get_wxappAppid();
+            }
+        }
+        
         $array = [
             'title'=>$title?$title:'帐号充值',
             'other'=>$other?$other:'test',
             'numcode'=>$type=='wxapp'?'000'.$numcode:$numcode,  //000为的是多生成一个不重复的订单给小程序支付,同时避免出现订单重复的现象,跟公众号那里有冲突
             'money'=>$money>0?$money:'0.01',
-            'wx_notify_url'=>$this->request->domain().url('pay/index',['banktype'=>'weixin','action'=>'back_notice','back_post'=>'wap','client_type'=>$type]),
+            'wx_notify_url'=>$this->request->domain().url('pay/index',[
+                'banktype'=>'weixin',
+                'action'=>'back_notice',
+                'back_post'=>'wap',
+                'client_type'=>$type,
+                'qun_wxapp_appid'=>$wxapp_appid,
+            ]),
             'openId'=>$openId,
         ];
         $result = PayModel::get([ 'numcode'=>$numcode, ]);
         if ( empty($result) ) {
+            
             $data = [
-                    'numcode'=>$numcode,
-                    'money'=>$array['money'],
-                    'posttime'=>time(),
-                    'uid'=>intval($this->user['uid']),
-                    'banktype'=>'weixin_app',
-                    'callback_class'=>mymd5(urldecode($callback_class),'DE'),     //支付成功后，后台执行的类
+                'numcode'=>$numcode,
+                'money'=>$array['money'],
+                'posttime'=>time(),
+                'uid'=>intval($this->user['uid']),
+                'banktype'=>$type,
+                'wxapp_appid'=>$wxapp_appid,
+                'callback_class'=>mymd5(urldecode($callback_class),'DE'),     //支付成功后，后台执行的类
             ];
             PayModel::create($data);
         }else{

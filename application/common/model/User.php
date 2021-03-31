@@ -56,6 +56,13 @@ class User extends Model
             $map = $value;
         }elseif($type=='name'){
             $map['username'] = $value;
+        }elseif($type=='wxapp_api' && get_wxappAppid()){
+            $result = \app\qun\model\Weixin::check_wxappExists($value,get_wxappAppid());
+            if ($result) {
+                $map['uid'] = $result['uid'];
+            }else{
+                return ;
+            }
         }elseif(preg_match('/^[\w]+$/', $type)){
             $map[$type] = $value;
         }
@@ -533,11 +540,15 @@ class User extends Model
 	
 	/**
 	 * 检查小程序openid是否存在
-	 * @param unknown $openid
+	 * @param string $openid
 	 * @return unknown
 	 */
-	public static function check_wxappIdExists($openid) {
-	    return self::get(['wxapp_api'=>$openid]);
+	public static function check_wxappIdExists($openid='') {
+	    if(get_wxappAppid()){
+	        return \app\qun\model\Weixin::check_wxappExists($openid,get_wxappAppid());
+	    }else{
+	        return self::get(['wxapp_api'=>$openid]);
+	    }	    
 	}
 	
 	/**

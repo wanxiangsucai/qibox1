@@ -6,10 +6,11 @@ use app\common\model\User AS UserModel;
 class Wxapp extends UserModel
 {
     public static function api_reg($openid,$data=array()){
-        if($data['nickName']==''){
-            return 'nickName 昵称不存在！';
-        }elseif($openid==''){
+        if($openid==''){
             return 'openid 值不存在！';
+        }elseif($data['nickName']==''){
+			$data['nickname'] = '小程序用户'.rands(5);
+            //return 'nickName 昵称不存在！';
         }
         
         if( self::check_wxappIdExists( $openid ) ){

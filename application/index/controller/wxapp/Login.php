@@ -140,6 +140,14 @@ class Login extends IndexBase
         }
         
         $user = UserModel::check_wxappIdExists($openid);  //根据小程序ID获取用户信息,优先级最高
+        
+        if (get_wxappAppid()) {
+            unset($info['unionId']);    //商家小程序不允许使用 unionId
+        }else{  //用户在大平台登录
+            if(!$user && modules_config('qun') && class_exists("app\\qun\\model\\Weixin")){
+                $user = \app\qun\model\Weixin::get_info_by_openid($openid);   //用户在大平台登录时，看看是否在某个商家那里注册过，就避免重复注册
+            }
+        }
  
         if ( $user && $info['unionId'] && empty($user['unionid']) ) {   //后来开通了认证微信开放平台的老用户处理
             UserModel::edit_user([
@@ -159,18 +167,21 @@ class Login extends IndexBase
             }
         }
         
-        //write_file(ROOT_PATH.'WXAPP.txt', var_export($info,true).'---'.$user['uid'].'---'.$info['unionId']);
         
         if(empty($user) && $uids){  //有传递WEB框架用户已登录的标志过来 , 这个是针对没有绑定认证开放平台处理的,已认证的话,用不到这里
             list($uid,$time) = explode(',',mymd5($uids,'DE'));
             if (time()-$time<600) {
                 $user = UserModel::getById($uid);
-                if (empty($user['wxapp_api'])) {
-                    UserModel::edit_user([
+                if (get_wxappAppid()) {
+                    \app\qun\model\Weixin::add($uid,$openid);   //首次绑定某个商家的小程序
+                }else{
+                    if (empty($user['wxapp_api'])) {
+                        UserModel::edit_user([
                             'uid'=>$uid,
                             'wxapp_api'=>$openid,
-                    ]);
-                }
+                        ]);
+                    }
+                }                
             }
         }
         if(empty($user)){
@@ -181,12 +192,18 @@ class Login extends IndexBase
             if(!is_array($user)||$user['uid']<1){
                 return $this->err_js('注册失败:'.$user);
             }
+            if (get_wxappAppid()) {
+                \app\qun\model\Weixin::add($uid,$openid);   //首次绑定某个商家的小程序
+                UserModel::where('uid',$uid)->update([
+                    'wxapp_api'=>''  //因为并不是平台的小程序ID，所以要做处理
+                ]);
+            }
         }
         
         UserModel::login($user['username'], '', '',true);   //这个并不能真正的登录.只是做一些登录的操作日志及其它接口处理
         
         $user = UserModel::get_info($user['uid']);  //这句可以删除,主要是考虑到以前password没有统一在一个数据表的情况
-        cache($skey,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t$sessionKey",3600*72);
+        cache($skey,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t$sessionKey"."\t{$openid}",3600*72);
         $array = [
                 'token'=>$skey,
                 'userInfo'=>UserModel::get_info($user['uid']),
@@ -206,13 +223,14 @@ class Login extends IndexBase
         $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.$this->webdb['wxapp_appid'].'&secret='.$this->webdb['wxapp_appsecret'].'&js_code='.$code.'&grant_type=authorization_code');
         $array = json_decode($string,true);
         if ($array['unionid'] || $array['openid']){
-            if ($array['unionid']) {
-                $user = get_user($array['unionid'],'unionid');
-            }else{
+            //注释掉是避免小程序支付的时候，小程序端觉得用户登录了，就没有强制登录，导致可能对新用户无法获取用户的wxaap_id
+//             if ($array['unionid']) {
+//                 $user = get_user($array['unionid'],'unionid');
+//             }else{
                 $user = get_user($array['openid'],'wxapp_api');
-            }
+//             }
             if ($user) {
-                cache($code,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN'),3600);
+                cache($code,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t\t{$array['openid']}",3600);
                 $array = [
                     'token'=>$code,
                     'userInfo'=>$user,
@@ -232,15 +250,24 @@ class Login extends IndexBase
      * @return \think\response\Json
      */
     public function check($token=''){    
-        list($uid,$username) = explode("\t", cache($token));
+        list($uid,$username,$pwd,,$wxapp_id) = explode("\t", cache($token));
         $code = 1;
         $userInfo = [];
-        $msg = '调用失败';
-        if($uid&&$username){
-            $code = 0;
-            $userInfo = UserModel::get_info($uid);
+        $msg = '用户并没有处于登录状态';
+        
+        if ($uid && $username) {
+            if ( get_wxappAppid() ) {
+                $userInfo = get_user($wxapp_id,'wxapp_api');
+            }else{
+                $userInfo = UserModel::get_info($uid);
+            }            
+        }
+        
+        if($userInfo){
+            $code = 0;            
             unset($userInfo['password_rand'],$userInfo['qq_api'],$userInfo['weixin_api'],$userInfo['wxapp_api']);
-            $msg = '调用成功';
+            $msg = '用户已处于登录状态';
+            
         }
         $data = [
                 'meta'=>[

@@ -67,6 +67,10 @@ div, p, dl, dt, dd,td,span,li,a,h3,h4{font-family: Arial, Helvetica, sans-serif,
 </div>
 <script language="JavaScript">
 
+{if in_weixin()&&$money>$userdb['rmb']}
+	paytype();
+{/if}
+
 function paytype(){
 	var type='';
 	$(".payList input").each(function(i){

@@ -138,15 +138,22 @@ class Pay extends IndexBase
         $array['numcode'] = mymd5(urldecode($numcode),'DE') ?: 'n'.date('ymdHis').rands(3);
         
         $array = array_merge($array,$this->send_config());
-
         
-        $data = [
-                'numcode'=>$array['numcode'],
-                'money'=>$array['money'],
-                'posttime'=>time(),
-                'uid'=>intval($this->user['uid']),
-                'banktype'=>$array['bankname'],
-                'callback_class'=>mymd5(urldecode(input('callback_class')),'DE'),     //支付成功后，后台执行的类
+        $wxapp_appid = '';
+        if (get_wxappAppid()) {
+            $_info = \app\qun\model\Wxset::get_info_by_appid();
+            if($_info['status']==2){
+                $wxapp_appid = get_wxappAppid();
+            }
+        }
+        $data = [            
+            'numcode'=>$array['numcode'],
+            'money'=>$array['money'],
+            'posttime'=>time(),
+            'uid'=>intval($this->user['uid']),
+            'banktype'=>$array['bankname'],
+            'wxapp_appid'=>$wxapp_appid,
+            'callback_class'=>mymd5(urldecode(input('callback_class')),'DE'),     //支付成功后，后台执行的类
         ];
 
         $info = getArray( PayModel::get(['numcode'=>$array['numcode']]) );
@@ -181,7 +188,12 @@ class Pay extends IndexBase
         if($havepay==true){   //如果仅是检查是否付款的，就不能执行以下操作，不然有漏洞
             PayModel::update(['ifpay'=>1,'id'=>$rt['id']]);            
             add_rmb($rt['uid'],$rt['money'],0,date('y年m月d日H:i ').'在线充值');
-            //$this->success("恭喜你充值成功",$fromurl);
+            if ($rt['wxapp_appid']) {
+                $uid = \app\qun\model\Wxset::get_uid_by_appid($rt['wxapp_appid']);
+                if ($uid) {
+                    add_rmb($uid,-$rt['money'],0,'提现 '.date('y年m月d日H:i ').'用户充值到你商户号');
+                }
+            }
             $this->run_callback($rt['callback_class']);
 			
 			//扩展接口

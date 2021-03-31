@@ -31,10 +31,11 @@ class User extends UserModel
             $check_attention = 1;
         }
         
-        if($data['nickname']==''){
-            return 'nickname 昵称不存在！';
-        }elseif($openid==''){
+        if($data['openid']==''){
             return 'openid 值不存在！';
+        }elseif($data['nickname']==''){
+			$data['nickname'] = '微信用户'.rands(5);
+            //return 'nickname 昵称不存在！';
         }
         
         if( self::check_wxIdExists( $data['openid'] ) ){

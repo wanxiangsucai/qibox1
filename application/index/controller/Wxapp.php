@@ -72,9 +72,10 @@ class Wxapp extends IndexBase
 	 * @param string $rtmp 推流地址 设置为test就是使用默认的测试推流网址
      * @param string $url 返回网址,留空的话,就返回来源页.不存在来源页的话,就返回主页
      * @param string $roomid 直播间ID
+     * @param string $appid 商家小程序APPid
      * @return mixed|string
      */
-    public function push($rtmp='',$url='',$roomid=0){
+    public function push($rtmp='',$url='',$roomid=0,$appid=''){
         if (!$this->user) {
             $this->error('请先登录');
         }elseif(!$roomid && !$rtmp){
@@ -83,13 +84,18 @@ class Wxapp extends IndexBase
 		
 		$fromurl = urlencode($url?:$this->request->domain());
 		
+			
 		if ($roomid&&!$rtmp) {
-		    $url = 'plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id='.$roomid.'&custom_params=';	
+		    $_url = 'plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id='.$roomid.'&custom_params=';
 		}else{
-		    $url = '/pages/push/index?url='.$fromurl.'&rtmp='.urlencode($rtmp).($roomid?'&roomid='.$roomid:'');	
-		}			
+		    $_url = '/pages/push/index?url='.$fromurl.'&rtmp='.urlencode($rtmp).($roomid?'&roomid='.$roomid:'');
+		}
 		
-		$this->assign('url',$url);
+		if($appid!=get_wxappAppid()){
+		    $_url = '/pages/jump/index?appid='.($appid?:$this->webdb['_wxapp_appid']).'&path='.urlencode($_url).'&backurl='.urlencode($fromurl);
+		}
+		
+		$this->assign('url',$_url);
 		$this->assign('codeimg', fun('wxapp@wxapp_codeimg',get_url('location'),$this->user['uid']) );
 		
 		return $this->fetch();
