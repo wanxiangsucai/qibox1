@@ -40,25 +40,19 @@
             <div class="layui-larry-menu">
                  <ul class="layui-nav clearfix">
 				 {volist name="base_menu" id="vo"}
-					{if $i<8}
-                       <li class="layui-nav-item {eq name='$i' value='1'}layui-this{/eq}" onclick="choose_menu('{$key}')">
+                       <li class="top-menu layui-nav-item {eq name='$i' value='1'}layui-this{/eq}" onclick="choose_menu('{$key}')">
                  	   	   <a href="javascript:;"><i class="{$vo.icon|default='fa fa-list-ul'}"></i>{$vo.title}</a>
                  	   </li>
-					{/if}
                  {/volist}
-				 	{if count($base_menu)>=8}
 					 <li class="layui-nav-item more_menu">
 						<a href="javascript:;"><i class="fa fa-hand-o-right"></i>更多　
 						</a>
 						  <dl class="layui-nav-child">
 						{volist name="base_menu" id="vo"}
-							{if $i>=8}
 							<dd onclick="choose_menu('{$key}')"><a href="javascript:;"><i class="{$vo.icon|default='fa fa-list-ul'}"></i>{$vo.title}</a></dd>
-							{/if}
 						{/volist}
 						  </dl>
 					</li>
-					{/if}
                  </ul>
             </div>
             <!-- 右侧导航 -->
@@ -179,11 +173,11 @@
 		</div>
 	</div>
 </div>
-             
+    <script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
 	<script type="text/javascript" src="__STATIC__/larry_layui/layui/layui.js"></script> 
 	<script type="text/javascript" src="__STATIC__/larry_layui/js/larry.js"></script>
 	<script type="text/javascript" src="__STATIC__/larry_layui/js/index.js"></script>
-	<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+	
 <script type="text/javascript">
 $('.closePageAll').click(function(){
 	$(".layui-tab-title>li").each(function(i){
@@ -216,7 +210,41 @@ $('.refreshAll').click(function(){
 	});
 });
 
+ 
+$(window).on('resize', function() {
+	$(".layui-larry-menu .top-menu").show();
+	$(".more_menu .layui-nav-child dd").show();
+	menu_show_set();
+});
+$(function(){
+	menu_show_set();
+});
 
+function menu_show_set(){
+	var max_width = $(".larry-header-item").offset().left-80;
+	var j=0;
+	var num=0;
+	var ck=false;
+	$(".layui-larry-menu .top-menu").each(function(){
+		var left = $(this).offset().left+$(this).width();
+		if(left>max_width&&!ck){
+			ck=true;
+			num = j;			
+		}else{
+			j++;
+		}
+		if(ck){
+			$(this).hide();
+		}
+	});
+	if(num==0){
+		$(".more_menu").hide();
+	}else{
+		$(".more_menu .layui-nav-child dd").each(function(i){
+			if(i<num)$(this).hide();
+		});
+	}	
+}
 </script>
 <!-- 锁屏插件
 <div class="lock-screen" style="display: none;">
