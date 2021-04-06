@@ -36,11 +36,11 @@ class Msg
     
     
     protected static function sendmsg($content=''){
-        $content = MsgModel::where('uid',self::$user['uid'])->order('id desc')->value('content');
+        $info = MsgModel::where('touid',self::$user['uid'])->order('id desc')->find();
         if (!self::$content) {
             self::$content = $content;
         }
-        if ($content!=self::$content){
+        if (substr(del_html($info['content']), 20) != substr(del_html(self::$content), 20) ){
             $data = [
                 'touid'=>self::$user['uid'],
                 'title'=>'微信消息',
@@ -48,13 +48,15 @@ class Msg
                 'create_time'=>time(),
             ];
             $result = MsgModel::create($data);
-            $id = $result->id;
-            $user = self::$user;
-            $token = md5( self::$wxid . time() . $user['lastvist'] . rands(5) );
-            cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
-            $url = get_url(murl('member/msg/show',['id'=>$id])).'?token='.$token;
-            return $url;
+            $id = $result->id;            
+        }else{
+            $id = $info['id'];
         }
+        $user = self::$user;
+        $token = md5( self::$wxid . time() . $user['lastvist'] . rands(5) );
+        cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
+        $url = get_url(murl('member/msg/show',['id'=>$id])).'?token='.$token;
+        return $url;
     }
      
     
