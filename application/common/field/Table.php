@@ -110,7 +110,7 @@ class Table extends Base
             }
             $show = implode('、', $detail);
         }elseif($field['type'] == 'yesno'){
-            $show = $field_value>0 ? "<i class='fa fa-check-circle' style='color:orange;font-size:16px;'></i>": "<i style='color:#888;' class='glyphicon glyphicon-ban-circle'></i>" ;
+            $show = ((is_numeric($field_value)&&$field_value>0)||(!is_numeric($field_value)&&$field_value)) ? "<i class='fa fa-check-circle' style='color:orange;font-size:16px;'></i>": "<i style='color:#888;' class='glyphicon glyphicon-ban-circle'></i>" ;
         }elseif($field['type'] == 'switch'){
             $show = "data-value='{$field_value}' data-name='$name' data-id='{$info['id']}'";
             $show = $field_value ? "<i $show class='fa fa-check-circle _switch' title='更改状态' style='color:green;font-size:20px;cursor:pointer;'></i>": "<i $show title='更改状态' style='font-size:20px;cursor:pointer;' class='fa fa-ban _switch'></i>" ;

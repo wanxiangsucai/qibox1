@@ -1458,3 +1458,4 @@ ALTER TABLE  `qb_memberdata` ADD  `subscribe_mp` TINYINT( 1 ) NOT NULL COMMENT  
 
 ALTER TABLE  `qb_rmb_infull` ADD  `wxapp_appid` VARCHAR( 25 ) NOT NULL COMMENT  '小程序API';
 ALTER TABLE  `qb_memberdata` ADD  `subscribe_qun_wxapp` TINYINT( 1 ) NOT NULL COMMENT  '是否订阅圈子小程序消息';
+ALTER TABLE  `qb_memberdata` ADD  `weixin_yz` TINYINT( 1 ) NOT NULL COMMENT  '微信人脸实名验证' AFTER  `idcard_yz` ;

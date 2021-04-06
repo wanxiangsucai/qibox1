@@ -16,8 +16,13 @@
 		</select>
 		<select name="search_bindidcard">
 			<option value="">身份证</option>
-			<option value="0" {:input('search_bindidcard')==='0'?'selected':''}>未验证</option>
-			<option value="1" {:input('search_bindidcard')=='1'?'selected':''}>已验证</option>
+			<option value="0" {:input('search_bindidcard')==='0'?'selected':''}>未认证</option>
+			<option value="1" {:input('search_bindidcard')=='1'?'selected':''}>已认证</option>
+		</select>
+		<select name="search_faceyz">
+			<option value="">人脸认证</option>
+			<option value="0" {:input('search_faceyz')==='0'?'selected':''}>未认证</option>
+			<option value="1" {:input('search_faceyz')=='1'?'selected':''}>已认证</option>
 		</select>
 		<select name="search_bindwxmp">
 			<option value="">公众号</option>

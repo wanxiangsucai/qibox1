@@ -158,6 +158,9 @@ EOT;
 	    if (isset($detail['search_bindidcard']) && $detail['search_bindidcard']!=='') {
 	        $map['idcard_yz'] = $detail['search_bindidcard'];
 	    }
+	    if (isset($detail['search_faceyz']) && $detail['search_faceyz']!=='') {
+	        $map['weixin_yz'] = $detail['search_faceyz'];
+	    }
 	    if (isset($detail['search_groupid']) && $detail['search_groupid']!=='') {
 	        $map['groupid'] = $detail['search_groupid'];
 	    }
