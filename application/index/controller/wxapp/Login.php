@@ -223,12 +223,23 @@ class Login extends IndexBase
         $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.$this->webdb['wxapp_appid'].'&secret='.$this->webdb['wxapp_appsecret'].'&js_code='.$code.'&grant_type=authorization_code');
         $array = json_decode($string,true);
         if ($array['unionid'] || $array['openid']){
-            //注释掉是避免小程序支付的时候，小程序端觉得用户登录了，就没有强制登录，导致可能对新用户无法获取用户的wxaap_id
-//             if ($array['unionid']) {
-//                 $user = get_user($array['unionid'],'unionid');
-//             }else{
-                $user = get_user($array['openid'],'wxapp_api');
-//             }
+            $user = get_user($array['openid'],'wxapp_api');
+            if ($user) {
+                if ($array['unionid']&&empty($user['unionid'])) {   //后来开通的微信开放平台
+                    UserModel::edit_user([
+                        'uid'=>$user['uid'],
+                        'unionid'=>$array['unionid'],
+                    ]);
+                }
+            }elseif($array['unionid'] && empty(get_wxappAppid())){
+                $user = get_user($array['unionid'],'unionid');
+                if ($user && empty($user['wxapp_api'])) {
+                    UserModel::edit_user([
+                        'uid'=>$user['uid'],
+                        'wxapp_api'=>$array['openid'],
+                    ]);
+                }
+            }
             if ($user) {
                 cache($code,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t\t{$array['openid']}",3600);
                 $array = [
