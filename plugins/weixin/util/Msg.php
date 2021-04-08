@@ -72,14 +72,16 @@ class Msg
         $subject = "来自《".config('webdb.webname')."》的消息";
         
         $content = stripslashes($content);
-        preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
-        $url = $array[2] ? "$array[1]:$array[2]" : request()->domain();
+        preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$_array);
+        $url = $_array[2] ? "$_array[1]:$_array[2]" : request()->domain();
         $content = preg_replace('/<([^<]*)>/is',"",$content);
         if (self::stringLength($content)>20) {
-            $_url = self::sendmsg($content);
-            if ($_url) {
-                $url = $_url;
-            }
+            if (!$array['sendmsg']) {   //不是私信的情况
+                $_url = self::sendmsg($content);
+                if ($_url) {
+                    $url = $_url;
+                }
+            }            
             $content = mb_substr($content,0,17,'utf-8').'...';
         }
         if (self::stringLength($subject)>20) {
@@ -133,14 +135,16 @@ class Msg
         $subject = "来自《".config('webdb.webname')."》的消息";
         
         $content = stripslashes($content);
-        preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
-        $url = $array[2] ? "$array[1]:$array[2]" : request()->domain();
+        preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$_array);
+        $url = $_array[2] ? "$_array[1]:$_array[2]" : request()->domain();
         $content = preg_replace('/<([^<]*)>/is',"",$content);
         if (self::stringLength($content)>20) {
-            $_url = self::sendmsg($content);
-            if ($_url) {
-                $url = $_url;
-            }
+            if (!$array['sendmsg']) {   //不是私信的情况
+                $_url = self::sendmsg($content);
+                if ($_url) {
+                    $url = $_url;
+                }
+            }            
             $content = mb_substr($content,0,17,'utf-8').'...';
         }
         if (self::stringLength($subject)>20) {            

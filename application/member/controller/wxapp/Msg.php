@@ -284,14 +284,14 @@ class Msg extends IndexBase
             //$data['content'] = str_replace(["\n",' '],['<br>','&nbsp;'],filtrate($data['content']));
             $result = Model::add($data,$this->admin,$data['push_id']?false:true);
             if(is_numeric($result)){    //发送成功
-                $content = ($this->user['username']?:'游客') . ' 给你发了一条私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
+                $content = ($this->user['username']?:'游客') . ' 给你私信,请尽快查收,<a href="'.get_url(urls('member/msg/show',['id'=>$result])).'">点击查收</a>';
                 if(empty($qun_id)){
-                    if ($touser_info['weixin_api']) {
+                    //if ($touser_info['weixin_api']) {
                         //检查是否设置了只接收好友的微信通知
                         if (empty($touser_info['sendmsg']['forbid_stranger_wxmsg']) || fun('Friend@my',$data['touid'])['type']==2) {
-                            send_wx_msg($touser_info['weixin_api'], $content);
+                            send_wx_msg($touser_info['uid'], $content,['sendmsg'=>true]);
                         }
-                    }
+                    //}
                 }else{
                     if( preg_match("/@([^ ]+)/", $data['content'],$array) ){
                         if(empty($data['send_to'])){
