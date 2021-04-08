@@ -40,7 +40,7 @@ class Msg
         if (!self::$content) {
             self::$content = $content;
         }
-        if (substr(del_html($info['content']) , 0 , 20) != substr(del_html(self::$content) , 0 , 20) ){
+        if ( (time()-strtotime($info['create_time']))>60 || substr(del_html($info['content']) , 0 , 30) != substr(del_html(self::$content) , 0 , 30) ){
             $data = [
                 'touid'=>self::$user['uid'],
                 'title'=>'微信消息',
