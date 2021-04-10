@@ -220,7 +220,11 @@ class Login extends IndexBase
         if (!$code) {
             return $this->err_js('CODE为空');
         }
-        $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.$this->webdb['wxapp_appid'].'&secret='.$this->webdb['wxapp_appsecret'].'&js_code='.$code.'&grant_type=authorization_code');
+        if (get_wxappAppid() && wxapp_open_cfg(get_wxappAppid())) {
+            $string = file_get_contents('https://api.weixin.qq.com/sns/component/jscode2session?appid='.get_wxappAppid().'&js_code='.$code.'&grant_type=authorization_code&component_appid='.config('webdb.P__wxopen')['open_appid'].'&component_access_token='.wx_getOpenAccessToken());
+        }else{
+            $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.$this->webdb['wxapp_appid'].'&secret='.$this->webdb['wxapp_appsecret'].'&js_code='.$code.'&grant_type=authorization_code');
+        }        
         $array = json_decode($string,true);
         if ($array['unionid'] || $array['openid']){
             $user = get_user($array['openid'],'wxapp_api');
