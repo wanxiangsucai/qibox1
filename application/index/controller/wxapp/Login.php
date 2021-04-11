@@ -235,13 +235,19 @@ class Login extends IndexBase
                         'unionid'=>$array['unionid'],
                     ]);
                 }
-            }elseif($array['unionid'] && empty(get_wxappAppid())){
+            }elseif($array['unionid']){                
                 $user = get_user($array['unionid'],'unionid');
-                if ($user && empty($user['wxapp_api'])) {
-                    UserModel::edit_user([
-                        'uid'=>$user['uid'],
-                        'wxapp_api'=>$array['openid'],
-                    ]);
+                if ($user) {
+                    if (get_wxappAppid()) {
+                        \app\qun\model\Weixin::add($user['uid'],$array['openid']);   //首次绑定某个商家的小程序
+                    }else{
+                        if (empty($user['wxapp_api'])) {
+                            UserModel::edit_user([
+                                'uid'=>$user['uid'],
+                                'wxapp_api'=>$array['openid'],
+                            ]);
+                        }
+                    }
                 }
             }
             if ($user) {

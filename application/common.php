@@ -2386,7 +2386,7 @@ if (!function_exists('getTemplate')) {
          $headers = '';
          if($type=='json'){
              $headers = array("Content-Type:application/json;charset=UTF-8","Accept: application/json","Cache-Control: no-cache", "Pragma: no-cache");
-             $data=json_encode($data);
+             $data = json_encode($data,JSON_UNESCAPED_UNICODE);
          }
          $curl = curl_init();
          curl_setopt($curl, CURLOPT_URL, $url);
@@ -2428,6 +2428,21 @@ if (!function_exists('getTemplate')) {
      }
  }
  
+ if (!function_exists('wxapp_open_cfg')) {
+     /**
+      * 获取开放平台的小程序列表
+      * @param string $appid
+      * @return unknown|array|mixed|\think\cache\Driver|boolean
+      */
+     function wxapp_open_cfg($appid=true){
+         if (!plugins_config('wxopen')) {
+             return ;
+         }
+         $array = \plugins\wxopen\Fun::list_appid();
+         return $appid===true ? $array : $array[$appid];
+     }
+ }
+ 
  if (!function_exists('wxapp_cfg')) {
      /**
       * 获取某个小程序的参数配置
@@ -2435,10 +2450,83 @@ if (!function_exists('getTemplate')) {
       * @return array|array
       */
      function wxapp_cfg($appid=true){
-         if (!modules_config('qun')||!class_exists("\\app\\qun\\model\\Wxset")) {
+         if (!modules_config('qun')||!class_exists("\\app\\qun\\model\\Wxset")||!plugins_config('wxopen')) {
              return [];
          }
-         return app\qun\model\Wxset::get_set($appid);
+         $info = [];
+         if (class_exists("\\app\\qun\\model\\Wxset")) {
+             $info = app\qun\model\Wxset::get_set($appid);
+         }
+         
+         if (empty($info) && plugins_config('wxopen')) {
+             $array = wxapp_open_cfg($appid);
+             if ($array) {
+                 $info = $array;
+             }
+         }         
+         return $info;
+     }
+ }
+ 
+ if (!function_exists('wx_getOpenAccessToken')) {
+     /**
+      * 获取开放平台的通信密钥
+      * @param string $check
+      * @return unknown|mixed|\think\cache\Driver|boolean
+      */
+     function wx_getOpenAccessToken($check=false){
+         $access_token = cache('open_access_token');
+         if (empty($access_token)) {
+             $webdb = config('webdb.P__wxopen');
+             $array = [
+                 'component_appid'=> $webdb['open_appid'],
+                 'component_appsecret'=>$webdb['open_appsecret'],
+                 'component_verify_ticket'=> cache2('wxopen_ticket'),
+             ];
+             if ($check&&empty(cache2('wxopen_ticket'))) {
+                 showerr('ticket不存在，请10分钟后再偿试');
+             }
+             $string = http_curl('https://api.weixin.qq.com/cgi-bin/component/api_component_token',$array,'json');
+             $result = json_decode($string,true);
+             if($result['component_access_token']){
+                 $access_token = $result['component_access_token'];
+                 cache('open_access_token',$result['component_access_token'],3600);
+             }elseif($check){
+                 showerr('component_token获取失败，原因如下：'.$string);
+             }
+         }
+         return $access_token;
+     }
+ }
+ 
+ if (!function_exists('wx_getAppidAccessToken')) {
+     /**
+      * 获取第三方APPID的通信密钥
+      * @param string $appid
+      * @param string $check
+      * @param string $authorizer_refresh_token 更新了刷新令牌
+      * @return unknown|mixed|\think\cache\Driver|boolean
+      */
+     function wx_getAppidAccessToken($appid='',$check=false,$authorizer_refresh_token=''){
+         $cache = cache('open_appid_ac'.$appid);
+         if (!$cache||$authorizer_refresh_token) {
+             $authorizer_refresh_token || $authorizer_refresh_token = Db::name('wxopen_info')->where('appid',$appid)->value('authorizer_refresh_token');
+             $ac = wx_getOpenAccessToken();
+             $array = [
+                 'component_appid'=>config('webdb.P__wxopen')['open_appid'],
+                 'authorizer_appid'=>$appid,
+                 'authorizer_refresh_token'=>$authorizer_refresh_token,
+             ];
+             $string = http_curl('https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token='.$ac,$array,'json');
+             $result = json_decode($string,true);
+             $cache = $result['authorizer_access_token'];
+             if ($cache) {
+                 cache('open_appid_ac'.$appid,$cache,7200-600);
+             }elseif($check){
+                 showerr('获取authorizer_access_token失败：'.$string);
+             }
+         }
+         return $cache;
      }
  }
  
@@ -2457,6 +2545,15 @@ if (!function_exists('getTemplate')) {
                      return '系统没有设置小程序的AppID或者AppSecret';
                  }
                  return ;
+             }
+             if ($wxapp_id || get_wxappAppid()) {
+                 $appid = $wxapp_id?:get_wxappAppid();
+                 if (plugins_config('wxopen')) {
+                     $array = wxapp_open_cfg($appid);
+                     if ($array) {
+                         return wx_getAppidAccessToken($appid);
+                     }
+                 }
              }
              $appid = config('webdb.wxapp_appid');
              $secret = config('webdb.wxapp_appsecret');
