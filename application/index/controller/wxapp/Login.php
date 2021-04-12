@@ -217,8 +217,15 @@ class Login extends IndexBase
      * @return void|\think\response\Json
      */
     public function wxapp_getuser_bycode($code=''){
+        $webdb = config('webdb.P__xcx_qun');
+        $cfg = [
+            'cover_image'=>$webdb['cover_image']?tempdir($webdb['cover_image']):'',
+            'wait_time'=>$webdb['wait_time'],
+            'allow_click_jump'=>$webdb['allow_click_jump'],
+            'click_jump_url'=>$webdb['click_jump_url'],
+        ];
         if (!$code) {
-            return $this->err_js('CODE为空');
+            return $this->err_js('CODE为空',$cfg);
         }
         if (get_wxappAppid() && wxapp_open_cfg(get_wxappAppid())) {
             $string = file_get_contents('https://api.weixin.qq.com/sns/component/jscode2session?appid='.get_wxappAppid().'&js_code='.$code.'&grant_type=authorization_code&component_appid='.config('webdb.P__wxopen')['open_appid'].'&component_access_token='.wx_getOpenAccessToken());
@@ -256,12 +263,12 @@ class Login extends IndexBase
                     'token'=>$code,
                     'userInfo'=>$user,
                 ];
-                return $this->ok_js($array);
+                return $this->ok_js(array_merge($array,$cfg));
             }else{
-                return $this->err_js('用户不存在！');
+                return $this->err_js('用户不存在！',$cfg);
             }            
         }else{
-            return $this->err_js($string);
+            return $this->err_js($string,$cfg);
         }
     }
     

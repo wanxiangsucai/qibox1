@@ -2386,7 +2386,7 @@ if (!function_exists('getTemplate')) {
          $headers = '';
          if($type=='json'){
              $headers = array("Content-Type:application/json;charset=UTF-8","Accept: application/json","Cache-Control: no-cache", "Pragma: no-cache");
-             $data = json_encode($data,JSON_UNESCAPED_UNICODE);
+             $data = empty($data)?'{}':json_encode($data,JSON_UNESCAPED_UNICODE);
          }
          $curl = curl_init();
          curl_setopt($curl, CURLOPT_URL, $url);
