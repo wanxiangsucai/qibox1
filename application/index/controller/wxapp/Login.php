@@ -216,14 +216,24 @@ class Login extends IndexBase
      * @param string $code
      * @return void|\think\response\Json
      */
-    public function wxapp_getuser_bycode($code=''){
-        $webdb = config('webdb.P__xcx_qun');
-        $cfg = [
-            'cover_image'=>$webdb['cover_image']?tempdir($webdb['cover_image']):'',
-            'wait_time'=>$webdb['wait_time'],
-            'allow_click_jump'=>$webdb['allow_click_jump'],
-            'click_jump_url'=>$webdb['click_jump_url'],
-        ];
+    public function wxapp_getuser_bycode($code='',$qid=0){
+        if (empty($qid)) {
+            $webdb = config('webdb.P__xcx_qun');
+            $cfg = [
+                'cover_image'=>$webdb['cover_image']?tempdir($webdb['cover_image']):'',
+                'wait_time'=>$webdb['wait_time'],
+                'allow_click_jump'=>$webdb['allow_click_jump'],
+                'click_jump_url'=>$webdb['click_jump_url'],
+            ];
+        }else{
+            $cfg = [
+                'cover_image'=>'',
+                'wait_time'=>2,
+                'allow_click_jump'=>0,
+                'click_jump_url'=>'',
+            ];
+        }
+        
         if (!$code) {
             return $this->err_js('CODE为空',$cfg);
         }

@@ -89,7 +89,7 @@ class Wxapp{
         }
         $code = http_curl('https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token,[
                 'scene'=>$id,
-                'page'=>'pages/hy/web/index',
+                'page'=>'pages/wap/iframe/index',
                 'width'=>'430',
         ],'json');
         if (strlen($code)>500) {
@@ -206,7 +206,7 @@ class Wxapp{
         $h = $w;
         
         $img = imagecreatetruecolor($w, $h);
-        imagesavealpha($img, true);
+        imagesavealpha($img, true);     //生成透明图片
         $bg = imagecolorallocatealpha($img, 255, 255, 255, 127);
         imagefill($img, 0, 0, $bg);
         
@@ -239,7 +239,7 @@ class Wxapp{
         $qr_code = imagecreatefromstring($qr_code);  //生成的二维码底色为白色
         
         //设置二维码为透明底
-        imagesavealpha($qr_code, true);  //这个设置一定要加上
+        //imagesavealpha($qr_code, true);  //生成透明图片
         $bg = imagecolorallocatealpha($qr_code, 255, 255, 255, 127);   //拾取一个完全透明的颜色,最后一个参数127为全透明
         imagefill($qr_code, 0, 0, $bg);
         
