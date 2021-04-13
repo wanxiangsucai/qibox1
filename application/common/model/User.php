@@ -3,7 +3,7 @@ namespace app\common\model;
 
 use think\Model;
 use app\common\fun\Cfgfield;
-//use think\Db;
+use think\Db;
 
 
 class User extends Model
@@ -104,6 +104,10 @@ class User extends Model
         }
         $array['icon'] && $array['icon'] = tempdir($array['icon']);
         $array['qun_group'] = fun('qun@get_my_group',$array['uid']);
+        if ($array['subscribe_qun_wxapp'] && modules_config('qun')) {
+            $de = Db::name('qun_weixin')->where(['uid'=>$array['uid'],'if_dy'=>1])->order('id desc')->column('wxapp_appid,wxapp_api');
+            $array['qun_msg_dy'] = $de;
+        }
         return $array;
     }
     

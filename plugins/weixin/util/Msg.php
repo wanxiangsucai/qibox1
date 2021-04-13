@@ -249,12 +249,24 @@ class Msg
         }
         $ac = wx_getAccessToken();
         
-        if ($user['subscribe_qun_wxapp']) {
-            $info = \app\qun\model\Weixin::where('uid',$user['uid'])->where('if_dy',1)->find();
-            if ($info && self::wxapp_subscribe($info['wxapp_api'], $content,$array,wx_getAccessToken(false,true,$info['wxapp_appid']))===true) {
+        if (get_wxappAppid() && $user['qun_msg_dy'] && $user['qun_msg_dy'][get_wxappAppid()]) {
+            if ( self::wxapp_subscribe($user['qun_msg_dy'][get_wxappAppid()], $content,$array,wx_getAccessToken(false,true,get_wxappAppid()))===true) {
                 return true;
             }
+        }elseif(!$user['subscribe_wxapp'] && $user['qun_msg_dy']){
+            foreach($user['qun_msg_dy'] AS $qun_appid=>$qun_openid){
+                if ( self::wxapp_subscribe($qun_openid, $content,$array,wx_getAccessToken(false,true,$qun_appid))===true) {
+                    return true;
+                }
+            }
         }
+        
+//         if ($user['subscribe_qun_wxapp']) {
+//             $info = \app\qun\model\Weixin::where('uid',$user['uid'])->where('if_dy',1)->find();
+//             if ($info && self::wxapp_subscribe($info['wxapp_api'], $content,$array,wx_getAccessToken(false,true,$info['wxapp_appid']))===true) {
+//                 return true;
+//             }
+//         }
 
         if($user['subscribe_wxapp'] && self::wxapp_subscribe($user['wxapp_api'], $content,$array,wx_getAccessToken(false,true))===true){
             return true;
