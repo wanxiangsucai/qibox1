@@ -2458,10 +2458,10 @@ if (!function_exists('getTemplate')) {
              $info = app\qun\model\Wxset::get_set($appid);
          }
          
-         if (empty($info) && plugins_config('wxopen')) {
+         if ((empty($info)||$appid===true)  && plugins_config('wxopen')) {
              $array = wxapp_open_cfg($appid);
              if ($array) {
-                 $info = $array;
+                 $info = $info ? array_merge($info,$array) : $array;
              }
          }         
          return $info;

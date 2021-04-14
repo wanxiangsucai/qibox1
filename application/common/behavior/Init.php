@@ -106,8 +106,12 @@ class Init{
 		    if ($ar) {
 		        foreach($ar AS $_key=>$rs){
 		            $this->webdb['_'.$_key] = $this->webdb[$_key];
+		            if (in_array($_key, ['appid','uid','status','aid']) || $this->webdb[$_key]==='') {
+		                unset($ar[$_key]);
+		                continue ;
+		            }		            
 		        }
-		        $this->webdb = array_merge($this->webdb,$ar);
+		        $this->webdb = array_merge($this->webdb,$ar?:[]);
 		    }else{
 		        $qun_wxapp_appid = '';
 		    }

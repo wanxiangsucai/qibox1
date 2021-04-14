@@ -141,7 +141,8 @@ class Pay extends IndexBase
         
         $wxapp_appid = '';
         if (get_wxappAppid()) {
-            $_info = \app\qun\model\Wxset::get_info_by_appid();
+            //$_info = \app\qun\model\Wxset::get_info_by_appid();
+            $_info = wxapp_cfg( get_wxappAppid() );
             if($_info['status']==2){
                 $wxapp_appid = get_wxappAppid();
             }
@@ -189,7 +190,8 @@ class Pay extends IndexBase
             PayModel::update(['ifpay'=>1,'id'=>$rt['id']]);            
             add_rmb($rt['uid'],$rt['money'],0,date('y年m月d日H:i ').'在线充值');
             if ($rt['wxapp_appid']) {
-                $uid = \app\qun\model\Wxset::get_uid_by_appid($rt['wxapp_appid']);
+                //$uid = \app\qun\model\Wxset::get_uid_by_appid($rt['wxapp_appid']);
+                $uid = wxapp_cfg( $rt['wxapp_appid'] )['uid'];
                 if ($uid) {
                     add_rmb($uid,-$rt['money'],0,'提现 '.date('y年m月d日H:i ').'用户充值到你商户号');
                 }

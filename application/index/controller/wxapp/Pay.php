@@ -42,7 +42,8 @@ class Pay extends IndexBase
         
         $wxapp_appid = '';
         if (get_wxappAppid()) {
-            $_info = \app\qun\model\Wxset::get_info_by_appid();
+            //$_info = \app\qun\model\Wxset::get_info_by_appid();
+            $_info = wxapp_cfg( get_wxappAppid() );
             if($_info['status']==2){
                 $wxapp_appid = get_wxappAppid();
             }

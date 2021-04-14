@@ -6,7 +6,7 @@ use app\common\controller\IndexBase;
 class Index extends IndexBase
 {
     public function index()
-    {
+    {print_r(\think\Db::name('wxopen_info')-> column('appid,status,wxapp_subscribe_template_id,uid,qun_id AS aid,gh_id AS wxapp_ghid,payid AS wxapp_payid,paykey AS wxapp_paykey'));exit;
 //         if(input('wxapp')==1||get_cookie('wxapp')){
 //             set_cookie('wxapp', 1);
 //             $this->redirect(url('cms/index/index'),301);
