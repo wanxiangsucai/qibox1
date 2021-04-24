@@ -176,8 +176,14 @@ class Reg extends IndexBase
             hook_listen('reg_by_hand_end',$uid,$data);			
             
             $result = UserModel::login($data['username'],$data['password'],$data['cookietime']);   //帐号同时实现登录
-            if(is_array($result)){
-                $this->success('注册成功','index/index');
+            if(is_array($result)){                
+                $token = md5( mymd5($result['uid'] . $result['password']  . time()) );
+                cache2(md5($token),"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",3600);
+                $_data = [
+                    'token' => $token,
+                    'userInfo' => \app\common\fun\Member::format($result),
+                ];
+                $this->success('注册成功','index/index',$_data);
             }else{
                 $this->error('注册失败！');
             }

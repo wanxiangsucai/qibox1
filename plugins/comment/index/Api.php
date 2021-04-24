@@ -21,12 +21,41 @@ class Api extends IndexBase
         }
     }
     
+    
+    /**
+     * 点赞评论
+     * @param number $id
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function agree($id=0){
+        $info = contentModel::where('id',$id)->find();
+        if (!$info) {
+            return $this->err_js('内容不存在!');
+        }
+        $key = 'commentAgree_'.($this->user['uid']?:get_ip()).'-'.$id;
+        if(time()-cache($key)<3600){
+            return $this->err_js('一小时内,只能点赞一次!');
+        }
+        cache($key, time() ,3600);
+        
+        
+        //监听点赞回复
+        $this->get_hook('comment_agree',$data=[],[],['id'=>$id,'aid'=>$info['aid'],'sysid'=>$info['sysid']]);
+        hook_listen( 'comment_agree' , $id , ['aid'=>$info['aid'],'sysid'=>$info['sysid']] );
+        
+        
+        if( contentModel::where('id',$id)->setInc('agree',1) ){
+            return $this->ok_js();
+        }else{
+            return $this->err_js('数据库执行失败!');
+        }
+    }
 
     /**
      * 发布评论接口
      * @param string $name  标签名
      * @param string $pagename 标签模板名
-     * @param number $sysid 频道ID
+     * @param number $sysid 频道ID 也可以是频道目录名
      * @param number $aid 主题ID
      * @param number $rows
      * @param string $order
@@ -36,43 +65,51 @@ class Api extends IndexBase
      */
     public function add($name='',$pagename='',$sysid=0, $aid=0 ,$rows=0,$order='',$by='',$status=''){
         $_array = input();
+        if (!$sysid && input('sys')) {
+            $sysid = input('sys');
+        }
         $agree = $_array['agree'];
         $type = $_array['type'];
         $data_type = $_array['data_type'];
         $pid = $_array['pid'];
         $id = $_array['id'];
         $tid = intval($_array['tid']);
+        if ($pid) {
+            $info = contentModel::where('id',$pid)->find();
+            if (!$info) {
+                return $this->err_js('引用ID有误！');
+            }
+            $sysid = $info['sysid'];
+            $aid = $info['aid'];
+        }
         
 //         self::$get_children = $pid;
 //         echo self::ajax_content($name,$pagename,$sysid, $aid,$rows,$order,$by,$status,$type);
 //         exit;
         
-        if($agree==1){  //点赞            
-            if(time()-get_cookie('comment_'.$id)<3600){
-                return $this->err_js('一小时内,只能点赞一次!');
-            }
-            set_cookie('comment_'.$id, time());
-
-			//监听点赞回复
-			$this->get_hook('comment_agree',$data=[],[],['id'=>$id,'aid'=>$aid,'sysid'=>$sysid]);
-            hook_listen( 'comment_agree' , $id , ['aid'=>$aid,'sysid'=>$sysid] );      
-			
-
-            if( contentModel::where('id',$id)->setInc('agree',1) ){
-                //echo self::ajax_content($name,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
-                return $this->ok_js();
-            }else{
-                return $this->err_js('数据库执行失败!');
-            }
+        if($agree==1){  //点赞          
+            return $this->agree($aid?:$id);
         }elseif ($this->request->isPost()) {
             $data = $this->request->post();
             
-            if($this->user['groupid']==2){
+            if (!$aid) {
+                return $this->err_js('主题ID不存在！');
+            }elseif (!$sysid) {
+                return $this->err_js('缺少频道参数！');
+            }
+            
+            $moduel = modules_config($sysid);
+            if (!$moduel) {
+                return $this->err_js('频道不存在！');
+            }
+            $sysid = $moduel['id'];
+            
+            if(empty($this->user) && empty($this->webdb['allow_guest_post_comment'])){
+                return $this->err_js('很抱歉,系统禁止游客发表评论!<br>请复制保存好你的内容,登录后,再评论<br>'.$data['content']);
+            }elseif($this->user['groupid']==2){
                 return $this->err_js('很抱歉,你已被列入黑名单,没权限发布评论,请先检讨自己的言行,再联系管理员解封!');
             }elseif($this->user && $this->user['yz']==0){
                 return $this->err_js('很抱歉,你的身份还没通过审核验证,没权限发布评论!');
-            }elseif(empty($this->user) && empty($this->webdb['allow_guest_post_comment'])){
-                return $this->err_js('很抱歉,系统禁止游客发表评论!<br>请复制保存好你的内容,登录后,再评论<br>'.$data['content']);
             }elseif( $this->webdb['can_post_comment_group'] && !in_array($this->user['groupid'],$this->webdb['can_post_comment_group'])){
                 return $this->err_js('很抱歉,你所在用户组禁止评论!');
             }elseif(empty($this->admin) && $this->webdb['forbid_comnent_phone_noyz'] && empty($this->user['mob_yz'])){
@@ -129,10 +166,10 @@ class Api extends IndexBase
                     self::$get_children = $pid;
                     contentModel::where('id',$pid)->setInc('reply',1);
                 }
-                if ($name && $pagename) {   //系统评论
-                    $this->send_msg($data);
+                $this->send_msg($data);
+                if ($name && $pagename) {  //标签评论                    
                     return self::ajax_content($name,$pagename,$sysid, $aid,$rows,$order,$by,$status,$data_type);
-                }else{  //即时聊天
+                }else{  //接口评论
                     $data['id'] = $result->id;
                     return $this->ok_js($data,'评论成功');
                 }                

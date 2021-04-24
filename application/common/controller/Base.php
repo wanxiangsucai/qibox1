@@ -13,15 +13,15 @@ class Base extends Controller
     protected $webdb;
     protected $route;
     protected $onlineip;
-	protected $user;              //用户登录后的信息
-	protected $weburl;          //当前网址
-	protected $fromurl;         //来源网址
-	protected $guest;            //游客身份标志
-	protected $index_style_layout; //可以自由定义前台布局模板
-	protected $map = [];
-	protected $admin = false;
-	
-	protected function _initialize()
+    protected $user;              //用户登录后的信息
+    protected $weburl;          //当前网址
+    protected $fromurl;         //来源网址
+    protected $guest;            //游客身份标志
+    protected $index_style_layout; //可以自由定义前台布局模板
+    protected $map = [];
+    protected $admin = false;
+    
+    protected function _initialize()
     {
         parent::_initialize();
         
@@ -30,8 +30,8 @@ class Base extends Controller
         $this->weburl = filtrate($this->request->url(true));
         $this->fromurl = filtrate($_SERVER["HTTP_REFERER"]);
         $this->guest = md5($_SERVER['HTTP_USER_AGENT'].$this->onlineip);
-		$GLOBALS['FROMURL'] = $this->fromurl;
-        $GLOBALS['WEBURL'] = $this->weburl;        
+        $GLOBALS['FROMURL'] = $this->fromurl;
+        $GLOBALS['WEBURL'] = $this->weburl;
         
         //路由信息
         $dispatch = $this->request->dispatch();
@@ -50,7 +50,7 @@ class Base extends Controller
             }
             if(input('get.label_set')=='set' || get_cookie('label_set')=='set'){
                 define('LABEL_SET', true);
-            }            
+            }
         }
         
         if($this->user['groupid']!=3 && in_array(ENTRANCE, ['member','index'])){
@@ -69,11 +69,14 @@ class Base extends Controller
         }
         
     }
-
-
+    
+    
     
     protected function success($msg = '', $url = null, $data = '', $wait = 1, array $header = [])
     {
+        if (!$this->request->isAjax() && (isset($_SERVER['HTTP_TOKEN'])||$this->request->header('token')) ) {
+            $this->request->post(['_ajax'=>1]);
+        }
         if($url!==null && $this->route[1]=='plugin' && $this->route[2]=='execute'){
             if(strpos($url,'/')!==0 && strpos($url,'http')!==0 ){
                 $url = purl($url);
@@ -89,8 +92,11 @@ class Base extends Controller
         if (!empty($template)) {
             config('dispatch_success_tmpl',$template);
         }
-        header("Access-Control-Allow-Origin:*");
-        header("Access-Control-Allow-Methods:GET,POST");
+//         header('Access-Control-Allow-Origin: *');
+//         header("Access-Control-Allow-Credentials: true");
+//         header("Access-Control-Allow-Headers: *");
+//         header("Access-Control-Expose-Headers:*");
+//         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
         parent::success($msg, $url, $data, $wait, $header);
     }
     
@@ -102,12 +108,15 @@ class Base extends Controller
      * @param number $wait
      * @param array $header
      */
-    public function showerr($msg = '', $url = null, $data = '', $wait = 60, array $header = []){
-        $this->error($msg, $url, $data, $wait , $header);
+    public function showerr($msg = '', $url = null, $data = '', $wait = 60, array $header = [], $code = 1){
+        $this->error($msg, $url, $data, $wait , $header, $code);
     }
     
-    protected function error($msg = '', $url = null, $data = '', $wait = 60, array $header = [])
+    protected function error($msg = '', $url = null, $data = '', $wait = 60, array $header = [], $code = 1)
     {
+        if (!$this->request->isAjax() && (isset($_SERVER['HTTP_TOKEN'])||$this->request->header('token')) ) {
+            $this->request->post(['_ajax'=>1]);
+        }
         if ($url==404) {
             $this->assign('msg', $msg);
             header('HTTP/1.1 404 Not Found');
@@ -116,19 +125,22 @@ class Base extends Controller
             //echo '404 Not Found';
             exit;
         }
-        if(!$this->request->isAjax() && (strstr($msg,'没登录')||strstr($msg,'先登录')) ){
-
-            if (in_weixin()) {  //在微信端,就强制自动登录!
-                if( config('webdb.weixin_type')==3 || (in_wxapp()&&config('webdb.wxapp_appid')&&config('webdb.wxapp_appsecret')) ){
-                    weixin_login();
-                    exit;
-                }                
+        if (strstr($msg,'没登录') || strstr($msg,'先登录')) {
+            if(!$this->request->isAjax() ){
+                if (in_weixin()) {  //在微信端,就强制自动登录!
+                    if( config('webdb.weixin_type')==3 || (in_wxapp()&&config('webdb.wxapp_appid')&&config('webdb.wxapp_appsecret')) ){
+                        weixin_login();
+                        exit;
+                    }
+                }
+                $url = get_url('login') . '?fromurl=' . urlencode($this->weburl);
+                $this->success($msg,$url,[],1);
             }
-            $url = get_url('login') . '?fromurl=' . urlencode($this->weburl);
-            $this->success($msg,$url,[],1);
+            $code = 500;
         }
         
-//         $template = getTemplate(APP_PATH.'index/view/default/error.' . ltrim(config('template.view_suffix'), '.'));
+        
+        //         $template = getTemplate(APP_PATH.'index/view/default/error.' . ltrim(config('template.view_suffix'), '.'));
         $template = getTemplate('index@error');
         if(empty($template)&&config('template.index_style')!='default'){  //寻找默认default模板
             config('template.index_style','default');
@@ -139,22 +151,28 @@ class Base extends Controller
         }
         $this->assign('userdb', $this->user);
         $this->assign('webdb', $this->webdb);
-        header("Access-Control-Allow-Origin:*");
-        header("Access-Control-Allow-Methods:GET,POST");
-        parent::error($msg, $url, $data, $wait, $header);
+//         header('Access-Control-Allow-Origin: *');
+//         header("Access-Control-Allow-Credentials: true");
+//         header("Access-Control-Allow-Headers: *");
+//         header("Access-Control-Expose-Headers:*");
+//         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        parent::error($msg, $url, $data, $wait, $header, $code);
     }
     
     protected function ok_js($data=[],$msg='操作成功',$page_rows=0){
-        header("Access-Control-Allow-Origin:*");
-        header("Access-Control-Allow-Methods:GET,POST");
+//         header('Access-Control-Allow-Origin: *');
+//         header("Access-Control-Allow-Credentials: true");
+//         header("Access-Control-Allow-Headers: *");
+//         header("Access-Control-Expose-Headers:*");
+//         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
         if(is_string($data)||is_numeric($data)){
             if(input('debug')){ //调试,查看原始数据
                 return $data;
             }
             return json(['code'=>0,
-                            'msg'=>$msg,
-                            'data'=>$data,                            
-                            ]);
+                'msg'=>$msg,
+                'data'=>$data,
+            ]);
         }
         $array = $data = getArray($data);
         if(isset($array['data']) && isset($array['total'])){
@@ -176,42 +194,48 @@ class Base extends Controller
         if (is_array($array) ) { //主要是服务于标签.因为标签中data全是html网页代码字符串,导致不能传递更多的数据
             $_array = $array;
             unset($_array['data'],$_array['page'],$_array['pages'],$_array['perPage'],$_array['total'],$_array['prev'],$_array['next'],$_array['hasNext'],$_array['hasPrev'],$_array['per_page'],$_array['current_page'],$_array['last_page']);
-        }       
+        }
         $array = [
             'code'=>0,
             'msg'=>$msg,
             'data'=>$data,
             'ext'=>$_array,
             'paginate'=>[
-                        'page'=> empty($array['data']) ? input('page') : $array['current_page'],         //当前页码, 要特别注意,系统分页函数,当数据不存在的时候,不会显示真实页码
-                        'pages' => $array['last_page'],           //总页数
-                        'perPage' => $array['per_page'],        //每页几条
-                        'total' => $array['total'],                     //总共几条
-                        'prev' => $array['current_page'],        //上一页的页码
-                        'next' => $next,                                 //下一页的页码
-                        'hasNext' =>$hasNext,                       //下一页是否存在
-                        'hasPrev' =>$array['current_page']>1?true:false,     //上一页是否存在
-                ],
-        ];
-        if(input('debug')){ //调试,查看原始数据
-            print_r($array) ;
-            return ;            
-        }		
-        return json($array);
-    }
-    
-    protected function err_js($msg='操作失败',$data=[],$code=1){
-        header("Access-Control-Allow-Origin:*");
-        header("Access-Control-Allow-Methods:GET,POST");
-        $array = [
-                'code'=>$code,
-                'msg'=>$msg,
-                'data'=>$data,
+                'page'=> empty($array['data']) ? input('page') : $array['current_page'],         //当前页码, 要特别注意,系统分页函数,当数据不存在的时候,不会显示真实页码
+                'pages' => $array['last_page'],           //总页数
+                'perPage' => $array['per_page'],        //每页几条
+                'total' => $array['total'],                     //总共几条
+                'prev' => $array['current_page'],        //上一页的页码
+                'next' => $next,                                 //下一页的页码
+                'hasNext' =>$hasNext,                       //下一页是否存在
+                'hasPrev' =>$array['current_page']>1?true:false,     //上一页是否存在
+            ],
         ];
         if(input('debug')){ //调试,查看原始数据
             print_r($array) ;
             return ;
-        }		
+        }
+        return json($array);
+    }
+    
+    protected function err_js($msg='操作失败',$data=[],$code=1){
+//         header('Access-Control-Allow-Origin: *');
+//         header("Access-Control-Allow-Credentials: true");
+//         header("Access-Control-Allow-Headers: *");
+//         header("Access-Control-Expose-Headers:*");
+//         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        if (strstr($msg,'没登录') || strstr($msg,'先登录')) {
+            $code = 500;
+        }
+        $array = [
+            'code'=>$code,
+            'msg'=>$msg,
+            'data'=>$data,
+        ];
+        if(input('debug')){ //调试,查看原始数据
+            print_r($array) ;
+            return ;
+        }
         return json($array);
     }
     
@@ -233,67 +257,67 @@ class Base extends Controller
         
         return parent::assign($name, $value);
     }
-
-	protected function fetch($template = '', $vars = [], $replace = [], $config = [])
-	{
-	    if (!defined('IN_TEMPLATE')) {
-	        define('IN_TEMPLATE',true);
-	    }
-	    if (function_exists('val')) {
-	        //碎片模板要用到
-	        $array = val('','template')?:[];
-	        $array = array_merge($array,$vars);
-	        val($array,'template');
-	    }
-	    
-	    //自定义模板
-	    if ( !strstr($template,substr(ROOT_PATH,0,-2))  ) {
-	        if ($this->route[1]=='plugin' && $this->route[2]=='execute') {
-	            $tp_module = input('param.plugin_name');
-	            $tp_controller = input('param.plugin_controller');
-	            $tp_action = input('param.plugin_action');
-	        }else{
-	            $tp_module = $this->route[0];
-	            $tp_controller = $this->route[1]?:'index';
-	            $tp_action = $this->route[2]?:'index';
-	        }
-	        $tp_name = (defined('IN_WAP')&&IN_WAP===true)?'wap_':'pc_';
-	        $tp_name .= defined('ENTRANCE') ? ENTRANCE.'_' : 'other_';
-	        $tp_name .= $tp_module.'_'.$tp_controller.'_'.$tp_action;
-	        if (($this->admin||strstr($tp_controller,'login')||strstr($tp_controller,'reg')) && input('get.get_template_name')==1) {
-	            die('当前页面的自定义模板变量名如下<br>'.$tp_name.'<br>'.str_replace('pc_', 'wap_', $tp_name));
-	        }
-	        if ($this->webdb[$tp_name]) {
-	            if (is_file(TEMPLATE_PATH.$this->webdb[$tp_name])) {
-	                $template = TEMPLATE_PATH.$this->webdb[$tp_name];
-	            }elseif(is_file(ROOT_PATH.$this->webdb[$tp_name])){
-	                $template = ROOT_PATH.$this->webdb[$tp_name];
-	            }
-	        }
-	    }
-	    
-	    if($this->route[1]=='plugin' && $this->route[2]=='execute' && !strstr($template,substr(ROOT_PATH,0,-2))){
-	        $plugin_name = input('param.plugin_name');
-	        $plugin_controller = input('param.plugin_controller');
-	        $plugin_action = input('param.plugin_action');
-	        $template = $template == '' ? $plugin_action : $template;
-	        if (config('template.view_base')) {	            
-	        }else{
-	            if(!is_file($template)){
-	                if(ENTRANCE === 'admin') {
-	                    $template = ROOT_PATH. "plugins/{$plugin_name}/view/admin/{$plugin_controller}/{$template}.".config('template.view_suffix');
-	                }elseif(ENTRANCE === 'member') {
-	                    $template = ROOT_PATH. "plugins/{$plugin_name}/view/member/default/{$plugin_controller}/{$template}.".config('template.view_suffix');
-	                }elseif(ENTRANCE === 'index') {
-	                    $template = ROOT_PATH. "plugins/{$plugin_name}/view/index/default/{$plugin_controller}/{$template}.".config('template.view_suffix');
-	                }
-	            }
-	        }
-	    }
-	    
-	    ENTRANCE=='index' && $template = $this->get_module_style_template($template);   //频道个性模板的查找
-	    
-	    if( defined('ENTRANCE')&&in_array(ENTRANCE,['index','member','admin']) ) {
+    
+    protected function fetch($template = '', $vars = [], $replace = [], $config = [])
+    {
+        if (!defined('IN_TEMPLATE')) {
+            define('IN_TEMPLATE',true);
+        }
+        if (function_exists('val')) {
+            //碎片模板要用到
+            $array = val('','template')?:[];
+            $array = array_merge($array,$vars);
+            val($array,'template');
+        }
+        
+        //自定义模板
+        if ( !strstr($template,substr(ROOT_PATH,0,-2))  ) {
+            if ($this->route[1]=='plugin' && $this->route[2]=='execute') {
+                $tp_module = input('param.plugin_name');
+                $tp_controller = input('param.plugin_controller');
+                $tp_action = input('param.plugin_action');
+            }else{
+                $tp_module = $this->route[0];
+                $tp_controller = $this->route[1]?:'index';
+                $tp_action = $this->route[2]?:'index';
+            }
+            $tp_name = (defined('IN_WAP')&&IN_WAP===true)?'wap_':'pc_';
+            $tp_name .= defined('ENTRANCE') ? ENTRANCE.'_' : 'other_';
+            $tp_name .= $tp_module.'_'.$tp_controller.'_'.$tp_action;
+            if (($this->admin||strstr($tp_controller,'login')||strstr($tp_controller,'reg')) && input('get.get_template_name')==1) {
+                die('当前页面的自定义模板变量名如下<br>'.$tp_name.'<br>'.str_replace('pc_', 'wap_', $tp_name));
+            }
+            if ($this->webdb[$tp_name]) {
+                if (is_file(TEMPLATE_PATH.$this->webdb[$tp_name])) {
+                    $template = TEMPLATE_PATH.$this->webdb[$tp_name];
+                }elseif(is_file(ROOT_PATH.$this->webdb[$tp_name])){
+                    $template = ROOT_PATH.$this->webdb[$tp_name];
+                }
+            }
+        }
+        
+        if($this->route[1]=='plugin' && $this->route[2]=='execute' && !strstr($template,substr(ROOT_PATH,0,-2))){
+            $plugin_name = input('param.plugin_name');
+            $plugin_controller = input('param.plugin_controller');
+            $plugin_action = input('param.plugin_action');
+            $template = $template == '' ? $plugin_action : $template;
+            if (config('template.view_base')) {
+            }else{
+                if(!is_file($template)){
+                    if(ENTRANCE === 'admin') {
+                        $template = ROOT_PATH. "plugins/{$plugin_name}/view/admin/{$plugin_controller}/{$template}.".config('template.view_suffix');
+                    }elseif(ENTRANCE === 'member') {
+                        $template = ROOT_PATH. "plugins/{$plugin_name}/view/member/default/{$plugin_controller}/{$template}.".config('template.view_suffix');
+                    }elseif(ENTRANCE === 'index') {
+                        $template = ROOT_PATH. "plugins/{$plugin_name}/view/index/default/{$plugin_controller}/{$template}.".config('template.view_suffix');
+                    }
+                }
+            }
+        }
+        
+        ENTRANCE=='index' && $template = $this->get_module_style_template($template);   //频道个性模板的查找
+        
+        if( defined('ENTRANCE')&&in_array(ENTRANCE,['index','member','admin']) ) {
             if($template=='' && $this->route[2]==''){
                 $template='index';
             }
@@ -302,28 +326,28 @@ class Base extends Controller
                 $this->assign('uid',$this->user['uid']);    //默认把当前用户的UID放进模板,方便标签调用
             }
             if (empty($template)) {
-				$template = getTemplate($_template,false);
-				if (!$this->admin) {
-				    $template = str_replace(ROOT_PATH, '/', $template);
-				}
-				header('HTTP/1.1 404 Not Found');
-				header("status: 404 Not Found");
+                $template = getTemplate($_template,false);
+                if (!$this->admin) {
+                    $template = str_replace(ROOT_PATH, '/', $template);
+                }
+                header('HTTP/1.1 404 Not Found');
+                header("status: 404 Not Found");
                 die('严重错误提示!!<br><br>当前模板文件不存在:<br><br>'.$template);
             }
-	    }
-	    if (empty($this->index_style_layout)) {
-	        $this->get_module_layout('default');   //频道默认个性布局模板,优化级低于指定的index show list布局模板
-	    }
-	    
+        }
+        if (empty($this->index_style_layout)) {
+            $this->get_module_layout('default');   //频道默认个性布局模板,优化级低于指定的index show list布局模板
+        }
+        
         $_vars = [
-                'admin'=>$this->admin,
-                'userdb'=>$this->user,
-                'timestamp'=>$this->timestamp,
-                'webdb'=>$this->webdb,
-                'index_style_layout'=>$this->index_style_layout?:getTemplate('index@layout'),
-                'member_style_layout'=>getTemplate('member@layout'),
-                'site_defalut_html'=>getTemplate(config('site_defalut_html')),
-                'simple_layout'=>getTemplate(config('simple_layout')),  //mui简单模板
+            'admin'=>$this->admin,
+            'userdb'=>$this->user,
+            'timestamp'=>$this->timestamp,
+            'webdb'=>$this->webdb,
+            'index_style_layout'=>$this->index_style_layout?:getTemplate('index@layout'),
+            'member_style_layout'=>getTemplate('member@layout'),
+            'site_defalut_html'=>getTemplate(config('site_defalut_html')),
+            'simple_layout'=>getTemplate(config('simple_layout')),  //mui简单模板
         ];
         $vars = array_merge($_vars,$vars);
         return parent::fetch($template, $vars, $replace, $config);
@@ -397,17 +421,17 @@ class Base extends Controller
         $plugin_action = input('param.plugin_action');
         
         $template = $template == '' ? $plugin_action : $template;
-//         if(!is_file($template)){
-//             if(ENTRANCE === 'admin') {
-//                 $template_path = ROOT_PATH. "plugins/{$plugin_name}/view/admin/{$plugin_controller}/{$template}.".config('template.view_suffix');
-//             }elseif(ENTRANCE === 'member') {
-//                 $template_path = ROOT_PATH. "plugins/{$plugin_name}/view/member/default/{$plugin_controller}/{$template}.".config('template.view_suffix');
-//             }
-//         }
-//         return self::fetch($template_path, $vars, $replace, $config);
+        //         if(!is_file($template)){
+        //             if(ENTRANCE === 'admin') {
+        //                 $template_path = ROOT_PATH. "plugins/{$plugin_name}/view/admin/{$plugin_controller}/{$template}.".config('template.view_suffix');
+        //             }elseif(ENTRANCE === 'member') {
+        //                 $template_path = ROOT_PATH. "plugins/{$plugin_name}/view/member/default/{$plugin_controller}/{$template}.".config('template.view_suffix');
+        //             }
+        //         }
+        //         return self::fetch($template_path, $vars, $replace, $config);
         return self::fetch($template, $vars, $replace, $config);
     }
-   
+    
     protected function getMap()
     {
         if(ENTRANCE!='admin'){
@@ -425,7 +449,7 @@ class Base extends Controller
         $select_value     = input('param._select_value/s', '');
         
         $map = [];
-
+        
         // 搜索框搜索
         if ($search_field !== '' && $keyword !== '') {
             if (in_array($search_field, ['id','uid']) || (is_numeric($keyword)&&$keyword<999999)) {
@@ -468,100 +492,101 @@ class Base extends Controller
         }elseif ($search_endtime != '') {
             $map[$timefield] = ['<',strtotime($search_endtime)];
         }
-
-        // 下拉筛选
-//         if ($select_field != '') {
-//             $select_field = array_filter(explode('|', $select_field), 'strlen');
-//             $select_value = array_filter(explode('|', $select_value), 'strlen');
-//             foreach ($select_field as $key => $item) {
-//                 if ($select_value[$key] != '_all') {
-//                     $map[$item] = $select_value[$key];
-//                 }
-//             }
-//         }
-
         
-
+        // 下拉筛选
+        //         if ($select_field != '') {
+        //             $select_field = array_filter(explode('|', $select_field), 'strlen');
+        //             $select_value = array_filter(explode('|', $select_value), 'strlen');
+        //             foreach ($select_field as $key => $item) {
+        //                 if ($select_value[$key] != '_all') {
+        //                     $map[$item] = $select_value[$key];
+        //                 }
+        //             }
+        //         }
+        
+        
+        
         // 表头筛选
-//         if ($filter != '') {
-//             $filter         = array_filter(explode('|', $filter), 'strlen');
-//             $filter_content = array_filter(explode('|', $filter_content), 'strlen');
-//             foreach ($filter as $key => $item) {
-//                 if (isset($filter_content[$key])) {
-//                     $map[$item] = ['in', $filter_content[$key]];
-//                 }
-//             }
-//         }
+        //         if ($filter != '') {
+        //             $filter         = array_filter(explode('|', $filter), 'strlen');
+        //             $filter_content = array_filter(explode('|', $filter_content), 'strlen');
+        //             foreach ($filter as $key => $item) {
+        //                 if (isset($filter_content[$key])) {
+        //                     $map[$item] = ['in', $filter_content[$key]];
+        //                 }
+        //             }
+        //         }
         return  array_merge( $map , $this->map);
-    }
-
-    /**
-     * 获取字段排序
-     * @param string $extra_order 默认排序
-     * @return string
-     */
-    protected function getOrder($extra_order = '')
-    {
-        if(ENTRANCE!='admin'){
-            //return '';
         }
-        $order = input('param._order/s', '');
-        $by    = input('param._by/s', '');        
-        if ($order != '' && $by != '') {
-            return $order . ' ' . $by;
-        }elseif ($extra_order != '') {
-            return $extra_order;
+        
+        /**
+         * 获取字段排序
+         * @param string $extra_order 默认排序
+         * @return string
+         */
+        protected function getOrder($extra_order = '')
+        {
+            if(ENTRANCE!='admin'){
+                //return '';
+            }
+            $order = input('param._order/s', '');
+            $by    = input('param._by/s', '');
+            if ($order != '' && $by != '') {
+                return $order . ' ' . $by;
+            }elseif ($extra_order != '') {
+                return $extra_order;
+            }
         }
-    }
-    
-    /**
-     * 齐博首创 钩子文件扩展接口
-     * 详细使用教程 https://www.kancloud.cn/php168/x1_of_qibo/1010065
-     * @param string $type 钩子标志,不能重复
-     * @param array $data POST表单数据 可以改变其值
-     * @param array $info 数据库资料
-     * @param array $array 其它参数
-     * @param string $use_common 默认同时调用全站通用的
-     * @return unknown|NULL
-     */
-    protected function get_hook($type='',&$data=[],$info=[],$array=[],$use_common=true){
-        $path_array = [];
-        preg_match_all('/([_a-z]+)/',get_called_class(),$carray);
-        $dirname = $carray[0][1];
-        $path_array[] = (defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH).$dirname.DS.'ext'.DS.$type.DS;
-        if ($use_common===true) {
-            $path_array[] = APP_PATH.'common'.DS.'ext'.DS.$type.DS;
-        }
-        $file_array = [];
-        foreach ($path_array AS $path){
-            if (is_dir($path)) {
-                $sarray = [];
-                $dir = opendir($path);
-                while($file = readdir($dir)){
-                    if(preg_match("/^([\w\.-]*)\.php$/i", $file,$sar)){
-                        if (in_array($sar[1], $file_array)) {
-                            continue ; //出现同名,就跳过
+        
+        /**
+         * 齐博首创 钩子文件扩展接口
+         * 详细使用教程 https://www.kancloud.cn/php168/x1_of_qibo/1010065
+         * @param string $type 钩子标志,不能重复
+         * @param array $data POST表单数据 可以改变其值
+         * @param array $info 数据库资料
+         * @param array $array 其它参数
+         * @param string $use_common 默认同时调用全站通用的
+         * @return unknown|NULL
+         */
+        protected function get_hook($type='',&$data=[],$info=[],$array=[],$use_common=true){
+            $path_array = [];
+            preg_match_all('/([_a-z]+)/',get_called_class(),$carray);
+            $dirname = $carray[0][1];
+            $path_array[] = (defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH).$dirname.DS.'ext'.DS.$type.DS;
+            if ($use_common===true) {
+                $path_array[] = APP_PATH.'common'.DS.'ext'.DS.$type.DS;
+            }
+            $file_array = [];
+            foreach ($path_array AS $path){
+                if (is_dir($path)) {
+                    $sarray = [];
+                    $dir = opendir($path);
+                    while($file = readdir($dir)){
+                        if(preg_match("/^([\w\.-]*)\.php$/i", $file,$sar)){
+                            if (in_array($sar[1], $file_array)) {
+                                continue ; //出现同名,就跳过
+                            }
+                            $sarray[$path.DS.$file] = $sar[1];
                         }
-                        $sarray[$path.DS.$file] = $sar[1];
+                    }
+                    asort($sarray);
+                    $file_array = array_merge($file_array,$sarray);
+                }
+            }
+            
+            if ($file_array) {
+                foreach($file_array AS $file=>$v){
+                    $result = include($file);
+                    if ($result===true||$result===false) {
+                        return $result;
+                    }elseif(is_string($result) || is_array($result)){
+                        return $result;
                     }
                 }
-                asort($sarray);
-                $file_array = array_merge($file_array,$sarray);
             }
+            
+            return NULL;
         }
         
-        if ($file_array) {
-            foreach($file_array AS $file=>$v){
-                $result = include($file);
-                if ($result===true||$result===false) {
-                    return $result;
-                }elseif(is_string($result) || is_array($result)){
-                    return $result;
-                }
-            }
-        }
-        
-        return NULL;
     }
     
-}

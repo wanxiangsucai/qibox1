@@ -27,7 +27,19 @@ abstract class Reply extends IndexBase
      * @param string $page 第几页
      * @return \think\response\Json
      */
-    public function index($id=0,$orderby='',$rows='',$page=0,$status=0,$fid=0){        
+    public function index($id=0,$orderby='',$rows=10,$page=0,$status=0,$fid=0,$pid=0){
+        if (!$id && input('aid')) {
+            $id = input('aid');
+        }
+        if (!$fid && input('fid')) {
+            $fid = input('fid');
+        }
+        if (!$pid && input('pid')) {
+            $pid = input('pid');
+        }
+        if (!$status && input('status')) {
+            $status = input('status');
+        }
         if($orderby=='asc'){
             $orderby = 'id asc';
         }elseif($orderby=='desc'){
@@ -36,9 +48,13 @@ abstract class Reply extends IndexBase
             $orderby = '';
         }
         $map = [];
-        if ($status==1) {
-            $map['status'] = ['>', 0];
-        }        
+        if ($pid) {
+            $map['pid'] = $pid;
+        }
+        if ($status<0) {
+            $status = 0;
+        }       
+        $map['status'] = ['>', intval($status)];
         $data = getArray($this->model->getListByAid($id,'',$orderby,$rows,$pages=[],$map));
         $array = [];
         $topic_info = [];
@@ -48,7 +64,8 @@ abstract class Reply extends IndexBase
                 if ($topic_info['uid']!=$this->user['uid']) {
                     continue;
                 }
-            }            
+            }
+            $rs['content'] = str_replace(['="/',"='/"],['="'.$this->request->domain().'/',"='".$this->request->domain()."/"],$rs['content']);
             if ($rs['sons']) {
                 $_array = [];
                 foreach ($rs['sons'] AS $k=>$v){
@@ -60,11 +77,18 @@ abstract class Reply extends IndexBase
                             }
                         }
                     }
+                    $v['content'] = str_replace(['="/',"='/"],['="'.$this->request->domain().'/',"='".$this->request->domain()."/"],$v['content']);
                     $_array[] = $v;
                 }
                 $rs['sons'] = $_array;
             }
             $array[] = $rs;
+        }
+        
+        if ($pid) {
+            $data['info'] = $this->model->format_content(getArray($this->model->where('id',$pid)->where('status','>=',0)->find()));
+        }else{
+            $data['totals'] = $this->model->where($map)->where('aid',$id)->count('id');
         }
         $data['data'] = $array;
         return $this->ok_js($data);
@@ -154,6 +178,12 @@ abstract class Reply extends IndexBase
      * @return \think\response\Json
      */
     public function add($id=0,$pid=0,$rows=10){
+        if (!$id&&input('aid')) {
+            $id = input('aid');
+        }
+        if (!$id&&$pid) {
+            $id = $this->model->where('id',$pid)->value('aid');
+        }
         if( empty($this->request->isPost()) ){
             return $this->err_js('必须POST方式提交数据');
         }
@@ -300,17 +330,17 @@ abstract class Reply extends IndexBase
             
             $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
             if( $this->webdb['reply_send_wxmsg'] ){
-                $content = '主题: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了回复,<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
+                $content = get_word($this->user['username'],8).',回复了 ' . $topic['title'] . ',<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
                 if($topic['uid']!=$this->user['uid']){
                     if($this->forbid_remind($topic['uid'])!==true){
-                        send_wx_msg($topic['uid'], '你发表的'.$content);
+                        send_wx_msg($topic['uid'], $content,['sendmsg'=>true]);
                     }
                 }
                 
                 if($pinfo && $topic['uid']!=$pinfo['uid']){
                     if($pinfo['uid']!=$this->user['uid']){
                         if($this->forbid_remind($pinfo['uid'])!==true){
-                            send_wx_msg($pinfo['uid'], '你参与讨论的'.$content);
+                            send_wx_msg($pinfo['uid'], '你参与的 '.$content,['sendmsg'=>true]);
                         }
                     }
                 }
@@ -323,9 +353,9 @@ abstract class Reply extends IndexBase
                         continue;
                     }
                     $title = '请及时审核论坛新回复';
-                    $content = '“'.$this->user['username'].'” 刚刚对主题: 《' . $topic['title'] . '》 进行了回复，请尽快审核！<a href="'.get_url(iurl('content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
-                    send_msg($_uid, $title, $content);
-                    send_wx_msg($_uid, $content);
+                    $content = get_word($this->user['username'],8).' 回复[' . get_word($topic['title'], 8) . ']请审核！<a href="'.get_url(iurl('content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
+                    //send_msg($_uid, $title, $content);
+                    send_wx_msg($_uid, $content,['sendmsg'=>true]);
                 }
             }
         }

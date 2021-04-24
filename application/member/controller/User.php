@@ -98,8 +98,8 @@ class User extends IndexBase
         if ($info['bday']<1) {
             $info['bday']='';
         }
-        
-        $this->form_items = [
+        //\application\extra\user_field.php可以重新自定义要修改的用户字段
+        $this->form_items = config('user_field')?:[
                 ['hidden', 'uid'],
                 ['text', 'username', '帐号',$this->webdb['edit_username_money']?'需要消费积分 '.intval($this->webdb['edit_username_money']).' 个':'请不要随意修改'],
                 ['text', 'password', '密码','留空则代表不修改密码'],
@@ -120,9 +120,7 @@ class User extends IndexBase
             
             $data = $this->request->post();
             
-            if ($data['uid']!=$info['uid']) {
-                $this->error('你不能修改别人的资料');
-            }
+            $data['uid'] = $this->user['uid'];
             
             $data = FieldPost::format_php_all_field($data,$this->form_items);
 
@@ -157,7 +155,7 @@ class User extends IndexBase
 //                     'icon'=>$data['icon'],
 //             ];
             
-            if ($info['username']!=$data['username']) {
+            if (isset($data['username']) && $info['username']!=$data['username']) {
                 $data['username'] = str_replace(['|',' ','',"'",'"','/','*',',','~',';','<','>','$',"\\","\r","\t","\n","`","!","?","%","^"],'',$data['username']);
                 if ($info['money'] < $this->webdb['edit_username_money']) {
                     $this->error('你的积分不足 '.intval($this->webdb['edit_username_money']).' 个,不能修改帐号!');
@@ -180,8 +178,6 @@ class User extends IndexBase
                // $array['username'] = $data['username'];
             }
             $data['introduce'] && $data['introduce'] = preg_replace("/(javascript|iframe|script |\/script)/i", '.\\1', $data['introduce']);
-            
-            
             if ( $this->model->edit_user($data) ) {
                 if ($data['password']) {
                     $title = '你修改了密码!';

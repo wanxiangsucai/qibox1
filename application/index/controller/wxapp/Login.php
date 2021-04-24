@@ -14,7 +14,12 @@ class Login extends IndexBase
     /**
      * webapp退出
      */
-    public function getout(){
+    public function getout($token=''){
+        if ($token) {
+            cache2(md5($token),null);
+        }elseif ($this->request->header('token')) {
+            cache2(md5($this->request->header('token')),null);
+        }
         UserModel::quit($this->user['uid']);
         return $this->ok_js([],'退出成功');
     }
@@ -33,12 +38,13 @@ class Login extends IndexBase
                 return $this->err_js("当前用户不存在,请重新输入");
             }elseif($result==-1){
                 return $this->err_js("密码不正确,点击重新输入");
-            }elseif(is_array($result)){
+            }elseif(is_array($result) && $result['uid']){
                 $user = $result;
-                $token = md5( $user['uid'] . $user['password']  . time() );
-                cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
+                $token = md5( mymd5($user['uid'] . $user['password']  . date('z')) );
+                cache2(md5($token),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*240);
                 $array = [
                     'uid'=>$result['uid'],
+                    'userInfo'=>\app\common\fun\Member::format($result),
                     'token'=>$token,
                 ];
                 return $this->ok_js($array,'登录成功');
@@ -105,11 +111,12 @@ class Login extends IndexBase
         }
         $result = UserModel::login($array['unionid'],'',3600*24,true,'unionid');
         $user = $result;
-        $token = md5( $user['uid'] . $user['password']  . time() );
-        cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
+        $token = md5( mymd5($user['uid'] . $user['password']  . date('z')) );
+        cache2(md5($token),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",1800);
         $array = [
             'uid'=>$result['uid'],
             'token'=>$token,
+            'userInfo'=>\app\common\fun\Member::format($user),
         ];
         return $this->ok_js($array,'登录成功');
     }
@@ -119,21 +126,49 @@ class Login extends IndexBase
      * @param string $code 微信端提交过来的
      * @param string $encryptedData 微信端提交过来的
      * @param string $iv 微信端提交过来的
-     * @param string $iv 微信端提交过来的之前的WEB框架登录标志
+     * @param string $uids 微信端提交过来的之前的框架webview登录标志
+     * @param string $userinfo 微信新版登录接口getUserProfile 无法获取openid  ,所以要把用户的基本信息传过来
      * @return string
      */
-    public function index($code='',$encryptedData='',$iv='',$uids=''){
+    public function index($code='',$encryptedData='',$iv='',$uids='',$userinfo=[]){
         if($code=='the code is a mock one'||empty($code)){
             return $this->err_js('无法登录,code 获取失败');
         }
-        $array = AuthAPI::login($code, $encryptedData, $iv);
-        if(!is_array($array)){
-            return $this->err_js($array);
-        }
-        $skey = $array['skey'];
-        $sessionKey = $array['sessionKey'];
-        $info = $array['userinfo'];
-        $openid = $info['openId'];
+        
+        if (get_wxappAppid() && wxapp_open_cfg(get_wxappAppid())) {
+            $string = file_get_contents('https://api.weixin.qq.com/sns/component/jscode2session?appid='.get_wxappAppid().'&js_code='.$code.'&grant_type=authorization_code&component_appid='.config('webdb.P__wxopen')['open_appid'].'&component_access_token='.wx_getOpenAccessToken());
+            $array = json_decode($string,true);
+            if ($array['unionid'] || $array['openid']){
+                $info = $userinfo;
+                $openid = $info['openId'] = $array['openid'];
+                $info['unionId'] = $array['unionid'];
+                $skey = $sessionKey = $code;
+            }else{
+                return $this->err_js('登录失败,详情是：'.$string);
+            }
+        }else{
+            if ($userinfo) {    //微信新版登录接口getUserProfile 无法获取openid
+                $info = $userinfo;
+                $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.config('webdb.wxapp_appid').'&js_code='.$code.'&grant_type=authorization_code&secret='.config('webdb.wxapp_appsecret'));
+                $_array = json_decode($string,true);
+                if(!$_array['openid']){
+                    return $this->err_js($_array);
+                }
+                $openid = $info['openId'] = $_array['openid'];
+                $info['unionId'] = $_array['unionid'];
+                $skey = $sessionKey = $code;
+            }else{
+                $array = AuthAPI::login($code, $encryptedData, $iv);
+                if(!is_array($array)){
+                    return $this->err_js($array);
+                }
+                $skey = $array['skey'];
+                $sessionKey = $array['sessionKey'];
+                $info = $array['userinfo'];
+                $openid = $info['openId'];
+            }
+        }        
+        
         
         if (empty($openid)) {
             return $this->err_js('登录失败,openid获取不到');
@@ -143,10 +178,9 @@ class Login extends IndexBase
         
         if (get_wxappAppid()) {
             unset($info['unionId']);    //商家小程序不允许使用 unionId
-        }else{  //用户在大平台登录
-            if(!$user && modules_config('qun') && class_exists("app\\qun\\model\\Weixin")){
-                $user = \app\qun\model\Weixin::get_info_by_openid($openid);   //用户在大平台登录时，看看是否在某个商家那里注册过，就避免重复注册
-            }
+        }
+        if(!$user && modules_config('qun') && class_exists("app\\qun\\model\\Weixin")){
+            $user = \app\qun\model\Weixin::get_info_by_openid($openid);   //用户在大平台登录时，看看是否在某个商家那里注册过，就避免重复注册
         }
  
         if ( $user && $info['unionId'] && empty($user['unionid']) ) {   //后来开通了认证微信开放平台的老用户处理
@@ -203,10 +237,11 @@ class Login extends IndexBase
         UserModel::login($user['username'], '', '',true);   //这个并不能真正的登录.只是做一些登录的操作日志及其它接口处理
         
         $user = UserModel::get_info($user['uid']);  //这句可以删除,主要是考虑到以前password没有统一在一个数据表的情况
-        cache($skey,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t$sessionKey"."\t{$openid}",3600*72);
+        $skey = md5( mymd5($user['uid'].$user['password'].date('z') ) );
+        cache2(md5($skey),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t$sessionKey"."\t{$openid}",3600*72);
         $array = [
-                'token'=>$skey,
-                'userInfo'=>UserModel::get_info($user['uid']),
+            'token'=>$skey,
+            'userInfo'=>\app\common\fun\Member::format($user),
         ];
         return $this->ok_js($array);
     }
@@ -214,9 +249,11 @@ class Login extends IndexBase
     /**
      * 通过code获取用户登录信息
      * @param string $code
-     * @return void|\think\response\Json
+     * @param string $uids 统一登录标志
+     * @param number $qid
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
-    public function wxapp_getuser_bycode($code='',$qid=0){
+    public function wxapp_getuser_bycode($code='',$uids='',$qid=0){
         if (empty($qid)) {
             $webdb = config('webdb.P__xcx_qun');
             $cfg = [
@@ -246,35 +283,48 @@ class Login extends IndexBase
         if ($array['unionid'] || $array['openid']){
             $user = get_user($array['openid'],'wxapp_api');
             if ($user) {
-                if ($array['unionid']&&empty($user['unionid'])) {   //后来开通的微信开放平台
+                if ($array['unionid'] && empty($user['unionid']) && empty(get_wxappAppid())) {   //后来开通的微信开放平台
                     UserModel::edit_user([
                         'uid'=>$user['uid'],
                         'unionid'=>$array['unionid'],
                     ]);
                 }
-            }elseif($array['unionid']){                
-                $user = get_user($array['unionid'],'unionid');
+            }else{
+                
+                if(empty(get_wxappAppid()) && $array['unionid']){
+                    $user = get_user($array['unionid'],'unionid');
+                }
+                if (!$user && $uids) {
+                    list($uid,$time) = explode(',',mymd5($uids,'DE'));
+                    if (time()-$time<600) {
+                        $user = UserModel::getById($uid);
+                    }
+                }
+                
                 if ($user) {
                     if (get_wxappAppid()) {
                         \app\qun\model\Weixin::add($user['uid'],$array['openid']);   //首次绑定某个商家的小程序
+                        cache('user_'.$user['uid'],null);
                     }else{
-                        if (empty($user['wxapp_api'])) {
-                            UserModel::edit_user([
-                                'uid'=>$user['uid'],
-                                'wxapp_api'=>$array['openid'],
-                            ]);
-                        }
+                        UserModel::edit_user([
+                            'uid'=>$user['uid'],
+                            'wxapp_api'=>$array['openid'],
+                        ]);
                     }
                 }
             }
             if ($user) {
-                cache($code,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t\t{$array['openid']}",3600);
+                $code = md5( mymd5($user['uid'].$user['password'].date('z')) );
+                cache2(md5($code),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t\t{$array['openid']}",3600);
                 $array = [
                     'token'=>$code,
-                    'userInfo'=>$user,
+                    'userInfo'=>\app\common\fun\Member::format($user),
                 ];
                 return $this->ok_js(array_merge($array,$cfg));
             }else{
+                if (get_wxappAppid()) {
+                    $cfg['openid'] = mymd5(time()."\t".$array['openid']);
+                }                
                 return $this->err_js('用户不存在！',$cfg);
             }            
         }else{
@@ -288,7 +338,7 @@ class Login extends IndexBase
      * @return \think\response\Json
      */
     public function check($token=''){    
-        list($uid,$username,$pwd,,$wxapp_id) = explode("\t", cache($token));
+        list($uid,$username,$pwd,,$wxapp_id) = explode("\t", cache2(md5($token)));
         $code = 1;
         $userInfo = [];
         $msg = '用户并没有处于登录状态';

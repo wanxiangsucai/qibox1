@@ -17,7 +17,7 @@ class Msg
         $user = self::$user;
         if ($user) {
             $token = md5( self::$wxid . time() . $user['lastvist'] . rands(5) );
-            cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
+            cache2(md5($token),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
         }
         //once=1 出于安全考虑,限制只有一次有效
         if(strstr($array[2],'?')){
@@ -54,8 +54,8 @@ class Msg
         }
         $user = self::$user;
         $token = md5( self::$wxid . time() . $user['lastvist'] . rands(5) );
-        cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
-        $url = get_url(murl('member/msg/show',['id'=>$id])).'?token='.$token;
+        cache2(md5($token),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*24);
+        $url = get_url(murl('member/msg/show',['id'=>$id])).'?once=1&token='.$token;
         return $url;
     }
      

@@ -285,7 +285,7 @@ class Attachment extends IndexBase{
 					'info'  => '上传成功',
 					'class' => 'success',
 					'id'    => $file_info['path'],
-					'url'   => $file_info['url'],
+					'url'   => tempdir($file_info['url']?:$file_path),
 					'path'  => $file_path,
 				] );
 		}

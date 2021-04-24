@@ -46,7 +46,7 @@ var Qibo = function () {
 	
 	//配合下面这个方法 _ajaxget 使用
 	var _ajaxgoto = function(url,id){
-		var index = layer.msg('请稍候...');
+		var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
 		$.get(url,function(res){
 			layer.close(index);
 			if(res.code==0){	//成功提示
@@ -144,7 +144,34 @@ var Qibo = function () {
 	}
 	
 	//直接使用window.history.go(-1) window.history.back() 遇到新开的页面,就导致无法返回, 用这个函数可以给他默认指定一个返回页面
-	var goBack = function(url) {		
+	var goBack = function(url) {
+		if(typeof(api)=='object'){
+			var frames = api.frames();
+			if(frames.length==0){				
+				api.historyBack(function(ret, err) {
+					if (!ret.status) {
+						var windows = api.windows();
+						api.closeWin(windows[windows.length-1].name);
+					}
+				});
+				return ;
+			}
+			var now_frame_name = frames[frames.length-1].name;
+			api.historyBack({
+				frameName:''
+			}, function(ret, err) {
+				if (!ret.status) {
+					if(frames.length>1){								
+						api.closeFrame({name:now_frame_name});
+					}else if(typeof(bui)=='object'){
+						bui.back();
+					}else if(url){
+						window.location.href = url;
+					}
+				}
+			});
+			return ;
+		}
 		if ((navigator.userAgent.indexOf('MSIE') >= 0) && (navigator.userAgent.indexOf('Opera') < 0)) { // IE 
 			if (history.length > 0) {
 				window.history.go(-1);
@@ -408,6 +435,48 @@ var Qibo = function () {
 		});
 	}
 
+	function open(url,title,iframe){ 
+		if(typeof(api)=="undefined" || iframe===true){ 
+			//layer.open({type: 2,title: false,shadeClose: true,shade: 0.3,area: ['95%', '90%'],content: url,}); 
+			bui.load({ 
+				url: "public/static/libs/bui/pages/frame/show.html",
+				param:{
+					url:url,
+					title:typeof(title)=="undefined"?'':title,
+				}
+			});
+		}else{
+			var win_name = iframe?iframe:'iframe'+Math.random();
+			api.openWin({
+							name: win_name,
+							url: url,
+							allowEdit:true,
+							reload: true,
+								bgColor:'#eeeeee',
+								/*
+							progress:{
+								type:'default',            //加载进度效果类型，默认值为 default，取值范围为 ，为 page 时，进度效果为仿浏览器类型，固定在页面的顶部
+								title: '页面加载中...',          //type 为 default 时显示的加载框标题，字符串类型
+								text:  '请稍候...',          //type 为 default 时显示的加载框内容，字符串类型
+								color: '#ef9f0e',          //type 为 page 时进度条的颜色，默认值为 #45C01A，支持#FFF，#FFFFFF，rgb(255,255,255)，rgba(255,255,255,1.0)等格式
+								height: 3         //type 为 page 时进度条高度，默认值为3，数字类型
+							},
+							animation:{
+								type:"push",                //动画类型（详见动画类型常量）
+								subType:"from_right",       //动画子类型（详见动画子类型常量）
+								duration:30                //动画过渡时间，默认300毫秒
+							},*/
+							rect: {
+									x: 0,
+									y: 0,
+									w: api.winWidth,
+									h: api.winHeight,
+							},
+							bounces: false
+			});
+		}
+	}
+
 	return {
 			init:function(){
 				pop();
@@ -424,6 +493,9 @@ var Qibo = function () {
 			},
 			pay:function(money,callback){
 				pay_money(money,callback);
+			},
+			open:function(url,title,iframe){
+				return open(url,title,iframe);
 			},
 	};
 }();

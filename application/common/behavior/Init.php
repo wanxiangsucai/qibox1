@@ -10,6 +10,16 @@ class Init{
 	private $webdb;
 
 	public function run(&$params){
+	    
+	    header('Access-Control-Allow-Origin: *');
+	    header("Access-Control-Allow-Credentials: true");
+	    header("Access-Control-Allow-Headers: *");
+	    header("Access-Control-Expose-Headers:*");
+	    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+	    if ($_SERVER['REQUEST_METHOD']=='OPTIONS' || request()->isOptions()) {
+	        die('OPTIONS请求仅响应给ajax跨域！！！');
+	    }
+	    
 		// 如果是安装系统，不需要执行
 		if(defined('BIND_MODULE')&&BIND_MODULE=='install') return;
 		if(empty(get_cookie('user_sid'))){    //分配每个用户一个唯一字串
@@ -101,7 +111,7 @@ class Init{
 		
 		if( isset($_GET['qun_wxapp_appid'])&&empty($_GET['qun_wxapp_appid']) ){
 		    cookie('qun_wxapp_appid',null);
-		}elseif ( ($qun_wxapp_appid = input('qun_wxapp_appid')?:cookie('qun_wxapp_appid'))!=false ) {
+		}elseif ( ($qun_wxapp_appid = input('qun_wxapp_appid')?:(cookie('qun_wxapp_appid')?:request()->header('wxappid')) )!=false ) {
 			$ar = wxapp_cfg($qun_wxapp_appid);
 		    if ($ar) {
 		        foreach($ar AS $_key=>$rs){
@@ -196,7 +206,7 @@ class Init{
 					        header('location:'.url($array[$module]));
 					        exit;
 					    }
-						showerr('当前频道不存在！',404);
+						showerr('当前频道不存在!！',404);
 					}
 				}
 				// 定义模块的前台文件目录

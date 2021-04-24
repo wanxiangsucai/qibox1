@@ -8,6 +8,16 @@ use plugins\weixin\util\Msg;
 //小程序 
 class User extends MemberBase
 {
+    /**
+     * 获取自己的登录信息
+     * @return void|unknown|\think\response\Json
+     */
+    public function index(){
+        $rs = $this->user;
+        unset($rs['qq_api'],$rs['weixin_api'],$rs['wxapp_api'],$rs['unionid'],$rs['wxopen_api']);
+        return $this->ok_js($rs);
+    }
+    
     public function edit_map($point='113.30764968,23.1200491',$type=0){
         if ($this->request->isAjax() && ($type==1 || empty($this->user['map_x']))) {
             list($x,$y) = explode(',',$point);

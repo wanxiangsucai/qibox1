@@ -143,11 +143,15 @@ class Config extends Model
 	 * 一般情况,$name为空 $sys_id为null默认值的话,全局参数为一维数据取出来. 插件与频道为二维数据取出来,插件第一个下标是P_目录名,频道第一个下标是M_目录名
 	 * @param string $name 关键字变量名,为空的话,就取出所有,不为空的话,就取指定的变量的值
 	 * @param unknown $sys_id 频道或插件,频道为正数,插件为负数,0为系统全局参数. 指定正数或负数的话,只取对应频道或插件的数据
+	 * @param unknown $is_open 是否只获取公开给外部接口的参数 
 	 * @return mixed|array|array[]
 	 */
-    public static function getConfig($name = '',$sys_id=null)
+    public static function getConfig($name = '', $sys_id = null, $is_open = null)
     {
         $map = [];
+        if ($is_open) {
+            $map['is_open'] = 1;
+        }
         if ($sys_id!==null) {
 //             //对应模型的所有分组ID
 //             $group_ids = configGroup::getIdsBySys($sys_id);

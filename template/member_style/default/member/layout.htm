@@ -45,8 +45,12 @@
 {block name="foot_menu"} {include file="index@footmenu" /} {/block}
 
 
-<script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
-<script src="__STATIC__/layui/layui.js"></script>
+<script type="text/javascript" src="__STATIC__/js/qibo.js?d"></script>
+<script type="text/javascript">
+if(typeof(layui)=='undefined'){
+	document.write('<script type="text/javascript" src="__STATIC__/layui/layui.js"><\/script>');
+}
+</script>
 
 {block name="script"} 
 <script type="text/javascript">

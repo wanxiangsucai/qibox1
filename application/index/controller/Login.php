@@ -22,8 +22,8 @@ class Login extends IndexBase
             weixin_login();
         }else{
             $user = $this->user;
-            $token = md5( $user['uid'] . $user['lastip'] . $user['lastvist'] );
-            cache($token,"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",60);
+            $token = md5( mymd5($user['uid'] . $user['lastip'] . $user['lastvist'] .date('z')) );
+            cache2(md5($token),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",60);
             $this->assign('token',$token);
             return $this->fetch();
         }        
@@ -183,9 +183,9 @@ class Login extends IndexBase
         if ($info) {    //已注册过的手机号
             cache('phone_login'.$num,null);
             $result = UserModel::login($phone_num,'',3600*24*7,true,'mobphone');
-            if (is_array($result)) {
-                $token = md5( $result['uid'] . $result['lastip']  . $result['lastvist'] );
-                cache($token,"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",60);
+            if (is_array($result) && $result['uid']) {
+                $token = md5( mymd5($result['uid'] . $result['lastip']  . $result['lastvist'] .date('z')) );
+                cache2(md5($token),"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",60);
                 return $this->ok_js([
                     'token'=>$token,
                     'type'=>'login',
@@ -269,8 +269,8 @@ class Login extends IndexBase
                 if($data['fromurl'] && !strstr($data['fromurl'],'index/login')){
                     $url = $data['fromurl'];
                 }
-                $token = md5( $result['uid'] . $result['lastip']  . $result['lastvist'] );
-                cache($token,"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",60);
+                $token = md5( mymd5($result['uid'] . $result['lastip']  . $result['lastvist'] .date('z')) );
+                cache2(md5($token),"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",60);
                 $this->success('注册成功',$url,$token);
             }else{
                 $this->error('注册失败！');

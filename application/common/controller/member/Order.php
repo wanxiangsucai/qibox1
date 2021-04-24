@@ -139,6 +139,11 @@ abstract class Order extends MemberBase
         return $this->fetch();
     }
     
+    /**
+     * 前台或后台自定义字段处理
+     * @param array $info
+     * @return array
+     */
     protected function format_info($info=[]){
         if (count($info['shop_db'])==1 && $info['shop_db'][0]['order_filed']) { //前台自定义字段的处理
             $f_array = fun('field@order_field_post',$info['shop_db'][0]['order_filed']);
@@ -146,7 +151,7 @@ abstract class Order extends MemberBase
             $order_info = fun('field@order_field_format',$info['order_field'],$f_array);
             $info = array_merge($info,$order_info);
         }else{
-            $form_items = \app\common\field\Form::get_all_field(-1);         //后台自定义字段
+            $form_items = \app\common\field\Form::get_all_field(-1,$info);         //后台自定义字段
             $info = fun('field@format',$info,'','show','',$form_items);      //数据转义
         }
         return $info;

@@ -69,7 +69,9 @@ class AdminBase extends Base
                 \think\Hook::add('app_end', function(){
                     if (!defined('IN_PLUGIN')&&!defined('FORBID_CLEAR_CACHE')&&empty(cache('forbid_clear_cache'))) {
                         Cache::clear();
-                    }                    
+                    }elseif ( input('plugin_controller')=='setting' ){
+                        Cache::clear();
+                    }
                 });
             }
         }

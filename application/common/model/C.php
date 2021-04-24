@@ -340,6 +340,8 @@ abstract class C extends Model
 				get_hook('cms_model_agree_end',$data=[],$info,['id'=>$id],true);
                 hook_listen('cms_model_agree_end',$info,$id);                
                 return true;
+            }else{
+                into_sql("ALTER TABLE  `qb_{$table}` ADD  `agree` MEDIUMINT( 5 ) NOT NULL COMMENT  '点赞';");
             }
         }
     }

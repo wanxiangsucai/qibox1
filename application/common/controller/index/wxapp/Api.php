@@ -13,13 +13,16 @@ abstract class Api extends IndexBase
     protected $mid;                      //模型ID
     
     public function add(){
-        die('出错了!');
+        return $this->err_js('出错了!');
     }
     public function edit(){
-        die('出错了!');
+        return $this->err_js('出错了!');
     }
     public function delete(){
-        die('出错了!');
+        return $this->err_js('出错了!');
+    }
+    public function index(){
+        return $this->err_js('出错了!');
     }
     
     protected function _initialize()

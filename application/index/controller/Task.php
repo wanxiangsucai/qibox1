@@ -46,7 +46,7 @@ class Task extends IndexBase
         write_file(self::$task_web_file, date('Y-m-d H:i:s'));
         set_time_limit(0);
         $this->run_task();
-        unlink(self::$task_web_file);
+        //unlink(self::$task_web_file);
         $this->ok_js('定时任务，执行完毕！');
     }
     

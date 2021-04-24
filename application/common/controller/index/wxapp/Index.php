@@ -38,27 +38,54 @@ abstract class Index extends IndexBase
      * @param string $type 类型筛选
      * @return \think\response\Json
      */
-    public function index($fid=0,$type='',$rows=10){
-        $map = [];
-        $fid && $map['fid'] = $fid;
+    public function index($fid=0,$type='',$rows=10,$notfid='',$mid=1){
+        $map = [
+            'status'=>['>',0],
+        ];
+        if (input('notfid')) {
+            $notfid = input('notfid');
+        }
+        if (input('mid')) {
+            $mid = input('mid');
+        }
+        if ($notfid!='') {
+            $detail = explode(',', $notfid);
+            foreach ($detail AS $key=>$value){
+                if (!is_numeric($value)) {
+                    unset($detail[$key]);
+                }
+            }
+            if ($detail) {
+                $map['fid'] = ['not in',implode(',', $detail)];
+            }
+        }
+        $fid && $map['fid'] = ['in',get_sort($fid,'','sons')];
         //$map['ispic'] = 1;
-        $order = 'id desc';
+        $order = 'list desc,id desc';
         if($type=='star'){
-            $map['status'] = 2;
+            $map['status'] = ['>',1];
         }elseif($type=='hot'){
             $order = 'view desc';
         }elseif($type=='new'){
             $order = 'id desc';
         }elseif($type=='reply'){
-            $order = 'list desc';
+            $order = 'list desc,id desc';
         }
-        $mid = $this->model->getMidByFid($fid) ?: $this->mid ;
-        $array = getArray( $this->model->getListByMid($mid,$map,$order,$rows) );
+        if ($mid==-1) {
+            $array = getArray( $this->model->getAll($map,$order,$rows) );
+        }else{
+            $mid = $fid ? (get_sort($fid,'mid')?:$mid) : $mid;
+            if (!model_config($mid)) {
+                return $this->err_js('你指定的模型并不存在！');
+            }
+            $array = getArray( $this->model->getListByMid($mid,$map,$order,$rows) );
+        }
+        
         foreach($array['data'] AS $key => $rs){
             $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
             $rs['picurl'] = tempdir($rs['picurl']);
             $rs['content'] = get_word(del_html($rs['content']), 100);
-            unset($rs['_content'],$rs['sncode']);
+            unset($rs['_content'],$rs['sncode'],$rs['password']);
             $array['data'][$key] = $rs;
         }
         
@@ -74,7 +101,7 @@ abstract class Index extends IndexBase
      * @param string $quote 默认都是站内引用调用
      * @return void|unknown|\think\response\Json
      */
-    public function listbyuid($uid=0,$mid=0,$rows=20,$keyword='',$quote=true){
+    public function listbyuid($uid=0,$mid=-1,$rows=20,$keyword='',$quote=true){
         if ($quote && get_model_class(config('system_dirname'), 'putin') ) { //兼容考试与答题系统
             return $this->listmypaper($uid,$rows,$keyword);
         }
@@ -87,18 +114,20 @@ abstract class Index extends IndexBase
         $map=[
             'uid'=>$uid,
         ];
-        if ($mid){
+        if ($mid>0){
             $map['mid'] = $mid;
         }
         if ($keyword!='') {
-            $mid || $mid=1;
+            $map['title'] = ['like','%'.$keyword.'%'];
+        }
+        
+        if ($mid>0) {            
             if (empty(model_config($mid))) {
                 return $this->err_js('模型不存在');
             }
-            $map['title'] = ['like','%'.$keyword.'%'];
-            $data = $this->model->getListByMid($mid,$map,"id desc",$rows,$pages=[],$format=FALSE);
+            $data = $this->model->getListByMid($mid,$map,"id desc",$rows,$pages=[],$format=true);
         }else{
-            $data = $this->model->getAll($map,"id desc",$rows,$pages=[],$format=FALSE);
+            $data = $this->model->getAll($map,"id desc",$rows,$pages=[],$format=true);
         }
         
         $array = getArray($data);
@@ -111,7 +140,7 @@ abstract class Index extends IndexBase
             }
             $rs['time'] = date('Y-m-d H:i',$rs['create_time']);
             $rs['url'] = iurl(config('system_dirname').'/content/show',['id'=>$rs['id']]);
-            unset($rs['_content'],$rs['full_content'],$rs['sncode']);
+            unset($rs['_content'],$rs['full_content'],$rs['sncode'],$rs['password']);
             $array['data'][$key] = $rs;
         }
         return $this->ok_js($array);

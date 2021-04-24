@@ -49,6 +49,7 @@ class Config extends AdminBase
 	            ['textarea', 'addsorts', '添加分类数据'],
 	            ['text', 'c_descrip', '介绍描述'],
 	            ['radio', 'ifsys', '是否属于系统全局参数字段','变量值全站通用,不局限于某个插件模块',['否','是'],intval($info['ifsys'])],
+	        ['radio', 'is_open', '是否裸露给外部接口','密钥等重要参数就不能裸露给外部接口调用',['否','是'],intval($info['ifsys'])],
 	            //['textarea', 'htmlcode', '额外HTML代码'],
 	    ];
 	    
@@ -238,7 +239,8 @@ class Config extends AdminBase
 				];
 
 		$this->list_items = [
-				['c_key', '关键字变量名', 'text'],              
+				['c_key', '关键字变量名', 'text'],  
+		    ['is_open', '裸露', 'yesno'],
 				['title', '名称', 'text.edit'],
 				['form_type', '表单类型', 'select2',config('form')],
 		        ['type', '所属分组', 'select', GroupModel::getNavTitle() ],

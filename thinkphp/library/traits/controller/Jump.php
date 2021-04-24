@@ -72,10 +72,11 @@ trait Jump
      * @param mixed  $data   返回的数据
      * @param int    $wait   跳转等待时间
      * @param array  $header 发送的 Header 信息
+     * @param int    $code   齐博增加错误代码
      * @return void
      * @throws HttpResponseException
      */
-    protected function error($msg = '', $url = null, $data = '', $wait = 3, array $header = [])
+    protected function error($msg = '', $url = null, $data = '', $wait = 3, array $header = [], $code = 1)
     {
         if (is_null($url)) {
             $url = Request::instance()->isAjax() ? '' : 'javascript:history.back(-1);';
@@ -85,7 +86,7 @@ trait Jump
 
         $type = $this->getResponseType();
         $result = [
-            'code' => 1,    //齐博修改,把0改成了1
+            'code' => $code,    //齐博修改,把0改成了1
             'msg'  => $msg,
             'data' => $data,
             'url'  => $url,

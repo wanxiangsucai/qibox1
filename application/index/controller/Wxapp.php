@@ -24,7 +24,8 @@ class Wxapp extends IndexBase
      */
     public function wximg($url=''){
         header('Content-Type: image/jpeg');
-        echo sockOpenUrl($url);
+		echo file_get_contents($url);
+        //sockOpenUrl(str_replace('https://','http://',$url));
         exit;
     }
     
@@ -99,6 +100,39 @@ class Wxapp extends IndexBase
 		$this->assign('codeimg', fun('wxapp@wxapp_codeimg',get_url('location'),$this->user['uid']) );
 		
 		return $this->fetch();
+    }
+    
+
+    
+    /**
+     * 小程序集群中的小程序同步登录公众号获取用户的openid unionid 实现帐号统一
+     * @param string $openid
+     * @param string $backurl
+     * @param string $jumptype tab 就使用 wx.miniProgram.switchTab 否则就是 wx.miniProgram.navigateTo
+     * @return mixed|string
+     */
+    public function iframe_login($openid='',$backurl='',$jumptype=''){
+        if (!get_wxappAppid()) {
+            $this->error('并没在第三方小程序中访问');
+        }
+        if (!$this->user) {
+            weixin_login();
+        }else{
+            list($time,$openID) = explode("\t", mymd5($openid,'DE'));
+            if (!$openID) {
+                $this->error('openid不存在！');
+            }elseif(time()-$time>60){
+                $this->error('统一登录超时了');
+            }
+            $user = get_user($openID,'wxapp_api');
+            if (!$user) {
+                \app\qun\model\Weixin::add($this->user['uid'],$openID);   //首次绑定某个商家的小程序
+                cache('user_'.$this->user['uid'],null);
+            }
+            $this->assign('url',$backurl);
+            $this->assign('jumptype',$jumptype);
+            return $this->fetch();
+        }
     }
     
     /**

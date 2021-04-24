@@ -4,9 +4,35 @@ bui.ready(function(){
     // 模块初始化定义    
     pageview.init = function () {
 
-		bui.btn({id:".bui-page",handle:".bui-btn,.a"}).load();
-
-		bui.btn({id:".rolltype",handle:".bui-btn,.a"}).load();
+		if(inWxapp){
+			$(".bui-btn").unbind('click').click(function(){
+				var url = $(this).attr("href");
+				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url } );
+				return false;
+			});
+			$(".a").unbind('click').click(function(){
+				var url = $(this).attr("href");
+				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url } );
+				return false;
+			});
+		}else{
+			bui.btn({id:".bui-page",handle:".bui-btn,.a"}).load();
+			bui.btn({id:".rolltype",handle:".bui-btn,.a"}).load();
+		}
+		setTimeout(function(){
+			if(typeof(api)=='object'){
+				$(".bui-btn").click(function(){
+					var url = $(this).attr("href");
+					if(url)Qibo.open(web_domain+url,'会员中心',win_name)
+					return false;
+				});
+				$(".a").click(function(){
+					var url = $(this).attr("href");
+					if(url)Qibo.open(web_domain+url,'会员中心',win_name)
+					return false;
+				});
+			}
+		},800);
 
 		$(".fullbg").click(function(){
 			hide_nav($('#editmodes'),$('.fullbg'));
@@ -33,6 +59,21 @@ bui.ready(function(){
 		fullbg.css({'display':'block'}).stop().animate({'opacity':.6},200,function(){
 			node.stop().animate({'width':'200px','padding':'0px 10px 0 10px'},100);
 		});
+		
+		if(inWxapp){
+			$(".morelink").unbind('click').click(function(){
+				var url = $(this).attr("href");
+				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url } );
+				return false;
+			});
+		}else if(typeof(api)=='object'){
+			$(".morelink").unbind('click').click(function(){
+				var url = $(this).attr("href");
+				Qibo.open(web_domain+url,'会员中心',win_name)
+				return false;
+			});
+		}
+		
 	}
 	function hide_nav(node,fullbg){
 		fullbg.animate({'opacity':0},200,function(){

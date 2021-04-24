@@ -67,9 +67,23 @@
 
 <div id="editmodes"></div>
 <div class="fullbg"></div>
-
+<script type="text/javascript">
+var web_domain = "{:request()->domain()}";
+var win_name = "member{:date('His')}";
+</script>
+{if in_wxapp()}
+<script src="__STATIC__/js/jweixin.js"></script>
+<script type="text/javascript">
+var inWxapp = true;
+</script>
+{else /}
+<script type="text/javascript">
+var inWxapp = false;
+</script>
+{/if}
+<script type="text/javascript" src="__STATIC__/js/qibo.js?86"></script>
 <script src="__STATIC__/libs/bui/js/bui.js"></script>
-<script src="__STATIC__/member/default/wapindex/index.js?s"></script>
+<script src="__STATIC__/member/default/wapindex/index.js?33"></script>
 <script type="text/javascript">
 $(function(){
 	$(".bui-box-vertical").each(function(){

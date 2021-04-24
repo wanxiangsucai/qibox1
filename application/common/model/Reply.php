@@ -128,8 +128,12 @@ abstract class Reply extends Model
             $order = 'list desc ,id desc';
         }elseif($order == 'list desc'){
             $order .= ',id desc';
+        }
+        if ($map['pid']) {
+            $_map = [];
+        }else{
+            $_map = ['aid'=>$aid,'pid'=>0];
         }        
-        $_map = ['aid'=>$aid,'pid'=>0];
         if ( !defined('IN_ADMIN') && !$map['status'] ) {
             $map['status'] = ['<>', -1];
         }
@@ -151,7 +155,7 @@ abstract class Reply extends Model
         return $data_list;
     }
     
-    protected static function format_content($rs=[]){
+    public static function format_content($rs=[]){
         $rs['username'] = get_user_name($rs['uid']);
         $rs['user_icon'] = get_user_icon($rs['uid']);
         $rs['time'] = format_time($rs['create_time'],true);

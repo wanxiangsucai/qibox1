@@ -44,8 +44,13 @@ class Content{
      * @param string $content
      */
     public static function bbscode($content=''){
+        static $domain = null;
+        if($domain === null){
+            $domain = request()->domain();
+        }
         $content = preg_replace_callback("/\[face(\d+)\]/is",array(self,'get_face'),$content);
         $content = preg_replace_callback("/([^br]?|<br>)(http|https):\/\/([\w\.\?\/=\-_&#]+)/is",array(self,'get_link'),$content);
+        $content = str_replace(['="/public/',"='/public/"],['="'.$domain.'/public/',"='".$domain."/public/"] , $content);
         return $content;
     }
     
@@ -70,7 +75,7 @@ class Content{
      * @param string $type
      * @return array|unknown[]
      */
-    public static function get_file($content='',$type='jpg,zip'){
+    public static function get_file($content='',$type='jpg,zip',$not_use_hide=true,$gethttp=false){
         preg_match_all("/<img([^>]+)src=\"([^\"]+)\"([^>]+)>/is",$content,$array);
         if (empty($array[2])) {
             return [];
@@ -82,7 +87,7 @@ class Content{
         foreach ($array[2] AS $url){
             if ( preg_match("/^\/public\/uploads\//i", $url) || ($oss_url&&strstr($url,$oss_url)) || ($oss_point&&strstr($url,$oss_point)) ) {
                 if ($type===true || preg_match("/($type)$/i", $url)) {
-                    $data[] = $url;
+                    $data[] = $gethttp?tempdir($url):$url;
                 }
             }            
         }
@@ -110,9 +115,9 @@ class Content{
      * @param string $not_use_hide 隐藏的内容,就不要提取他的图片
      * @return array[][]|\app\common\fun\unknown[][][]
      */
-    public static function get_images($content='',$not_use_hide=true){
+    public static function get_images($content='',$not_use_hide=true,$gethttp=false){
         $content = del_html($content,$not_use_hide);
-        $array = self::get_file($content,'jpg,jpeg,png,gif');
+        $array = self::get_file($content,'jpg,jpeg,png,gif',$not_use_hide,$gethttp);
         $data = [];
         foreach ($array AS $pic){
             $data[] = [

@@ -2016,11 +2016,12 @@ if(!function_exists('tempdir')){
         }
         if(!preg_match('/:\/\//', $path)&&!preg_match('/^\/public\//', $path)){
             $path = $domain . PUBLIC_URL . $path;
-        }
-        elseif(strpos($path, 'http://thirdwx') !== false){
+        }elseif(strpos($path, 'http://thirdwx') !== false){
             $path = str_replace("http:","https:",$path);
         }elseif(strpos($path, 'http://thirdqq') !== false){
             $path = str_replace("http:","https:",$path);
+        }elseif( preg_match('/^\/public\//', $path) ){
+            $path = $domain .$path;
         }
         return $path;
 	}
@@ -2420,7 +2421,7 @@ if (!function_exists('getTemplate')) {
          if($appid!==null){
              return $appid;
          }
-         $appid = input('qun_wxapp_appid')?:cookie('qun_wxapp_appid');
+         $appid = input('qun_wxapp_appid') ?: (cookie('qun_wxapp_appid') ?: request()->header('wxappid'));
          if ( empty($appid) || empty(wxapp_cfg($appid)) ) {
              $appid = '';
          }

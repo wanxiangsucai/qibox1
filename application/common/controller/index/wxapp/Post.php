@@ -199,11 +199,11 @@ abstract class Post extends IndexBase
     public function agree($id=0){
         $k = $id.'-'.($this->user['uid']?:$this->onlineip);
         hook_listen( 'topic_agree' , $id , $this->request->module() );      //监听点赞主题
-        if(cache('TopicReply_'.$k)){
+        if(cache('TopicAgree_'.$k)){
             return $this->err_js('一小时内,只能点赞一次!');
-        }
-        cache('TopicReply_'.$k, time(),3600);
+        }        
         if($this->model->addAgree($id)){
+            cache('TopicAgree_'.$k, time(),3600);
             return $this->ok_js();
         }else{
             return $this->err_js('数据库执行失败');

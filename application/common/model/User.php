@@ -184,6 +184,21 @@ class User extends Model
 	}
 	
 	/**
+	 * 获取最新的UID
+	 * @return mixed
+	 */
+	protected static function get_top_uid(){
+	    $array = \think\Db::query("SHOW TABLE STATUS WHERE name='".config('database.prefix')."memberdata'");
+	    if ($array[0]['Auto_increment']) {
+	        $_uid = $array[0]['Auto_increment'];
+	    }else{
+	        $_uid = self::where([])->order('uid','desc')->limit(1)->value('uid');
+	        $_uid++;
+	    }
+	    return $_uid;
+	}
+	
+	/**
 	 * 用户注册 注册成功,只返回UID数值,不成功,返回对应的提示字符串
 	 * @param unknown $array
 	 * @return string|mixed
@@ -477,8 +492,13 @@ class User extends Model
 	 * @return unknown[]|array[]
 	 */
 	public static  function get_token(){
-	    $token = input('token');
-	    if( empty(input('havelogin')) && strlen($token)>=32 && $token_string = cache($token) ){   //APP或小程序 havelogin=1的时候,就不要覆盖登录了,比如充值的时候。
+	    $token = input('token')?:request()->header('token');
+	    $token_string = '';
+	    if ($token && strlen($token)>=32) {
+	        $token_string = cache($token)?:cache2(md5($token));
+	    }
+	    
+	    if( empty(input('havelogin')) && $token_string ){   //APP或小程序 havelogin=1的时候,就不要覆盖登录了,比如充值的时候。
 	        list($uid,$username,$password) = explode("\t",$token_string);
 	        if(input('once')==1){
 	            cache($token,null);    //出于安全考虑,1次有效

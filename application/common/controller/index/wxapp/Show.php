@@ -52,7 +52,7 @@ abstract class Show extends IndexBase
         $info['create_time'] = date('Y-m-d H:i',$info['create_time']);
         $info['content'] = $info['full_content'] ;
         $info['content'] = str_replace('="/public/uploads', '="'.$this->request->domain().'/public/uploads', $info['content']);
-        unset($info['full_content'],$info['sncode']);
+        unset($info['full_content'],$info['sncode'],$info['password']);
         
         return $this->ok_js($info);
     }
