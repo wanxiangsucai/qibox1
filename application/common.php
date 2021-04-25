@@ -2451,9 +2451,6 @@ if (!function_exists('getTemplate')) {
       * @return array|array
       */
      function wxapp_cfg($appid=true){
-         if (!modules_config('qun')||!class_exists("\\app\\qun\\model\\Wxset")||!plugins_config('wxopen')) {
-             return [];
-         }
          $info = [];
          if (class_exists("\\app\\qun\\model\\Wxset")) {
              $info = app\qun\model\Wxset::get_set($appid);
