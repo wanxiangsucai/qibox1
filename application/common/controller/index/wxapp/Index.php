@@ -2,7 +2,7 @@
 namespace app\common\controller\index\wxapp;
 
 use app\common\controller\IndexBase;
-use app\common\traits\ModuleContent;
+//use app\common\traits\ModuleContent;
 
 
 //小程序或APP调用的列表数据
@@ -33,12 +33,16 @@ abstract class Index extends IndexBase
     }
     
     /**
-     * 列表数据
-     * @param number $fid 栏目ID
-     * @param string $type 类型筛选
-     * @return \think\response\Json
+     * 获取列表数据
+     * @param number $fid 指定获取哪个栏目，会把子栏目的数据一起列出来
+     * @param string $type star推荐数据，hot热门数据 ， new最新发表 ， reply最新回复
+     * @param number $rows 每次获取几条
+     * @param string $notfid 不包括哪些栏目的内容，多个栏目用逗号隔开
+     * @param number $mid 模型ID，指定获取哪个模型的数据
+     * @param number $ext_id 关联圈子的ID，不一定是圈子
+     * @param string $ext_sys 圈子目录名或频道ID
      */
-    public function index($fid=0,$type='',$rows=10,$notfid='',$mid=1){
+    public function index($fid=0,$type='',$rows=10,$notfid='',$mid=1,$ext_id=0,$ext_sys=''){
         $map = [
             'status'=>['>',0],
         ];
@@ -48,6 +52,27 @@ abstract class Index extends IndexBase
         if (input('mid')) {
             $mid = input('mid');
         }
+        
+        if (input('ext_id')) {
+            $ext_id = input('ext_id');
+        }
+        if (input('ext_sys')) {
+            $ext_sys = input('ext_sys');
+        }
+        if ($ext_id) {
+            $map['ext_id'] = $ext_id;
+        }
+        if ($ext_sys && !is_numeric($ext_sys)) {
+            $module = modules_config($ext_sys);
+            if (!$module) {
+                return $this->error('频道不存在！');
+            }
+            $ext_sys = $module['id'];
+        }
+        if ($ext_sys) {
+            $map['ext_sys'] = $ext_sys;
+        }
+        
         if ($notfid!='') {
             $detail = explode(',', $notfid);
             foreach ($detail AS $key=>$value){
