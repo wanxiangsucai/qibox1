@@ -117,6 +117,45 @@ abstract class Sorts extends IndexBase
         }
         $array = [];
         $sort_array = sort_config($this->dirname,null,null);
+        $array = self::get_sort($sort_array,$only_array,$fid,$not_array,$mid_array,$onlytitle);
+//         foreach($sort_array AS $rs){
+//             if ($only_array) {
+//                 if (!in_array($rs['id'], $only_array)) {
+//                     continue ;
+//                 }
+//             }elseif (is_numeric($fid) && $rs['pid']!=$fid) {
+//                 continue ;
+//             }
+//             if ($not_array && in_array($rs['id'], $not_array)) {
+//                 continue ;
+//             }
+//             if ($mid_array && !in_array($rs['mid'], $mid_array)) {
+//                 continue ;
+//             }
+//             if ($onlytitle) {
+//                 $array[] = [
+//                     'id'=>$rs['id'],
+//                     'name'=>$rs['name'],
+//                 ];
+//             }else{
+//                 $array[] = $rs;
+//             }
+//         }        
+        return $this->ok_js($array);
+    }
+    
+    protected static function get_children($sort_array=[]){
+        static $array = [];
+        if (!empty($array)) {
+            return $array;
+        }
+        foreach($sort_array AS $id=>$rs){
+            $array[$rs['pid']][$id] = $rs;
+        }
+        return $array;
+    }
+    
+    protected static function get_sort($sort_array=[],$only_array=[],$fid=0,$not_array=[],$mid_array=[],$onlytitle=0){
         foreach($sort_array AS $rs){
             if ($only_array) {
                 if (!in_array($rs['id'], $only_array)) {
@@ -137,10 +176,14 @@ abstract class Sorts extends IndexBase
                     'name'=>$rs['name'],
                 ];
             }else{
+                $children_array = self::get_children($sort_array)[$rs['id']];
+                if ($children_array) {
+                    $rs['children'] = self::get_sort($children_array,$only_array,$rs['id'],$not_array,$mid_array,$onlytitle);
+                }
                 $array[] = $rs;
             }
-        }        
-        return $this->ok_js($array);
+        }
+        return $array;
     }
     
     public function hot(){
