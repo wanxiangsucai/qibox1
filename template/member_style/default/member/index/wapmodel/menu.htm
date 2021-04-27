@@ -116,7 +116,7 @@
 {php}while(count($rs1)<4)$rs1[]='';	/*为的是生成占位符*/{/php}
 
               {volist name="rs1" id="rs"}
-                    <li class="bui-btn bui-box-vertical show-more-menu">
+                    <li class="bui-btn bui-box-vertical {:count($rs.sons)==1?'':'show-more-menu'}" {if count($rs.sons)==1}href="{$rs['sons'][0]['url']}"{/if}>
 				{if is_array($rs)}
                         <i class="{$rs.icon}" {if $rs.fontcolor!=''}style="color:{$rs.fontcolor};"{/if}>
                             <!--<span class="bui-badges">10</span>-->
