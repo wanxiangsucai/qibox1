@@ -7,6 +7,7 @@ class Menu{
     //protected static $instance;
     protected static $type = 'admin';
     protected static $groupid = null;
+    protected static $wxapp_id = '';
     protected static $sysmenu = [] ;
     protected static $tag = ''; //指定显示哪个模块的菜单,也即频道专属菜单
     
@@ -17,16 +18,19 @@ class Menu{
     
     /**
      * 获取会员中心或后台菜单
-     * @param unknown $type member admin
+     * @param unknown $type member 或 admin 的菜单
+     * @param string $tag 会员中心按频道显示相应的菜单
+     * @param string $wxapp_id 调取小程序定义的会员个性菜单
      * @return string|array
      */
-    public static function make($type,$tag=''){
+    public static function make($type,$tag='',$wxapp_id=''){
         //if (is_null(self::$instance)) {
          //   self::$instance = new static($type);
        // }
         if ($type=='member') {
             self::$sysmenu = Menu::member_sys_cache();
         }
+        self::$wxapp_id = $wxapp_id;
         self::$type = $type;
         self::$tag = $tag;
         return self::get_menu();
@@ -78,7 +82,7 @@ class Menu{
     }
     
     /**
-     * 系统菜单, 不是模型与插件的菜单 
+     * 会员中心或后台的系统菜单, 不是模型与插件的菜单 
      * @return unknown
      */
     public static function get_sys_menu(){
@@ -133,8 +137,7 @@ class Menu{
      * @return array|\app\common\util\unknown
      */
     protected static function build_sys_menu(){
-        $base_menu=[];
-        $base_menu = empty($base_menu) ? self::get_sys_menu() : array_merge($base_menu,self::get_sys_menu());
+        $base_menu = self::get_sys_menu();
         foreach($base_menu AS $key=>$ar){
             foreach($ar['sons'] AS $i=>$v){
                 $ar['sons'][$i] = self::get_member_set($v);
@@ -249,13 +252,22 @@ class Menu{
      * @return unknown|array|string[]|NULL[]
      */
     protected static function build_often_menu($base_menu=[],$type=0){
-        $map = [
+        $_array = [];
+        if (self::$wxapp_id && class_exists("\\plugins\\wxopen\\model\\Menu")) {    //小程序自定义菜单
+            $map = [
+                'appid'=>self::$wxapp_id,
+                'ifshow'=>1,
+            ];
+            $data = \plugins\wxopen\model\Menu::getTreeList($map);
+            $listdb = $data ? get_sons($data) : [];
+        }else{
+            $map = [
                 'type'=>$type,
                 'ifshow'=>1,
                 'groupid'=>self::$groupid?:login_user('groupid'),
-        ];
-        $_array = [];
-        $listdb = self::$tag ? [] : get_sons( AdminMenu::getTreeList($map) ); //频道专属菜单模式下就不显示会员个性菜单
+            ];
+            $listdb = self::$tag ? [] : get_sons( AdminMenu::getTreeList($map) ); //频道专属菜单模式下就不显示会员个性菜单
+        }        
         foreach ($listdb AS  $key=>$rs) {
             $_array[$key]['title'] = $rs['name'];
             $_array[$key]['icon'] = $rs['icon'];
@@ -269,7 +281,7 @@ class Menu{
                 ];*/
             }             
         }
-        if ($type!=0&&empty($_array)) {     //会员中心
+        if ($type!=0&&empty($_array)) {  //会员中心的话，要跳出去，不能设置 $base_menu['often'] 任何值，因为会员中心判断有这个值 ，就不显示其它菜单了
             return $base_menu;
         }
         if(is_array($base_menu['often']['sons'])){
@@ -399,7 +411,8 @@ class Menu{
         if ($groupid) {
             self::$groupid = $groupid;
         }
-        //系统菜单
+        
+        //调取会员中心或后台的系统菜单，不包括频道与插件
         $base_menu = self::build_sys_menu();
         
         //常用菜单

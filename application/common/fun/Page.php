@@ -24,8 +24,12 @@ class Page{
         }
         //频道强制的底部菜单结束
         
-        $menu = [];
-        $hyid = config('webdb.sys_mode_type')==1 ? get_cookie('last_qun_id') : get_cookie('HYID');
+        $menu = [];        
+        if (get_wxappAppid()) {
+            $hyid = wxapp_cfg(get_wxappAppid())['aid'];
+        }else{
+            $hyid = config('webdb.sys_mode_type')==1 ? get_cookie('last_qun_id') : get_cookie('HYID');
+        }
         if ($hyid) {
             $menu = cache('qun_menu_1_'.$hyid);
             if( !is_array($menu) ){
