@@ -122,6 +122,10 @@ class Form extends Base
         
         if ( ($show = self::get_item($field['type'],$field,$info)) !='' ) {    //个性定义的表单模板,优先级最高
             
+        }elseif ($field['type'] == 'callback') {    //万能字段,自定义回调函数的处理
+            
+            $show = $field['fun'](isset($info[$field['name']])?$info[$field['name']]:$field['value'],$info);
+            
         }elseif ($field['type'] == 'jcrop') {    // 截图
             
             $show = self::get_item('image',$field,$info);
