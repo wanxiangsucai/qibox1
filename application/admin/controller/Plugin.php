@@ -246,6 +246,8 @@ class Plugin extends AdminBase
 	        $str = 'abstract,and,array,as,break,callable,case,catch,class,clone,php,const,continue,declare,default,die,do,echo,else,elseif,empty,enddeclare,endfor,endforeach,endif,endswitch,endwhile,eval,exit,extends,final,finally,for,foreach,function,global,goto,if,implements,include,instanceof,interface,isset,list,namespace,new,print,private,protected,public,require,return,static,switch,throw,trait,try,unset,use,var,while,xor,yield,insteadof';
 	        if(in_array($data['keywords'],explode(',',$str))){
 	            $this->error('请换一个目录名,该目录名是PHP关键字');
+	        }elseif(!preg_match('/^[_a-z]+$/', $data['keywords'])){
+	            $this->error($data['keywords'].'关键字只能字母或下画线，不能有数字');
 	        }
 	        $reuslt = $this->copy_mod($info,$data,'p');
 	        if($reuslt!==true){

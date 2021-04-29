@@ -162,8 +162,8 @@ class Module extends AdminBase
 	    
 	    if ($this->request->isPost()) {	        
 	        $data = $this->request->post();
-	        if(!preg_match('/^[\w]+$/', $data['keywords'])){
-	            $this->error($data['keywords'].'关键字只能字母或数字或下画线');
+	        if(!preg_match('/^[_a-z]+$/', $data['keywords'])){
+	            $this->error($data['keywords'].'关键字只能字母或下画线，不能有数字');
 	        }
 	        $str = 'abstract,and,array,as,break,callable,case,catch,class,clone,php,const,continue,declare,default,die,do,echo,else,elseif,empty,enddeclare,endfor,endforeach,endif,endswitch,endwhile,eval,exit,extends,final,finally,for,foreach,function,global,goto,if,implements,include,instanceof,interface,isset,list,namespace,new,print,private,protected,public,require,return,static,switch,throw,trait,try,unset,use,var,while,xor,yield,insteadof';
 	        if(in_array($data['keywords'],explode(',',$str))){
