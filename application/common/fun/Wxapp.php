@@ -89,7 +89,7 @@ class Wxapp{
         }
         $code = http_curl('https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token,[
                 'scene'=>$id,
-                'page'=>'pages/wap/iframe/index',
+                'page'=>'pages/hy/web/index',
                 'width'=>'430',
         ],'json');
         if (strlen($code)>500) {

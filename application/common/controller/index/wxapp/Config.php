@@ -47,6 +47,9 @@ abstract class Config extends IndexBase
             'group'=>getGroupByid(),
             'userInfo'=>$this->user ? \app\common\fun\Member::format($this->user,$this->user['uid']) : '',
         ];
+        if (plugins_config('timthumb')) {
+            $array['small_img'] = get_url('/_tim.php?src=');
+        }
         return $this->ok_js($array);        
     }
     

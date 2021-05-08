@@ -3674,9 +3674,9 @@ if(!function_exists('val')){
 }
 
 if(!function_exists('showerr')){
-    function showerr($msg = '', $url = null, $data = '', $wait = 60, array $header = []){
+    function showerr($msg = '', $url = null, $data = '', $wait = 60, array $header = [],$code = 1){
         $obj = new Base;
-        $obj->showerr($msg , $url , $data , $wait , $header);
+        $obj->showerr($msg , $url , $data , $wait , $header,$code);
     }
 }
 

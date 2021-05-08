@@ -76,6 +76,7 @@ class Base extends Controller
     {
         if (!$this->request->isAjax() && (isset($_SERVER['HTTP_TOKEN'])||$this->request->header('token')) ) {
             $this->request->post(['_ajax'=>1]);
+            $this->request->get(['_ajax'=>1]);
         }
         if($url!==null && $this->route[1]=='plugin' && $this->route[2]=='execute'){
             if(strpos($url,'/')!==0 && strpos($url,'http')!==0 ){
@@ -116,6 +117,7 @@ class Base extends Controller
     {
         if (!$this->request->isAjax() && (isset($_SERVER['HTTP_TOKEN'])||$this->request->header('token')) ) {
             $this->request->post(['_ajax'=>1]);
+            $this->request->get(['_ajax'=>1]);
         }
         if ($url==404) {
             $this->assign('msg', $msg);
@@ -550,7 +552,7 @@ class Base extends Controller
          */
         protected function get_hook($type='',&$data=[],$info=[],$array=[],$use_common=true){
             $path_array = [];
-            preg_match_all('/([_a-z]+)/',get_called_class(),$carray);
+            preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$carray);
             $dirname = $carray[0][1];
             $path_array[] = (defined('IN_PLUGIN')?PLUGINS_PATH:APP_PATH).$dirname.DS.'ext'.DS.$type.DS;
             if ($use_common===true) {
