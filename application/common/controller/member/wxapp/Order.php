@@ -31,6 +31,8 @@ abstract class Order extends MemberBase
         }elseif($type=='waitsend'){
             $map['pay_status'] = 1;
             $map['shipping_status'] = 0;
+        }elseif($type=='havesend'){
+            $map['shipping_status'] = 1;
         }elseif($type=='success'){
             $map['pay_status'] = 1;
             $map['receive_status'] = 1;
