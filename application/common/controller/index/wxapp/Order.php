@@ -17,7 +17,7 @@ class Order extends IndexBase
     protected function _initialize()
     {
         parent::_initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         $dirname = $array[0][1];
         $this->model = get_model_class($dirname,'order');
         $this->car_model = get_model_class($dirname,'car');
@@ -28,10 +28,10 @@ class Order extends IndexBase
      * @param number $address_id 用户地址ID
      * @return \think\response\Json
      */
-    public function add($address_id=0){        
+    public function add($address_id=0,$id=0){        
         $map = [
-                'uid'=>$this->user['uid'],
-                'id'=>$address_id,
+            'uid'=>$this->user['uid'],
+            'id'=>$address_id?:$id,
         ];
         $info = getArray(AddressModel::where($map)->order('often desc,id desc')->find());     //用户的地址   
         $data = [
@@ -58,6 +58,7 @@ class Order extends IndexBase
             $total_money +=$money;
             $data['uid'] = $this -> user['uid'];
             $data['create_time'] = time();
+            $data['user_note'] = input('user_note')?:'';
             if (($result = $this->model->create($data))!=false) {
                 $order_ids[] = $result->id;
             }
