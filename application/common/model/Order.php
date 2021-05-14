@@ -25,7 +25,7 @@ class Order extends Model
     protected function initialize()
     {
         parent::initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         self::$model_key = $array[0][1];
         self::$base_table = $array[0][1].'_content';
         self::$table_pre = config('database.prefix');
@@ -48,7 +48,7 @@ class Order extends Model
             }
             list($shpid,$num,$type1,$type2,$type3) = explode('-', $value);
             $shopdb = self::$content_model->getInfoByid($shpid,true);
-            unset($shopdb['content'],$shopdb['full_content']);
+            unset($shopdb['content'],$shopdb['full_content'],$shopdb['sncode'],$shopdb['password']);
             //对价格与商品属性进行处理
             ShopFun::car_get_price_type($shopdb,[
                     'num'=>$num,
@@ -181,7 +181,7 @@ class Order extends Model
      * @param array $order_info 订单信息,不是商品信息
      */
     protected static function send_msg($order_info=[]){
-        //preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        //preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         //$dirname = $array[0][1];
         $dirname = self::$model_key;
         $title = '恭喜你,成功交易了一笔订单';

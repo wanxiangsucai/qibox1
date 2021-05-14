@@ -287,7 +287,7 @@ class Config extends AdminBase
             $rs['c_value'] = str_replace("\r\n", "\\r\\n", addslashes($rs['c_value']));
             $rs['htmlcode'] = str_replace("\r\n", "\\r\\n", addslashes($rs['htmlcode']));
             $rs['options'] = str_replace("\r\n", "\\r\\n", addslashes($rs['options']));
-            $outstr .="INSERT INTO `qb_config` (`type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES('-1','{$rs['title']}','{$rs['c_key']}','{$rs['c_value']}','{$rs['form_type']}','{$rs['options']}','{$rs['ifsys']}','{$rs['htmlcode']}','{$rs['c_descrip']}','{$rs['list']}','{$rs['sys_id']}');\r\n";
+            $outstr .="INSERT INTO `qb_config` (`type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`, `is_open`) VALUES('-1','{$rs['title']}','{$rs['c_key']}','{$rs['c_value']}','{$rs['form_type']}','{$rs['options']}','{$rs['ifsys']}','{$rs['htmlcode']}','{$rs['c_descrip']}','{$rs['list']}','{$rs['sys_id']}','{$rs['is_open']}');\r\n";
         }
         ob_end_clean();
         header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');

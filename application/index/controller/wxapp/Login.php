@@ -148,7 +148,7 @@ class Login extends IndexBase
             }
         }else{
             if ($userinfo) {    //微信新版登录接口getUserProfile 无法获取openid
-                $info = $userinfo;
+                $info = is_array($userinfo)?$userinfo:[];
                 $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.config('webdb.wxapp_appid').'&js_code='.$code.'&grant_type=authorization_code&secret='.config('webdb.wxapp_appsecret'));
                 $_array = json_decode($string,true);
                 if(!$_array['openid']){

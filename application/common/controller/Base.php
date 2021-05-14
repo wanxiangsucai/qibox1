@@ -161,12 +161,15 @@ class Base extends Controller
         parent::error($msg, $url, $data, $wait, $header, $code);
     }
     
-    protected function ok_js($data=[],$msg='操作成功',$page_rows=0){
+    protected function ok_js($data=[],$msg='操作成功',$code=0,$must_json=null){
 //         header('Access-Control-Allow-Origin: *');
 //         header("Access-Control-Allow-Credentials: true");
 //         header("Access-Control-Allow-Headers: *");
 //         header("Access-Control-Expose-Headers:*");
 //         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        if (defined('JSON_ARRAY')&&!$must_json) {
+            return $data;
+        }
         if(is_string($data)||is_numeric($data)){
             if(input('debug')){ //调试,查看原始数据
                 return $data;
@@ -182,7 +185,7 @@ class Base extends Controller
         }elseif( isset($array['data']) && empty($array['data'])){
             $data = '';
         }else{
-            $array = ['current_page'=>1,'last_page'=>1,'per_page'=>$page_rows,'current_page'=>1,'current_page'=>1];
+            $array = ['current_page'=>1,'last_page'=>1,'current_page'=>1,'current_page'=>1];
             $array['total'] = $array['per_page'] = count($data);
         }
         
@@ -198,7 +201,7 @@ class Base extends Controller
             unset($_array['data'],$_array['page'],$_array['pages'],$_array['perPage'],$_array['total'],$_array['prev'],$_array['next'],$_array['hasNext'],$_array['hasPrev'],$_array['per_page'],$_array['current_page'],$_array['last_page']);
         }
         $array = [
-            'code'=>0,
+            'code'=>$code,
             'msg'=>$msg,
             'data'=>$data,
             'ext'=>$_array,

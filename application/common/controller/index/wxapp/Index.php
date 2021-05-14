@@ -26,7 +26,7 @@ abstract class Index extends IndexBase
     protected function _initialize()
     {
         parent::_initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         $dirname = $array[0][1];
         $this->model = get_model_class($dirname,'content');
         $this->mid = 1;
@@ -41,11 +41,19 @@ abstract class Index extends IndexBase
      * @param number $mid 模型ID，指定获取哪个模型的数据
      * @param number $ext_id 关联圈子的ID，不一定是圈子
      * @param string $ext_sys 圈子目录名或频道ID
+     * @param string $uid 指定用户的数据
+     * @param string $keyword 按关键字搜索
      */
-    public function index($fid=0,$type='',$rows=10,$notfid='',$mid=1,$ext_id=0,$ext_sys=''){
+    public function index($fid=0,$type='',$rows=10,$notfid='',$mid=1,$ext_id=0,$ext_sys='',$uid=0,$keyword=''){
         $map = [
             'status'=>['>',0],
         ];
+        if (input('uid')) {
+            $uid = input('uid');
+        }
+        if (input('keyword')) {
+            $keyword = input('keyword');
+        }
         if (input('notfid')) {
             $notfid = input('notfid');
         }
@@ -71,6 +79,12 @@ abstract class Index extends IndexBase
         }
         if ($ext_sys) {
             $map['ext_sys'] = $ext_sys;
+        }
+        if ($uid) {
+            $map['uid'] = $uid;
+        }
+        if ($keyword!='') {
+            $map['title'] = ['like','%'.filtrate($keyword).'%'];
         }
         
         if ($notfid!='') {

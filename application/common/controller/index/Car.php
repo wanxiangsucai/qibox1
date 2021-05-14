@@ -28,13 +28,13 @@ abstract class Car extends IndexBase
     protected function _initialize()
     {
         parent::_initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         $dirname = $array[0][1];
         $this->model = get_model_class($dirname,'car');
         $this->topic_model = get_model_class($dirname,'content');
     }
     
-    protected function check_status($shopid=0,$num=1,$type1='',$type2='',$type3=''){
+    protected function check_status($shopid=0,$num=1,$type1='',$type2='',$type3='',$act=''){
         if (!$shopid) {
             return '商品id不存在';
         }
@@ -42,6 +42,15 @@ abstract class Car extends IndexBase
             return '你还没登录';
         }
         $shop = $this->topic_model->getInfoByid($shopid);
+        if ($act=='add') {
+            if ($shop['type1']&&json_decode($shop['type1'],true)&&!$type1) {
+                return '请选择商品型号';
+            }elseif ($shop['type2']&&json_decode($shop['type2'],true)&&!$type2) {
+                return '请选择商品型号';
+            }elseif ($shop['type3']&&json_decode($shop['type3'],true)&&!$type3) {
+                return '请选择商品型号';
+            }
+        }
         if($shop['end_time']){
             if (!is_numeric($shop['end_time'])) {
                 $shop['end_time'] = strtotime($shop['end_time']);
@@ -76,9 +85,16 @@ abstract class Car extends IndexBase
     
     /**
      * 加入购物车 如果没有就新增加,如果有的话,就进行修改 功能强于 change_num() 方法
+     * @param number $shopid 商品ID
+     * @param number $num 数量
+     * @param string $type1 型号1
+     * @param string $type2 型号2
+     * @param string $type3 型号3
+     * @param number $fastbuy 是否立即购买
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
-    public function add($shopid=0,$num=1,$type1='',$type2='',$type3=''){
-        $result = $this->check_status($shopid,$num,$type1,$type2,$type3);
+    public function add($shopid=0,$num=1,$type1='',$type2='',$type3='',$fastbuy=0){
+        $result = $this->check_status($shopid,$num,$type1,$type2,$type3,'add');
         if ($result!==true) {
             return $this->err_js($result);
         }
@@ -97,6 +113,9 @@ abstract class Car extends IndexBase
                     'num'=>$num,
             ];
             if ($this -> model -> create($data)) {
+                if ($fastbuy) {
+                    $this->fastbuy($shopid);
+                }
                 return $this->ok_js();
             } else {
                 return $this->err_js('插入数据失败');
@@ -110,11 +129,20 @@ abstract class Car extends IndexBase
                         'num'=>$num,
              ];
             if ($this -> model -> update($data)) {
+                if ($fastbuy) {
+                    $this->fastbuy($shopid);
+                }
                 return $this->ok_js();
             } else {
                 return $this->err_js('插入数据失败');
             }
         }
+    }
+    
+    public function fastbuy($id=0){
+        $this -> model -> where('uid',$this->user['uid'])-> update(['ifchoose'=>0]);
+        $this -> model -> where('uid',$this->user['uid'])->where('shopid',$id)-> update(['ifchoose'=>1]);
+        return $this->ok_js();
     }
     
     /**
@@ -151,6 +179,26 @@ abstract class Car extends IndexBase
                 'ifchoose'=> $ck ? 1 : 0,
         ];
         if ($this -> model -> update($data)) {
+            return $this->ok_js();
+        } else {
+            return $this->err_js('更新失败');
+        }
+    }
+    
+    /**
+     * 全选或全取消
+     * @param number $ck 1或0
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function choose_all($ck=1){
+        $info = $this -> model -> where('uid',$this->user['uid']) -> find() ;
+        if (!$info) {
+            return $this->err_js('购物车内容为空！');
+        }
+        $data = [
+            'ifchoose'=> $ck ? 1 : 0,
+        ];
+        if ($this -> model  -> where('uid',$this->user['uid']) -> update($data)) {
             return $this->ok_js();
         } else {
             return $this->err_js('更新失败');
@@ -214,7 +262,7 @@ abstract class Car extends IndexBase
             }
         }
         
-        $result = $this->check_status($shopid,$num,$type1,$type2,$type3);
+        $result = $this->check_status($shopid,$num,$type1,$type2,$type3,$type?:'add');
         if ($result!==true) {
             return $this->err_js($result);
         }

@@ -57,7 +57,7 @@ class Address extends MemberBase
             return $this->err_js('你没权限');
         }
         $data = input();
-        if($data['type']=='post'){            
+        if($this->request->isPost()){            
             $array = [
                     'id'=>$id,
                     'sex'=>$data['sex'],
@@ -67,6 +67,9 @@ class Address extends MemberBase
                     'often'=>$data['often'],
             ];
             if(AddressModel::update($array)){
+                if ($data['often']) {
+                    AddressModel::where('uid',$this->user['uid'])->where('id','<>',$id)->update(['often'=>0]);
+                }
                 return $this->ok_js([],'修改成功');
             }else{
                 return $this->err_js('修改失败');
@@ -91,6 +94,9 @@ class Address extends MemberBase
      * @return \think\response\Json
      */
     public function setDefault($id=0){
+        if (!$id) {
+            return $this->err_js('id不存在！');
+        }
         $map = [
                 'uid'=>$this->user['uid'],
         ];
