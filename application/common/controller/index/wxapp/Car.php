@@ -2,6 +2,7 @@
 namespace app\common\controller\index\wxapp;
 
 use app\common\controller\IndexBase;
+use app\member\model\Address AS AddressModel;
 
 /**
  * 小程序购物车
@@ -21,12 +22,23 @@ class Car extends IndexBase
     }
     
     /**
-     * 列出我的购物车
-     * @param unknown $type 为1的时候,列出选中的商品
+     * 列出我的购物车为1的时候,列出选中的商品
+     * @param number $type 为1的时候,列出选中的商品
      * @return \think\response\Json
      */
-    public function index($type=null){
-        $car_array = $this->model->getList($this->user['uid'],$type?1:null);
+    public function index($type=''){
+        $listdb = $this->get_cart_data($type?1:null);
+        return $this->ok_js($listdb);
+    }
+    
+    
+    /**
+     * 获取购物车数据
+     * @param number $type 为1的时候,列出选中的商品
+     * @return string[][]|void[][]|unknown[][][]|unknown[][]
+     */
+    protected function get_cart_data($type=null){
+        $car_array = $this->model->getList($this->user['uid'],$type);
         $listdb = [];
         foreach($car_array AS $seller_uid=>$array){
             $shops = [];
@@ -34,12 +46,12 @@ class Car extends IndexBase
                 $shops[] = $rs;
             }
             $listdb[] = [
-                    'uid'=>$seller_uid, //商铺卖家资料
-                    'icon'=>get_user_icon($seller_uid),
-                    'shops'=>$shops,    //用户购买了该商家的所有商品
+                'uid'=>$seller_uid, //商铺卖家资料
+                'icon'=>get_user_icon($seller_uid),
+                'shops'=>$shops,    //用户购买了该商家的所有商品
             ];
         }
-        return $this->ok_js($listdb);
+        return $listdb;
     }
     
     
@@ -232,6 +244,233 @@ class Car extends IndexBase
     }
     
     
+    /**
+     * 我的购物车另一种数据展现形式
+     * @param unknown $type 为1的时候,列出选中的商品
+     * @return void|unknown|\think\response\Json
+     */
+    public function uniapp_cart($type=null){
+        $array = $this->get_cart_data($type?1:null);
+        $total = $this->total_money($array);
+        $total = sprintf("%.2f",$total).'';
+        $data = [
+            'items' =>[
+                'type' => 'items',
+                'data' =>[
+                    'list' =>$this->get_goods($array),
+                ],
+            ],
+            'submit' =>[
+                'type' => 'submit',
+                'data' =>[
+                    'field' =>[
+                        'note' => '',
+                        'is_all_checked' => $this->total_nocheck($array)?0:1,
+                        'is_can_submit' => $this->total_check($array),
+                        'total_price' =>$total,
+                        'total_goods' => $this->total_num($array),
+                    ],
+                    'style' =>[
+                        'background' => $this->total_check($array)?'#d81e06':'#CCCCCC',
+                        'fontSize' => 40,
+                    ],
+                ],
+                'show' => $this->total_nocheck($array)+$this->total_check($array),
+            ],
+        ];
+        return $this->ok_js($data);
+    }
+    
+    /**
+     * 订单中获取默认地址
+     * @return string[]|string[]|number[]|unknown[]|NULL[]
+     */
+    protected function getAddress(){
+        $info = getArray(AddressModel::where('uid',$this->user['uid'])->order('often desc,id desc')->find());
+        if (!$info) {
+            return ['address_id' =>''];
+        }
+        return [
+            'id' => $info['id'],
+            'address_id' => $info['id'],
+            'user_id' => '',
+            'contact' => $info['user'],
+            'contact_number' => $info['telphone'],
+            'gender' => $info['sex'],
+            'province' => '',
+            'city' => '',
+            'district' => '',
+            'street' => '',
+            'address' => '',
+            'house_number' => '',
+            'longitude' => '',
+            'latitude' => '',
+            'is_default' => 1,
+            'status' => 1,
+            'is_delete' => 0,
+            'province_name' => '',
+            'city_name' => '',
+            'district_name' => '',
+            'street_name' => '',
+            'full_address' => $info['address'],
+        ];
+    }
+    
+    protected function get_charges($total_money=0,$array=[]){
+        $data = [
+            [
+                'label' => '商品总金额',
+                'text' => $total_money,
+            ],
+            [
+                'label' => '优惠券',
+                'text' => '-¥0.00',
+            ],
+            [
+                'label' => '积分抵扣',
+                'text' => '-¥0.00',
+            ],
+        ];
+        return $data;
+    }
+    
+    /**
+     * 购物车提交前展示的形式
+     * @param array $array
+     * @return array[]|array[][]|number[][]|string[][][]|number[][][]|unknown[][][]|\think\response\Json[][][]|string[][][][]|number[][][][]|unknown[][][][]
+     */
+    public function uniapp_order_cart(){
+        $address_info = $this->getAddress();
+        $array = $this->get_cart_data(1);        
+        $goods = $this->get_goods($array);
+        $total_money = 0;
+        foreach($goods AS $rs){
+            $total_money += $rs['goods_number']*$rs['goods_price'];
+        }
+        $total_money = sprintf("%.2f",$total_money).'';
+        $data = [
+            'goods' =>['list' =>$goods],
+            'address' =>[
+                'field' =>$address_info,
+                'form' =>['address_id' => $address_info['address_id']],
+                'show' => 1,
+            ],
+            'coupon' =>[
+                'show' => 0,
+                'form' =>['user_coupon_id' => ''],
+                'list' =>[],
+                'field' =>['text' => '无可用优惠券','discount_amount' => 0,],
+            ],
+            'integral' =>[
+                'field' =>[
+                    'user' => 0,
+                    'note' => '暂无积分可用',
+                    'discount' => 0,
+                    'discount_amount' => 0,
+                    'integral' => 0,
+                ],
+                'switch' =>[
+                    'disabled' => 1,
+                    'checked' => 0,
+                    'color' => '#f30',
+                ],
+                'form' =>['integral' => 0],
+                'show' => 0,
+            ],
+            'charges' =>$this->get_charges($total_money,$array),
+            'delivery_time' =>[
+                'show' => 0,
+                'form' =>['delivery_time' => ''],
+                'field' =>['text' => '尽快送达'],
+            ],
+            'delivery_method' =>[''=>[]],
+            'outlets' =>[],
+            'submit' =>[
+                'field' =>[
+                    'note' => '',
+                    'text' => '',
+                    'order_amount' => $total_money,
+                    'integral' => 0,
+                ],
+                'style' =>['background' => '#d81e06'],
+            ],
+        ];
+        return $this->ok_js($data);
+    }
+    
+    protected function get_goods($array=[]){
+        $data = [];
+        foreach($array AS $qs){
+            foreach($qs['shops'] AS $rs){
+                $data[] = [
+                    'cart_id' => $rs['_car_']['id'],
+                    'goods_id' => $rs['id'],
+                    'goods_sku_key' => $rs['_car_']['type1'].','.$rs['_car_']['type2'].','.$rs['_car_']['type3'],
+                    'goods_number' => $rs['_car_']['num'],
+                    'is_checked' => $rs['_car_']['ifchoose'],
+                    'goods_name' => $rs['title'],
+                    'goods_image' => $rs['picurl'],
+                    'shop_price' => $rs['_price'],
+                    'goods_sku_text' => $rs['_type1'].' '.$rs['_type2'].' '.$rs['_type3'],
+                    'goods_sku_id' => '153610691889303554',
+                    'reason' => '',
+                    'is_invalid' => 0,  //1是失效
+                    'goods_price' => $rs['_price'],
+                    'integral_discount' => 0,
+                    'integral' => 0,
+                ];
+            }
+        }
+        return $data;
+    }
+    
+    protected function total_money($array=[]){
+        $total = 0;
+        foreach($array AS $qs){
+            foreach($qs['shops'] AS $rs){
+                if ($rs['_car_']['ifchoose']) {
+                    $total += $rs['_price']*$rs['_car_']['num'];
+                }
+            }
+        }
+        return $total;
+    }
+    
+    protected function total_num($array=[]){
+        $total = 0;
+        foreach($array AS $qs){
+            foreach($qs['shops'] AS $rs){
+                if ($rs['_car_']['ifchoose']) {
+                    $total += $rs['_car_']['num'];
+                }
+            }
+        }
+        return $total;
+    }
+    
+    protected function total_check($array=[]){
+        $total = 0;
+        foreach($array AS $qs){
+            foreach($qs['shops'] AS $rs){
+                if ($rs['_car_']['ifchoose']) {
+                    $total++;
+                }
+            }
+        }
+        return $total;
+    }
+    
+    protected function total_nocheck($array=[]){
+        $total = 0;
+        foreach($array AS $qs){
+            foreach($qs['shops'] AS $rs){
+                if (!$rs['_car_']['ifchoose']) {
+                    $total++;
+                }
+            }
+        }
+        return $total;
+    }
 }
 
 

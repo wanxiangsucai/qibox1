@@ -59,6 +59,8 @@ class Order extends IndexBase
             $data['uid'] = $this -> user['uid'];
             $data['create_time'] = time();
             $data['user_note'] = input('user_note')?:'';
+            $data['order_day'] = input('order_day')?:'';
+            $data['order_tid'] = input('order_tid')?:'';
             if (($result = $this->model->create($data))!=false) {
                 $order_ids[] = $result->id;
             }
