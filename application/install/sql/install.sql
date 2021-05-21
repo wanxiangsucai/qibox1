@@ -1462,3 +1462,12 @@ ALTER TABLE  `qb_memberdata` ADD  `weixin_yz` TINYINT( 1 ) NOT NULL COMMENT  '�
 ALTER TABLE  `qb_config` ADD  `is_open` TINYINT NOT NULL COMMENT  '是否公开给接口调用，密钥就不要公开';
 ALTER TABLE  `qb_config` ADD INDEX (  `is_open` ) COMMENT  '';
 UPDATE  `qb_config` SET is_open=1 WHERE  `c_key` IN ( 'webname','wxapp_appid','MoneyName','MoneyDW','logo','hiden_index_php','weixin_type','mp_code_img','wxapp_subscribe_template_id','forbid_normal_reg','yzImgReg','reg_email_num','reg_phone_num','reg_weixin_num','show_nickname','edit_username_money','must_yz_phone','service_email','service_tel','service_qq','service_wxcode','seo_title','seo_keyword','seo_description','web_open','close_why');
+
+
+ALTER TABLE  `qb_shorturl` ADD  `wxapp_id` VARCHAR( 20 ) NOT NULL COMMENT  '第三方小程序ID';
+ALTER TABLE  `qb_shorturl` ADD  `expire_time` INT( 10 ) NOT NULL COMMENT  '失效日期，默认为空';
+ALTER TABLE  `qb_shorturl` DROP INDEX  `type` ,ADD INDEX  `type` (  `type` ,  `url` ,  `wxapp_id` ) COMMENT  '';
+ALTER TABLE  `qb_shorturl` ADD INDEX (  `expire_time` ) COMMENT  '';
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, 'PC微信扫码登录方式', 'scan_login_type', 'mp', 'radio', 'mp|公众号H5码\r\nwxapp|小程序码', 1, '', '如果配置了小程序的话，就推荐用小程序码', 0, -2);
+

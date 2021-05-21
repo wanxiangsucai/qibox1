@@ -21,17 +21,20 @@ class Shorturl extends Model
 	 * @param number $uid 生成用户的帐号
 	 * @return unknown
 	 */
-	public static function getId($url='',$type=0,$uid=0){
+	public static function getId($url='',$type=0,$uid=0,$time=0){
 	    $map = [
 	        'url'=>$url,
 	        'type'=>$type,
+	        'wxapp_id'=>get_wxappAppid()?:'',
 	    ];
 	    $id = self::where($map)->value('id');
 	    if (empty($id)) {
 	        $map['uid'] = intval($uid);
+	        $map['expire_time'] = $time ? $time+time() : 0;
 	        $reslut = self::create($map);
 	        $id = $reslut->id;
 	    }
+	    self::where('expire_time','>',0)->where('expire_time','<',time())->delete();
 	    return $id;
 	}
 	

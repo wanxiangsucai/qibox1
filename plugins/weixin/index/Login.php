@@ -151,11 +151,11 @@ class Login extends IndexBase
                 exit;
             }
             
-            if($this->webdb['wxopen_appid'] && $this->webdb['wxopen_appkey']){  //配置了微信认证开放平台统一帐号
+            //if($this->webdb['wxopen_appid'] && $this->webdb['wxopen_appkey']){  //配置了微信认证开放平台统一帐号
                 $type = "snsapi_userinfo";
-            }else{
-                $type = "snsapi_base";  //这种方式得不到unionid
-            }
+            //}else{
+            //    $type = "snsapi_base";  //这种方式得不到unionid
+            //}
             header('location:https://open.weixin.qq.com/connect/oauth2/authorize?appid='.config('webdb.weixin_appid').'&redirect_uri='.$url.'&response_type=code&scope='.$type.'&state=1#wechat_redirect');
             exit;
         }

@@ -322,6 +322,7 @@ EOT;
 	            ['text', 'weixin_api', '微信接口ID'],
 	            ['text', 'qq_api', 'QQ接口ID'],
 	            ['text', 'wxapp_api', '小程序接口ID'],
+	            ['text', 'unionid', '开放平台接口ID'],
 	            ['radio', 'sex', '性别','',[0=>'保密',1=>'男',2=>'女']],
 	            ['jcrop', 'icon', '头像'],
 	            ['number', 'money', '积分'],

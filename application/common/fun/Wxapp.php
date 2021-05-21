@@ -75,7 +75,7 @@ class Wxapp{
         if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
             return 'http://x1.php168.com/public/static/qibo/nowxapp.jpg';
         }
-        $path = config('upload_path') . '/qun_code/';
+        $path = config('upload_path') . '/qun_code/'.get_wxappAppid();
         $img_path  = $path.$id.'.png';
         if ( is_file($img_path) && (time()-filemtime($img_path)<3600*24) ) {
             return tempdir("uploads/qun_code/{$id}.png");
@@ -108,10 +108,12 @@ class Wxapp{
      * 通用小程序二维码入口
      * @param string $url 要生成小程序二维码的URL网址
      * @param int $uid 当前用户UID
+     * @param string $logo 个性水印图标
+     * @param int $time 失效日期，不设置则永久有效
      * 小程序的关键字 取值 最大32个可见字符，只支持数字，大小写英文以及部分特殊字符：!#$&'()*+,/:;=?@-._~，其它字符请自行编码为合法字符（因不支持%，中文无法使用 urlencode 处理，请使用其他编码方式）
      * 加前缀处理的方法是 qun/Error.php/_initialize 务必用_下画线做分隔符,比如 bbs_123
      */
-    public static function wxapp_codeimg($url='',$uid=0,$logo=''){
+    public static function wxapp_codeimg($url='',$uid=0,$logo='',$time=0){
         if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
             if (!is_file(PUBLIC_PATH."static/images/nowxapp.jpg")&&is_writable(PUBLIC_PATH."static/images/")) {                
                 file_put_contents(PUBLIC_PATH."static/images/nowxapp.jpg",http_curl('http://x1.php168.com/public/static/qibo/nowxapp.jpg'));                
@@ -125,12 +127,21 @@ class Wxapp{
         if ($uid===0) {
             $uid = login_user('uid');
         }
-        $url = get_url($url);   //补全http
-        $id = ShorturlModel::getId($url,2,$uid);
+        if ( preg_match('/^(\/|)pages\//', $url) ) {
+            $page = trim(preg_replace("/\?(.*)?/", '',$url),'/');
+            $scene = preg_replace("/^(.*)\?/", '',$url);
+            $dirname = get_wxappAppid().md5($url);
+        }else{
+            $page = 'pages/wap/iframe/index';
+            $url = get_url($url);   //补全http
+            $scene = ShorturlModel::getId($url,2,$uid,$time);
+            $dirname = get_wxappAppid().$scene;
+        }
+        
         $path = config('upload_path') . '/wxapp_codeimg/';
-        $img_path  = $path.$id.'.png';
+        $img_path  = $path.$dirname.'.png';
         if ( is_file($img_path) && (time()-filemtime($img_path)<3600*24) ) {
-            return tempdir("uploads/wxapp_codeimg/{$id}.png");
+            return tempdir("uploads/wxapp_codeimg/{$dirname}.png");
         }
         if (!is_dir($path)) {
             mkdir($path);
@@ -140,16 +151,24 @@ class Wxapp{
             return 'access_token不存在!';
         }
         $code = http_curl('https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token,[
-            'scene'=>$id,
-            'page'=>'pages/wap/iframe/index',
+            'scene'=>$scene,
+            'page'=>$page,
             'width'=>'430',
         ],'json');
-        if (strlen($code)>500) {
-            write_file($img_path, $code);
-            if ($logo!='') {
-                self::make_logo($img_path,$logo);
-            }
-            return tempdir("uploads/wxapp_codeimg/{$id}.png");
+        if (strstr($code,'{"errcode":')) {
+            return $code;
+        }elseif (strlen($code)>500) {
+            if ($time>0) {  //有时效性的，就不生成缓存图片了
+                header("Content-Type: image/png;text/html; charset=utf-8");
+                echo $code;
+                exit;
+            }else{
+                write_file($img_path, $code);
+                if ($logo!='') {
+                    self::make_logo($img_path,$logo);
+                }
+                return tempdir("uploads/wxapp_codeimg/{$dirname}.png");
+            }            
         }else{
             return $code;
         }

@@ -51,7 +51,7 @@ abstract class Order extends MemberBase
      * @param number $id
      */
     public function receive($id=0){
-        $info = $this->model->getInfo($id);
+        $info = getArray($this->model->getInfo($id));
         if ($info['uid']!=$this->user['uid'] && $info['shop_uid']!=$this->user['uid']) {
             $this->error('你没权限');
         }
@@ -75,7 +75,7 @@ abstract class Order extends MemberBase
         $info = getArray($this->model->getInfo($id));
         if ($info['uid']!=$this->user['uid']) {
             $this->error('你没权限');
-        }elseif ( $info['pay_status']!=0 || $info['few_ifpay']!=0 ) {
+        }elseif ( $info['pay_status']!=0 || ($info['few_ifpay']!=0&&$info['fewmoney']>0) ) {
             $this->error('已支付的订单不能删除');
         }
         if ($this->model->destroy($id)) {
@@ -83,6 +83,58 @@ abstract class Order extends MemberBase
         }else{
             $this->error('删除失败');
         }
+    }
+    
+    /**
+     * 退款
+     * @param number $id
+     */
+    public function tui_money($id=0){
+        $info = getArray($this->model->get($id));
+        if ($info['uid']!=$this->user['uid']) {
+            $this->error('不是你的订单!');
+        }elseif ($info['status']==-1) {
+            $this->error('交易已关闭!');
+        }elseif ($info['status']==1) {
+            $this->error('交易成功不能再申请退款!');
+        }elseif ($info['few_ifpay']==-1) {
+            $this->error('订金还在退还当中,请耐心等待!');
+        }elseif ($info['pay_status']==0) {
+            $this->error('你还没付全款!');
+        }elseif ( $info['pay_status']==-1 ) {
+            $this->error('退款正等待商家处理中,请耐心等待!');
+        }
+        $this->model->update([
+            'id'=>$id,
+            'pay_status'=>-1,
+        ]);
+        $url = get_url(murl('order/show',['id'=>$id]));
+        $content = '<a href="'.$url.'" target="_blank">'.$this->user['username'].' 申请退款，订单号是:'.$info['order_sn'].'</a>';
+        send_msg($info['shop_uid'],$this->user['username'].'申请退款',$content);
+        send_wx_msg($info['shop_uid'], $content);
+        $this->success('退款申请已提交,需要商家同意才能把款项退还到你帐户余额');
+    }
+    
+    /**
+     * 取消退全款
+     * @param number $id
+     */
+    public function cancel_money($id=0){
+        $info = getArray($this->model->get($id));
+        if ($info['uid']!=$this->user['uid']) {
+            $this->error('不是你的订单!');
+        }elseif ($info['pay_status']!=-1) {
+            $this->error('该订单并没有处于退款申请中!');
+        }
+        $this->model->update([
+            'id'=>$id,
+            'pay_status'=>1,
+        ]);
+        $url = get_url(murl('order/show',['id'=>$id]));
+        $content = '<a href="'.$url.'" target="_blank">'.$this->user['username'].' 取消退款申请了，订单号是:'.$info['order_sn'].'</a>';
+        send_msg($info['shop_uid'],$this->user['username'].'申请退款',$content);
+        send_wx_msg($info['shop_uid'], $content);
+        $this->success('退款申请已成功取消！');
     }
     
     /**

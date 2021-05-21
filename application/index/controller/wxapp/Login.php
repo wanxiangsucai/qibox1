@@ -162,6 +162,26 @@ class Login extends IndexBase
                 if(!is_array($array)){
                     return $this->err_js($array);
                 }
+                /*
+(
+    [userinfo] => Array
+        (
+            [phoneNumber] => 18664780444 //用户绑定的手机号（国外手机号会有区号）
+            [purePhoneNumber] => 18664780444 //没有区号的手机号
+            [countryCode] => 86
+            [watermark] => Array
+                (
+                    [timestamp] => 1620867919
+                    [appid] => wxa53b9074eeee84f
+                )
+
+        )
+
+    [skey] => 5dcc377c389875d3588a86403b8b188ede7376d3
+    [sessionKey] => 6TNiTv4wszPVrMFQEbOZPQ==
+)
+
+                 */
                 $skey = $array['skey'];
                 $sessionKey = $array['sessionKey'];
                 $info = $array['userinfo'];
@@ -291,7 +311,8 @@ class Login extends IndexBase
                 }
             }else{
                 
-                if(empty(get_wxappAppid()) && $array['unionid']){
+                //if(empty(get_wxappAppid()) && $array['unionid']){
+                if($array['unionid']){
                     $user = get_user($array['unionid'],'unionid');
                 }
                 if (!$user && $uids) {
@@ -322,9 +343,7 @@ class Login extends IndexBase
                 ];
                 return $this->ok_js(array_merge($array,$cfg));
             }else{
-                if (get_wxappAppid()) {
-                    $cfg['openid'] = mymd5(time()."\t".$array['openid']);
-                }                
+                $cfg['openid'] = mymd5(time()."\t".$array['openid']);
                 return $this->err_js('用户不存在！',$cfg);
             }            
         }else{
