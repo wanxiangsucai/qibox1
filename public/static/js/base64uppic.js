@@ -61,7 +61,7 @@ jQuery.getScript("/public/static/js/exif.js")
 									callback(res.url,pics);
 								 }
 							 }else{
-								alert(res.info);
+								 layer.alert(res.info?res.info:res.msg);
 							 }
 						}).fail(function () {
 							alert('操作失败，请跟技术联系');
@@ -100,7 +100,7 @@ jQuery.getScript("/public/static/js/exif.js")
 							callback(res.path,pics);
 						}
 					}else{
-						alert(res.info);
+						layer.alert(res.info?res.info:res.msg);
 					}
 				}
 			});

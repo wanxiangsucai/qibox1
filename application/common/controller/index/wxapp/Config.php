@@ -50,9 +50,19 @@ abstract class Config extends IndexBase
         if (plugins_config('timthumb')) {
             $array['small_img'] = get_url('/_tim.php?src=');
         }
+        
+        $array = $this->format_data($array);
         return $this->ok_js($array);        
     }
     
+    /**
+     * 方便频道或插件实现拓展
+     * @param array $array
+     * @return unknown
+     */
+    protected function format_data($array=[]){
+        return $array;
+    }
     
 
 }

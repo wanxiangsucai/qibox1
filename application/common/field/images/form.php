@@ -175,6 +175,8 @@ jQuery(document).ready(function() {
 								 //pics[0] = res.path;	//单图
 								that.parent().parent().find(".input_value").val( pics.join(',') );
 								viewpics(res.path,pics);
+							}else{
+								 layer.alert(res.info?res.info:res.msg);
 							}
 						}	
 					})	
@@ -359,6 +361,8 @@ jQuery(document).ready(function() {
 								 if(typeof callback == 'function'){
 									callback(res.url,pics);
 								 }
+							 }else{
+								 layer.alert(res.info?res.info:res.msg);
 							 }
 					}).fail(function () {
 							alert('操作失败，请跟技术联系');
@@ -383,6 +387,8 @@ jQuery(document).ready(function() {
 								 if(typeof callback == 'function'){
 									callback(res.url,pics);
 								 }
+							 }else{
+								 layer.alert(res.info?res.info:res.msg);
 							 }
 						}).fail(function () {
 							alert('操作失败，请跟技术联系');

@@ -175,6 +175,8 @@ jQuery(document).ready(function() {
 								//that.parent().parent().find(".input_value").val( pics.join(',') );
 								pics.push({"picurl":res.path,"title":"","url":""});	//组图
 								viewpics(pics);
+							}else{
+								 layer.alert(res.info?res.info:res.msg);
 							}
 						}	
 					})	
@@ -386,6 +388,8 @@ jQuery(document).ready(function() {
 								 if(typeof callback == 'function'){
 									callback(pics,res.url);
 								 }
+							 }else{
+								 layer.alert(res.info?res.info:res.msg);
 							 }
 					}).fail(function () {
 							layer.closeAll();
@@ -412,6 +416,8 @@ jQuery(document).ready(function() {
 								 if(typeof callback == 'function'){
 									callback(pics,res.url);
 								 }
+							 }else{
+								 layer.alert(res.info?res.info:res.msg);
 							 }
 						}).fail(function () {
 							layer.closeAll();

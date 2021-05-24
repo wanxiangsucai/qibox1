@@ -40,9 +40,19 @@ abstract class Show extends IndexBase
         $info = $this->getInfoData($id,true);
         if(empty($info)){
             return $this->err_js('内容不存在');
-        }
+        }        
+        $info = $this->format_data($info);        
+        return $this->ok_js($info);
+    }
+    
+    /**
+     * 主要是当接口用，方便频道做二开
+     * @param array $info
+     * @return unknown
+     */
+    protected function format_data($info=[]){
         
-        $this->model->addView($id); //更新浏览量
+        $this->model->addView($info['id']); //更新浏览量
         
         if($info['picurls']==''){
             $info['picurls'] = [];
@@ -54,7 +64,7 @@ abstract class Show extends IndexBase
         $info['content'] = str_replace('="/public/uploads', '="'.$this->request->domain().'/public/uploads', $info['content']);
         unset($info['full_content'],$info['sncode'],$info['password']);
         
-        return $this->ok_js($info);
+        return $info;
     }
     
     /**
