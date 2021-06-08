@@ -393,6 +393,9 @@ class LabelShow extends IndexBase
         }
         $tag_array['cfg'] = unserialize($tag_array['cfg']);
         $div_w = $tag_array['cfg']['div_width']>10?$tag_array['cfg']['div_width']:100;
+        if($div_w>1200){
+            $div_w = 200;
+        }
         $div_h = $tag_array['cfg']['div_height']>10?$tag_array['cfg']['div_height']:30;
         $div_bgcolor = '#A6A6FF';
         if (($type=='choose'||$type=='classname') && $class_name!='') {

@@ -64,6 +64,8 @@ abstract class Show extends IndexBase
         $info['content'] = str_replace('="/public/uploads', '="'.$this->request->domain().'/public/uploads', $info['content']);
         unset($info['full_content'],$info['sncode'],$info['password']);
         
+        $info['field_array'] = array_values(get_field($info['mid']));
+        
         return $info;
     }
     
@@ -95,6 +97,7 @@ abstract class Show extends IndexBase
                 'value' => $rs['picurl'],
             ];
         }
+        $info['sncode'] = $info['password'] = '';
         $spec_array = [];
         if($info['type1']){
             $spec_array[] = $this->get_des('型号',$info['type1']['items'],'100');
@@ -104,36 +107,35 @@ abstract class Show extends IndexBase
         }
         if($info['type3']){
             $spec_array[] = $this->get_des('颜色',$info['type3']['items'],'300');
-        }
+        }        
         $sku = $this->get_sku($spec_array,$info['price'],isset($info['max_user'])?$info['max_user']:$info['num']);
+        $attribute = $this->get_attribute($info);
         $data = [
             'basic' =>[
-                'field' =>[
+                'field' =>array_merge($info,[
                     'goods_id' => $info['id'],
-                    'uid' => $info['uid'],
-                    'fid' => $info['fid'],
-                    'view' => $info['view'],
                     'goods_name' => $info['title'],
-                    'goods_short_name' => '',
                     'goods_image' => $info['picurl'],
                     'shop_price' => $info['price'],
-                    'market_price' => $info['market_price'],
                     'detail_mobile' =>json_encode($slider),
-                    'content' => $info['content'],
-                    'is_sale' => 1,
                     'activity_price' => $info['price'],
-                    'sales_volume' => 0,
                     'reference_price' => $info['market_price'],
                     'final_price' => $info['price'],
+                    'goods_short_name' => '',
                     'integral' => 0,
+                    'is_sale' => 1,
                     'is_collect' => 0,
-                ],
+                    'sales_volume' => 0,
+                ]),
             ],
-            'attribute' =>['show' => 0,'field' =>['text' => '详细参数'],'list' =>[
-                ['label'=>'产地','value'=>'中国'],
-                ['label'=>'性别','value'=>'男士'],
-            ]],
-            'ordertime' =>$this->get_ordertime($info),
+            'attribute' =>[
+                'show' => count($attribute),
+                'field' =>['text' => '详细参数'],
+                'list' =>$attribute,                
+            ],
+            'form_filed' => $this->get_formfiled($info),
+            'order_filed' => $this->get_orderfiled($info),
+            'ordertime' => $this->get_ordertime($info),
             'spec' =>[
                 'list' =>$spec_array,
                 'field' =>[
@@ -182,6 +184,62 @@ abstract class Show extends IndexBase
             ],
         ];
         return $data;
+    }
+    
+    /**
+     * 后台统一定义的字段
+     * @param array $info
+     * @return array
+     */
+    protected function get_formfiled($info=[]){
+        if ($info['order_filed']) {
+            return [];
+        }
+        $form_items = \app\common\field\Form::get_all_field(-1,$info);      //后台自定义字段
+        foreach($form_items AS $key=>$rs){
+            if(in_array($rs['name'], ['linkman','telphone','address','ifolpay'])){
+                unset($form_items[$key]);
+            }
+        }
+        $form_items = array_values($form_items);
+        if(count($form_items)==1 && $form_items[0]['name']=='user_note'){
+            return [];
+        }
+        return $form_items;
+    }
+    
+    /**
+     * 前台单个商品定义的字段
+     * @param array $info
+     * @return array|array
+     */
+    protected function get_orderfiled($info=[]){
+        if (!$info['order_filed']) {
+            return [];
+        }
+        $f_array = fun('field@order_field_post',$info['order_filed']);
+        return $f_array?array_values($f_array):[];
+    }
+    
+    /**
+     * 商品其它参数
+     * @param array $info
+     * @return mixed[][]|unknown[][]
+     */
+    protected function get_attribute($info=[]){
+        $array = [];
+        //默认不显示的字段
+        $fields = ['title','paytype','stocktype','market_price','price','fewmoney','min_user','max_user','begin_time','end_time','price_changetype','price_grow','each_money','bottom_price','picurl','onlybuyone','is_limit_area','map_km','buy_map','day_begintime','day_endtime','limit_new_buy','limit_show_hxma','hexiao_uids','content','type1','type2','type3','fx1','sncode','fx2','fx3','map','order_filed','min_money','max_money','limit_day','limittime','forbid_more','is_yidao_limit_area','yidao_map_km','yidao_map','yidao_limit','sell_num','extend_time','each_time','user_limit','money_type','sys_jifen_type','money_scale','limitmoney','begin_hxtime','qun_money','limit_qungroup','timesort','order_timedays','order_beginday','stop_yuyue_day','givedou','prize_num','repeat_join','top_prize','vip_price','num','myfid','coupon_tag','qmoney','notice_group','robtype','market_money','jifen'];
+        foreach(get_field($info['mid']) AS $name=>$rs){
+            if($info[$name]!=='' && $info[$name]!==null && !in_array($name, $fields)){
+                $array[] = [
+                    'label'=>$rs['title'],
+                    'value'=>del_html($info[$name]),
+                    'type'=>$rs['type']
+                ];
+            }
+        }
+        return $array;
     }
     
     protected function get_des($label='',$items=[],$type=''){

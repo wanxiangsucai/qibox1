@@ -118,7 +118,7 @@ var vues = new Vue({
 				open_win(id);
 			}
 
-			function open_win(id){
+			function open_win(id){alert(market_url)
 				parent.layer.open({
 					type: 2,
 					title: '安装应用',
@@ -209,6 +209,19 @@ function hide_demo(){
 	});
 }
 
+function get_market_token(sid){
+	$.get("/p/login-scan-cklogin.html?"+Math.random(), function(data){
+		if(data=='ok'){
+			window.location.reload();
+		}else{
+			setTimeout(function(){
+				get_market_token(sid)
+			},3000);
+		}
+	});
+}
+
+
 var have_pay = [];	//是否已购买过可以直接安装.不提示购买
 function setup_app(id,fid,keywords,price,have_open_layer){
 	if(typeof(app_have_setup[id])!='undefined'){
@@ -218,7 +231,7 @@ function setup_app(id,fid,keywords,price,have_open_layer){
 	if(have_pay[id]==undefined){
 		have_pay[id]=0;
 	}
-	var baseurl = "?id=" + id + "&domain="+domain+"&appkey="+appkey+"&";
+	var baseurl = "?id=" + id + "&domain="+domain+"&appkey="+appkey+"&token="+qibo_token;
 	if(price>0 && have_pay[id]<1){	//收费模块,先要做权限判断
 		//安装权限检查
 		$.get("https://x1.php168.com/appstore/getapp/client_check.html"+baseurl+'&'+Math.random(),function(res){
@@ -272,7 +285,7 @@ function setup_app(id,fid,keywords,price,have_open_layer){
 		layer.alert('APP分类有误!');
 		return ;
 	}
-	var url = window.location.href.split('/market/')[0]+"/"+mtype+"/market.html" + baseurl + "keywords=" + keywords + "&type=down";
+	var url = window.location.href.split('/market/')[0]+"/"+mtype+"/market.html" + baseurl + "&keywords=" + keywords + "&type=down";
 	if( typeof(ids_ck_msg[id])!="undefined" ){
 		url +="&upvip=1"
 	}

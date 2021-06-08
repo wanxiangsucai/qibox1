@@ -50,7 +50,7 @@ class Car extends Model
             $map['ifchoose'] = intval($choose_type);
         }
         
-        $list_data = self::where($map)->order('update_time','desc')->column(true);  //用户的购物车数据
+        $list_data = self::where($map)->order('id','desc')->column(true);  //用户的购物车数据
         //$field = [];
         foreach ($list_data AS $rs){
             $shop = self::$content_model->getInfoByid($rs['shopid'],$format);    //取得商品的详细数据

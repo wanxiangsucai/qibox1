@@ -18,8 +18,13 @@ abstract class Post extends IndexBase
         parent::_initialize();
         preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         $dirname = $array[0][1];
-        $this->model = get_model_class($dirname,'content');
-        $this->s_model = get_model_class($dirname,'sort');
+        $this->model            = get_model_class($dirname,'content');
+        $this->s_model          = get_model_class($dirname,'sort');
+        $this->m_model          = get_model_class($dirname,'module');
+        $this->category_model   = get_model_class($dirname,'category');
+        $this->info_model       = get_model_class($dirname,'info');
+        $this->f_model          = get_model_class($dirname,'field');
+        
         $this->mid = 1;
     }
    

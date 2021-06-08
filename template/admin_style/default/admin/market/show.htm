@@ -200,7 +200,13 @@ function check_setup(){
 		}
 	});
 };
+
+var qibo_token = $.cookie('qibo_token');
+if(!qibo_token){
+	qibo_token = "{:rands(32)}";
+	$.cookie('qibo_token',qibo_token,{ expires: 60, path: '/' });
+}
 </script>
-<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/admin/default/market/main.js?0"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" src="__STATIC__/admin/default/market/main.js?43"></SCRIPT>
 
 {/block}

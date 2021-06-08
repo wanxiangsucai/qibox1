@@ -111,7 +111,7 @@ abstract class Index extends IndexBase
             $order = 'list desc,id desc';
         }
         if ($mid==-1) {
-            $array = getArray( $this->model->getAll($map,$order,$rows) );
+            $array = getArray( $this->model->getAll($map,$order,$rows,[],true) );
         }else{
             $mid = $fid ? (get_sort($fid,'mid')?:$mid) : $mid;
             if (!model_config($mid)) {

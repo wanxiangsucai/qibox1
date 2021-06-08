@@ -25,7 +25,7 @@ abstract class M extends Model
     protected function initialize()
     {
         parent::initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         self::$model_key = $array[0][1];
         self::$base_table = $array[0][1].'_content';
         self::$table_pre = config('database.prefix');

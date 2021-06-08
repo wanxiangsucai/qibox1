@@ -8,7 +8,7 @@ class OrderField extends F
     {
         parent::_initialize();        
         if ( $this->request->isPost() ) {
-            preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+            preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
             $dirname = $array[0][1];
             if (!table_field("{$dirname}_order",'mid')) {
                 query("ALTER TABLE  `qb_{$dirname}_order` ADD  `mid` MEDIUMINT( 5 ) NOT NULL DEFAULT  '-1' COMMENT  '模型ID,只能是负数,避免跟主题相冲突' AFTER  `id`");

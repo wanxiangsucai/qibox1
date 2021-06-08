@@ -34,11 +34,11 @@ class Rmb extends MemberBase
 	 */
 	public function delete($id)
 	{
-	    if (RmbConsume::destroy([$id])) {
-	        $this->success('删除成功','index');
-	    }else{
-	        $this->error('删除失败');
-	    }
+// 	    if (RmbConsume::destroy([$id])) {
+// 	        $this->success('删除成功','index');
+// 	    }else{
+// 	        $this->error('删除失败');
+// 	    }
 	}
     
 

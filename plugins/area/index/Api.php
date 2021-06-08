@@ -6,9 +6,12 @@ use plugins\area\model\Area AS AreaModel;
 
 class Api extends IndexBase
 {
-    public function getlist($iftop=0,$pid=0,$ckid=0){
+    public function getlist($iftop=0,$pid=0,$fid=null){
+        if ($fid && empty($pid)) {
+            $pid = $fid;
+        }
         $pid = intval($pid);
-        if(empty($iftop) && empty($pid)){
+        if(empty($iftop) && empty($pid) && $fid===null){
             return $this->err_js('pid不存在');
         }
         $data = AreaModel::where(['pid'=>$pid])->column(true);

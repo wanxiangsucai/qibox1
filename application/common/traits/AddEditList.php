@@ -56,6 +56,102 @@ trait AddEditList {
         }
     }
     
+    
+    /**
+     * 发布或修改的前置接口
+     * @param array $array
+     */
+    protected function post_begin($array=[]){
+        $fid    = $array['fid'];
+        $mid    = $array['mid'];
+        $id     = $array['id'];
+        $info   = $array['info'];
+        if ($this->request->header('token') || $this->request->isAjax()) {
+            $data = \app\common\field\Format::form_fields($this->form_items);
+            foreach($data AS $key=>$rs){
+                if ( $rs['type']=='checkboxtree' ) {
+                    $rs['options'] = $this->get_tree_options($rs['options'],$info&&isset($info[$rs['name']]) ? $info[$rs['name']] : $rs['value']);
+                }elseif( in_array($rs['type'],['treeone','treemore']) ){
+                    $rs['options'] = $this->set_tree_keyvalue($rs['options']);
+                }else{
+                    $rs['options'] = $this->format_options($rs['options']);
+                }
+                $rs['is_hide'] = false; //VUE联动字段用到
+                $rs['about'] && $rs['about'] = del_html($rs['about']); //删除JS代码
+                $data[$key] = $rs;
+            }
+            return [
+                'field' => array_values($data),
+                'tab_ext' => $this->tab_ext,
+                'info' => $info?:'',
+            ];
+        }
+        return true;
+    }
+    
+    /**
+     * 获取树状分类参数
+     * @param array $opt
+     * @param string $opt_value
+     */
+    protected function get_tree_options($opt=[],$opt_value=''){
+        if (!is_array($opt)) {
+            return $opt;
+        }
+        $data = [];
+        \app\common\field\Form::get_children($data,1,$opt);
+        if ($data) {
+            return \app\common\field\Form::get_xm_select_data($data,0,$opt_value,[
+                'key'=>'value',
+                'title'=>'label',
+                'select'=>'checked',
+            ]);
+        }else{
+            return $opt;
+        }
+    }
+    
+    /**
+     * 把无限级分类的key value设置一下别名
+     * @param array $array
+     * @return unknown
+     */
+    protected function set_tree_keyvalue($array=[]){
+        foreach($array AS $key=>$rs){
+            if(!isset($rs['value'])){
+                $rs['value'] = $rs['id'];
+            }
+            if(!isset($rs['label'])){
+                $rs['label'] = $rs['title'];
+            }
+            if (is_array($rs['children'])) {
+                $rs['children'] = $this->set_tree_keyvalue($rs['children']);
+            }
+            $array[$key] = $rs;
+        }
+        return $array;
+    }
+    
+    /**
+     * 避免JS中把对象强制按字母或数字当索引排序。而不能保持原来的顺序
+     * @param array $opt
+     * @return unknown
+     */
+    protected function format_options($opt=[]){
+        $array = [];
+        if (is_array($opt)) {
+            foreach($opt AS $key=>$value){
+                if (!is_array($value)) {
+                    $array[] = [
+                        'value'=>$key,
+                        'label'=>$value,
+                    ];
+                }
+            }
+        }
+        return $array?:$opt;
+    }
+    
     /**
      * 列表要显示的数据
      * @param array $map 查询条件
@@ -94,6 +190,12 @@ trait AddEditList {
             $this->error('缺少字段参数list_items');
         }
         
+        //app调用表单字段接口
+        $result = $this->table_begin($data_list);
+        if ($result!==true) {
+            return $this->ok_js($result);
+        }
+        
         $template = $this->get_template('',$this->mid);
         if (empty($template)) {
             $template = $this->get_template('admin@common/wn_table');  //如果是前台的话,可以考虑换成 member@common/wn_table 不过最好还是单独设置模板更个性化
@@ -124,6 +226,12 @@ trait AddEditList {
             $this->error('缺少字段参数list_items');
         }
         
+        //app调用表单字段接口
+        $result = $this->table_begin($data_list);
+        if ($result!==true) {
+            return $this->ok_js($result);
+        }
+        
         $template = $this->get_template('',$this->mid);
         if (empty($template)) {
             $template = $this->get_template('admin@common/wn_table');  //如果是前台的话,可以考虑换成 member@common/wn_table 不过最好还是单独设置模板更个性化
@@ -141,6 +249,19 @@ trait AddEditList {
         $this->assign('pages',$pages);
         $this->assign('search_file',$this->tab_ext['search_file'] ?: TEMPLATE_PATH.'admin_style/default/admin/common/search_inc.htm');
         return $this->fetch($template);
+    }
+    
+    protected function table_begin($array=[]){
+        if ($this->request->header('token') || $this->request->isAjax()) {
+            $data = [
+                'listdb' => $array,
+                'tab_ext' => $this->tab_ext,
+                'field' => $this->list_items,
+                'mid' => $this->mid,
+            ];
+            return $this->format_json_data($data);
+        }
+        return true;
     }
     
     /**
@@ -228,6 +349,16 @@ trait AddEditList {
                 $this -> error('添加失败');
             }
         }
+        
+        //app调用表单字段接口
+        $result = $this->post_begin([
+            'fid'=>input('fid'),
+            'mid'=>$this->mid
+        ]);
+        if ($result!==true) {
+            return $this->ok_js($result);
+        }
+        
         $template = $this->get_template('',$this->mid); //如果模板存在的话,就用实际的后台模板
         if (empty($template)) {
             $template = $this->get_template('admin@common/wn_form');
@@ -288,6 +419,14 @@ trait AddEditList {
             } else {
                 $this -> error('修改失败');
             }
+        }
+        
+        //app调用表单字段接口
+        $result = $this->post_begin([
+            'info'=>$info
+        ]);
+        if ($result!==true) {
+            return $this->ok_js($result);
         }
         
         // 		if (empty($this->mid)&&empty($this -> form_items)) {

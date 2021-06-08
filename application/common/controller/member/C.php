@@ -40,10 +40,16 @@ abstract class C extends MemberBase
      * 把所有模型的一起列出来
      * @return mixed|string
      */
-    public function listall(){
+    public function listall($rows=10){
         $this->tab_ext['top_button'] = $this->page_top_botton();
         $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = M('name').' 我发布的内容';
-        $listdb = $this->model->getListByUid($this->user['uid']);
+        $map = $this->get_map();
+        foreach ($map AS $key=>$rs){
+            if(!in_array($key, ['id','uid','mid','fid','status','view','list','create_time','ext_id','ext_sys','title'])){
+                unset($map[$key]);
+            }
+        }
+        $listdb = $this->model->getListByUid($this->user['uid'],$rows,$pages=[],$map);
         $pages = $listdb->render();
         $this->assign('listdb',$listdb);
         $this->assign('pages',$pages);
@@ -78,13 +84,33 @@ abstract class C extends MemberBase
         return $tab_list;
     }
     
+    protected function get_map(){
+        return [];
+    }
+    
+    /**
+     * 纯属是为了兼容其它模块index方法没有升级的情况使用。
+     * @param number $fid
+     * @param number $mid
+     * @param number $rows
+     * @return unknown
+     */
+//     public function index_temp($fid=0,$mid=0,$rows=10)
+//     {        
+//         if(count(model_config())>1&&!$mid&&!$fid){
+//             return $this->listall($rows);
+//         }else{
+//             return $this->index($fid,$mid,$rows);
+//         }
+//     }
+    
     /**
      * 按模型或栏目列出自己发布的信息
      * @param number $fid
      * @param number $mid
      * @return mixed|string
      */
-    public function index($fid=0,$mid=0)
+    public function index($fid=0,$mid=0,$rows=10)
     {
         if(!$mid && !$fid){
             //没有指定栏目或模型的话， 就显示默认模型的内容
@@ -137,7 +163,7 @@ abstract class C extends MemberBase
         $this->assign('field_db',$f_array);
         $this->assign('model_list',$this->m_model->getTitleList());
         $this->assign('fid',$fid);
-        $data_list = $this->getListData($map,'',0,[],false);    //获取列表数据 false不转义,只要原始数据
+        $data_list = $this->getListData(array_merge($map,$this->get_map()),'',$rows,[],true);
         return $this->getMemberTable($data_list);
 
     }
@@ -213,9 +239,18 @@ abstract class C extends MemberBase
        
         //分组显示处理
         $this->tab_ext['group'] = $this->get_group_form($this->form_items);
-        if( $this->tab_ext['group'] ){
-            unset($this->form_items);
-        }
+        
+//         $result = $this->post_begin([
+//             'fid'=>$fid,
+//             'mid'=>$mid
+//         ]);
+//         if ($result!==true) {
+//             return $this->ok_js($result);
+//         }
+        
+//         if( $this->tab_ext['group'] ){
+//             unset($this->form_items);
+//         }
         
         $this->tab_ext['page_title'] = $this->tab_ext['page_title']?: '发布 '.$this->m_model->getNameById($this->mid);
         $this->assign('fid',$fid);
@@ -223,6 +258,8 @@ abstract class C extends MemberBase
         $this->assign('info',get_post());  //方便地址栏赋值
         return $this->addContent();
     }
+    
+
     
     /**
      * 修改内容
@@ -290,9 +327,17 @@ abstract class C extends MemberBase
         
         //分组显示
         $this->tab_ext['group'] = $this->get_group_form($this->form_items);
-        if( $this->tab_ext['group'] ){
-            unset($this->form_items);
-        }
+        
+//         $result = $this->post_begin([
+//             'info'=>$info
+//         ]);
+//         if ($result!==true) {
+//             return $this->ok_js($result);
+//         }
+        
+//         if( $this->tab_ext['group'] ){
+//             unset($this->form_items);
+//         }
         $this->assign('fid',$info['fid']);
         //修改内容后，最好返回到模型列表页，因为有可能修改了栏目
         return $this->editContent($info , '' ,'member');
@@ -322,7 +367,11 @@ abstract class C extends MemberBase
             
         }        
         if( $num>0 ){
-            $this->success("成功删除 {$num} 条记录", auto_url('index',['mid'=>$this->mid]));
+            $msg = "成功删除 {$num} 条记录";
+            if(defined('SHOW_RUBBISH') && SHOW_RUBBISH===true && (!defined('FORCE_DELETE') || FORCE_DELETE!==true) ){
+                $msg = '下架成功';
+            }
+            $this->success($msg, auto_url('index',['mid'=>$this->mid]));
         }else{
             $this->error('删除失败');
         }

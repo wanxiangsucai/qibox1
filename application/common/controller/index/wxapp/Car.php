@@ -285,8 +285,12 @@ class Car extends IndexBase
      * 订单中获取默认地址
      * @return string[]|string[]|number[]|unknown[]|NULL[]
      */
-    protected function getAddress(){
-        $info = getArray(AddressModel::where('uid',$this->user['uid'])->order('often desc,id desc')->find());
+    protected function getAddress($id=0){
+        $map = [];
+        if ($id) {
+            $map = ['id'=>$id];
+        }
+        $info = getArray(AddressModel::where('uid',$this->user['uid'])->where($map)->order('often desc,id desc')->find());
         if (!$info) {
             return ['address_id' =>''];
         }
@@ -339,8 +343,8 @@ class Car extends IndexBase
      * @param array $array
      * @return array[]|array[][]|number[][]|string[][][]|number[][][]|unknown[][][]|\think\response\Json[][][]|string[][][][]|number[][][][]|unknown[][][][]
      */
-    public function uniapp_order_cart(){
-        $address_info = $this->getAddress();
+    public function uniapp_order_cart($address_id=0){
+        $address_info = $this->getAddress($address_id);
         $array = $this->get_cart_data(1);        
         $goods = $this->get_goods($array);
         $total_money = 0;

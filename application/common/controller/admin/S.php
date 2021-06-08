@@ -23,7 +23,7 @@ abstract class S extends AdminBase
     protected function _initialize()
     {
         parent::_initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         $dirname = $array[0][1];
         $this->model = get_model_class($dirname,'sort');
         $this->m_model = get_model_class($dirname,'module');
@@ -233,7 +233,7 @@ abstract class S extends AdminBase
             }
             
             if ($data['haibao']) {
-                preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+                preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
                 $dirname = $array[0][1];
                 if ( !table_field($dirname.'_sort','haibao') ) {
                     query("ALTER TABLE  `qb_{$dirname}_sort` ADD  `haibao` VARCHAR( 255 ) NOT NULL COMMENT  '海报模板';");
@@ -325,7 +325,7 @@ abstract class S extends AdminBase
         }
         
         if ( !isset($info['allow_viewtitle']) ) {
-            preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+            preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
             $dirname = $array[0][1];
             into_sql("ALTER TABLE  `qb_".$dirname."_sort` ADD  `allow_viewtitle` VARCHAR( 255 ) NOT NULL COMMENT  '允许查看标题的用户组'");
         }

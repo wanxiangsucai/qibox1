@@ -36,7 +36,7 @@ class Form extends Base
      * @param number $step
      * @param array $array
      */
-    protected static function get_children(&$data=[],$step=1,$array=[]){
+    public static function get_children(&$data=[],$step=1,$array=[]){
         $pid = 0;
         $total_level = 0;
         foreach($array AS $key=>$value){
@@ -74,15 +74,16 @@ class Form extends Base
      * @param number $ck
      * @return boolean[][]|unknown[][]|boolean[][][][]|unknown[][][][]|NULL[][][][]
      */
-    protected static function get_xm_select_data($array=[],$pid=0,$ck=0){
+    public static function get_xm_select_data($array=[],$pid=0,$ck=0,$obj=['key'=>'value','title'=>'name','select'=>'selected']){
         $data = [];
         foreach($array[$pid] AS $id=>$rs){
+            $checked = ($rs['id']==$ck || (is_array($ck)&&in_array($rs['id'], $ck))) ? true : false;
             $ar = [
-                'name'=>$rs['name'],
-                'value'=>$rs['id'],
-                'selected'=>($rs['id']==$ck || (is_array($ck)&&in_array($rs['id'], $ck)))?true:false,
+                $obj['title']   =>  $rs['name'],
+                $obj['key']     =>  $rs['id'],
+                $obj['select']  =>  $checked,
             ];
-            $array[$id] && $ar['children'] = self::get_xm_select_data($array,$id,$ck);
+            $array[$id] && $ar['children'] = self::get_xm_select_data($array,$id,$ck,$obj);
             $data[] = $ar;
         }
         return $data;

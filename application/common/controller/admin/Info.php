@@ -23,7 +23,7 @@ abstract class Info extends AdminBase
     protected function _initialize()
     {
         parent::_initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         $dirname = $array[0][1];
         $this->model = get_model_class($dirname,'info');
         $this->c_model = get_model_class($dirname,'content');

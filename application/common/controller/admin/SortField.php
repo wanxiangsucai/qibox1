@@ -8,7 +8,7 @@ class SortField extends F
     {
         parent::_initialize();        
         if ( $this->request->isPost() ) {
-            preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+            preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
             $dirname = $array[0][1];
             query("ALTER TABLE  `qb_{$dirname}_field` CHANGE  `mid`  `mid` MEDIUMINT( 5 ) NOT NULL DEFAULT  '0' COMMENT  '所属模型id'");
         }

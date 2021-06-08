@@ -235,7 +235,7 @@ class Msg extends Model
         ->field('uid,touid,create_time,title,id,ifread,qun_id,visit_time,update_time')
         //->order('id desc')
         ->order('update_time desc,visit_time desc,id desc')
-        ->limit(5000)   //理论上某个用户收到的私信及发出的私信及发出的圈子群聊(不包含圈子内其它人的聊天)很少有超过5千条。
+        ->limit(9000)   //理论上某个用户收到的私信及发出的私信及发出的圈子群聊(不包含圈子内其它人的聊天)很少有超过9千条。
         ->buildSql();
         
         $listdb = Db::table($subQuery.' a')

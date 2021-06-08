@@ -12,10 +12,10 @@ class Address extends MemberBase
      * @return \think\response\Json
      */
     public function add(){
-        if(!$this->user){
-            return $this->err_js('你还没登录');
+        if (!table_field('address','area')) {
+            into_sql("ALTER TABLE `qb_address` ADD `area` VARCHAR( 256 ) NOT NULL COMMENT '所在行政区域';");
         }
-        $data = input();
+        $data = input();        
         $data['uid'] = $this->user['uid'];
         $result = AddressModel::create($data);
         if($result){
@@ -57,22 +57,14 @@ class Address extends MemberBase
             return $this->err_js('你没权限');
         }
         $data = input();
-        if($this->request->isPost()){            
-            $array = [
-                    'id'=>$id,
-                    'sex'=>$data['sex'],
-                    'user'=>$data['user'],
-                    'telphone'=>$data['telphone'],
-                    'address'=>$data['address'],
-                    'often'=>$data['often'],
-            ];
-            if(AddressModel::update($array)){
+        if($this->request->isPost()){
+            if(AddressModel::where('id',$id)->update($data)){
                 if ($data['often']) {
                     AddressModel::where('uid',$this->user['uid'])->where('id','<>',$id)->update(['often'=>0]);
                 }
                 return $this->ok_js([],'修改成功');
             }else{
-                return $this->err_js('修改失败');
+                return $this->err_js('无效修改');
             }
         }
         return $this->ok_js($info);

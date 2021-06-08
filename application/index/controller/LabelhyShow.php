@@ -484,6 +484,9 @@ EOT;
             $tag_array['cfg'] = unserialize($tag_array['cfg']);
             $div_bgcolor = 'orange';
             $div_w = $tag_array['cfg']['div_width']>10?$tag_array['cfg']['div_width']:100;
+            if($div_w>1200){
+                $div_w = 200;
+            }
             $div_h = $tag_array['cfg']['div_height']>10?$tag_array['cfg']['div_height']:30;
             if ($type=='labelmodel') {
                 $div_h = $tag_array['cfg']['div_height']>30 ? 30 : $tag_array['cfg']['div_height'];

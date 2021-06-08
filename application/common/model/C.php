@@ -27,7 +27,7 @@ abstract class C extends Model
     protected function initialize()
     {
         parent::initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         if (!empty(self::$model_key) && self::$model_key!=$array[0][1]) {     //不为空,并且跟上次不一样,代表中途变更为其它模块频道
             self::$change_model = self::$model_key;     //记录一下上一次的频道名
         }
@@ -42,7 +42,7 @@ abstract class C extends Model
         if(empty(self::$model_key) || (self::$change_model && self::$change_model != self::$model_key)){
             self::InitKey();    //实例化模型类
         }else{
-            preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+            preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
             if(self::$model_key != $array[0][1]){
                 self::InitKey();    //不一致的时候
             }
@@ -529,9 +529,9 @@ abstract class C extends Model
      * @param number $rows
      * @return \think\Paginator|\app\common\model\unknown|array|\think\db\false|PDOStatement|string|\think\Model
      */
-    public static function getListByUid($uid=0,$rows=20,$pages=[]){
+    public static function getListByUid($uid=0,$rows=20,$pages=[],$map=[]){
         static::check_model();
-        $array = Db::name(self::$base_table)->where(static::map())->where('uid',$uid)->order('id','desc')->paginate(
+        $array = Db::name(self::$base_table)->where(static::map())->where('uid',$uid)->where($map)->order('id','desc')->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
                 empty($pages[1])?['query'=>input('get.')]:$pages[1]
@@ -1035,7 +1035,7 @@ abstract class C extends Model
             return $data?getArray($data):[];
         }
         
-//         preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+//         preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
 //         $dirname = $array[0][1];
         $dirname = self::$model_key;
         $sort_array = sort_config($dirname);    //获取栏目数据

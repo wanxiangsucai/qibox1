@@ -263,6 +263,44 @@ class Base extends Controller
         return parent::assign($name, $value);
     }
     
+    protected function format_json_data($array = []){
+        if(is_object($array)){
+            $array = getArray($array);
+        }
+        foreach($array AS $key=>$rs){
+            if(is_object($rs)){
+                $rs = $key=='listdb'?getArray($rs):'';
+            }
+            
+            if(is_array($rs)){
+                $rs = $this->format_json_data($rs);
+            }elseif( isset($array['uid']) && $array['uid']!=$this->user['uid'] ){
+                if($key!=0&&in_array($key, ['sncode','password'])){
+                    $rs = '';
+                }elseif(isset($array['password_rand'])){
+                    $rs = '';
+                }
+                
+            }
+            $array[$key] = $rs;
+        }
+        return $array;
+    }
+    
+    /**
+     * APP接口
+     * @return array[]|NULL[][]|unknown[]|NULL[]|boolean
+     */
+    protected function fetch_begin(){
+        if ( ENTRANCE!='index' && ($this->request->header('token') || $this->request->isAjax()) ) {
+            $array = val('','template');
+            if($array['listdb'] || $array['info']){
+                return $this->format_json_data($array['listdb']?:$array['info']);
+            }
+        }
+        return true;
+    }
+    
     protected function fetch($template = '', $vars = [], $replace = [], $config = [])
     {
         if (!defined('IN_TEMPLATE')) {
@@ -273,6 +311,10 @@ class Base extends Controller
             $array = val('','template')?:[];
             $array = array_merge($array,$vars);
             val($array,'template');
+            $result = $this->fetch_begin();
+            if($result!==true){
+                return $this->ok_js($result);
+            }
         }
         
         //自定义模板

@@ -18,7 +18,7 @@ abstract class M extends AdminBase
     protected function _initialize()
     {
         parent::_initialize();
-        preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+        preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
         $dirname = $array[0][1];
         $this->model = get_model_class($dirname,'module');
         $this->set_config();
@@ -157,7 +157,7 @@ abstract class M extends AdminBase
         
         if ($this->request->isPost()) {
             $data = $this->request->post();
-            preg_match_all('/([_a-z]+)/',get_called_class(),$array);
+            preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
             $dirname = $array[0][1];
             if ( !table_field($dirname.'_module','haibao') ) {
                 query("ALTER TABLE  `qb_{$dirname}_module` ADD  `haibao` VARCHAR( 255 ) NOT NULL COMMENT  '海报模板';");
