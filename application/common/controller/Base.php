@@ -127,7 +127,7 @@ class Base extends Controller
             //echo '404 Not Found';
             exit;
         }
-        if (strstr($msg,'没登录') || strstr($msg,'先登录')) {
+        if (strstr($msg,'没登录') ||strstr($msg,'没有登录') || strstr($msg,'先登录')) {
             if(!$this->request->isAjax() ){
                 if (in_weixin()) {  //在微信端,就强制自动登录!
                     if( config('webdb.weixin_type')==3 || (in_wxapp()&&config('webdb.wxapp_appid')&&config('webdb.wxapp_appsecret')) ){
@@ -229,7 +229,7 @@ class Base extends Controller
 //         header("Access-Control-Allow-Headers: *");
 //         header("Access-Control-Expose-Headers:*");
 //         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        if (strstr($msg,'没登录') || strstr($msg,'先登录')) {
+        if (strstr($msg,'没登录') ||strstr($msg,'没有登录') || strstr($msg,'先登录')) {
             $code = 500;
         }
         $array = [
@@ -275,7 +275,7 @@ class Base extends Controller
             if(is_array($rs)){
                 $rs = $this->format_json_data($rs);
             }elseif( isset($array['uid']) && $array['uid']!=$this->user['uid'] ){
-                if($key!=0&&in_array($key, ['sncode','password'])){
+                if($key!==0&&in_array($key, ['sncode','password'])){
                     $rs = '';
                 }elseif(isset($array['password_rand'])){
                     $rs = '';
