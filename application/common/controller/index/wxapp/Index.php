@@ -44,10 +44,13 @@ abstract class Index extends IndexBase
      * @param string $uid 指定用户的数据
      * @param string $keyword 按关键字搜索
      */
-    public function index($fid=0,$type='',$rows=10,$notfid='',$mid=1,$ext_id=0,$ext_sys='',$uid=0,$keyword=''){
+    public function index($fid=0,$type='',$rows=10,$notfid='',$mid=1,$ext_id=0,$ext_sys='',$uid=0,$keyword='',$myfid=0){
         $map = [
             'status'=>['>',0],
         ];
+        if (input('myfid')) {
+            $myfid = input('myfid');
+        }
         if (input('uid')) {
             $uid = input('uid');
         }
@@ -76,6 +79,9 @@ abstract class Index extends IndexBase
                 return $this->error('频道不存在！');
             }
             $ext_sys = $module['id'];
+        }
+        if ($myfid) {
+            $map['myfid'] = $myfid;
         }
         if ($ext_sys) {
             $map['ext_sys'] = $ext_sys;

@@ -37,9 +37,9 @@ class Order extends IndexBase
         }
         $info = getArray(AddressModel::where($map)->order('often desc,id desc')->find());     //用户的地址   
         $data = [
-                'linkman'   => $info['user'],
-                'telphone'  => $info['telphone'],
-                'address'   => $info['address'],
+                'linkman'   => $info['user']?:'',
+                'telphone'  => $info['telphone']?:'',
+                'address'   => $info['address']?:'',
         ];
         $data['uid']            = $this -> user['uid'];
         $data['create_time']    = time();
@@ -83,7 +83,11 @@ class Order extends IndexBase
         }
         if($order_ids){
             $this->car_model->where(['uid'=>$this->user['uid'],'ifchoose'=>1])->delete();
-            return $this->ok_js($order_ids,'下单成功');
+            return $this->ok_js([
+                'order_ids'         =>  $order_ids,
+                'totalmoney'        =>  $total_money,
+                'callback_class'    =>  mymd5('app\\'.config('system_dirname').'\\model\\Order@pay@'.implode(',', $order_ids))
+            ],'下单成功');
         }else{
             return $this->err_js('下单失败');
         }

@@ -38,7 +38,12 @@ class Wxapp extends IndexBase
             $this->error('地址不能为空');
         }
         $imgurl = WxappFun::wxapp_codeimg($url,$this->user['uid']);
-        header("location:$imgurl");
+        if(strstr($imgurl,'invalid page rid')||strstr($imgurl,'"errcode"')){
+            die($imgurl);
+        }
+        header("Content-Type: image/png;text/html; charset=utf-8");
+        echo file_get_contents($imgurl);
+        //header("location:$imgurl");
         exit;
     }
     

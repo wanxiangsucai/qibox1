@@ -44,7 +44,7 @@ class Login extends IndexBase
                 cache2(md5($token),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t",3600*240);
                 $array = [
                     'uid'=>$result['uid'],
-                    'userInfo'=>\app\common\fun\Member::format($result),
+                    'userInfo'=>\app\common\fun\Member::format($result,$user['uid']),
                     'token'=>$token,
                 ];
                 return $this->ok_js($array,'登录成功');
@@ -116,7 +116,7 @@ class Login extends IndexBase
         $array = [
             'uid'=>$result['uid'],
             'token'=>$token,
-            'userInfo'=>\app\common\fun\Member::format($user),
+            'userInfo'=>\app\common\fun\Member::format($user,$user['uid']),
         ];
         return $this->ok_js($array,'登录成功');
     }
@@ -261,7 +261,7 @@ class Login extends IndexBase
         cache2(md5($skey),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t$sessionKey"."\t{$openid}",3600*72);
         $array = [
             'token'=>$skey,
-            'userInfo'=>\app\common\fun\Member::format($user),
+            'userInfo'=>\app\common\fun\Member::format($user,$user['uid']),
         ];
         return $this->ok_js($array);
     }
@@ -339,7 +339,7 @@ class Login extends IndexBase
                 cache2(md5($code),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN')."\t\t{$array['openid']}",3600);
                 $array = [
                     'token'=>$code,
-                    'userInfo'=>\app\common\fun\Member::format($user),
+                    'userInfo'=>\app\common\fun\Member::format($user,$user['uid']),
                 ];
                 return $this->ok_js(array_merge($array,$cfg));
             }else{

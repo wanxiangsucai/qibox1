@@ -98,8 +98,12 @@ trait LabelEdit {
      * 删除标签
      * @param string $name
      */
-    public function delete($name=''){
-        if (LabelModel::destroy(['name'=>$name])) {
+    public function delete($name='',$pagename=''){
+        $map = ['name'=>$name];
+        if ($pagename) {
+            $map['pagename'] = $pagename;
+        }
+        if (LabelModel::where($map)->delete()) {
             $this->clean_cache($name);
             $this -> success('删除成功');
         } else {
@@ -211,7 +215,7 @@ trait LabelEdit {
         $result = LabelModel::save_data($array);
         if($result===true){
             $this->clean_cache($array['name']);
-			if($this->request->isAjax()){
+            if($this->request->isAjax() || isset($_SERVER['HTTP_TOKEN']) || $this->request->header('token') ){
 				$this->success('设置成功');
 			}else{
 				echo '<script type="text/javascript">

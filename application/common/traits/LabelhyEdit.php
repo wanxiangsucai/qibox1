@@ -48,8 +48,12 @@ trait LabelhyEdit {
      * @param number $hy_id 圈子黄页ID
      * @param number $hy_tags 同名标签编号
      */
-    public function delete($name='',$hy_id=0,$hy_tags=0){
-        if (LabelModel::where(['name'=>$name,'ext_id'=>$hy_id,'fid'=>intval($hy_tags)])->delete()) {
+    public function delete($name='',$hy_id=0,$hy_tags=0,$pagename=''){
+        $map = ['name'=>$name,'ext_id'=>$hy_id,'fid'=>intval($hy_tags)];
+        if ($pagename) {
+            $map['pagename'] = $pagename;
+        }
+        if (LabelModel::where($map)->delete()) {
             $this -> success('删除成功');
         } else {
             $this -> error('删除失败');
@@ -73,7 +77,7 @@ trait LabelhyEdit {
         unset($array['view_tpl']);  //安全起见,不允许设置模板代码
         $result = LabelModel::save_data($array);
         if($result===true){
-            if($this->request->isAjax()){
+            if($this->request->isAjax() || isset($_SERVER['HTTP_TOKEN']) || $this->request->header('token') ){
                 $this->success('设置成功');
             }else{
                 echo '<script type="text/javascript">

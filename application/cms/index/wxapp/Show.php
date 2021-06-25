@@ -18,7 +18,7 @@ class Show extends _Show
     }
     
     protected function format_data($info=[]){
-        if(!in_array($info['mid'], [2,3,4])){
+        if(function_exists('get_content_pages') && !in_array($info['mid'], [2,3,4])){
             $info['morePage'] = [];
             $array = get_content_pages($info['id']);
             if($array){

@@ -414,6 +414,27 @@ class Label extends IndexBase
         return 10000+$j;
     }
     
+    public function appform($name='',$hy_id='',$hy_tags=''){
+        if(IS_POST){
+            $data = $this->request->post();
+            $this->setTag_value("app\\index\\controller\\LabelShow@labelGetMyform")
+            ->setTag_extend_cfg(json_encode($data))
+            ->setTag_type( substr(strstr(__METHOD__,'::'),2) );
+            $_array = $this->get_post_data();
+            $this->save($_array);
+        }
+        
+        $form_items = [
+            ['textarea', 'extend_aaa','示例 代码','',$info['extend_cfg']],
+            ['text', 'extend_bbb','示例 代码','',$info['extend_cfg']],
+        ];
+                
+        $_info = $this->getTagInfo();
+        $info = json_decode($_info['extend_cfg'],true);
+        
+        return $this -> get_form_table($info, $form_items,false);
+    }
+    
     
     /**
      * 自定义表单

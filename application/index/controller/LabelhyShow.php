@@ -14,6 +14,7 @@ class LabelhyShow extends LabelShow
         if (defined('LABEL_SET') && LABEL_SET===true){
             set_cookie('labelhy_set','set');
         }
+        $this->model = new LabelModel;
     }
     
     /**

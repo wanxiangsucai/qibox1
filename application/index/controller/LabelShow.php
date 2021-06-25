@@ -11,12 +11,18 @@ class LabelShow extends IndexBase
     public static $label_adminurl = [];
     
     protected $beforeActionList = [
-        'check_run'  =>  ['except'=>'app_get,ajax_get'],
+        'check_run'  =>  ['except'=>'app_get,ajax_get,list_apptag'],
     ];
     protected function check_run(){
         if (!defined('IN_TEMPLATE')) {
             $this->error('只能在模板中调用!!');
         }
+    }
+    
+    protected function  _initialize()
+    {
+        parent::_initialize();
+        $this->model = new LabelModel;
     }
 
     /**
@@ -225,6 +231,25 @@ class LabelShow extends IndexBase
                 'data'=>['picurl'=>$picurl,'url'=>$url],
                 'format_data'=>$url?"<a href='$url' target='_blank'><img src='$picurl'></a>":'<img src="'.$picurl.'">',
         ];
+    }
+    
+    /**
+     * APP标签获取所有标签数据
+     * @param number $ext_id
+     * @param string $pagename
+     * @return void|unknown|\think\response\Json
+     */
+    public function list_apptag($ext_id=0,$pagename='app_'){
+        $map = [
+            'pagename'=>$pagename,
+            'ext_id'=>$ext_id,
+        ];
+        $listdb = [];
+        $array = $this->model->where($map)->column(true);
+        foreach ($array AS $rs){
+            $listdb[] = $this->labelGetMyform($rs);
+        }
+        return $this->ok_js($listdb);
     }
     
     /**
