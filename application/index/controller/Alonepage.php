@@ -21,6 +21,7 @@ class Alonepage extends IndexBase
         if ($info['template'] && is_file(TEMPLATE_PATH . 'index_style/' . $info['template'])) {
             $template = getTemplate(TEMPLATE_PATH . 'index_style/'  . $info['template']);       //如果不用pc_或wap_开头的文件名,能自动识别PC或WAP模板
         }
+        $info['content'] = fun('ueditor@show',$info['content'],'show'); //播放视频
         AlonepageModel::where('id',$id)->setInc('view',1);
         $this->assign('info', $info);
 		$this->assign('fid','alonepage'.$id);	//这里纯属是给PC头部菜单做选中样式调用
@@ -41,6 +42,7 @@ class Alonepage extends IndexBase
             return $this->err_js('内容已关闭');
         }
         AlonepageModel::where('id',$id)->setInc('view',1);
+        $info['picurl'] = tempdir($info['picurl']);
         $info['content'] = str_replace('="/public/uploads', '="'.$this->request->domain().'/public/uploads', $info['content']);
         return $this->ok_js($info);
     }

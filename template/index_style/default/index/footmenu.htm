@@ -157,4 +157,9 @@ $(".footmenu_warp .menu1").click(function() {
         $(this).children(".menu2").slideDown("fast"); //展示当前的二级菜单
     }
 });
+
+
+if("{:get_cookie('hide_footmenu')}"==$(window).height()){
+	$(".footmenu_warp").hide();	//在小程序的tabbar中打开，就不要重复显示菜单了
+}
 </script>

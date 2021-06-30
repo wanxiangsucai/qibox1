@@ -109,6 +109,13 @@ class Init{
 			$this->webdb=array_merge($this->webdb,$this->webdb['M__'.$dispatch['module'][0]]);
 		}
 		
+		if($_GET['hide_footmenu']){
+		    set_cookie('hide_footmenu',intval($_GET['hide_footmenu']));    //隐藏底部菜单
+		}
+		if($_GET['hide_member']){
+		    set_cookie('hide_member',filtrate($_GET['hide_member']));    //禁用会员中心
+		}
+		
 		if( isset($_GET['qun_wxapp_appid'])&&empty($_GET['qun_wxapp_appid']) ){
 		    cookie('qun_wxapp_appid',null);
 		}elseif ( ($qun_wxapp_appid = input('qun_wxapp_appid')?:(cookie('qun_wxapp_appid')?:request()->header('wxappid')) )!=false ) {

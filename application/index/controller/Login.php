@@ -185,7 +185,7 @@ class Login extends IndexBase
             $result = UserModel::login($phone_num,'',3600*24*7,true,'mobphone');
             if (is_array($result) && $result['uid']) {
                 $token = md5( mymd5($result['uid'] . $result['lastip']  . $result['lastvist'] .date('z')) );
-                cache2(md5($token),"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",60);
+                cache2(md5($token),"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",3600*24);
                 return $this->ok_js([
                     'token'=>$token,
                     'type'=>'login',
@@ -201,7 +201,7 @@ class Login extends IndexBase
                             'type'=>'reg',
                             'uid'=>0,
                             'username'=>substr($phone_num,9),
-                    ],'验证输入正确');
+                    ],'验证码输入正确');
         }
     }
     
@@ -239,7 +239,7 @@ class Login extends IndexBase
             }elseif(empty($phone_num)){
                 $this->error('验证码不正确!');
             }
-            cache('phone_login'.$data['phone_code'],null);
+            
             $data['mobphone'] = $phone_num;     //避免用户中途换号码
             
             if( UserModel::get_info( $phone_num , 'mobphone')){
@@ -264,14 +264,17 @@ class Login extends IndexBase
             hook_listen('reg_by_hand_end',$uid,$data);			
             
             $result = UserModel::login($phone_num,'',3600*24*7,true,'mobphone');   //帐号同时实现登录
-            if(is_array($result)){
+            if(is_array($result)){                
+                cache('phone_login'.$data['phone_code'],null);                
                 $url = murl('member/index/index');
                 if($data['fromurl'] && !strstr($data['fromurl'],'index/login')){
                     $url = $data['fromurl'];
                 }
                 $token = md5( mymd5($result['uid'] . $result['lastip']  . $result['lastvist'] .date('z')) );
                 cache2(md5($token),"{$result['uid']}\t{$result['username']}\t".mymd5($result['password'],'EN')."\t",60);
-                $this->success('注册成功',$url,$token);
+                $this->success('注册成功',$url,[
+                    'token'=>$token,
+                ]);
             }else{
                 $this->error('注册失败！');
             }

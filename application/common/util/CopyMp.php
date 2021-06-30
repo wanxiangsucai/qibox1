@@ -81,7 +81,7 @@ class CopyMp
         $postdb['content'] = str_replace(' data-src=\"https://mmbiz.',' src=\"http://mmbiz.',$postdb['content']);
         $postdb['content'] = str_replace(' src=\"https://mmbiz.',' src=\"http://mmbiz.',$postdb['content']);
         
-        preg_match_all("/(http|https):\/\/([^ '\"<>]+)(\.gif|\.jpg|\.png|wx_lazy=1)/is",$postdb['content'],$array);
+        preg_match_all("/(http|https):\/\/([^ '\"<>]+)(\.gif|\.jpg|\.png|wx_lazy=1|wx_fmt=png|wx_fmt=jpeg|wx_fmt=gif)/is",$postdb['content'],$array);
         $filedb=$array[0];
         foreach( $filedb AS $key=>$value){
             if( strstr($value,$www_url) ){

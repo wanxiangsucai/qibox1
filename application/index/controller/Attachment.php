@@ -345,17 +345,20 @@ class Attachment extends IndexBase{
 		// 判断附件格式是否符合
 		$file_name = $file->getInfo( 'name' );
 		$file_ext = strtolower( substr( $file_name,strrpos( $file_name,'.' )+1 ) );
+		
 		if ( $ext_limit == '' ) {
 			$error_msg = '系统没设置允许上传附件的类型！';
 		} elseif ( ! function_exists( 'finfo_open' ) ) {
 			$error_msg = '服务器没开启fileinfo组件！';
 		} elseif ( ! function_exists( 'imagecreatefromjpeg' ) ) {
 			$error_msg = '服务器没开启GD库！';
+		} elseif ( in_array( $file_ext,['php','asp','aspx','jsp'] ) ) {
+		    $error_msg = '可执行文件，禁止上传！';
 		} elseif ( $file->getMime() == 'text/x-php' || $file->getMime() == 'text/html' ) {
 			$error_msg = '禁止上传非法文件！';
 		} elseif ( $file_ext == '' ) {
 			$error_msg = '无法获取上传文件的后缀！';
-		} elseif ( ! in_array( $file_ext,$ext_limit ) ) {
+		}  elseif ( ! in_array( $file_ext,$ext_limit ) ) {
 			$error_msg = '系统未允许上传此类型的文件！';
 		} elseif ( $file->getInfo( 'size' ) > $size_limit ) {
 			$error_msg = '附件过大';
