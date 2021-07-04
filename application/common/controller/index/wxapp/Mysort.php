@@ -33,7 +33,7 @@ abstract class Mysort extends IndexBase
             return $this->err_js('参数不存在!');
         }
         $data_list = $this->model->where($map)->order('list desc,id asc')->column(true);
-        return $this->ok_js($data_list);
+        return $this->ok_js(array_values($data_list));
     }
 }
 

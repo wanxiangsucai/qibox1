@@ -113,7 +113,7 @@ abstract class Order extends KehuOrder
     protected function get_goods($array=[],$order_info=[]){
         $goods = [];
         foreach ($array AS $rs){
-            $goods[] = [
+            $data = [
                 'goods_id' => $rs['id'],
                 'id' => $rs['id'],
                 'goods_sku_id' => '',
@@ -130,6 +130,8 @@ abstract class Order extends KehuOrder
                 'refund_status' => 0,
                 'operation' =>[],
             ];
+            unset($rs['sncode'],$rs['password']);
+            $goods[] = array_merge($rs,$data);
         }
         return [
             'type' => 'goods',
@@ -158,6 +160,7 @@ abstract class Order extends KehuOrder
         }
     }
     
+    
     protected function order_base_field($info=[]){
         return [
             'type' => 'basic',
@@ -170,6 +173,8 @@ abstract class Order extends KehuOrder
                     'receive_status' => $info['receive_status'],
                     'goods_amount' => $info['totalmoney'],
                     'order_amount' => $info['pay_money'],
+                    'pay_money' => $info['pay_money'],
+                    'fewmoney' => $info['fewmoney']?:0,
                     'order_time' => $info['create_time'],
                     'uid' => $info['uid'],
                     'linkman' => $info['linkman'],
@@ -180,6 +185,7 @@ abstract class Order extends KehuOrder
                     'cancel_time' => '',
                     'refund_time' => '',
                     'complete_time' => '',
+                    'callback_class'=>mymd5('app\\'.config('system_dirname').'\\model\\Order@pay@'.$info['id']),
                 ],
             ],
         ];
@@ -445,7 +451,7 @@ abstract class Order extends KehuOrder
         return [
             'type' => 'operation',
             'data' =>[
-                'list' =>$array,
+                'list' =>($info['pay_money']>0||$info['fewmoney']>0)?$array:[],
             ],
         ];
     }

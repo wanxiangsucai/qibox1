@@ -237,6 +237,7 @@ abstract class Order extends IndexBase
     public function label($tag_array=[]){
         $cfg = unserialize($tag_array['cfg']);
         $info = $this->content_model->getInfoByid(intval($cfg['ids']));
+        unset($info['sncode'],$info['password']);
         return [
             'info'=>$info,
             'f_array'=>$info ? $this->get_order_field($info) : [],

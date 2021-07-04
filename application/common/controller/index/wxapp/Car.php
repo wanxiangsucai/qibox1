@@ -405,8 +405,8 @@ class Car extends IndexBase
     protected function get_goods($array=[]){
         $data = [];
         foreach($array AS $qs){
-            foreach($qs['shops'] AS $rs){
-                $data[] = [
+            foreach($qs['shops'] AS $rs){                
+                $ar = [
                     'cart_id' => $rs['_car_']['id'],
                     'goods_id' => $rs['id'],
                     'goods_sku_key' => $rs['_car_']['type1'].','.$rs['_car_']['type2'].','.$rs['_car_']['type3'],
@@ -423,6 +423,8 @@ class Car extends IndexBase
                     'integral_discount' => 0,
                     'integral' => 0,
                 ];
+                unset($rs['_car_'],$rs['sncode'],$rs['password']);
+                $data[] = array_merge($rs,$ar);
             }
         }
         return $data;
