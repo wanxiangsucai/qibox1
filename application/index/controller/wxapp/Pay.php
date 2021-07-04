@@ -27,7 +27,7 @@ class Pay extends IndexBase
                     if(empty(get_wxappAppid()) && $this->user['weixin_api']=='' && $this->user['wxapp_api']=='' && $this->user['wxopen_api']==''){
                         $this->err_js('你的当前帐号还没有绑定微信，不能使用微信支付');
                     }
-        }else{
+        }elseif($type!='rmb'){
             $this->error('系统没有设置好微信支付接口,所以不能使用微信支付');
         }
    
@@ -36,6 +36,15 @@ class Pay extends IndexBase
             $openId = get_wxappAppid() ?  \app\qun\model\Weixin::get_openid_by_uid($this->user['uid']) : $this->user['wxapp_api'] ;
         }elseif($type=='wxopen'){
             $openId = $this->user['wxopen_api'];
+        }elseif($type=='rmb'){
+            if ($this->user['rmb']<$money) {
+                return $this->err_js('你的余额不足!');
+            }
+            $callback_class = mymd5($callback_class,'DE');
+            if ($callback_class){
+                $this->run_callback($callback_class);
+            }
+            return $this->ok_js();
         }else{
             $openId = $this->user['weixin_api'];
         }
@@ -99,5 +108,27 @@ class Pay extends IndexBase
         }else{
             return include(ROOT_PATH.'plugins/weixin/api/wxapp.php');
         }        
+    }
+    
+    
+    /**
+     * 支付成功,异步执行各种功能模块的应用 格式是 mymd5("app\\shop\\model\\Order@pay@5")
+     * @param unknown $code
+     */
+    protected function run_callback($code){
+        if (empty($code)) {
+            return ;
+        }
+        //'app-shop-model-Order@pay@order_id|5' //弃用这种格式了
+        $detail = explode('@',$code);
+        $class = str_replace('-', '\\', $detail[0]);    //兼容以前用-隔开目录名的情况
+        $action = $detail[1];
+        $ar = explode('|',$detail[2]);
+        //$_params = [$ar[0]=>$ar[1]];
+        $_params = $ar;
+        if(class_exists($class)&&method_exists($class,$action)){
+            $obj = new $class;
+            call_user_func_array([$obj, $action], $_params);
+        }
     }
 }
