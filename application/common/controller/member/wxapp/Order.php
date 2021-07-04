@@ -162,46 +162,66 @@ abstract class Order extends KehuOrder
     
     
     protected function order_base_field($info=[]){
+        $callback_class = mymd5('app\\'.config('system_dirname').'\\model\\Order@pay@'.$info['id']);
+        if($info['fewmoney']>0&&$info['few_ifpay']==0){
+            $callback_class = mymd5('app\\'.config('system_dirname').'\\model\\Order@payfew@'.$info['id']);
+        }
+        $data = [
+                'order_sn' => $info['order_sn'],
+                'order_id' => $info['id'],
+                'pay_status' => $info['pay_status'],
+                'shipping_status' => $info['shipping_status'],
+                'receive_status' => $info['receive_status'],
+                'goods_amount' => $info['totalmoney'],
+                'order_amount' => $info['pay_money'],
+                'pay_money' => $info['pay_money'],
+                'fewmoney' => $info['fewmoney']?:0,
+                'order_time' => $info['create_time'],
+                'uid' => $info['uid'],
+                'linkman' => $info['linkman'],
+                'buyer_remark' => '',
+                'seller_remark' => '',
+                'pay_time' => '',
+                'shipping_time' => '',
+                'cancel_time' => '',
+                'refund_time' => '',
+                'complete_time' => '',
+                'callback_class'=>$callback_class,
+        ];
         return [
             'type' => 'basic',
             'data' =>[
-                'field' =>[
-                    'order_sn' => $info['order_sn'],
-                    'order_id' => $info['id'],
-                    'pay_status' => $info['pay_status'],
-                    'shipping_status' => $info['shipping_status'],
-                    'receive_status' => $info['receive_status'],
-                    'goods_amount' => $info['totalmoney'],
-                    'order_amount' => $info['pay_money'],
-                    'pay_money' => $info['pay_money'],
-                    'fewmoney' => $info['fewmoney']?:0,
-                    'order_time' => $info['create_time'],
-                    'uid' => $info['uid'],
-                    'linkman' => $info['linkman'],
-                    'buyer_remark' => '',
-                    'seller_remark' => '',
-                    'pay_time' => '',
-                    'shipping_time' => '',
-                    'cancel_time' => '',
-                    'refund_time' => '',
-                    'complete_time' => '',
-                    'callback_class'=>mymd5('app\\'.config('system_dirname').'\\model\\Order@pay@'.$info['id']),
-                ],
+                'field' =>array_merge($info,$data),
             ],
         ];
     }
     
     protected function order_status($info=[]){
+        if($info['fewmoney']>0){
+            if($info['pay_status']!=0){
+                $msg = '已付全款';
+                $color = 'red';
+            }elseif($info['few_ifpay']!=0){
+                $msg = '已付订金,未付尾款';
+                $color = 'blue';
+            }else{
+                $msg = '未付款';
+                $color = '#333333';
+            }
+        }else{
+            $msg = $info['pay_status']?'已支付':'待支付';
+            $color = $info['pay_status']?'#f70202':'#333333';
+        }
         return [
             'type' => 'status',
             'data' =>[
                 'field' =>[
-                    'text' => $info['pay_status']?'已支付':'待支付',
-                    'note' => '',
+                        'text' => $msg,
+                        'note' => '',
                 ],
                 'style' =>[
-                    'color' => $info['pay_status']?'#f70202':'#333333',
-                    'background' => '#e93323',
+                        'color' => $color,
+                        'background' => '#e93323',
                 ],
             ],
         ];
@@ -412,16 +432,42 @@ abstract class Order extends KehuOrder
      */
     protected function order_menu($info=[]){
         if($info['pay_status']==0){
-            $array = [
-                [
-                    'label' => '立即支付',
-                    'code' => 'payment',
-                ],
-                [
-                    'label' => '取消订单',
-                    'code' => 'delete',
-                ],
-            ];
+            if($info['fewmoney']>0){
+                if($info['few_ifpay']==0){
+                    $array = [
+                            [
+                                    'label' => '支付订金',
+                                    'code' => 'payment',
+                            ],
+                            [
+                                    'label' => '取消订单',
+                                    'code' => 'delete',
+                            ],
+                    ];
+                }else{
+                    $array = [
+                            [
+                                    'label' => '支付尾款',
+                                    'code' => 'payment',
+                            ],
+                            [
+                                    'label' => '申请退订',
+                                    'code' => 'tuifew',
+                            ],
+                    ];
+                }     
+            }else{
+                $array = [
+                        [
+                                'label' => '立即支付',
+                                'code' => 'payment',
+                        ],
+                        [
+                                'label' => '取消订单',
+                                'code' => 'delete',
+                        ],
+                ];
+            }            
         }elseif($info['pay_status']==1 && $info['shipping_status']==0){
             $array = [
                 [
