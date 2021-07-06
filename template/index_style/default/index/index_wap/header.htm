@@ -7,6 +7,13 @@
 	{$header_title?$header_title:(M('name')?:$webdb['webname'])}
 	<div class="R"><i onclick="window.location.href='{:get_url('member')}'" class="fa fa-user-circle-o"></i> <i class="web_menu_btn fa fa-ellipsis-h"></i></div>
 </div>
+<script type="text/javascript">
+$(function(){
+	if("{:get_cookie('hide_footmenu')}"==$(window).height()){
+		$(".qb_wap_header").hide();	//在小程序的tabbar中打开，就不要重复显示菜单了
+	}
+})
+</script>
 <!--
 <link rel="stylesheet" href="__STATIC__/index/default/header.css">
 <div class="body_Hearcont">
