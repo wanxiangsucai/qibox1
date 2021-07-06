@@ -189,6 +189,7 @@
 
 .change-type-moremenu .type-right-moremenu {
     /*width: 40px;*/
+	height: 30px;
     background: #27BBBF;
 	opacity:0.8;
     overflow: hidden;
