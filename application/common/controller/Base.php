@@ -68,6 +68,18 @@ class Base extends Controller
             fun('filter@check_safe'); //禁止提交eval <?php
         }
         
+        if(isset($_GET['hide_footmenu'])){
+            set_cookie('hide_footmenu',intval($_GET['hide_footmenu']));    //隐藏底部菜单
+        }
+        if(isset($_GET['hide_member'])){
+            set_cookie('hide_member',filtrate($_GET['hide_member']));    //禁用会员中心
+        }
+        if(isset($_GET['login_token'])){
+            set_cookie('login_token',$_GET['login_token']);            
+        }
+        if(get_cookie('login_token')){
+            cache(get_cookie('login_token'),get_ip()."\t".$this->user['uid']."\t".get_cookie('sockpuppet_uid'),600);    //小程序同步登录
+        }
     }
     
     

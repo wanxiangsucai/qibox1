@@ -15,9 +15,10 @@ class Pay extends IndexBase
      * @param string $other 其它参数
      * @param string $callback_class 支付成功后,回调函数执行类
      * @param string $type 公众号支付,还是小程序支付
+     * @param string $code 小程序登录code，为了获取openid
      * @return unknown
      */
-    public function index($money='0.01' , $numcode='' , $title='' , $other='',$callback_class='',$type='wxapp'){
+    public function index($money='0.01' , $numcode='' , $title='' , $other='',$callback_class='',$type='wxapp',$code=''){
         
         if(
                 ($this->webdb['weixin_appid'] && $this->webdb['weixin_appsecret'] && $this->webdb['weixin_payid'] && $this->webdb['weixin_paykey'])
@@ -33,7 +34,19 @@ class Pay extends IndexBase
    
         $numcode || $numcode = 'w'.date('ymdHis').rands(3);
         if($type=='wxapp'){
-            $openId = get_wxappAppid() ?  \app\qun\model\Weixin::get_openid_by_uid($this->user['uid']) : $this->user['wxapp_api'] ;
+            $openId = '';
+            if($code){
+                if (get_wxappAppid() && wxapp_open_cfg(get_wxappAppid())) {
+                    $string = file_get_contents('https://api.weixin.qq.com/sns/component/jscode2session?appid='.get_wxappAppid().'&js_code='.$code.'&grant_type=authorization_code&component_appid='.config('webdb.P__wxopen')['open_appid'].'&component_access_token='.wx_getOpenAccessToken());
+                }else{
+                    $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.$this->webdb['wxapp_appid'].'&secret='.$this->webdb['wxapp_appsecret'].'&js_code='.$code.'&grant_type=authorization_code');
+                }
+                $array = json_decode($string,true);
+                $openId = $array['openid'];
+            }
+            if(!$openId){
+                $openId = get_wxappAppid() ?  \app\qun\model\Weixin::get_openid_by_uid($this->user['uid']) : $this->user['wxapp_api'] ;
+            }
         }elseif($type=='wxopen'){
             $openId = $this->user['wxopen_api'];
         }elseif($type=='rmb'){

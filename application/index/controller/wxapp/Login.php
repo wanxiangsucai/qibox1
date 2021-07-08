@@ -347,9 +347,48 @@ class Login extends IndexBase
                 return $this->err_js('用户不存在！',$cfg);
             }            
         }else{
-            return $this->err_js($string,$cfg);
+            return $this->err_js($string.'appid:'.get_wxappAppid(),$cfg);
         }
     }
+    
+    /**
+     * 借助H5实现小程序登录
+     * @param string $sid
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function login_from_h5($sid=''){
+        if(!$sid){
+            return $this->err_js('sid参数不存在');
+        }
+        $str = cache($sid);
+        if(!$str){
+            return $this->err_js('资料不存在');
+        }
+        list($ip,$uid,$sockpuppet) = explode("\t", $str);
+        
+        if ($ip!=get_ip()) {
+            return $this->err_js('登录IP不一致！');
+        }elseif(!$uid){
+            return $this->err_js('游客状态！');
+        }
+        
+        if($sockpuppet){
+            list($time,$suid) = explode("\t", mymd5($sockpuppet,'DE'));
+            if($suid){
+                $uid = $suid;
+            }
+        }
+        
+        $user = get_user($uid);
+        $code = md5( mymd5($user['uid'].$user['password'].date('z')) );
+        cache2(md5($code),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN'),3600);
+        $array = [
+            'uid'=>$uid,
+            'token'=>$code,
+        ];
+        return $this->ok_js($array);
+    }
+    
     
     /**
      * 小程序或APP客户端检查登录状态
