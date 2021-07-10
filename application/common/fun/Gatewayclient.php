@@ -2,7 +2,7 @@
 namespace app\common\fun;
 
 use GatewayClient\Gateway;
-use WebSocket\Client;
+use WebSocket\Client AS wClient;
 
 class Gatewayclient{
     
@@ -31,7 +31,7 @@ class Gatewayclient{
             $array['my_uid'] = $array['my_uid']?:login_user('uid');
             $array = json_encode($array);
         }
-        $client = new Client($this->client_url());
+        $client = new wClient($this->client_url());
         $string = $client->receive();
         //$info = json_decode($string,true);
         //$client_id = $info['client_id'];
