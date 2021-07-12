@@ -88,7 +88,7 @@ class Api extends IndexBase
 //         exit;
         
         if($agree==1){  //点赞          
-            return $this->agree($aid?:$id);
+            return $this->agree($id);
         }elseif ($this->request->isPost()) {
             $data = $this->request->post();
             
