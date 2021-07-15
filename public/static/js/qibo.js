@@ -275,7 +275,7 @@ var Qibo = function () {
 				//objs=obj.getElementsByTagName("TD");
 				//objs[1].id=DivId;
 				obj.innerHTML='<div class="more-menu-wap"><div class="more-menu-in" id="'+DivId+'"></div></div>';
-				obj.style.Zindex='9990';
+				obj.style.zIndex='9990';
 				obj.style.display='none';	//网速慢的话,就把这行删除掉,直接先显示,再加载其它内容
 				obj.style.position='absolute';
 				obj.style.top=position.bottom+'px';
