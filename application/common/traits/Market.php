@@ -28,8 +28,8 @@ UPDATE  `qb_config` SET is_open=1 WHERE  `c_key` IN ( 'webname','wxapp_appid','M
         if(!is_writable($basepath)){
             return $this->err_js($basepath.'目录不可写,请先修改目录属性可写');
         }elseif ( is_dir($basepath.$keywords) ){
-            if ($upvip==1||($type=='m'&&modules_config($keywords))||($type!='m'&&plugins_config($keywords))) { //如果频道停用的话.原数据库会被清空
-                $_array = modules_config($keywords);
+            if ($upvip==1||($type=='m'&&$_array=modules_config($keywords))||($type!='m'&&$_array=plugins_config($keywords))) { //如果频道停用的话.原数据库会被清空
+                //$_array = modules_config($keywords);
                 if($upvip==1){
                     $this->model->update([
                         'id'=>$_array['id'],
@@ -38,7 +38,8 @@ UPDATE  `qb_config` SET is_open=1 WHERE  `c_key` IN ( 'webname','wxapp_appid','M
                     ]);
                     Cache::clear();
                     return $this->err_js( '当前应用成功授权为正版应用,请按键盘F5键,刷新网页获取升级文件.' );
-                }elseif ($type=='m' && $_array && $_array['version_id']!=$id) {
+                }elseif (//$type=='m' && 
+                    $_array && $_array['version_id']!=$id) {
                     $_info = json_decode(http_curl("https://x1.php168.com/appstore/getapp/info.html?id=".$id),true);
                     $this->model->update([
                         'id'=>$_array['id'],
@@ -47,9 +48,9 @@ UPDATE  `qb_config` SET is_open=1 WHERE  `c_key` IN ( 'webname','wxapp_appid','M
                         'author'=>$_info['author']?:'',
                     ]);
                     Cache::clear();
-                    return $this->err_js( $_array['name'].' 频道数据库升级成功,你还需要进一步升级文件,请按键盘F5键,刷新网页重新升级程序文件.' );
+                    return $this->err_js( $_array['name'].' 模块数据库升级成功,你还需要进一步升级文件,请按键盘F5键,刷新网页重新升级程序文件.' );
                 }else{
-                    return $this->err_js($basepath.$keywords.'该频道已经存在了,不能重复安装');
+                    return $this->err_js($basepath.$keywords.'该模块已经存在了,不能重复安装');
                 }                
             }else{
                 return $this->err_js("目录冲突，安全起见，请先卸载或删除当前目录:".$basepath.$keywords."，才能安装当前应用");
