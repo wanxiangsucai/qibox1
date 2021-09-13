@@ -44,13 +44,18 @@ class Image extends IndexBase
 	 * @param string $url
 	 */
 	public function headers($url=''){
+	    //get_headers($url,1) 
 		if($url==''){
 			return ;
 		}
 		if(preg_match("/^\//",$url)){
 		    $url = get_url(preg_match("/^\/index(\.php|)\//", $url)?$url:tempdir($url));
 		}
-		$img = file_get_contents($url)?:http_curl($url); die($img);
+		$img = file_get_contents($url)?:http_curl($url);
+		if (stristr($img,'<?php')) {
+		    die('err!');
+		}
+		die($img);
 		if($img==''){
 			return ;
 		}

@@ -65,7 +65,7 @@ class Labelmodels extends IndexBase
         if ($result!==true) {
             return "$result<script>layer.alert('".$result."')</script>";
         }
-        $this->request->get(['tags'=>$tags]);
+        $this->request->get(['tags'=>$tags]);   //模板碎片中会用到，比如<div class="head listimg-{:input('tags')}">,不过将要弃用,因为污染了全局
         
         $this->assign('tags',$tags);
         
@@ -99,6 +99,9 @@ class Labelmodels extends IndexBase
      * @return string
      */
     public function get_label($tag_array=[]){
+        if(isset($_GET['tag_array'])||isset($_POST['tag_array'])||isset($_REQUEST['tag_array'])||isset($_COOKIE['tag_array'])){
+			die('error!');
+		}
         $cfg = unserialize($tag_array['cfg']);
         $this->info = $cfg['Info'];
         $this->id = $cfg['Id'];

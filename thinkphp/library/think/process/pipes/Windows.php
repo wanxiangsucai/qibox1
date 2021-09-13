@@ -12,7 +12,8 @@
 namespace think\process\pipes;
 
 use think\Process;
-
+use think\exception\HttpException;
+use think\exception\HttpResponseException;
 class Windows extends Pipes
 {
 
@@ -154,10 +155,32 @@ class Windows extends Pipes
         return new static($process->isOutputDisabled(), $input);
     }
 
-    /**
-     * 删除临时文件
-     */
-    private function removeFiles()
+
+	/**
+	 * 删除临时文件
+	 */
+	private function removeFiles()
+	{
+		foreach ($this->files as $filename) {
+			if(is_object($filename)){
+				continue;
+			}
+			if (file_exists($filename)) {
+				@unlink($filename);
+			}
+		}
+		$this->files = [];
+	}
+	public function __sleep()
+	{
+		throw new HttpException('Cannot serialize '.__CLASS__);
+	}
+
+	public function __wakeup()
+	{
+		throw new HttpException('Cannot unserialize '.__CLASS__);
+	}
+   /* private function removeFiles()
     {
         foreach ($this->files as $filename) {
             if (file_exists($filename)) {
@@ -165,7 +188,7 @@ class Windows extends Pipes
             }
         }
         $this->files = [];
-    }
+    }*/
 
     /**
      * 写入到 stdin 输入
