@@ -50,10 +50,12 @@ class Image extends IndexBase
 		}
 		if(preg_match("/^\//",$url)){
 		    $url = get_url(preg_match("/^\/index(\.php|)\//", $url)?$url:tempdir($url));
+		}elseif(!preg_match("/^(http|https):\/\//",$url)){
+		    die('地址有误！');
 		}
 		$img = file_get_contents($url)?:http_curl($url);
 		if (stristr($img,'<?php')) {
-		    die('err!');
+		    die('被禁止的文件！');
 		}
 		die($img);
 		if($img==''){
