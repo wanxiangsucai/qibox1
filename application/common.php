@@ -3392,9 +3392,10 @@ if (!function_exists('weixin_login')) {
      */
     function weixin_login($url='',$jump=true){
         $url = $url=='' ? request()->url(true) : $url;
-        if( (in_weixin()&&config('webdb.weixin_type')==3) //在微信端并且是认证服务号的情况下
+        if( config('webdb.autologin_in_weixin')==1 && (
+            (in_weixin()&&config('webdb.weixin_type')==3) //在微信端并且是认证服务号的情况下
             || (in_wxapp()&&config('webdb.wxapp_appid')&&config('webdb.wxapp_appsecret'))    //在小程序中
-            ){    
+            )){    
             $url = purl('weixin/login/index',[],'index') . '?fromurl=' . urlencode($url);
         }else{            
             $url = iurl('index/login/index').'?fromurl='.urlencode($url);

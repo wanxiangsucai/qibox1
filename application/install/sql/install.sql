@@ -1471,3 +1471,4 @@ ALTER TABLE  `qb_shorturl` ADD INDEX (  `expire_time` ) COMMENT  '';
 
 INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`) VALUES(0, 4, 'PC微信扫码登录方式', 'scan_login_type', 'mp', 'radio', 'mp|公众号H5码\r\nwxapp|小程序码', 1, '', '如果配置了小程序的话，就推荐用小程序码', 0, -2);
 
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`) VALUES(0, 1, '在微信中访问是否自动登录', 'autologin_in_weixin', '1', 'radio', '0|选择登录方式\r\n1|自动微信登录', 1, '', '只有配置好微信认证服务号或者在微信小程序中才有效');

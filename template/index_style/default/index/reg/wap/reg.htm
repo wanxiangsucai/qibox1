@@ -265,7 +265,7 @@ header ul ol{
 	<div class="OtherLogin">
 		<div class="h"><span>推荐使用第三方一键注册登录</span></div>
 		<div class="c">
-			{if !in_array('qq',val('hidelogin'))}<a href="#" onclick="qq_login()"><i class="fa fa-fw fa-qq"></i></a>{/if}
+			{if !in_array('qq',val('hidelogin'))&&!in_wxapp()}<a href="#" onclick="qq_login()"><i class="fa fa-fw fa-qq"></i></a>{/if}
 			{if !in_array('wx',val('hidelogin'))}<a href="#" class="wx" onclick="weixin_login()"><i class="fa fa-fw fa-weixin"></i></a>{/if}
 			{if !in_array('phone',val('hidelogin'))}<a class="phone" href="{:urls('index/login/phone')}?fromurl={$fromurl}"><i class="fa fa-fw fa-mobile-phone"></i></a>{/if}
 		</div>

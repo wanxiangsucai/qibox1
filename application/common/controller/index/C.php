@@ -180,7 +180,7 @@ abstract class C extends IndexBase
             $this->error('内容不存在!',404);
         }
         
-        if ( empty($this->user) && in_weixin() ) {//在微信端,就强制自动登录!
+        if ( empty($this->user) && in_weixin() && config('webdb.autologin_in_weixin')==1 ) {//在微信端,就强制自动登录!
             if( config('webdb.weixin_type')==3 || (in_wxapp()&&config('webdb.wxapp_appid')&&config('webdb.wxapp_appsecret')) ){
                 weixin_login();
             }            

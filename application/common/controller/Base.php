@@ -141,10 +141,9 @@ class Base extends Controller
         }
         if (strstr($msg,'没登录') ||strstr($msg,'没有登录') || strstr($msg,'先登录')) {
             if(!$this->request->isAjax() ){
-                if (in_weixin()) {  //在微信端,就强制自动登录!
+                if (config('webdb.autologin_in_weixin')==1 && in_weixin()) {  //在微信端,就强制自动登录!
                     if( config('webdb.weixin_type')==3 || (in_wxapp()&&config('webdb.wxapp_appid')&&config('webdb.wxapp_appsecret')) ){
                         weixin_login();
-                        exit;
                     }
                 }
                 $url = get_url('login') . '?fromurl=' . urlencode($this->weburl);

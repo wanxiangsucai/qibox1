@@ -1,0 +1,1 @@
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`) VALUES(0, 1, '在微信中访问是否自动登录', 'autologin_in_weixin', '1', 'radio', '0|选择登录方式\r\n1|自动微信登录', 1, '', '只有配置好微信认证服务号或者在微信小程序中才有效');

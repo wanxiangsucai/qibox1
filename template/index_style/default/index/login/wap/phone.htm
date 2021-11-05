@@ -238,7 +238,7 @@ header ul ol{
 	<div class="OtherLogin">
 		<div class="h"><span>使用第三方一键注册登录</span></div>
 		<div class="c">
-			{if !in_array('qq',val('hidelogin'))}<a href="#" onclick="qq_login()"><i class="fa fa-fw fa-qq"></i></a>{/if}
+			{if !in_array('qq',val('hidelogin'))&&!in_wxapp()}<a href="#" onclick="qq_login()"><i class="fa fa-fw fa-qq"></i></a>{/if}
 			{if !in_array('wx',val('hidelogin'))}<a href="#" onclick="weixin_login()" class="wx"><i class="fa fa-fw fa-weixin"></i></a>{/if}
 		</div>
 	</div>
