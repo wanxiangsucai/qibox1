@@ -75,10 +75,11 @@ class Wxapp{
         if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
             return 'http://x1.php168.com/public/static/qibo/nowxapp.jpg';
         }
-        $path = config('upload_path') . '/qun_code/'.get_wxappAppid();
+        $wxappid = get_wxappAppid();
+        $path = config('upload_path') . '/qun_code/'.$wxappid;
         $img_path  = $path.$id.'.png';
         if ( is_file($img_path) && (time()-filemtime($img_path)<3600*24) ) {
-            return tempdir("uploads/qun_code/{$id}.png");
+            return tempdir("uploads/qun_code/{$wxappid}{$id}.png");
         }
         if (!is_dir($path)) {
             mkdir($path);
@@ -97,7 +98,7 @@ class Wxapp{
             if ($logo!='') {
                 self::make_logo($img_path,$logo);
             }
-            return tempdir("uploads/qun_code/{$id}.png");
+            return tempdir("uploads/qun_code/{$wxappid}{$id}.png");
         }else{
             return $code;
         }
