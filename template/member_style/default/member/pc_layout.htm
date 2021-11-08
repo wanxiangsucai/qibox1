@@ -29,7 +29,9 @@ body .Notes{margin:0 2px 15px 0;}
 {block name="jump_iframe"}
 {if empty(input('debug'))}
 <script type="text/javascript">
-if(window.self==window.top && window.location.href.indexOf('/member/yz/mob')==-1)window.location.href="{:url('member/index/index')}?url="+window.location.href;//强制引用框架
+if (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+	if(window.self==window.top && window.location.href.indexOf('/member/yz/mob')==-1)window.location.href="{:url('member/index/index')}?url="+window.location.href;//强制引用框架
+}
 </script>
 {/if}
 {/block}
@@ -41,7 +43,11 @@ if(window.self==window.top && window.location.href.indexOf('/member/yz/mob')==-1
 
 {block name="content"}内容部分{/block}
 <script type="text/javascript" src="__STATIC__/js/qibo.js"></script>
-<script src="__STATIC__/layui/layui.js"></script>
+<script type="text/javascript">
+if(typeof(layui)=='undefined'){
+	document.write('<script type="text/javascript" src="__STATIC__/layui/layui.js"><\/script>');
+}
+</script>
 
 {block name="script"} 
 <script type="text/javascript">
