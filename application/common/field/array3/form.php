@@ -121,13 +121,22 @@ $groups = '<style type="text/css">
 }
 </style>';
 $array = json_decode($info[$name],true);
+
+$title1 = $field['options']['title']&&$field['options']['title'][0] ? $field['options']['title'][0] : '属性1';
+$title2 = $field['options']['title']&&$field['options']['title'][1] ? $field['options']['title'][1] : '属性2';
+$title3 = $field['options']['title']&&$field['options']['title'][2] ? $field['options']['title'][2] : '属性3';
+
+$type1 = $field['options']['form']&&$field['options']['form'][0] ? $field['options']['form'][0] : 'text';
+$type2 = $field['options']['form']&&$field['options']['form'][1] ? $field['options']['form'][1] : 'text';
+$type3 = $field['options']['form']&&$field['options']['form'][2] ? $field['options']['form'][2] : 'text';
+
 if($array){
 	foreach($array AS $key=>$vo){
 		$groups .= "<div class='input-group'>
 			<span class='input-group-addon add'><i class='fa fa-plus-square'></i></span>
-			<input class='wri title1' type='text' value='{$vo['title1']}' placeholder='属性1'>
-			<input class='wri title2' type='text' value='{$vo['title2']}' placeholder='属性2'>
-			<input class='wri title3' type='text' value='{$vo['title3']}' placeholder='属性3'>
+			<input class='wri title1' type='{$type1}' value='{$vo['title1']}' placeholder='{$title1}'>
+			<input class='wri title2' type='{$type2}' value='{$vo['title2']}' placeholder='{$title2}'>
+			<input class='wri title3' type='{$type3}' value='{$vo['title3']}' placeholder='{$title3}'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
 			<span class='input-group-addon down'><i class='fa fa-arrow-down'></i></span>
 			<span class='input-group-addon up'><i class='fa fa-arrow-up'></i></span>
@@ -136,9 +145,9 @@ if($array){
 }else{
 	$groups .= "<div class='input-group'>
 			<span class='input-group-addon add'><i class='fa fa-plus-square'></i></span>
-			<input class='wri title1' type='text' value='' placeholder='属性1'>
-			<input class='wri title2' type='text' value='' placeholder='属性2'>
-			<input class='wri title3' type='text' value='' placeholder='属性3'>
+			<input class='wri title1' type='{$type1}' value='' placeholder='{$title1}'>
+			<input class='wri title2' type='{$type2}' value='' placeholder='{$title2}'>
+			<input class='wri title3' type='{$type3}' value='' placeholder='{$title3}'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
 			<span class='input-group-addon down'><i class='fa fa-arrow-down'></i></span>
 			<span class='input-group-addon up'><i class='fa fa-arrow-up'></i></span>

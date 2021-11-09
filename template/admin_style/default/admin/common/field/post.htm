@@ -95,6 +95,56 @@
       </td>	 
     </tr>
 
+	<tr id="form_array_tr" style="display:none"> 
+      <td class='tdL'>表单描述 (可不设置)</td>
+      <td class='tdR'>
+
+	   第一个表单描述：<input type="text">比如：型号 <select><option value="text">任意字符</option><option value="number">仅限数字</option></select><br>
+
+	   第二个表单描述：<input type="text">比如：数量 <select><option value="text">任意字符</option><option value="number">仅限数字</option></select><br>
+
+	   <span class="array3" style="display:none">第三个表单描述：<input type="text">比如：颜色 <select><option value="text">任意字符</option><option value="number">仅限数字</option></select><br></span>
+
+	   <span class="array4" style="display:none">第四个表单描述：<input type="text">比如：产地 <select><option value="text">任意字符</option><option value="number">仅限数字</option></select><br></span>
+
+      </td>	 
+    </tr>
+<script type="text/javascript">
+$(function(){
+	var ar = $("#atc_options").val();
+	
+	if(ar!=''){
+		try{
+			var o = JSON.parse(ar);
+			$("#form_array_tr input").each(function(i){
+				if(o.title[i])$(this).val(o.title[i])		
+			});
+			$("#form_array_tr select").each(function(i){
+				if(o.form[i])$(this).val(o.form[i])		
+			});			
+		}catch(err){
+			console.error(err);
+		}		
+	}
+
+	function get_array_set(){
+		var o = {title:[],form:[]};
+		$("#form_array_tr input").each(function(i){
+			o.title.push($(this).val());			
+		});
+		$("#form_array_tr select").each(function(i){
+			o.form.push($(this).val());			
+		});
+		$("#atc_options").val( JSON.stringify(o) )
+	}
+	$("#form_array_tr input").blur(function(){
+		get_array_set()
+	});
+	$("#form_array_tr select").change(function(){
+		get_array_set()
+	});
+});
+</script>
     <tr> 
       <td class='tdL'>表单默认值:<br>
         (一般为空,如多选框多个的话,用<font color="#FF0000">,</font>逗号隔开) </td>
@@ -480,6 +530,9 @@ $(function(){
 	$("#form_file_tr input").blur(function(){
 		$("#atc_options").val( $("#file_type").val()+"\n"+$("#file_size").val());
 	});
+
+
+
 });
 
 function field_choose(va){
@@ -505,6 +558,22 @@ function form_choose(t){
 		$('#form_file_tr').show();
 	}else{
 		$('#form_file_tr').hide();
+	}
+	
+	if(t=='array2'||t=='array3'||t=='array4'){
+		$('#form_array_tr').show();
+		if(t=='array3'||t=='array4'){
+			$('.array3').show();
+			if(t=='array4'){
+				$('.array4').show();
+			}else{
+				$('.array4').hide();
+			}
+		}else{
+			$('.array3,.array4').hide();
+		}
+	}else{
+		$('#form_array_tr').hide();
 	}
 	
 	if(t=='checkbox'){
