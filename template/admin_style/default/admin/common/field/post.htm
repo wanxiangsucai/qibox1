@@ -94,6 +94,13 @@
 	   不能超过几M：<input type="text" name="" id="file_size">单位M
       </td>	 
     </tr>
+	
+	<tr id="form_array2_tr"> 
+      <td class='tdL'>前台是否自动转义:</td>
+      <td class='tdR'>		
+		<input type="radio" name="is_prototype" value="0" checked>转义为html代码(适合不懂二开) <input type="radio" name="is_prototype" value="1">保留原始代码(方便二开)
+      </td>	 
+    </tr>
 
 	<tr id="form_array_tr" style="display:none"> 
       <td class='tdL'>表单描述 (可不设置)</td>
@@ -121,26 +128,33 @@ $(function(){
 			});
 			$("#form_array_tr select").each(function(i){
 				if(o.form[i])$(this).val(o.form[i])		
-			});			
+			});
+			if(o.prototype&&o.prototype==1){
+				$("#form_array2_tr input[value=1]").prop("checked",true);
+			}
 		}catch(err){
 			console.error(err);
 		}		
 	}
 
 	function get_array_set(){
-		var o = {title:[],form:[]};
+		var o = {title:[],form:[],prototype:0};
 		$("#form_array_tr input").each(function(i){
 			o.title.push($(this).val());			
 		});
 		$("#form_array_tr select").each(function(i){
 			o.form.push($(this).val());			
 		});
+		o.prototype = $("#form_array2_tr input:checked").val();
 		$("#atc_options").val( JSON.stringify(o) )
 	}
 	$("#form_array_tr input").blur(function(){
 		get_array_set()
 	});
 	$("#form_array_tr select").change(function(){
+		get_array_set()
+	});
+	$("#form_array2_tr input").change(function(){
 		get_array_set()
 	});
 });
@@ -574,6 +588,12 @@ function form_choose(t){
 		}
 	}else{
 		$('#form_array_tr').hide();
+	}
+
+	if(t=='array2'){
+		$('#form_array2_tr').show();
+	}else{
+		$('#form_array2_tr').hide();
 	}
 	
 	if(t=='checkbox'){

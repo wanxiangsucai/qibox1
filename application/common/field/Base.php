@@ -122,8 +122,7 @@ class Base
             foreach($array AS $value){
                 $show .= "<div class='array_field $name'>$value</div>";
             }
-        }elseif($field['type']=='array2'){
-            
+        }elseif($field['type']=='array2' && ($field['options']=='' || json_decode($field['options'],true)['prototype']==0) ){
             $array = json_decode($info[$name],true);
             foreach($array AS $vs){
                 $show .= "<div class='array_field $name'><span>{$vs['title1']}：</span><span>{$vs['title2']}</span></div>";

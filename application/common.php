@@ -870,6 +870,8 @@ if (!function_exists('str_array')) {
             $exp = ";";
         }elseif( strpos($value," ") ){
             $exp = " ";
+        }elseif($value===''||$value===null){
+            return [];
         }else{
             return [$value];
         }
