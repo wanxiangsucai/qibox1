@@ -64,7 +64,10 @@ class Index extends MemberBase
         $this->assign('user',$this->user);
         $this->assign('menu',$menu_array);
         $this->assign('url',substr(strstr($this->weburl,'?url='),5)?:url('map',['tag'=>$tag]));
-        $template = get_group_tpl('member',$this->user['groupid']);
+        if(get_wxappAppid()){   //第三方小程序个性模板
+            $template = getTemplate(get_wxappAppid());
+        }
+        $template || $template = get_group_tpl('member',$this->user['groupid']);
         return $this->fetch($template);
     }
     

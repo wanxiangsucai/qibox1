@@ -1,5 +1,15 @@
 bui.ready(function(){
 	var pageview = {};
+	var oldurl = '';
+	var oldtime = 0;
+
+	function check_if_open(url){
+		if(oldurl == url && (new Date().getTime()-oldtime)<2000 ){	//重复点击了两次并且小于2秒，判断为超过小程序最多的10层页面栈
+			wx.miniProgram.reLaunch( { url: "/pages/hy/web/index?url="+web_domain+url} );
+		}
+		oldtime = new Date().getTime();
+		oldurl = url;
+	}
 
     // 模块初始化定义    
     pageview.init = function () {
@@ -7,12 +17,16 @@ bui.ready(function(){
 		if(inWxapp){
 			$(".bui-btn").unbind('click').click(function(){
 				var url = $(this).attr("href");
-				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url } );
+				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url,success:function(){
+					check_if_open(url);
+				} } );
 				return false;
 			});
 			$(".a").unbind('click').click(function(){
 				var url = $(this).attr("href");
-				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url } );
+				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url,success:function(){
+					alert('err2');
+				} } );
 				return false;
 			});
 		}else{
@@ -63,7 +77,9 @@ bui.ready(function(){
 		if(inWxapp){
 			$(".morelink").unbind('click').click(function(){
 				var url = $(this).attr("href");
-				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url } );
+				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url,success:function(){
+					alert('err3');
+				} } );
 				return false;
 			});
 		}else if(typeof(api)=='object'){
