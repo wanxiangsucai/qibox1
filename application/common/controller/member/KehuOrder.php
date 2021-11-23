@@ -134,7 +134,7 @@ abstract class KehuOrder extends MemberBase
         $groups = Db::name('qun_power')->where([
             'qid'=>$qid,
             'sysname'=>config('system_dirname'),
-            'type'=>3,
+            'type'=>'order',
         ])->value('groups');
         if($groups && in_array($this->user['qun_group'][$qid]['type'], str_array($groups))){
             return true;

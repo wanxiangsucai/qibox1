@@ -23,11 +23,11 @@ abstract class C extends MemberBase
     protected $list_items;
     protected $tab_ext;
     protected $mid;
-    protected $qun_power_list = [   //数组元素顺序不能随意更换。
-        ['仅限哪些用户组有权发布','不设置都有权限'],
-        ['修改它人权限的用户组','不设置都没权限'],
-        ['删除它人权限的用户组','不设置都没权限'],
-        ['管理订单权限的用户组','不设置都没权限'],
+    protected $qun_power_list = [
+        ['add','仅限哪些用户组有权发布','不设置都有权限'],
+        ['edit','修改它人权限的用户组','不设置都没权限'],
+        ['delete','删除它人权限的用户组','不设置都没权限'],
+        ['order','管理订单权限的用户组','不设置都没权限'],
     ];
     
     protected function _initialize()
@@ -41,6 +41,9 @@ abstract class C extends MemberBase
         $this->category_model     = get_model_class($dirname,'category');
         $this->info_model     = get_model_class($dirname,'info');
         $this->f_model     = get_model_class($dirname,'field');
+        if(config('qun_power_list')){
+            $this->qun_power_list = config('qun_power_list');
+        }
     }
     
     /**
@@ -93,22 +96,23 @@ abstract class C extends MemberBase
             'sysname'=>config('system_dirname')
         ])->column('type,id,groups');
         foreach ($array AS $rs){
-            $info['groups'.$rs['type']] = $rs['groups'];
+            $info[$rs['type']] = $rs['groups'];
         }
         if ($this->request->isPost()) {
             $data = $this->request->post();
             for($i=0;$i<count($this->qun_power_list);$i++){
-                $groups = $data['groups'.$i] ? implode(',', $data['groups'.$i]) : '';
-                if(!$array[$i]){
+                $key = $this->qun_power_list[$i][0];
+                $groups = $data[$key] ? implode(',', $data[$key]) : '';
+                if(!$array[$key]){
                     Db::name('qun_power')->insert([
-                        'type'=>$i,
+                        'type'=>$key,
                         'qid'=>$qid,
                         'sysname'=>config('system_dirname'),
                         'groups'=>$groups
                     ]);
                 }else{
                     Db::name('qun_power')->update([
-                        'id'=>$array[$i]['id'],
+                        'id'=>$array[$key]['id'],
                         'groups'=>$groups,                        
                     ]);
                 }
@@ -116,14 +120,8 @@ abstract class C extends MemberBase
             $this->success('设置成功');
         }
         $qungroup = fun('qun@get_group','name',$qid)?:[];
-//         $this->form_items = [
-//             ['checkbox', 'groups0', '仅限哪些用户组有权发布','不设置都有权限',$qungroup],
-//             ['checkbox', 'groups1', '修改它人权限的用户组','不设置都没权限',$qungroup],
-//             ['checkbox', 'groups2', '删除它人权限的用户组','不设置都没权限',$qungroup],
-//             ['checkbox', 'groups3', '管理订单权限的用户组','不设置都没权限',$qungroup],
-//         ];
         foreach ($this->qun_power_list AS $key=>$rs){
-            $this->form_items[] = ['checkbox', 'groups'.$key, $rs[0],$rs[1],$qungroup];
+            $this->form_items[] = ['checkbox', $rs[0], $rs[1],$rs[2],$qungroup];
         }
         
         $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = modules_config(config('system_dirname'))['name'].' 权限设置';

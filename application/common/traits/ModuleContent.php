@@ -9,13 +9,13 @@ trait ModuleContent
 	
 	/**
 	 * 检查用户在某个圈子的发布，及修改，删除管理权限
-	 * @param number $type 0新发表，1修改，2删除
+	 * @param number $type add新发表，edit修改，delete删除 order 订单管理
 	 * @param number $qid 圈子ID
 	 * @return void|boolean check_qun_power(0,$qid)===false 没有权限发表到该圈子 check_qun_power(1,$qid)===true 有修改权限 1换成2是有删除权限
 	 */
-	protected function check_qun_power($type=0,$qid=0){
+	protected function check_qun_power($type='',$qid=0){
 	    if (!modules_config('qun') || !$qid || !$this->webdb['is_qun_manage']) {
-	        if ($type==0) {
+	        if ($type=='add') {
 	            return true;    //默认有发布权限
 	        }
 	        return ;
@@ -32,7 +32,7 @@ trait ModuleContent
 	        'sysname'=>config('system_dirname'),
 	        'type'=>$type,
 	    ])->value('groups');
-	    if ($type==0 && $groups=='') {
+	    if ($type=='add' && $groups=='') {
 	        return true;    //默认有发布权限
 	    }
 	    if($groups && in_array($this->user['qun_group'][$qid]['type'], str_array($groups))){
@@ -474,7 +474,7 @@ trait ModuleContent
 	 * @return string|boolean
 	 */
 	protected function qun_post_topic_check($data=[]){
-	    if($this->check_qun_power(0,$data['ext_id'])===false){
+	    if($this->check_qun_power('add',$data['ext_id'])===false){
 	        return "你没权限发布到该圈子！";
 	    }
 	    return true;
@@ -658,10 +658,10 @@ trait ModuleContent
 	 * @return string|boolean
 	 */
 	protected function qun_edit_topic_check($info=[],$data=[]){
-	    if($info['ext_id'] && $data['ext_id'] && $info['ext_id']!=$data['ext_id'] && $this->check_qun_power(0,$data['ext_id'])!==true){
+	    if($info['ext_id'] && $data['ext_id'] && $info['ext_id']!=$data['ext_id'] && $this->check_qun_power('add',$data['ext_id'])!==true){
 	        return "你没权限发布到该圈子！";
 	    }
-	    if($this->check_qun_power(1,$info['ext_id'])===true){
+	    if($this->check_qun_power('edit',$info['ext_id'])===true){
 	        $this->admin = true;   //为了给他有版主权限
 	    }
 	    return true;
@@ -748,7 +748,7 @@ trait ModuleContent
 	        return $result;
 	    }	    
 	    
-	    if( empty($this->admin) && fun('admin@sort',$info['fid'])!==true && $this->check_qun_power(2,$info['ext_id'])!==true){
+	    if( empty($this->admin) && fun('admin@sort',$info['fid'])!==true && $this->check_qun_power('delete',$info['ext_id'])!==true){
 	        if ($info['uid']!=$this->user['uid'] || empty($info['uid'])) {
 	            return '你没权删除ID:' . $id;
 	        }	        
