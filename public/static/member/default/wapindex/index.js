@@ -5,10 +5,23 @@ bui.ready(function(){
 
 	function check_if_open(url){
 		if(oldurl == url && (new Date().getTime()-oldtime)<2000 ){	//重复点击了两次并且小于2秒，判断为超过小程序最多的10层页面栈
-			wx.miniProgram.reLaunch( { url: "/pages/hy/web/index?url="+web_domain+url} );
+			wx.miniProgram.reLaunch( { url: "/pages/hy/web/index?url="+url} );
 		}
 		oldtime = new Date().getTime();
 		oldurl = url;
+	}
+
+	function wxapp_open_win(url){
+		if(!url){
+			return ;
+		}
+		if(url.indexOf('https://')!=0 && url.indexOf('http://')!=0){
+			url = web_domain+url;
+		}
+		url = encodeURIComponent(url);
+		wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+url,success:function(){
+			check_if_open(url);
+		} } );
 	}
 
     // 模块初始化定义    
@@ -17,16 +30,12 @@ bui.ready(function(){
 		if(inWxapp){
 			$(".bui-btn").unbind('click').click(function(){
 				var url = $(this).attr("href");
-				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url,success:function(){
-					check_if_open(url);
-				} } );
+				wxapp_open_win(url);
 				return false;
 			});
 			$(".a").unbind('click').click(function(){
 				var url = $(this).attr("href");
-				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url,success:function(){
-					alert('err2');
-				} } );
+				wxapp_open_win(url);
 				return false;
 			});
 		}else{
@@ -77,9 +86,7 @@ bui.ready(function(){
 		if(inWxapp){
 			$(".morelink").unbind('click').click(function(){
 				var url = $(this).attr("href");
-				if(url)wx.miniProgram.navigateTo( { url: "/pages/hy/web/index?url="+web_domain+url,success:function(){
-					alert('err3');
-				} } );
+				wxapp_open_win(url);
 				return false;
 			});
 		}else if(typeof(api)=='object'){

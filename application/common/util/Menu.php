@@ -259,7 +259,35 @@ class Menu{
                 'ifshow'=>1,
             ];
             $data = \plugins\wxopen\model\Menu::getTreeList($map);
+            foreach ($data AS $key=>$rs){
+                if($rs['groups']){
+                    
+                }
+            }
+            $app_cfg = wxapp_open_cfg(self::$wxapp_id)?:[];
+            $qun_id = $app_cfg['aid'];  //圈子ID
+            $mygroups = login_user('qun_group');
+            $my_gid = 0;
+            if($app_cfg['uid']==login_user('uid')){
+                $my_gid = 3;
+            }elseif($mygroups[$qun_id]){
+                $my_gid = $mygroups[$qun_id]['type'];
+            }
+            
+            foreach ($data AS $key=>$rs){
+                if($rs['groups'] && !in_array($my_gid,str_array($rs['groups']))){
+                    unset($data[$key]);
+                    if($rs['pid']==0){
+                        foreach ($data AS $key2=>$rs2){
+                            if($rs2['pid']==$rs['pid']){
+                                unset($data[$key2]);
+                            }
+                        }
+                    }
+                }
+            }
             $listdb = $data ? get_sons($data) : [];
+            
         }else{
             $map = [
                 'type'=>$type,

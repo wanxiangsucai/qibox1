@@ -42,15 +42,26 @@ class Buylist extends AdminBase
 	        $data = $this -> request -> post();
 	        
 	        $this -> request -> post([
+	            'qid'=>$data['qid'],
 	            'endtime'=>$data['endtime'] ? strtotime($data['endtime']) : 0,
 	        ]);
 	    }
+	    $array = [];
+	    $_array = fun('qun@getByuid',$info['uid']);
+	    foreach($_array AS $rs){
+	        $array[$rs['id']] = $rs['title'];
+	    }
+	    $this->form_items[] = ['select','qid','所属商圈','',$array];
 	    return $this -> editContent($info,url('index',['id'=>$info['mid']]));
 	}
 	
 	public function index($id=0) {
 	    $this->list_items = [
 	        ['uid', '购买者', 'username'],
+	        ['qid', '所属商圈', 'callback',function($key,$rs){
+	            $info = $key>0?fun('qun@getByid',$key):[];
+	            return '<a href="'.iurl('qun/content/show',['id'=>$key]).'" target="_blank">'.$info['title'].'</a>';
+	        },'__data__'],
 	        ['endtime', '失效日期', 'datetime'],
 	        ['mid', '应用名称', 'callback',function($key,$rs){
 	            $info = $key>0?modules_config($key):plugins_config(abs($key));

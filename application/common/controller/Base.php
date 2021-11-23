@@ -146,7 +146,7 @@ class Base extends Controller
                         weixin_login();
                     }
                 }
-                $url = get_url('login') . '?fromurl=' . urlencode($this->weburl);
+                $url = get_url('login');// . '?fromurl=' . urlencode($this->weburl);
                 $this->success($msg,$url,[],1);
             }
             $code = 500;

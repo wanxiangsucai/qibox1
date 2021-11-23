@@ -3,6 +3,7 @@ namespace app\common\controller\member;
 
 use app\common\controller\MemberBase;
 use app\common\traits\ModuleContent;
+use think\Db;
 
 /**
  * 
@@ -22,6 +23,12 @@ abstract class C extends MemberBase
     protected $list_items;
     protected $tab_ext;
     protected $mid;
+    protected $qun_power_list = [   //数组元素顺序不能随意更换。
+        ['仅限哪些用户组有权发布','不设置都有权限'],
+        ['修改它人权限的用户组','不设置都没权限'],
+        ['删除它人权限的用户组','不设置都没权限'],
+        ['管理订单权限的用户组','不设置都没权限'],
+    ];
     
     protected function _initialize()
     {
@@ -58,10 +65,76 @@ abstract class C extends MemberBase
     }
     
     /**
+     * 设置圈子会员组在当前圈子发布内容的权限，及修改与删除的管理权限
+     * @param number $qid 指定圈子ID
+     * @return mixed|string
+     */
+    public function setpower($qid=0){
+        if(!$qid && get_wxappAppid()){
+            $app_cfg = wxapp_open_cfg( get_wxappAppid() ) ?: [];
+            $qid = $app_cfg['aid'];
+        }
+        if (!$qid) {
+            $quns = fun('qun@getByuid',$this->user['uid']);
+            if (count($quns)>1) {
+                $url = url('qun/choose/index').'?url='.urlencode( urls('setpower').'?qid=' );
+                $this->redirect($url);
+            }
+        }
+        if (!$qid) {
+            showerr('圈子ID不存在！');
+        }
+        if ($this->user['qun_group'][$qid]['type']!=3) {
+            showerr('你无权设置！');
+        }
+        $info = [];
+        $array = Db::name('qun_power')->where([
+            'qid'=>$qid,
+            'sysname'=>config('system_dirname')
+        ])->column('type,id,groups');
+        foreach ($array AS $rs){
+            $info['groups'.$rs['type']] = $rs['groups'];
+        }
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+            for($i=0;$i<count($this->qun_power_list);$i++){
+                $groups = $data['groups'.$i] ? implode(',', $data['groups'.$i]) : '';
+                if(!$array[$i]){
+                    Db::name('qun_power')->insert([
+                        'type'=>$i,
+                        'qid'=>$qid,
+                        'sysname'=>config('system_dirname'),
+                        'groups'=>$groups
+                    ]);
+                }else{
+                    Db::name('qun_power')->update([
+                        'id'=>$array[$i]['id'],
+                        'groups'=>$groups,                        
+                    ]);
+                }
+            }
+            $this->success('设置成功');
+        }
+        $qungroup = fun('qun@get_group','name',$qid)?:[];
+//         $this->form_items = [
+//             ['checkbox', 'groups0', '仅限哪些用户组有权发布','不设置都有权限',$qungroup],
+//             ['checkbox', 'groups1', '修改它人权限的用户组','不设置都没权限',$qungroup],
+//             ['checkbox', 'groups2', '删除它人权限的用户组','不设置都没权限',$qungroup],
+//             ['checkbox', 'groups3', '管理订单权限的用户组','不设置都没权限',$qungroup],
+//         ];
+        foreach ($this->qun_power_list AS $key=>$rs){
+            $this->form_items[] = ['checkbox', 'groups'.$key, $rs[0],$rs[1],$qungroup];
+        }
+        
+        $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = modules_config(config('system_dirname'))['name'].' 权限设置';
+        return $this->editContent($info);        	    
+    }
+    
+    /**
      * 生成模型分类菜单
      * @return unknown|array
      */
-    protected function page_top_botton(){
+    protected function page_top_botton($pagetype='index',$qid='',$mid=''){
         if ($this->tab_ext['top_button']) {
             return $this->tab_ext['top_button'];
         }
@@ -70,15 +143,15 @@ abstract class C extends MemberBase
         if (count($mlist)>1) {
             foreach ( $mlist AS $rs) {
                 $tab_list[$rs['id']] = [
-                        'title'=>$rs['title'],
-                        'url'=>auto_url('index', ['mid' => $rs['id']]),
+                    'title'=>$rs['title'],
+                    'url'=>auto_url($pagetype, ['mid' => $rs['id'],'qid'=>$qid]),
                 ];
             }
         }
         $tab_list[] = [
-                'type'=>'add',
-                'url'=>auto_url('add', ['mid' => $this->mid]),
-                'title'=>'发布',
+            'type'=>'add',
+            'url'=>auto_url('add', ['mid' => $mid ?: $this->mid,'ext_id'=>$qid]).'?fromurl='.urlencode(get_url('location')),
+            'title'=>'发布',
         ];
         $this->tab_ext['top_button'] = $tab_list;
         return $tab_list;
@@ -169,6 +242,78 @@ abstract class C extends MemberBase
     }
     
     /**
+     * 圈主管理内容列表
+     * @param number $qid 圈子ID
+     * @param number $mid 内容模型ID
+     * @param number $rows
+     * @return void|unknown|\think\response\Json|mixed|string
+     */
+    public function manage($qid=0,$mid=0,$rows=10){
+        $this->tab_ext['top_button'] = $this->page_top_botton('manage',$qid,$mid);
+        $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = M('name').' 内容列表';
+        $this->tab_ext['right_button'] || $this->tab_ext['right_button'] = [
+            [
+                'type'=>'delete',
+                'url'=>url('delete','ids=__id__').'?fromurl='.urlencode(get_url('location')),
+            ],
+            [
+                'type'=>'edit',
+                'url'=>url('edit','id=__id__').'?fromurl='.urlencode(get_url('location')),
+            ],
+            [
+                'url'=>iurl('show','id=__id__'),
+                'icon'=>'glyphicon glyphicon-eye-open',
+                'title'=>'浏览',
+                'target'=>'_blank',
+            ],
+        ];
+        
+        $map = $this->get_map();
+        foreach ($map AS $key=>$rs){
+            if(!in_array($key, ['id','uid','mid','fid','status','view','list','create_time','ext_id','ext_sys','title'])){
+                unset($map[$key]);
+            }
+        }
+        if(get_wxappAppid()){
+            $app_cfg = wxapp_open_cfg( get_wxappAppid() ) ?: [];
+            $qid = $app_cfg['aid'];
+        }
+        if (!$qid) {
+            $quns = fun('qun@getByuid',$this->user['uid']);
+            if (count($quns)>1) {
+                $url = url('qun/choose/index').'?url='.urlencode( urls('manage').'?qid=' );
+                $this->redirect($url);
+            }
+        }
+        if ($qid) {
+            $map['ext_id'] = $qid;
+        }else{
+            $map['uid'] = $this->user['uid'];
+        }
+        if($mid){
+            $map['mid'] = $mid;
+        }
+        
+        $this->list_items = [
+            ['title', '标题', 'text'],
+            ['create_time', '日期', 'date'],
+            //['view', '浏览量', 'text'],
+            ['status', '审核', 'select2',['未审','已审','已推荐']],
+        ];
+        
+        $listdb = $this->model->getAll($map,$order="id desc",$rows,[],$format=FALSE);
+        $pages = $listdb->render();
+        $this->assign('listdb',$listdb);
+        $this->assign('pages',$pages);
+        $this->assign('qid',$qid);
+        $this->assign('mid',$mid);
+        $this->assign('tab_ext',$this->tab_ext);
+        return $this->getMemberTable($listdb);
+        //return $this->fetch();
+        
+    }
+    
+    /**
      * 发布页，可以根据栏目ID或者模型ID，但不能为空，不然不知道调用什么字段
      * @param number $fid
      * @param number $mid
@@ -188,7 +333,7 @@ abstract class C extends MemberBase
         $this->mid = $mid;
 
         //接口
-        hook_listen('cms_add_begin',$data);
+        hook_listen('cms_add_begin',$data);        
         if (($result=$this->add_check($mid,$fid,$data))!==true) {
             if ($this -> request -> isPost()) {
                 $this->error($result);
@@ -277,16 +422,15 @@ abstract class C extends MemberBase
 	    $data = $this->request->post();
 
         //接口
-        hook_listen('cms_edit_begin',$data);
+	    hook_listen('cms_edit_begin',$data);
         if (($result=$this->edit_check($id,$info,$data))!==true) {
             $this->error($result);
         }
         
         $this->mid = $info['mid'];
-        
         // 保存数据
         if ($this -> request -> isPost()) {
-            return $this->saveEdit($this->mid,$data,get_cookie('fromurl'));
+            return $this->saveEdit($this->mid,$data,input('fromurl')?:get_cookie('fromurl'));
         }
         
         set_cookie('fromurl', input('fromurl')?:null );
@@ -358,7 +502,7 @@ abstract class C extends MemberBase
             $info = $this->getInfoData($id);
             
             //接口
-            hook_listen('cms_delete_begin',$id);
+            hook_listen('cms_delete_begin',$id);            
             if (($result=$this->delete_check($id,$info))!==true) {
                 $this->error($result);
             }
@@ -371,7 +515,7 @@ abstract class C extends MemberBase
             if(defined('SHOW_RUBBISH') && SHOW_RUBBISH===true && (!defined('FORCE_DELETE') || FORCE_DELETE!==true) ){
                 $msg = '下架成功';
             }
-            $this->success($msg, auto_url('index',['mid'=>$this->mid]));
+            $this->success($msg, input('fromurl') ?: auto_url('index',['mid'=>$this->mid]));
         }else{
             $this->error('删除失败');
         }

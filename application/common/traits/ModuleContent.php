@@ -1,10 +1,45 @@
 <?php
 namespace app\common\traits;
 
+use think\Db;
 
 trait ModuleContent
 {
 	use AddEditList;
+	
+	/**
+	 * 检查用户在某个圈子的发布，及修改，删除管理权限
+	 * @param number $type 0新发表，1修改，2删除
+	 * @param number $qid 圈子ID
+	 * @return void|boolean check_qun_power(0,$qid)===false 没有权限发表到该圈子 check_qun_power(1,$qid)===true 有修改权限 1换成2是有删除权限
+	 */
+	protected function check_qun_power($type=0,$qid=0){
+	    if (!modules_config('qun') || !$qid || !$this->webdb['is_qun_manage']) {
+	        if ($type==0) {
+	            return true;    //默认有发布权限
+	        }
+	        return ;
+	    }
+	    //         if(!$qid && get_wxappAppid()){
+	    //             $app_cfg = wxapp_open_cfg( get_wxappAppid() ) ?: [];
+	    //             $qid = $app_cfg['aid'];
+	    //         }
+	    if ($this->user['qun_group'][$qid]['type']==3) {
+	        return true;    //圈主默认有权限
+	    }
+	    $groups = Db::name('qun_power')->where([
+	        'qid'=>$qid,
+	        'sysname'=>config('system_dirname'),
+	        'type'=>$type,
+	    ])->value('groups');
+	    if ($type==0 && $groups=='') {
+	        return true;    //默认有发布权限
+	    }
+	    if($groups && in_array($this->user['qun_group'][$qid]['type'], str_array($groups))){
+	        return true;
+	    }
+	    return false;
+	}
     
 	/**
 	 * 新发表内容入口 有的模型可能不使用栏目 而是直接在模型下面发布东西
@@ -433,6 +468,17 @@ trait ModuleContent
 	    return parent::get_hook($type,$data,$info,$array);    //继承 \app\common\controller\base.php
 	}
 	
+	/**
+	 * 发布内容到某个圈子的权限检查
+	 * @param array $data
+	 * @return string|boolean
+	 */
+	protected function qun_post_topic_check($data=[]){
+	    if($this->check_qun_power(0,$data['ext_id'])===false){
+	        return "你没权限发布到该圈子！";
+	    }
+	    return true;
+	}	
 
 	/**
 	 * 适用于前台会员 新增加前做检查
@@ -463,7 +509,12 @@ trait ModuleContent
 	        return '很抱歉,你没有绑定手机,没权限发布,请先进会员中心绑定手机!';
 	    }
 	    
-	    $result = $this->market_check();
+	    $result = $this->qun_post_topic_check($data);
+	    if ($result!==true){
+	        return $result;
+	    }
+	    
+	    $result = $this->market_check([],$data);
 	    if ($result!==true){
 	        return $result;
 	    }
@@ -601,6 +652,23 @@ trait ModuleContent
 	}
 	
 	/**
+	 * 圈主的类似版主权限检查
+	 * @param array $info
+	 * @param array $data
+	 * @return string|boolean
+	 */
+	protected function qun_edit_topic_check($info=[],$data=[]){
+	    if($info['ext_id'] && $data['ext_id'] && $info['ext_id']!=$data['ext_id'] && $this->check_qun_power(0,$data['ext_id'])!==true){
+	        return "你没权限发布到该圈子！";
+	    }
+	    if($this->check_qun_power(1,$info['ext_id'])===true){
+	        $this->admin = true;   //为了给他有版主权限
+	    }
+	    return true;
+	}
+	
+	
+	/**
 	 * 适用于前台会员 修改前做检查
 	 * @param number $id 内容ID
 	 * @param array $info 内容数据
@@ -614,7 +682,12 @@ trait ModuleContent
 	        return $result;
 	    }
 	    
-	    $result = $this->market_check();
+	    $result = $this->qun_edit_topic_check($info,$data);
+	    if ($result!==true){
+	        return $result;
+	    }
+	    
+	    $result = $this->market_check($info,$data);
 	    if ($result!==true){
 	        return $result;
 	    }
@@ -673,9 +746,9 @@ trait ModuleContent
 	    $result = $this->get_hook('cms_delete_begin',$data=[],$info,['id'=>$id]);
 	    if($result!==null){
 	        return $result;
-	    }
+	    }	    
 	    
-	    if( empty($this->admin) && fun('admin@sort',$info['fid'])!==true ){
+	    if( empty($this->admin) && fun('admin@sort',$info['fid'])!==true && $this->check_qun_power(2,$info['ext_id'])!==true){
 	        if ($info['uid']!=$this->user['uid'] || empty($info['uid'])) {
 	            return '你没权删除ID:' . $id;
 	        }	        
@@ -930,11 +1003,14 @@ trait ModuleContent
 	    }	    
 	}
 	
+
 	/**
 	 * 应用市场权限检测
-	 * @param array $info
+	 * @param array $data 提交的表单数据
+	 * @param array $topic 修改时的原来数据
+	 * @return boolean|string
 	 */
-	protected function market_check($topic=[]){
+	protected function market_check($topic=[],$data=[]){
 	    if(ENTRANCE==='admin'||in_array(config('system_dirname'), ['vote'])){
 			return true;
 		}
@@ -948,7 +1024,20 @@ trait ModuleContent
 	    if ($info['is_sell']) {
 	        $groupid = $topic ? get_user($topic['uid'])['groupid'] : $this->user['groupid'];
 	        if($info['admingroup']=='' || !in_array($groupid, explode(',', $info['admingroup'])) ){
-	            $rs = \app\common\model\Module_buyer::where('uid',$uid)->where('mid',defined('IN_PLUGIN')?-$info['id']:$info['id'])->find();
+	            $map  = [
+	                'mid'=>defined('IN_PLUGIN')?-$info['id']:$info['id'],
+	            ];
+	            $qid = 0;
+	            $rs = \app\common\model\Module_buyer::where('uid',$uid)->where($map)->find();
+	            if( !$rs && modules_config('qun') && $this->webdb['is_qun_manage'] ){
+	                $qid = intval($data['ext_id'] ?: $topic['ext_id']);
+	                if ( !$qid && input('ext_id') ) {
+	                    $qid = input('ext_id');
+	                }
+	                if($qid){
+	                    $rs = \app\common\model\Module_buyer::where('qid',$qid)->where($map)->find();
+	                }	                
+	            }
 	            if (!$rs || ($rs['endtime']>0&&$rs['endtime']<time())) {
 	                if ($uid==$this->user['uid']) {
 	                    if( $rs['endtime']>0 && $rs['endtime']<time() ){
@@ -956,6 +1045,7 @@ trait ModuleContent
 	                    }elseif($info['testday']>0){
 	                        if ( $this->request->isPost() ) {
 	                            $array = [
+	                                'qid'=>$qid,
 	                                'uid'=>$this->user['uid'],
 	                                'mid'=>defined('IN_PLUGIN')?-$info['id']:$info['id'],
 	                                'create_time'=>time(),

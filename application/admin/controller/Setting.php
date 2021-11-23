@@ -214,6 +214,18 @@ class Setting extends AdminBase
                     'list'=>-2,
                 ],
         ];
+        if (config('system_dirname')!='qun') {
+            $this->config[] = [
+                'c_key'=>'is_qun_manage',
+                'title'=>'是否开启圈子会员组管理内容权限',
+                'c_descrip'=>'开启即代表圈主及圈子某些会员组可以管理当前频道里边归属该圈子的相关内容',
+                'c_value'=>'0',
+                'form_type'=>'radio',
+                'options'=>"0|禁用\r\n1|启用",
+                'ifsys'=>0,
+                'list'=>-2,
+            ];
+        }
     }
     
     /**

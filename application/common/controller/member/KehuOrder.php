@@ -2,6 +2,7 @@
 namespace app\common\controller\member;
 
 use app\common\controller\MemberBase;
+use think\Db;
 
 abstract class KehuOrder extends MemberBase
 {
@@ -117,15 +118,39 @@ abstract class KehuOrder extends MemberBase
     }
     
     /**
+     * 检查圈子会员组的权限
+     * @param number $shopid
+     * @return void|boolean
+     */
+    protected function check_qun_power($shopid=0){
+        $info = $this->content_model->getInfoByid($shopid);
+        $qid = $info['ext_id'];
+        if (!modules_config('qun') || !$qid || !$this->webdb['is_qun_manage']) {
+            return ;
+        }
+        if ($this->user['qun_group'][$qid]['type']==3) {
+            return true;    //圈主默认有权限
+        }
+        $groups = Db::name('qun_power')->where([
+            'qid'=>$qid,
+            'sysname'=>config('system_dirname'),
+            'type'=>3,
+        ])->value('groups');
+        if($groups && in_array($this->user['qun_group'][$qid]['type'], str_array($groups))){
+            return true;
+        }
+        return ;
+    }
+    
+    /**
      * 权限判断
      * @param array $info
      * @return string
      */
     protected function check_power($info = []){
-        if ($info['shop_uid']!=$this->user['uid']) {
+        if ($info['shop_uid']!=$this->user['uid'] && $this->check_qun_power($info['shopid'])!==true) {
             return '你没权限';
-        }
-        
+        }        
         return true;
     }
     

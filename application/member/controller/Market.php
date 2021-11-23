@@ -110,10 +110,16 @@ class Market extends MemberBase
         }elseif( $info['admingroup']=='' || !in_array($this->user['groupid'], explode(',', $info['admingroup'])) ){
             $this->error('你没权限免费使用');
         }
-        
+        $qid = 0;
+        $array = fun('qun@getByuid',$this->user['uid']);
+        foreach($array AS $rs){
+            $qid = $rs['id'];
+            break;
+        }
         $array = [
             'uid'=>$this->user['uid'],
             'mid'=>$is_m ? $id : -$id,
+            'qid'=>$qid,
         ];
         $endtime = 0;
         $rs = BuyerModel::where($array)->find();
@@ -160,9 +166,17 @@ class Market extends MemberBase
             $this->error('你的余额不足 '.$cfg[$type]['money'].' 元');
         }
         
+        $qid = 0;
+        $array = fun('qun@getByuid',$this->user['uid']);
+        foreach($array AS $rs){
+            $qid = $rs['id'];
+            break;
+        }
+        
         $array = [
             'uid'=>$this->user['uid'],
             'mid'=>$is_m ? $id : -$id,
+            'qid'=>$qid,
         ];
         $endtime = time();
         $rs = BuyerModel::where($array)->find();
