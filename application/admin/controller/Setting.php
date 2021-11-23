@@ -225,6 +225,16 @@ class Setting extends AdminBase
                 'ifsys'=>0,
                 'list'=>-2,
             ];
+            $this->config[] = [
+                'c_key'=>'edit2notyz',
+                'title'=>'哪些用户组修改主题后变为待审核',
+                'c_descrip'=>'全不选择，则不变化。',
+                'c_value'=>'',
+                'form_type'=>'usergroup2',
+                'options'=>"",
+                'ifsys'=>0,
+                'list'=>-2,
+            ];
         }
     }
     

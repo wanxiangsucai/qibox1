@@ -716,8 +716,20 @@ trait ModuleContent
 	    if ($result!==true) {
 	        return $result;
 	    }
-	    
+	    if ($this->edit_cancel_status($info,$data)===true) {
+	        $data['status'] = 0;
+	    }
 	    return true;
+	}
+	
+	/**
+	 * 哪些用户组修改内容后，变为待审核
+	 * @return boolean
+	 */
+	protected function edit_cancel_status($info=[],&$data=[]){
+	    if($this->webdb['edit2notyz'] && in_array($this->user['groupid'], $this->webdb['edit2notyz'])){
+	        return true;
+	    }
 	}
 	
 	/**
