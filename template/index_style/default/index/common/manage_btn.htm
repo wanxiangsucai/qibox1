@@ -1,7 +1,7 @@
 <style type="text/css">
 .manage_topic{
 	cursor:pointer;
-	display:{$userdb.uid!=$info.uid&&$userdb.groupid!=3?'none !important':''};
+	display:{$userdb.uid!=$info.uid&&fun('admin@sort',$info['fid'])!==true?'none !important':''};
 }
 .manage_button{
 	font-size:16px;
@@ -33,11 +33,13 @@ $(function(){
 	<a href="{:murl('pages/index')}?aid={$id}" class="manage_button" target="blank">管理多页</a>
 {/if}
 
+{if fun('admin@sort',$info['fid'])===true}
 	{if $info.list>time()}
 		<a onclick="api_get('{:urls('wxapp.api/recover','id='.$id)}','你要取消置顶吗?',this)" class="manage_button menu_highlight" title="取消置顶">取消置顶</a>
 	{else /}
 		<a onclick="set_topic_top('{:urls('wxapp.api/top','id='.$id)}',this)" class="manage_button" title="排序置顶">栏目置顶</a>
 	{/if}
+{/if}
 </div>
 
 <script type="text/javascript">

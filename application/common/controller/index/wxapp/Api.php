@@ -35,12 +35,12 @@ abstract class Api extends IndexBase
         $this->mid = 1;
     }
     
-    protected function check_getTab($id=0){
+    protected function check_getTab($id=0,$status=0){
         
         $info = $this->model->getInfoByid($id);
         if (empty($info)) {
             return '信息内容不存在';
-        }elseif (!$this->admin && fun('admin@sort',$info['fid'])!==true) {
+        }elseif (!$this->admin && fun('admin@sort',$info['fid'])!==true && fun('admin@status_check',$status)!==true) {
             return '你没权限';
         }
 //         $table = $this->model->getTableByMid($info['mid']);         
@@ -48,6 +48,55 @@ abstract class Api extends IndexBase
         return $info;
     }
     
+    /**
+     * 审核员操作
+     * @param number $id
+     * @param number $status
+     * @return void|\think\response\Json
+     */
+    public function change_status($id=0,$status=0){
+        $info = $this->check_getTab($id);
+        if (is_string($info)) {
+            return $this->err_js($info);
+        }
+        if ($info['status']==$status){
+            return $this->err_js('重复设置，操作无效！');
+        }
+        $this->model->updates([
+            'id'=>$id,
+            'status'=>$status
+        ]);
+        
+        $this->send_admin_msg($status,$info); //多级审核通知处理
+        
+        return $this->ok_js([
+            'status'=>$status,
+            'id'=>$id,
+            'status_name'=>fun('Content@status')[$status],
+        ],fun('Content@status')[$status].' 操作成功');
+    }
+    
+    /**
+     * 对审核员进行消息通知
+     * @param number $id
+     * @param array $data
+     */
+    protected function send_admin_msg($status,$info=[]){
+        if ($status>-2) {
+            return ;
+        }elseif($info['status']<$status){   //比如审核失误，重新退回审核，不通知，因为通知也是通知自己
+            return ;
+        }
+        foreach(str_array($this->webdb['status_users'][abs($status)-1]) AS $_uid){
+            if (!$_uid) {
+                continue;
+            }
+            $title = '请及时审核 '.M('name').' 新主题';
+            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 提交了: 《' . $info['title'] . '》请示你审核，请尽快处理！<a href="'.get_url(murl('content/manage')).'" target="_blank">点击查看详情</a>';
+            send_msg($_uid, $title, $content);
+            send_wx_msg($_uid, $content);
+        }
+    }
     
     /**
      * 审核操作

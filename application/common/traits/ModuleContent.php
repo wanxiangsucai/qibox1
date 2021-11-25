@@ -789,19 +789,18 @@ trait ModuleContent
 	}
 	
 	/**
-	 * 对频道管理员进行消息通知
+	 * 对审核员进行消息通知
 	 * @param number $id
 	 * @param array $data
 	 */
 	protected function send_admin_msg($id=0,$data=[]){
-	    if ($data['status']==0 && $this->webdb['admin']!='') {
-	        $detail = explode(',',$this->webdb['admin']);
-	        foreach($detail AS $_uid){
-	            if ($_uid=='' || in_array($_uid, [147,69])) {
+	    if ($data['status']==0 && $this->webdb['status_users']) {
+	        foreach(str_array($this->webdb['status_users'][0]) AS $_uid){
+	            if (!$_uid) {
 	                continue;
 	            }
 	            $title = '请及时审核 '.M('name').' 新主题';
-	            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 发布了: 《' . $data['title'] . '》，请尽快审核！<a href="'.get_url(iurl('content/show',['id'=>$id])).'" target="_blank">点击查看详情</a>';
+	            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 发布了: 《' . $data['title'] . '》，请尽快审核！<a href="'.get_url(murl('content/manage')).'" target="_blank">点击查看详情</a>';
 	            send_msg($_uid, $title, $content);
 	            send_wx_msg($_uid, $content);
 	        }

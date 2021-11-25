@@ -240,63 +240,129 @@ abstract class C extends MemberBase
     }
     
     /**
-     * 圈主管理内容列表
+     * 管理内容列表
      * @param number $qid 圈子ID
      * @param number $mid 内容模型ID
+     * @param number $fid 栏目ID
+     * @param number $status 主题状态
      * @param number $rows
      * @return void|unknown|\think\response\Json|mixed|string
      */
-    public function manage($qid=0,$mid=0,$rows=10){
-        $this->tab_ext['top_button'] = $this->page_top_botton('manage',$qid,$mid);
-        $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = M('name').' 内容列表';
-        $this->tab_ext['right_button'] || $this->tab_ext['right_button'] = [
-            [
-                'type'=>'delete',
-                'url'=>url('delete','ids=__id__').'?fromurl='.urlencode(get_url('location')),
-            ],
-            [
-                'type'=>'edit',
-                'url'=>url('edit','id=__id__').'?fromurl='.urlencode(get_url('location')),
-            ],
-            [
-                'url'=>iurl('show','id=__id__'),
-                'icon'=>'glyphicon glyphicon-eye-open',
-                'title'=>'浏览',
-                'target'=>'_blank',
-            ],
-        ];
-        
+    public function manage($qid=0,$mid='',$fid='',$rows=10,$status=''){
         $map = $this->get_map();
         foreach ($map AS $key=>$rs){
             if(!in_array($key, ['id','uid','mid','fid','status','view','list','create_time','ext_id','ext_sys','title'])){
                 unset($map[$key]);
             }
         }
-        if(get_wxappAppid()){
-            $app_cfg = wxapp_open_cfg( get_wxappAppid() ) ?: [];
-            $qid = $app_cfg['aid'];
-        }
-        if (!$qid) {
-            $quns = fun('qun@getByuid',$this->user['uid']);
-            if (count($quns)>1) {
-                $url = url('qun/choose/index').'?url='.urlencode( urls('manage').'?qid=' );
-                $this->redirect($url);
-            }
-        }
-        if ($qid) {
+        
+        $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = M('name').' 内容列表';
+        
+        if($qid){
+            $this->tab_ext['top_button'] = $this->page_top_botton('manage',$qid,$mid);
             $map['ext_id'] = $qid;
         }else{
-            $map['uid'] = $this->user['uid'];
+            $status_array = [];
+            $this->tab_ext['top_button'][] = [
+                'title'=>'全部',
+                'url'=>url('manage',['mid'=>$mid,'fid'=>$fid]),
+            ];
+            foreach (fun("Content@status") AS $key=>$title){
+                if($key==-1){
+                    continue ;
+                }elseif(fun('admin@sort',$fid)!==true){ //审核员，不是管理员的情况
+                    if(fun('admin@status_check',$key)!==true){
+                        continue ;
+                    }
+                    $status_array[] = $key;
+                }
+                $this->tab_ext['top_button'][] = [
+                    'title'=>$title,
+                    'url'=>url('manage',['mid'=>$mid,'fid'=>$fid,'status'=>$key]),
+                    'checked'=>is_numeric($status)?($status==$key?'1':''):'',
+                ];
+            }
+            if ( fun('admin@sort',$fid)!==true ) {
+                if ($status_array) {
+                    $map['status'] = ['in',$status_array];
+                }else{
+                    $this->showerr('你没权限！');
+                }
+            }
         }
+        if (is_numeric($status)) {
+            $map['status'] = $status;
+        }
+        
+        if(!$this->tab_ext['right_button']){
+            $this->tab_ext['right_button'] = [
+                [
+                    'type'=>'delete',
+                    'url'=>url('delete','ids=__id__').'?fromurl='.urlencode(get_url('location')),
+                ],
+                [
+                    'type'=>'edit',
+                    'url'=>url('edit','id=__id__').'?fromurl='.urlencode(get_url('location')),
+                ],
+                [
+                    'url'=>iurl('show','id=__id__'),
+                    'icon'=>'glyphicon glyphicon-eye-open',
+                    'title'=>'浏览',
+                    'target'=>'_blank',
+                ],     
+            ];
+            if(!$qid){  //不是圈子管理的话，就显示审核操作功能                
+                if ( fun('admin@sort',$fid)!==true ) {
+                    unset($this->tab_ext['right_button'][0],$this->tab_ext['right_button'][1]); //审核员，不显示修改与删除操作
+                }else{
+                    unset($this->tab_ext['right_button'][2]);
+                }
+                $this->tab_ext['right_button'][] = [
+                    'title'=>'审核操作',
+                    'type'=>'callback',
+                    'fun'=>function($info){
+                        $array = [];
+                        foreach(fun('Content@status') AS $key=>$title){
+                            if(fun('admin@sort',$fid)!==true && fun('admin@status_check',$key)!==true){
+                                continue ;
+                            }
+                            $array[$title] = [
+                                'url'=>iurl('wxapp.api/change_status',['id'=>$info['id'],'status'=>$key]),
+                                'target'=>'ajax',
+                            ];
+                        }
+                        return fun('link@more',"<i class='glyphicon glyphicon-star-empty'></i>审核操作",$array);
+                    }
+                ];
+            }
+        }
+        
+        
+        
+//         if(get_wxappAppid()){
+//             $app_cfg = wxapp_open_cfg( get_wxappAppid() ) ?: [];
+//             $qid = $app_cfg['aid'];
+//         }
+//         if (!$qid) {
+//             $quns = fun('qun@getByuid',$this->user['uid']);
+//             if (count($quns)>1) {
+//                 $url = url('qun/choose/index').'?url='.urlencode( urls('manage').'?qid=' );
+//                 $this->redirect($url);
+//             }
+//         }
+
         if($mid){
             $map['mid'] = $mid;
+        }
+        if($fid){
+            $map['fid'] = $fid;
         }
         
         $this->list_items = [
             ['title', '标题', 'text'],
             ['create_time', '日期', 'date'],
-            //['view', '浏览量', 'text'],
-            ['status', '审核', 'select2',['未审','已审','已推荐']],
+            ['uid', '发布者', 'username'],
+            //['status', '审核', 'select2',['未审','已审','已推荐']],
         ];
         
         $listdb = $this->model->getAll($map,$order="id desc",$rows,[],$format=FALSE);
@@ -304,6 +370,7 @@ abstract class C extends MemberBase
         $this->assign('listdb',$listdb);
         $this->assign('pages',$pages);
         $this->assign('qid',$qid);
+        $this->assign('fid',$fid);
         $this->assign('mid',$mid);
         $this->assign('tab_ext',$this->tab_ext);
         return $this->getMemberTable($listdb);

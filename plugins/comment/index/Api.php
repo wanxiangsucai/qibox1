@@ -405,7 +405,14 @@ class Api extends IndexBase
         $listdb->each(function($rs,$key){            
             return $this->format_content($rs);
         });
-        return $listdb;
+        $array = getArray($listdb);
+        $sysname = modules_config($rs['sysid'])['keywords'];
+        foreach($array['data'] AS $key=>$rs){
+            if($rs['status']==0 && $this->user['uid']!=$rs['uid'] && fun('admin@sort',0,$sysname)!==true && !fun('admin@status_power',$sysname)){
+                unset($array['data'][$key]);
+            }
+        }
+        return $array;
     }
     
     protected function format_content($rs=[]){

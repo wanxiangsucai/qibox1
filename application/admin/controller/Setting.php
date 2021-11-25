@@ -39,7 +39,7 @@ class Setting extends AdminBase
         $this->model = new ConfigModel();
 //         $this->tab_ext = [ 'help_msg'=>'系统参数配置',];
         $this->tab_ext['page_title'] = '系统参数配置';
-        $this->add_module_config();
+        //$this->add_module_config();
     }
     
     /**
@@ -47,10 +47,10 @@ class Setting extends AdminBase
      * 提醒,如果你的频道不想要下面的字段,就需要在你频道那里设置 protected $config = [];
      */
     protected function add_module_config(){
-        if ($this->config!==null || defined('IN_PLUGIN') || empty(config('system_dirname'))) {
-            return ;
-        }
-        $this->config = [
+//         if ($this->config!==null || defined('IN_PLUGIN') || empty(config('system_dirname'))) {
+//             return [];
+//         }
+        $array = [
                 [
                         'c_key'=>'module_pc_index_template',
                         'title'=>'频道主页PC版风格模板',
@@ -215,7 +215,7 @@ class Setting extends AdminBase
                 ],
         ];
         if (config('system_dirname')!='qun') {
-            $this->config[] = [
+            $array[] = [
                 'c_key'=>'is_qun_manage',
                 'title'=>'是否开启圈子会员组管理内容权限',
                 'c_descrip'=>'开启即代表圈主及圈子某些会员组可以管理当前频道里边归属该圈子的相关内容',
@@ -225,7 +225,7 @@ class Setting extends AdminBase
                 'ifsys'=>0,
                 'list'=>-2,
             ];
-            $this->config[] = [
+            $array[] = [
                 'c_key'=>'edit2notyz',
                 'title'=>'哪些用户组修改主题后变为待审核',
                 'c_descrip'=>'全不选择，则不变化。',
@@ -235,14 +235,35 @@ class Setting extends AdminBase
                 'ifsys'=>0,
                 'list'=>-2,
             ];
+            $array[] = [
+                'c_key'=>'admin',
+                'title'=>'频道管理员',
+                'c_descrip'=>'请输入用户uid，多个用半角逗号,隔开。',
+                'c_value'=>'',
+                'form_type'=>'text',
+                'options'=>"",
+                'ifsys'=>0,
+                'list'=>-2,
+            ];
+            $array[] = [
+                'c_key'=>'status_users',
+                'title'=>'内容主题审核员',
+                'c_descrip'=>'输入审核员的uid，若有多个审核员，就用半角逗号隔开。若只设置一级审核(初审即终审)，若要多级审核，就相应的增加多一组（最后那组为终审），以此类推',
+                'c_value'=>'',
+                'form_type'=>'array',
+                'options'=>"",
+                'ifsys'=>0,
+                'list'=>-2,
+            ];
         }
+        return $array;
     }
     
     /**
      * 补全系统强制要加上的字段
      * @param number $group 分组ID
      */
-    protected function add_config($group=0){        
+    protected function add_config($group=0){
         if (empty($group)) {
             return ;
         }
@@ -250,7 +271,10 @@ class Setting extends AdminBase
         if($gdb['sys_id']==0){                  //分组属于系统,不属于任何频道或插件
             $array = $this->_config;
         }else{                                          //分组属于频道或插件
-            $array = $this->config;
+            $array = $this->config?:[];
+            if (!defined('IN_PLUGIN') && config('system_dirname')) {
+                $array = array_merge($this->add_module_config(),$array);
+            }
         }
         
         foreach ($array AS $rs){

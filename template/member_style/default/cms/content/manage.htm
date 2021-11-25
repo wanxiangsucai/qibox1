@@ -5,5 +5,12 @@
 {block name="content"}
 	{include file="member@common/menu" /}
 	{include file="member@common/table01" /}
-	{$pages} 
+	{$pages}
+<script type="text/javascript">
+	function more_link_fun(res){
+		if(res.code==0){
+			$("#status-"+res.data.id).html(res.data.status_name);
+		}
+	}
+</script>
 {/block}

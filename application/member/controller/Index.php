@@ -45,7 +45,8 @@ class Index extends MemberBase
                 foreach($rs2['sons'] AS $key3=>$rs3){
                     //判断是否具有菜单权限
                     if (!$power    //设置了要购买应用,但没有购买应用
-                        || ($rs3['power'] && $webdb[$rs3['power']] && empty(in_array($this->user['groupid'], $webdb[$rs3['power']])))  //设置了指定用户组权限
+                        || ($rs3['power'] && is_string($rs3['power']) && $webdb[$rs3['power']] && empty(in_array($this->user['groupid'], $webdb[$rs3['power']])))  //设置了指定用户组权限
+                        || $rs3['power'] && is_callable($rs3['power']) && ($rs3['power'] instanceof \Closure) && empty($rs3['power']())
                         || (isset($rs3['role']) && trim($rs3['role'],',')!=='' && !in_array($this->user['grouptype'],explode(',',$rs3['role']))) //设置了用户组角色
                         || (!$rs3['url']&&!$rs3['title'])) { //商业频道
                         unset($menu_array[$key1]['sons'][$key2]['sons'][$key3]);    //隐藏没权限

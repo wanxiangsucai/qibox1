@@ -46,8 +46,10 @@ abstract class C extends IndexBase
             set_cookie('first_view',$info['uid'].','.$info['ext_id']); //给定义为网站工具的圈子使用app\qun\index\Api那里用到;
         }
         //$info['hook_check'] 钩子可以对这个变量赋值,就可以绕过查看权限检查
-        if(empty($info['status']) && empty($info['hook_check']) && !$this->admin && fun('admin@sort',$info['fid'])!==true && $this->user['uid']!=$info['uid']){
-            $this->error('内容还没通过审核,你不能查看!');
+        if($info['status']<1 && empty($info['hook_check']) && !$this->admin && fun('admin@sort',$info['fid'])!==true && $this->user['uid']!=$info['uid']){
+            if(!$this->webdb['status_users'] || !$this->user || !in_array($this->user['uid'], str_array(implode(',', $this->webdb['status_users'])))){
+                $this->error('内容还没通过审核,你不能查看!');
+            }            
         }
         $s_info = get_sort($info['fid'],'config');
         if ($s_info['allowview']) {
@@ -358,7 +360,7 @@ abstract class C extends IndexBase
             $listdb = $this->getListData($map, "$order $by",  $rows , [] ,true);
         }        
         $listdb->each(function($rs,$key){
-            if( $rs['status']==0 && (empty($this->user)||($rs['uid']!=$this->user['uid']&&fun('admin@sort',$rs['fid'])!==true)) ){
+            if( $rs['status']<1 && (empty($this->user)||($rs['uid']!=$this->user['uid']&&fun('admin@sort',$rs['fid'])!==true&&!fun('admin@status'))) ){
                 return [];
             }else{
                 if ($rs['fid'] && $allow_viewtitle=sort_config()[$rs['fid']]['allow_viewtitle']) {    //允许查看标题的用户组

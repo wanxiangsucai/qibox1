@@ -12,11 +12,20 @@ class Content{
      * @return array
      */
     public static function status(){
-        $array = [
-            -1=>'回收站',
+        $array = [            
+            -1=>'回收站',            
             0=>'未审核',
-            1=>'已审核',
-        ];
+//             -2=>'通过初审',
+//             -3=>'通过二审',
+//             1=>'已审核',
+        ];        
+        if (config('webdb.status_users') && count(config('webdb.status_users'))>1) {
+            $status_title = ['通过初审','通过二审','通过三审','通过四审','通过五审'];
+            for($i=0;$i<count(config('webdb.status_users'))-1;$i++){
+                $array[-($i+2)] = $status_title[$i]?:'通过'.($i+1).'审';
+            }
+        }
+        $array[1] = '已审核';
         $data = config('webdb.content_status')?str_array(config('webdb.content_status')):[];
         if(empty($data)){
             $data = [
@@ -30,9 +39,9 @@ class Content{
                 '8星推荐',
             ];
         }
-        foreach ($data AS $value){
+        foreach ($data AS $key=>$value){
             if($value){
-                $array[] = $value;
+                $array[$key+2] = $value;
             }
         }
         //$array = array_merge($array,$data);

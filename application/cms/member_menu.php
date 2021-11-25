@@ -28,6 +28,22 @@ return array(
 								                'link'=>'mysort/index',
 										        'power'=>'can_post_group',
 								        ),
+
+
+										array(
+											'title'=>'主题审核管理',
+											'link'=>'content/manage',
+											'power'=>function(){
+												$dirname =  basename(__DIR__);
+												if(fun('admin@sort',0,$dirname)===true || fun('admin@status_power',$dirname)){
+													return true;
+												}
+												return false;
+											},
+										),
+
+
+
 								),
 							),
 				),
