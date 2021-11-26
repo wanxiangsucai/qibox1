@@ -55,6 +55,16 @@ class Setting extends _Setting
                     'ifsys'=>0,
                     'list'=>-1,
             ],
+            [
+                'c_key'=>'jifen2getoutmoney',
+                'title'=>'是否启用积分抵扣兑换提现手续费',
+                'c_value'=>'',
+                'form_type'=>'radio',
+                'options'=>"0|禁用\r\n1|启用",
+                'c_descrip'=>'若启用，只针对提现需要收取手续费的用户组有效，最高兑换不超过相应的手续费，兑换比例跟RMB购买积分的比例一致',
+                'ifsys'=>0,
+                'list'=>0,
+            ],
     ];
     
     /**

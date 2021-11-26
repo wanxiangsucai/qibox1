@@ -121,14 +121,37 @@ class Rmb extends MemberBase
 	                $this->error('很抱歉，你本次最多只能提现 '.($_rmb>0?$_rmb:0).' 元，系统设置的T+N提现周期是 '.$this->webdb['getout_rmb_tn'].' 天，剩余的款项请过几天后再申请提现！');
 	            }
 	        }
+	        $dikou_money = 0;
 	        $data['real_money'] = $data['money'];          //标志实际申请提现金额,即没扣手续费前的
-	        if($getout_percent_money>0){    //扣除手续费	            
-	            $data['money'] = $data['money'] - $data['money'] * $getout_percent_money;
+	        if($getout_percent_money>0){    //扣除手续费	
+	            $jfmoney = $data['money'] * $getout_percent_money;
+	            $data['money'] = $data['money'] - $jfmoney;
+	            if($this->webdb['jifen2getoutmoney'] && $data['jifen']>0){
+	                if($data['jifen']>$this->user['money']){
+	                    $this->error('抵扣积分不能大于你自身的积分');
+	                }elseif($data['jifen']>$jfmoney*$this->webdb['money_ratio']){
+	                    $this->error('抵扣积分不能大于 '.($jfmoney*$this->webdb['money_ratio']).' 个');
+	                }elseif($data['jifen']<0){
+	                    $this->error('抵扣积分不能小于0');
+	                }
+	                $dikou_money = $data['jifen']/$this->webdb['money_ratio'];
+	                if($dikou_money<=$jfmoney){
+	                    $data['money'] += $dikou_money;
+	                }else{
+	                    $dikou_money = 0;
+	                }
+	            }
+	        }
+	        if($dikou_money==0){
+	            $data['jifen'] = 0;
 	        }
 	        $data['uid'] = $this->user['uid'];
 	        $data['username'] = $this->user['username'];
 	        $data['posttime'] = time();
 	        if ( RmbGetout::create($data) ) {
+	            if($dikou_money){
+	                add_jifen($this->user['uid'],-abs($data['jifen']),'提现抵扣手续费');
+	            }
 	            add_rmb($this->user['uid'],-$data['real_money'],$data['real_money'],'申请提现冻结');
 	            send_admin_msg('有人申请提现了',$this->user['username'].' 申请提现 '.$data['money'].' 元,请尽快审核处理');
 	            $this->success('你的信息已提交，请耐心等候审核，我们将于3个工作日内处理(如遇节假日会延长)，请注意查收短消息。如有疑问请联系客服',auto_url('marketing/rmb/index'));

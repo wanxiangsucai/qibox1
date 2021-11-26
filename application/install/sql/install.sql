@@ -1477,3 +1477,4 @@ INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`,
 ALTER TABLE `qb_module_buyer` ADD `qid` INT( 8 ) NOT NULL COMMENT '归属圈子ID' AFTER `id` ;
 ALTER TABLE `qb_module_buyer` ADD INDEX (`qid`);
 
+ALTER TABLE `qb_rmb_getout` ADD `jifen` MEDIUMINT( 7 ) NOT NULL COMMENT '抵扣手续费的积分';

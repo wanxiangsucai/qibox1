@@ -128,6 +128,9 @@ class RmbGetout extends AdminBase
 	    $real_money = $info['real_money']?:$info['money']; //实际申请金额
 	    add_rmb($user['uid'],0,-$real_money,'拒绝提现,解除冻结金额');
 	    add_rmb($user['uid'],$real_money,0,'拒绝提现,退回提现金额');
+	    if($info['jifen']){
+	        add_jifen($user['uid'],$info['jifen'],'返还提现抵扣手续费');
+	    }
 	    $title = '很抱歉,你的提现被拒绝了';
 	    $content = '很抱歉,你申请的提现被 '.$this->user['username'].' 拒绝了，金额已原路返回到你的帐户余额，原因如下:'.$why;
 	    send_msg($user['uid'],$title,$content);

@@ -9,10 +9,18 @@
 			<ol>可用余额:</ol>
 			<li><span class="b red">{$userdb.rmb}</span>元 </li>
 		</ul>
+		<div style="text-align:right;padding-right:8px;" id="getrealmoney"> </div>
 		<ul>
 			<ol>提现金额为:(<span class="red">*</span>)</ol>
-			<li><input type="text" name="money" placeholder="输入金额"/></li>
+			<li><input id="getoutmoney" type="number" name="money" placeholder="输入金额"/></li>
 		</ul>
+{if $webdb.jifen2getoutmoney&&$getout_percent_money>0}
+        <div style="text-align:right;padding-right:8px;font-size:13px;">{$webdb.MoneyName}抵扣手续费，每个可抵 <font style="color:blue;">{:abs($webdb.money_ratio/100)}</font> 元，<span style="display:none;" id="jifenmsg">最多可用 <font style="color:blue;" id="maxjifen">{$userdb.money}</font> 个抵扣 <font id="maxmoney" style="color:blue;">0</font> 元</span></div>
+		<ul>
+			<ol>抵扣的{$webdb.MoneyName}数量（个）:</ol>
+			<li><input id="payjifenNum" placeholder='你共有{$userdb.money}个' type="number" name="jifen"/></li>
+		</ul>
+{/if}
 		<ul>
 			<ol>支付密码:(<span class="red">*</span>)</ol>
 			<li><input type="password" name="pwd" placeholder="输入密码"/></li>
@@ -60,4 +68,62 @@
         </dl>
 	</form>
 </div>
+
+<script type="text/javascript">
+
+$(function(){
+	var totaljifen;
+	var realJFmoney = 0;
+	var realmoney;
+	$("#getoutmoney").blur(function(){
+		if($(this).val()==''){
+			return ;
+		}
+		if($(this).val()>{$userdb.rmb}){
+			layer.alert("提现金额不能大于你的实际可用余额 {$userdb.rmb} 元！");
+			return ;
+		}else if($(this).val()!='' && $(this).val()<0.01){
+			layer.alert("提现金额不能小于0.01元");
+			return ;
+		}
+		realmoney = Number( parseFloat(Number($(this).val())*(100-{$getout_percent_money})/100).toFixed(2) );
+		showrealmoney();
+		var paymoney = Number( parseFloat(parseFloat($(this).val()) - realmoney).toFixed(2) );
+		totaljifen = paymoney*{$webdb.money_ratio};
+		if(totaljifen>{$userdb.money}){
+			totaljifen = {$userdb.money};
+		}
+		var jifenmoney = totaljifen/{$webdb.money_ratio};
+		$("#maxjifen").html(totaljifen);
+		$("#maxmoney").html(jifenmoney);
+		$("#jifenmsg").show();
+	});
+
+	$("#payjifenNum").blur(function(){
+		if($(this).val()==''){
+			return ;
+		}
+		if($("#getoutmoney").val()==''){
+			layer.alert("请先输入提现金额！");
+			$(this).val('')
+			return ;
+		}
+		var num = Number($(this).val());
+		if(num<0){
+			layer.alert("不能是负数");
+			return ;
+		}else if(num>totaljifen){
+			layer.alert("不能大于 "+totaljifen+" 个");
+			return ;
+		}
+		realJFmoney = Number( parseFloat(num/{$webdb.money_ratio}).toFixed(2) );
+		showrealmoney();
+	});
+
+	function showrealmoney(){
+		$("#getrealmoney").html("实际可到帐 <font style='color:red;'>"+realmoney+ (realJFmoney>0?"+"+realJFmoney:'') +"</font> 元");
+	}
+});
+</script>
+
 {/block}
