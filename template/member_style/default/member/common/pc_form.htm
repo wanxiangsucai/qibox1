@@ -1,3 +1,6 @@
+<script type="text/javascript" src="__STATIC__/libs/tncode/tn_code.js"></script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/libs/tncode/tn_code.css"/>
+
 <style type="text/css">
 .MainCont .form_about{
 	color:#a9a9a9;
@@ -138,13 +141,13 @@ var trigger_config = {
 }
 </script>
 {/notempty}
-
 <script type="text/javascript">
 var nopower = `{$nopower}`; //没权限的提示
 var in_wap = false;
 var upgroup_url = "{:murl('member/group/index')}?tag={:M('key')}";
 var bind_phone_url = "{:murl('member/yz/mob')}";
 var mp_img_url = "{:purl('weixin/bind/index',[],'index')}?url={:urlencode(get_url('location'))}";//"{:tempdir($webdb.mp_code_img)}";
+var needTncode = {$need_tncode?'true':'false'};	//是否需要行为验证码
 </script>
 <!-- 表单常用事件,比如无刷新提交 -->
 <script LANGUAGE="JavaScript" src="__STATIC__/js/form/base.js?c"></script>

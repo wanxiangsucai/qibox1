@@ -466,6 +466,7 @@ abstract class C extends MemberBase
         $this->assign('fid',$fid);
         $this->assign('mid',$mid);
         $this->assign('info',get_post());  //方便地址栏赋值
+        $this->assign('need_tncode',in_array($this->user['groupid'], $this->webdb['group_postnew_need_tncode'])?true:false);
         return $this->addContent();
     }
     

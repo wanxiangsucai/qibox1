@@ -30,8 +30,21 @@ jQuery(document).ready(function() {
 	//ajax无刷新提交表单
 	$("form.ajax_post").each(function(){
 		var form = $(this);
-		var havepost = true;
 		form.submit(function(){
+			if(typeof(needTncode)!=undefined && needTncode==true){
+				open_tncode(function(){
+					needTncode = false;
+					post_form(form);
+				});
+			}else{
+				post_form(form);
+			}
+			return false;
+		});
+	});
+
+	function post_form(form){
+			var havepost = true;
 			var form_data = form.serialize();
 			var url = form.attr('action');
 
@@ -86,10 +99,7 @@ jQuery(document).ready(function() {
 				layer.close(index);
 				layer.open({title: '服务器发生错误',area:['90%','90%'],content: res.responseText});
 			});
-
-			return false;
-		});
-	});
+	}
 
 
 	function pay_money(money){

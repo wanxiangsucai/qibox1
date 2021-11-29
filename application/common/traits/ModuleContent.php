@@ -134,6 +134,9 @@ trait ModuleContent
 	        $result = $this->validate($data, $this->validate);
 	        if(true !== $result) $this->error($result);
 	    }
+// 	    if(!defined('IN_ADMIN') && in_array($this->user['groupid'], $this->webdb['group_need_tncode']) && !check_tncode() ){
+// 	        $this->error('验证码不存在或有误！！！');
+// 	    }
 	    $data['uid'] = $this->user['uid'];
 	    $data['mid'] = $this->mid;	    
 	    $id = $this->model->addData($this->mid,$data);	
@@ -582,6 +585,10 @@ trait ModuleContent
 	    $result = $this->check_post_filed($data,$mid);
 	    if ($result!==true) {
 	        return $result;
+	    }
+	    
+	    if($this->request->isPost() && in_array($this->user['groupid'], $this->webdb['group_postnew_need_tncode']) && !check_tncode() ){
+	        return '验证码不存在或有误！！！';
 	    }
 
 	    return true;

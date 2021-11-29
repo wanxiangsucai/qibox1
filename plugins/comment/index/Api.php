@@ -135,6 +135,10 @@ class Api extends IndexBase
                 set_cookie('reply_content', md5($data['content']));
             }
             
+            if(in_array($this->user['groupid'], $this->webdb['M__'.$moduel['keywords']]['group_reply_need_tncode']) && !check_tncode() ){
+                return $this->err_js('验证码不存在或有误！！！');
+            }
+            
             if ( $this->user  ) {
                 //如果不设置的话,就默认都通过审核
                 if ( empty($this->webdb['post_auto_pass_comment_group']) || in_array($this->user['groupid'],$this->webdb['post_auto_pass_comment_group']) ) {

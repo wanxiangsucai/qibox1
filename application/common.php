@@ -3683,6 +3683,20 @@ if(!function_exists('showerr')){
     }
 }
 
+if(!function_exists('check_tncode')){
+    /**
+     * 校验行为验证码
+     * @return boolean
+     */
+    function check_tncode(){
+        if ( !cache('tn_code'.get_cookie('user_sid')) ) {
+            return false;
+        }
+        cache('tn_code'.get_cookie('user_sid'),null);
+        return true;
+    }
+}
+
 
 
 if (!function_exists('run_label')) {

@@ -305,6 +305,10 @@ abstract class Reply extends IndexBase
             $data['status'] = 1;
         }
         
+        if(in_array($this->user['groupid'], $this->webdb['group_reply_need_tncode']) && !check_tncode() ){
+            return '验证码不存在或有误！！！';
+        }
+        
         return true;
     }
     

@@ -216,6 +216,26 @@ class Setting extends AdminBase
         ];
         if (config('system_dirname')!='qun') {
             $array[] = [
+                'c_key'=>'group_postnew_need_tncode',
+                'title'=>'新发表主题需要滑动验证码的用户组',
+                'c_descrip'=>'全不选择，则都不需要',
+                'c_value'=>'',
+                'form_type'=>'usergroup2',
+                'options'=>"",
+                'ifsys'=>0,
+                'list'=>0,
+            ];
+            $array[] = [
+                'c_key'=>'group_reply_need_tncode',
+                'title'=>'发表评论回复需要滑动验证码的用户组',
+                'c_descrip'=>'全不选择，则都不需要',
+                'c_value'=>'',
+                'form_type'=>'usergroup2',
+                'options'=>"",
+                'ifsys'=>0,
+                'list'=>0,
+            ];
+            $array[] = [
                 'c_key'=>'is_qun_manage',
                 'title'=>'是否开启圈子会员组管理内容权限',
                 'c_descrip'=>'开启即代表圈主及圈子某些会员组可以管理当前频道里边归属该圈子的相关内容',

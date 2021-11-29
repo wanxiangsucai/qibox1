@@ -920,6 +920,7 @@ abstract class C extends IndexBase
         $this->assign('fid',$fid);
         $this->assign('mid',$mid);
         //$template = $this->get_tpl('post',$this->mid);
+        $this->assign('need_tncode',in_array($this->user['groupid'], $this->webdb['group_postnew_need_tncode'])?true:false);
         return $this->fetch('post');
     }
     
