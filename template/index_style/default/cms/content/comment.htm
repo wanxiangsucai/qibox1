@@ -12,12 +12,14 @@
 						<div class="name"><a href="{:murl('member/msg/add',['uid'=>$rs.uid])}">{$rs.username}</a></div>
 						<div class="comment">{$rs.content}</div>
 						<dl><dt>{$rs.time}</dt><dd><em onclick="dingcomment({$rs.id})"><i class="si si-like"></i> <a class="agree{$rs.id}">{$rs.agree}</a></em> <span onclick="post_comment({$rs.id})"><i class="fa fa-commenting-o"></i> 回复</span>
-						{if $rs.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$rs.id})"><i class="fa fa-close"></i></span>{/if}
+						{if fun('Admin@sort',$info.fid)||fun('Admin@status_power')}<span onclick="yz_comment({$rs.id},$(this))"  class="comment_if_yz {$rs.status==0?'notyz':''}"><i class=" fa fa-ban"></i></span>{/if}
+						{if $rs.uid==login_user('uid')||fun('Admin@sort',$info.fid)}<span onclick="del_comment({$rs.id})"><i class="fa fa-close"></i></span>{/if}
 						</dd></dl>
 						<div class="repalyinfs repalyinfs{$rs.id}">
 							{volist name="rs.children" id="vo"}
 							<div id="comment_cnt_{$vo.id}"><a href="{:get_url('user',$vo.uid)}" target="_blank">{$vo.username}：</a>{$vo.content}
-								{if $vo.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$vo.id})" style="float:right;"><i class="fa fa-close"></i></span>{/if}
+								{if $vo.uid==login_user('uid')||fun('Admin@sort',$info.fid)}<span onclick="del_comment({$vo.id})" style="float:right;"><i class="fa fa-close"></i></span>{/if}
+								{if fun('Admin@sort',$info.fid)||fun('Admin@status_power')}<span onclick="yz_comment({$vo.id},$(this))" style="float:right;" class="comment_if_yz {$vo.status==0?'notyz':''}"><i class=" fa fa-ban"></i></span>{/if}
 							</div>
 							{/volist}
 						</div>
@@ -44,5 +46,6 @@ var cache_need_tncode = needTncode;
 	
 var comment_page_url = "{pageurl}";
 var comment_rows = parseInt("{$cfg_array.rows}");
+var comment_yz_url = "{:purl('comment/api/yz')}";
 </script>
 <script type="text/javascript" src="__STATIC__/js/comment/wap.js"></script>

@@ -188,14 +188,15 @@ class Api extends IndexBase
      * @param array $data
      */
     protected function send_msg($data=[]){
-        if (defined('HOOK_SEND_MSG')) { //如果钩子里发过消息,这里就不发送了
-            return ;
-        }
+//         if (defined('HOOK_SEND_MSG')) { //如果钩子里发过消息,这里就不发送了
+//             return ;
+//         }
         $topic = fun('Content@info',$data['tid']?:$data['aid'],$data['sysid'],false);
         $mods = modules_config($data['sysid']);
         
         $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
         //if( $this->webdb['comment_send_msg'] ){
+        if(!defined('HOOK_SEND_MSG')){
             if($data['tid']){
                 $url = get_url(murl($mods['keywords'].'/order/show',['id'=>$data['aid']]));
             }else{
@@ -219,7 +220,19 @@ class Api extends IndexBase
                     //}
                 }
             }
+        }
         //}
+        if ($data['status']==0 && $this->webdb['M__'.$mods['keywords']]['status_users']) {
+            foreach(str_array($this->webdb['M__'.$mods['keywords']]['status_users'][0]) AS $_uid){
+                if (!$_uid) {
+                    continue;
+                }
+                $title = '请及时审核 '.$mods['name'].' 频道的新评论';
+                $content = get_word($this->user['username'],8).' 评论了 '.$mods['name'].' 频道的《' . $topic['title'] . '》，请尽快审核！<a href="'.get_url(urls($mods['keywords'].'/content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
+                send_msg($_uid, $title, $content);
+                send_wx_msg($_uid, $content);
+            }
+        }
     }
     
     private function get_tag_config($name='',$pagename=''){
@@ -451,6 +464,41 @@ class Api extends IndexBase
             return $this->ok_js();
         } else {
             return $this->err_js('删除失败');
+        }
+    }
+    
+    /**
+     * 审核评论
+     * @param number $id 评论ID
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
+     */
+    public function yz($id=0){
+        if (empty($id)) {
+            return $this->err_js('ID有误');
+        }
+        $info = contentModel::get($id);
+        if (empty($info)) {
+            return $this->err_js('评论内容不存在');
+        }
+        $dirname = modules_config($info['sysid'])['keywords'];
+        
+        $topic = fun('Content@info',$info['aid'],$info['sysid'],false);
+        
+        if( !fun('Admin@sort',$topic['fid'],$dirname) && !fun('Admin@status_power',$dirname)){
+            return $this->err_js('你没权限');
+        }
+        
+        $status = 1;
+        if ($info['status']!=0) {
+            $status = 0;
+        }
+        $result = contentModel::where('id',$id)->update(['status'=>$status]);
+        if ($result) {
+            return $this->ok_js([
+                'status' => $status,
+            ]);
+        } else {
+            return $this->err_js('操作失败');
         }
     }
 	

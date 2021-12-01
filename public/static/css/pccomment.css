@@ -151,3 +151,10 @@
 .PostCommentBox1 li button:hover{
 	background: #F30;
 }
+
+.comment_if_yz{
+	margin-right:10px;
+}
+.comment_if_yz.notyz .fa{
+	color:orange;
+}

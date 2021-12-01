@@ -13,14 +13,16 @@
 						<div class="name"><a href="<?php echo murl('member/msg/add',['uid'=>$rs['uid']]);?>" class="_pop"><?php echo $rs['username']; ?></a></div>
 						<div class="comment"><?php echo $rs['content']; ?></div>
 						<dl><dt><?php echo $rs['time']; ?></dt><dd><em onclick="dingcomment(<?php echo $rs['id']; ?>)"><i class="si si-like"></i> <a class="agree<?php echo $rs['id']; ?>"><?php echo $rs['agree']; ?></a></em> <span onclick="post_comment(<?php echo $rs['id']; ?>)"><i class="fa fa-commenting-o"></i> 回复</span>
-						<?php if($rs['uid']==login_user('uid')||login_user('groupid')==3): ?><span onclick="del_comment(<?php echo $rs['id']; ?>)"><i class="fa fa-close"></i> 删除</span><?php endif; ?>
+						<?php if(fun('Admin@sort',$info['fid'])||fun('Admin@status_power')): ?><span onclick="yz_comment(<?php echo $rs['id']; ?>,$(this))"  class="comment_if_yz <?php echo $rs.status==0?'notyz':''; ?>"><i class=" fa fa-ban"></i></span><?php endif; ?>
+						<?php if($rs['uid']==login_user('uid')||fun('Admin@sort',$info['fid'])): ?><span onclick="del_comment(<?php echo $rs['id']; ?>)"><i class="fa fa-close"></i> 删除</span><?php endif; ?>
 						</dd></dl>
 						<div class="repalyinfs repalyinfs<?php echo $rs['id']; ?>">
 							<?php if(is_array($rs['children']) || $rs['children'] instanceof \think\Collection || $rs['children'] instanceof \think\Paginator): $i = 0; $__LIST__ = $rs['children'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
 							<div id="comment_cnt_<?php echo $vo['id']; ?>">
 								<a href="<?php echo get_url('user',$vo['uid']); ?>" target="_blank"><?php echo $vo['username']; ?>：</a>
 								<?php echo $vo['content']; ?>
-								<?php if($vo['uid']==login_user('uid')||login_user('groupid')==3): ?><span onclick="del_comment(<?php echo $vo['id']; ?>)" style="float:right;"><i class="fa fa-close"></i> 删除</span><?php endif; ?>
+								<?php if($vo['uid']==login_user('uid')||fun('Admin@sort',$info['fid'])): ?><span onclick="del_comment(<?php echo $vo['id']; ?>)" style="float:right;"><i class="fa fa-close"></i> 删除</span><?php endif; ?>
+								<?php if(fun('Admin@sort',$info['fid'])||fun('Admin@status_power')): ?><span onclick="yz_comment(<?php echo $vo['id']; ?>,$(this))"  style="float:right;" class="comment_if_yz <?php echo $vo.status==0?'notyz':''; ?>"><i class=" fa fa-ban"></i></span><?php endif; ?>
 							</div>
 							<?php endforeach; endif; else: echo "" ;endif; ?>
 						</div>
@@ -48,5 +50,6 @@ var cache_need_tncode = needTncode;
 		
 var comment_page_url = '<?php echo fun("label@comment_api","pageurl",$aid,$sysid,$cfg_array); ?>';
 var comment_rows = parseInt("<?php echo $cfg_array['rows']; ?>");
+var comment_yz_url = "<?php echo purl('comment/api/yz'); ?>";
 </script>
 <script type="text/javascript" src="__STATIC__/js/comment/pc.js"></script>

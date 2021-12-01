@@ -5,6 +5,7 @@
 			}
 			layer.open({
 			  type: 1,
+				 title:'发表评论',
 			  skin: 'layui-layer-demo', //样式类名
 			  area: ['320px', '280px'], //宽高
 			  closeBtn: 0, //不显示关闭按钮
@@ -12,9 +13,8 @@
 			  shadeClose: true, //开启遮罩关闭
 			  content: '<ul class="PostCommentBox"><ol><textarea placeholder="请输入评论内容"></textarea></ol></ul>',
 				btn:['确认','取消'],
-				  btn1:function(){
-				  //console.log(543543);
-				  post_comment1()
+				btn1:function(){
+					post_comment1()
 				}
 			});
 		}
@@ -115,3 +115,17 @@ function post_comment1(){
 		}
 
 		HiddenShowMoreComment();
+
+function yz_comment(id,obj){	
+	$.post(comment_yz_url,{id:id},function(res){
+		if(res.code==0){
+			if(obj.hasClass('notyz')){
+				obj.removeClass('notyz');
+			}else{
+				obj.addClass('notyz');
+			}
+		}else{
+			layer.alert(res.msg);
+		}
+	});
+}

@@ -299,7 +299,7 @@ abstract class Reply extends IndexBase
         $data['status'] = 0;
         if ( empty($this->webdb['reply_auto_pass_group']) 
              || in_array($this->user['groupid'], $this->webdb['reply_auto_pass_group'])
-             || fun('admin@sort',$data['fid'])===true
+             //|| fun('admin@sort',$data['fid'])===true
             || ($this->webdb['post_auto_pass_uids'] && in_array($this->user['uid'], str_array($this->webdb['post_auto_pass_uids'])))
             ) {
             $data['status'] = 1;
@@ -350,18 +350,31 @@ abstract class Reply extends IndexBase
                 }
             }
             
-            if ($data['status']==0 && $this->webdb['admin']!='') {
-                $detail = explode(',',$this->webdb['admin']);
-                foreach($detail AS $_uid){
-                    if ($_uid=='' || in_array($_uid, [147,69])) {
+//             if ($data['status']==0 && $this->webdb['admin']!='') {
+//                 $detail = explode(',',$this->webdb['admin']);
+//                 foreach($detail AS $_uid){
+//                     if ($_uid=='' || in_array($_uid, [147,69])) {
+//                         continue;
+//                     }
+//                     $title = '请及时审核论坛新回复';
+//                     $content = get_word($this->user['username'],8).' 回复[' . get_word($topic['title'], 8) . ']请审核！<a href="'.get_url(iurl('content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
+//                     //send_msg($_uid, $title, $content);
+//                     send_wx_msg($_uid, $content,['sendmsg'=>true]);
+//                 }
+//             }
+            
+            if ($data['status']==0 && $this->webdb['status_users']) {
+                foreach(str_array($this->webdb['status_users'][0]) AS $_uid){
+                    if (!$_uid) {
                         continue;
                     }
-                    $title = '请及时审核论坛新回复';
-                    $content = get_word($this->user['username'],8).' 回复[' . get_word($topic['title'], 8) . ']请审核！<a href="'.get_url(iurl('content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
-                    //send_msg($_uid, $title, $content);
-                    send_wx_msg($_uid, $content,['sendmsg'=>true]);
+                    $title = '请及时审核 '.M('name').' 频道的新评论';
+                    $content = get_word($this->user['username'],8).' 回复了 '.M('name').' 的 《' . $topic['title'] . '》，请尽快审核！<a href="'.get_url(iurl('content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
+                    send_msg($_uid, $title, $content);
+                    send_wx_msg($_uid, $content);
                 }
-            }
+            }            
+            
         }
     }
     

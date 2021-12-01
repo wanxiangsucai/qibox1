@@ -111,3 +111,10 @@
 	padding: 5px 10px;
 	color: #999;
 }
+
+.comment_if_yz{
+	margin-right:10px;
+}
+.comment_if_yz.notyz .fa{
+	color:orange;
+}

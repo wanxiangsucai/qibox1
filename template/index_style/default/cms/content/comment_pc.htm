@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="__STATIC__/css/pccomment.css"> 
+<link rel="stylesheet" href="__STATIC__/css/pccomment.css?s"> 
 <div class="WapCommentBox">
 	<ul class="PostCommentBox1">
 		<ol><i class="fa fa-edit"></i><textarea placeholder="发布您的精彩评论"></textarea></ol>
@@ -15,9 +15,11 @@
 				<dl>
 					<dt><a href="{:murl('member/msg/add',['uid'=>$rs.uid])}" class="_pop">{$rs.username}</a> <span>{$rs.time}</span></dt>
 					<dd>
-						<em onclick="dingcomment({$rs.id})"><i class="si si-like"></i> <a class="agree{$rs.id}">{$rs.agree}</a></em> 
+						<em onclick="dingcomment({$rs.id})"><i class="si si-like"></i> <a class="agree{$rs.id}">{$rs.agree}</a></em>
 						<span onclick="post_comment({$rs.id})"><i class="fa fa-commenting-o"></i> 回复</span>
-						{if $rs.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$rs.id})"><a href="javascript:"><i class="fa fa-close"></i> 删除</a></span>{/if}
+						{if fun('Admin@sort',$info.fid)||fun('Admin@status_power')}<span onclick="yz_comment({$rs.id},$(this))"  class="comment_if_yz {$rs.status==0?'notyz':''}"><a href="javascript:"><i class=" fa fa-ban"></i></a></span>{/if}
+						{if $rs.uid==login_user('uid')||fun('Admin@sort',$info.fid)}<span onclick="del_comment({$rs.id})"><a href="javascript:"><i class="fa fa-close"></i> 删除</a></span>{/if}
+
 					</dd>
 				</dl>
 				<div class="comment">{$rs.content}</div>				
@@ -26,7 +28,10 @@
 					<div id="comment_cnt_{$vo.id}">
 						<a href="{:get_url('user',$vo.uid)}" target="_blank">{$vo.username|default='游客'}：</a>
 						{$vo.content} 
-						{if $vo.uid==login_user('uid')||login_user('groupid')==3}<span onclick="del_comment({$vo.id})" style="float:right;"><a href="javascript:"><i class="fa fa-close"></i> 删除</a></span>{/if}
+						
+						{if $vo.uid==login_user('uid')||fun('Admin@sort',$info.fid)}<span onclick="del_comment({$vo.id})" style="float:right;"><a href="javascript:"><i class="fa fa-close"></i> 删除</a></span>{/if}
+
+						{if fun('Admin@sort',$info.fid)||fun('Admin@status_power')}<span onclick="yz_comment({$vo.id},$(this))" style="float:right;" class="comment_if_yz {$vo.status==0?'notyz':''}"><a href="javascript:"><i class=" fa fa-ban"></i></a></span>{/if}
 					</div>
 					{/volist}
 				</div>
@@ -53,5 +58,7 @@ var cache_need_tncode = needTncode;
 	
 var comment_page_url = "{pageurl}";
 var comment_rows = parseInt("{$cfg_array.rows}");
+
+var comment_yz_url = "{:purl('comment/api/yz')}";
 </script>
 <script type="text/javascript" src="__STATIC__/js/comment/pc.js"></script>
