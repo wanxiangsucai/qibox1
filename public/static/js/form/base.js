@@ -31,7 +31,7 @@ jQuery(document).ready(function() {
 	$("form.ajax_post").each(function(){
 		var form = $(this);
 		form.submit(function(){
-			if(typeof(needTncode)!=undefined && needTncode==true){
+			if(typeof(needTncode)!='undefined' && needTncode==true){
 				open_tncode(function(){
 					needTncode = false;
 					post_form(form);
