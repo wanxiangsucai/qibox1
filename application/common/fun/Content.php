@@ -13,7 +13,8 @@ class Content{
      */
     public static function status(){
         $array = [            
-            -1=>'回收站',            
+            -1=>'回收站', 
+            -9=>'不通过',
             0=>'未审核',
 //             -2=>'通过初审',
 //             -3=>'通过二审',
