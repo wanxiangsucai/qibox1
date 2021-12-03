@@ -723,7 +723,7 @@ trait ModuleContent
 	    if ($result!==true) {
 	        return $result;
 	    }
-	    if ($this->edit_cancel_status($info,$data)===true) {
+	    if ($info['status']==-9 || $this->edit_cancel_status($info,$data)===true) {
 	        $data['status'] = 0;
 	    }
 	    return true;
