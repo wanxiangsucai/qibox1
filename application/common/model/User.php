@@ -199,12 +199,11 @@ class User extends Model
 	}
 	
 	/**
-	 * 用户注册 注册成功,只返回UID数值,不成功,返回对应的提示字符串
-	 * @param unknown $array
-	 * @return string|mixed
+	 * 注册入库前的数据校验
+	 * @param array $array
+	 * @return string|boolean
 	 */
-	public static function register_user($array){
-	    
+	public static function check_reg_data(&$array=[]){
 	    if(self::get_info($array['username'],'username')){
 	        return '当前用户已经存在了'.$array['username'];
 	    }
@@ -245,16 +244,33 @@ class User extends Model
 	        return '用户名为空了!';
 	    }
 	    
-	    foreach($array AS $key=>$value){
-	        $array[$key] = filtrate($value);
-	    }
-
-		$result = get_hook('user_add_begin',$array,[],[],true);
+	    $result = get_hook('user_add_begin',$array,[],[],true);
 	    if ($result!==null) {
 	        return $result;
 	    }
+	    
+	    return true;
+	}
+	
+	/**
+	 * 用户注册 注册成功,只返回UID数值,不成功,返回对应的提示字符串
+	 * @param unknown $array
+	 * @return string|mixed
+	 */
+	public static function register_user($array=[]){
+	    
+	    $result = static::check_reg_data($array);
+	    if($result!==true){
+	        return $result;
+	    }
+	    
+	    foreach($array AS $key=>$value){
+	        $array[$key] = filtrate($value);
+	    }
+	    
 	    hook_listen('user_add_begin',$array);	    
-
+        
+	    
 	    if(($array['uid'] = static::insert_data($array))==false){
 	        return "创建用户失败";
 	    }

@@ -8,6 +8,18 @@
 <META content="MSHTML 6.00.2900.3132" name=GENERATOR>
 </HEAD>
 <BODY>
+
+<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
+{if $webdb.login_use_tncode}
+<script type="text/javascript">
+var loginNeedTncode = {$webdb.login_use_tncode?'true':'false'};
+</script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/libs/tncode/tn_code.css"/>
+<script type="text/javascript" src="__STATIC__/libs/tncode/tn_code.js"></script>
+<script type="text/javascript" src="__STATIC__/js/tn_login.js"></script>
+{/if}
+
 <script type="text/javascript">
 if(self!=top){
 	window.top.location=location.href;
@@ -17,7 +29,7 @@ if(self!=top){
 	<dl>
 		<dt></dt>
 		<dd>
-			<form name="form1" method="post" action="{:url('login')}">
+			<form name="form1" method="post" action="{:url('login')}" class="tncodeUserLogin">
 				<ul>
 					<ol>账号</ol>
 					<li><input type="text" name="username" placeholder="输入帐号"></li>

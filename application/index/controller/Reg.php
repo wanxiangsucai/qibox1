@@ -167,8 +167,17 @@ class Reg extends IndexBase
             $result = $this->validate($data, 'Reg');
             if(true !== $result) $this->error($result);
             
+            if($this->webdb['reg_use_tncode']){
+                $result = UserModel::check_reg_data($data); //避免用户重复操作滑动码
+                if($result!==true){
+                    $this->error($result);
+                }elseif (!check_tncode()) {
+                    $this->error('验证码错误或不存在！');
+                }                
+            }
+            
             $uid = UserModel::register_user($data); //注册帐号
-            if ($uid<2) {
+            if (!is_numeric($uid)||$uid<2) {
                 $this->error($uid);
             }
 

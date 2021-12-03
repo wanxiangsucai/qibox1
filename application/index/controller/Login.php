@@ -94,6 +94,9 @@ class Login extends IndexBase
             }
         }
         if(IS_POST){
+            if($this->webdb['login_use_tncode'] && !check_tncode()){
+                $this->error('验证码错误或不存在！');
+            }
             $data= get_post('post');
             if(empty($data['cookietime'])){
                 $data['cookietime'] = $this->webdb['login_time']?:3600*24*30;
@@ -104,7 +107,7 @@ class Login extends IndexBase
             }elseif($result==-1){
                 $this->error("密码不正确,点击重新输入");
             }elseif(is_array($result)){
-                if($type=='iframe'){
+                if($type=='iframe'&&!$this->request->isAjax()){
                     return $this->fetch('ok');
                 }
                 $jump = $fromurl ? urldecode($fromurl) : iurl('index/index/index');

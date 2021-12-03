@@ -210,8 +210,19 @@ header ul ol{
 		<ol><br/></ol>
 	</ul>
 </header>
+
+
+{if $webdb.reg_use_tncode}
+<script type="text/javascript">
+var regNeedTncode = {$webdb.reg_use_tncode?'true':'false'};
+</script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/libs/tncode/tn_code.css"/>
+<script type="text/javascript" src="__STATIC__/libs/tncode/tn_code.js"></script>
+<script type="text/javascript" src="__STATIC__/js/tn_reg.js"></script>
+{/if}
+
 <div class="FormContainer">
-<form class="mui-input-group" action="{:urls('reg/index')}" method="post">
+<form class="mui-input-group tncodeUserReg" action="{:urls('reg/index')}" method="post">
 	<ul><ol><i class="fa fa-fw fa-user-o"></i></ol><li><input type="text" name="username" minlength="3" maxlength="20" placeholder="请输入帐号" onBlur="checkinput($(this),'username')" required/></li></ul>
 	<ul><ol><i class="si si-lock"></i></ol><li><input type="password" name="password" minlength="5" maxlength="30" placeholder="请输入密码" onBlur="checkinput($(this),'password')" required/></li></ul>
 	<ul><ol><i class="si si-lock"></i></ol><li><input type="password" name="password2" minlength="5" maxlength="30" placeholder="请重复输入密码" onBlur="checkpassword($(this))" required/></li></ul>

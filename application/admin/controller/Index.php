@@ -73,6 +73,10 @@ class Index extends AdminBase
                 };
             }
             
+            if($this->webdb['login_use_tncode'] && !check_tncode()){
+                $this->error('验证码错误或不存在！');
+            }
+            
             $result = UserModel::login($data['username'],$data['password']);
             
             if($result==0){

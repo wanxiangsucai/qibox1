@@ -15,6 +15,9 @@ class Loginajax extends IndexBase{
 			return $this->err_js('你已经登录了');
 		}
 		if(IS_POST){
+		    if($this->webdb['login_use_tncode'] && !check_tncode()){
+		        $this->error('验证码错误或不存在！');
+		    }
 			$data=get_post('post');
 			if(empty($data['cookietime'])){
 				$data['cookietime']=$this->webdb['login_time']?:3600*24*30;

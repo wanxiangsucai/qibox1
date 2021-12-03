@@ -12,12 +12,22 @@
 </div>
 {/block}
 {block name="body_content"}
+
+{if $webdb.reg_use_tncode}
+<script type="text/javascript">
+var regNeedTncode = {$webdb.reg_use_tncode?'true':'false'};
+</script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/libs/tncode/tn_code.css"/>
+<script type="text/javascript" src="__STATIC__/libs/tncode/tn_code.js"></script>
+<script type="text/javascript" src="__STATIC__/js/tn_reg.js"></script>
+{/if}
+
 <link rel="stylesheet" href="__STATIC__/index/default/pclogin.css"> 
 <div class="UserLoginCont">
 	<div class="head"><i class="fa fa-address-book-o"></i> 用户注册</div>
 	<div class="LoginCont">
 		<div class="Left">
-			<form class="mui-input-group" action="{:urls('reg/index')}" method="post">
+			<form class="mui-input-group tncodeUserReg" action="{:urls('reg/index')}" method="post">
 				<div class="LoginBox">
 					<ul>
 						<li class="icon"><i class="fa fa-fw fa-user-o"></i></li>

@@ -1478,3 +1478,7 @@ ALTER TABLE `qb_module_buyer` ADD `qid` INT( 8 ) NOT NULL COMMENT '归属圈子I
 ALTER TABLE `qb_module_buyer` ADD INDEX (`qid`);
 
 ALTER TABLE `qb_rmb_getout` ADD `jifen` MEDIUMINT( 7 ) NOT NULL COMMENT '抵扣手续费的积分';
+
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`, `is_open`) VALUES(0, 1, '用帐号密码登录是否启用滑动验证码', 'login_use_tncode', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '', 0, 0, 1);
+INSERT INTO `qb_config` (`id`, `type`, `title`, `c_key`, `c_value`, `form_type`, `options`, `ifsys`, `htmlcode`, `c_descrip`, `list`, `sys_id`, `is_open`) VALUES(0, 8, '是否启用滑动验证码', 'reg_use_tncode', '0', 'radio', '0|禁用\r\n1|启用', 1, '', '', 0, 0, 1);
+

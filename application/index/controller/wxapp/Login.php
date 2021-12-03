@@ -29,6 +29,9 @@ class Login extends IndexBase
      */
     public function goin(){
         if ($this->request->isPost()) {
+            if($this->webdb['login_use_tncode'] && !check_tncode()){
+                $this->error('验证码错误或不存在！');
+            }
             $data = $this->request->post();
             if(empty($data['cookietime'])){
                 $data['cookietime'] = $this->webdb['login_time']?:3600*24*30;
