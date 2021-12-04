@@ -97,7 +97,7 @@ class Menu extends Model
 	    }	    
 	    //$par = substr(strstr($path,'='),1);
 	    //$path = str_replace($par,str_replace([':','?','=','&'],['%3A','%3F','%3D','%26'],$par),$path);
-	    if ( strstr($path,'=') ) {
+	    if ( preg_match('/=$/',$path) ) {
 	        $path .= str_replace([':','?','=','&'],['%3A','%3F','%3D','%26'],$url);
 	    }
 	    return [$wx_appid,$path];

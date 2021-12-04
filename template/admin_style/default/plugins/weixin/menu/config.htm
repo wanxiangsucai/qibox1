@@ -213,9 +213,9 @@ function addsorts(num){
 			<li>注意：目前自定义菜单最多包括3个一级菜单，每个一级菜单最多包含5个二级菜单。一级菜单最多4个汉字，二级菜单最多7个汉字，多出来的部分将会以“...”代替，如果菜单设置了超链接关键字就没有效果。请注意，创建自定义菜单后，由于微信客户端缓存，需要24小时微信客户端才会展现出来。建议测试时可以尝试取消关注公众账号后再次关注，则可以看到创建后的效果。
 微信官方强调：修改后，需要重新关注，或者最迟隔天才会看到修改后的效果！</li>
 <li class="b">小程序跳转注意事项!!</li>
-<li>关键字那一项统一输入右边红色代码:<font color="red">pages/hy/web/index?url=</font></li>
-<li>默认只能是当前系统的小程序,如果是其它关联的小程序,就需要在前面加上小程序的appid用“|”隔开,比如“wx286b93c14bbf93|pages/hy/web/index?url=”</li>
-<li>超链接这一项,就输入你具体要访问的网址,比如:<font color="red">https://xxx</font>，只能是https开头的网址,并且要在小程序平台里授权的域名</li>
+<li>关键字那一项统一输入右边红色代码:<font color="red">pages/hy/web/index?url=</font>，这是为了能实现框架跳转H5页面，如果不需要跳转的话，就输入其它实际路径，比如“pages/xxx/bb”(但是必须要包含有pages/)</li>
+<li>默认只能是当前系统的小程序,如果是其它关联的小程序,就需要在前面加上小程序的appid用“|”隔开,比如“wx286b93c14bbf93<b><font color="red">|</font></b>pages/hy/web/index?url=”其中“pages/hy/web/index?url=”可以是其它的小程序页面，比如“wx286b93c|pages/xxx/bb”(但是必须要包含有pages/)</li>
+<li>超链接这一项,就输入你具体要访问的网址,比如:<font color="red">https://xxx</font>，只能是https开头的网址,并且要在小程序平台里授权的域名(如果不须跳转H5的话，随便输入一个网址即可)</li>
 		</ul>
 	</div>
 </div>
