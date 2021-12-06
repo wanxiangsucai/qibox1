@@ -23,9 +23,9 @@ class Tncode
         //ini_set('display_errors','On');
         //
         //error_reporting(0);
-        if(!isset($_SESSION)){
-            session_start();
-        }
+//         if(!isset($_SESSION)){
+//             session_start();
+//         }
     }
     function make(){
         $this->_init();
@@ -37,6 +37,8 @@ class Tncode
     }
     
     function check($offset=''){
+        $_SESSION = [];
+        list($_SESSION['tncode_r'],$_SESSION['tncode_err']) = explode("\t", cache('tncodeR'.get_cookie('user_sid')));
         if(!$_SESSION['tncode_r']){
             return false;
         }
@@ -46,10 +48,13 @@ class Tncode
         $ret = abs($_SESSION['tncode_r']-$offset)<=$this->_fault;
         if($ret){
             unset($_SESSION['tncode_r']);
+            cache('tncodeR'.get_cookie('user_sid'),null);
         }else{
             $_SESSION['tncode_err']++;
+            cache('tncodeR'.get_cookie('user_sid'),$_SESSION['tncode_r']."\t".$_SESSION['tncode_err']);
             if($_SESSION['tncode_err']>5){//错误5次必须刷新
                 unset($_SESSION['tncode_r']);
+                cache('tncodeR'.get_cookie('user_sid'),null);
             }
         }
         return $ret;
@@ -62,8 +67,10 @@ class Tncode
         $this->im_bg = imagecreatetruecolor($this->bg_width, $this->bg_height);
         imagecopy($this->im_bg,$this->im_fullbg,0,0,0,0,$this->bg_width, $this->bg_height);
         $this->im_slide = imagecreatetruecolor($this->mark_width, $this->bg_height);
-        $_SESSION['tncode_r'] = $this->_x = mt_rand(50,$this->bg_width-$this->mark_width-1);
-        $_SESSION['tncode_err'] = 0;
+        $tncode_r = $this->_x = mt_rand(50,$this->bg_width-$this->mark_width-1);
+//         $_SESSION['tncode_r'] = $tncode_r;
+//         $_SESSION['tncode_err'] = 0;
+        cache('tncodeR'.get_cookie('user_sid'),$tncode_r."\t0");
         $this->_y = mt_rand(0,$this->bg_height-$this->mark_height-1);
     }
     
