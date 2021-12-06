@@ -8,21 +8,40 @@
 {block name="body_content"}
 <link rel="stylesheet" href="__STATIC__/index/default/showpic.css">
 
-<!-- mui图片特效 对应DIV里的mui-content-padded类 图片要加参数 data-preview-src="" data-preview-group="1" -->
-<link rel="stylesheet" href="__STATIC__/mui/css/mui.min.css">
-<link rel="stylesheet" href="__STATIC__/mui/css/mui.preview.css">
+
 
 <div class="ShowPhotoCont">
 {qb:showpage name="photo_show_pic0"}
-	<div class="PhotoBox mui-content-padded">
-		<div class="BigPic"><span><a href="#"><img src="{$listdb.0.picurl}" data-preview-src="" data-preview-group="1" /></a></span></div>
-		<ul class="MorePic">
-{volist name="listdb" id="rs"}
-			<li><span><a href="#"><img src="{$rs.picurl}" data-preview-src="" data-preview-group="1"/></a></span></li>
-{/volist}
+	<div class="PhotoBox">
+		<div class="BigPic"><span><a href="#" onclick="$('.photo-swipe figure').eq(0).find('img').trigger('click')"><img src="{$listdb.0.picurl}"/></a></span></div>
+		<ul class="MorePic photo-swipe">
+	{volist name="listdb" id="rs"}
+	<figure>
+			<a href="{$rs.picurl}" data-size="800x600">
+			<li><span><img src="{$rs.picurl}"/></span></li>
+			</a>
+	</figure>
+	{/volist}
 		</ul>
 	</div>
 {/qb:showpage}
+
+{include file="index@common/photoswipe" /}
+<script type="text/javascript">
+$(function(){
+	$('.photo-swipe figure').each(function(){
+		var that = $(this);
+		var img = $(this).find('img');
+		$("<img/>").attr("src", $(img).attr("src")).load(function() {
+			var realWidth = this.width;
+			var realHeight = this.height;
+			that.find('a').attr('data-size',realWidth+'x'+realHeight);
+		});
+	});
+	initPhotoSwipeFromDOM('.photo-swipe');
+});
+</script>
+
 <script type="text/javascript">
 function add_fav(id){
 	var url="{:purl('fav/api/add')}?type={:config('system_dirname')}&id="+id;
@@ -37,6 +56,7 @@ function add_fav(id){
 </script>
 <style type="text/css">.infos{font-size:14px;color:#999;}.infos span{margin-right:10px;}</style>
 	<div class="ContentBox">
+	{qb:hy name="wap_cmsshow_content201" type="labelmodel" val="datas" where="index_style/default/cms/content/wap_model/gz"} {$datas} {/qb:hy}
 		<div class="title">{$info.title}</div>
 		<div class="infos">
 			<span><i class="glyphicon glyphicon-time"></i> {:date("Y-m-d H:i:s",$info.create_time)}</span>
@@ -54,14 +74,6 @@ function add_fav(id){
 	{qb:comment name="commentwap02" rows='5' tpl="comment/wap01"}{/qb:comment}
 </div>
 
-<!-- mui图片特效 -->
-<script src="__STATIC__/mui/js/mui.min.js"></script>
-<script src="__STATIC__/mui/js/mui.zoom.js"></script>
-<script src="__STATIC__/mui/js/mui.previewimage.js"></script>
-<script>mui.previewImage();</script>
-
-<!-- 微动态自动收录用户感兴趣的主题,时间60代表用户停留60秒将自动收藏 -->
-{:fun('sns@fav',$info,60,'系统帮你订阅了本主题,下次本主题有回复,将会通知你')}
 
 <script>
 $('.PhotoBox img').hover(
@@ -74,17 +86,16 @@ $('.PhotoBox img').hover(
 );
 </script>
 
-<script type="text/javascript">
-//解决MUI链接无法点击的问题
-mui('body').on('tap','a',function(){
-	window.top.location.href=this.href;
-});
-</script>
+
+
 
 <!-- 分享海报二维码宣传推广图片 -->
 {include file="$haibao" /}
 {include file="../../../haibao_style/btn" /}
 <!--<div style="position:fixed;right:30px;top:80px;z-index:200;width:30px;font-size:10px;line-height:10px;color:#000;opacity:0.7;"><i id="share_code" onclick="share_btn()" style="font-size:30px;" class="fa fa-qrcode"></i>海报</div>-->
 
+
+<!-- 微信分享 -->
+{include file="index@share"/}
 
 {/block}
