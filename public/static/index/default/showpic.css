@@ -81,6 +81,7 @@
 	border-right-color: #FFF ;
 	border-bottom-color:#CCC;    
 	border-left-color:#CCC;
+	opacity: 0.6;
 }
 .ContentBox .Cont img{
 	max-width:100%;
