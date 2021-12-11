@@ -177,6 +177,7 @@ abstract class Index extends IndexBase
         
         $array = getArray($data);
         foreach ($array['data'] AS $key=>$rs){
+            $rs['title'] = del_html($rs['title']);
             $rs['picurl'] = tempdir($rs['picurl']);
             if(config('system_dirname')=='bbs'){
                 $rs['content'] = fun("bbs@getContents",$rs['id'],100);
