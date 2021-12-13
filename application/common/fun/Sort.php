@@ -77,10 +77,14 @@ class Sort{
      * 获取栏目管理员所管辖的栏目ID
      * @param number $uid 栏目管理员UID
      * @param string $sys_type
+     * @return array
      */
     public static function admin($uid=0,$sys_type=''){
         if (!$uid) {
             $uid = login_user('uid');
+        }
+        if (!$uid) {
+            return [];
         }
         $array = sort_config($sys_type);
         $s_array = [];
