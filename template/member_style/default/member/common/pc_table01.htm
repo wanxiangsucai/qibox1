@@ -80,7 +80,7 @@
 		{if $f_array}
 			<div class="info">
 			{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"}<!-- 自定义字段 -->
-				{if (!in_array($vs['name'],['title','picurl','create_time','view'])) /}<!--把图片\时间过滤掉-->
+				{if (!in_array($vs['name'],['title','picurl','create_time','view','status'])) /}<!--把图片\时间过滤掉-->
 				{$vs.title}：<span>{$vs.value}</span> 
 				{/if}
 			{/volist}
