@@ -270,7 +270,7 @@ abstract class C extends MemberBase
             foreach (fun("Content@status") AS $key=>$title){
                 if($key==-1){
                     continue ;
-                }elseif(fun('admin@sort',$fid)!==true){ //审核员，不是管理员的情况
+                }elseif(fun('admin@sort',$fid)!==true && !fun('sort@admin')){ //审核员，不是管理员的情况
                     if(fun('admin@status_check',$key)!==true){
                         continue ;
                     }
@@ -283,7 +283,9 @@ abstract class C extends MemberBase
                 ];
             }
             if ( fun('admin@sort',$fid)!==true ) {
-                if ($status_array) {
+                if(fun('sort@admin')){
+                    $map['fid'] = ['in',fun('sort@admin')];
+                }elseif ($status_array) {
                     $map['status'] = ['in',$status_array];
                 }else{
                     $this->showerr('你没权限！');
@@ -312,7 +314,7 @@ abstract class C extends MemberBase
                 ],     
             ];
             if(!$qid){  //不是圈子管理的话，就显示审核操作功能                
-                if ( fun('admin@sort',$fid)!==true ) {
+                if ( fun('admin@sort',$fid)!==true && !fun('sort@admin')) {
                     unset($this->tab_ext['right_button'][0],$this->tab_ext['right_button'][1]); //审核员，不显示修改与删除操作
                 }else{
                     unset($this->tab_ext['right_button'][2]);
@@ -323,7 +325,7 @@ abstract class C extends MemberBase
                     'fun'=>function($info){
                         $array = [];
                         foreach(fun('Content@status') AS $key=>$title){
-                            if(fun('admin@sort',$fid)!==true && fun('admin@status_check',$key)!==true){
+                            if(fun('admin@sort',$fid)!==true && !fun('sort@admin') && fun('admin@status_check',$key)!==true){
                                 continue ;
                             }
                             $array[$title] = [
@@ -362,7 +364,7 @@ abstract class C extends MemberBase
             ['title', '标题', 'text'],
             ['create_time', '日期', 'date'],
             ['uid', '发布者', 'username'],
-            //['status', '审核', 'select2',['未审','已审','已推荐']],
+            ['status', '状态', 'select2',fun('Content@status')],
         ];
         
         $listdb = $this->model->getAll($map,$order="id desc",$rows,[],$format=FALSE);

@@ -74,6 +74,25 @@ class Sort{
     }
     
     /**
+     * 获取栏目管理员所管辖的栏目ID
+     * @param number $uid 栏目管理员UID
+     * @param string $sys_type
+     */
+    public static function admin($uid=0,$sys_type=''){
+        if (!$uid) {
+            $uid = login_user('uid');
+        }
+        $array = sort_config($sys_type);
+        $s_array = [];
+        foreach($array AS $key=>$rs){
+            if($rs['admin']!='' && in_array($uid, str_array($rs['admin']))){
+                $s_array[] = $rs['id'];
+            }
+        }
+        return $s_array;
+    }
+    
+    /**
      * 获取父级 同级 下一级 这三级的所有栏目
      * @param number $id
      * @param string $sys_type

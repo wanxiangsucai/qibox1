@@ -124,6 +124,7 @@ abstract class S extends AdminBase
                         ['checkbox', 'allowpost', '允许发布内容的用户组','全留空,则不作限制',getGroupByid()],
                         ['checkbox', 'allowview', '允许查看内容的用户组','全留空,则不作限制。注意标题不能限制。',getGroupByid()],
                         ['checkbox', 'allow_viewtitle', '允许查看标题的用户组','全留空,则不作限制。注意标签调用可能无效。',getGroupByid()],
+                    ['text', 'admin', '栏目管理员','输入用户的uid,不是用户名,有多个用半角逗号,隔开'],
                 ],
                 '模板设置'=>[
                         ['text', 'haibao', '海报模板路径',fun('haibao@get_haibao_list').'可留空,多个用逗号隔开,需要补全路径(其中haibao_style不用填):比如:“xxx/show.htm”'],
@@ -232,6 +233,13 @@ abstract class S extends AdminBase
                 //if (true !== $result) $this -> error($result);
             }
             
+            //if ($data['admin']) {
+                preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
+                $dirname = $array[0][1];
+                if ( !table_field($dirname.'_sort','admin') ) {
+                    query("ALTER TABLE  `qb_{$dirname}_sort` ADD  `admin` VARCHAR( 255 ) NOT NULL COMMENT  '管理员uid，多个用逗号隔开';");
+                }
+            //}
             if ($data['haibao']) {
                 preg_match_all('/([_a-z0-9]+)/i',get_called_class(),$array);
                 $dirname = $array[0][1];

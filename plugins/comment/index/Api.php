@@ -415,6 +415,7 @@ class Api extends IndexBase
 //             $page=1;
 //         }
 //         $min = ($page-1)*$rows;
+        $topic = fun('Content@info',$aid,$sysid,false);
         $listdb = contentModel::where($map)->order($order)->paginate($rows);
         if(!is_object($listdb)){
             return $listdb;
@@ -425,7 +426,7 @@ class Api extends IndexBase
         $array = getArray($listdb);
         $sysname = modules_config($rs['sysid'])['keywords'];
         foreach($array['data'] AS $key=>$rs){
-            if($rs['status']==0 && $this->user['uid']!=$rs['uid'] && fun('admin@sort',0,$sysname)!==true && !fun('admin@status_power',$sysname)){
+            if($rs['status']==0 && $this->user['uid']!=$rs['uid'] && fun('admin@sort',$topic['fid'],$sysname)!==true && !fun('admin@status_power',$sysname)){
                 unset($array['data'][$key]);
             }
         }
