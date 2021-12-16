@@ -14,11 +14,25 @@ class U33{
 	{include file="member@common/table01" /}
 	{$pages}
 <script type="text/javascript">
-	function more_link_fun(res){
-		if(res.code==0){
-			$("#status-"+res.data.id).html(res.data.status_name);
-		}
+function pre_link_fun(url){
+	if(url.indexOf(\'/status/-9\')>0 || url.indexOf(\'/status/-1\')>0){
+		layer.confirm(\'<textarea class="doReason" style="width:100%;height:100px;"></textarea>\',{title:\'操作理由（可不填）\'},function(){
+			post(url,{reason:$(".doReason").last().val()});
+		});
+	}else{
+		post(url,{});
 	}
+	function post(url,data){
+		$.post(url,data,function(res){            
+			if(res.code==0){
+                layer.msg(res.msg?res.msg:\'操作成功\');
+				$("#status-"+res.data.id).html(res.data.status_name);
+			}else{
+				layer.alert(res.msg?res.msg:\'操作失败\');
+			}
+		});
+	}
+}
 </script>
 {/block}';
 	   foreach ($m AS $rs){

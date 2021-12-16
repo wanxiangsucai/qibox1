@@ -48,13 +48,15 @@ abstract class Api extends IndexBase
         return $info;
     }
     
+    
     /**
      * 审核员操作
      * @param number $id
      * @param number $status
-     * @return void|\think\response\Json
+     * @param string $reason 操作理由
+     * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
-    public function change_status($id=0,$status=0){
+    public function change_status($id=0,$status=0,$reason=''){
         $info = $this->check_getTab($id);
         if (is_string($info)) {
             return $this->err_js($info);
@@ -68,12 +70,43 @@ abstract class Api extends IndexBase
         ]);
         
         $this->send_admin_msg($status,$info); //多级审核通知处理
+        $this->send_author_msg($status,$info,$reason);
         
         return $this->ok_js([
             'status'=>$status,
             'id'=>$id,
             'status_name'=>fun('Content@status')[$status],
         ],fun('Content@status')[$status].' 操作成功');
+    }
+    
+    /**
+     * 给作者发消息
+     * @param unknown $status
+     * @param array $info
+     * @param string $reason
+     */
+    protected function send_author_msg($status=0,$info=[],$reason=''){
+        if ($reason!='') {
+            $content = '你发的主题,';
+            if($status==-9){
+                $content .= '被拒审了';
+            }elseif($status==-1){
+                $content .= '被删除了';
+            }elseif($status==1){
+                $content .= '通过审核了';
+            }else{
+                $content .= '被执行了 '.fun('Content@status')[$status].' 操作';
+            }
+            $content .= '，标题是：'.$info['title'];
+            if ($reason) {
+                $content .= '，理由是：'.$reason;
+            }
+            if($status!=-1){
+                $content .= '，<a href="'.get_url(iurl('content/show',['id'=>$info['id']])).'" target="_blank">点击查看详情</a>';
+            }            
+            send_msg($info['uid'],'被执行了 '.fun('Content@status')[$status].' 操作',$content);
+            send_wx_msg($info['uid'], $content);
+        }
     }
     
     /**

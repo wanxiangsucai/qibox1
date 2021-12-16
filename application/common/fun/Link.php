@@ -36,6 +36,8 @@ function more_links_ajax(url,alert_msg){
 		layer.confirm(alert_msg,{title:false,},function(index){
 			post(url);
 		});
+	}else if(typeof(pre_link_fun)=='function'){
+		pre_link_fun(url);
 	}else{
 		post(url);
 	}
