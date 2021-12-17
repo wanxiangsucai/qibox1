@@ -141,7 +141,7 @@ if($array){
 			<input class='wri title1' type='{$type1}' value='{$vo['title1']}' placeholder='{$title1}'>
 			<input class='wri title2' type='{$type2}' value='{$vo['title2']}' placeholder='{$title2}'>
 			<input class='wri title3' type='{$type3}' value='{$vo['title3']}' placeholder='{$title3}'>
-			<input class='wri title4' type='{$type4}' value='{$vo['title3']}' placeholder='{$title4}'>
+			<input class='wri title4' type='{$type4}' value='{$vo['title4']}' placeholder='{$title4}'>
 			<span class='input-group-addon del'><i class='fa fa-fw fa-close'></i></span>
 			<span class='input-group-addon down'><i class='fa fa-arrow-down'></i></span>
 			<span class='input-group-addon up'><i class='fa fa-arrow-up'></i></span>
