@@ -38,6 +38,13 @@
 					</div>
 {/if}
 
+{if modules_config('qun')}
+					<div class="mui-input-row mui-radio mui-left" onclick="window.location.href='{$url}?type=qun_topic'">
+						 <label>商品货架（专题）</label>
+						<input name="radio1" type="radio"> 
+					</div>
+{/if}
+
 {volist name="module_db" id="rs"}
 					<div class="mui-input-row mui-radio mui-left" onclick="window.location.href='{$rs.label_url}'">
 						 <label>{$rs.name}</label>

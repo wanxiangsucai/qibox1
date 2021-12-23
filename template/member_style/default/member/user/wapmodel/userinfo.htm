@@ -4,6 +4,7 @@
 	<ul><ol>昵称</ol><li>{$info.nickname}</li></ul>
 	<ul><ol>角色</ol><li>{:get_role($info.grouptype)}</li></ul>
 	<ul><ol>我的ID</ol><li>{$info.uid}</li></ul>
+	{if modules_config('bbs')}<ul><ol>总共发贴</ol><li>{:fun('bbs@mytotal',$info.uid)} 篇</li></ul>{/if}
 	<ul><ol>注册日期</ol><li>{:date("Y-m-d H:i:s",$info.regdate)}</li></ul>
 	<ul><ol>最后登录</ol><li>{:date("Y-m-d H:i:s",$info.lastvist)}</li></ul>
 

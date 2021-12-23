@@ -3,7 +3,7 @@
 {block name="title"}积分消费日志{/block}
 {block name="content"}
 <div class="MainCont">
-	<div class="head"><div class="tag">虚拟财富日志,你当前的状态, 积分:<span class="b red">{$userdb.money}</span>个 
+	<div class="head"><div class="tag">虚拟财富日志,你当前的状态： <!--积分:<span class="b red">{$userdb.money}</span>个 -->
 	{volist name=":jf_name()" id="name"}
 			{if get_user_money($key,$userdb.uid)}
 			{$name}:<span class="b red">{:get_user_money($key,$userdb.uid)}</span>个

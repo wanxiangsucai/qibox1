@@ -58,6 +58,8 @@ class Labelhy extends Label
                 $url = url("index/labelhy/links",$url_array);
             }elseif($type=='myform'){
                 $url = url("index/labelhy/myform",$url_array);
+            }elseif($type=='qun_topic'){
+                $url = url("qun/labelhy/topic",$url_array);
 //             }elseif($type=='sql'){
 //                 $url = url("index/labelhy/sql",$url_array);
             }elseif(modules_config($type)){

@@ -59,6 +59,9 @@ class Index extends AdminBase
         if (!empty($this->user)) {
             $this->error('你已经登录了','index');
         }
+        if ($this->webdb['login_use_tncode'] && isset($this->webdb['web_open']) && empty($this->webdb['web_open'])) {
+            $this->webdb['login_use_tncode'] = 0;
+        }
         if(IS_POST){
             
             $data= get_post('post');

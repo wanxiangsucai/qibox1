@@ -215,6 +215,7 @@ var Qibo = function () {
 						oo[i].addEventListener("mousedown",moreMenu.showdiv,true);
 						oo[i].addEventListener("mouseover",moreMenu.showstyle,true);
 						oo[i].addEventListener("mouseout",moreMenu.hidestyle,true);
+						
 					}
 				}else if(oo[i].getAttribute("url")!=null){
 					if(oo[i].getAttribute("href")=="#")oo[i].href='javascript:';
@@ -222,6 +223,7 @@ var Qibo = function () {
 						oo[i].attachEvent("onmouseover",this.showdiv);
 					}else{ //For Mozilla
 						oo[i].addEventListener("mouseover",this.showdiv,true);
+						oo[i].addEventListener("mousedown",this.showdiv,true);
 					}
 				}
 			}
@@ -255,7 +257,8 @@ var Qibo = function () {
 			}
 			ao.style.border='0px dotted red';
 		},
-		showdiv:function(evt){
+		showdiv:function(evt){console.log(5555);
+			$(".more-menu-wap").parent().hide();
 			var evt = (evt) ? evt : ((window.event) ? window.event : "");
 			if (evt) {
 				 ao = (evt.target) ? evt.target : evt.srcElement;
@@ -285,8 +288,12 @@ var Qibo = function () {
 				document.body.appendChild(obj);
 				//moreMenu.getparent(DivId).show("slow");
 				//obj.innerHTML='以下是显示内容...';
-				if(thisurl.indexOf('<')>-1){
-					$("#"+DivId).html(thisurl);				
+				if(thisurl.indexOf('<')>-1 || /^([a-z0-9_-]+)$/i.test(thisurl)){
+					if( thisurl.indexOf('<')>-1 ){
+						$("#"+DivId).html(thisurl);
+					}else{
+						$("#"+DivId).html( $('.'+thisurl).html()  );
+					}									
 					if($(ao).width()>moreMenu.getparent(DivId).width()){
 						moreMenu.getparent(DivId).css("width",$(ao).width()+"px");
 					}
@@ -320,13 +327,17 @@ var Qibo = function () {
 				},100);
 				moreMenu.autohide(ao);
 			}
+			setTimeout(function(){
+				//$("#"+DivId).parent().parent().css({'display':'none'});
+			},5000);
 		},
 		getparent:function(sonId){
 			parentObj = $("#"+sonId).parent().parent();
 			return parentObj;
 		},
 		cancel:function(sonId){
-			moreMenu.getparent(sonId).hide();
+			//moreMenu.getparent(sonId).hide();
+			$(".more-menu-wap").parent().hide();
 		},
 		autohide:function(eObj){
 			parentObj = moreMenu.getparent(moreMenu.showSonId);

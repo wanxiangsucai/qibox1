@@ -2,7 +2,7 @@
 {block name="title"}积分消费记录{/block}
 {block name="content"}
 <div class="qb_member_note">
-	虚拟财富状态，积分：<span class="red">{$userdb.money}</span> 个
+	虚拟财富状态：<!--积分：<span class="red">{$userdb.money}</span> 个-->
 	{volist name=":jf_name()" id="name"}
 			{if get_user_money($key,$userdb.uid)}
 			{$name}：<span class="red">{:get_user_money($key,$userdb.uid)}</span>个

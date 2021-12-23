@@ -44,15 +44,13 @@ abstract class Mysort extends MemberBase
     }
     
     
-    public function index($ext_id=0) {
+    public function index($ext_id=0,$aid=0) {
         if ($this->request->isPost()) {
             //修改排序
             return $this->edit_order();
         }
         
-        $map = [
-                'uid'=>$this->user['uid'],                
-        ];
+        $map = [];
         if ($ext_id) {
             if (empty($ext_sys)) {
                 $ext_sys = modules_config('qun')['id'];
@@ -62,12 +60,20 @@ abstract class Mysort extends MemberBase
                     'ext_sys'=>$ext_sys,
             ];
         }
+        if ($aid) {
+            $map = [
+                'aid'=>$aid,
+            ];        
+        }
         
+        $map['uid'] = $this->user['uid'];
+
         $this->tab_ext['top_button'] = [
                 [
                         'type'=>'add',
                         'title'=>'新增分类',
                         'href'=>url('add',[
+                                'aid'=>$aid,
                                 'ext_id'=>$ext_id,
                                 'ext_sys'=>$ext_sys,
                         ]),
@@ -78,14 +84,16 @@ abstract class Mysort extends MemberBase
         return $this -> getAdminTable($listdb);
     }
     
-    public function add($ext_id=0,$ext_sys=0) {
+    public function add($ext_id=0,$ext_sys=0,$aid=0) {
         $this->form_items = [
                 ['hidden','ext_id',$ext_id],
                 ['hidden','ext_sys',$ext_sys],
+                ['hidden','aid',$aid],
                 ['textarea','name','分类名称','同时添加多个,则每个名称换一行'],
         ];
         $url = url('index',[
                 'ext_id'=>$ext_id,
+                'aid'=>$aid,
                 'ext_sys'=>$ext_sys,
         ]);
         return $this -> addContent($url);
@@ -103,6 +111,7 @@ abstract class Mysort extends MemberBase
             $this -> error('你没权限');
         }
         $url = url('index',[
+                'aid'=>$info['aid'],
                 'ext_id'=>$info['ext_id'],
                 'ext_sys'=>$info['ext_sys'],
         ]);

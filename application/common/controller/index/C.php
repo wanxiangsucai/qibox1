@@ -606,6 +606,41 @@ abstract class C extends IndexBase
     }
     
     /**
+     * 获取圈子的内容页风格
+     * @param string $style
+     * @param number $mid
+     * @return string
+     */
+    protected function get_qun_template($style='',$mid=1){
+        $template = '';
+        $base_path = TEMPLATE_PATH.'qun_style/'.$style.'/'.config('system_dirname').'/';
+        if (IN_WAP===true) {
+            $path = $base_path.'wap_show';
+            if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
+                $template = $path.$mid.'.'.config('template.view_suffix');
+            }elseif( is_file($path.'.'.config('template.view_suffix')) ){
+                $template = $path.'.'.config('template.view_suffix');
+            }
+        }else{
+            $path = $base_path.'pc_show';
+            if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
+                $template = $path.$mid.'.'.config('template.view_suffix');
+            }elseif( is_file($path.'.'.config('template.view_suffix')) ){
+                $template = $path.'.'.config('template.view_suffix');
+            }
+        }
+        if (empty($template)) {
+            $path = $base_path.'show';
+            if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
+                $template = $path.$mid.'.'.config('template.view_suffix');
+            }elseif( is_file($path.'.'.config('template.view_suffix')) ){
+                $template = $path.'.'.config('template.view_suffix');
+            }
+        }
+        return $template;
+    }
+    
+    /**
      * 挑选模板 不存在就返回空值
      * @param string $type 值为 list 或 show  
      * @param number $mid 模型ID
@@ -616,31 +651,13 @@ abstract class C extends IndexBase
     protected function get_tpl($type='show',$mid=0,$sort=[],$info=[]){
         $template = '';
         
-        if ($type=='show' && $info['qun']['style']!='') {   //圈子个性模板,可以不存在母模板
-            $base_path = TEMPLATE_PATH.'qun_style/'.$info['qun']['style'].'/'.config('system_dirname').'/';
-            if (IN_WAP===true) {
-                $path = $base_path.'wap_show';
-                if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
-                    $template = $path.$mid.'.'.config('template.view_suffix');
-                }elseif( is_file($path.'.'.config('template.view_suffix')) ){
-                    $template = $path.'.'.config('template.view_suffix');
-                }
-            }else{
-                $path = $base_path.'pc_show';
-                if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
-                    $template = $path.$mid.'.'.config('template.view_suffix');
-                }elseif( is_file($path.'.'.config('template.view_suffix')) ){
-                    $template = $path.'.'.config('template.view_suffix');
-                }
+        if ($type=='show') {   //圈子个性模板,可以不存在母模板
+            if(input('style') && preg_match('/^([\w-]+)$/i', input('style'))){
+                $template = $this->get_qun_template(input('style'),$mid);
             }
-            if (empty($template)) {
-                $path = $base_path.'show';
-                if( is_file($path.$mid.'.'.config('template.view_suffix')) ){
-                    $template = $path.$mid.'.'.config('template.view_suffix');
-                }elseif( is_file($path.'.'.config('template.view_suffix')) ){
-                    $template = $path.'.'.config('template.view_suffix');
-                }
-            }
+            if(empty($template) && $info['qun']['style']!=''){
+                $template = $this->get_qun_template($info['qun']['style'],$mid);
+            }            
         }
         
         if (empty($template) && IN_WAP===true && $info['wap_template'] && is_file(TEMPLATE_PATH.'index_style/'.$info['wap_template']) && preg_match("/".config('template.view_suffix')."$/", $info['wap_template'])) {

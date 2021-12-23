@@ -169,6 +169,9 @@ class Table extends Base
                 if (is_array($array)) {
                     $data[] = $array;
                 }else{
+                    if (!$array) {
+                        continue;
+                    }
                     $data[] = [
                         'title'=>$rs['title'],
                         'value'=>$array,
@@ -180,11 +183,19 @@ class Table extends Base
                 $rs['href'] || $rs['href']=$rs['url'];
                 //$rs['href'] = str_replace('__id__', $info['id'], $rs['href']);
                 $rs['href'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $rs['href']);
-                $alert = $rs['type']=='delete' ? ' class="_dels" onclick="if(typeof(delete_one)==\'function\'){return delete_one($(this).attr(\'href\').split(\'/ids/\')[1].split(\'.\')[0]);}else{return confirm(\'你确实要删除吗?不可恢复!\')}"' : ' ';
+                //$alert = $rs['type']=='delete' ? ' class="_dels" onclick="if(typeof(delete_one)==\'function\'){return delete_one($(this).attr(\'href\').split(\'/ids/\')[1].split(\'.\')[0]);}else{return confirm(\'你确实要删除吗?不可恢复!\')}"' : ' ';
+                $alert = 'data-alert="你确认要删除吗？不可恢复哦！"';
                 $target = $rs['target']?" target='{$rs['target']}' ":'';
+                $ext_class = 'btn_normal';
+                if($rs['type']=='delete'){
+                    $ext_class = 'btn_delete alert';
+                }elseif($rs['type']=='edit'){
+                    $ext_class = 'btn_edit';
+                }
                 $data[] = [
+                    'type'=>$rs['type'],
                     'title'=>$rs['title'],
-                    'value'=>"<a href='{$rs['href']}' class='{$rs['class']}' title='{$rs['title']}' $alert $target><i class='{$rs['icon']}'></i> ".($show_title?$rs['title']:'')."</a>",
+                    'value'=>"<a href='{$rs['href']}' class='{$rs['class']} {$ext_class}' title='{$rs['title']}' $alert $target><i class='{$rs['icon']}'></i> ".($show_title?$rs['title']:'')."</a>",
                     ];
             }
         }

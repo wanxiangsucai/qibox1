@@ -285,9 +285,10 @@ class Form extends Base
             $detail = is_array($field['options']) ? $field['options'] : str_array($field['options']);
             foreach ($detail as $key => $value) {
                 $cked = $info[$name]==$key?' checked ':'';
-                $_show .= "<input $ifmust type='radio' name='{$name}' id='atc_{$name}{$key}' value='$key' {$cked} title='$value' lay-filter='{$name}'><span class='m_title'> $value </span>";
+                $_key = preg_replace('/\(\)/', '', $key);
+                $_show .= "<input $ifmust type='radio' name='{$name}' id='atc_{$name}{$_key}' value='$key' {$cked} title='$value' lay-filter='{$name}'><span class='m_title'> $value </span>";
             }
-            $show = $_show ."
+            $show = $_show ."<span id='atc_{$name}'></span>
 <script type='text/javascript'>
 $(function(){
 	if(typeof(layui)=='object'){
@@ -314,7 +315,7 @@ $(function(){
                     $cked = in_array((string)$key, $_detail)?' checked ':'';    //强制转字符串是避免0会出问题
                     $_show .= " <input $ifmust type='checkbox' name='{$name}[]'  id='atc_{$name}{$key}' value='$key' {$cked}  title='$value' lay-filter='{$name}'><span class='m_title'> $value </span>";
                 }
-                $show = "$_show "; 
+                $show = "$_show <span id='atc_{$name}'></span>"; 
             }else{
                 foreach ($detail as $key => $value) {
                     $cked = in_array((string)$key, $_detail)?' true ':'false';    //强制转字符串是避免0会出问题
@@ -635,37 +636,41 @@ $(function(){
     {
         $array=[];
         $field_array = get_field($mid);
-        foreach ($field_array AS $rs){
-            //$rs['options'] && $rs['options'] = str_array($rs['options']);
-            if($rs['type'] == 'usergroup2'||$rs['type'] == 'usergroup3'){    //用户组多选 及单选
-                $rs['options'] = 'app\common\model\Group@getTitleList';
-            }
-            $rs['options'] = static::options_2array($rs['options'],$info);
-            if($rs['type']=='hidden'){   //隐藏域比较特别些
-                $rs['title'] = $rs['value'];
-            }
-            if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'||$rs['type']=='checkboxtree'){
-                $arr = [
-                        $rs['type'],
-                        $rs['name'],
-                        $rs['title'],
-                        $rs['about'],
-                        $rs['options'],
-                        $rs['value'],
-                ];
-            }else{
-                $arr = [
-                        $rs['type'],
-                        $rs['name'],
-                        $rs['title'],
-                        $rs['about'],
-                        $rs['value'],
-                        $rs['options']
-                ];
-            }
-            $array[] = $arr+$rs;
+        foreach ($field_array AS $rs){            
+            $array[] = self::format_data_field($rs,$info);
         }
         return $array;
+    }
+    
+    public static function format_data_field($rs=[],$info=[]){
+        //$rs['options'] && $rs['options'] = str_array($rs['options']);
+        if($rs['type'] == 'usergroup2'||$rs['type'] == 'usergroup3'){    //用户组多选 及单选
+            $rs['options'] = 'app\common\model\Group@getTitleList';
+        }
+        $rs['options'] = static::options_2array($rs['options'],$info);
+        if($rs['type']=='hidden'){   //隐藏域比较特别些
+            $rs['title'] = $rs['value'];
+        }
+        if($rs['type']=='select'||$rs['type']=='radio'||$rs['type']=='checkbox'||$rs['type']=='checkboxtree'){
+            $arr = [
+                $rs['type'],
+                $rs['name'],
+                $rs['title'],
+                $rs['about'],
+                $rs['options'],
+                $rs['value'],
+            ];
+        }else{
+            $arr = [
+                $rs['type'],
+                $rs['name'],
+                $rs['title'],
+                $rs['about'],
+                $rs['value'],
+                $rs['options']
+            ];
+        }
+        return $arr+$rs;
     }
     
     

@@ -31,6 +31,24 @@ class Mysort{
         return Db::name($mod.'_mysort')->where($map)->order('list desc,id asc')->column(true);
     }
     
+    
+    /**
+     * 我的分类,根据圈子ID获取
+     * @param number $aid
+     * @param string $mod 哪个频道 我的分类
+     * @return array
+     */
+    public static function getByaid($aid=0,$mod='qun'){
+        $mod || $mod=config('system_dirname');        
+        if (!class_exists("app\\".$mod."\\model\\Mysort")) {
+            return ;
+        }
+        $map = [
+            'aid'=>$aid,
+        ];
+        return Db::name($mod.'_mysort')->where($map)->order('list desc,id asc')->column(true);
+    }
+    
     /**
      * 我的分类,根据ext_id获取
      * @param number $ext_id

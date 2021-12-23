@@ -263,6 +263,8 @@ class LabelhyShow extends _LabelhyShow
             }
             if($type=='member'&&empty($cfg['class'])){
                 $cfg['class'] = "app\\common\\model\\User@labelGet";
+            }elseif($type=='qun_topic'&&empty($cfg['class'])){
+                $cfg['class'] = "app\qun\model\Topic@get_label";
             }
 //             if(    ($type&&( modules_config($type)||plugins_config($type) ))    ||    $cfg['class']    ){
 //                 if($tpl_have_edit || empty( cache($hy_id.'tag_default_'.$tag_name) )){   //没入库前,也方便AJAX获取更多分页使用

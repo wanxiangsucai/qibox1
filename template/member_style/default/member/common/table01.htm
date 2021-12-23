@@ -1,118 +1,144 @@
 <style type="text/css">
-body{
-	background: #F5F5F5;
-}
-.sideBox{
-	margin: 0px 10px 10px 10px;
-	background: #FFF;
-	border-radius: 5px;
-	box-shadow: 2px 2px 2px #CCC;
-	padding: 0 15px;
-	overflow: hidden;
-	font-size:16px;
-}
-.sideBox ul{
-	position: relative;
-	display: table;
-	width: 100%;
-	border-bottom: #DDD dotted 1px;
-}
-.sideBox ul ol,.sideBox ul li{
-	display: table-cell;
-	padding:10px 5px;
-	line-height: 20px;
-}
-.sideBox ul ol{
-	color: #888;	
-}
-.sideBox ul li{
-	text-align: right;
-}
-.sideBox .showimg,.sideBox .content{
-	border-bottom: #DDD dotted 1px;
-	padding: 8px 0;
-	color: #666;
-	font-size: 14px;
-	line-height: 20px;
-}
-.sideBox .showimg img{
-	max-width: 100%;
-}
-.sideBox .actions{
-	height: 40px;
-	padding: 10px 0;
-}
-.sideBox .actions a{
-	display: block;
-	width: 33%;
-	line-height: 40px;
-	text-align: center;
-	float: left;
-	color: #777;
-	font-size:16px;
-}
-.sideBox .actions a:before{
-	padding-right: 8px;
-}
-.sideBox .actions a.fa-eye{
-	border-left:#DDD solid 1px;
-	border-right:#DDD solid 1px;
-}
+	body{
+		background-color: #f1f1f1;
+	}
+	.wrap_box{
+		margin-top:10px;
+		padding: 0 8px;
+	}
+	.list_box{
+		background-color: #fff;
+		border-radius: 10px;
+		margin-bottom: 15px;
+		padding: 10px;
+	}
+	.list_box .title_box{
+		font-weight: bold;
+		line-height: 130%;
+		margin-bottom: 8px;
+	}
+	.list_box .main_box{
+		display: flex;
+		justify-content: space-between;
+	}
+	.list_box .main_box .img_box{
+		display: flex;
+	}
+	.list_box .main_box .img{
+		width: 120px;
+		height: 90px;
+		overflow: hidden;
+		border-radius: 5px;
+		flex: none;
+		margin-right: 8px;
+	}
+	.list_box .main_box .more{
+		font-size: 14px;
+		line-height: 120%;
+	}
+	.list_box .main_box .more .el{
+		padding-bottom: 5px;
+	}
+	.list_box .main_box em{
+		color: #a19b9b;
+		margin-right: 4px;
+	}
+	.list_box .main_box .main_btn{
+		display:flex;
+		flex-direction: column;
+		justify-content: space-between;
+		flex:none;
+	}
+	.list_box .act_box{
+		display: flex;
+		justify-content: space-between;
+		margin: 8px 0;
+	}
+	.list_box .act_box .act_btn{
+		border:1px solid #e3e3e3;
+		padding:1px 7px 1px 7px;
+		border-radius: 4px;
+		font-size:15px;
+	}
+	.list_box .act_box .act_btn{
+	}
+	.list_box .main_btn .list_btn{
+		border-radius: 2px;
+		font-size:14px;
+		background:#419ad9;
+		padding:1px 7px 1px 7px;
+		color:#fff;
+	}
+	.list_box .main_btn .list_btn.del{
+		background:#cd3610;
+	}
+	.list_box .main_btn{
+		min-height:65px;
+	}
 </style>
 
 
-
-{volist name="listdb" id="rs"}
-<div class="sideBox" data-status="{$rs.status}" data-id="{$rs.id}">
-	
-	{notempty name="$rs.title"}<!--标题单独显示-->
-		<ul><a href="{:request()->controller()=='Content'?iurl('show',['id'=>$rs.id]):'#'}">{$rs.title}</a><ol>&nbsp;</ol></ul>
-	{/notempty}
-
-	{notempty name="$rs.picurl"}<!--图片单独显示-->
-		<div class="showimg"><img src="{$rs.picurl|tempdir}"/></div>
-	{/notempty}
-
-	{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"} <!--自定义字段-->
-		{if (in_array($vs['type'],['textarea','ueditor']))}	<!--文本内容单独显示-->
-			{notempty name="$vs.value"}
-			<div class="content">{$vs.value}</div>
-			{/notempty}
-		{elseif($vs.value!==''&&!in_array($vs['name'],['title','picurl','create_time','status'])) /}<!--把标题\图片\时间过滤掉-->
-			<ul>
-				<ol>{$vs.title}</ol>
-				<li>{$vs.value}</li>		
-			</ul>
-		{/if}
-	{/volist}
-
-		{if $rs.create_time}<!--时间单独显示-->
-		<ul>
-			<ol>日期</ol>
-			<li>{$rs.create_time|format_time="Y-m-d H:i"}<div></div></li>		
-		</ul>
-		{/if}
-
-		{if isset($rs.status)}	
-		<ul class="sys-info">
-			<ol>状态</ol>
-			<li id="status-{$rs['id']}"><!--{if $rs.status==0} <i style="color:blue;">未审核</i> {elseif($rs.status>1) /} 推荐 {elseif($rs.status==1) /} 已审核 {elseif($rs.status==-1) /} <i style="color:green;">回收站</i> {/if}<div></div-->
-			{:fun('Content@status')[$rs['status']]}
-			</li>		
-		</ul>
-		{/if}
-	
-
-	<div class="actions">
-	{volist name=":fun('field@get_rbtn',$tab_ext['right_button'],$rs,true)" id="vs"}
-      {$vs.value}
-	{/volist}
-
-	{if empty($f_array)}
-		<a href="{:auto_url('delete','ids='.$rs[id])}" class="fa fa-trash">删除</a>
-		<a href="{:iurl('show','id='.$rs[id])}" target="_blank" class="fa fa-eye">浏览</a>
-		<a href="{:auto_url('edit','id='.$rs[id])}" class="fa fa-edit">修改</a>
-	{/if}
+<div class="wrap_box">			
+	{volist name='listdb' id='rs'}
+	{php}
+		$btn_array = fun('field@get_rbtn',$tab_ext['right_button'],$rs,true);
+	{/php}
+	<div class="list_box" id="box-{$rs.id}" data-status="{$rs.status}" data-id="{$rs.id}">
+		{notempty name="$rs.title"}
+		<div class="title_box">
+			<a href="{:request()->controller()=='Content'?iurl('show',['id'=>$rs.id]):'#'}">{$rs.title}</a>
+		</div>
+		{/notempty}
+		<div class="main_box">
+			<div class="img_box">
+				<div class="img">
+					<a href="{:request()->controller()=='Content'?iurl('show',['id'=>$rs.id]):'#'}">
+						<img src="{$rs.picurl|tempdir}" onerror="$(this).parent().parent().remove()" onload="img_center(this)">
+					</a>
+				</div>
+				<div class="more">
+					{volist name=":fun('field@fields_to_table',$f_array,$rs)" id="vs"} <!--自定义字段-->
+						{if (in_array($vs['type'],['textarea','ueditor']))}	<!--文本内容单独显示-->
+							{notempty name="$vs.value"}
+							<div class="el content">{$vs.value}</div>
+							{/notempty}
+						{elseif($vs.value!==''&&!in_array($vs['name'],['title','picurl','create_time','status'])) /}<!--把标题\图片\时间过滤掉-->
+							<div class="el"><em>{$vs.title}:</em><span>{$vs.value}</span></div>
+						{/if}
+					{/volist}					
+					{if $rs.create_time} <div class="el time"><em>日期:</em>{$rs.create_time|format_time="Y-m-d H:i"} </div>{/if}
+					{if isset($rs.status)} <div class="el status"><em>状态:</em>{:fun('Content@status')[$rs['status']]} </div>{/if}
+				</div>
+			</div>
+			{if count($btn_array)<3}
+			<div class="main_btn">
+				{volist name="$btn_array" id="vs"}
+					{if strstr($vs.value,'/delete/')}
+						<a href="{:auto_url('delete','ids='.$rs[id])}" class='list_btn del alert' data-alert="你确认要删除吗？不可恢复哦！">删除</a>
+					{elseif strstr($vs.value,'/edit/')}
+						<a href="{:auto_url('edit','id='.$rs[id])}" class='list_btn'>修改</a>
+					{else /}
+					<div class="el list_btn">
+						{$vs.value}
+					</div>
+					{/if}
+				{/volist}
+				{if !$btn_array}
+					<a href="{:auto_url('delete','ids='.$rs[id])}" class='list_btn del alert' data-alert="你确认要删除吗？不可恢复哦！">删除</a>
+					<a href="{:auto_url('edit','id='.$rs[id])}" class='list_btn'>修改</a>
+				{/if}
+			</div>
+			{/if}
+		</div>
+		{if count($btn_array)>2}
+		<div class="act_box">
+			{volist name="$btn_array" id="vs"}
+				<div class="el act_btn">
+					{$vs.value}
+				</div>
+			{/volist}
+		</div>
+	   {/if}
 	</div>
+	{/volist}
 </div>
-{/volist}

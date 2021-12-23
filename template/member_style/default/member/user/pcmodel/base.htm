@@ -15,6 +15,7 @@
 						<div>级别：{$info.groupid|getGroupByid}</div>
 						<div>角色：{:get_role($info.grouptype)}</div>
 						<div>UID：{$info.uid}</div>
+						{if modules_config('bbs')}<div>总共发贴: {:fun('bbs@mytotal',$info.uid)} 篇</div>{/if}
 						<div>性别：{switch $info.sex}{case 1}男{/case}{case 2}女{/case}{default /}保密{/switch}</div>
 						{if $info.bday}<div>生日：{$info.bday|format_time="Y-m-d"}</div>{/if}
 						<div>注册日期：{:date("Y-m-d H:i:s",$info.regdate)}</div>

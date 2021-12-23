@@ -453,6 +453,18 @@ abstract class Api extends IndexBase
         }
     }
     
+    public function list_model(){
+        $array = model_config();
+        $data = [];
+        foreach ($array AS $rs){
+            $data[] = [
+                'id'=>$rs['id'],
+                'name'=>$rs['title'],
+            ];
+        }
+        return $this->ok_js($data);
+    }
+    
 }
 
 

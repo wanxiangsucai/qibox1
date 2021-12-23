@@ -1,5 +1,9 @@
 <?php
 
+if(config('webdb.typeid')&&is_file(__DIR__.'/'.config('webdb.typeid').'member_menu.php')){
+    return include_once __DIR__.'/'.config('webdb.typeid').'member_menu.php';
+}
+
 return array(
         'often'=>array(
                 'title'=>'常用菜单',
