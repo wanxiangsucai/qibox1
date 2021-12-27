@@ -264,6 +264,17 @@ function postmsg(content,callback){
 		$.post("/member.php/member/wxapp.msg/add.html",content_obj,function(res){
 			if(res.code==0){
 				//layer.msg('发送成功');
+			}else if(res.code==2){
+				setTimeout(function(){
+					ws_send({
+						type:'qun_to_alluser',
+						tag:'delete_msg',
+						data:{
+							id:content_obj.push_id,
+						},
+					});
+				},600)
+				layer.msg(res.msg,{time:5000});
 			}else{
 				//router.$("#btnSend").removeClass("disabled").addClass("primary");
 				layer.alert('本条信息已发出,但并没有入库,原因:'+res.msg);

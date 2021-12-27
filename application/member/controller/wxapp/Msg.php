@@ -218,6 +218,21 @@ class Msg extends IndexBase
     }
     
     /**
+     * 撤回消息
+     * @param number $qun_id 圈子ID
+     * @param number $msg_id 消息ID
+     */
+    protected function delete_chat_msg($qun_id=0,$msg_id=0){
+        usleep(500000);
+        fun("Gatewayclient@send_to_group",$this->user['uid'],-$qun_id,[
+            'type'=>'delete_msg',
+            'data'=>[
+                'id'=>$msg_id
+            ],
+        ]);
+    }
+    
+    /**
      * 发送消息
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
@@ -242,14 +257,30 @@ class Msg extends IndexBase
             $post_uid = $data['uid'];   //后面这个值$data['uid']会变动
             $touser_info = $info = [];
             if ($data['uid']<0) {   //圈子群聊
-                if (empty($this->user)) {
-                    return $this->err_js('请先登录!');
-                }
                 $qun_id = abs($data['uid']);
+                
+                if (empty($this->user)) {
+                    $this->delete_chat_msg($qun_id,$data['push_id']);
+                    return $this->err_js('请先登录!');
+                }                
                 $info = fun('qun@getByid',$qun_id);
+                
                 if (!$info) {
                     return $this->err_js('该'.__QUN__.'不存在!');
+                }elseif ($info['chat_blacklist']!='' && in_array($this->user['uid'], str_array($info['chat_blacklist']))) {
+                    $this->delete_chat_msg($qun_id,$data['push_id']);
+                    return $this->err_js('你已被禁言，不能发言!',[],2);
+                }elseif($info['chat_post']==1){
+                    if (!$this->user['qun_group'][$qun_id]) {
+                        $this->delete_chat_msg($qun_id,$data['push_id']);
+                        return $this->err_js('只有圈内成员才能发言!',[],2);
+                    }elseif ($this->user['qun_group'][$qun_id]['type']==0) {
+                        $this->delete_chat_msg($qun_id,$data['push_id']);
+                        return $this->err_js('你还没通过审核，还不能发言!',[],2);
+                    }
+                    
                 }
+                
                 $data['qun_id'] = $qun_id;
                 $data['title'] || $data['title'] = '';
                 $data['touid'] = 0;

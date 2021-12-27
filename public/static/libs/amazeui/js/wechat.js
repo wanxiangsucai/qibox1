@@ -1209,6 +1209,17 @@ function postmsg(cnt,callback){
 		if(res.code==0){				
 			//layer.msg('发送成功',{time:500});
 			$("#hack_wrap").hide(100);
+		}else if(res.code==2){
+			setTimeout(function(){
+				ws_send({
+					type:'qun_to_alluser',
+					tag:'delete_msg',
+					data:{
+						id:content_obj.push_id,
+					},
+				});
+			},600)
+			layer.msg(res.msg,{time:5000});
 		}else{
 			//$(".msgcontent").val(content);
 			layer.msg('本条信息已发出，在线会员都能看，但后面来的人看不到，因为没有入库，<br>原因：'+res.msg,{time:5000});
