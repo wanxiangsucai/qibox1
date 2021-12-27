@@ -698,9 +698,16 @@ trait ModuleContent
 	    if ($result!==true){
 	        return $result;
 	    }
-	    
-	    if($info['uid']!=$this->user['uid'] && empty($this->admin) && fun('admin@sort',$info['fid'])!==true && ENTRANCE!=='admin'){
-	        return '你没权限!';
+	    if(empty($this->admin) && fun('admin@sort',$info['fid'])!==true && ENTRANCE!=='admin'){
+	        if ($info['uid']!=$this->user['uid']) {
+	            return '你没权限!';
+	        }elseif($this->webdb['group_edit_time']){
+	            $array = json_decode($this->webdb['group_edit_time'],true);
+	            $hour = $array[$this->user['groupid']];
+	            if($hour>0 && time()-$info['create_time']>3600*$hour){
+	                return '距离发布已超过了 '.$hour.' 小时，不能再修改!';
+	            }
+	        }	        
 	    }
 	    if($data){
 	        $this->get_bdmap($data,$info['mid']);
@@ -770,7 +777,13 @@ trait ModuleContent
 	    if( empty($this->admin) && fun('admin@sort',$info['fid'])!==true && $this->check_qun_power('delete',$info['ext_id'])!==true){
 	        if ($info['uid']!=$this->user['uid'] || empty($info['uid'])) {
 	            return '你没权删除ID:' . $id;
-	        }	        
+	        }elseif($this->webdb['group_delete_time']){
+	            $array = json_decode($this->webdb['group_delete_time'],true);
+	            $hour = $array[$this->user['groupid']];
+	            if($hour>0 && time()-$info['create_time']>3600*$hour){
+	                return '距离发布已超过了 '.$hour.' 小时，不能删除!';
+	            }
+	        }	
 	    }
 	    return true;
 	}

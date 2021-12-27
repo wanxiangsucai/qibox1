@@ -275,6 +275,27 @@ class Setting extends AdminBase
                 'ifsys'=>0,
                 'list'=>-2,
             ];
+            
+            $array[] = [
+                'c_key'=>'group_edit_time',
+                'title'=>'限制发表内容多久后不能修改',
+                'c_descrip'=>'单位是小时，你可以设置对应的用户组发表内容多少小时后就不能再修改，留空则不限制（管理员与版主不限制）',
+                'c_value'=>'',
+                'form_type'=>'usergroup',
+                'options'=>"",
+                'ifsys'=>0,
+                'list'=>-3,
+            ];
+            $array[] = [
+                'c_key'=>'group_delete_time',
+                'title'=>'限制发表内容多久后不能删除',
+                'c_descrip'=>'单位是小时，你可以设置对应的用户组发表内容多少小时后就不能再删除，留空则不限制（管理员与版主不限制）',
+                'c_value'=>'',
+                'form_type'=>'usergroup',
+                'options'=>"",
+                'ifsys'=>0,
+                'list'=>-3,
+            ];
         }
         return $array;
     }
@@ -493,7 +514,7 @@ class Setting extends AdminBase
      * 分组设置
      */
     protected function set_form_group(){
-        $array_a = $array_b = [];
+        $array_a = $array_b = $array_b = [];
         foreach($this->form_items AS $rs){
             if (in_array($rs[1], ['module_pc_index_template','module_wap_index_template','module_pc_list_template','module_wap_list_template','module_pc_show_template','module_wap_show_template','module_pc_index_layout','module_wap_index_layout','module_pc_list_layout','module_wap_list_layout','module_pc_show_layout','module_wap_show_layout'])) {
                 list(,$pcwap,$filename,$type) = explode('_', $rs[1]);
@@ -502,13 +523,16 @@ class Setting extends AdminBase
                 }
                 $rs[3] = $rs['c_descrip'] = \app\common\util\Style::select_indexstyle_template($filename,$pcwap,$rs[1]).$rs[3];
                 $array_b[] = $rs;
+            }elseif (in_array($rs[1], ['group_delete_time','group_edit_time'])) {
+                $array_c[] = $rs;
             }else{
                 $array_a[] = $rs;
             }
         }
-        if ($array_b) {
+        if ($array_b||$array_c) {
             $this -> tab_ext['group']['基础设置'] = $array_a;
-            $this -> tab_ext['group']['模板个性设置'] = $array_b;
+            $array_c & $this -> tab_ext['group']['权限设置'] = $array_c;
+            $array_b & $this -> tab_ext['group']['模板个性设置'] = $array_b;            
         }        
     }
 
