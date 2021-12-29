@@ -59,14 +59,14 @@ class Content{
             $domain = request()->domain();
         }
         $content = preg_replace_callback("/\[face(\d+)\]/is",array(self,'get_face'),$content);
-        $content = preg_replace_callback("/([^br]?|<br>)(http|https):\/\/([\w\.\?\/=\-_&#]+)/is",array(self,'get_link'),$content);
+        $content = preg_replace_callback("/(<br>|<p>|[ \t\n]+|[^a-z0-9=\'\">])(http|https):\/\/([\w\.\?\/=\-_&#]+)/is",array(self,'get_link'),$content);
         $content = str_replace(['="/public/',"='/public/"],['="'.$domain.'/public/',"='".$domain."/public/"] , $content);
         return $content;
     }
     
     private static function get_link($array){
         $url  = $array[2].'://'.$array[3];
-        if($array[1]!='<br>'&&(in_array($array[1], ['>',"'",'"']) || preg_match("/([\w]+)/i", $array[1]))){
+        if($array[1]!='<br>'&&$array[1]!='<p>'&&(in_array($array[1], ['>',"'",'"']) || preg_match("/([\w]+)/i", $array[1]))){
             return $array[1].$url;
         }else{
             return $array[1].'<a href="'.$url.'" target="_blank">'.$url.'</a>';
