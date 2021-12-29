@@ -514,7 +514,7 @@ class Setting extends AdminBase
      * 分组设置
      */
     protected function set_form_group(){
-        $array_a = $array_b = $array_b = [];
+        $array_a = $array_b = $array_c = [];
         foreach($this->form_items AS $rs){
             if (in_array($rs[1], ['module_pc_index_template','module_wap_index_template','module_pc_list_template','module_wap_list_template','module_pc_show_template','module_wap_show_template','module_pc_index_layout','module_wap_index_layout','module_pc_list_layout','module_wap_list_layout','module_pc_show_layout','module_wap_show_layout'])) {
                 list(,$pcwap,$filename,$type) = explode('_', $rs[1]);
@@ -531,9 +531,9 @@ class Setting extends AdminBase
         }
         if ($array_b||$array_c) {
             $this -> tab_ext['group']['基础设置'] = $array_a;
-            $array_c & $this -> tab_ext['group']['权限设置'] = $array_c;
-            $array_b & $this -> tab_ext['group']['模板个性设置'] = $array_b;            
-        }        
+            $array_c && $this -> tab_ext['group']['权限设置'] = $array_c;
+            $array_b && $this -> tab_ext['group']['模板个性设置'] = $array_b;            
+        }
     }
 
 }
