@@ -26,12 +26,12 @@ class Reg extends IndexBase
         $openid = input('openid');
         $kcode = input('kcode');
         
-        $check_attention = 0;
-        if( $openid && (!$this->webdb['wxlogin_url']||!$this->webdb['wxlogin_key']) ){
-            $check_attention = wx_check_attention($openid);	//检查一下是否已关注过的老用户但系统里还没有注册
-        }
+//         $check_attention = 0;
+//         if( $openid && (!$this->webdb['wxlogin_url']||!$this->webdb['wxlogin_key']) ){
+//             $check_attention = wx_check_attention($openid);	//检查一下是否已关注过的老用户但系统里还没有注册
+//         }
         
-        if($state==1 || $check_attention || $kcode){            
+        if($state==1 || $kcode){            
             
             if ($kcode && $this->webdb['wxlogin_url'] && $this->webdb['wxlogin_key']) { //请求了第三方站点实现微信登录
                 list($time,$openid,$string2) = explode("\t", mymd5($kcode,'DE',$this->webdb['wxlogin_key']));
@@ -41,7 +41,7 @@ class Reg extends IndexBase
                     $this->error('登录超时了!!');
                 }
                 $data = json_decode($string2,true);
-            }elseif($state && !$check_attention){
+            }elseif($state){
                 if(!$code){
                     $this->error('code 值不存在！');
                 }
