@@ -1,5 +1,9 @@
 <?php
 
+if(config('webdb.typeid')&&is_file(__DIR__.'/'.config('webdb.typeid').'admin_menu.php')){
+    return include_once __DIR__.'/'.config('webdb.typeid').'admin_menu.php';
+}
+
 return array(
 		'plugin'=>array(
 				'title'=>'插件',

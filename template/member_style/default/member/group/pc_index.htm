@@ -67,7 +67,7 @@
 		  	{if count($rs._level)>1}
 				<a href="javascript:upgroup('{:urls('buy',['gid'=>$rs['id']])}',{$rs['id']})" class='upbtn fa fa-id-badge'>{$rs.level?'付费升级':'免费升级'}</a>
 			{else /}
-				<a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge ajax_get' data-alert="你确认要付费认证吗?">{$rs.level?'付费升级':'免费升级'}</a>
+				<a href="{:urls('buy',['gid'=>$rs['id']])}" class='upbtn fa fa-id-badge ajax_get' data-alert="你确认要升级吗?">{$rs.level?'付费升级':'免费升级'}</a>
 			{/if}
 		  {/if} 
 		 </td>

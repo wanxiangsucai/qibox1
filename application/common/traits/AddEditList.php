@@ -341,6 +341,7 @@ trait AddEditList {
      * @return mixed|string
      */
     protected function addContent($url = 'index', $vars = []) {
+        $this->form_items = array_values($this->form_items);
         // 保存数据
         if ($this -> request -> isPost()) {
             if ($this -> saveAddContent()) {
@@ -412,6 +413,7 @@ trait AddEditList {
      * @return mixed|string
      */
     protected function editContent($info=[], $url = 'index', $type = 'admin') {
+        $this->form_items = array_values($this->form_items);
         // 保存数据
         if ($this -> request -> isPost()) {
             if ($this -> saveEditContent()) {

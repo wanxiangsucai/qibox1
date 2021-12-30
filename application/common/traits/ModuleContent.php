@@ -443,7 +443,24 @@ trait ModuleContent
 	 * @param unknown $form_items
 	 * @return array|unknown
 	 */
-	protected function get_group_form($form_items){
+	protected function get_group_form(&$form_items=[]){
+	    //$form_items = array_values($form_items);
+	    $formItems = [];
+	    $field = $this->request->route('field') ?: $this->request->get('field');
+	    if($field){        //自定义显示的字段
+	        $detail = explode(',', $field);
+	        foreach($form_items AS $rs){
+	            if (in_array($rs[1], $detail)) {
+	                $formItems[] = $rs;
+	            }
+	        }
+	    }
+	    
+	    if ($formItems) {
+	        $form_items = $formItems;
+	        return ;
+	    }
+	    
 	    $_field = $this->f_model->where('mid',$this->mid)->where('nav','<>','')->column('name,nav');
 	    
 	    if(!empty($_field)){
@@ -507,7 +524,13 @@ trait ModuleContent
 	    }elseif($mid && !get_field($mid)){
 	        return '模型不存在!';
 	    }elseif(!$this->admin && fun('admin@sort',$fid)!==true && config('webdb.can_post_group') && !in_array($this->user['groupid'], config('webdb.can_post_group'))){
-	        return '你所在用户组没权限!';
+	        $array = [];
+	        foreach (getGroupByid() AS $gid=>$title){
+	            if(in_array($gid, config('webdb.can_post_group'))){
+	                $array[] = $title;
+	            }
+	        }	        
+	        return '你的身份是“'.getGroupByid($this->user['groupid']).'”没权限，只有以下用户组才有权限“'.implode('、', $array).'”，你可以选择升级用户组。';
 	    }elseif(empty($this->admin) && $this->webdb['forbid_post_topic_phone_noyz'] && empty($this->user['mob_yz']) ){
 	        return '很抱歉,你没有绑定手机,没权限发布,请先进会员中心绑定手机!';
 	    }

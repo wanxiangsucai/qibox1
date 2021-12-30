@@ -35,14 +35,15 @@
 {else /}<!--会员组个性菜单结束，默认菜单开始标签-->
 
 <!--基础功能开始-->
+{volist name="$menu['base']['sons']" id="bs" key="bkey"}
         <div class="bui-panel panel-usercenter">
             <div class="bui-panel-head bui-box-align-middle">
-                <i class="icon-service"><span style="color:{$menu['base']['sons'][0]['fontcolor']?:''}" class="{$menu['base']['sons'][0]['icon']?:'glyphicon glyphicon-star-empty'}"></span></i>
-                <div class="span1">{$menu['base']['sons'][0]['title']}</div>
-                <div class="panel-head-right a" href="{:get_url('user',$info.uid)}">我的主页<i class="icon-listright"></i></div>
+                <i class="icon-service"><span style="color:{$bs['fontcolor']?:''}" class="{$bs['icon']?:'glyphicon glyphicon-star-empty'}"></span></i>
+                <div class="span1">{$bs['title']}</div>
+                {if $bkey==1}<div class="panel-head-right a" href="{:get_url('user',$info.uid)}">我的主页<i class="icon-listright"></i></div>{/if}
             </div>
             <div class="bui-panel-main">
-{volist name=":array_chunk($menu['base']['sons'][0]['sons'], 4)" id="rs1"}
+{volist name=":array_chunk($bs['sons'], 4)" id="rs1"}
 				<ul class="bui-nav nav-list">
 
 {php}while(count($rs1)<4)$rs1[]='';	/*为的是生成占位符*/{/php}
@@ -63,6 +64,7 @@
 {/volist}
             </div>
         </div>
+{/volist}
 <!--基础功能结束-->
 
 <!--独立菜单的频道开始-->
