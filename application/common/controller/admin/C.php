@@ -164,7 +164,7 @@ abstract class C extends AdminBase
         $this->tab_ext['area'] = config('use_area') || config('webdb.use_area'); //是否启用地区
         
         //分组显示
-        $this->tab_ext['group'] = $this->get_group_form($this->form_items);
+        $this->tab_ext['group'] = $this->get_group_form($this->form_items,'add');
         if( $this->tab_ext['group'] ){
             unset($this->form_items);
         }

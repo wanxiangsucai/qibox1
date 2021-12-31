@@ -23,7 +23,7 @@ abstract class F extends AdminBase
         $this->model = get_model_class($dirname,'field');
         $this->set_config();
         
-        if ($this->request->action()=='index'||$this->request->param()['plugin_action'] =='index'){
+        //if ($this->request->action()=='index'||$this->request->param()['plugin_action'] =='index'){
             if(!table_field($dirname.'_field','input_width')) {
                 query("ALTER TABLE  `qb_{$dirname}_field` ADD  `input_width` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单宽度',ADD  `input_height` VARCHAR( 7 ) NOT NULL COMMENT  '输入表单高度',ADD  `unit` VARCHAR( 20 ) NOT NULL COMMENT  '单位名称',ADD  `match` VARCHAR( 150 ) NOT NULL COMMENT  '表单正则匹配',ADD  `css` VARCHAR( 20 ) NOT NULL COMMENT  '表单CSS类名';");
             }            
@@ -37,7 +37,10 @@ abstract class F extends AdminBase
                 query("ALTER TABLE  `qb_{$dirname}_field` ADD  `group_post` VARCHAR( 255 ) NOT NULL COMMENT  '允许使用此字段的用户组'");
                 query("ALTER TABLE  `qb_{$dirname}_field` CHANGE  `title`  `title` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '' COMMENT  '字段标题'");
             }
-        }
+            if(!table_field($dirname.'_field','add_hide') ){
+                query("ALTER TABLE `qb_{$dirname}_field` ADD `add_hide` TINYINT( 1 ) NOT NULL COMMENT '新发表时隐藏不显示，修改才显示';");
+            }
+        //}
         
     }
     
@@ -65,6 +68,7 @@ abstract class F extends AdminBase
                 ['checkbox', 'group_view', '仅限哪些用户组查看', '', getGroupByid()],
             ['checkbox', 'group_post', '仅限哪些用户组填写', '', getGroupByid()],
                 ['radio', 'index_hide', '详情页是否隐藏', '二次开发才会用到隐藏', ['显示', '隐藏'], 0],
+                ['radio', 'add_hide', '新发表是否隐藏', '', ['显示', '隐藏'], 0],
                 ['text', 'about', '描述说明'],
                 ['textarea', 'script', 'JS脚本:(一般留空)','若不为空的话，&lt;script&gt; &lt;/script&gt; 也要一起写上'],
                 ['text', 'list', '排序值'],

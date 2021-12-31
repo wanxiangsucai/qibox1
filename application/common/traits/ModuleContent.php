@@ -443,7 +443,7 @@ trait ModuleContent
 	 * @param unknown $form_items
 	 * @return array|unknown
 	 */
-	protected function get_group_form(&$form_items=[]){
+	protected function get_group_form(&$form_items=[],$type='edit'){
 	    //$form_items = array_values($form_items);
 	    $formItems = [];
 	    $field = $this->request->route('field') ?: $this->request->get('field');
@@ -459,6 +459,13 @@ trait ModuleContent
 	    if ($formItems) {
 	        $form_items = $formItems;
 	        return ;
+	    }elseif($type=='add'){
+	        foreach ($form_items AS $key=>$rs){
+	            if($rs['add_hide']){
+	                unset($form_items[$key]);
+	            }
+	        }
+	        $form_items = array_values($form_items);
 	    }
 	    
 	    $_field = $this->f_model->where('mid',$this->mid)->where('nav','<>','')->column('name,nav');

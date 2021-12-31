@@ -450,7 +450,7 @@ abstract class C extends MemberBase
        $this->tab_ext['area'] = config('use_area') || config('webdb.use_area'); //是否启用地区
        
         //分组显示处理
-        $this->tab_ext['group'] = $this->get_group_form($this->form_items);
+        $this->tab_ext['group'] = $this->get_group_form($this->form_items,'add');
         
 //         $result = $this->post_begin([
 //             'fid'=>$fid,
