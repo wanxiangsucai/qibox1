@@ -333,18 +333,38 @@ abstract class Reply extends IndexBase
             }
             
             $pinfo = $data['pid'] ? getArray($this->model->get($data['pid'])) : [];
+            
+            $username = get_word($this->user['username'],8);
+            $title = $topic['title'];
+            $post_content = preg_replace('/^@([^ ]+)( |&nbsp;|　)/is', '', get_word(del_html($data['content']),20));
+            $url = get_url(urls('content/show',['id'=>$data['aid']]));
+            
+            $wx_data = [
+                'title'=>'有人回复了你的帖子',
+                'username'=>$this->user['username'],
+                'time'=>date('Y-m-d H:i'),
+                'content'=>$title,
+                'about'=>$post_content,
+                'modname'=>M('name'),
+            ];
+            $wxmsg_array = [
+                'sendmsg'=>true,
+                'template_data'=>fun('msg@format_data','reply',$wx_data,$url),
+            ];
+            
             if( $this->webdb['reply_send_wxmsg'] ){
-                $content = get_word($this->user['username'],8).',回复了 ' . $topic['title'] . ',<a href="'.get_url(urls('content/show',['id'=>$data['aid']])).'">你可以点击查看详情</a>';
+                $content = $username.',回复了 ' . $title . ',<a href="'.$url.'">你可以点击查看详情</a>';
                 if($topic['uid']!=$this->user['uid']){
                     if($this->forbid_remind($topic['uid'])!==true){
-                        send_wx_msg($topic['uid'], $content,['sendmsg'=>true]);
+                        send_wx_msg($topic['uid'], $content,$wxmsg_array);
                     }
                 }
                 
                 if($pinfo && $topic['uid']!=$pinfo['uid']){
                     if($pinfo['uid']!=$this->user['uid']){
                         if($this->forbid_remind($pinfo['uid'])!==true){
-                            send_wx_msg($pinfo['uid'], '你参与的 '.$content,['sendmsg'=>true]);
+                            $wxmsg_array['template_data']['title'] = '有人对你进行了评论';
+                            send_wx_msg($pinfo['uid'], '你参与的 '.$content,$wxmsg_array);
                         }
                     }
                 }
@@ -369,7 +389,7 @@ abstract class Reply extends IndexBase
                         continue;
                     }
                     $title = '请及时审核 '.M('name').' 频道的新评论';
-                    $content = get_word($this->user['username'],8).' 回复了 '.M('name').' 的 《' . $topic['title'] . '》，请尽快审核！<a href="'.get_url(iurl('content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
+                    $content = $username.' 回复了 '.M('name').' 的 《' . $topic['title'] . '》，请尽快审核！<a href="'.get_url(iurl('content/show',['id'=>$data['aid']])).'" target="_blank">点击查看详情</a>';
                     send_msg($_uid, $title, $content);
                     send_wx_msg($_uid, $content);
                 }

@@ -89,34 +89,65 @@ class Msg
         }
         
         $time = date('Y年m月d日 H:i');
-        $data="      {
-        \"touser\":\"$openid\",
-        \"template_id\":\"".config('webdb.mp_subscribe_template_id')."\",
-        \"page\":\"$url\",
-        \"data\":{
-        \"thing2\": {
-        \"value\":\"$content\",
-        \"color\":\"#0000ff\"
-    },
-    \"thing4\":{
-    \"value\":\"$content\",
-    \"color\":\"#666666\"
-    },
-    \"thing3\":{
-    \"value\":\"$content\",
-    \"color\":\"#666666\"
-    },
-    \"time3\": {
-    \"value\":\"$time\",
-    \"color\":\"#666666\"
-    },
-    \"thing1\":{
-    \"value\":\"$content\",
-    \"color\":\"#0000ff\"
-    }
-    }
-    }";
-        $string = http_Curl("https://api.weixin.qq.com/cgi-bin/message/subscribe/bizsend?access_token=".$access_token,$data);
+        
+        $tinfo = [];
+        if($array['template_data']){
+            $tinfo = fun('msg@template',$array['template_data']['key_word']);
+            if (!$tinfo || $tinfo['type']==0) {
+                return ;
+            }
+        }
+        
+        if ($tinfo) {
+            $_data = [];
+            foreach(json_decode($tinfo['data_field'],true) AS $rs){
+                $_data[$rs['title3']] = [
+                    'value'=>$array['template_data'][$rs['title2']],
+                    'color'=>'#0000ff',
+                ];
+            }
+            $array = [
+                'touser'=>$openid,
+                'template_id'=>$tinfo['template_id'],
+                'url'=>$array['template_data']['page_url'] ?: $url,
+                'page'=>$array['template_data']['page_url'] ?: $url,
+                'data'=>$_data,
+            ];
+            $data = json_encode($array);
+        }else{
+            $data="      {
+                \"touser\":\"$openid\",
+                \"template_id\":\"".config('webdb.mp_subscribe_template_id')."\",
+                \"page\":\"$url\",
+                \"data\":{
+                \"thing2\": {
+                \"value\":\"$content\",
+                \"color\":\"#0000ff\"
+            },
+            \"thing4\":{
+            \"value\":\"$content\",
+            \"color\":\"#666666\"
+            },
+            \"thing3\":{
+            \"value\":\"$content\",
+            \"color\":\"#666666\"
+            },
+            \"time3\": {
+            \"value\":\"$time\",
+            \"color\":\"#666666\"
+            },
+            \"thing1\":{
+            \"value\":\"$content\",
+            \"color\":\"#0000ff\"
+            }
+            }
+            }";
+        }
+        $surl = 'https://api.weixin.qq.com/cgi-bin/message/subscribe/bizsend?access_token=';
+        if($tinfo['type']==2){
+            $surl = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=';
+        }        
+        $string = http_Curl($surl.$access_token,$data);
         if(strstr($string,'ok')){
             return true;
         }
@@ -150,35 +181,65 @@ class Msg
         if (self::stringLength($subject)>20) {            
             $subject = mb_substr($subject,0,17,'utf-8').'...';
         }
+        
+        
         $url = urlencode($url);
         $time = date('Y年m月d日 H:i');
-        $data="      {
-        \"touser\":\"$openid\",
-        \"template_id\":\"".config('webdb.wxapp_subscribe_template_id')."\",
-        \"page\":\"pages/hy/web/index?url=$url\",
-        \"data\":{
-        \"thing3\": {
-        \"value\":\"$content\",
-        \"color\":\"#0000ff\"
-    },
-    \"thing4\":{
-    \"value\":\"$content\",
-    \"color\":\"#666666\"
-    },
-    \"thing2\":{
-    \"value\":\"$content\",
-    \"color\":\"#666666\"
-    },
-    \"time3\": {
-    \"value\":\"$time\",
-    \"color\":\"#666666\"
-    },
-    \"thing1\":{
-    \"value\":\"$content\",
-    \"color\":\"#0000ff\"
-    }
-    }
-    }";
+        
+        $tinfo = [];
+        if($array['template_data']){
+            $tinfo = fun('msg@template',$array['template_data']['key_word']);
+            if (!$tinfo || $tinfo['type']!=0) {
+                return ;
+            }
+        }
+        
+        if ($tinfo) {
+            $_data = [];
+            foreach(json_decode($tinfo['data_field'],true) AS $rs){
+                $_data[$rs['title3']] = [
+                    'value'=>$array['template_data'][$rs['title2']],
+                    'color'=>'#0000ff',
+                ];
+            }
+            $array = [
+                'touser'=>$openid,
+                'template_id'=>$tinfo['template_id'],
+                'page'=>'pages/hy/web/index?url='.$array['template_data']['page_url']?urlencode($array['template_data']['page_url']):$url,
+                'data'=>$_data,
+            ];
+            $data = json_encode($array);
+        }else{
+            $data="      {
+            \"touser\":\"$openid\",
+            \"template_id\":\"".config('webdb.wxapp_subscribe_template_id')."\",
+            \"page\":\"pages/hy/web/index?url=$url\",
+            \"data\":{
+            \"thing3\": {
+            \"value\":\"$content\",
+            \"color\":\"#0000ff\"
+            },
+            \"thing4\":{
+            \"value\":\"$content\",
+            \"color\":\"#666666\"
+            },
+            \"thing2\":{
+            \"value\":\"$content\",
+            \"color\":\"#666666\"
+            },
+            \"time3\": {
+            \"value\":\"$time\",
+            \"color\":\"#666666\"
+            },
+            \"thing1\":{
+            \"value\":\"$content\",
+            \"color\":\"#0000ff\"
+            }
+            }
+            }";
+        }
+        
+        
         $string = http_Curl("https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=".$access_token,$data);
         if(strstr($string,'ok')){
             return true;
@@ -249,6 +310,7 @@ class Msg
         }
         $ac = wx_getAccessToken();
         
+        //圈子小程序消息的处理
         if (get_wxappAppid() && $user['qun_msg_dy'] && $user['qun_msg_dy'][get_wxappAppid()]) {
             if ( self::wxapp_subscribe($user['qun_msg_dy'][get_wxappAppid()], $content,$array,wx_getAccessToken(false,true,get_wxappAppid()))===true) {
                 return true;
@@ -267,10 +329,21 @@ class Msg
 //                 return true;
 //             }
 //         }
-
+        
+        //个性模板消息优先
+        if(!get_wxappAppid() && $array['template_data'] && ($tinfo = fun('msg@template',$array['template_data']['key_word'])) ){
+            if($tinfo['type']==0 && $user['wxapp_api'] && self::wxapp_subscribe($user['wxapp_api'], $content,$array,wx_getAccessToken(false,true))===true ){
+                return true;
+            }elseif($user['weixin_api'] && self::mp_subscribe($user['weixin_api'], $content,$array,$ac)===true ){
+                return true;
+            }
+        }
+        
+        //通用模板消息的处理
         if($user['subscribe_wxapp'] && self::wxapp_subscribe($user['wxapp_api'], $content,$array,wx_getAccessToken(false,true))===true){
             return true;
-        }elseif($user['subscribe_mp'] && self::mp_subscribe($user['weixin_api'], $content,$array,$ac)===true){
+        //}elseif($user['subscribe_mp'] && self::mp_subscribe($user['weixin_api'], $content,$array,$ac)===true){
+        }elseif( self::mp_subscribe($user['weixin_api'], $content,$array,$ac)===true ){
             return true;
         }elseif(strstr( http_curl("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=$ac",$data) ,'ok')){
             return true;
@@ -288,7 +361,6 @@ class Msg
                 $content = preg_replace('/<([^<]*)>/is',"",$content);
                 $content = addslashes($content);
                 
-                //TM00440	新邮件通知
                 $data="      {
                 \"touser\":\"$openid\",
                 \"template_id\":\"".config('webdb.weixin_msg_template_id')."\",

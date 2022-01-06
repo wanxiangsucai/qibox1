@@ -2736,9 +2736,7 @@ if (!function_exists('getTemplate')) {
          }
          $num++;
          if (!defined('IN_TASK') && $num>5 && $uid) { //处理批量发送时,请求微信服务器容易卡死
-             $result = fun('Msg@send',$uid,'队列发送',$content,[
-                 'msgtype'=>'wxmsg',
-             ]);
+             $result = fun('Msg@send',$uid,'队列发送',$content,array_merge($array,['msgtype'=>'wxmsg']));
              if ($result===true) {
                  return true;
              }

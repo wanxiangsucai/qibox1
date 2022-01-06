@@ -203,12 +203,26 @@ class Api extends IndexBase
                 $url = get_url(urls($mods['keywords'].'/content/show',['id'=>$data['aid']]));
             }
             
+
+            $wx_data = [
+                'title'=>'有人评论了你的主题',
+                'username'=>$this->user['username'],
+                'time'=>date('Y-m-d H:i'),
+                'content'=>$topic['title'],
+                'about'=>preg_replace('/^@([^ ]+)( |&nbsp;|　)/is', '', get_word(del_html($data['content']),20)),
+                'modname'=>$mods['name'],
+            ];
+            $wxmsg_array = [
+                'sendmsg'=>true,
+                'template_data'=>fun('msg@format_data','comment',$wx_data,$url),
+            ];
+            
             $content = $mods['name'].' 里的信息: 《' . $topic['title'] . '》刚刚 “'.$this->user['username'].'” 对此进行了评论,<a target="_blank" href="'.$url.'">你可以点击查看详情</a>';
             $title = $this->user['username'].' 对你评论了!';            
             if($topic['uid']!=$this->user['uid']){
                 //if($this->forbid_remind($topic['uid'])!==true){
                     send_msg($topic['uid'],$title,$content);
-                    send_wx_msg($topic['uid'], '你发表的'.$content);
+                    send_wx_msg($topic['uid'], '你发表的'.$content,$wxmsg_array);
                 //}
             }
             
@@ -216,7 +230,7 @@ class Api extends IndexBase
                 if($pinfo['uid']!=$this->user['uid']){                    
                     //if($this->forbid_remind($pinfo['uid'])!==true){
                         send_msg($pinfo['uid'],$title,$content);
-                        send_wx_msg($pinfo['uid'], '你参与评论的'.$content);
+                        send_wx_msg($pinfo['uid'], '你参与评论的'.$content,$wxmsg_array);
                     //}
                 }
             }

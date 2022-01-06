@@ -34,6 +34,10 @@ return array(
     										'link'=>'weixin_msg/index',
     									     'power'=>[],
     									),
+    								    array(
+    								        'title'=>'订阅/模板消息设置',
+    								        'link'=>'weixin_notice/index',
+    								    ),
 								),
 							),
 				),

@@ -3,11 +3,68 @@ namespace app\common\fun;
 
 use plugins\msgtask\model\Task AS TaskModel;
 use plugins\msgtask\model\Log as LogModel;
-
+use plugins\weixin\model\WeixinNotice;
 /**
  * 群发消息
  */
 class Msg{
+    
+    /**
+     * 获取微信模板消息的相关信息
+     * @param string $keyword 指定关键字
+     * @return unknown
+     */
+    public static function template($keyword=''){
+        $map = [
+            'status'=>1,
+        ];
+        $listdb = cache('weixin_notice_template');
+        if (!$listdb) {
+            $listdb = WeixinNotice::where($map)->column(true,'keyword');
+            cache('weixin_notice_template',$listdb);
+        }
+        if($keyword){
+            return $listdb[$keyword];
+        }else{
+            return $listdb;
+        }        
+    }
+    
+    /**
+     * 自定义字段替换处理
+     * @param string $keyword
+     * @param array $data
+     * @param string $url
+     * @return mixed
+     */
+    public static function format_data($keyword='',$data=[],$url=''){
+        $array = $data;
+        $winfo = self::template($keyword);
+        $field_array = json_decode($winfo['data_field'],true);
+        if (!$winfo || !$field_array) {
+            return ;
+        }
+        $all_field = [];
+        foreach ($field_array AS $rs){
+            if($rs['title4']){
+                foreach($array AS $key=>$value){
+                    $rs['title4'] = str_replace('{'.$key.'}',$value,$rs['title4']);
+                }
+                $data[$rs['title2']] = $rs['title4'];
+            }
+            if($rs['title3']){
+                $all_field[] = $rs['title2'];
+            }            
+        }
+        foreach($data AS $key=>$value){
+            if(!in_array($key, $all_field)){
+                unset($data[$key]);
+            }
+        }
+        $data['key_word'] = $keyword;
+        $data['page_url'] = $url;
+        return $data;
+    }
     
     /**
      * 定时群发消息
@@ -61,6 +118,7 @@ class Msg{
                 'type'=>$msgtype,
                 'ext_id'=>$ext_id,
                 'ext_sys'=>$ext_sys,
+                'ext_data'=>$array['template_data'] ? json_encode(['template_data' => $array['template_data'],]) : '',
             ];
             $result = TaskModel::create($data);
             if(!$result){
