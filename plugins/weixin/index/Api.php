@@ -81,7 +81,7 @@ class Api extends IndexBase
     //模拟用户登录或注册，与用户实际隔离开的。
     protected function check_user(){
         $this->user = UserModel::get_info(['weixin_api'=>$this->user_appId]);
-        if (empty($this->user)) {
+        if (empty($this->user) && $this->webdb['gz_auto_reg']==1) { //不推荐，因为不能再获取到微信头像与昵称
             $this->user = UserModel::weixin_reg($this->user_appId);
             define('NewUser',true);     //声明是新用户注册，方便后续判断调用
         }

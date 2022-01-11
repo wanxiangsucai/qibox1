@@ -79,6 +79,29 @@ class Login extends IndexBase
                 $rs = UserModel::get_info(['unionid'=>$unionid]);
             }
             
+            if ($rs && $code && ($rs['icon']==''||preg_match('/^微信用户([\w]+)$/i', $rs['username']))) {
+                $string2 = file_get_contents('https://api.weixin.qq.com/sns/userinfo?access_token='.$array['access_token'].'&openid='.$array['openid'].'&lang=zh_CN');
+                $data = json_decode($string2,true);
+                $nickname = filtrate($data['nickname']);
+                $icon = filtrate($data['headimgurl']);
+                if ($rs['icon']=='') {
+                    edit_user([
+                        'uid'=>$rs['uid'],
+                        'icon'=>$icon,
+                    ]);
+                }else{
+                    if ( UserModel::get_info(['username'=>$nickname]) ) {
+                        $nickname .= '_'.$rs['uid'];
+                    }
+                    edit_user([
+                        'uid'=>$rs['uid'],
+                        'username'=>$nickname,
+                        'nickname'=>$nickname,
+                    ]);
+                    $rs['username'] = $nickname;
+                }
+            }
+            
             if($type=='bind'){  //绑定帐号
                 
                 $uid = cache('bind_'.$sid);                
