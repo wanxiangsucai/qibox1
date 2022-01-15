@@ -179,6 +179,14 @@ class Setting extends AdminBase
                         'list'=>-1,
                 ],
                 [
+                        'c_key'=>'group_day_create_num',
+                        'title'=>'24小时内发布主题数量对应用户组的限制',
+                        'c_descrip'=>'超过24小时,重新计算。留空或为0则不限制',
+                        'form_type'=>'usergroup',
+                        'ifsys'=>0,
+                        'list'=>-1,
+                ],
+                [
                         'c_key'=>'group_post_money',
                         'title'=>'发布主题对应用户组的虚拟币变化',
                         'c_descrip'=>'填负数才是扣积分，否则就是奖励积分，0或留空则不做处理',
@@ -523,7 +531,7 @@ class Setting extends AdminBase
                 }
                 $rs[3] = $rs['c_descrip'] = \app\common\util\Style::select_indexstyle_template($filename,$pcwap,$rs[1]).$rs[3];
                 $array_b[] = $rs;
-            }elseif (in_array($rs[1], ['group_delete_time','group_edit_time'])) {
+            }elseif (in_array($rs[1], ['group_delete_time','group_edit_time','group_day_create_num','group_create_num'])) {
                 $array_c[] = $rs;
             }else{
                 $array_a[] = $rs;

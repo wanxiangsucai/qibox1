@@ -115,9 +115,10 @@ abstract class C extends Model
      * 查询用户的记录条数
      * @param unknown $uid 用户ID
      * @param number $mid 模型ID 为0的时候,查询所有模型
+     * @param array $map 附加查询条件
      * @return number|number|string
      */
-    public static function user_info_num($uid,$mid=1){
+    public static function user_info_num($uid,$mid=1,$map=[]){
         if($mid){
             $table = self::getTableByMid($mid);
             if (empty($table)) {
@@ -126,7 +127,7 @@ abstract class C extends Model
         }else{
             $table = self::$base_table;
         }        
-        return Db::name($table)->where(static::map())->where('uid',$uid)->count('id');
+        return Db::name($table)->where(static::map())->where('uid',$uid)->where($map)->count('id');
     }
     
     /**

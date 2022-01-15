@@ -553,7 +553,12 @@ trait ModuleContent
 	    }
 	    
 	    $result = $this->check_info_num();
-	    if ($result!==true) {  //检查对应用户组的发布数量限制	        
+	    if ($result!==true) {  //检查对应用户组的发布总数量限制	        
+	        return $result;
+	    }
+	    
+	    $result = $this->check_info_day_num();
+	    if ($result!==true) {  //检查对应用户组的24小时内发布数量限制
 	        return $result;
 	    }
 	    
@@ -684,6 +689,29 @@ trait ModuleContent
 
 	    if($num>=$group_array[$groupid]){
 	        return '你所在用户组的发布数量不能超过 '. $group_array[$groupid] .' 条记录，想要发表更多， 请升级用户组';
+	    }
+	    return true;
+	}
+	
+	/**
+	 * 检查对应用户组24小时内发布数量限制
+	 * @param number $mid 为0的时候,针对所有模型
+	 * @return string|boolean
+	 */
+	protected function check_info_day_num($mid=0){
+	    $group_array = json_decode($this->webdb['group_day_create_num'],true);
+	    $groupid = $this->user['groupid'];
+	    if($group_array[$groupid]<0){
+	        return '你所在的用户组没权限发表，若想要发表， 请选择升级用户组';
+	    }elseif (empty($group_array[$groupid])) {
+	        return true;
+	    }
+	    $map = [
+	            'create_time'=>['>',time()-3600*24],
+	    ];
+	    $num = $this->model->user_info_num($this->user['uid'],0,$map);
+	    if($num>=$group_array[$groupid]){
+	        return '你所在用户组24小时内发布的数量不能超过 '. $group_array[$groupid] .' 条，想要发表更多， 请升级用户组';
 	    }
 	    return true;
 	}
