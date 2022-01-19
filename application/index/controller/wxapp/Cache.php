@@ -7,6 +7,14 @@ use app\common\controller\IndexBase;
 class Cache extends IndexBase
 {
     public function set($key='',$value=''){
+        if(!preg_match('/^[a-z0-9_]+$/i', $key)){
+            return $this->err_js('KEY有误!');
+        }elseif (cache($key)) {
+            if(is_array(cache($key))){
+                return $this->err_js('数组内容不允许直接设置');
+            }
+        }
+        
         if ($key&&$value) {
             cache($key,$value,60);
             return $this->ok_js();
