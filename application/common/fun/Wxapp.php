@@ -8,21 +8,25 @@ class Wxapp{
     /**
      * 生成公众号二维码
      * @param number $id 数字或字母都可以的
+     * @param string $make_file 是否生成图片文件
      * @return string|void|string|unknown
      */
-    public static function mp_code($id=0){
+    public static function mp_code($id=0,$make_file=true){
         if( config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
             return '系统没有配置公众号';
         }
-        $path = config('upload_path') . '/mp_code/';
-        $randstr = md5($id);
-        $img_path  = $path.$randstr.'.png';
-        if ( is_file($img_path) && (time()-filemtime($img_path)<3600*24) ) {
-            return tempdir("uploads/mp_code/{$randstr}.png");
+        if ($make_file) {
+            $path = config('upload_path') . '/mp_code/';
+            $randstr = md5($id);
+            $img_path  = $path.$randstr.'.png';
+            if ( is_file($img_path) && (time()-filemtime($img_path)<3600*24) ) {
+                return tempdir("uploads/mp_code/{$randstr}.png");
+            }
+            if (!is_dir($path)) {
+                mkdir($path);
+            }
         }
-        if (!is_dir($path)) {
-            mkdir($path);
-        }
+        
         $access_token = wx_getAccessToken(true,false);
         if (empty($access_token)) {
             return 'access_token不存在!';
@@ -42,11 +46,16 @@ class Wxapp{
             return 'ticket不存在!';
         }
         $code = http_Curl("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=$tick");        
-        if (strlen($code)>500) {
+        if ($make_file && strlen($code)>500) {
             write_file($img_path, $code);
             return tempdir("uploads/mp_code/{$randstr}.png");
         }else{
-            return $code;
+            if (strlen($code)>500) {
+                header("content-type:image/png");
+                die($code);
+            }else{
+                return $code;
+            }
         }
     }
 
@@ -60,7 +69,7 @@ class Wxapp{
         $uid = $uid ?: login_user('uid');
         $code = 'bind'.$uid;
         cache($code,$url?:$uid,300);
-        $img = self::mp_code($code);
+        $img = self::mp_code($code,false);
         return $img;        
     }
     

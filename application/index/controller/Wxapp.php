@@ -141,6 +141,35 @@ class Wxapp extends IndexBase
     }
     
     /**
+     * 小商店中统一帐号
+     * @param string $openid
+     * @param string $backurl
+     * @return void|unknown|\think\response\Json|mixed|string
+     */
+    public function minishop_login($openid='',$backurl='' ){
+        if (!get_wxappAppid()) {
+            $this->error('并没在小商店中访问');
+        }
+        if (!$this->user) {
+            weixin_login();
+        }else{
+            list($time,$openID) = explode("\t", mymd5($openid,'DE'));
+            if (!$openID) {
+                $this->error('openid不存在！');
+            }elseif(time()-$time>60){
+                $this->error('统一登录超时了');
+            }
+            $user = get_user($openID,'wxapp_api');
+            if (!$user) {
+                \app\qun\model\Weixin::add($this->user['uid'],$openID);   //首次绑定某个商家的小程序
+                cache('user_'.$this->user['uid'],null);
+            }
+            //$this->assign('url','/pages/jump/index?appid='.get_wxappAppid().'&path='.urlencode($backurl));
+            return $this->fetch();
+        }
+    }
+    
+    /**
      * 小程序调用订阅消息模板
      * @param string $type
      * @return void|\think\response\Json|void|unknown|\think\response\Json

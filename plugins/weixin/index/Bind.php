@@ -8,6 +8,9 @@ use app\common\fun\Wxapp;
 class Bind extends IndexBase
 {
     public function index($url=''){
+        if (!$this->user) {
+            $this->error('请先登录!');
+        }
         if ($url!='' && !strstr($url,'http')) {
             $url = get_url($url);
         }

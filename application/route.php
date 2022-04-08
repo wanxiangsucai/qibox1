@@ -21,9 +21,9 @@ if (is_file(APP_PATH.'routemy.php')) {      //用户自定义的路由规则
 }
 
 Route::group(['name'=>'cms','ext'=>'html'], [
-        'show-<id>'	=>['cms/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>'=>['cms/content/index',['method'=>'get'],['fid' => '\d+']],
-        'mid-<mid>'=>['cms/content/index',['method'=>'get'],['mid' => '\d+']],
+        'show-<id>'	=>['cms/content/show',['method'=>'GET|POST'],['id' => '\d+']],
+        'list-<fid>'=>['cms/content/index',['method'=>'GET|POST'],['fid' => '\d+']],
+        'mid-<mid>'=>['cms/content/index',['method'=>'GET|POST'],['mid' => '\d+']],
         'show'	=> 'cms/content/show',
         'list'	=> 'cms/content/index',
         'index$'	=> 'cms/index/index',
@@ -39,18 +39,18 @@ Route::group(['name'=>'cms','ext'=>'html'], [
 // ]);
 
 Route::group(['name'=>'bbs','ext'=>'html'], [
-        'show-<id>'	=>['bbs/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>'=>['bbs/content/index',['method'=>'get'],['fid' => '\d+']],
-        'mid-<mid>'=>['bbs/content/index',['method'=>'get'],['mid' => '\d+']],
+        'show-<id>'	=>['bbs/content/show',['method'=>'GET|POST'],['id' => '\d+']],
+        'list-<fid>'=>['bbs/content/index',['method'=>'GET|POST'],['fid' => '\d+']],
+        'mid-<mid>'=>['bbs/content/index',['method'=>'GET|POST'],['mid' => '\d+']],
         'show'	=> 'bbs/content/show',
         'list'	=> 'bbs/content/index',
         'index$'	=> 'bbs/index/index',
 ]);
 
 Route::group(['name'=>'qun','ext'=>'html'], [
-        'show-<id>'	=>['qun/content/show',['method'=>'get'],['id' => '\d+']],
-        'list-<fid>'=>['qun/content/index',['method'=>'get'],['fid' => '\d+']],
-        'mid-<mid>'=>['qun/content/index',['method'=>'get'],['mid' => '\d+']],
+        'show-<id>'	=>['qun/content/show',['method'=>'GET|POST'],['id' => '\d+']],
+        'list-<fid>'=>['qun/content/index',['method'=>'GET|POST'],['fid' => '\d+']],
+        'mid-<mid>'=>['qun/content/index',['method'=>'GET|POST'],['mid' => '\d+']],
         'show'	=> 'qun/content/show',
         'list'	=> 'qun/content/index',
         'index$'	=> 'qun/index/index',
@@ -79,11 +79,11 @@ Route::group(['name'=>'p','ext'=>'html'], [
 ]);
 
 Route::group(['name'=>'page','ext'=>'html'], [
-        '<id>$'	=>['index/alonepage/index',['method'=>'get'],['id' => '\d+']],
+        '<id>$'	=>['index/alonepage/index',['method'=>'GET|POST'],['id' => '\d+']],
 ]);
 
 Route::group(['name'=>'home','ext'=>'html'], [
-        '<uid>$'	=>['member/user/index',['method'=>'get'],['uid' => '\d+']],
+        '<uid>$'	=>['member/user/index',['method'=>'GET|POST'],['uid' => '\d+']],
 ]);
 
 // return [

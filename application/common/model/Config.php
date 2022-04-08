@@ -227,6 +227,9 @@ class Config extends Model
                 case 'array':
                     $rs['c_value'] = $rs['c_value']?json_decode($rs['c_value'],true):[];
                     break;
+                case 'shenhe':
+                    $rs['c_value'] = $rs['c_value']?json_decode($rs['c_value'],true):[];
+                    break;
                 case 'usergroup':    //之前没转义,避免冲突,所以加多一个变量
                     $_value = $rs['c_value']?json_decode($rs['c_value'],true):[];
                     break;

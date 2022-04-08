@@ -49,12 +49,74 @@ class WeixinNotice extends AdminBase
 		    ['text', 'template_id', '模板ID'],
 		    ['text', 'title', '标注描述'],
 		    ['radio', 'status', '是否启用','',['禁用','启用'],1],
-		    ['array4', 'data_field', '内容字段'
-		        ,'名称：比如下单时间、联系人（可随意）。<br>系统变量名：即程序中使用的变量标志<br>微信变量名：比如first、remark、keyword1、thing1、date2、time15，<br>指定内容：你可以个性化定义内容，不要程序写死的。（一般为空，因为需要程序配合）'
-		        ,['title'=>['名称（可随意）','系统变量名','微信变量名','指定内容(一般为空,随意)']]
-		        ,'[{"title1":"标题","title2":"title","title3":"first","title4":""},{"title1":"附注","title2":"content","title3":"remark","title4":""}]'
+// 		    ['array4', 'data_field', '内容字段'
+// 		        ,'名称：比如下单时间、联系人（可随意）。<br>系统变量名：即程序中使用的变量标志<br>微信变量名：比如first、remark、keyword1、thing1、date2、time15，<br>指定内容：你可以个性化定义内容，不要程序写死的。（一般为空，因为需要程序配合）'
+// 		        ,['title'=>['名称（可随意）','系统变量名','微信变量名','指定内容(一般为空,随意)']]
+// 		        ,'[{"title1":"标题","title2":"title","title3":"first","title4":""},{"title1":"附注","title2":"content","title3":"remark","title4":""}]'
+// 		    ],
+		    ['array3', 'data_field3', '内容字段'
+		        ,'第一项：微信字段变量名：比如常用first、remark、keyword1、thing1、date2、time15，<br>第二项：系统字段内容：即程序中使用的变量标志，可以多个变量+文字组合。也可以不要变量，只用固定的文字<br>第三项：备注，与微信中的字段描述一样即可，主要是方便自己查看，没实际意义，比如下单时间、联系人。'
+		        ,['title'=>['微信字段变量名','系统字段内容','字段备注']]
+		        ,'[{"title1":"first","title2":"标题是{title}","title3":"标题"},{"title1":"remark","title2":"内容是{content}","title3":""},{"title1":"keyword1","title2":"{time}","title3":"时间"},{"title1":"keyword2","title2":"{username}","title3":"用户"}]'
 		    ],
+		    ['textarea', 'about', '系统字段备注','用到的字段如上,你也可以多个组合起来放在微信的某个字段里比如“作者{username}发表的{title}”，特别是系统字段不够用的话，就可以组合起来。或者直接用固定的文字'],
 		];
+		
+		
+		if ($this->request->isPost()){
+		    $data = $this->request->post();
+		    $_ar = [];
+		    $ar3 = json_decode($data['data_field3'],true);
+		    foreach($ar3 AS $rs){
+		        $_ar[] = [
+		            'title1'=>$rs['title3'],
+		            'title2'=>'a_'.rands(5),
+		            'title3'=>$rs['title1'],
+		            'title4'=>$rs['title2'],
+		        ];
+		    }
+		    $this->request->post([
+		        'data_field'=>json_encode($_ar,JSON_UNESCAPED_UNICODE),
+		    ]);
+		}
+		
+	}
+	
+	
+	public function index() {
+	    if (!table_field('weixinnotice','about')) {
+	       into_sql("ALTER TABLE `qb_weixinnotice` ADD `about` TEXT NOT NULL COMMENT '备注';");
+	    }
+	    $listdb = $this->getListData($map = [], $order = '');
+	    return $this -> getAdminTable($listdb);
+	}
+	
+	public function edit($id = null) {
+	    if (empty($id)) $this -> error('缺少参数');
+	    $info = $this -> getInfoData($id);
+	    
+
+	    
+	    $array = json_decode($info['data_field'],true);
+	    if(!$info['about']){
+	        $info['about'] = "";
+	        foreach($array AS $rs){
+	            $info['about'].=$rs['title1'].":{".$rs['title2']."}\r\n";
+	        }
+	    }
+	    $_data = [];
+	    foreach($array AS $rs){
+	        if($rs['title3']){
+	            $_data[] = [
+	                'title1'=>$rs['title3'],
+	                'title2'=>$rs['title4']?:'{'.$rs['title2'].'}',
+	                'title3'=>$rs['title1'],
+	            ];
+	        }
+	    }
+	    $info['data_field3'] = json_encode($_data);
+	    
+	    return $this -> editContent($info);
 	}
 	
 	public function add(){

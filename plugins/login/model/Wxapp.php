@@ -13,7 +13,9 @@ class Wxapp extends UserModel
             //return 'nickName 昵称不存在！';
         }
         
-        if( self::check_wxappIdExists( $openid ) ){
+        if( $data['unionid'] && self::get_info( $data['unionid'] , 'unionid' ) ){
+            return '当前微信已经注册过了!!!！';
+        }elseif( self::check_wxappIdExists( $openid ) ){
             return '当前微信号已经注册过了！';
         }
         

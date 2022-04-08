@@ -38,7 +38,9 @@ class User extends UserModel
             //return 'nickname 昵称不存在！';
         }
         
-        if( self::check_wxIdExists( $data['openid'] ) ){
+        if( $data['unionid'] && self::get_info( $data['unionid'] , 'unionid' ) ){
+            return '当前微信已经注册过了!!!！';
+        }elseif( self::check_wxIdExists( $data['openid'] ) ){
             return '当前微信号已经注册过了！';
         }
         

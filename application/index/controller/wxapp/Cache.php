@@ -6,7 +6,7 @@ use app\common\controller\IndexBase;
 
 class Cache extends IndexBase
 {
-    public function set($key='',$value=''){
+    public function set($key='',$value=''){return $this->err_js('暂停使用');
         if(!preg_match('/^[a-z0-9_]+$/i', $key)){
             return $this->err_js('KEY有误!');
         }elseif (cache($key)) {
@@ -23,7 +23,7 @@ class Cache extends IndexBase
         }
     }
     
-    public function get($key=''){
+    public function get($key=''){return $this->err_js('暂停使用');
         if(!preg_match('/^[a-z0-9_]+$/i', $key)){
             return $this->err_js('KEY有误!');
         }elseif (cache($key)) {

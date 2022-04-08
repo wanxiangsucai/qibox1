@@ -50,6 +50,7 @@ $form_array = [
   'treeone' => '无限级分类(单选)',
   'treemore' => '无限级分类(多选)',
   'treemake' => '无限级分类(构建)',
+  'shenhe' => '审核员',
   //'masked' => '格式文本',
   //'range' => '范围',
 

@@ -187,8 +187,18 @@ class Pay extends IndexBase
         }
         
         if($havepay==true){   //如果仅是检查是否付款的，就不能执行以下操作，不然有漏洞
-            PayModel::update(['ifpay'=>1,'id'=>$rt['id']]);            
-            add_rmb($rt['uid'],$rt['money'],0,date('y年m月d日H:i ').'在线充值');
+            $array = [];
+            $responseObj = simplexml_load_string(file_get_contents("php://input"), 'SimpleXMLElement', LIBXML_NOCDATA);
+            if($responseObj){
+                $array = json_decode(json_encode($responseObj),true);
+            }            
+            PayModel::update([
+                'ifpay'=>1,
+                'id'=>$rt['id'],
+                'transaction_id'=>$array['transaction_id']?:'',
+                'paytime'=>time(),
+            ]);            
+            add_rmb($rt['uid'],$rt['money'],0,date('y年m月d日H:i ').'在线充值',1);
             if ($rt['wxapp_appid']) {
                 //$uid = \app\qun\model\Wxset::get_uid_by_appid($rt['wxapp_appid']);
                 $uid = wxapp_cfg( $rt['wxapp_appid'] )['uid'];
@@ -200,8 +210,7 @@ class Pay extends IndexBase
 			
 			//扩展接口
 			$this->get_hook('pay_end',$data=[],$rt);
-            hook_listen('pay_end',$rt);   
-			
+            hook_listen('pay_end',$rt);
             return 'ok';
         }else{
             return 0;

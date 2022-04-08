@@ -8,6 +8,9 @@ define('WxPayConfig__MCHID', config('webdb.weixin_payid') );
 define('WxPayConfig__KEY', config('webdb.weixin_paykey') );
 define('WxPayConfig__APPSECRET', config('webdb.weixin_appsecret') );
 
+define('WxPayConfig__SSLCERT', PUBLIC_PATH.strstr(config('webdb.weixin_apiclient_cert'),'uploads/') );
+define('WxPayConfig__SSLKEY', PUBLIC_PATH.strstr(config('webdb.weixin_apiclient_key'),'uploads/') );
+
 class WxPayConfig
 {
 	//=======【基本信息设置】=====================================
@@ -39,8 +42,8 @@ class WxPayConfig
 	 * API证书下载地址：https://pay.weixin.qq.com/index.php/account/api_cert，下载之前需要安装商户操作证书）
 	 * @var path
 	 */
-	const SSLCERT_PATH = '../cert/apiclient_cert.pem';
-	const SSLKEY_PATH = '../cert/apiclient_key.pem';
+	const SSLCERT_PATH = WxPayConfig__SSLCERT;
+	const SSLKEY_PATH = WxPayConfig__SSLKEY;
 	
 	//=======【curl代理设置】===================================
 	/**

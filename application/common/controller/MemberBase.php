@@ -32,4 +32,37 @@ class MemberBase extends Base
         // 自动表单公共模板
         $this->assign('auto_tpl_base_layout',APP_PATH.'member/view/default/layout.htm');
     }
+    
+    protected function get_assign_data($array=[]){
+        static $data=[];
+        if (!$this->request->isAjax()) {
+            return ;
+        }
+        if ($array) {
+            $data = array_merge($data,$array);
+        }else{
+            return $data;
+        }
+    }
+    
+    protected function assign($name, $value = '')
+    {
+        if(is_array($name)){
+            $this->get_assign_data($name);
+        }else{
+            $this->get_assign_data([$name=>$value]);
+        }
+        return parent::assign($name, $value);
+    }
+    
+    protected function fetch($template = '', $vars = [], $replace = [], $config = [])
+    {
+        if ($this->request->isAjax()) {
+            $array = $this->get_assign_data();
+            if ($array['_listdb']) {
+                return $this->ok_js( $this->format_json_data( ['listdb'=>getArray($array['_listdb'])] ) );
+            }
+        }
+        return parent::fetch($template, $vars, $replace, $config);
+    }
 }

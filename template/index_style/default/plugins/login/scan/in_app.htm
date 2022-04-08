@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{$webdb.webname}</title>
+<meta name="keywords" content='{$webdb.webname}'>
+<meta name="description" content='{$webdb.webname}'>
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="stylesheet" href="__STATIC__/css/base.css">
+<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">
+<link rel="stylesheet" href="__STATIC__/icon/icon.css">
+<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>
+<script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
+</head>
+<body> 
+<script type="text/javascript">
+function getcode(){
+	//open_tncode(function(){		
+		$(".mui-input-group").submit(); 
+	//});
+	//return false;
+};
+</script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/libs/tncode/tn_code.css"/>
+<script type="text/javascript" src="__STATIC__/libs/tncode/tn_code.js"></script>
+<script type="text/javascript" src="__STATIC__/js/tn_login.js"></script>
+
+<link rel="stylesheet" href="__STATIC__/css/base.css">
+<link rel="stylesheet" href="__STATIC__/css/login.css">
+<div class="LogoContainer">	
+	<ul>
+		<ol><img src="{$userdb.icon}" style="border-radius: 20px;width:100px;" onerror="this.src='__STATIC__/member/default/base/logo.png'"/></ol>
+		<li>{$userdb.username}</li>
+	</ul>
+</div>
+
+<div class="FormContainer">
+<form class="mui-input-group" action="" method="post">
+	 提示：{$msg?:'电脑端请求登录你的帐号,你允许吗？'}
+	<input type="hidden" name="step" value="{$step}">
+	<button type="button" onclick="getcode()" class="mui-btn mui-btn-danger mui-btn-block">允许登录</button>
+</form>
+</div>        
+
+</body>
+</html>

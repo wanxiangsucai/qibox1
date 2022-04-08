@@ -267,7 +267,7 @@ class Base extends Controller
         if (function_exists('val')) {
             //碎片模板要用到
             $array = val('','template')?:[];
-            $array[$name] = $value;
+            $array = array_merge($array,is_array($name)?$name:[$name=>$value]);
             val($array,'template');
         }
         

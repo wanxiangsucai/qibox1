@@ -55,7 +55,7 @@ qb_time();
 if(empty($vo['sons'])){continue;}	//没有子菜单的就不要显示了
 if($menu['often']['sons'] && $key!='often'){continue;}	//如果有个性菜单,就不显示其它菜单了
 {/php}
-<dl>
+<dl class="tags-{$key}">
 	<dt><span><i class="{$vo.icon|default='fa fa-list-ul'}"></i>{$vo.title}</span></dt>
 	<dd>
 		{volist name="vo.sons" id="ar"}
@@ -175,7 +175,17 @@ $('.changemenu dt').click(function(){
 $('.changemenu dd').click(function(){
 	next_topmenu();
 });
-selectMenu(0);
+
+{if $tag}
+	if($('.tags-{$tag}').length>0){
+		$('.tags-{$tag}').trigger("click");
+	}else{
+		$('.tags-module').trigger("click");
+	}	
+{else /}
+	selectMenu(0);
+{/if}
+
 function linksthis(objs){
 	var fobj=objs.parent();
 	fobj.find('li').removeClass('ck');

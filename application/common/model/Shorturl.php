@@ -23,7 +23,7 @@ class Shorturl extends Model
 	 */
 	public static function getId($url='',$type=0,$uid=0,$time=0){
 	    $map = [
-	        'url'=>$url,
+	        'url'=>strlen($url)>255 ? md5($url) : $url,
 	        'type'=>$type,
 	        'wxapp_id'=>get_wxappAppid()?:'',
 	    ];
@@ -31,6 +31,9 @@ class Shorturl extends Model
 	    if (empty($id)) {
 	        $map['uid'] = intval($uid);
 	        $map['expire_time'] = $time ? $time+time() : 0;
+	        if(strlen($url)>255){
+	            $map['long_url'] = $url;
+	        }
 	        $reslut = self::create($map);
 	        $id = $reslut->id;
 	    }
@@ -44,7 +47,14 @@ class Shorturl extends Model
 	 * @return unknown
 	 */
 	public static function getUrl($id=0){
-	    $url = self::where('id',$id)->value('url');
-	    return $url;
+	    $info = self::where('id',$id)->find();
+	    if(!$info){
+	        return '';
+	    }
+	    if(strlen($info['url'])==32 && preg_match("/^([a-z0-9]{32})$/", $info['url'])){
+	        return $info['long_url'];
+	    }else{
+	        return $info['url'];
+	    }	    
 	}
 }

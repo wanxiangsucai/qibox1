@@ -363,7 +363,7 @@ class Menu{
                     //打上标志是哪个模块的系统，方便处理URL指向
                     self::menu_make_url($ar,$model['keywords']);
 
-                    if($model['ifsys']){    // 使用顶部菜单的频道
+                    if($model['ifsys'] || self::$tag){    // 使用顶部菜单的频道 或者是指定频道
                         $ar['sons'][0]['title'] = $model['name'];
                         $ar['sons'][0]['icon'] = $model['icon'];
                          
@@ -454,7 +454,7 @@ class Menu{
         $base_menu = self::build_module_menu($base_menu);
         
         //插件菜单处理
-        $base_menu = self::build_plugin_menu($base_menu);
+        self::$tag || $base_menu = self::build_plugin_menu($base_menu);
         
         foreach($base_menu AS $key1=>$menu1){
             foreach ($menu1['sons'] AS $key2=>$menu2){
@@ -464,7 +464,6 @@ class Menu{
                 }
             }
         }
-
-        return $base_menu;
+        return self::$tag ? array_reverse($base_menu) : $base_menu;
     }	
 }

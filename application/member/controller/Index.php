@@ -82,7 +82,7 @@ class Index extends MemberBase
         $this->assign('user',$this->user);
         $this->assign('userdb',$this->user);
         $this->assign('info',$this->user);
-        return $this->fetch();
+        return $this->fetch( preg_match('/^[\w]+$/', $tag)?getTemplate('../../'.$tag.'/map'):'' );
     }
 
 }

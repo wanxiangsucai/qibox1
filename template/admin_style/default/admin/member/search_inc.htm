@@ -1,13 +1,33 @@
-		
+ 
 		<select name="search_timefield">
 			<option value="regdate" {:input('search_timefield')=='regdate'?'selected':''}>注册日期</option>
 			<option value="lastvist" {:input('search_timefield')=='lastvist'?'selected':''}>最后登录</option>
 		</select>
 		<input type="text" placeholder='开始日期' value="{:input('search_begintime')}" class="search_begintime time" name="search_begintime">
 		<input type="text" placeholder='结束日期' value="{:input('search_endtime')}" class="search_endtime time" name="search_endtime">
-		<script>laydate.render({ elem: '.search_begintime',type: 'datetime'});</script>
-		<script>laydate.render({ elem: '.search_endtime',type: 'datetime'});</script>
-		
+
+<script type="text/javascript">
+function get_search_time(o){
+	o.render({ elem: '.search_begintime',type: 'datetime'});
+	o.render({ elem: '.search_endtime',type: 'datetime'
+		,done: function(value, date, endDate){
+			setTimeout(()=>{
+				$('.search_endtime').val(value.replace('00:00:00','23:59:59'));
+			},300);
+		}
+	});
+}
+if(typeof(layui)=='object'){
+	$(function(){
+		layui.use('laydate', function(){
+			var laydate = layui.laydate;
+			get_search_time(laydate);
+		}); 
+	});
+}else{
+	get_search_time(laydate)
+}
+</script>
 		
 		<select name="search_bindphone">
 			<option value="">手机</option>
@@ -84,6 +104,7 @@ function search_content(){
 	var search_sex = $("select[name='search_sex']").length>0 ? $("select[name='search_sex']").val() : '';
 	var search_groupid = $("select[name='search_groupid']").length>0 ? $("select[name='search_groupid']").val() : '';
 	var search_bindidcard = $("select[name='search_bindidcard']").length>0 ? $("select[name='search_bindidcard']").val() : '';
+	var search_faceyz = $("select[name='search_faceyz']").length>0 ? $("select[name='search_faceyz']").val() : '';
 	
 
 	if(keyword!='' && field==''){
@@ -123,6 +144,9 @@ function search_content(){
 	}
 	if(search_bindidcard!==''){
 		url +='&search_bindidcard=' + search_bindidcard;
+	}
+	if(search_faceyz!==''){
+		url +='&search_faceyz=' + search_faceyz;
 	}
 
 	window.location.href = url;

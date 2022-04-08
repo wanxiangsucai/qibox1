@@ -414,13 +414,31 @@ class Label extends IndexBase
         return 10000+$j;
     }
     
+    /**
+     * 小程序或者APP提交标签数据
+     * @param string $name
+     * @param string $hy_id
+     * @param string $hy_tags
+     * @return mixed|string
+     */
     public function appform($name='',$hy_id='',$hy_tags=''){
         if(IS_POST){
+//             if ( get_wxappAppid() && input('pagename')=='app_minishop') {
+//                 $info = get_wxappinfo( get_wxappAppid() );
+//                 if ($info['minishop_style']) {
+//                     $this->request->post([
+//                         'pagename'=>$info['minishop_style'],
+//                     ]);
+//                 }                
+//             }
             $data = $this->request->post();
             $this->setTag_value("app\\index\\controller\\LabelShow@labelGetMyform")
             ->setTag_extend_cfg(json_encode($data))
             ->setTag_type( substr(strstr(__METHOD__,'::'),2) );
             $_array = $this->get_post_data();
+            if ($data['style']) {
+                $_array['title'] = $data['style'];  //将就着把title字段当风格字段使用。
+            }
             $this->save($_array);
         }
         

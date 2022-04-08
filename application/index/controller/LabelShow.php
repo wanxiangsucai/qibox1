@@ -234,15 +234,31 @@ class LabelShow extends IndexBase
     }
     
     /**
-     * APP标签获取所有标签数据
+     * 小程序或者APP标签获取所有标签数据
      * @param number $ext_id
      * @param string $pagename
      * @return void|unknown|\think\response\Json
      */
     public function list_apptag($ext_id=0,$pagename='app_'){
+        $info = [];
+        if($ext_id==-1 && $this->user && plugins_config('wxopen')){ //H5访问
+            $info = \plugins\wxopen\model\Info::where('uid',$this->user['uid'])->where('type',4)->find();
+            if (!$info){
+                return $this->err_js('资料不存在');
+            }
+        }elseif ( $ext_id==0 && get_wxappAppid() ) { //小商店访问
+            $info = get_wxappinfo( get_wxappAppid() );            
+        }
+        if ($info['qun_id']) {
+            $ext_id = $info['qun_id'];
+        }
+//         if ($info['minishop_style']) {
+//             $pagename = $info['minishop_style'];
+//         }
         $map = [
             'pagename'=>$pagename,
             'ext_id'=>$ext_id,
+            'hide'=>0,
         ];
         $listdb = [];
         $array = $this->model->where($map)->column(true);
@@ -258,7 +274,23 @@ class LabelShow extends IndexBase
      * @return array
      */
     public function labelGetMyform($tag_array=[]){
-        return json_decode($tag_array['extend_cfg'],true)?:[];
+        $array = json_decode($tag_array['extend_cfg'],true)?:[];        
+        if($array['mod_cfg']){
+			static $ck = [];            
+            $data = json_decode($array['mod_cfg'],true);
+            foreach($data AS $key=>$rs){
+                if($rs['tags']){
+                    if($ck[$rs['tags']]){
+                        $data[$key]['tags'] = rands(15);
+                    }
+                    $ck[$rs['tags']] = true;
+                }                
+            }
+            $array['mod_cfg'] = json_encode($data);
+        }
+        $array['style'] = $tag_array['title'];
+        $array['name'] = $tag_array['name'];
+        return $array;
     }
     
     

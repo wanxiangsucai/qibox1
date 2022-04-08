@@ -758,7 +758,9 @@ trait ModuleContent
 	    }
 	    if(empty($this->admin) && fun('admin@sort',$info['fid'])!==true && ENTRANCE!=='admin'){
 	        if ($info['uid']!=$this->user['uid']) {
-	            return '你没权限!';
+	            if(!fun('admin@status_power',config('system_dirname')) || !$this->webdb['shenhe_edit'] ){  //不是审核员，或者没开通审核员的修改权限
+	                return '你没权限!';
+	            }
 	        }elseif($this->webdb['group_edit_time']){
 	            $array = json_decode($this->webdb['group_edit_time'],true);
 	            $hour = $array[$this->user['groupid']];
@@ -877,10 +879,25 @@ trait ModuleContent
 	            if (!$_uid) {
 	                continue;
 	            }
+	            $url = get_url(murl('content/manage'));
 	            $title = '请及时审核 '.M('name').' 新主题';
-	            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 发布了: 《' . $data['title'] . '》，请尽快审核！<a href="'.get_url(murl('content/manage')).'" target="_blank">点击查看详情</a>';
+	            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 发布了: 《' . $data['title'] . '》，请尽快审核！<a href="'.$url.'" target="_blank">点击查看详情</a>';
+	            
+	            $wx_data = [
+	                'title'=>$data['title'],
+	                'author'=>$this->user['username'],
+	                'username'=>get_user_name($_uid),
+	                'time'=>date('Y-m-d H:i'),
+	                'content'=>$info['title'],
+	                'modname'=>M('name'),
+	                'status'=>'待审',
+	            ];
+	            $wxmsg_array = [
+	                'sendmsg'=>true,
+	                'template_data'=>fun('msg@format_data','content_request2check',$wx_data,$url),
+	            ];
 	            send_msg($_uid, $title, $content);
-	            send_wx_msg($_uid, $content);
+	            send_wx_msg($_uid, $content,$wxmsg_array);
 	        }
 	    }
 	}

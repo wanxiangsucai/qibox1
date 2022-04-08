@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>第三方小程序登录</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">	
+</head>
+<body onload="wx_ready()">
+<script type="text/javascript" src="__STATIC__/js/jweixin.js"></script>
+<div onclick="wx_ready()">点击进入</div>
+<script type="text/javascript">
+function wx_ready(){
+	wx.miniProgram.navigateTo({ url: "/pages/close/index?&title=点击关闭&showmsg=同步帐号成功，请点击关闭！" });	
+}
+</script>
+ </body>
+</html>

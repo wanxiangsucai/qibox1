@@ -50,6 +50,14 @@ trait LabelhyEdit {
      */
     public function delete($name='',$hy_id=0,$hy_tags=0,$pagename=''){
         $map = ['name'=>$name,'ext_id'=>$hy_id,'fid'=>intval($hy_tags)];
+        
+//         if (get_wxappAppid() && $pagename=='app_minishop') {
+//             $info = get_wxappinfo( get_wxappAppid() );
+//             if ($info['minishop_style']) {
+//                 $pagename = $info['minishop_style'];
+//             }
+//         }
+        
         if ($pagename) {
             $map['pagename'] = $pagename;
         }

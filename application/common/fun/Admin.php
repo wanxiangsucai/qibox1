@@ -70,7 +70,7 @@ class Admin{
                 if(in_array($user['uid'], str_array($s_array[$i-1]))){
                     //return $i;
                     $powers[$i] = $i;
-                    if($i==1){
+                    if($i==1){  //一审默认有-9不通过及恢复0未审核状态的权限
                         $powers[] = 0;
                         $powers[] = -9;
                     }

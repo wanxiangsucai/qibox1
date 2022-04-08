@@ -44,7 +44,7 @@ class Setting extends AdminBase
     
     /**
      * 模块里要强制补上的配置参数
-     * 提醒,如果你的频道不想要下面的字段,就需要在你频道那里设置 protected $config = [];
+     * 提醒,如果你的频道不想要下面的字段,就需要在你频道那里重写下面这个方法
      */
     protected function add_module_config(){
 //         if ($this->config!==null || defined('IN_PLUGIN') || empty(config('system_dirname'))) {

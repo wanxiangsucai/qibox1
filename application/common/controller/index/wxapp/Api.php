@@ -57,7 +57,7 @@ abstract class Api extends IndexBase
      * @return void|\think\response\Json|void|unknown|\think\response\Json
      */
     public function change_status($id=0,$status=0,$reason=''){
-        $info = $this->check_getTab($id);
+        $info = $this->check_getTab($id,$status);
         if (is_string($info)) {
             return $this->err_js($info);
         }
@@ -69,8 +69,16 @@ abstract class Api extends IndexBase
             'status'=>$status
         ]);
         
-        $this->send_admin_msg($status,$info); //多级审核通知处理
-        $this->send_author_msg($status,$info,$reason);
+        hook_listen('content_change_status',$info,[
+            'status'=>$status,
+            'reason' =>$reason,
+            'module'=>config('system_dirname')
+        ]);
+        
+        if(!defined('CHANGE_STATUS_MSG')){
+            $this->send_admin_msg($status,$info); //多级审核通知处理
+            $this->send_author_msg($status,$info,$reason);
+        }
         
         return $this->ok_js([
             'status'=>$status,
@@ -86,27 +94,46 @@ abstract class Api extends IndexBase
      * @param string $reason
      */
     protected function send_author_msg($status=0,$info=[],$reason=''){
-        if ($reason!='') {
-            $content = '你发的主题,';
-            if($status==-9){
-                $content .= '被拒审了';
-            }elseif($status==-1){
-                $content .= '被删除了';
-            }elseif($status==1){
-                $content .= '通过审核了';
-            }else{
-                $content .= '被执行了 '.fun('Content@status')[$status].' 操作';
-            }
-            $content .= '，标题是：'.$info['title'];
-            if ($reason) {
-                $content .= '，理由是：'.$reason;
-            }
-            if($status!=-1){
-                $content .= '，<a href="'.get_url(iurl('content/show',['id'=>$info['id']])).'" target="_blank">点击查看详情</a>';
-            }            
-            send_msg($info['uid'],'被执行了 '.fun('Content@status')[$status].' 操作',$content);
-            send_wx_msg($info['uid'], $content);
+        if(!in_array($status, [-9,-1,1])){ //主题-1删除，-9拒审，1通过，才通知作者
+            return ;
         }
+        $content = '你发的主题,';
+        $status_tile = '';
+        if($status==-9){
+            $content .= $status_tile = '被拒审了';
+        }elseif($status==-1){
+            $content .= $status_tile = '被删除了';
+        }elseif($status==1){
+            $content .= $status_tile = '通过审核了';
+        }else{
+            $content .= '被执行了 '.fun('Content@status')[$status].' 操作';
+        }
+        $content .= '，标题是：'.$info['title'];
+        if ($reason) {
+            $content .= '，理由是：'.$reason;
+        }
+        $url = get_url(iurl('content/show',['id'=>$info['id']]));
+        if($status!=-1){
+            $content .= '，<a href="'.$url.'" target="_blank">点击查看详情</a>';
+        }
+        
+        $wx_data = [
+            'title'=>$info['title'],
+            'author'=>get_user_name($info['uid']),
+            'username'=>$this->user['username'],
+            'time'=>date('Y-m-d H:i'),
+            'content'=>$reason,
+            'modname'=>M('name'),
+            'status'=>$status_tile,
+            'reason'=>$reason,
+        ];
+        $wxmsg_array = [
+            'sendmsg'=>true,
+            'template_data'=>fun('msg@format_data','content_status2author',$wx_data,$url),
+        ];
+        
+        send_msg($info['uid'],'被执行了 '.fun('Content@status')[$status].' 操作',$content);
+        send_wx_msg($info['uid'], $content,$wxmsg_array);
     }
     
     /**
@@ -124,10 +151,27 @@ abstract class Api extends IndexBase
             if (!$_uid) {
                 continue;
             }
+            $url = get_url(murl('content/manage'));
             $title = '请及时审核 '.M('name').' 新主题';
-            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 提交了: 《' . $info['title'] . '》请示你审核，请尽快处理！<a href="'.get_url(murl('content/manage')).'" target="_blank">点击查看详情</a>';
+            $content = '“'.$this->user['username'].'” 刚刚在 '.M('name').' 提交了: 《' . $info['title'] . '》请示你审核，请尽快处理！<a href="'.$url.'" target="_blank">点击查看详情</a>';
+            
+            $s_arrray = [-2=>'初审',-3=>'二审',-4=>'三审',-5=>'四审',-9=>'拒审',-1=>'删除',0=>'待审'];
+            $wx_data = [
+                'title'=>$info['title'],
+                'author'=>get_user_name($info['uid']),
+                'username'=>$this->user['username'],
+                'admin'=>get_user_name($_uid),
+                'time'=>date('Y-m-d H:i'),
+                'content'=>$info['title'],
+                'modname'=>M('name'),
+                'status'=>$s_arrray[$status],
+            ];
+            $wxmsg_array = [
+                'sendmsg'=>true,
+                'template_data'=>fun('msg@format_data','content_status2admin',$wx_data,$url),
+            ];
             send_msg($_uid, $title, $content);
-            send_wx_msg($_uid, $content);
+            send_wx_msg($_uid, $content,$wxmsg_array);
         }
     }
     

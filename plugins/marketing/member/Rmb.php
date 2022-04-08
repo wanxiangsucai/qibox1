@@ -3,7 +3,7 @@ namespace plugins\marketing\member;
 
 use app\common\controller\MemberBase; 
 use plugins\marketing\model\RmbGetout;
-//use plugins\marketing\model\RmbInfull;
+use plugins\marketing\model\RmbInfull;
 use plugins\marketing\model\RmbConsume;
 
 class Rmb extends MemberBase
@@ -23,10 +23,62 @@ class Rmb extends MemberBase
 		});
 		$pages = $data_list->render();
 		$listdb = getArray($data_list)['data'];
+		$time = time()-3600*24*30;
+		$max = RmbInfull::where([
+		    'uid'=>$this->user['uid'],
+		    'money'=> ['>',0],
+		    'posttime'=>['>',$time],
+		    'refund_money'=>0,
+		    'ifpay'=>1,
+		    'banktype'=>['<>','支付宝'],
+		])->order('money desc')->value('money');
+		$max || $max=0; //最大可退款金额
+		foreach($listdb AS $key=>$rs){
+		    $rs['allow_refund'] = false;
+		    if($rs['money']>0 
+		        && $rs['money']<=$max
+		        && ($rs['refund']==1||strstr($rs['about'],'充值')||strstr($rs['about'],'退')) 
+		        && $rs['posttime']>$time
+		        && $rs['refund']!=2
+		        && $rs['money']<=$this->user['rmb']
+		        ){
+		        $rs['allow_refund'] = true;
+		    }
+		    $listdb[$key] =$rs;
+		}
 		//给模板赋值变量
 		$this->assign('pages',$pages);
 		$this->assign('listdb',$listdb);		
 		return $this->pfetch();
+	}
+	
+	/**
+	 * 退款
+	 * @param number $id
+	 */
+	public function refund($id=0){
+	    $map = [
+	        'uid'=>$this->user['uid'],
+	        'id'=>$id
+	    ];
+	    $info = getArray(RmbConsume::where($map)->find());
+	    if(!$info){
+	        $this->error('记录不存在！');
+	    }elseif($info['money']<0.01){
+	        $this->error('金额小于0！');
+	    }elseif($info['refund']==2){
+	        $this->error('已退款！');
+	    }elseif( $info['refund']!=1 && !strstr($info['about'],'充值') && !strstr($info['about'],'退') ){
+	        $this->error('不符合退款条件！');
+	    }elseif($info['money']>$this->user['rmb']){
+	        $this->error('退款金额不能大于你的可用余额！');
+	    }
+	    $result = fun('pay@refund',$this->user['uid'],$info['money'],'自主申请退款');
+	    if ($result===true) {
+	        $this->success('退款申请成功退还至微信钱包，请耐心等候，大约一分钟后才能到帐。',null,'',60);
+	    }else{
+	        $this->error($result);
+	    }
 	}
 	
 	/**
@@ -59,7 +111,7 @@ class Rmb extends MemberBase
 	        post_olpay([
 	            'money' => $data['money'],
 	            'return_url' => $callback_url?:purl('index'),
-	            'banktype' => $type,//in_weixin() ? 'weixin' : 'alipay',
+	            'banktype' => $type ?: (in_weixin() ? 'weixin' : ''),
 	            'numcode' => $numcode,
 	            'callback_class' => '',
 	        ] , true);	

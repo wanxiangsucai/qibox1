@@ -1005,6 +1005,40 @@ class WxPayCloseOrder extends WxPayDataBase
  */
 class WxPayRefund extends WxPayDataBase
 {
+    /**
+     * 退款原因
+     * @param string $value
+     */
+    public function SetDesc($value)
+    {
+        $this->values['refund_desc'] = $value;
+    }
+    public function GetDesc($value)
+    {
+        return $this->values['refund_desc'];
+    }
+    public function IsDescSet($value)
+    {
+        return array_key_exists('refund_desc', $this->values);
+    }
+    
+    /**
+     * 退款结果通知url
+     * @param string $value
+     */
+    public function SetUrl($value)
+    {
+        $this->values['notify_url'] = $value;
+    }
+    public function GetUrl($value)
+    {
+        return $this->values['notify_url'];
+    }
+    public function IsUrlSet($value)
+    {
+        return array_key_exists('notify_url', $this->values);
+    }
+    
 	/**
 	* 设置微信分配的公众账号ID
 	* @param string $value 

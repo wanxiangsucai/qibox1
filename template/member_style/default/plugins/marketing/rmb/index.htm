@@ -46,6 +46,7 @@
 {volist name="listdb" id="rs"}
 <div class="Listcont">
 	{$rs.title|get_word="60"}
+	{if $rs.allow_refund}<a href="{:auto_url('refund',['id'=>$rs.id])}" style="color:#0a1dff;margin-left:8px;" title="退款到微信钱包"><i class="icons-uniE952"></i></a>{/if}
 	<ul>
 		<ol>{$rs.posttime|format_time}</ol>
 		<li>

@@ -1,4 +1,9 @@
-<script type="text/javascript" src="__STATIC__/layui/laydate/laydate.js"></script> 
+<script type="text/javascript">
+if(typeof(layui)!='object'){
+	document.write('<script type="text/javascript" src="__STATIC__/layui/laydate/laydate.js"><\/script>');
+	//这个与 /public/static/layui/layui.js 会冲突的
+}
+</script>
 <style type="text/css">
 .cktr td{
 	background:#e2e1ba !important;

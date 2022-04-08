@@ -36,6 +36,7 @@
 
 <!--基础功能开始-->
 {volist name="$menu['base']['sons']" id="bs" key="bkey"}
+{php}if($tag)break;{/php}
         <div class="bui-panel panel-usercenter">
             <div class="bui-panel-head bui-box-align-middle">
                 <i class="icon-service"><span style="color:{$bs['fontcolor']?:''}" class="{$bs['icon']?:'glyphicon glyphicon-star-empty'}"></span></i>
@@ -69,7 +70,7 @@
 
 <!--独立菜单的频道开始-->
 {volist name="$menu" id="rs2"}
-{php}if(in_array($key,['plugin','base','module']))continue;{/php}
+{php}if(in_array($key,['plugin','module'])||($key=='base'&&!$tag))continue;{/php}
 		<div class="bui-panel panel-usercenter">
             <div class="bui-panel-head bui-box-align-middle">
                 <i class="icon-member" style="color:{$rs2.fontcolor?:'#8CC9FD'};"><span class="{$rs2.icon}"></span></i>
@@ -105,6 +106,7 @@
 .morelink{width:100%;text-align:left;}
 </style>
 <!--功能插件开始-->
+{if $menu['plugin']['sons']}
 		<div class="bui-panel panel-usercenter">
             <div class="bui-panel-head bui-box-align-middle">
                 <i class="icon-member" style="color:#e8a4cb;"><span class="fa fa-gears"></span></i>
@@ -138,6 +140,7 @@
 {/volist}
             </div>
         </div>
+{/if}
 <!--功能插件结束-->
 
 

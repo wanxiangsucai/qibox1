@@ -153,8 +153,12 @@ class WxPayApi
 		}else if(!$inputObj->IsOp_user_idSet()){
 			throw new WxPayException("退款申请接口中，缺少必填参数op_user_id！");
 		}
-		$inputObj->SetAppid(WxPayConfig__APPID);//公众账号ID
-		$inputObj->SetMch_id(WxPayConfig__MCHID);//商户号
+		if (!$inputObj->IsAppidSet()) {
+		    $inputObj->SetAppid(WxPayConfig__APPID);//公众账号ID
+		}
+		if (!$inputObj->IsMch_idSet()) {
+		    $inputObj->SetMch_id(WxPayConfig__MCHID);//商户号
+		}		
 		$inputObj->SetNonce_str(self::getNonceStr());//随机字符串
 		
 		$inputObj->SetSign();//签名
@@ -328,8 +332,10 @@ class WxPayApi
 		} if(!$inputObj->IsExecute_time_Set()) {
 			throw new WxPayException("接口耗时，缺少必填参数execute_time_！");
 		}
-		$inputObj->SetAppid(WxPayConfig__APPID);//公众账号ID
-		$inputObj->SetMch_id(WxPayConfig__MCHID);//商户号
+		$inputObj->SetAppid( config('webdb.weixin_appid') //WxPayConfig__APPID
+		    );//公众账号ID
+		$inputObj->SetMch_id( config('webdb.weixin_payid') //WxPayConfig__MCHID
+		    );//商户号
 		$inputObj->SetUser_ip($_SERVER['REMOTE_ADDR']);//终端ip
 		$inputObj->SetTime(date("YmdHis"));//商户上报时间	 
 		$inputObj->SetNonce_str(self::getNonceStr());//随机字符串
@@ -549,9 +555,11 @@ class WxPayApi
 			//设置证书
 			//使用证书：cert 与 key 分别属于两个.pem文件
 			curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
-			curl_setopt($ch,CURLOPT_SSLCERT, WxPayConfig::SSLCERT_PATH);
+			curl_setopt($ch,CURLOPT_SSLCERT, PUBLIC_PATH.strstr(config('webdb.weixin_apiclient_cert'),'uploads/') //WxPayConfig::SSLCERT_PATH
+			    );
 			curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
-			curl_setopt($ch,CURLOPT_SSLKEY, WxPayConfig::SSLKEY_PATH);
+			curl_setopt($ch,CURLOPT_SSLKEY, PUBLIC_PATH.strstr(config('webdb.weixin_apiclient_key'),'uploads/') //WxPayConfig::SSLKEY_PATH
+			    );
 		}
 		//post提交方式
 		curl_setopt($ch, CURLOPT_POST, TRUE);

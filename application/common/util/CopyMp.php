@@ -36,12 +36,20 @@ class CopyMp
         preg_match("/var msg_cdn_url = \"([^\"]+)\"/is",$content,$array);
         $postdb['picurl'] = addslashes($array[1]);
         
-        preg_match("/id=\"js_content\">(.*?)<script nonce=/is",$content,$array);        
-        $postdb['content'] = '<div>'.$array[1];
+        preg_match('/<div class="rich_media_content([^>]+)>(.*?)<script type="text/is',$content,$array);
+        $postdb['content'] = '<div>'.$array[2];
+
         if (empty($array[1])) {
             preg_match("/<div class=\"rich_media_content \" id=\"js_content\" style=\"visibility: hidden;\">(.*?)<script nonce=/is",$content,$array);
             $postdb['content'] = '<div>'.$array[1];
-        }        
+        }
+        
+//         preg_match("/id=\"js_content\">(.*?)<script nonce=/is",$content,$array);        
+//         $postdb['content'] = '<div>'.$array[1];
+//         if (empty($array[1])) {
+//             preg_match("/<div class=\"rich_media_content \" id=\"js_content\" style=\"visibility: hidden;\">(.*?)<script nonce=/is",$content,$array);
+//             $postdb['content'] = '<div>'.$array[1];
+//         }       
 
         if(strstr($postdb['content'],'v.qq.com/iframe/')||strstr($postdb['content'],'pages/video_player_tmpl')){
             $postdb['content'] = static::get_iframe_mv($postdb['content']);

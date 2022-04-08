@@ -165,8 +165,7 @@ class Login extends IndexBase
                 if(!is_array($array)){
                     return $this->err_js($array);
                 }
-                /*
-(
+                /*(
     [userinfo] => Array
         (
             [phoneNumber] => 18664780444 //用户绑定的手机号（国外手机号会有区号）
@@ -182,9 +181,7 @@ class Login extends IndexBase
 
     [skey] => 5dcc377c389875d3588a86403b8b188ede7376d3
     [sessionKey] => 6TNiTv4wszPVrMFQEbOZPQ==
-)
-
-                 */
+)*/
                 $skey = $array['skey'];
                 $sessionKey = $array['sessionKey'];
                 $info = $array['userinfo'];
@@ -197,14 +194,16 @@ class Login extends IndexBase
             return $this->err_js('登录失败,openid获取不到');
         }
         
-        $user = UserModel::check_wxappIdExists($openid);  //根据小程序ID获取用户信息,优先级最高
-        
-        if (get_wxappAppid()) {
+        if (get_wxappAppid() && get_wxappAppid()!=config('webdb.P__wxopen')['shop_plugin_appid']) {
             unset($info['unionId']);    //商家小程序不允许使用 unionId
         }
-        if(!$user && modules_config('qun') && class_exists("app\\qun\\model\\Weixin")){
-            $user = \app\qun\model\Weixin::get_info_by_openid($openid);   //用户在大平台登录时，看看是否在某个商家那里注册过，就避免重复注册
-        }
+        
+        $user = UserModel::check_wxappIdExists($openid);  //根据小程序ID获取用户信息,优先级最高
+        
+        //下面这个其实有些多余了，因为上面这条语句已经获取过了。
+        //if(!$user && modules_config('qun') && class_exists("app\\qun\\model\\Weixin")){
+        //    $user = \app\qun\model\Weixin::get_info_by_openid($openid);   //用户在大平台登录时，看看是否在某个商家那里注册过，就避免重复注册
+        //}
  
         if ( $user && $info['unionId'] && empty($user['unionid']) ) {   //后来开通了认证微信开放平台的老用户处理
             UserModel::edit_user([
@@ -213,34 +212,32 @@ class Login extends IndexBase
             ]);
         }
         
-        if (empty($user) && $info['unionId']) {     //绑定了微信认证开放平台
-            $user = UserModel::get(['unionid'=>$info['unionId']]);
-
-            if ( $user && empty($user['wxapp_api']) ) { //开通了微信认证开放平台正常情况新用户都是这种
-                UserModel::edit_user([
-                    'uid'=>$user['uid'],
-                    'wxapp_api'=>$openid,
-                ]);
+        if (empty($user)) {
+            if ($info['unionId']) { //绑定了微信认证开放平台
+                $user = UserModel::get(['unionid'=>$info['unionId']]);
             }
-        }
-        
-        
-        if(empty($user) && $uids){  //有传递WEB框架用户已登录的标志过来 , 这个是针对没有绑定认证开放平台处理的,已认证的话,用不到这里
-            list($uid,$time) = explode(',',mymd5($uids,'DE'));
-            if (time()-$time<600) {
-                $user = UserModel::getById($uid);
+            
+            if(empty($user) && $uids){  //有传递WEB框架用户已登录的标志过来 , 这个是针对没有绑定认证开放平台处理的,已认证的话,用不到这里
+                list($uid,$time) = explode(',',mymd5($uids,'DE'));
+                if (time()-$time<600) {
+                    $user = UserModel::getById($uid);
+                }
+            }
+            
+            if ($user) {                
                 if (get_wxappAppid()) {
-                    \app\qun\model\Weixin::add($uid,$openid);   //首次绑定某个商家的小程序
-                }else{
-                    if (empty($user['wxapp_api'])) {
-                        UserModel::edit_user([
-                            'uid'=>$uid,
-                            'wxapp_api'=>$openid,
-                        ]);
-                    }
-                }                
-            }
+                    \app\qun\model\Weixin::add($user['uid'],$openid);   //首次绑定某个商家的小程序
+                    
+                }else{ //开通了微信认证开放平台正常情况新用户都是这种
+                    
+                    UserModel::edit_user([
+                        'uid'=>$user['uid'],
+                        'wxapp_api'=>$openid,
+                    ]);
+                }
+            }            
         }
+        
         if(empty($user)){
             if($info['unionId']){
                 $info['unionid']=$info['unionId'];  //注意I是大写
@@ -250,8 +247,8 @@ class Login extends IndexBase
                 return $this->err_js('注册失败:'.$user);
             }
             if (get_wxappAppid()) {
-                \app\qun\model\Weixin::add($uid,$openid);   //首次绑定某个商家的小程序
-                UserModel::where('uid',$uid)->update([
+                \app\qun\model\Weixin::add($user['uid'],$openid);   //首次绑定某个商家的小程序
+                UserModel::where('uid',$user['uid'])->update([
                     'wxapp_api'=>''  //因为并不是平台的小程序ID，所以要做处理
                 ]);
             }
@@ -297,7 +294,12 @@ class Login extends IndexBase
         if (!$code) {
             return $this->err_js('CODE为空',$cfg);
         }
+        
+        
         if (get_wxappAppid() && wxapp_open_cfg(get_wxappAppid())) {
+//             if(wxapp_cfg(get_wxappAppid())['status']==3){
+//                 get_wxappAppid(config('webdb.P__wxopen')['shop_plugin_appid']);
+//             }
             $string = file_get_contents('https://api.weixin.qq.com/sns/component/jscode2session?appid='.get_wxappAppid().'&js_code='.$code.'&grant_type=authorization_code&component_appid='.config('webdb.P__wxopen')['open_appid'].'&component_access_token='.wx_getOpenAccessToken());
         }else{
             $string = file_get_contents('https://api.weixin.qq.com/sns/jscode2session?appid='.$this->webdb['wxapp_appid'].'&secret='.$this->webdb['wxapp_appsecret'].'&js_code='.$code.'&grant_type=authorization_code');

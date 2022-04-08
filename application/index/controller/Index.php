@@ -7,6 +7,9 @@ class Index extends IndexBase
 {
     public function index()
     {
+        if(input('scene')&&input('code')){
+            $this->redirect(url('minishop/api/login',['code'=>input('code')]));
+        }
 //         if(input('wxapp')==1||get_cookie('wxapp')){
 //             set_cookie('wxapp', 1);
 //             $this->redirect(url('cms/index/index'),301);

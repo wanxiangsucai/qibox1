@@ -50,7 +50,10 @@ abstract class C extends MemberBase
      * 把所有模型的一起列出来
      * @return mixed|string
      */
-    public function listall($rows=10){
+    public function listall($rows=0){
+        if (!$rows) {
+            $rows = input('rows')?:10;
+        }
         $this->tab_ext['top_button'] = $this->page_top_botton();
         $this->tab_ext['page_title'] || $this->tab_ext['page_title'] = M('name').' 我发布的内容';
         $map = $this->get_map();
@@ -181,8 +184,12 @@ abstract class C extends MemberBase
      * @param number $mid
      * @return mixed|string
      */
-    public function index($fid=0,$mid=0,$rows=10)
+    public function index($fid=0,$mid=0,$rows=0)
     {
+        if (!$rows) {
+            $rows = input('rows')?:10;
+        }
+        
         if(!$mid && !$fid){
             //没有指定栏目或模型的话， 就显示默认模型的内容
             //$mid = $this->m_model->getId();
@@ -315,7 +322,10 @@ abstract class C extends MemberBase
             ];
             if(!$qid){  //不是圈子管理的话，就显示审核操作功能                
                 if ( fun('admin@sort',$fid)!==true && !fun('sort@admin')) {
-                    unset($this->tab_ext['right_button'][0],$this->tab_ext['right_button'][1]); //审核员，不显示修改与删除操作
+                    unset($this->tab_ext['right_button'][0]); //审核员，不显示删除操作
+                    if(!$this->webdb['shenhe_edit']){
+                        unset($this->tab_ext['right_button'][1]); //审核员没开通修改权限
+                    }                    
                 }else{
                     unset($this->tab_ext['right_button'][2]);
                 }

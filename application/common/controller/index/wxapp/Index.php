@@ -88,7 +88,7 @@ abstract class Index extends IndexBase
         }
         if ($uid) {
             $map['uid'] = $uid;
-        }
+        }        
         if ($keyword!='') {
             $map['title'] = ['like','%'.filtrate($keyword).'%'];
         }
@@ -101,10 +101,12 @@ abstract class Index extends IndexBase
                 }
             }
             if ($detail) {
-                $map['fid'] = ['not in',implode(',', $detail)];
+                $map['fid'] = ['not in',implode(',', $detail)?:0];
             }
         }
         $fid && $map['fid'] = ['in',get_sort($fid,'','sons')];
+        
+        
         //$map['ispic'] = 1;
         $order = 'list desc,id desc';
         if($type=='star'){
@@ -116,6 +118,21 @@ abstract class Index extends IndexBase
         }elseif($type=='reply'){
             $order = 'list desc,id desc';
         }
+        
+        if (input('ids')) {
+            $detail = explode(',', input('ids'));
+            foreach ($detail AS $key=>$value){
+                if (!is_numeric($value)) {
+                    unset($detail[$key]);
+                }
+            }
+            //上面的筛选条件全失效
+            $map = [
+                'status'=>['>',0],
+                'id'=>['IN',implode(',', $detail)?:0],
+            ];
+        }
+        
         if ($mid==-1) {
             $array = getArray( $this->model->getAll($map,$order,$rows,[],true) );
         }else{
@@ -126,15 +143,19 @@ abstract class Index extends IndexBase
             $array = getArray( $this->model->getListByMid($mid,$map,$order,$rows) );
         }
         
-        foreach($array['data'] AS $key => $rs){
-            $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
-            $rs['picurl'] = tempdir($rs['picurl']);
-            $rs['content'] = get_word(del_html($rs['content']), 100);
-            unset($rs['_content'],$rs['sncode'],$rs['password']);
-            $array['data'][$key] = $rs;
+        foreach($array['data'] AS $key => $rs){            
+            $array['data'][$key] = $this->format_data($rs);
         }
         
         return $this->ok_js($array);        
+    }
+    
+    protected function format_data($rs=[]){
+        $rs['create_time'] = date('Y-m-d H:i',$rs['create_time']);
+        $rs['picurl'] = tempdir($rs['picurl']);
+        $rs['content'] = get_word(del_html($rs['content']), 100);
+        unset($rs['_content'],$rs['sncode'],$rs['password']);
+        return $rs;
     }
     
     /**

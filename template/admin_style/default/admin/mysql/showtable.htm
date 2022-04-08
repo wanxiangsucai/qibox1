@@ -110,7 +110,7 @@ function edit_value(obj){
 	if( obj.find('input').length==0 ){
 		var son = obj.find('div');
 		var v = obj.find('div').html();
-		son.html('<input onchange="end_edit($(this))" type="text" name="" value="'+v+'" data-url="'+obj.data('url')+'" style="width:auto;">');
+		son.html('<input onchange="end_edit($(this))" type="text" name="" value=\''+v+'\' data-url="'+obj.data('url')+'" style="width:auto;">');
 	}	
 }
 function end_edit(obj){

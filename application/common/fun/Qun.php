@@ -398,13 +398,17 @@ class Qun{
      * @param number|array $id 可以是圈子数据,也可以是圈子ID
      * @return string
      */
-    public static function moneyname($id){
+    public static function moneyname($id,$type=1){
         if (is_numeric($id)) {
             $info = self::getByid($id);
         }else{
             $info = $id;
         }
-        return $info['moneyname']?:'圈币';
+        if($type==1){
+            return $info['moneyname']?:'圈币';
+        }else{
+            return $info['douname']?:'圈豆';
+        }        
     }
     
     /**
@@ -537,7 +541,7 @@ class Qun{
                 $listdb[] = $info;
             }
             $array[$uid] = $listdb;
-        }        
+        }
         return $listdb;
     }
     

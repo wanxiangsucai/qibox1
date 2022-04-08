@@ -207,7 +207,7 @@ class Mysql extends AdminBase
 	}
 	
 	private function field_describe($create_table){
-	    preg_match_all("/`([\w]+)` ([^,]+) COMMENT '([^']+)',/i", $create_table,$array);
+	    preg_match_all("/`([\w]+)` ([^`]+) COMMENT '([^']+)',/i", $create_table,$array);
 	    foreach($array[1] AS $key=>$value){
 	        $data[$value] = $array[3][$key];
 	    }

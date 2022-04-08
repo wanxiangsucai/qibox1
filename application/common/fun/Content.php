@@ -58,6 +58,9 @@ class Content{
         if($domain === null){
             $domain = request()->domain();
         }
+        if (preg_match('/^(http|https):\/\/([\w\.\?\/=\-_&#]+)/', $content)) {
+            $content = ' '.$content;
+        }
         $content = preg_replace_callback("/\[face(\d+)\]/is",array(self,'get_face'),$content);
         $content = preg_replace_callback("/(<br>|<p>|[ \t\n]+|[^a-z0-9=\'\">])(http|https):\/\/([\w\.\?\/=\-_&#]+)/is",array(self,'get_link'),$content);
         $content = str_replace(['="/public/',"='/public/"],['="'.$domain.'/public/',"='".$domain."/public/"] , $content);

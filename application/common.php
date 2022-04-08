@@ -1015,12 +1015,12 @@ if (!function_exists('get_user')) {
 if (!function_exists('get_user_name')) {
     /**
      * 获取用户帐号或昵称
-     * @param unknown $value
+     * @param number $uid
      * @return unknown|mixed
      */
-    function get_user_name($value)
+    function get_user_name($uid=0)
     {
-        $info = get_user($value);
+        $info = get_user($uid);
         if( !empty($info)  ){
             return config('webdb.show_nickname') ? $info['nickname'] : $info['username'];
         }
@@ -2383,13 +2383,19 @@ if (!function_exists('getTemplate')) {
       * @param string $url 对方网址
       * @param array $data 要提交的数据
       * @param string $type 可以设置为 json 数据格式提交
+      * @param array $opt 要创建的header信息
       * @return mixed
       */
-     function http_curl($url='',$data = [],$type=''){
-         $headers = '';
+     function http_curl($url='',$data = [],$type='',$opt=[]){
+         $headers = [];
          if($type=='json'){
              $headers = array("Content-Type:application/json;charset=UTF-8","Accept: application/json","Cache-Control: no-cache", "Pragma: no-cache");
              $data = empty($data)?'{}':json_encode($data,JSON_UNESCAPED_UNICODE);
+         }
+         if ($opt) {
+             foreach ($opt AS $key=>$value){
+                 $headers[] = $key.':'.$value;
+             }
          }
          $curl = curl_init();
          curl_setopt($curl, CURLOPT_URL, $url);
@@ -2731,7 +2737,7 @@ if (!function_exists('getTemplate')) {
          }else{
              $user_db = get_user($openid,'weixin_api')?:get_user($openid,'wxapp_api');
          }
-         if (!$user_db['weixin_api'] && !$user_db['wxapp_api']) {
+         if (!$user_db['weixin_api'] && !$user_db['wxapp_api'] && !wx_check_attention($openid)) {
              return ;
          }
          $num++;
@@ -2821,8 +2827,9 @@ if (!function_exists('getTemplate')) {
       * @param number $money 变动的金额,可以是负数
       * @param number $freeze_money 这项是正数,冻结金额,这里冻结的话,上面的值要对应的为负数
       * @param string $about 附注说明
+      * @param number $refund 是否支持申请退款 1支持，0不支持
       */
-     function add_rmb($uid=0,$money=0,$freeze_money=0,$about=''){
+     function add_rmb($uid,$money,$freeze_money,$about='',$refund=0){
 
          //$money = number_format($money,2);
          //$freeze_money = number_format($freeze_money,2);
@@ -2852,6 +2859,7 @@ if (!function_exists('getTemplate')) {
              'about'=>$about,
              'posttime'=>time(),
              'freeze'=>$freeze,
+             'refund'=>$refund,
          ]);
     }
  }
@@ -3552,6 +3560,21 @@ if(!function_exists('get_status')){
             $array = explode(',',$array);
         }
         return $array[$state];
+    }
+}
+
+if(!function_exists('get_wxappinfo')){
+    /**
+     * 获取小程序的配置参数
+     * @param string $appid
+     * @return void|array|NULL[]|unknown
+     */
+    function get_wxappinfo($appid='') {
+        if (!plugins_config('wxopen') || !$appid) {
+            return ;
+        }
+        $info = \plugins\wxopen\model\Info::where('appid',$appid)->find();        
+        return $info ? getArray($info) : [];
     }
 }
 
