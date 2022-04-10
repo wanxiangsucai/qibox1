@@ -25,7 +25,7 @@ class Wxapp extends UserModel
         $address = filtrate("{$data['province']} {$data['city']}");
         
         if(self::check_username($username)!==true){ //用户名不合法或者有非法字符
-            $username='aa_'.rands(10);
+            $username='微信用户';
         }elseif(strlen($username)>50||strlen($username)<2){            
             $username = get_word($username,16,0).'_'.static::get_top_uid();
         }

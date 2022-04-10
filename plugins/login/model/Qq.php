@@ -21,13 +21,9 @@ class Qq extends UserModel
         
         
         if(self::check_username($username)!==true){ //用户名不合法或者有非法字符
-            $username='aa_'.rands(10);
+            $username='QQ用户';
         }elseif(strlen($username)>50||strlen($username)<2){
-            
-            //$username='bb_'.rands(7);
-            $ts = self::where([])->order('uid','desc')->limit(1)->select();
-            $ts['uid']++;
-            $username = get_word($username,16,0).'_'.$ts['uid'];
+            $username = get_word($username,16,0).'_'.static::get_top_uid();
         }
         
         $openid = filtrate($openid);
@@ -39,8 +35,7 @@ class Qq extends UserModel
         
         //$username = get_word($username,40,0);	//帐号不能太长
         if(self::check_userexists($username)){	//检查用户名是否已存在
-            $pss = self::where([])->order('uid','desc')->limit(1)->select();
-            $username .='-'.($pss['uid']+1);
+            $username .='-'.static::get_top_uid();
         }
         
         //随机生成邮箱与密码
