@@ -328,6 +328,16 @@ class Base extends Controller
             }
         }
         
+        if(input('route.token')||input('get.token')){    //避免用户分享链接的时候。把token一起分享出去
+            $url = preg_replace_callback('/(\?|&|\/)token(=|\/)([\w]+)/i', function($array){
+                if($array[1]=='?'){
+                    return $array[1];
+                }
+            }, $this->weburl);
+            header("location:".$url);
+            exit;
+        }
+        
         //自定义模板
         if ( !strstr($template,substr(ROOT_PATH,0,-2))  ) {
             if ($this->route[1]=='plugin' && $this->route[2]=='execute') {

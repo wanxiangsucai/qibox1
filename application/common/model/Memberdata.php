@@ -545,15 +545,6 @@ class Memberdata extends Model
 	        return $usr_info;
 	    }
 	    $token=static::get_token();
-	    if(input('token')){    //避免用户分享链接的时候。把token一起分享出去
-	        $url = preg_replace_callback('/(\?|&|\/)token(=|\/)([\w]+)/i', function($array){
-	            if($array[1]=='?'){
-	                return $array[1];
-	            }
-	        }, get_url('location'));
-	        header("location:".$url);
-	        exit;
-	    }
 	    if(!$token){
 	        $usr_info = false;
 	        return $usr_info;
