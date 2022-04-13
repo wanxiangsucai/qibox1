@@ -2064,8 +2064,26 @@ if (!function_exists('set_cookie')) {
         }
         config('webdb.cookiePre') && $name = config('webdb.cookiePre') . $name;
         
-        cookie($name,$value,$option);
+        //cookie($name,$value,$option);
         //setCookie($webdb['cookiePre'].$name,$value,$cktime,$path,$domain,$S);
+        
+        if($value===null){
+            $value = '';
+            $option['expire'] = -10000;
+        }
+        $time = $option['expire'];
+        $path = $option['path']?:'/';
+        $host = $option['domain'];
+        $cookie = $name.'='.urlencode($value);
+        if($time) $cookie .= "; expires=".gmstrftime("%A, %d-%b-%Y %H:%M:%S GMT",$time + time() )."";
+        if($path) $cookie .= "; path={$path}";
+        if($host) $cookie .= "; domain={$host}";
+        $cookie .= ";HttpOnly";
+        if(strstr(request()->domain(),'https://')){
+            $cookie .= ";HttpOnly; SameSite=None";
+            $cookie .= "; Secure";
+        }
+        header("Set-Cookie: {$cookie}",false);        
     }
 }
 

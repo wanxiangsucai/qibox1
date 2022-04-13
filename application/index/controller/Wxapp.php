@@ -24,7 +24,7 @@ class Wxapp extends IndexBase
      */
     public function wximg($url=''){
         header('Content-Type: image/jpeg');
-		echo file_get_contents($url);
+		echo http_curl($url);
         //sockOpenUrl(str_replace('https://','http://',$url));
         exit;
     }

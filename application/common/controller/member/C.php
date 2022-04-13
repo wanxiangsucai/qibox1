@@ -275,23 +275,45 @@ abstract class C extends MemberBase
                 'url'=>url('manage',['mid'=>$mid,'fid'=>$fid]),
             ];
             foreach (fun("Content@status") AS $key=>$title){
+                $menu_ck = false;
                 if($key==-1){
                     continue ;
-                }elseif(fun('admin@sort',$fid)!==true && !fun('sort@admin')){ //审核员，不是管理员的情况
-                    if(fun('admin@status_check',$key)!==true){
+                //}elseif(fun('admin@sort',$fid)!==true && !fun('sort@admin')){ //审核员，不是管理员的情况
+                }elseif(fun('admin@sort')!==true){  //不是超管及不是频道管理员的时候，但有可能是栏目管理员
+                    
+                    if(fun('sort@admin')){  //栏目管理员，要保留所有菜单
+                        $this->tab_ext['top_button'][] = [
+                            'title'=>$title,
+                            'url'=>url('manage',['mid'=>$mid,'fid'=>$fid,'status'=>$key]),
+                            'checked'=>is_numeric($status)?($status==$key?'1':''):'',
+                        ];
+                        $menu_ck = true;
+                    }
+                    
+                    if(fun('admin@status_check',$key)!==true){                        
                         continue ;
                     }
                     $status_array[] = $key;
                 }
-                $this->tab_ext['top_button'][] = [
-                    'title'=>$title,
-                    'url'=>url('manage',['mid'=>$mid,'fid'=>$fid,'status'=>$key]),
-                    'checked'=>is_numeric($status)?($status==$key?'1':''):'',
-                ];
+                if(!$menu_ck){  //栏目管理员上面执行过了，不要重复
+                    $this->tab_ext['top_button'][] = [
+                        'title'=>$title,
+                        'url'=>url('manage',['mid'=>$mid,'fid'=>$fid,'status'=>$key]),
+                        'checked'=>is_numeric($status)?($status==$key?'1':''):'',
+                    ];
+                }                
             }
-            if ( fun('admin@sort',$fid)!==true ) {
+            //if ( fun('admin@sort',$fid)!==true ) {
+            if ( fun('admin@sort')!==true ) {   //不是超管及不是频道管理员的时候
                 if(fun('sort@admin')){
-                    $map['fid'] = ['in',fun('sort@admin')];
+                    if ($status_array) {
+                        $map['OR'] = [
+                            'status'=>['in',$status_array],
+                            'fid'=>['in',fun('sort@admin')]
+                        ];
+                    }else{
+                        $map['fid'] = ['in',fun('sort@admin')];
+                    }                    
                 }elseif ($status_array) {
                     $map['status'] = ['in',$status_array];
                 }else{
@@ -334,8 +356,9 @@ abstract class C extends MemberBase
                     'type'=>'callback',
                     'fun'=>function($info){
                         $array = [];
+                        $fid_array = fun('sort@admin')?:['NO']; //避免栏目不存在的时候，所以要设置一个 NO 即不存在的栏目ID
                         foreach(fun('Content@status') AS $key=>$title){
-                            if(fun('admin@sort',$fid)!==true && !fun('sort@admin') && fun('admin@status_check',$key)!==true){
+                            if(fun('admin@sort',$info['fid'])!==true && !in_array($info['fid'], $fid_array) && fun('admin@status_check',$key)!==true){
                                 continue ;
                             }
                             $array[$title] = [
@@ -376,7 +399,6 @@ abstract class C extends MemberBase
             ['uid', '发布者', 'username'],
             ['status', '状态', 'select2',fun('Content@status')],
         ];
-        
         $listdb = $this->model->getAll($map,$order="id desc",$rows,[],$format=FALSE);
         $pages = $listdb->render();
         $this->assign('listdb',$listdb);

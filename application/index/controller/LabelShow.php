@@ -241,8 +241,16 @@ class LabelShow extends IndexBase
      */
     public function list_apptag($ext_id=0,$pagename='app_'){
         $info = [];
-        if($ext_id==-1 && $this->user && plugins_config('wxopen')){ //H5访问
-            $info = \plugins\wxopen\model\Info::where('uid',$this->user['uid'])->where('type',4)->find();
+        if(($ext_id==-1||$ext_id==-2) && $this->user && plugins_config('wxopen')){ //H5管理后台访问
+            $map = [
+                'uid'=>$this->user['uid'],
+            ];
+            if($ext_id==-1){    //小商店
+                $map['type'] = 4;
+            }else{  //普通小程序
+                $map['type'] = ['<>',4];
+            }
+            $info = \plugins\wxopen\model\Info::where($map)->find();
             if (!$info){
                 return $this->err_js('资料不存在');
             }

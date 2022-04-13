@@ -1,0 +1,2 @@
+优化审核功能，频道内容增加或者OR查询
+cookie改为header方式增加HttpOnly属性，避免被脚本读取。同时支持https跨域访问

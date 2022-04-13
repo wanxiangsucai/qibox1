@@ -498,15 +498,25 @@ abstract class C extends Model
      * @return \think\Paginator|array|\think\db\false|PDOStatement|string|\think\Model
      */
     public static function getAll($map=[],$order="id desc",$rows=0,$pages=[],$format=FALSE){
-        static::check_model();        
+        static::check_model();
+        $mapOr = $map['OR']?:[];
+        unset($map['OR']);
         if (stristr($order,'rand()')) {
-            $array = Db::name(self::$base_table)->where(static::map())->where($map)->orderRaw('rand()')->paginate(
+            $array = Db::name(self::$base_table)->where(static::map())->where($map)->where(function($query)use($mapOr){
+                foreach($mapOr AS $key=>$value){
+                    $query->whereOr($key,$value);
+                }
+            })->orderRaw('rand()')->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
                 empty($pages[1])?['query'=>input('get.')]:$pages[1]
                 );
-        }else{
-            $array = Db::name(self::$base_table)->where(static::map())->where($map)->order($order)->paginate(
+        }else{            
+            $array = Db::name(self::$base_table)->where(static::map())->where($map)->where(function($query)use($mapOr){ 
+                foreach($mapOr AS $key=>$value){
+                    $query->whereOr($key,$value);
+                }
+            })->order($order)->paginate(
                 empty($rows)?null:$rows,    //每页显示几条记录
                 empty($pages[0])?false:$pages[0],
                 empty($pages[1])?['query'=>input('get.')]:$pages[1]
@@ -754,6 +764,10 @@ abstract class C extends Model
     public static function getListByMid($mid=0,$map=[],$order='',$rows=0,$pages=[],$format=true,$field=true)
     {
         //static::check_model();
+        
+        $mapOr = $map['OR']?:[];
+        unset($map['OR']);
+        
         $order  = trim($order);
         if(empty($order)){
             $order = 'list desc ,id desc';
@@ -761,13 +775,21 @@ abstract class C extends Model
             $order .= ',id desc';
         }
         if(strstr($order,'rand()')){    //随机排序不能用 order() 方法
-            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->field($field)->orderRaw('rand()')->paginate(
+            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->where(function($query)use($mapOr){
+                            foreach($mapOr AS $key=>$value){
+                                $query->whereOr($key,$value);
+                            }
+                        })->field($field)->orderRaw('rand()')->paginate(
                     empty($rows)?null:$rows,    //每页显示几条记录
                     empty($pages[0])?false:$pages[0],
                     empty($pages[1])?['query'=>input('get.')]:$pages[1]
                     );            
         }else{
-            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->field($field)->order($order)->paginate(
+            $data_list = Db::name(self::getTableByMid($mid))->where(static::map())->where($map)->where(function($query)use($mapOr){
+                            foreach($mapOr AS $key=>$value){
+                                $query->whereOr($key,$value);
+                            }
+                        })->field($field)->order($order)->paginate(
                     empty($rows)?null:$rows,    //每页显示几条记录
                     empty($pages[0])?false:$pages[0],
                     empty($pages[1])?['query'=>input('get.')]:$pages[1]
@@ -1103,19 +1125,27 @@ abstract class C extends Model
             }elseif ($map['ext_id'] && $map['uid']) {
                 unset($map['uid']);
             }
-            $whereor = [];
-            if($cfg['whereor']){  //用户自定义的查询语句 whereor不建议使用,并没有完善好
+            $mapOr = [];
+            if($cfg['whereor']){  //用户自定义的或者查询语句 
                 $_array = fun('label@where',$cfg['whereor'],$cfg);
                 if($_array){
-                    $whereor = $_array;
+                    $mapOr = $_array;
                 }
             }
             
             //$data = Db::name(self::getTableByMid($mid))->where($map)->whereOr($whereor)->limit($min,$rows)->order($order,$by)->column(true);
             if(strstr($order,'rand()')){
-                $data = Db::name(self::getTableByMid($mid)) -> where(static::map()) -> where($map) -> whereOr($whereor) -> orderRaw('rand()') -> paginate($rows,false,['page'=>$page]);
+                $data = Db::name(self::getTableByMid($mid)) -> where(static::map()) -> where($map) -> where(function($query)use($mapOr){
+                    foreach($mapOr AS $key=>$value){
+                        $query->whereOr($key,$value);
+                    }
+                })-> orderRaw('rand()') -> paginate($rows,false,['page'=>$page]);
             }else{
-                $data = Db::name(self::getTableByMid($mid)) -> where(static::map()) -> where($map) -> whereOr($whereor) -> order($order,$by) -> paginate($rows,false,['page'=>$page]);
+                $data = Db::name(self::getTableByMid($mid)) -> where(static::map()) -> where($map) -> where(function($query)use($mapOr){
+                    foreach($mapOr AS $key=>$value){
+                        $query->whereOr($key,$value);
+                    }
+                })-> order($order,$by) -> paginate($rows,false,['page'=>$page]);
            }
            $array = getArray($data);
         }else{  //全频道全模型取数据, 如果有不符合条件的话, 就会导致取出的数据量比指定的要少,甚至有可能取出0条数据,不能精准
