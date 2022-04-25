@@ -120,7 +120,7 @@ abstract class Category extends Model
             $where['mid'] = $mid;
         }
         
-        $data_list = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id desc')->column('id,pid,name'));
+        $data_list = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id desc')->column(true,'id'));
      
         return $data_list;
     }

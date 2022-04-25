@@ -7,7 +7,7 @@ if(fun('field@load_js',$field['type'])){
 	$weixin_time = weixin_share("timestamp")?:0;
 	$weixin_nonceStr = weixin_share("nonceStr");
 	$weixin_signature = weixin_share("signature");
-	$qun_url = iurl('qun/near/point_address');
+	$qun_url = modules_config('qun')?iurl('qun/near/point_address'):'https://x1.php168.com/qun/near/point_address.html';
 	$jscode = <<<EOT
 <style type="text/css">
 .bmap{width:100%;height:350px;border: 1px solid #ccc;}
@@ -159,13 +159,17 @@ function reload_baidu_map(obj){
 		  map_y = result.point.lat;
 		  obj.val(map_x+','+map_y);
 		  if(typeof(set_baidu_map)=='function'){set_baidu_map();}
+          if(typeof(get_baidu_map_point)=='function'){get_baidu_map_point(map_x+','+map_y);}
 
 		  //显示当前位置的街道名
 			var geoc = new BMap.Geocoder();
 			geoc.getLocation(result.point, function(rs){
 				var addComp = rs.addressComponents;
 				$("#atc_address").val(addComp.district + addComp.street + addComp.streetNumber);
+                if(typeof(get_baidu_map_point)=='function'){get_baidu_map_point(map_x+','+map_y,addComp.district + addComp.street + addComp.streetNumber);}
 			});
+
+            
 
 			//gg = GPS.bd_decrypt(result.point.lat, result.point.lng);	//百度转谷歌
 			//wgs = GPS.gcj_decrypt(gg.lat, gg.lon); //谷歌转GPS
@@ -187,9 +191,11 @@ function load_wx_map(obj){
            map_x = o.lon;//res.longitude;
 		   map_y = o.lat;//res.latitude; 
 		  obj.val(map_x+','+map_y);
-		  if(typeof(set_baidu_map)=='function'){set_baidu_map();}		  
+		  if(typeof(set_baidu_map)=='function'){set_baidu_map();}	
+          if(typeof(get_baidu_map_point)=='function'){get_baidu_map_point(map_x+','+map_y);}	  
 		  $.get("{$qun_url}?x=" + map_y +  "&y=" + map_x  ,function(res){
 			  $("#atc_address").val(res.data);
+                 if(typeof(get_baidu_map_point)=='function'){get_baidu_map_point(map_x+','+map_y,res.data);}
 		  });
       },
       cancel: function (res) {

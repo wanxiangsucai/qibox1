@@ -72,7 +72,24 @@ class Filter{
             'code'=>1,
             'msg'=>$msg,
         ];
-        die(json_encode($msg));
+        die(json_encode($msg,JSON_UNESCAPED_UNICODE));
+    }
+    
+    /**
+     * 屏蔽恶意灌水
+     */
+    public static function attack_visit(){
+        if(defined('IN_X1_POST') || !request()->isPost() || (empty($_POST['content'])&&empty($_POST['title']))){
+            return ;
+        }
+        define('IN_X1_POST', true);
+        $ip = str_replace('.', '', get_ip());
+        $num = cache('IN_X1_POST'.$ip)?:0;
+        $num++;        
+        cache('IN_X1_POST'.$ip,$num,60);
+        if($num>3){
+            self::err('请不要频繁提交数据！');
+        }
     }
     
     

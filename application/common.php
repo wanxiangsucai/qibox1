@@ -2080,7 +2080,7 @@ if (!function_exists('set_cookie')) {
         if($host) $cookie .= "; domain={$host}";
         $cookie .= ";HttpOnly";
         if(strstr(request()->domain(),'https://')){
-            $cookie .= ";HttpOnly; SameSite=None";
+            $cookie .= "; SameSite=None";
             $cookie .= "; Secure";
         }
         header("Set-Cookie: {$cookie}",false);        

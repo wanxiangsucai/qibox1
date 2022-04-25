@@ -66,7 +66,10 @@ class Base extends Controller
             }
             
             fun('filter@check_safe'); //禁止提交eval <?php
+            
+            fun('filter@attack_visit'); //防灌水发贴
         }
+        
         
         if(isset($_GET['hide_footmenu'])){
             set_cookie('hide_footmenu',intval($_GET['hide_footmenu']));    //隐藏底部菜单
