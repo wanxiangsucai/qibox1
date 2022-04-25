@@ -87,7 +87,7 @@ class Filter{
         $num = cache('IN_X1_POST'.$ip)?:0;
         $num++;        
         cache('IN_X1_POST'.$ip,$num,60);
-        if($num>3){
+        if($num>(strlen(implode('', $_POST['content']))>40?3:10)){
             self::err('请不要频繁提交数据！');
         }
     }
