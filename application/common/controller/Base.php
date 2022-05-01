@@ -530,16 +530,17 @@ class Base extends Controller
                 $map[$search_field] = ['like', "%$keyword%"];
             }
         }
-        if (is_array($search_fields)) {
+        
+        if (is_array($search_fields)) { //列表筛选
             foreach($search_fields AS $key=>$value){
                 if ($value===''||$value===null) {
                     continue;
                 }
-                if (in_array($key, ['id','uid']) || (is_numeric($value)&&$value<999999)) {
+                //if (in_array($key, ['id','uid']) || (is_numeric($value)&&$value<999999)) {
                     $map[$key] = ['=', $value];
-                }else{
-                    $map[$key] = ['like', "%$value%"];
-                }
+                //}else{
+                //    $map[$key] = ['like', "%$value%"];
+                //}
             }
         }
         
@@ -588,7 +589,7 @@ class Base extends Controller
         //             }
         //         }
         return  array_merge( $map , $this->map);
-        }
+    }
         
         /**
          * 获取字段排序
@@ -597,11 +598,11 @@ class Base extends Controller
          */
         protected function getOrder($extra_order = '')
         {
-            if(ENTRANCE!='admin'){
-                //return '';
-            }
             $order = input('param._order/s', '');
             $by    = input('param._by/s', '');
+            if(ENTRANCE!='admin'&&$order!='id'&&!in_array($by, ['asc','desc'])){
+                return '';
+            }
             if ($order != '' && $by != '') {
                 return $order . ' ' . $by;
             }elseif ($extra_order != '') {
@@ -659,5 +660,122 @@ class Base extends Controller
             return NULL;
         }
         
-    }
+        
+        /**
+         * 导出excel数据
+         * 具体使用教程，请参考示例 \plugins\comment\admin\Content.php 及 \application\common\controller\admin\Order.php 及 \application\admin\controller\Member.php中的方法excel()
+         * @param array|object $data 
+         * @param array $field_array
+         * @param number $rows
+         */
+        protected function bak_excel($data,$field_array,$rows=0){
+            $totalpage = '';
+            if(is_array($data)){
+                $listdb = $data;
+            }else{
+                $array = getArray($data);
+                $listdb = $array['data'];
+                $totalpage = $array['last_page'];
+                $rows = $array['per_page'];
+            }
+            $path = RUNTIME_PATH.'mysql_bak/'.substr(md5($this->user['password'].$this->user['uid']), 0,10).'/';
+            $page = input('page')?:1;
+            if ($page==1) {
+                delete_dir($path);
+            }
+            makepath($path);
+            if(!$listdb){
+                if ($page==1) {
+                    $this->error('没有数据可导出！');
+                }elseif($page==2){
+                    ob_end_clean();
+                    header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
+                    header('Pragma: no-cache');
+                    header('Content-Encoding: none');
+                    header('Content-Disposition: attachment; filename=MicrosoftExce.xls');
+                    header('Content-type: text/csv');
+                    echo file_get_contents($path.'1.xls');
+                    exit;
+                }else{
+                    $this->php_zip = new \app\common\util\Zip;
+                    $tempzip = RUNTIME_PATH."MicrosoftExcel.zip";      //临时文件
+                    
+                    if($this->php_zip->run($tempzip,dirname($path).'/',basename($path))){
+                        //ob_end_clean();
+                        set_time_limit(0);
+                        header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
+                        header('Pragma: no-cache');
+                        header('Content-Encoding: none');
+                        header('Content-Disposition: attachment; filename='.basename($tempzip));
+                        header('Content-type: .zip');
+                        header('Content-Length: '.filesize($tempzip));
+                        readfile($tempzip);
+                        unlink($tempzip);
+                        delete_dir($path);
+                        exit;
+                    }else{
+                        $this->error('打包失败') ;
+                    }
+                }
+            }
+            $outstr="<table width=\"100%\" border=\"1\" align=\"center\" cellpadding=\"5\"><tr>";
+            $field_array = ['i'=>'序号']+$field_array;
+            foreach($field_array AS $rs){
+                $outstr.="<th bgcolor=\"#A5A0DE\">".(is_array($rs)?$rs['title']:$rs)."</th>";
+            }
+            $outstr.="</tr>";
+            
+            $min = ($page-1)*$rows;
+            $i = $min;
+            foreach($listdb AS $rs){
+                $i++;
+                $outstr.="<tr>";
+                foreach($field_array AS $k=>$ar){
+                    $value = $rs[$k];
+                    if (is_array($ar)) {
+                        if($ar['key']){
+                            $value = $rs[$ar['key']];
+                        }
+                        if(is_array($ar['opt'])){
+                            $value = $ar['opt'][$value];
+                        }elseif($ar['callback']){
+                            $value = $ar['callback']($value,$rs);
+                        }elseif($ar['type']=='username'){
+                            $value = get_user_name($value);
+                        }elseif($ar['type']=='time'){
+                            $value = $value?format_time($value,'Y-m-d H:i'):'';
+                        }
+                    }elseif($k=='i'){
+                        $value = $i;
+                    }elseif(strstr($value,'<')||strstr($value,'>')){
+                        $value = filtrate(del_html($value));
+                    }
+                    if( preg_match('/^[\d]{10,}$/', $value) ){
+                        $value = '&nbsp;'.$value.'&nbsp;';
+                    }
+                    $outstr.="<td align=\"center\">{$value}</td>";
+                }
+                $outstr.="</tr>\n";
+            }
+            $outstr.="</table>";
+            if ($totalpage==1) {
+                ob_end_clean();
+                header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
+                header('Pragma: no-cache');
+                header('Content-Encoding: none');
+                header('Content-Disposition: attachment; filename=MicrosoftExcel.xls');
+                header('Content-type: text/csv');
+                echo $outstr;
+                exit;
+            }
+            $filename = $path.$page.'.xls';
+            file_put_contents($filename, $outstr);
+            $page++;
+            $url = preg_replace("/(\?|&)page=([\d]+)/", '', $this->weburl);
+            $url .= (strstr($url,'?')?'&':'?') . 'page='.$page;
+            echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL={$url}'>正在备份第 {$page} 卷,总共 {$totalpage} 卷";
+            exit;
+        }
+        
+}
     

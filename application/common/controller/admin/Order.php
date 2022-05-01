@@ -11,10 +11,7 @@ class Order extends AdminBase
     protected $model;
     protected $list_items;
     protected $form_items;
-    protected $tab_ext = [
-            'page_title'=>'订单记录',
-            'top_button'=>[ ['type'=>'delete']],
-    ];
+    protected $tab_ext = [];
     
     protected function _initialize()
     {
@@ -102,12 +99,28 @@ class Order extends AdminBase
                 ],
         ];
         
-        $listdb = self::getListData($this->get_search(), $order = []);
+        if(input('excel')){
+            return $this->excel(500);
+        }
+        
+        $listdb = self::getListData($this->get_search());
         $this->tab_ext['id_name'] = '订单ID';
         $this->assign('search_time','create_time');
         if (empty($this->get_template('search_inc'))) {
             $this->tab_ext['search_file'] = $this->get_template('admin@common/order_search');
         }
+        
+        $this->tab_ext = [
+            'page_title'=>'订单记录',
+            'top_button'=>[
+                ['type'=>'delete'],
+                [
+                    'title'=>'导出Exce',
+                    'icon'=>'fa fa-table',
+                    'url'=>$this->weburl.(strstr($this->weburl,'?')?'&':'?').'excel=1&page=1',
+                ],
+            ],
+        ];
         return $this -> getAdminTable($listdb);
     }
     
@@ -130,6 +143,96 @@ class Order extends AdminBase
             $map['receive_status'] = $detail['search_receive_status'];
         }
         return $map;
+    }
+    
+    /**
+     * 导出excel表格数据
+     * @param number $rows 每卷几条记录
+     * @return unknown
+     */
+    protected function excel($rows = 500){
+        $array = self::getListData($this->get_search(), $order='' ,$rows );
+        $field_array = [
+            'i'=>'序号',
+            'uid'=>'用户UID',
+            'uid'=>[
+                'key'=>'uid',   //处理上面key重复的问题
+                'title'=>'用户帐号',
+                'type'=>'username',
+            ],
+            'linkman'=>'联系人',
+            'telphone'=>'联系电话',
+            'address'=>'联系地址',
+            'totalmoney'=>'优惠前的总金额',
+            'pay_money'=>'实付金额',
+            'order_sn'=>'订单号',
+            'shop'=>[
+                'title'=>'所购买的商品',
+                'callback'=>function($v){
+                    $array = [];
+                    $detail = explode(',',$v);
+                    foreach ($detail AS $ar){
+                        list($shopid,$num,$type1,$type2,$type3) = explode('-',$ar);
+                        $info = $this->model_content->getInfoByid($shopid);
+                        $array[] = $info['title']."({$num}份)";
+                    }                    
+                    return implode("；\r\n", $array);
+                 },
+            ],
+            'create_time'=>[
+                'title'=>'下单日期',
+                'type'=>'time',
+            ],
+            'shipping_time'=>[
+                'title'=>'发货日期',
+                'type'=>'time',
+            ],
+            'receive_time'=>[
+                'title'=>'收货日期',
+                'type'=>'time',
+            ],
+            'pay_time'=>[
+                'title'=>'支付日期',
+                'type'=>'time',
+            ],
+            'pay_status'=>[
+                'title'=>'支付状态',
+                'opt'=>['未付款','已付款'],
+            ],
+            'receive_status'=>[
+                'title'=>'收货状态',
+                'opt'=>['未签收','已签收'],
+            ],
+            'shipping_status'=>[
+                'title'=>'发货状态',
+                'opt'=>['未发货','已发货'],
+            ],
+            'shipping_name'=>'物流名称',
+            'shipping_code'=>'物流单号',
+            'user_note'=>'用户备注',
+            'admin_note'=>'商家备注',
+            'ifolpay'=>[
+                'title'=>'付款渠道',
+                'opt'=>['线下付款','在线支付'],
+            ],
+            'ifolpay'=>[
+                'title'=>'付款渠道',
+                'opt'=>['线下付款','在线支付'],
+            ],
+            'introducer_1'=>[
+                'title'=>'直接推荐人',
+                'type'=>'username',
+            ],
+            'introducer_2'=>[
+                'title'=>'二级推荐人',
+                'type'=>'username',
+            ],
+            'introducer_3'=>[
+                'title'=>'三级推荐人',
+                'type'=>'username',
+            ],
+        ];
+        return $this->bak_excel($array,$field_array);
     }
     
     /**

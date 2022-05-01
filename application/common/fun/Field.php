@@ -221,6 +221,7 @@ class Field{
     
     /**
      * 生成后台筛选URL
+     * 将弃用，这个不能实现多选
      */
     public function make_admin_filter_url($order='',$by='',$search_field='',$keyword=''){
         
@@ -234,6 +235,68 @@ class Field{
             $array = array_merge(input('route.'),$array);
         }
         return auto_url(request()->action(),$array);
+    }
+    
+    
+    /**
+     * 生成筛选URL
+     * @param string $order 排序字段名
+     * @param string $by 排序方式，正序或倒序
+     * @param string $search_field 当前选择的字段名
+     * @param string $keyword 当前选择的字段值
+     * @return unknown
+     */
+    public static function seach_url($search_field='',$keyword='',$order='',$by=''){
+        static $url = null;
+        if($url===null){
+            if(IN_PLUGIN){
+                $url = '?';
+            }else{
+                $url = auto_url(request()->action()).'?';
+            }            
+        }
+        $array = input();
+        if($search_field){
+            if ($keyword!=='') {
+                $array['search_fields'][$search_field] = $keyword;
+            }else{
+                unset($array['search_fields'][$search_field]);
+            }
+        }
+        if($order){
+            $array['_order'] = $order;
+        }
+        if($by){
+            $array['_by'] = $by;
+        }
+        $str = '';
+        foreach($array AS $key=>$value){
+            if(is_array($value)){
+                foreach($value AS $k=>$v){
+                    $str .= $key.'['.$k.']='.urlencode($v).'&';
+                }
+            }elseif($value!==''){
+                $str .= $key.'='.urlencode($value).'&';
+            }
+        }
+        return $url.$str;
+    }
+    
+    /**
+     * 检查是否选中当前字段
+     * @param string $name
+     * @param unknown $value
+     * @return boolean
+     */
+    public static function is_choose($name='',$value=''){
+        $array = input()['search_fields'];
+        if($value===null||$value===''){
+            if(isset($array[$name])){
+                return true;
+            }
+        }elseif(isset($array[$name]) && $value!=='' && $array[$name]==$value){
+            return true;
+        }
     }
     
     /**

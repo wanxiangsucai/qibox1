@@ -26,6 +26,11 @@ class Content extends AdminBase
                 'icon'        => 'fa fa-check-circle-o',
                 'href'        => auto_url('batch',['action'=>'yz'])
             ],
+            [
+                'title'=>'导出Exce',
+                'icon'=>'fa fa-table',
+                'url'=>$this->weburl.(strstr($this->weburl,'?')?'&':'?').'excel=1&page=1',
+            ],
         ];
         
         //右边菜单
@@ -54,10 +59,11 @@ class Content extends AdminBase
             'status'=>['未审核','已审核'],
         ];
         
-        $this->list_items = [
+        $this->list_items = [            
                     ['content','评论内容','callback',function($value){
                         return get_word(del_html($value), 70);
                     }],
+                    ['create_time','评论日期','datetime'],
                     ['status','审核与否','switch'],               
                     ['uid','发布者','username'],
                     ['sysid','所属模块','callback',function($value){
@@ -75,6 +81,66 @@ class Content extends AdminBase
                         return "<a href='{$url}' target='_blank' class='si si-link' title='查看来源于哪个主题'></a>";
                     }],
                 ];
+    }
+    
+    public function index() {
+        
+        if(input('excel')){
+            return $this->excel(500);
+        }
+
+        $listdb = $this->getListData($map = [], $order = '');
+        return $this -> getAdminTable($listdb);
+    }
+    
+    /**
+     * 导出excel表格数据
+     * @param number $rows 每卷几条记录
+     * @return unknown
+     */
+    protected function excel($rows = 500){
+        $array = self::getListData($map = [], $order='' ,$rows );
+        $array_module = [];
+        foreach (modules_config() AS $rs){
+            $array_module[$rs['id']] = $rs['name'];
+        }
+        foreach (plugins_config() AS $rs){
+            $array_module[-$rs['id']] = $rs['name'];
+        }
+        $field_array = [
+            'i'=>'序号',
+            'id'=>'ID',
+            'uid'=>'用户UID',
+            '_uid'=>[
+                'key'=>'uid',   //处理上面key重复的问题
+                'title'=>'用户帐号',
+                'type'=>'username',
+            ],
+            'create_time'=>[
+                'title'=>'评论日期',
+                'type'=>'time',
+            ],
+            'content'=>'评论内容',
+            'agree'=>'支持数',
+            'disagree'=>'反对数',
+            'sysid'=>[
+                'title'=>'所属频道',
+                'opt'=>$array_module,
+            ],
+            'aid'=>[
+                'title'=>'归属主题',
+                'callback'=>function($v,$rs){
+                    $array = $rs['sysid']>0?modules_config($rs['sysid']):plugins_config(abs($rs['sysid']));
+                    $dirname = $array['keywords'];
+                    $model = get_model_class($dirname,'content');
+                    if($model){
+                        $info = $model->getInfoByid($v);
+                        return $info['title'];
+                    }
+                },
+             ],
+        ];
+        return $this->bak_excel($array,$field_array);
     }
     
     /**

@@ -122,11 +122,11 @@ EOT;
 	            'type'=>'excel',
 	            'title'=>'导出excel表格',
 	            'icon'=>'fa fa-table',
-	            'url'=>$weburl . (strstr($weburl,'?')?"&":'?').'type=excel',
+	            'url'=>$weburl . (strstr($weburl,'?')?"&":'?').'type=excel&page=1',
 	    ];
 	    
 	    if ($type=='excel') {
-	        return $this->excel();
+	        return $this->excel($order);
 	    }
 	    
 	    return $this -> getAdminTable(self::getListData($this->get_search(), $order ));
@@ -167,112 +167,112 @@ EOT;
 	    return $map;
 	}
 	
-	protected function excel(){
-	    $map = $this->get_search();
-	    $order = $this -> getOrder() ? $this -> getOrder() : 'uid desc' ;
-	    set_time_limit(0);
-	    $page = input('page')?:1;
-	    $rows = 2000;
-	    $min = ($page-1)*$rows;
-	    $array = UserModel::where($map)->order($order)->limit($min,$rows)->column(true);
-	    if(!$array){
-	        $this->error('没有数据可导出!');
-	    }
-	    
-	    $outstr="<table width=\"100%\" border=\"1\" align=\"center\" cellpadding=\"5\"><tr>";
-	    
-	    $fieldDB = [
-	            'i'=>'序号',
-	            'uid'=>'用户UID',
-	            'username'=>'用户帐号',
-	            'nickname'=>'用户昵称',
-	            'qq_api'=>'是否绑定QQ',
-	            'weixin_api'=>'是否绑定绑定',
-	            'wxapp_api'=>'是否登录过小程序',
-	            'groupid'=>'所属用户组',
-	            'grouptype'=>'用户角色',
-	            'money'=>'可用积分',
-	            'rmb'=>'可用余额',
-	            'lastvist'=>'最后访问时间',
-	            'lastip'=>'最后访问IP',
-	            'regdate'=>'注册日期',
-	            'regip'=>'注册IP',
-	            'sex'=>'性别',
-	            'introduce'=>'介绍签名',
-	            'address'=>'联系地址',
-	            'mobphone'=>'手机号',
-	            'idcard'=>'证件号码',
-	            'truename'=>'真实姓名',
-	            'email_yz'=>'验证邮箱与否',
-	            'mob_yz'=>'验证手机与否',
-	            'wx_attention'=>'是否关注公众号',
-	            'introducer_1'=>'直接推荐人',
-	            'introducer_2'=>'二级推荐人',
-	            'introducer_3'=>'三级推荐人',
+	protected function excel($order='',$rows = 500){
+	    $array = self::getListData($this->get_search(), $order ,$rows );
+// 	    $map = $this->get_search();
+// 	    $order = $this->getOrder() ? $this->getOrder() : 'uid ASC' ;
+// 	    $array = UserModel::where($map)->order($order)->paginate($rows);
+	    $field_array = [
+	        'i'=>'序号',
+	        'uid'=>'用户UID',
+	        'username'=>'用户帐号',
+	        'nickname'=>'用户昵称',
+	        'qq_api'=>[
+	            'title'=>'是否绑定QQ',
+	            'callback'=>function($v){
+	               return $v?'未绑定':'已绑定';
+	            },
+	        ],
+	        'groupid'=>[
+	            'title'=>'所属用户组',
+	            'opt'=>getGroupByid(),
+	        ],
+	        'grouptype'=>[
+	            'title'=>'用户角色',
+	            'opt'=>get_role(),
+	        ],
+	        'wx_attention'=>[
+	            'title'=>'是否关注公众号',
+	            'opt'=>['未关注','已关注'],
+	        ],
+	        'weixin_api'=>[
+	            'title'=>'是否绑定公众号登录(不一定关注)',
+	            'callback'=>function($v){
+	                return $v?'未绑定':'已绑定';
+	            },
+	        ],
+	        'wxapp_api'=>[
+	            'title'=>'是否绑定小程序登录',
+	            'callback'=>function($v){
+	               return $v?'未绑定':'已绑定';
+	            },
+	        ],
+	        'wxopen_api'=>[
+	            'title'=>'是否绑定APP微信登录',
+	            'callback'=>function($v){	                
+	                   return $v?'未绑定':'已绑定';
+	               },
+	        ],
+	        'money'=>'可用积分',
+	        'rmb'=>'可用余额',
+	        'lastip'=>'最后访问IP',
+	        'lastvist'=>[
+	            'title'=>'最后访问时间',
+	            'type'=>'time',
+	        ],	        
+	        'regdate'=>[
+	            'title'=>'注册日期',
+	            'type'=>'time',
+	        ],
+	        'group_endtime'=>[
+	            'title'=>'用户组截止日期',
+	            'type'=>'time',
+	        ],
+	        'regip'=>'注册IP',
+	        'sex'=>[
+	            'title'=>'性别',
+	            'opt'=>['未知','先生','女士'],
+	        ],
+	        'introduce'=>'介绍签名',
+	        'address'=>'联系地址',
+	        'mobphone'=>'手机号',
+	        'idcard'=>'证件号码',
+	        'truename'=>'真实姓名',
+	        'emai'=>'邮箱',
+	        'email_yz'=>[
+	            'title'=>'验证邮箱与否',
+	            'opt'=>['未验证','已验证'],
+	        ],
+	        'mob_yz'=>[
+	            'title'=>'验证手机与否',
+	            'opt'=>['未验证','已验证'],
+	        ],
+	        'idcard_yz'=>[
+	            'title'=>'证件验证与否',
+	            'opt'=>['未验证','已验证'],
+	        ],
+	        'subscribe_mp'=>[
+	            'title'=>'订阅公众号消息与否',
+	            'opt'=>['未订阅','已订阅'],
+	        ],
+	        'subscribe_wxapp'=>[
+	            'title'=>'订阅小程序消息与否',
+	            'opt'=>['未验证','已验证'],
+	        ],
+	        'introducer_1'=>[
+	            'title'=>'直接推荐人',
+	            'type'=>'username',
+	        ],
+	        'introducer_2'=>[
+	            'title'=>'二级推荐人',
+	            'type'=>'username',
+	        ],
+	        'introducer_3'=>[
+	            'title'=>'三级推荐人',
+	            'type'=>'username',
+	        ],
 	    ];
-	    
-	    foreach($fieldDB AS $title){
-	        $outstr.="<th bgcolor=\"#A5A0DE\">$title</th>";
-	    }
-	    $i=$min;
-	    $outstr.="</tr>";
-	    foreach($array  AS $rs){
-	        $i++;
-	        $outstr.="<tr>";
-	        foreach($fieldDB AS $k=>$v){
-	            $value = $rs[$k];
-	            if (in_array($k, ['qq_api','weixin_api','wxapp_api','email_yz','mob_yz','wx_attention'])) {
-	                $value = $value?'是':'否';
-	            }elseif($k=='groupid'){
-	                $value=getGroupByid($value);
-	            }elseif($k=='grouptype'){
-	                $value=get_role($value);
-	            }elseif($k=='sex'){
-	                if($value=='2'){
-	                    $value='女';
-	                }elseif($value=='1'){
-	                    $value='男';
-	                }else{
-	                    $value='未知';
-	                }
-	            }elseif(in_array($k, ['lastvist','regdate'])){
-	                $value=date('Y-m-d H:i',$value);
-	            }elseif(in_array($k, ['introducer_1','introducer_2','introducer_3'])){
-	                if ($value) {
-	                    $user = get_user($value);
-	                    $value = $user['username'].'('.$user['nickname'].'/'.$value.')';
-	                }else{
-	                    $value = '';
-	                }
-	            }elseif(($k=='mobphone'||$k=='idcard')&&$value){
-	                $value = '&nbsp;'.$value.'&nbsp;';//避免数字变成负数
-	            }elseif($k=='introduce'&&$value!=''){
-	                $value = filtrate(del_html($value));
-	            }elseif($k=='i'){
-	                $value = $i;
-	            }
-	            $outstr.="<td align=\"center\">{$value}</td>";
-	        }
-	        $outstr.="</tr>\n";
-	    }
-	    $outstr.="</table>";//die($outstr);
-	    ob_end_clean();
-	    header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
-	    header('Pragma: no-cache');
-	    header('Content-Encoding: none');
-	    header('Content-Disposition: attachment; filename=MicrosoftExce.xls');
-	    header('Content-type: text/csv');
-	    echo "<!doctype html>
-	    <html lang='en'>
-	    <head>
-	    <meta charset='UTF-8'>
-	    <title></title>
-	    </head>
-	    <body>
-	    $outstr
-	    </body>
-	    </html>";
-	    exit;
+	    return $this->bak_excel($array,$field_array);
 	}
 	
 	/**

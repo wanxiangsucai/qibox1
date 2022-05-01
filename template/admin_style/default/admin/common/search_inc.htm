@@ -1,9 +1,38 @@
-		{if $search_time}
+{php}
+if(!$search_time&&input('search_timefield'))$search_time=input('search_timefield');
+if(!$search_time&&$listdb&&isset($listdb[0]['create_time']))$search_time='create_time';
+if(!$search_time&&$listdb&&isset($listdb[0]['posttime']))$search_time='posttime';
+{/php}
+
+{if $search_time}
 		<input type="text" placeholder='开始日期' value="{:input('search_begintime')}" class="search_begintime time" name="search_begintime">
 		<input type="text" placeholder='结束日期' value="{:input('search_endtime')}" class="search_endtime time" name="search_endtime">
-		<script>laydate.render({ elem: '.search_begintime',type: 'datetime'});</script>
-		<script>laydate.render({ elem: '.search_endtime',type: 'datetime'});</script>
-		{/if}
+		<!--<script>laydate.render({ elem: '.search_begintime',type: 'datetime'});</script>
+		<script>laydate.render({ elem: '.search_endtime',type: 'datetime'});</script>-->
+		
+	<script type="text/javascript">
+	function get_search_time(o){
+		o.render({ elem: '.search_begintime',type: 'datetime'});
+		o.render({ elem: '.search_endtime',type: 'datetime'
+			,done: function(value, date, endDate){
+				setTimeout(()=>{
+					$('.search_endtime').val(value.replace('00:00:00','23:59:59'));
+				},300);
+			}
+		});
+	}
+	if(typeof(layui)=='object'){
+		$(function(){
+			layui.use('laydate', function(){
+				var laydate = layui.laydate;
+				get_search_time(laydate);
+			}); 
+		});
+	}else{
+		get_search_time(laydate)
+	}
+	</script>
+{/if}
 
 		{if $sort_array}
 	    <select name="search_fid">
@@ -50,6 +79,9 @@ function search_content(){
 		return ;
 	}
 	var url = location.href.indexOf('?')>0 ? location.href.substr(0,location.href.indexOf('?')) : location.href;
+	if(/#$/.test(url)){
+		url=url.replace('#','');
+	}	
 	url +='?search_field=' + field + '&keyword=' +keyword;
 	if(search_fid!=''){
 		url +='&search_fid=' + search_fid;

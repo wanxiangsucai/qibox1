@@ -125,11 +125,11 @@ function show_allsons(type){
 			{php}$_id=$tab_ext['id']?:'id';{/php}
 			{:strtoupper($_id)}
 			{if input('_order')==$_id&&input('_by')=='desc'}
-				<a href="{:fun('Field@make_admin_filter_url',$_id,'asc',input('search_field'),input('keyword'))}"><i style="color:red;" class="glyphicon glyphicon-triangle-bottom"></i></a>
+				<a href="{:fun('Field@seach_url','','',$_id,'asc')}"><i style="color:red;" class="glyphicon glyphicon-triangle-bottom"></i></a>
 			{elseif input('_order')==$_id&&input('_by')=='asc'}
-				<a href="{:fun('Field@make_admin_filter_url',$_id,'desc',input('search_field'),input('keyword'))}"><i style="color:red;" class="glyphicon glyphicon-triangle-top"></i></a>
+				<a href="{:fun('Field@seach_url','','',$_id,'desc')}"><i style="color:blue;" class="glyphicon glyphicon-triangle-top"></i></a>
 			{else /}
-				<a href="{:fun('Field@make_admin_filter_url',$_id,'asc',input('search_field'),input('keyword'))}"><i class="fa fa-unsorted"></i></a>
+				<a href="{:fun('Field@seach_url','','',$_id,'asc')}"><i class="fa fa-unsorted"></i></a>
 			{/if}			
 	</th>
 	<!-- 自定义字段头部标题 -->
@@ -138,16 +138,16 @@ function show_allsons(type){
 		<!--排序-->
 		{if in_array($vs.name,explode(',',$tab_ext.order))}
 			{if input('_order')==$vs.name&&input('_by')=='desc'}
-				<a href="{:fun('Field@make_admin_filter_url',$vs.name,'asc',input('search_field'),input('keyword'))}"><i style="color:red;" class="glyphicon glyphicon-triangle-bottom"></i></a>
+				<a href="{:fun('Field@seach_url','','',$vs.name,'asc')}"><i style="color:red;" class="glyphicon glyphicon-triangle-bottom"></i></a>
 			{elseif input('_order')==$vs.name&&input('_by')=='asc'}
-				<a href="{:fun('Field@make_admin_filter_url',$vs.name,'desc',input('search_field'),input('keyword'))}"><i style="color:red;" class="glyphicon glyphicon-triangle-top"></i></a>
+				<a href="{:fun('Field@seach_url','','',$vs.name,'desc')}"><i style="color:blue;" class="glyphicon glyphicon-triangle-top"></i></a>
 			{else /}
-				<a href="{:fun('Field@make_admin_filter_url',$vs.name,'desc',input('search_field'),input('keyword'))}"><i class="fa fa-unsorted"></i></a>
+				<a href="{:fun('Field@seach_url','','',$vs.name,'desc')}"><i class="fa fa-unsorted"></i></a>
 			{/if}			
 		{/if}
 		<!--筛选项-->
 		{if $tab_ext['filter_search'][$vs['name']]}
-			<i {if input('search_field')==$vs.name}style="color:red;"{/if} class="fa fa-filter" onclick="layer.tips('<a href=\'{:fun('Field@make_admin_filter_url',input('_order'),input('_by'))}\' style=\'color:#fff;\'>不限</a><br>{volist name="$tab_ext['filter_search'][$vs['name']]" id="name"}<a style=\'{if (input('keyword')!=''&&input('keyword')==$key)}color:red;{else /}color:#fff;{/if}\' href=\'{:fun('Field@make_admin_filter_url',input('_order'),input('_by'),$vs.name,$key)}\'>{$name}</a><br>{/volist}', $(this), {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });"></i>
+			<i {if fun('Field@is_choose',$vs.name)}style="color:red;"{/if} class="fa fa-filter" onclick="layer.tips('{if isset(input()['search_fields'][$vs['name']])}<a href=\'{:fun('Field@seach_url',$vs.name)}\' style=\'color:#fff;\'>不限</a><br>{/if}{volist name="$tab_ext['filter_search'][$vs['name']]" id="name"}<a style=\'{if fun('Field@is_choose',$vs.name,$key)}color:red;font-weight: bold;text-shadow: 2px 2px 1px #fff;{else /}color:#fff;{/if}\' href=\'{:fun('Field@seach_url',$vs.name,$key)}\'>{$name}</a><br>{/volist}', $(this), {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });"></i>
 		{/if}
 	  {$vs.title} 
 	</th>
