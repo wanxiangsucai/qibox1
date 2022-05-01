@@ -601,7 +601,7 @@ class Base extends Controller
             $order = input('param._order/s', '');
             $by    = input('param._by/s', '');
             if(ENTRANCE!='admin'&&$order!='id'&&!in_array($by, ['asc','desc'])){
-                return '';
+                return $extra_order;
             }
             if ($order != '' && $by != '') {
                 return $order . ' ' . $by;
