@@ -718,7 +718,7 @@ class Base extends Controller
                     }
                 }
             }
-            $outstr="<table width=\"100%\" border=\"1\" align=\"center\" cellpadding=\"5\"><tr>";
+            $outstr="<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body><table width=\"100%\" border=\"1\" align=\"center\" cellpadding=\"5\"><tr>";
             $field_array = ['i'=>'序号']+$field_array;
             foreach($field_array AS $rs){
                 $outstr.="<th bgcolor=\"#A5A0DE\">".(is_array($rs)?$rs['title']:$rs)."</th>";
@@ -757,7 +757,7 @@ class Base extends Controller
                 }
                 $outstr.="</tr>\n";
             }
-            $outstr.="</table>";
+            $outstr.="</table></body></html>";
             if ($totalpage==1) {
                 ob_end_clean();
                 header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
@@ -769,7 +769,7 @@ class Base extends Controller
                 exit;
             }
             $filename = $path.$page.'.xls';
-            file_put_contents($filename, '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>'.$outstr.'</body></html>');
+            file_put_contents($filename, $outstr);
             $page++;
             $url = preg_replace("/(\?|&)page=([\d]+)/", '', $this->weburl);
             $url .= (strstr($url,'?')?'&':'?') . 'page='.$page;
