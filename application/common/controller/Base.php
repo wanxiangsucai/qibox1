@@ -769,7 +769,7 @@ class Base extends Controller
                 exit;
             }
             $filename = $path.$page.'.xls';
-            file_put_contents($filename, $outstr);
+            file_put_contents($filename, '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>'.$outstr.'</body></html>');
             $page++;
             $url = preg_replace("/(\?|&)page=([\d]+)/", '', $this->weburl);
             $url .= (strstr($url,'?')?'&':'?') . 'page='.$page;

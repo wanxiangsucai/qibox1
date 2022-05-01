@@ -155,7 +155,7 @@ class Order extends AdminBase
         $field_array = [
             'i'=>'序号',
             'uid'=>'用户UID',
-            'uid'=>[
+            '_uid'=>[
                 'key'=>'uid',   //处理上面key重复的问题
                 'title'=>'用户帐号',
                 'type'=>'username',

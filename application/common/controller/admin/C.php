@@ -562,12 +562,31 @@ abstract class C extends AdminBase
      * @param number $mid
      * @param array $ids
      */
-    public function excel($mid=0,$ids=[]){
-
-        if(!$ids){
-            $this->error('没有数据可导出!');
-        }
+    public function excel($mid=0,$ids=[],$rows=500){
+        
         $this->mid = $mid;
+        
+        if(!$ids){
+            $list = self::getListData(input('fid') ? ['fid'=>input('fid')] : ['mid'=>$mid],'',$rows,[],true);
+            $field_array = [
+                'id'=>'记录ID',
+                'uid'=>'用户UID',
+                '_uid'=>[
+                    'key'=>'uid',   //处理上面key重复的问题
+                    'title'=>'用户帐号',
+                    'type'=>'username',
+                ],
+                'create_time'=>[
+                    'title'=>'日期',
+                    'type'=>'time',
+                ],
+            ];
+            foreach(get_field($mid) AS $rs){
+                $field_array[$rs['name']] = $rs['title'];
+            }
+            return $this->bak_excel($list,$field_array);
+        }
+
         $array = $this->getEasyFormItems();
         foreach($array AS $rs){
             $fieldDB[$rs[1]] = $rs[2];
