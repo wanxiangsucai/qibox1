@@ -122,6 +122,7 @@ class Weixin extends Pay{
             $openid = $array['openid'];
             if($openid){
                 set_cookie('weixin_openid',$openid,3600);
+                return $openid;
             }else{
                 if($string == ''){
                     $this->error('获取微信接口内容失败，请确认你的服务器已打开 extension=php_openssl.dll ');
