@@ -107,7 +107,7 @@ class Weixin extends Pay{
      */
     protected function get_openid(){
         $openid = get_cookie('weixin_openid');
-        if ($openid!='') {
+        if ($openid) {
             return $openid;
         }
         $state = input('state');
