@@ -11,7 +11,7 @@
 {block name="head_base_css"}<link rel="stylesheet" href="__STATIC__/css/base.css">{/block}
 {block name="head_qb_ui"}<link rel="stylesheet" href="__STATIC__/css/qb_ui.css">{/block}
 {block name="head_font_icon"}<link rel="stylesheet" href="__STATIC__/icon/icon.css">{/block}
-{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js"></script>{/block}
+{block name="head_jquery_js"}<script type="text/javascript" src="__STATIC__/js/core/jquery.min.js?d"></script>{/block}
 {block name="head_layer_js"}
 <script type="text/javascript" src="__STATIC__/layer/layer.js"></script>
 <script type="text/javascript" src="__STATIC__/layui/layui.js"></script>
@@ -53,10 +53,14 @@
 
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
-<script type="text/javascript" src="__STATIC__/js/qibo.js?546}"></script>
+<script type="text/javascript" src="__STATIC__/js/qibo.js?12345"></script>
 
+{if $webdb.remind_gzmp}
 {include file="index@weixingz" /}<!--若没有关注微信公众号,就做个提醒-->
+{/if}
 
+<!--右上角按钮菜单-->
+{include file="index@lib/navmenu" /}
 
 <!--网站菜单开始-->
 <link rel="stylesheet" href="__STATIC__/libs/menu/menu.css">

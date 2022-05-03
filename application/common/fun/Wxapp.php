@@ -124,25 +124,28 @@ class Wxapp{
      * 加前缀处理的方法是 qun/Error.php/_initialize 务必用_下画线做分隔符,比如 bbs_123
      */
     public static function wxapp_codeimg($url='',$uid=0,$logo='',$time=0){
-        if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
-            if (!is_file(PUBLIC_PATH."static/images/nowxapp.jpg")&&is_writable(PUBLIC_PATH."static/images/")) {                
-                file_put_contents(PUBLIC_PATH."static/images/nowxapp.jpg",http_curl('http://x1.php168.com/public/static/qibo/nowxapp.jpg'));                
-            }
-            if(is_file(PUBLIC_PATH."static/images/nowxapp.jpg")){
-                return PUBLIC_URL.'/static/qibo/nowxapp.jpg';
-            }else{
-                return 'http://x1.php168.com/public/static/qibo/nowxapp.jpg';
-            }            
-        }
+//         if( config('webdb.wxapp_appid')=='' || config('webdb.wxapp_appsecret')==''){
+//             if (!is_file(PUBLIC_PATH."static/images/nowxapp.jpg")&&is_writable(PUBLIC_PATH."static/images/")) {                
+//                 file_put_contents(PUBLIC_PATH."static/images/nowxapp.jpg",http_curl('http://x1.php168.com/public/static/qibo/nowxapp.jpg'));                
+//             }
+//             if(is_file(PUBLIC_PATH."static/images/nowxapp.jpg")){
+//                 return PUBLIC_URL.'/static/qibo/nowxapp.jpg';
+//             }else{
+//                 return 'http://x1.php168.com/public/static/qibo/nowxapp.jpg';
+//             }            
+//         }
         if ($uid===0) {
             $uid = login_user('uid');
         }
-        if ( preg_match('/^(\/|)pages\//', $url) ) {
+        if ( preg_match('/^\/(pages|minipage)\//', $url) && strlen($url)<32 ) {
             $page = trim(preg_replace("/\?(.*)?/", '',$url),'/');
             $scene = preg_replace("/^(.*)\?/", '',$url);
             $dirname = get_wxappAppid().md5($url);
         }else{
             $page = 'pages/wap/iframe/index';
+            if(preg_match('/^\/(pages|minipage)\//', $url)){
+                $url = urls('index/wxapp/jump').'?url='.urlencode($url);
+            }
             $url = get_url($url);   //补全http
             $scene = ShorturlModel::getId($url,2,$uid,$time);
             $dirname = get_wxappAppid().$scene;

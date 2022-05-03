@@ -51,7 +51,7 @@ $(function(){
 {block name="foot_menu"} {include file="index@footmenu" /} {/block}
 
 
-<script type="text/javascript" src="__STATIC__/js/qibo.js?d"></script>
+<script type="text/javascript" src="__STATIC__/js/qibo.js?12345"></script>
 <script type="text/javascript">
 if(typeof(layui)=='undefined'){
 	document.write('<script type="text/javascript" src="__STATIC__/layui/layui.js"><\/script>');
@@ -76,5 +76,7 @@ if(window.self!=window.top){
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_member_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
 
+<!--右上角按钮菜单-->
+{include file="index@lib/navmenu" /}
 </body>
 </html>

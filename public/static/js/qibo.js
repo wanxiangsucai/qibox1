@@ -458,33 +458,47 @@ var Qibo = function () {
 			});
 		}else{
 			var win_name = iframe?iframe:'iframe'+Math.random();
+			/*
 			api.openWin({
-							name: win_name,
-							url: url,
-							allowEdit:true,
-							reload: true,
-								bgColor:'#eeeeee',
-								/*
-							progress:{
-								type:'default',            //加载进度效果类型，默认值为 default，取值范围为 ，为 page 时，进度效果为仿浏览器类型，固定在页面的顶部
-								title: '页面加载中...',          //type 为 default 时显示的加载框标题，字符串类型
-								text:  '请稍候...',          //type 为 default 时显示的加载框内容，字符串类型
-								color: '#ef9f0e',          //type 为 page 时进度条的颜色，默认值为 #45C01A，支持#FFF，#FFFFFF，rgb(255,255,255)，rgba(255,255,255,1.0)等格式
-								height: 3         //type 为 page 时进度条高度，默认值为3，数字类型
-							},
-							animation:{
-								type:"push",                //动画类型（详见动画类型常量）
-								subType:"from_right",       //动画子类型（详见动画子类型常量）
-								duration:30                //动画过渡时间，默认300毫秒
-							},*/
-							rect: {
-									x: 0,
-									y: 0,
-									w: api.winWidth,
-									h: api.winHeight,
-							},
-							bounces: false
+				name: win_name,
+				url: url,
+				allowEdit:true,
+				reload: true,
+				bgColor:'#eeeeee',
+				rect: {
+					x: 0,
+					y: 0,
+					w: api.winWidth,
+					h: api.winHeight,
+				},
+				bounces: false
 			});
+			*/
+			api.openTabLayout({
+                name: win_name,
+                url:url,                
+                title: title,
+                hideTabBar:true,
+                hideNavigationBar:false,
+				headers:{INAPI:'1.0'},
+                scaleEnabled:true,
+				allowEdit:true,
+				reload: true,
+                navigationBar: {
+                    background: '#38A4FF',
+                    color:'#FFFFFF',
+                    rightButtons: url.indexOf('/member.php/')>-1?[{
+                            iconPath: "widget://icon/more.png"
+                        }] : [                        
+                        {
+                            iconPath: "widget://icon/more.png"
+                        },
+                        {
+                            iconPath: "widget://icon/member.png"
+                        },
+                    ],
+                }
+            });
 		}
 	}
 

@@ -234,9 +234,9 @@ class Base
             }
             is_array($map) || $map = [];
             $array = Db::name($table_name)->where($map)->column($fields);
-        }elseif(!empty($array = json_decode($str,true))){
+        }elseif(preg_match('/("|\[)/',$str)&&is_array($array = json_decode($str,true))){
         }else{
-            $array = str_array($str,"\n");
+            $array = str_array($str);
         }
         return $array;
     }

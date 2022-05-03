@@ -2064,7 +2064,10 @@ if (!function_exists('set_cookie')) {
         }
         config('webdb.cookiePre') && $name = config('webdb.cookiePre') . $name;
         
-        //cookie($name,$value,$option);
+        if(!preg_match('/ Chrome/i', $_SERVER['HTTP_USER_AGENT'])){ //小程序中只能用setcookie 用header有时会清除不掉 
+            cookie($name,$value,$option);
+            return ;
+        }        
         //setCookie($webdb['cookiePre'].$name,$value,$cktime,$path,$domain,$S);
         
         if($value===null){
@@ -2479,7 +2482,7 @@ if (!function_exists('getTemplate')) {
      function wxapp_cfg($appid=true){
          $info = [];
          if (class_exists("\\app\\qun\\model\\Wxset")) {
-             $info = app\qun\model\Wxset::get_set($appid);
+             $info = \app\qun\model\Wxset::get_set($appid);
          }
          
          if ((empty($info)||$appid===true)  && plugins_config('wxopen')) {
@@ -2730,8 +2733,8 @@ if (!function_exists('getTemplate')) {
  if (!function_exists('send_wx_msg')) {
      /**
       * 给用户发送微信信息
-      * @param unknown $openid 微信ID 也可以是用户的UID
-      * @param unknown $content 内容
+      * @param string $openid 微信ID 也可以是用户的UID
+      * @param string $content 内容
       * @param array $array 资源ID
       * @return void|boolean|mixed 发送成功则返回true 发送失败会返回相应的错误代码
       */
@@ -2751,21 +2754,25 @@ if (!function_exists('getTemplate')) {
          if(is_numeric($openid)){
              $uid = $openid;
              $user_db = get_user($openid);
-             $openid = $user_db['weixin_api']?:$user_db['wxapp_api'];
+             $openid = $user_db['weixin_api'];
          }else{
-             $user_db = get_user($openid,'weixin_api')?:get_user($openid,'wxapp_api');
+             $user_db = get_user($openid,'weixin_api');
          }
-         if (!$user_db['weixin_api'] && !$user_db['wxapp_api'] && !wx_check_attention($openid)) {
+         
+         if (!$user_db) {
              return ;
          }
-         $num++;
-         if (!defined('IN_TASK') && $num>5 && $uid) { //处理批量发送时,请求微信服务器容易卡死
-             $result = fun('Msg@send',$uid,'队列发送',$content,array_merge($array,['msgtype'=>'wxmsg']));
-             if ($result===true) {
-                 return true;
+
+         if ($user_db['subscribe_mp'] || $user_db['subscribe_wxapp'] || $user_db['subscribe_qun_wxapp'] || $user_db['wx_attention'] || wx_check_attention($user_db['weixin_api']) ) {
+             $num++;
+             if (!defined('IN_TASK') && $num>5) { //处理批量发送时,请求微信服务器容易卡死
+                 $result = fun('Msg@send',$uid,'队列发送',$content,array_merge($array,['msgtype'=>'wxmsg']));
+                 if ($result===true) {
+                     return true;
+                 }
              }
-         }
-         return $obj->send($openid,$content,$array,$user_db);
+             return $obj->send($openid,$content,$array,$user_db);
+         }         
      }
  }
  
@@ -3066,7 +3073,19 @@ if (!function_exists('getTemplate')) {
      }
  }
  
- 
+ if (!function_exists('in_apiapp')) {
+     /**
+      * 是否在app中打开
+      * @return boolean
+      */
+     function in_apiapp(){
+         if( get_cookie('inApi') ){
+             return true;
+         }else{
+             return false;
+         }
+     }
+ }
 
  
  if (!function_exists('get_sons')) {

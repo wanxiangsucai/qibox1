@@ -56,7 +56,7 @@ $order = WxPayApi::unifiedOrder($input);
 
 $array = error_info($order);
 if($array){
-    return $this->err_js('参数有误'.current($array),$array);
+    return $this->err_js('参数有误'.json_encode($order,JSON_UNESCAPED_UNICODE),$array);
 }
 
 $jsApiParameters = $tools->GetJsApiParameters($order);

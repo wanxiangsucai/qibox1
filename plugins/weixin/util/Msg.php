@@ -159,9 +159,10 @@ class Msg
      * @param unknown $content
      * @param array $array
      * @param string $access_token
+     * @param string $template_id
      * @return boolean
      */
-    public static function wxapp_subscribe($openid,$content,$array=[],$access_token=''){
+    public static function wxapp_subscribe($openid,$content,$array=[],$access_token='',$template_id=''){
         $first = "你好!";
         $subject = "来自《".config('webdb.webname')."》的消息";
         
@@ -212,7 +213,7 @@ class Msg
         }else{
             $data="      {
             \"touser\":\"$openid\",
-            \"template_id\":\"".config('webdb.wxapp_subscribe_template_id')."\",
+            \"template_id\":\"".($template_id?:config('webdb.wxapp_subscribe_template_id'))."\",
             \"page\":\"pages/hy/web/index?url=$url\",
             \"data\":{
             \"thing3\": {
@@ -256,11 +257,11 @@ class Msg
      */
     public function send($openid,$content,$array=[],$user=[]){
         
-        if($openid==''){
+        if(empty($openid) && empty($user)){
             return ;
         }
         
-        self::$wxid = $openid;
+        self::$wxid = $openid?:$user['uid'];
         self::$user = $user;
         self::$content = $content;
         
@@ -310,14 +311,20 @@ class Msg
         }
         $ac = wx_getAccessToken();
         
+        if(in_array($array['type'],['image','voice','video'])&&strstr( http_curl("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=$ac",$data) ,'ok')){
+            return true;
+        }
+        
         //圈子小程序消息的处理
         if (get_wxappAppid() && $user['qun_msg_dy'] && $user['qun_msg_dy'][get_wxappAppid()]) {
-            if ( self::wxapp_subscribe($user['qun_msg_dy'][get_wxappAppid()], $content,$array,wx_getAccessToken(false,true,get_wxappAppid()))===true) {
+            $template_id = wxapp_open_cfg(get_wxappAppid())['wxapp_subscribe_template_id'];
+            if ($template_id && self::wxapp_subscribe($user['qun_msg_dy'][get_wxappAppid()], $content,$array,wx_getAccessToken(false,true,get_wxappAppid()),$template_id)===true) {
                 return true;
             }
         }elseif(!$user['subscribe_wxapp'] && $user['qun_msg_dy']){
             foreach($user['qun_msg_dy'] AS $qun_appid=>$qun_openid){
-                if ( self::wxapp_subscribe($qun_openid, $content,$array,wx_getAccessToken(false,true,$qun_appid))===true) {
+                $template_id = wxapp_open_cfg($qun_appid)['wxapp_subscribe_template_id'];
+                if ( $template_id && self::wxapp_subscribe($qun_openid, $content,$array,wx_getAccessToken(false,true,$qun_appid),$template_id)===true) {
                     return true;
                 }
             }
@@ -339,6 +346,10 @@ class Msg
             }
         }
         
+        if($user['wx_attention'] && self::gz_mp_msg($user['weixin_api'],$content,$ac)===true){
+            return true;
+        }
+        
         //通用模板消息的处理
         if($user['subscribe_wxapp'] && self::wxapp_subscribe($user['wxapp_api'], $content,$array,wx_getAccessToken(false,true))===true){
             return true;
@@ -347,50 +358,55 @@ class Msg
             return true;
         }elseif(strstr( http_curl("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=$ac",$data) ,'ok')){
             return true;
-        }else{
-            
-            //超过48小时用户没访问过公众号的话，只能偿试用模板来给用户发消息
-            if($array['type']!='image'&&$array['type']!='voice'&&$array['type']!='video'){
-                $first = "你好!";
-                $subject = "来自《".config('webdb.webname')."》的消息";
-                $sender = "系统消息";
-                
-                $content = stripslashes($content);
-                preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
-                $url = $array[2] ? "$array[1]:$array[2]" : request()->url(true);
-                $content = preg_replace('/<([^<]*)>/is',"",$content);
-                $content = addslashes($content);
-                
-                $data="      {
-                \"touser\":\"$openid\",
-                \"template_id\":\"".config('webdb.weixin_msg_template_id')."\",
-                \"url\":\"$url\",
-                \"data\":{
-                \"first\": {
-                \"value\":\"$first\",
-                \"color\":\"#0000ff\"
-            },
-            \"subject\":{
-            \"value\":\"$subject\",
-            \"color\":\"#666666\"
-            },
-            \"sender\": {
-            \"value\":\"$sender\",
-            \"color\":\"#666666\"
-            },
-            \"remark\":{
-            \"value\":\"$content\",
-            \"color\":\"#0000ff\"
-            }
-            }
-            }";
-                $string = http_Curl("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=$ac",$data);
-                if(strstr($string,'ok')){
-                    return true;
-                }
-            }
-            
-            return $string;
+        }elseif($user['weixin_api'] && self::gz_mp_msg($user['weixin_api'],$content,$ac)===true){
+            return true;
+        }
+    }
+    
+    /**
+     * 关注了公众号，才能使用的模板消息。非公众号订阅消息
+     * @param string $openid
+     * @param string $content
+     * @param string $ac
+     * @return boolean
+     */
+    private static function gz_mp_msg($openid='',$content='',$ac=''){
+        $first = "你好!";
+        $subject = "来自《".config('webdb.webname')."》的消息";
+        $sender = "系统消息";
+        
+        $content = stripslashes($content);
+        preg_match("/(http|https):([^ ]+)(\"|')/is",$content,$array);
+        $url = $array[2] ? "$array[1]:$array[2]" : request()->url(true);
+        $content = preg_replace('/<([^<]*)>/is',"",$content);
+        $content = addslashes($content);
+        
+        $data="      {
+        \"touser\":\"$openid\",
+        \"template_id\":\"".config('webdb.weixin_msg_template_id')."\",
+        \"url\":\"$url\",
+        \"data\":{
+        \"first\": {
+        \"value\":\"$first\",
+        \"color\":\"#0000ff\"
+    },
+    \"subject\":{
+    \"value\":\"$subject\",
+    \"color\":\"#666666\"
+    },
+    \"sender\": {
+    \"value\":\"$sender\",
+    \"color\":\"#666666\"
+    },
+    \"remark\":{
+    \"value\":\"$content\",
+    \"color\":\"#0000ff\"
+    }
+    }
+    }";
+        $string = http_Curl("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=$ac",$data);
+        if(strstr($string,'ok')){
+            return true;
         }
     }
 }

@@ -107,7 +107,7 @@ class Cookie
         if ($config['setcookie']) {
             setcookie(
                 $name, $value, $expire, $config['path'], $config['domain'],
-                $config['secure'], $config['httponly']
+                $config['secure'], $config['httponly']===false?false:true
             );
         }
 

@@ -1,0 +1,171 @@
+{if function_exists('in_apiapp')&&in_apiapp()}
+<style type="text/css">
+	#ShareMaskWarp{
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		background-color: #525252;
+		opacity:0.6;
+		z-index: 100000;
+		top:0px;
+		left:0px;
+		display: none;
+	}
+	#appShare_Warp{
+		display: none;
+		z-index: 100001;
+		position: fixed;
+		left:0px;
+		bottom: -200px;
+	}
+	.appShareWarp{
+		padding:15px 0 25px 0;
+		background-color: #ffffff;
+		display:flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+	.appShareWarp ul{
+		width:25%;
+		margin-top: 15px;
+	}
+	.appShareWarp ul .text{
+		text-align: center;
+		font-size: 12px;
+	}
+	.appShareWarp ul .icon{
+		margin:auto;		
+		width:50px;
+		height:50px;
+		text-align:center;
+		line-height:55px;
+		border-radius: 100%;
+		background-color: #4eab0c;
+	}
+	.appShareWarp ul:nth-child(2) .icon{
+		background-color: #FB8C32;
+		line-height:60px;
+	}
+	.appShareWarp ul:nth-child(3) .icon{
+		background-color: #d55ba7;
+	}
+	.appShareWarp ul:nth-child(4) .icon{
+		background-color: #108fc7;
+	}
+	.appShareWarp ul:nth-child(5) .icon{
+		background-color: #838780;
+		line-height:60px;
+	}
+	.appShareWarp ul:nth-child(6) .icon{
+		background-color: #938ff3;
+	}	
+	.appShareWarp ul:nth-child(7) .icon{
+		background-color: #f77c7c;
+	}
+	.appShareWarp ul:nth-child(8) .icon{
+		background-color: #a4b306;
+	}
+	.appShareWarp i{
+		font-size:23px;
+		color:#FFFFFF;
+	}
+</style>
+<div id="ShareMaskWarp"></div>
+<div id="appShare_Warp">
+	<div class="appShareWarp" onclick="return ;event.stopPropagation();">
+		<ul><li class="icon" onclick="api_wxshare('user')"><i class="fa fa-wechat"></i></li><li class="text">分享微信好友</li></ul>
+		<ul><li class="icon" onclick="api_wxshare('timeline')"><i class="icons-uniE909"></i></li><li class="text">分享朋友圈</li></ul>
+		<ul><li class="icon" onclick="api_wxshare('fav')"><i class="fa fa-star"></i></li><li class="text">微信收藏</li></ul>
+		<ul><li class="icon"><i class="fa fa-qq"></i></li><li class="text">分享QQ</li></ul>
+		<ul><li class="icon"><i class="glyphicon glyphicon-qrcode"></i><li class="text">普通二维码</li></ul>
+		<ul><li class="icon"><i class="fa fa-bullseye"></i></li><li class="text">小程序码</li></ul>
+		<ul><li class="icon copyUrl" data-clipboard-text="{:get_url('location')}"><i class="fa fa fa-copy"></i></li><li class="text">复制链接</li></ul>
+		<ul><li class="icon" onclick="window.location.reload();"><i class="fa fa-refresh"></i></li><li class="text">刷新网页</li></ul>
+	</div>
+</div>
+
+
+<script type="text/javascript" src="__STATIC__/model_style/default/share_btn/share.js"></script>
+<script type="text/javascript" src="__STATIC__/js/clipboard.min.js"></script>
+
+<script type="text/javascript">
+	let clipboard = new ClipboardJS('.copyUrl');
+
+    clipboard.on('success', function(e) {
+        layer.msg('复制成功');
+    });
+
+    clipboard.on('error', function(e) {
+        layer.alert('复制失败!');
+    });
+
+	window.wxShare = {
+		link:"{:get_url('location')}",
+		title:"{$info.title?:($webdb.mseo_title?:$webdb.seo_title)}",
+		picurl:"{:get_url($info.picurl?:$webdb.logo)}",
+		about:"{$info.about?:($webdb.mseo_keyword?:$webdb.seo_keyword)}",
+	}
+	function showTool(){
+		$("#ShareMaskWarp").show();
+		$("#appShare_Warp").show();
+		$("#appShare_Warp").animate({bottom:'0px'});
+	}
+	$("#ShareMaskWarp").click(()=>{		
+		$("#appShare_Warp").animate({bottom:'-200px'},500,()=>{
+			$("#appShare_Warp").hide();
+			$("#ShareMaskWarp").hide();
+		});
+	});
+	
+ 	function apiready(){
+		api.addEventListener({
+			name: 'navitembtn'
+		}, function(ret, err) {
+			if (ret.type == 'right') {
+				if(ret.index==0){
+					showTool();
+				}else if(ret.index==1){
+					Qibo.open("{:get_url(murl('member/index/index'))}",'会员中心','member{:date("His")}')
+				}
+			}
+		});
+
+		api.addEventListener({
+			name: 'navbackbtn'
+		}, function(ret, err) {
+			api.historyBack({
+				frameName: 'iframe'
+			}, function(ret, err) {
+				if (ret.status==false) {
+				    if(api.winName=='main'){
+				        var res = confirm("不能再回退了，你要退出APP吗？");
+    					if(res){
+    						api.closeWidget({id: 'A6018032006531',silent: true});
+    					}
+				    }else{
+				        //api.closeWin({name:api.winName});
+				        api.closeToWin({name:'main'});
+				    }
+					return false;
+				}
+			});
+		});
+		
+		api.setTabLayoutAttr({
+            title: $(document).attr("title").substr(0, 10)
+        });
+	}
+// layer.open({
+//   type: 1,
+//   title: false,
+//   closeBtn: 0, //不显示关闭按钮
+// shadeClose: true, //点击遮罩区域是否关闭页面 
+//   shade: 0.5,  //遮罩透明度
+//   area: ['100%', '200px'],
+//   offset: 'b', //右下角弹出
+//   anim: 2,
+//   content:$("#ShareMaskWarp").html(),
+// });
+</script>
+
+{/if}

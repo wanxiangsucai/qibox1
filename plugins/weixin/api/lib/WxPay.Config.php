@@ -3,16 +3,40 @@
 * 	配置账号信息
 */
 
-define('WxPayConfig__APPID', config('webdb.weixin_appid') );
-define('WxPayConfig__MCHID', config('webdb.weixin_payid') );
-define('WxPayConfig__KEY', config('webdb.weixin_paykey') );
-define('WxPayConfig__APPSECRET', config('webdb.weixin_appsecret') );
-
-define('WxPayConfig__SSLCERT', PUBLIC_PATH.strstr(config('webdb.weixin_apiclient_cert'),'uploads/') );
-define('WxPayConfig__SSLKEY', PUBLIC_PATH.strstr(config('webdb.weixin_apiclient_key'),'uploads/') );
-
 class WxPayConfig
 {
+    public static function appid(){
+        return config('webdb.weixin_appid');
+    }
+    public static function payid(){
+        return config('webdb.weixin_payid');
+    }
+    public static function paykey(){
+        return config('webdb.weixin_paykey');
+    }
+    public static function appsecret(){
+        return config('webdb.weixin_appsecret');
+    }
+    
+    public static function sslcert(){
+        return self::get_path( config('webdb.weixin_apiclient_cert') );
+    }
+    public static function sslkey(){
+        return self::get_path( config('webdb.weixin_apiclient_key') );
+    }
+    
+    private static function get_path($file=''){
+        if(preg_match('/^(http|https):\/\//', $file)){
+            $filename = md5($file).'.pem';
+            if(!is_file(TEMP_PATH.$filename)){
+                file_put_contents(TEMP_PATH.$filename, file_get_contents($file));
+            }
+            return TEMP_PATH.$filename;
+        }else{
+            return PUBLIC_PATH.strstr($file,'uploads/');
+        }
+    }
+    
 	//=======【基本信息设置】=====================================
 	//
 	/**
@@ -42,8 +66,8 @@ class WxPayConfig
 	 * API证书下载地址：https://pay.weixin.qq.com/index.php/account/api_cert，下载之前需要安装商户操作证书）
 	 * @var path
 	 */
-	const SSLCERT_PATH = WxPayConfig__SSLCERT;
-	const SSLKEY_PATH = WxPayConfig__SSLKEY;
+	const SSLCERT_PATH = 'apiclient_cert.pem';
+	const SSLKEY_PATH = 'apiclient_key.pem';
 	
 	//=======【curl代理设置】===================================
 	/**

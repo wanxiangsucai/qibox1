@@ -1,0 +1,76 @@
+<style type="text/css">
+.mp_subscribe_btn{
+	position: absolute;	
+	top:-999px;
+	width:100%;
+}
+.in_subscribe_btn{
+	margin:auto;
+	width: 250px;
+}
+</style>
+<div class="mp_subscribe_btn">
+	<div class="in_subscribe_btn">
+	<wx-open-subscribe template="{$template?:config('webdb.mp_subscribe_template_id')}" id="subscribe-btn">
+	  <template slot="style">
+		<style>
+		  .subscribe-btn {
+			color: #fff;
+			border:0;
+			width:250px;
+			margin:auto;
+			margin-top:30px;
+			text-align:center;
+			padding: 10px 0 10px 0;
+			border-radius:5px;
+			background-color: #1bbd1a;
+			display:block;
+			font-size:14px;
+		  }
+		</style>
+	  </template>
+	  <template>
+		<button class="subscribe-btn">
+		  点击订阅消息
+		</button>
+	  </template>
+	</wx-open-subscribe>
+	</div>
+</div>
+
+<script type="text/javascript">
+var msg_array = {
+'10001':'参数传空了',
+'10002':'网络问题，请求消息列表失败',
+'10003':'网络问题，订阅请求发送失败',
+'10004':'参数类型错误',
+'20001':'没有模板数据，一般是模板 ID 不存在 或者和模板类型不对应所导致订阅不成功',
+'20002':'模板消息类型 既有一次性的又有永久的',
+'20003':'模板消息数量超过上限',
+'20004':'用户关闭了主开关，无法进行订阅',
+'20005':'服务号被封禁',
+};
+var subscribeBtn = document.getElementById('subscribe-btn');
+subscribeBtn.addEventListener('success', function (e) {            
+  console.log('success', e.detail);
+  if(e.detail.errMsg=='subscribe:ok' &&JSON.stringify(e.detail).indexOf('accept')>0){
+	  layer.msg('订阅成功!');
+	  $.post("{:murl('member/wxapp.user/edit_subscribe')}?type=mp",{},function(res){
+		  if(res.code==0){
+			  layer.msg('订阅成功了!');
+		  }else{
+			 layer.alert('订阅失败,'+res.msg);
+		  }
+		  if(typeof(subscribe_fun)=='function'){
+			  subscribe_fun(res.code==0);
+		  }
+	  });
+  }
+});   
+subscribeBtn.addEventListener('error',function (e) {             
+  console.log('fail', e.detail);
+  layer.alert('订阅失败:<br>'+e.detail.errMsg + (msg_array[e.detail.errCode]?"<br>原因如下："+msg_array[e.detail.errCode]:"，错误代码如下："+e.detail.errCode) ,{title:'订阅失败!'});
+});
+</script>
+
+<!-- 特别提醒必须要用到 index@share -->

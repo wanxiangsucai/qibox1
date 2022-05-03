@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>进入中，请稍候</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">	
+</head>
+<body onload="wx_ready()">
+<script type="text/javascript" src="__STATIC__/js/jweixin.js"></script>
+<div onclick="wx_ready()">点击进入</div>
+<script type="text/javascript">
+function wx_ready(){
+	wx.miniProgram.getEnv(function(res) {
+		if(res.miniprogram==true){
+			wx.miniProgram.navigateTo( { url: "{$url}" } );
+		}else{
+		}
+	});
+}
+</script>
+ </body>
+</html>

@@ -29,6 +29,8 @@ class Link{
                 $str .= "<a class='more_links' href=\"javascript:layer.confirm('你确定要{$name}？', { btn: ['确定', '取消'] },function(){ window.location.href='{$link}' });\">{$name}</a>";
             }            
         }
+        $area_width = count($link_array)>=6?'400px':'200px';
+        $show_time = count($link_array)>=6?'10000':'5000';
         $code = "
 <script type='text/javascript'>
 function more_links_ajax(url,alert_msg){
@@ -52,6 +54,21 @@ function more_links_ajax(url,alert_msg){
 		});
 	}
 }
+$(function(){
+    $('body').click(()=>{
+        if(window.layer_more_links){
+            layer.close(window.layer_more_links);
+        }
+        window.layer_more_links = null;
+
+    });
+})
+function show_layer_more_links(obj){
+    var index = layer.tips(obj.next().html(), obj, {tips: [3, '#0FA6D8'],tipsMore: false,time:{$show_time},area:'{$area_width}' });
+    setTimeout(()=>{
+        window.layer_more_links = index;
+    },500);
+}
 </script>
 <style type='text/css'>
 .more_links{
@@ -60,13 +77,25 @@ function more_links_ajax(url,alert_msg){
 	color:rgb(15, 166, 216) !important;
 	padding:3px 8px 3px 8px;
 	border-radius:3px;
-	margin:5px 0 15px 0;
+	margin:5px 0;
 	display:block;
     text-align:center;
-}			
+}
+.more-links-warp{
+    width: 100%;
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.more-links-warp .more_links{
+    width:160px;
+}
+.more-links-warp .more_links:hover{
+    background:#f3f3f3;
+}
 </style>
-<a href='javascript:' title='请点击选择相应选项！' onclick=\"layer.tips($(this).next().html(), $(this), {tips: [3, '#0FA6D8'],tipsMore: false,time:5000 });\">{$title}</a>
-<div style='display:none;'>{$str}
+<a href='javascript:' title='请点击选择相应选项！' onclick=\"show_layer_more_links($(this));event.stopPropagation();\">{$title}</a>
+<div style='display:none;'><div class='more-links-warp'>{$str}</div>
 </div>";
         return $code;
     }

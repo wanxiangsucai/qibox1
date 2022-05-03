@@ -35,12 +35,35 @@ class Pay{
             'ifpay'=>1,
             'banktype'=>['<>','支付宝'],
         ];
-        $log = Db::name('rmb_infull')->where($map)->order('money asc')->find();
+        $log = Db::name('rmb_infull')->where($map)->order('money asc,id desc')->find();
         if (!$log) {
             return '没有微信支付记录，无法退款';
         }
+        $wxapp_info = [];
+        $cache_cfg = [];
         if ($log['wxapp_appid']) {
-            return '商家小程序支付，目前无法直接退款';
+            $wxapp_info = get_wxappinfo($log['wxapp_appid']);
+            if(!$wxapp_info['payid']||!$wxapp_info['paykey']||!$wxapp_info['weixin_apiclient_cert']||!$wxapp_info['weixin_apiclient_key']){
+                return '商家小程序支付，商家资料不全，目前无法直接退款';
+            }
+            $cache_cfg = [
+                'wxapp_appid'=>config('webdb.wxapp_appid'),
+                'wxapp_payid'=>config('webdb.wxapp_payid'),
+                
+                'weixin_payid'=>config('webdb.weixin_payid'),
+                'weixin_paykey'=>config('webdb.weixin_paykey'),
+                
+                'weixin_apiclient_cert'=>config('webdb.weixin_apiclient_cert'),
+                'weixin_apiclient_key'=>config('webdb.weixin_apiclient_key'),
+            ];
+            config('webdb.wxapp_appid',$wxapp_info['appid']);
+            config('webdb.wxapp_payid',$wxapp_info['payid']);
+            
+            config('webdb.weixin_payid',$wxapp_info['payid']);
+            config('webdb.weixin_paykey',$wxapp_info['paykey']);
+            
+            config('webdb.weixin_apiclient_cert',$wxapp_info['weixin_apiclient_cert']);
+            config('webdb.weixin_apiclient_key',$wxapp_info['weixin_apiclient_key']);
         }
         
         try{
@@ -64,6 +87,11 @@ class Pay{
             $input->SetMch_id( $log['banktype']=='wxapp'?config('webdb.wxapp_payid'):config('webdb.weixin_payid') );//商户号
             
             $array = \WxPayApi::refund($input);
+            if ($cache_cfg) {
+                foreach($cache_cfg AS $key=>$value){
+                    config('webdb.'.$key,$value);
+                }
+            }
             if($array['result_code']!='SUCCESS'){
                 return $array['err_code_des']?:$array['return_msg'];
             }

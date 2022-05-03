@@ -552,10 +552,21 @@ class Memberdata extends Model
 	    $usr_info = cache('user_'.$token['uid']);
 	    if(empty($usr_info['password'])){
 	        $usr_info = static::get_info(intval($token['uid']));
-	        cache('user_'.$usr_info['uid'],$usr_info,3600);
+	        $usr_info && cache('user_'.$usr_info['uid'],$usr_info,3600);
 	    }
 	    if( mymd5($usr_info['password'],'EN') != $token['password'] ){
 	        static::quit($usr_info['uid']);
+	        
+	        if(input('route.token')||input('get.token')){    //token无效，避免微信登录带上token进入死循环
+	            $url = preg_replace_callback('/(\?|&|\/)token(=|\/)([\w]+)/i', function($array){
+	                if($array[1]=='?'){
+	                    return $array[1];
+	                }
+	            }, get_url('location'));
+	                header("location:".$url);
+	                exit;
+	        }
+	        
 	        $usr_info = false;
 	        return $usr_info;
 	    }

@@ -44,6 +44,11 @@ class Init{
 		}else{
 			config('paginate',['type'=>'page\Pc_page','var_page'=>'page','list_rows'=>20]);	//分页参数设置
 		}
+		
+		if (request()->header('inapi')) {
+		    set_cookie('inApi',request()->header('inapi'),3600*24*7);
+		}
+		
 		define('TEMPLATE_PATH',ROOT_PATH.'template/');
 		define('IS_POST',request()->isPost()?true:false);
 		// 获取前台访问网址，是否放在根目录

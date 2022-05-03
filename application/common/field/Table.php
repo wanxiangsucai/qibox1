@@ -72,8 +72,8 @@ class Table extends Base
             $field['url'] = preg_replace_callback('/__([\w]+)__/i',function($ar)use($info){return $info[$ar[1]]; }, $field['url']);
             $show = "<a href='{$field['url']}' target='{$field['target']}'>$field_value</a>";
         }elseif($field['type'] == 'select'){
-            if (ENTRANCE==='member') {
-                $show = $field['array'][$field_value];
+            if (ENTRANCE==='member') {str_array();
+            $show = is_array($field['array'])?$field['array'][$field_value]:(is_array($field['options'])?$field['options'][$field_value]:self::options_2array($field['options'])[$field_value]);
             }else{
                 $mid = 0;
                 if($field['sys'] && sort_config($field['sys'])){    //频道模型那里的栏目不能选择本模型之外的栏目
@@ -241,7 +241,7 @@ class Table extends Base
             if(!in_array($rs['type'], ['radio','select','checkbox'])){
                 continue;
             }
-            $rs['options'] && $rs['options'] = str_array($rs['options']);
+            $rs['options'] && $rs['options'] = self::options_2array($rs['options']);
             $array[$rs['name']] = $rs['options'];
             
         }

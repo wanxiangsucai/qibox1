@@ -1,18 +1,28 @@
 function check_post(form_obj){
 	var ck = true;
 	$(".must-choose").each(function(){
-		var obj = $(this).find('input');
-		if(obj.length<0){
-			//obj = $(this).find('select');
-		}
-		if(obj.length==1 && obj.val()==''){
-			obj.focus();
-			layer.alert("必填项,不能为空!");
+		let title = $(this).data('title');
+		if($(this).find('select').length>0 && !$(this).find('select').val()){
+			layer.alert(title+" 必选项,不能为空!");
 			ck = false;
-			return ;
-		}
+			return false;
+		}else if($(this).find("input[type='radio']").length>0 && $(this).find("input[type='radio']:checked").length==0){
+			layer.alert(title+" 必选项,不能为空!");
+			ck = false;
+			return false;
+		}else{
+			var obj = $(this).find('input');
+			if(obj.length<0){
+				//obj = $(this).find('select');
+			}
+			if(obj.length==1 && obj.val()==''){
+				obj.focus();
+				layer.alert(title+" 必填项,不能为空!");
+				ck = false;
+				return false;
+			}
+		}	
 	});
-	
 	var array = [];
 	$(".customize").each(function(){
 		var va = '';

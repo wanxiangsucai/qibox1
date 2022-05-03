@@ -69,7 +69,11 @@ class Page{
             }
             if ($array) { //存在频道菜单
                 return $array;
-            }
+            }            
+        }
+        
+        if (get_wxappAppid()) {
+            return [];   //小程序集群不使用系统菜单
         }
         
         $array = cache('web_menu_'.$type);

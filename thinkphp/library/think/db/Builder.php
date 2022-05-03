@@ -98,6 +98,12 @@ abstract class Builder
 
         $result = [];
         foreach ($data as $key => $val) {
+			
+			//2022-04-19增加
+			if ('*' != $options['field'] && !in_array($key, $fields, true)) {
+                continue;
+            }
+
             $item = $this->parseKey($key, $options, true);
             if ($val instanceof Expression) {
                 $result[$item] = $val->getValue();

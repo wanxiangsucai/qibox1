@@ -81,9 +81,9 @@ var inWxapp = true;
 var inWxapp = false;
 </script>
 {/if}
-<script type="text/javascript" src="__STATIC__/js/qibo.js?86"></script>
+<script type="text/javascript" src="__STATIC__/js/qibo.js?12345"></script>
 <script src="__STATIC__/libs/bui/js/bui.js"></script>
-<script src="__STATIC__/member/default/wapindex/index.js?33"></script>
+<script src="__STATIC__/member/default/wapindex/index.js?330"></script>
 <script type="text/javascript">
 $(function(){
 	$(".bui-box-vertical").each(function(){
@@ -104,6 +104,9 @@ $(function(){
 
 <!--下面是钩子插件,做风格的时候尽量加上,方便扩展-->
 {:hook_listen('layout_member_body_foot',$userdb,['webdb'=>$webdb,'info'=>$info],true)}
+
+<!--右上角按钮菜单-->
+{include file="index@lib/navmenu" /}
 
 </body>
 </html>

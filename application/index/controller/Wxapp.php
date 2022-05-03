@@ -23,6 +23,10 @@ class Wxapp extends IndexBase
      * @param string $url 腾讯的图片地址
      */
     public function wximg($url=''){
+        if (strstr($url,request()->domain())) {
+            header('location:'.$url);
+            exit;
+        }
         header('Content-Type: image/jpeg');
 		echo http_curl($url);
         //sockOpenUrl(str_replace('https://','http://',$url));
@@ -107,6 +111,15 @@ class Wxapp extends IndexBase
 		return $this->fetch();
     }
     
+    /**
+     * 小程序页面跳转
+     * @return void|unknown|\think\response\Json|mixed|string
+     */
+    public function jump($url){
+        $this->assign('url',$url);
+        return $this->fetch();
+    }
+    
 
     
     /**
@@ -136,6 +149,16 @@ class Wxapp extends IndexBase
             }
             $this->assign('url',$backurl);
             $this->assign('jumptype',$jumptype);
+            return $this->fetch();
+        }
+    }
+    
+    public function iframe_reg($backurl='',$backnum='-1'){
+        if (!$this->user) {
+            weixin_login();
+        }else{
+            $this->assign('url',urlencode($backurl));
+            $this->assign('back',$backnum);
             return $this->fetch();
         }
     }
