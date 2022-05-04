@@ -72,7 +72,7 @@ class Page{
             }            
         }
         
-        if (get_wxappAppid()) {
+        if ($type!='pc'&&get_wxappAppid()) {
             return [];   //小程序集群不使用系统菜单
         }
         
