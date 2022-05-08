@@ -29,8 +29,8 @@ class Link{
                 $str .= "<a class='more_links' href=\"javascript:layer.confirm('你确定要{$name}？', { btn: ['确定', '取消'] },function(){ window.location.href='{$link}' });\">{$name}</a>";
             }            
         }
-        $area_width = count($link_array)>=6?'400px':'200px';
-        $show_time = count($link_array)>=6?'10000':'5000';
+        $area_width = empty(in_wap())&&count($link_array)>=6?'400px':'200px';
+        $show_time = empty(in_wap())&&count($link_array)>=6?'10000':'5000';
         $code = "
 <script type='text/javascript'>
 function more_links_ajax(url,alert_msg){
