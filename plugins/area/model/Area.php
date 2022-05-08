@@ -14,11 +14,11 @@ class Area extends Model
 
     public static function getTitleList($where=[])
     {
-        return self::where($where)->order('list','desc')->column('id,name');
+        return self::where($where)->order('list desc,id asc')->column('id,name');
     }
     
     public static function get_all(){
-        return self::where([])->order('list','desc')->order('id','asc')->column('id,pid,name');
+        return self::where([])->order('list desc,id asc')->column('id,pid,name');
     }
     
 
@@ -34,7 +34,7 @@ class Area extends Model
             $where['pid'] = $pid;
         }
         
-        $data_list = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id desc')->column(true,'id'));
+        $data_list = Tree::config(['title' => 'name'])->toList(self::where($where)->order('list desc,id asc')->column(true,'id'));
         foreach ($data_list as $item) {
             $result[$item['id']] = $onlytitle?$item['title_display']:$item;
         }
