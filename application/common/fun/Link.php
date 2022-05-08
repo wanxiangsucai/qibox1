@@ -44,7 +44,13 @@ function more_links_ajax(url,alert_msg){
 		post(url);
 	}
 	function post(url){
-		$.get(url,function(res){            
+        var Tip = layer.load(1, {
+    	    shadeClose: true,
+    	    icon:1,
+    	    shade: [0.8,'#666']
+    	});
+		$.get(url,function(res){
+            layer.close(Tip); 
 			if(res.code==0){
                 layer.msg(res.msg?res.msg:'操作成功');
 			}else{

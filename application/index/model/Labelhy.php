@@ -24,13 +24,18 @@ class Labelhy extends Label
 //             return '缺少ext_id参数';
         }
         
-        $info = self::where([
-                'name'=>$data['name'],
-                'ext_id'=>intval($data['ext_id']),
-                'fid'=>intval($data['fid']),
-        ])->find();
+        $maps = [
+            'name'=>$data['name'],
+            'ext_id'=>intval($data['ext_id']),
+            'fid'=>intval($data['fid']),
+        ];
+        $info = self::where($maps)->find();
         unset($data['id']);
         if($info){
+            $num = self::where($maps)->count('id');
+            if($num>1){
+                self::where($maps)->where('id','<>',$info['id'])->delete();
+            }
             if(self::update($data,['id'=>$info['id']])){
                 return true;
             }
