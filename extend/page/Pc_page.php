@@ -54,8 +54,16 @@ class Pc_page extends Paginator
     //统计信息  
     protected function info(){  
         return "<li class='page_disabled'><span>"  . $this->lastPage . '/' . $this->total
-		//.  "/" . $this->total 
-		. "</span></li>";  
+        //.  "/" . $this->total  
+        . "</span></li>".(ENTRANCE==='admin'?"
+<li><a style='width:50px;' title='自定义每页显示几条记录'><input type='number' value='".input('rows')."' placeholder='列几条' onblur='change_page_rows($(this).val())' style='width:50px;border:0px;line-height: 30px;'></a></li><script type='text/javascript'>
+function change_page_rows(v){
+	if(v<1)v=20;
+	var url = window.location.href;
+	url+= (url.indexOf('?')>-1 ? '&' : '?') + 'rows='+v;
+	window.location.href = url;
+}
+</script>":'');  
     }  
   
     /** 

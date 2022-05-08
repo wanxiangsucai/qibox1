@@ -1433,6 +1433,9 @@ class Query
         } else {
             $config   = array_merge(Config::get('paginate'), $config);
             $listRows = $listRows ?: $config['list_rows'];
+            if(ENTRANCE==='admin' && $_GET['rows']>=1 && $_GET['rows']<2000){   //齐博增加
+                $listRows = intval($_GET['rows']);
+            }
         }
 
         /** @var Paginator $class */
