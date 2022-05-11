@@ -3735,9 +3735,9 @@ if(!function_exists('val')){
                     if(is_string($rs) && $input[$key] && (preg_match($str_match, $input[$key])||preg_match('/<.+>/is', $input[$key]))){
                         showerr("URL中有禁止的变量字符".filtrate($key));
                     }elseif(is_array($rs)){
-                        foreach($rs AS $k=>$vs){
-                            if(is_string($vs) && $input[$k] && (preg_match($str_match, $input[$k])||preg_match('/<.+>/is', $input[$k]))){
-                                showerr("URL中有禁止的变量字符:".filtrate($k));
+                        foreach($rs AS $ke=>$vs){
+                            if(is_string($vs) && $input[$ke] && (preg_match($str_match, $input[$ke])||preg_match('/<.+>/is', $input[$ke]))){
+                                showerr("URL中有禁止的变量字符:".filtrate($ke));
                             }
                         }
                     }
