@@ -30,7 +30,8 @@ class Link{
             }            
         }
         $area_width = empty(in_wap())&&count($link_array)>=6?'400px':'200px';
-        $show_time = empty(in_wap())&&count($link_array)>=6?'10000':'5000';
+        $show_time = count($link_array)>=6?'10000':'5000';
+		$link_width = in_wap()&&count($link_array)>=6?'auto':'160px';
         $code = "
 <script type='text/javascript'>
 function more_links_ajax(url,alert_msg){
@@ -94,7 +95,7 @@ function show_layer_more_links(obj){
     justify-content: space-between;
 }
 .more-links-warp .more_links{
-    width:160px;
+    width:{$link_width};
 }
 .more-links-warp .more_links:hover{
     background:#f3f3f3;

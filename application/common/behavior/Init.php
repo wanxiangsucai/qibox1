@@ -117,7 +117,7 @@ class Init{
 		
 		if( isset($_GET['qun_wxapp_appid'])&&empty($_GET['qun_wxapp_appid']) ){
 		    cookie('qun_wxapp_appid',null);
-		}elseif ( ($qun_wxapp_appid = input('qun_wxapp_appid')?:(cookie('qun_wxapp_appid')?:request()->header('wxappid')) )!=false ) {
+		}elseif ( ($qun_wxapp_appid = input('qun_wxapp_appid')?:(request()->header('wxappid')?:cookie('qun_wxapp_appid')) )!=false ) {
 			$ar = wxapp_cfg($qun_wxapp_appid);
 		    if ($ar) {
 		        foreach($ar AS $_key=>$rs){

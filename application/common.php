@@ -2450,7 +2450,7 @@ if (!function_exists('getTemplate')) {
          if($appid!==null){
              return $appid;
          }
-         $appid = input('qun_wxapp_appid') ?: (cookie('qun_wxapp_appid') ?: request()->header('wxappid'));
+         $appid = input('qun_wxapp_appid') ?: (request()->header('wxappid') ?: cookie('qun_wxapp_appid'));
          if ( empty($appid) || empty(wxapp_cfg($appid)) ) {
              $appid = '';
          }
@@ -3723,8 +3723,26 @@ if(!function_exists('val')){
      * @return unknown
      */
     function val($array='',$k='label'){
-        static $data=[];
+        static $data = [];
+        static $input = null;        
         if (is_array($array)) {
+            if($input === null){
+                $input = input();
+            }
+            if($k=='template'){
+                $str_match = '/("|\')/is';
+                foreach($array AS $key=>$rs){
+                    if(is_string($rs) && $input[$key] && (preg_match($str_match, $input[$key])||preg_match('/<.+>/is', $input[$key]))){
+                        showerr("URL中有禁止的变量字符".filtrate($key));
+                    }elseif(is_array($rs)){
+                        foreach($rs AS $k=>$vs){
+                            if(is_string($vs) && $input[$k] && (preg_match($str_match, $input[$k])||preg_match('/<.+>/is', $input[$k]))){
+                                showerr("URL中有禁止的变量字符:".filtrate($k));
+                            }
+                        }
+                    }
+                }
+            }
             $data[$k] = $array;
         }elseif(is_string($array) && $array!=''){
             return $data[$k]?$data[$k][$array]:'';
