@@ -64,6 +64,9 @@ class Filter{
                 self::err('内容中有非法字符?php');
             }
         }
+        if(preg_match('/("|\'|<.+>|`)/', urldecode(get_url('location')))){
+            self::err('URL中有危险字符');
+        }
     }
     
     private static function err($msg=''){
