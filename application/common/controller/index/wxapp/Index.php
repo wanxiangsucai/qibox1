@@ -48,6 +48,9 @@ abstract class Index extends IndexBase
         $map = [
             'status'=>['>',0],
         ];
+        if (input('rows')) {
+            $rows = input('rows');
+        }
         if (input('myfid')) {
             $myfid = input('myfid');
         }
