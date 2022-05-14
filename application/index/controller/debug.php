@@ -444,7 +444,7 @@
 
     <div class="copyright">
 	
-	<a title="齐博官方网站" href="http://www.php168.com/">Powered by qibosoft Code © 2003-2019</a> 
+	<a title="齐博官方网站" href="http://www.php168.com/">Powered by qibosoft Code © 2003-2022</a> 
 	<br><br>
         <a title="TP官方网站" href="http://www.thinkphp.cn">ThinkPHP</a> 
         <span>V<?php echo THINK_VERSION; ?></span>          
@@ -546,5 +546,12 @@ $content=ob_get_contents();
 ob_end_clean();
 ob_start();
 $content = str_replace(substr(ROOT_PATH,0,-1), '服务器的路径,保密了!', $content);
+if(empty(login_user('groupid')) || login_user('groupid')==8){
+    if (!is_dir(RUNTIME_PATH.'error_log/')) {
+        @mkdir(RUNTIME_PATH.'error_log/');
+    }
+    @file_put_contents(RUNTIME_PATH.'error_log/'.date('Y-m-d Hi').'.php', '<?php die("forbid!!");?>'.$content);
+    die("系统出错了，详细原因，请管理员查看错误日志文件/runtime/error_log/".date('Y-m-d Hi').'.php');
+}
 echo $content;
 ?>
