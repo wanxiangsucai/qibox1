@@ -52,19 +52,23 @@ class Scan extends IndexBase
         if($type=='success'){            
             $this->success('登录成功',iurl('index/index/index'));
         }
+        $user = null;
         if ($this->user) {
-            die('ok');
-        }
-        $info = getArray( ScanModel::where('sid',self::$sid )->find() );
-        if($info['uid']){
-            if($info['ip']!=$this->request->ip()){
-                //return 'error IP';
+            $user = $this->user;
+        }else{
+            $info = getArray( ScanModel::where('sid',self::$sid )->find() );
+            if($info['uid']){
+                if($info['ip']!=$this->request->ip()){
+                    //return 'error IP';
+                }
+                if(time() - $info['posttime']>300){
+                    die('overtime');
+                }
+                $user = UserModel::login($info['uid'], '', 3600*24*30,true,'uid');
+                ScanModel::where('sid',self::$sid)->delete();
             }
-            if(time() - $info['posttime']>300){
-                die('overtime');
-            }            
-            $user = UserModel::login($info['uid'], '', 3600*24*30,true,'uid');
-            ScanModel::where('sid',self::$sid)->delete();
+        }
+        if ($user) {
             if ($sid) {
                 $skey = md5( mymd5($user['uid'].$user['password'].date('z') ) );
                 cache2(md5($skey),"{$user['uid']}\t{$user['username']}\t".mymd5($user['password'],'EN'),3600*72);
@@ -75,9 +79,10 @@ class Scan extends IndexBase
                 return $this->ok_js($array);
             }else{
                 die('ok');
-            }            
+            }
+        }else{
+            die('数据为空');
         }
-        die('数据为空');
     }
     
     /**
