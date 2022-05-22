@@ -127,6 +127,7 @@ abstract class Car extends IndexBase
                         'type2'=>$type2,
                         'type3'=>$type3,
                         'num'=>$num,
+                 'ifchoose'=>1,
              ];
             if ($this -> model -> update($data)) {
                 if ($fastbuy) {
@@ -292,11 +293,13 @@ abstract class Car extends IndexBase
                 $data = [
                         'id'=>$info['id'],
                         'num'=>$_num,
+                    'ifchoose'=>1,
                 ];
             }elseif($type=='change_num'){   //直接修改购买数量
                 $data = [
                         'id'=>$info['id'],
                         'num'=> intval($num),
+                    'ifchoose'=>1,
                 ];
             }elseif($type=='choose'){   //是否选中 下单
                 $data = [
@@ -310,6 +313,7 @@ abstract class Car extends IndexBase
                         'type2'=>$type2,
                         'type3'=>$type3,
                         'num'=>$num,
+                    'ifchoose'=>1,
                 ];
             }
             if ($this -> model -> update($data)) {

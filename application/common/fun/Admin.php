@@ -42,7 +42,7 @@ class Admin{
             return false;
         }elseif($status==1 && !in_array(count(config('webdb.status_users')), self::status_power())){    //是否有终审权限
             return false;
-        }elseif(($status==0||$status==-9) && !in_array(0, self::status_power())){
+        }elseif(($status==0||$status==-9) && !in_array(0, self::status_power()) && !in_array($status, self::status_power()) ){
             return false;
         }elseif($status<-1 && $status!=-9 && !in_array(abs($status)-1, self::status_power())){   //只显示相应的哪级审核权限
             return false;
@@ -79,6 +79,9 @@ class Admin{
                     $ck = false;
                 }
             }
+        }
+        if ($powers && !in_array(-9, $powers)) {
+            $powers[] = -9; //所有人都有不通过审核的权限
         }
         return array_values($powers);
         //return 0;

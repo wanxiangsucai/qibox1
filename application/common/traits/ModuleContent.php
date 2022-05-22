@@ -1087,22 +1087,29 @@ trait ModuleContent
 	        }else{
 	            $form_array = [];
 	        }
-	        
-	        if (empty($info)) {    //修改就不处理了
+	        //if (empty($info)) {    //修改就不处理了
 	            if( $this->webdb['M__qun']['modules_show_select_topic'] && in_array(config('system_dirname'), $this->webdb['M__qun']['modules_show_select_topic']) ){
 	            //if(!isset($this->webdb['M__qun']['modules_show_select_topic']) || in_array(config('system_dirname'), $this->webdb['M__qun']['modules_show_select_topic']) ){
 	                $data2 = [];
 	                foreach($array AS $rs){
-	                    if ($rs['uid']==$uid) {
+	                    if ($rs['uid']==$uid||in_array($this->user['qun_group'][$rs['id']]['type'], [2,3])) {  //推送专题只能管理员与副管理员
 	                        $data2[$rs['id']] = $rs['title'];
 	                    }
 	                }
 	                if ($data2) {
-	                    $form_array[] = [ 'select','topic_aid','归属货架(专题)','',$data2];
+	                    $qids = [];
+	                    if($info && class_exists('app\qun\model\Topic')){
+	                        $map = [
+	                            'ext_id'=>$info['id'],
+	                            'ext_sys'=>M('id'),
+	                        ];
+	                        $qids = \app\qun\model\Topic::where($map)->column('aid');
+	                    }
+	                    $form_array[] = [ 'checkbox','topic_aid','归属货架(专题)','',$data2,$qids];
 	                    //$form_array[] = [ 'hidden','topic_sys',config('system_dirname')];
 	                }
 	            }	            
-	        }
+	       // }
 	        return $form_array;
 	    }else{
 	        return [];
