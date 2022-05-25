@@ -29,6 +29,7 @@ class RmbGetout extends AdminBase
 		$this->model = new RmbGetoutModel();
 		$this->list_items = [
 		        ['posttime', '申请日期', 'datetime'],
+		        ['sign_img', '签名', 'image'],
 		        ['username', '会员帐号', 'link',get_url('user',['uid'=>'__uid__']),'_blank'],	
 				['money', '提现金额', 'text'],
 		        ['banktype', '收款方式', 'text'], 

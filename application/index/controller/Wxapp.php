@@ -23,6 +23,9 @@ class Wxapp extends IndexBase
      * @param string $url 腾讯的图片地址
      */
     public function wximg($url=''){
+        if (preg_match("/\.(php|htm|sql)$/i", $url)&&!preg_match("/^http/i", $url)) {
+            die('非法请求！！！');
+        }
         if (strstr($url,request()->domain())) {
             header('location:'.$url);
             exit;

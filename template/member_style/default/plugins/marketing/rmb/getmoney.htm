@@ -4,7 +4,7 @@
 {block name="content"}
 <div class="WapFormContainer">
 	<div class="tag">提现 {if $getout_percent_money>0}(手续费<span style="color:red;">{$getout_percent_money}%</span>){/if}</div>
-	<form name="form1" method="post" action="">
+	<form name="form1" method="post" action="" class="ajax_post">
 		<ul>
 			<ol>可用余额:</ol>
 			<li><span class="b red">{$userdb.rmb}</span>元 </li>
@@ -51,6 +51,14 @@
 	        <dt>提现备注:(选填)</dt>
 	        <dd><textarea name="why" placeholder="输入备注内容"></textarea></dd>
 	    </dl>
+		<dl>
+	        <dt>签名:(<span class="red">必填</span>)</dt>
+	        <dd><div id="signature" style="width:100%;height:200px;border:1px solid red;"></div>
+				<input id="clear" type="button" value="清除签名">
+			    <input id="save" type="button" value="确认签名">
+				<input type="hidden" name="sign_img" id="sign_img">
+			</dd>
+	    </dl>
 	    <div class='butter'>
             <button type="submit">提交</button>
             <input type="hidden" name="step" value="2">            
@@ -68,6 +76,38 @@
         </dl>
 	</form>
 </div>
+
+
+<script type="text/javascript" src="__STATIC__/libs/jsignature/jSignature.min.noconflict.js"></script>
+<script type="text/javascript" charset="utf-8">
+			$(document).ready(function() {
+				$("#signature").jSignature({height:"100%",width:"100%",color:"#000",lineWidth:5})
+			});
+			$("#clear").click( function() {
+				$("#signature").jSignature("reset");
+			});
+			$("#save").click( function() {
+				var datapair = $("#signature").jSignature("getData", "image");
+				var array = datapair.splice(",");
+				$.post("{:iurl('index/attachment/upload','dir=images&from=base64&module=marketing')}",{imgBase64:'data:image/png;base64,'+array[1]},res=>{
+					if(res.code==1){
+						$("#sign_img").val(res.url);
+						layer.msg('保存成功');
+					}else{
+						alert('保存失败');
+					}
+				});
+			});
+			/*
+			$("#export").click( function() {
+				var datapair = $("#signature").jSignature("getData", "image");
+				var i = new Image();
+				i.src = "data:" + datapair[0] + "," + datapair[1];
+				$(i).appendTo($("#pic"));
+			});
+			*/
+</script>
+
 
 <script type="text/javascript">
 
@@ -125,5 +165,7 @@ $(function(){
 	}
 });
 </script>
+<!-- 表单常用事件,比如无刷新提交 -->
+<script LANGUAGE="JavaScript" src="__STATIC__/js/form/base.js"></script>
 
 {/block}

@@ -152,6 +152,10 @@ class Rmb extends MemberBase
 	        if($this->user['rmb']<0.3){
 	            $this->error("你当前可用余额小于0.3元,无法提现!");
 	        }
+	        if(isset($data['sign_img'])&&!$data['sign_img']){
+	            $this->error("你没有签名，或者是签名没确认!");
+	        }
+	        
 	        $min_money = $this->webdb['min_getout_money'] ?: 50 ; //最低提现金额
 	        if(!$data['banktype']){
 	            $this->error("请选择一个收款帐号!");
