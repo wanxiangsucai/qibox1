@@ -13,6 +13,13 @@ class Index extends MemberBase
      */
     public function index($tag='')
     {
+        if(in_wap()&&get_wxappAppid()){
+            $app_info = get_wxappinfo(get_wxappAppid());
+            if($app_info['use_diypage']==2){
+                return $this->fetch('diypage');
+            }
+        }
+        
         $menu_array = Menu::order_member_menu(Menu::make('member',$tag,get_wxappAppid()));
         foreach($menu_array AS $key1=>$rs1){
             foreach($rs1['sons'] AS $key2=>$rs2){

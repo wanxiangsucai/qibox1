@@ -100,7 +100,7 @@ class Time{
                 ];
             }else{
                 $m = (ceil(date('m')/3)-1)*3+1;
-                $array = ['>',strtotime(date('Y-01-01 00:00:00'))];
+                $array = ['>',strtotime(date("Y-{$m}-01 00:00:00"))];
             }
         }
         return $array;

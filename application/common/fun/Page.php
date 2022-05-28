@@ -72,8 +72,20 @@ class Page{
             }            
         }
         
-        if ($type!='pc'&&get_wxappAppid()) {
-            return [];   //小程序集群不使用系统菜单
+        if ($type!='pc'&&get_wxappAppid()) { //小程序集群不使用系统菜单
+            $info = get_wxappinfo(get_wxappAppid());
+            return [
+                [
+                    'name'=>'主页',
+                    'url'=>iurl('qun/content/show',['id'=>$info['qun_id']]),
+                    'style'=>'fa fa-home',
+                ],
+                [
+                    'name'=>'会员中心',
+                    'url'=>murl('member/index/index'),
+                    'style'=>'fa fa-user-circle-o',
+                ],
+            ];
         }
         
         $array = cache('web_menu_'.$type);
