@@ -61,6 +61,11 @@ class Qq extends IndexBase
         }elseif(!$openid){
             $this->error('获取openid失败');
         }
+        if(config('webdb.qqopen_appid')&&config('webdb.qqopen_appsecret')&&config('webdb.qqopen_appid')!=config('webdb.qqlogin_appid')){
+            config('webdb.qqlogin_appid',config('webdb.qqopen_appid'));
+            config('webdb.qqlogin_appsecret',config('webdb.qqopen_appsecret'));
+            define('QQ_INAPP', true);
+        }
         $array = $this->get_user_info($access_token,$openid);
         if(!isset($array['nickname'])){
             $this->error_msg('出错了');
@@ -70,9 +75,9 @@ class Qq extends IndexBase
     
     protected function login_in($openid='',$access_token='',$type='',$fromurl=''){
         
-        $rs = UserModel::get_info(['qq_api'=>$openid]);
+        $rs = UserModel::get_info(defined('QQ_INAPP')?['qq_open_api'=>$openid]:['qq_api'=>$openid]);
         
-        if($type=='bind'){  //绑定帐号
+        if($type=='bind'){  //绑定帐号 只针对网页端
             
             if($rs){    //解绑以前的帐号
                 $array = [

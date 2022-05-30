@@ -2064,7 +2064,8 @@ if (!function_exists('set_cookie')) {
         }
         config('webdb.cookiePre') && $name = config('webdb.cookiePre') . $name;
         
-        if(!preg_match('/ Chrome/i', $_SERVER['HTTP_USER_AGENT'])){ //小程序中只能用setcookie 用header有时会清除不掉 
+        preg_match('/ Chrome\/([\d]+)\./i', $_SERVER['HTTP_USER_AGENT'],$array);        
+        if(!$array[1] || $array[1]<=63){ //小程序中只能用setcookie 用header有时会清除不掉  另外Chrome 63版本以上才可以
             cookie($name,$value,$option);
             return ;
         }        

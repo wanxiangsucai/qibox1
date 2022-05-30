@@ -11,8 +11,11 @@ class Qq extends UserModel
             return 'nickname 或 openid 值不存在！';
         }
         
-        if( self::check_qqIdExists( $data['openid'] ) ){
+
+        if(!defined('QQ_INAPP') && self::check_qqIdExists( $data['openid'] ) ){
             return '当前QQ号已经注册过了！';
+        }elseif(defined('QQ_INAPP') && self::get_info( ['qq_open_api'=>$data['openid']]) ){
+            return '当前QQ号已经注册过了!!!';
         }
         
         $username = $nickname = str_replace(array('|',' ','',"'",'"','/','*',',','~',';','<','>','$',"\\","\r","\t","\n","`","!","?","%","^"),'',$data['nickname']);
@@ -61,6 +64,11 @@ class Qq extends UserModel
                 'qq_api'=>$openid,
                 'bday'=>$bday,
         );
+        
+        if(defined('QQ_INAPP')){
+            $array['qq_api'] = '';
+            $array['qq_open_api'] = $openid;
+        }
         
         //入库
         $uid = self::register_user($array);

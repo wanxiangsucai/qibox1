@@ -43,8 +43,14 @@ abstract class Mysort extends MemberBase
         ];
     }
     
-    
-    public function index($ext_id=0,$aid=0) {
+    /**
+     * 用户自定义的我分类
+     * @param number $ext_id 关联的圈子ID
+     * @param number $aid 圈子ID，这个暂时只是圈子货架分类用到
+     * @param string $ext_sys 关联的频道ID
+     * @return unknown|mixed|string
+     */
+    public function index($ext_id=0,$aid=0,$ext_sys='') {
         if ($this->request->isPost()) {
             //修改排序
             return $this->edit_order();
@@ -54,13 +60,15 @@ abstract class Mysort extends MemberBase
         if ($ext_id) {
             if (empty($ext_sys)) {
                 $ext_sys = modules_config('qun')['id'];
+            }else{
+                $ext_sys = modules_config($ext_sys)['id']?:0;
             }
             $map = [
                     'ext_id'=>$ext_id,
                     'ext_sys'=>$ext_sys,
             ];
         }
-        if ($aid) {
+        if ($aid && M('keyword')=='qun') {  //目前只有圈子用到
             $map = [
                 'aid'=>$aid,
             ];        
