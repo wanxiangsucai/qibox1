@@ -424,6 +424,9 @@ abstract class C extends MemberBase
         isset($data['fid']) && $fid = $data['fid'];
         
         if(!$mid && !$fid){
+            if ($this->request->isAjax()) {
+                return $this->error('栏目或模型不能同时为空!');
+            }
             return $this->postnew();
             //$this->error('参数有误！');
         }elseif($fid && !$mid){ //根据栏目选择发表内容

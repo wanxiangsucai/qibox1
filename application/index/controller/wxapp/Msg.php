@@ -100,6 +100,7 @@ class Msg extends IndexBase{
                     return $this->err_js('你还没通过审核,无权查看聊天内容!');
                 }
             }
+            unset($qun_info['sncode'],$qun_info['password']);
         }
         
         $array = model::list_moremsg($my_uid,$uid,$id,$rows,$maxid,$msg_id,$msg_sys);

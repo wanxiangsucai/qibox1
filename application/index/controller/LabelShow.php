@@ -250,7 +250,7 @@ class LabelShow extends IndexBase
             }else{  //普通小程序
                 $map['type'] = ['<>',4];
             }
-            $info = \plugins\wxopen\model\Info::where($map)->find();
+            $info = \plugins\wxopen\model\Info::where($map)->order('id desc')->find();
             if (!$info){
                 return $this->err_js('资料不存在');
             }

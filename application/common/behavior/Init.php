@@ -114,8 +114,7 @@ class Init{
 			$this->webdb=array_merge($this->webdb,$this->webdb['M__'.$dispatch['module'][0]]);
 		}		
 		
-		
-		if( isset($_GET['qun_wxapp_appid'])&&empty($_GET['qun_wxapp_appid']) ){
+		if( (isset($_GET['qun_wxapp_appid'])&&empty($_GET['qun_wxapp_appid'])) || isset($_SERVER['HTTP_WXAPPID'])&&empty($_SERVER['HTTP_WXAPPID']) ){
 		    cookie('qun_wxapp_appid',null);
 		}elseif ( ($qun_wxapp_appid = input('qun_wxapp_appid')?:(request()->header('wxappid')?:cookie('qun_wxapp_appid')) )!=false ) {
 			$ar = wxapp_cfg($qun_wxapp_appid);

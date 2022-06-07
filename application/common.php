@@ -3766,10 +3766,11 @@ if(!function_exists('check_tncode')){
      * @return boolean
      */
     function check_tncode(){
-        if ( !cache('tn_code'.get_cookie('user_sid')) ) {
+        if ( !cache('tn_code'.get_cookie('user_sid')) && !cache('tn_code'.input('post.tnCode')) ) {
             return false;
         }
         cache('tn_code'.get_cookie('user_sid'),null);
+        cache('tn_code'.input('post.tnCode'),null);
         return true;
     }
 }
