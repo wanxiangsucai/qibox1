@@ -76,6 +76,15 @@ class User extends MemberBase
                 }                
             }
             edit_user($array);
+            
+            $msg_array = [
+                'type'=>'subscribe',
+                'data'=>[
+                    'type'=>$type,
+                    'sub'=>$sub,
+                ],
+            ];
+            fun("Gatewayclient@send_to_group",0,$this->user['uid'],$msg_array);         
             return $this->ok_js([],'设置成功');
 //         }else{
 //             return $this->err_js('出错了');
