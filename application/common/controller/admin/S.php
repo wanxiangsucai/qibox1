@@ -125,6 +125,7 @@ abstract class S extends AdminBase
                         ['checkbox', 'allowview', '允许查看内容的用户组','全留空,则不作限制。注意标题不能限制。',getGroupByid()],
                         ['checkbox', 'allow_viewtitle', '允许查看标题的用户组','全留空,则不作限制。注意标签调用可能无效。',getGroupByid()],
                     ['text', 'admin', '栏目管理员','输入用户的uid,不是用户名,有多个用半角逗号,隔开'],
+                    ['textarea', 'allow_ip', '指定IP才能访问','一旦设置，则只允许指定的IP才能访问，每个IP换一行，如果某个IP段的话，就只输入前面部分，比如192.168.'],
                 ],
                 '模板设置'=>[
                         ['text', 'haibao', '海报模板路径',fun('haibao@get_haibao_list').'可留空,多个用逗号隔开,需要补全路径(其中haibao_style不用填):比如:“xxx/show.htm”'],
@@ -252,6 +253,10 @@ abstract class S extends AdminBase
                         $this->error('当前文件不存在:'.TEMPLATE_PATH.'haibao_style/'.$value);
                     }
                 }
+            }
+            
+            if ( !table_field($dirname.'_sort','allow_ip') ) {
+                query("ALTER TABLE  `qb_{$dirname}_sort` ADD  `allow_ip` VARCHAR( 256 ) NOT NULL COMMENT  '指定IP才能访问';");
             }
 
             $data['allowpost'] = is_array($data['allowpost']) ? implode(',', $data['allowpost']) : $data['allowpost'].'';  //允许发布内容的用户组

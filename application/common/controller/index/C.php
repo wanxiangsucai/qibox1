@@ -59,6 +59,11 @@ abstract class C extends IndexBase
                 $this->error('你所在用户组无权查看!');
             }
         }
+        if (($allow_ip=trim($s_info['allow_ip'], " \r\n"))!='') { //指定了IP才能访问
+            if (!fun('admin@in_ip',$allow_ip)) {
+                $this->error('你所在ip：'.get_ip().' 范围无权查看!');
+            }
+        }
         
         $result = $this->market_check($info);
         if ($result!==true){
@@ -365,6 +370,11 @@ abstract class C extends IndexBase
             }else{
                 if ($rs['fid'] && $allow_viewtitle=sort_config()[$rs['fid']]['allow_viewtitle']) {    //允许查看标题的用户组
                     if (empty($this->user)||!in_array($this->user['groupid'], explode(',',$allow_viewtitle))) {
+                        return [];
+                    }
+                }
+                if( $rs['fid'] && $allow_ip=trim(sort_config()[$rs['fid']]['allow_ip'], " \r\n")){  //指定了IP才能访问
+                    if (!fun('admin@in_ip',$allow_ip)) {
                         return [];
                     }
                 }

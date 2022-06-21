@@ -6,6 +6,23 @@ namespace app\common\fun;
  */
 class Admin{
     /**
+     * 检查自己的IP是否在参数里边 
+     * @param string $ips IP列表，每条换一行
+     * @param string $myip 我的IP
+     * @return boolean
+     */
+    public static function in_ip($ips='',$myip=''){
+        $ips = str_replace('*', '', $ips);
+        $array = str_array($ips);
+        $myip || $myip = get_ip();
+        foreach ($array AS $value){
+            if(preg_match("/^".$value."/", $myip)){
+                return true;
+            }
+        }
+    }
+    
+    /**
      * 查找栏目管理员及频道管理员
      * @param number $fid
      * @param string $dirname
