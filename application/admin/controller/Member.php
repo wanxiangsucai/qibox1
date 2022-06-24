@@ -279,10 +279,10 @@ EOT;
 	 * 登录他人的帐号
 	 * @param number $id
 	 */
-	public function login($id=0){
+	public function login($id=0,$url=''){
 	    $result = UserModel::login($id,$password='',$cookietime=null,$not_pwd=true,$type='uid');
 	    if (is_array($result)) {
-	        return $this->success('登录成功',get_url('member'));
+	        return $this->success('登录成功',$url?:get_url('member'));
 	    }else{
 	        return $this->error('登录失败');
 	    }
@@ -300,12 +300,12 @@ EOT;
 	 * 修改用户资料
 	 * @param number $id 用户UID
 	 */
-	public function edit($id = 0,$type='')
+	public function edit($id = 0,$type='',$url='')
 	{
 	    if(empty($id)) $this->error('缺少参数');
 	    
 	    if ($type=='login') {
-	        $this->login($id);
+	        $this->login($id,$url);
 	    }
     	
 	    $info = $this->model->get_info($id,'uid',false);

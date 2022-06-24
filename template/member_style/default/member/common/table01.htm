@@ -107,7 +107,14 @@
 						{/if}
 					{/volist}					
 					{if $rs.create_time} <div class="el time"><em>日期:</em>{$rs.create_time|format_time="Y-m-d H:i"} </div>{/if}
-					{if isset($rs.status)} <div class="el status"><em>状态:</em>{:fun('Content@status')[$rs['status']]} </div>{/if}
+					{if isset($rs.status)} <div class="el status">
+					<em>状态:</em><span id="status-{$rs['id']}">
+						{if $rs.status==0} <i style="color:blue;">待审核</i> 				
+						{elseif($rs.status==-1) /} <i style="color:green;">回收站</i> 
+						{elseif($rs.status==-9) /} <i style="color:blue;">{:fun('Content@status')[$rs['status']]}</i> 
+						{else /} {:fun('Content@status')[$rs['status']]} 
+						{/if}</span> 
+				</div>{/if}
 				</div>
 			</div>
 			{if count($btn_array)<3}

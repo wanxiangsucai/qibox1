@@ -25,6 +25,111 @@ class Attachment extends IndexBase{
 	protected function makeName() {
 		return $this->user['uid'] . '_' . date( 'YmdHis' ) . rands( 5 );
 	}
+	
+	
+	/**
+	 * 从微信服务器下载图片附件
+	 * @param string $sid
+	 * @param string $path
+	 * @return void|\think\response\Json|void|unknown|\think\response\Json
+	 */
+	public function get_weixin_file($sid='',$module='',$from=''){
+	    if(config('webdb.weixin_type')<2 || config('webdb.weixin_appid')=='' || config('webdb.weixin_appsecret')==''){
+	        return $this->err_js('没有配置认证服务号');
+	    }elseif(!$sid){
+	        return $this->err_js('参数不存在');
+	    }
+	    $data = file_get_contents('https://api.weixin.qq.com/cgi-bin/media/get?access_token='.wx_getAccessToken(true).'&media_id='.$sid);
+	    if(strlen($data)<1024){
+	        $ar = json_decode($data,true);
+	        if($ar['errcode']||$ar['errmsg']){
+	            return $this->err_js('上传失败，原因如下：'.$ar['errmsg']);
+	        }
+	    }
+	    $updir = config( 'upload_path' ) . '/images/'. date( 'Ymd' );
+	    if (!is_dir($updir)){
+	        mkdir( $updir ,0777,true );
+	    }
+	    $type = 'jpg';
+	    $name = $this->makeName() . '.' . $type;
+	    $updir .= '/' . $name;
+	    $dirpath = str_replace( PUBLIC_PATH,'',$updir );
+	    if(file_put_contents($updir, $data)){
+	        
+	        // 判断附件存在的情况
+	        $file_is_exists = false;
+	        if ( ( $file_exists = AttachmentModel::get( [ 'md5' => md5_file( $updir ) ] ) ) != false ) {
+	            if (preg_match("/^(http|https):/i", $file_exists['path'])) {
+	                if (file_get_contents($file_exists['path']) || http_curl($file_exists['path'])) {
+	                    $file_is_exists = true;
+	                }
+	            }elseif(is_file(PUBLIC_PATH . $file_exists['path'])){
+	                $file_is_exists = true;
+	            }
+	            if ($file_is_exists) {
+	                unlink( $updir );
+	                $dirpath = $file_exists['path'];
+	            }else{
+	                AttachmentModel::where('id',$file_exists['id'])->delete();
+	            }
+	        }
+	        
+	        if (!$file_is_exists) {
+	            $file_info = [
+	                'uid'    => intval( $this->user['uid'] ),
+	                'name'   => $name,
+	                'mime'   => 'image/'.$type,
+	                'path'   => $dirpath,
+	                'ext'    => $type,
+	                'size'   => filesize($updir),
+	                'md5'    => md5_file($updir),
+	                'sha1'   => sha1_file($updir),
+	                'thumb'  => '',
+	                'module' => $module,
+	            ];
+	            
+	            // 写入数据库
+	            if ( ( $file_add = AttachmentModel::create( $file_info ) ) != false ) {
+	                
+	            }
+	            
+	            $file_info = [
+	                'path'     => $dirpath,
+	                'url'      => PUBLIC_URL . $dirpath,
+	                'name'     => $name,
+	                'tmp_name' => PUBLIC_PATH . $dirpath,
+	                'size'     => '0',
+	                'type'     => 'image/jpeg',
+	            ];
+	            
+	            if ( config( 'webdb.upload_driver' ) && config( 'webdb.upload_driver' ) != 'local' ) {
+	                $hook_result = \think\Hook::listen( 'upload_driver',$file_info,[
+	                    'from'   => $from,
+	                    'module' => $module,
+	                    'type'   => 'weixin',
+	                ],true );
+	                if ( false !== $hook_result ) {
+	                    @unlink( $updir );
+	                    return $hook_result;
+	                }
+	            }
+	            
+	            $this->get_hook('upload_attachment_end',$data,$file_info,$array=[
+	                'base64' => true,
+	                'from'   => $from,
+	                'module' => $module,
+	            ]);
+	            Hook_listen( 'upload_attachment_end',$file_info,$array );  //钩子接口,上传后处理
+	        }
+	        
+	        return $this->ok_js([
+	            'url'=>tempdir($dirpath),
+	            'path'=>$dirpath,
+	        ]);
+	    }else{
+	        return $this->err_js($dirpath.'目录不可写');
+	    }
+	}
 
 	/**
 	 * H5上传图片进行压缩处理

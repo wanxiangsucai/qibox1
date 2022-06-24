@@ -95,8 +95,9 @@
 			日期：<span>{$rs.create_time|format_time="Y-m-d H:i"}</span> 
 			{notempty name="$rs.view"} 浏览：<span>{$rs.view}</span>{/notempty}
 			{if isset($rs.status) } 状态：<span id="status-{$rs['id']}">
-				{if $rs.status==0} <i style="color:blue;">未审核</i> 				
+				{if $rs.status==0} <i style="color:blue;">待审核</i> 				
 				{elseif($rs.status==-1) /} <i style="color:green;">回收站</i> 
+				{elseif($rs.status==-9) /} <i style="color:blue;">{:fun('Content@status')[$rs['status']]}</i> 
 				{else /} {:fun('Content@status')[$rs['status']]} 
 				{/if}</span>
 			{/if}

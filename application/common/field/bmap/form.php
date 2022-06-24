@@ -3,11 +3,12 @@ function_exists('urls') || die('ERR');
 $info[$name] || $info[$name] = '113.263661,23.155131';
 $jscode = '';
 if(fun('field@load_js',$field['type'])){
-	$weixin_appid = weixin_share("appId");
-	$weixin_time = weixin_share("timestamp")?:0;
-	$weixin_nonceStr = weixin_share("nonceStr");
-	$weixin_signature = weixin_share("signature");
+// 	$weixin_appid = weixin_share("appId");
+// 	$weixin_time = weixin_share("timestamp")?:0;
+// 	$weixin_nonceStr = weixin_share("nonceStr");
+// 	$weixin_signature = weixin_share("signature");
 	$qun_url = modules_config('qun')?iurl('qun/near/point_address'):'https://x1.php168.com/qun/near/point_address.html';
+	$inwxapp = in_wxapp()?1:0;
 	$jscode = <<<EOT
 <style type="text/css">
 .bmap{width:100%;height:350px;border: 1px solid #ccc;}
@@ -206,6 +207,14 @@ function load_wx_map(obj){
 
 var is_in_wxapp = -1;
 function get_location_point(obj){
+	if("{$inwxapp}"==1){
+		setTimeout(function(){
+			load_wx_map(obj);
+		},1500);
+	}else{
+		load_wx_map(obj);
+	}
+	/*
 	wx.miniProgram.getEnv(function(res) {
 		if(res.miniprogram==true){	//在小程序中,用不了百度地图定位
 			is_in_wxapp = 1;
@@ -216,9 +225,18 @@ function get_location_point(obj){
 				nonceStr: '{$weixin_nonceStr}',
 				signature: '{$weixin_signature}',
 				jsApiList: [
-						'openLocation',
-						'getLocation'
-				]
+					'checkJsApi',
+					'onMenuShareTimeline',
+					'onMenuShareAppMessage', 
+					'hideMenuItems',
+					'showMenuItems',
+					'openLocation',
+					'getLocation',
+					'chooseImage',
+					'previewImage',
+					'uploadImage'
+				],
+				openTagList: ['wx-open-launch-weapp','wx-open-subscribe','wx-open-launch-app'],
 			});
 			wx.ready(function () {
 				load_wx_map(obj);
@@ -236,6 +254,7 @@ function get_location_point(obj){
 				reload_baidu_map(obj);
 			}
 		},1500);
+	*/
 }
 
 </script>

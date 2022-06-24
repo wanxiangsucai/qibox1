@@ -1,0 +1,72 @@
+<!--微信JSDK上传图片开始-->
+{if in_weixin()&&config('webdb.weixin_type')>=2&&config('webdb.weixin_appid')&&config('webdb.weixin_appsecret')}
+
+{if !defined('LOAD_SHARE')}
+{include file="index@share" /}
+{/if}
+<script type="text/javascript">
+function wexin_jsdk_upimg(textObj,callback,ismore){
+	var pics=[],severUrl="{:iurl('index/attachment/get_weixin_file')}";
+	if(ismore=='editor'){
+	}else if(textObj.val()!=''){
+		pics = ismore=='images2' ? JSON.parse( textObj.val() ) : textObj.val().split(',');
+	}
+
+	wx.chooseImage({
+		count: ismore ? 9 : 1 ,  //(!ismore || ismore=='editor') ? 1 : 9,
+		sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+		sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+		success: function (res) {
+			weixin_upload(res.localIds);
+		},fail(e){
+			layer.alert("wx.config加载失败,请稍候再试:"+JSON.stringify(e))
+		}
+	});
+
+	var weixin_upload = function(picid_array){
+		var picid = picid_array.shift();
+		wx.uploadImage({	//wx.uploadImage必须要排队，不支持同时并发
+			localId: picid,
+			isShowProgressTips: 1,
+			success: function (res) {
+				copyimg(res.serverId);
+				if(picid_array.length>0){
+					weixin_upload(picid_array);
+				}
+			}
+		});
+	}
+
+	var copyimg = function(sid){
+		var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
+		$.post(severUrl,{'sid':sid}).done(function (res) {
+			layer.close(index);
+			if(res.code==0){
+				if(ismore=='images2'){
+					pics.push({"picurl":res.data.path,"title":"","url":""});	//组图带介绍
+					callback(pics);
+					return ;
+				}else if(ismore==='editor'){
+					callback(res.data.url);
+					return ;
+				}else if(ismore===true){
+					pics.push(res.data.path);	//组图
+				}else{
+					pics[0] = res.data.path;	//单图
+				}
+				textObj.val( pics.join(',') );
+				if(typeof callback == 'function'){
+					callback(res.data.url,pics);
+				}
+			}else{
+				layer.alert(res.msg);
+			}
+		}).fail(function () {
+			alert('操作失败，请跟技术联系');
+		});
+	}
+}
+</script>
+
+{/if}
+<!--微信JSDK上传图片结束-->

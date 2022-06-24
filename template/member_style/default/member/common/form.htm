@@ -153,3 +153,6 @@ var needTncode = {$need_tncode?'true':'false'};	//是否需要行为验证码
 var default_ckid = ["{$info.province_id}","{$info.city_id}","{$info.zone_id}","{$info.street_id}"];
 var get_area_url = "{:purl('area/api/getlist',[],'index')}";
 </SCRIPT>
+
+<!--微信端上传图片-->
+{include file="index@lib/weixin_upload" /}

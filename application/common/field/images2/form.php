@@ -135,7 +135,11 @@ jQuery(document).ready(function() {
 		var that = $(this);
 
 		that.find(".upbtn").click(function(e){
-			that.find('input[type="file"]').click();
+			if(typeof(wexin_jsdk_upimg)=="function"){		//微信中上传
+				wexin_jsdk_upimg(that.find(".input_value"),viewpics,'images2')
+			}else{
+				that.find('input[type="file"]').click();
+			}
 		});
 
 
