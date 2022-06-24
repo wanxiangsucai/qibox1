@@ -6244,6 +6244,13 @@
             deferred.reject();
           }
         });
+        if(typeof(wexin_jsdk_upimg)=="function"){	//微信上传接口
+			wexin_jsdk_upimg({},function(picurl){
+				//deferred.resolve(url);
+				context.invoke('editor.pasteHTML', '<img src="'+picurl+'" style="max-width:100%;"><br><br><br>');
+			},'editor');
+			return ;
+		}
 
         ui.showDialog(self.$dialog);
       });
