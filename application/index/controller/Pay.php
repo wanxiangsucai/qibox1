@@ -36,12 +36,19 @@ class Pay extends IndexBase
      */
     public function index($banktype = '' , $action = '' , $back_post = '')
     {
+        if(input('money')&&!preg_match("/^([\.\d]+)$/", input('money'))){
+            $this->error('金额类型有误!');
+        }elseif(input('totalmoney')&&!preg_match("/^([\.\d]+)$/", input('totalmoney'))){
+            $this->error('金额类型有误!');
+        }
+        $this->weburl = filtrate($this->weburl);
         if ($banktype == '') {  //没有指定支付方式的话,就让用户自由选择支付方式
             if (empty($this->user)) {
                 //$this->error('请先登录!');
             }
             $this->assign('weburl',$this->weburl);
-            $this->assign('money',input('money'));
+            $this->assign('money',input('money'));              //有可能是除去余额还需要支付的金额
+            $this->assign('totalmoney',input('totalmoney')?:0);    //实际所需要的总金额 ， 这样就避免显示余额支付的尴尬
             return $this->fetch(input('iframe')?'pc_iframe_choose':'index');
             
         } elseif($banktype == 'rmb') {  //选择了余额支付

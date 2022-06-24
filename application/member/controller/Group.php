@@ -126,6 +126,7 @@ class Group extends MemberBase
             if($this->user['rmb']<$need_money){                
                 $payurl = post_olpay([
                     'money'=>$need_money-$this->user['rmb'],     //有部分余额的话,就不用充值那么多
+                    'totalmoney'=>$need_money,   //实际需要花费金额
                     'return_url'=>url('buy',['gid'=>$gid,'day'=>$day]),
                     'banktype'=>'',
                     'numcode'=>'g'.date('ymdHis').rands(3),
@@ -141,6 +142,7 @@ class Group extends MemberBase
                 if($this->user['rmb']<$money){
                     $payurl = post_olpay([
                             'money'=>$money-$this->user['rmb'],     //有部分余额的话,就不用充值那么多
+                            'totalmoney'=>$money,   //实际需要花费金额
                             'return_url'=>$payurl,
                             'banktype'=>'',
                             'numcode'=>'g'.date('ymdHis').rands(3),

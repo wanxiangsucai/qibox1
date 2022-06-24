@@ -61,7 +61,7 @@ div, p, dl, dt, dd,td,span,li,a,h3,h4{font-family: Arial, Helvetica, sans-serif,
 		  <li {if $money>0&&!in_weixin()}class='ck'{/if}><em><input type='radio' name='paytype' value='alipay' {if $money>0&&!in_weixin()}checked{/if} /></em><span style="color:#059CD8;" class="fa fa-buysellads">支付宝</span></li>
 {/if}
 
-{if $userdb.rmb>=$money}
+{if $userdb.rmb>=$money&&$userdb.rmb>=$totalmoney}
 		  <li {if $money==0}class='ck'{/if}><em><input type='radio' name='paytype' value='rmb' {if $money==0}checked{/if} {if $money>$userdb.rmb} onclick="layer.alert('你余额不足,不能使用余额支付!')" {/if}/></em><span style="color:#B94303;" class="glyphicon glyphicon-yen">余额(可用:{$userdb.rmb}元)</span></li>
 {/if}
       </ul>
@@ -70,9 +70,10 @@ div, p, dl, dt, dd,td,span,li,a,h3,h4{font-family: Arial, Helvetica, sans-serif,
 </div>
 <script language="JavaScript">
 
-{if in_weixin()&&$money>$userdb['rmb']}
+{if in_weixin()&&($money>$userdb['rmb']||$totalmoney>$userdb['rmb'])}
 	paytype();
 {/if}
+
 
 function paytype(){
 	var type='';
@@ -83,7 +84,12 @@ function paytype(){
 		alert("请选择一种支付类型!");
 		return ;
 	}
-	window.location.href="{$weburl}&banktype="+type;
+
+	if(window.self!=window.top && type=="weixin" && "{:in_weixin()?1:0}"!="0"){
+		window.parent.location.href = "{$weburl}&banktype="+type;	//跳出框架，因为微信各种接口不能在框架中使用
+	}else{
+		window.location.href="{$weburl}&banktype="+type;
+	}
 }
 
 $(".payList li").click(function(){
