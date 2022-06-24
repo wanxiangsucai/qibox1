@@ -41,6 +41,18 @@ function wexin_jsdk_upimg(textObj,callback,ismore){
 		var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
 		$.post(severUrl,{'sid':sid}).done(function (res) {
 			layer.close(index);
+			if(res.path&&res.info&&res.url){	//兼容OSS远程附件接口
+				res.msg = res.info
+				if(res.code==1){
+					res.code=0;
+					res.data = {
+						url:res.url,
+						path:res.path,
+					};
+				}else{
+					res.code=1;
+				}
+			}
 			if(res.code==0){
 				if(ismore=='images2'){
 					pics.push({"picurl":res.data.path,"title":"","url":""});	//组图带介绍
