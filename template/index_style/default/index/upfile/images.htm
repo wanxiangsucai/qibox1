@@ -31,7 +31,7 @@
 				<input type="text" name="picurl" value="{$img}" id="compressValue"  style="width:100%;" /> 
 			</div>
 			<ol>点击下面图标上传图片</ol>
-			<li onclick='$("#fileToUpload").click()'><i class="si si-camera"></i></li>
+			<li onclick='if(typeof(parent.wexin_jsdk_upimg)=="function"){ parent.wexin_jsdk_upimg($("#compressValue"),viewpics,true) }else{ $("#fileToUpload").click() }'><i class="si si-camera"></i></li>
 		</ul>
 		<div class="ListImgs"></div>
 				<div class="button"><button type="butotn" onclick="save_pic()">全部上传完毕,确认保存</button></div>		

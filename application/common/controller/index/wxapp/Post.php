@@ -27,16 +27,36 @@ abstract class Post extends IndexBase
         
         $this->mid = 1;
     }
+    
+    /**
+     * 获取 postFile 上传的文件 
+     * @param string $skey
+     * @return void|unknown|\think\response\Json|void|\think\response\Json
+     */
+    public function getfile($skey=''){
+        $url = cache('file-'.$skey)?:cache('file-');
+        if($url){
+            return $this->ok_js(['url'=>$url]);
+        }else{
+            return $this->err_js('上传失败，文件不存在！');
+        }
+    }
    
     /**
-     * 上传图片
+     * APP及小程序上传文件
      */
     public function postFile(){
+        if (empty($this->user)) {
+            return $this->err_js("你还没登录!");
+        }
         $obj = new Attachment();
         $o = $obj->upload('wxapp','wxapp','wxapp');
         $info = $o->getData();
         if($info['code']){
             $data['url'] = tempdir($info['id']);
+            if(input('skey')){
+                cache('file-'.input('skey'),$data['url'],600);
+            }
             return $this->ok_js($data, $info['info']);
         }else{
             return $this->err_js($info['info']);

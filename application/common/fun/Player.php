@@ -109,7 +109,7 @@ class Player{
         $array_id++;
         $js = '';
         if($array_id==1){
-            $js = '<script type="text/javascript">if(typeof(ckplayer)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/ckplayer/ckplayer.js"><\/script>\');}</script>';
+            $js = '<script type="text/javascript">if(typeof(ckplayer)=="undefined"){if(typeof(Qibo)!="undefined"){window.location.reload();/*异步加载document.write，页面会白屏*/}else{document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/ckplayer/ckplayer.js"><\/script>\');}}</script>';
         }
         if(!$bgpic){
             $bgpic = config('webdb.video_player_bgpic');
@@ -164,7 +164,7 @@ class Player{
         }        
         $autoplay = $autoplay?'true':'false';
         if($array_id==1){
-            $js = '<script type="text/javascript">if(typeof(DPlayer)=="undefined"){document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/flv.min.js"><\/script><script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/hls.min.js"><\/script><script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.js?v=f32"><\/script><link rel="stylesheet" href="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">\');}</script>';
+            $js = '<script type="text/javascript">if(typeof(DPlayer)=="undefined"){if(typeof(Qibo)!="undefined"){window.location.reload();/*异步加载document.write，页面会白屏*/}else{document.write(\'<script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/flv.min.js"><\/script><script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/hls.min.js"><\/script><script type="text/javascript" src="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.js?v=f32"><\/script><link rel="stylesheet" href="'.config('view_replace_str.__STATIC__').'/libs/bui/pages/zhibo/dplayer/DPlayer.min.css">\');}}</script>';
         }
         $url = str_replace('.','x@01x@01',urlencode($url));
         return "{$js}<center><div class='video{$array_id} video-player' style='width: {$width};height: {$height};'><div id='d_player{$array_id}' style='width:100%;height:100%;'></div></div></center>
@@ -201,7 +201,7 @@ class Player{
         }
         $autoplay = $autoplay?'true':'false';
         if($array_id==1){
-            $js = '<script type="text/javascript">if(typeof(Aliplayer)=="undefined"){document.write(\'<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.9.1/skins/default/aliplayer-min.css" /><script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.9.1/aliplayer-min.js"><\/script>\');}</script>';
+            $js = '<script type="text/javascript">if(typeof(Aliplayer)=="undefined"){if(typeof(Qibo)!="undefined"){window.location.reload();/*异步加载document.write，页面会白屏*/}else{document.write(\'<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.9.1/skins/default/aliplayer-min.css" /><script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.9.1/aliplayer-min.js"><\/script>\');}}</script>';
         }
         return <<<EOT
 $js

@@ -1,4 +1,4 @@
-<!--微信JSDK上传图片开始-->
+<!--微信JSDK上传图片与视频开始-->
 {if in_weixin()&&config('webdb.weixin_type')>=2&&config('webdb.weixin_appid')&&config('webdb.weixin_appsecret')}
 
 {if !defined('LOAD_SHARE')}
@@ -80,5 +80,89 @@ function wexin_jsdk_upimg(textObj,callback,ismore){
 }
 </script>
 
+
+<!--上面是JSSDK上传图片的功能，下面是小程序上传视频的功能-->
+
+{php}
+$upload_sid = rands(10);
+$upload_uids = mymd5($userdb['uid'].','.time());
+{/php}
+<style type="text/css">
+.wxapp_upload_btn{
+	text-align:center;
+	position: fixed;
+	top:-100px;
+	width:100%;
+	z-index: 9999999999;
+}
+.upload_mask{
+	width:calc(100vw);
+	height:calc(100vh);
+	opacity: 0.9;
+	background:#666;
+	display:none;
+	position: fixed;
+	top:0px;
+	left:0px;
+	z-index: 9999999998;
+}
+</style>
+<div class="upload_mask" onclick='$(".upload_mask").hide(200);$(".wxapp_upload_btn").animate({top:"-100px"});'></div>
+<div class="wxapp_upload_btn" onclick="window.event? window.event.cancelBubble = true : e.stopPropagation();">
+	<wx-open-launch-weapp
+		id="upload-launch-btn"
+		username="{:config('webdb.wxapp_ghid')}"
+		path="/pages/bbs/postmv/index?back=close&weburl=1&uids={$upload_uids}&skey={$upload_sid}">
+		<template>
+			<style>.btn {background:#19a519;font-weight:bold;color:#fff;padding:12px 0;width:300px;border-radius:5px;border:0;font-size:16px;}</style>
+			<button class="btn">点击进小程序上传视频</button>
+		</template>
+	</wx-open-launch-weapp>
+</div>
+
+<script type="text/javascript">
+var wxapp_upload_btn = document.getElementById('upload-launch-btn');
+wxapp_upload_btn.addEventListener('launch', function (e) {
+	console.log('success');
+});
+wxapp_upload_btn.addEventListener('error', function (e) {
+	console.log('fail', e.detail);
+});
+function wxapp_upload_mv(callback){
+	if("{:in_wxapp()?1:0}"=="1"){	//在小程序中访问就直接进入
+		wx.miniProgram.navigateTo({ url: "/pages/bbs/postmv/index?back=1&weburl=1&uids={$upload_uids}&skey={$upload_sid}" });
+	}else{
+		$(".upload_mask").show(200);
+		$('.wxapp_upload_btn').animate({top:"400px"});
+	}
+
+	var listener = function(){
+		if(document.visibilityState=='hidden'){
+		}else if(document.visibilityState=='visible'){
+			$(".upload_mask").hide(200);
+			$('.wxapp_upload_btn').animate({top:"-100px"});
+			get_file();
+			window.removeEventListener("visibilitychange", listener);
+		}
+	};
+
+	window.addEventListener('visibilitychange',listener)
+
+	var get_file = ()=>{
+		var index = layer.load(1,{shade: [0.7, '#393D49']}, {shadeClose: true}); //0代表加载的风格，支持0-2
+		$.get("{:iurl('cms/wxapp.post/getfile')}?skey={$upload_sid}",function(res){
+			layer.close(index);
+			if(res.code==0){
+				layer.msg("上传成功");
+				callback(res.data.url);
+			}else{
+				layer.alert(res.msg);
+			}
+		});
+	}
+}
+</script>
+
+
 {/if}
-<!--微信JSDK上传图片结束-->
+<!--微信JSDK上传图片与视频结束-->
