@@ -83,6 +83,7 @@
 	{php}
 		$btn_array = fun('field@get_rbtn',$tab_ext['right_button'],$rs,true);
 	{/php}
+	<input type="checkbox" name="ids[]" value="{$rs.id}" style="display:none;">
 	<div class="list_box" id="box-{$rs.id}" data-status="{$rs.status}" data-id="{$rs.id}">
 		{notempty name="$rs.title"}
 		<div class="title_box">
@@ -149,3 +150,4 @@
 	</div>
 	{/volist}
 </div>
+<script type="text/javascript" src="__STATIC__/js/batch_delete.js"></script>

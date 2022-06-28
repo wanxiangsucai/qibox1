@@ -1,5 +1,6 @@
 <div class="qb_member_Cnt">
 {volist name="listdb" id="rs"}
+	<input type="checkbox" name="ids[]" value="{$rs.id}" style="display:none;">
 	<ul class="qb_member_ListType1" data-status="{$rs.status}" data-id="{$rs.id}">
 		<ol>
 		{notempty name="$rs.title"}<!--标题单独显示-->
@@ -39,3 +40,4 @@
 	{$pages}
 </div>	 
 
+<script type="text/javascript" src="__STATIC__/js/batch_delete.js"></script>

@@ -9,6 +9,7 @@
 
 <div class="MyshopBox">
 {volist name="listdb" id="rs"}
+	<input type="checkbox" name="ids[]" value="{$rs.id}" style="display:none;">
 	<div class="ListShop" data-status="{$rs.status}" data-id="{$rs.id}">
 		<dl>
 			{notempty name="$rs.picurl"}<!--图片单独显示-->
@@ -57,3 +58,4 @@
 </div>
 
 
+<script type="text/javascript" src="__STATIC__/js/batch_delete.js"></script>

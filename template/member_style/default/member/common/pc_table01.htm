@@ -69,6 +69,7 @@
 {/if}
 
 {volist name="listdb" id="rs"}
+	<input type="checkbox" name="ids[]" value="{$rs.id}" style="display:none;">
 	<div class="list_item" data-status="{$rs.status}" data-id="{$rs.id}">
 		{notempty name="$rs.picurl"}<!--图片单独显示-->
 			<div class="img"><a href="{:iurl('show',['id'=>$rs.id])}" target="_blank"><img src="{$rs.picurl|tempdir}" onerror="this.src='__STATIC__/images/nopic.png';"/></a></div>
@@ -116,3 +117,5 @@
 			</div>
 	</div>
 {/volist}
+
+<script type="text/javascript" src="__STATIC__/js/batch_delete.js"></script>
