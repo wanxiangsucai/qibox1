@@ -123,6 +123,25 @@ function ShareAppMessage(){
     //alert('请点击左上角的菜单，发送给朋友');
 }
 
+function Share2QQ(){
+	wx.onMenuShareQQ({
+      title: wxShare.title ,
+      desc: wxShare.about ,
+      link: wxShare.link ,
+      imgUrl: wxShare.picurl ,
+      success: function (res) {
+		  layer.msg('成功分享到QQ好友');
+		//window.location.href='?job=have_shareFriend';
+      },
+      cancel: function (res) {
+        //alert('你已取消操作，建议你重新分享给好友！');
+      },
+      fail: function (res) {
+        alert(JSON.stringify(res));
+      }
+    });
+    //alert('请点击左上角的菜单，发送给朋友');
+}
 
 function wx_share_config(){
 	wx.config({
@@ -141,7 +160,8 @@ function wx_share_config(){
 			'getLocation',
 			'chooseImage',
 			'previewImage',
-			'uploadImage'
+			'uploadImage',
+			'onMenuShareQQ'
 		  ],
 		openTagList: ['wx-open-launch-weapp','wx-open-subscribe','wx-open-launch-app'],
 	});
@@ -150,6 +170,7 @@ function wx_share_config(){
 		//wx.hideOptionMenu();
 		ShareTimeline();
 		ShareAppMessage();
+		Share2QQ();
 		if(typeof(wx_ready)=='function'){
 			wx_ready();
 		}
