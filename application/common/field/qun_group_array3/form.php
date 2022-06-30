@@ -15,6 +15,7 @@ if(fun('field@load_js',$field['type'])){
 
 </style>
 <script type="text/javascript">
+    // 打开图标选择器
 $(function(){
 	$(".choose_qun-{$name}").each(function(){
 		var base = $(this);
@@ -25,7 +26,7 @@ $(function(){
 						var str = '';
 						res.data.forEach((rs)=>{
 							var ck = that.val().indexOf(rs.gid)>-1?' checked ':' ';
-							str+='<input type="checkbox" '+ck+' value="'+rs.gid+'">'+rs.name+'<br>';
+							str+='<input type="radio" '+ck+' name="choose_qun" value="'+rs.gid+'">'+rs.name+'<br>';
 						});
 						layer.alert('<div class="list_qungroup">'+str+'</div>',{title:'请选择用户组'},function(i){
 							var garray = [];

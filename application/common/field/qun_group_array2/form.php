@@ -1,7 +1,7 @@
 <?php
 function_exists('urls') || die('ERR');
 
-
+$ext_id = intval(input('ext_id'));
 $jscode = '';
 if(fun('field@load_js',$field['type'])){
 	$group_url = iurl('qun/wxapp.group/index');
@@ -92,7 +92,7 @@ jQuery(document).ready(function() {
 		var choosegroup_act = function(){
 			base.find('.choose_group').on('click',function(){
 				var that = $(this);
-				$.get("{$group_url}?id="+($("#atc_ext_id").length>0?$("#atc_ext_id").val():0),function(res){
+				$.get("{$group_url}?id="+($("#atc_ext_id").length>0?$("#atc_ext_id").val():{$ext_id}),function(res){
 					if(res.code==0){
 						var str = '';
 						res.data.forEach((rs)=>{

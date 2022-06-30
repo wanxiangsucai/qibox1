@@ -9,32 +9,41 @@ if(fun('field@load_js',$field['type'])){
 	$jscode .= <<<EOT
 
 <style type="text/css">
-.input-group-addon {
+.choose_qun_group .input-group-addon {
     cursor: pointer;
 }
-
+.list_qungroup ul{
+	display:flex;
+}
+.list_qungroup ul li{
+	width:50%;
+}
+.list_qungroup ul li input{
+	width:80px;
+}
 </style>
 <script type="text/javascript">
 $(function(){
-	$(".choose_qun-{$name}").each(function(){
+	$(".choose_qun_group").each(function(){
 		var base = $(this);
 		base.find("input").click(function(){
 			var that = $(this);
 			$.get("{$group_url}?id="+($("#atc_ext_id").length>0?$("#atc_ext_id").val():{$ext_id}),function(res){
 					if(res.code==0){
+						var vobj = {};
+						if(that.val()!=''){
+							vobj = JSON.parse( that.val() );
+						}
 						var str = '';
 						res.data.forEach((rs)=>{
-							var ck = that.val().indexOf(rs.gid)>-1?' checked ':' ';
-							str+='<input type="checkbox" '+ck+' value="'+rs.gid+'">'+rs.name+'<br>';
+							str+="<ul><li>"+rs.name+'</li><li><input type="text" data-gid="'+rs.gid+'" value="'+(vobj[rs.gid]||'')+'"></li></ul>';
 						});
-						layer.alert('<div class="list_qungroup">'+str+'</div>',{title:'请选择用户组'},function(i){
-							var garray = [];
+						layer.alert('<div class="list_qungroup">'+str+'</div>',{title:'请设置用户组'},function(i){
+							var garray = {};
 							$(".list_qungroup input").each(function(){
-								if($(this).is(':checked')){
-									garray.push($(this).val());
-								}
+								garray[$(this).data('gid')] = $(this).val();
 							});
-							that.val(garray.join(','));
+							that.val( JSON.stringify(garray) );
 							layer.close(i);
 						});
 					}else{
@@ -62,8 +71,8 @@ EOT;
 
 return <<<EOT
 $jscode
-	<div class="input-group choose_qun-{$name}">
-            <input style="width:300px;" readOnly type="text" id="atc_{$name}" name="{$name}" value="{$info[$name]}" placeholder="点击选择用户组" >
+	<div class="input-group choose_qun_group">
+            <input style="width:300px;" readOnly type="text" id="atc_{$name}" name="{$name}" value='{$info[$name]}' placeholder="点击选择用户组" >
             <span class="input-group-addon delete-icon"><i class="fa fa-times"></i></span>
     </div>
 EOT;
