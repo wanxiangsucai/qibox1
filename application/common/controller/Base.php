@@ -752,6 +752,8 @@ class Base extends Controller
                     }
                     if( preg_match('/^[\d]{10,}$/', $value) ){
                         $value = '&nbsp;'.$value.'&nbsp;';
+                    }elseif( preg_match('/^0[\d]+$/', $value) ){
+                        $value = '&nbsp;'.$value.'&nbsp;';
                     }
                     $outstr.="<td align=\"center\">{$value}</td>";
                 }
