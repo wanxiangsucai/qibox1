@@ -166,6 +166,14 @@ $("#atc_field_type").after(string);
         ];
        
         $data = self::getListData(['mid'=>$mid],'list desc',50);
+        $_ckarray = [];
+        $array = getArray($data)['data'];
+        foreach ($array AS $rs){
+            if($_ckarray[$rs['name']]){
+                $this->model->where('id',$rs['id'])->delete();  //删除升级重复出现的字段
+            }
+            $_ckarray[$rs['name']] = $rs;
+        }
         return $this->getAdminTable($data);
     }
     
