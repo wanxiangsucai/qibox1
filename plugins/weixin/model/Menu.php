@@ -92,7 +92,7 @@ class Menu extends Model
 	    if(strstr($word,'|')){
 	        list($wx_appid,$path)=explode('|',$word);
 	    }else{
-	        $wx_appid = config('webdb.wxapp_appid');
+	        $wx_appid = config('webdb._wxapp_appid')?:config('webdb.wxapp_appid');
 	        $path = $word;
 	    }	    
 	    //$par = substr(strstr($path,'='),1);
@@ -119,7 +119,7 @@ class Menu extends Model
 	        $query2 = getArray($this->where('fid',$rs['id'])->order('list','asc')->select());
 	        foreach($query2 AS $rs2){
 	            $j++;
-	            if(strstr($rs2['keyword'],'pages/')){
+	            if( preg_match("/([-\w]+)\/([-\w]+)\?/", $rs2['keyword']) ){ //if(strstr($rs2['keyword'],'pages/')){
 	                $type = 'miniprogram';
 	                preg_match('/^http/',$rs2['linkurl']) || $rs2['linkurl']=$domain.$rs2['linkurl'];
 	                $Marray[$i]['sub_button'][$j]['url'] = urlencode($rs2['linkurl']);
@@ -144,7 +144,7 @@ class Menu extends Model
 	        }
 	        
 	        if(!is_array($Marray[$i]['sub_button'])){
-	            if(strstr($rs['keyword'],'pages/')){
+	            if( preg_match("/([-\w]+)\/([-\w]+)\?/", $rs['keyword']) ){  //if(strstr($rs['keyword'],'pages/')){
 	                $type = 'miniprogram';
 	                preg_match('/^http/',$rs['linkurl']) || $rs['linkurl']=$domain.$rs['linkurl'];
 	                $Marray[$i]['url'] = urlencode($rs['linkurl']);
