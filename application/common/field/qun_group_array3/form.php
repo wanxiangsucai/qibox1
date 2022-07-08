@@ -21,7 +21,12 @@ $(function(){
 		var base = $(this);
 		base.find("input").click(function(){
 			var that = $(this);
-			$.get("{$group_url}?id="+($("#atc_ext_id").length>0?$("#atc_ext_id").val():{$ext_id}),function(res){
+			var qid = $("#atc_ext_id").length>0?$("#atc_ext_id").val():{$ext_id};
+			if(!qid){
+				layer.alert("请先选择圈子！");
+				return false;
+			}
+			$.get("{$group_url}?id="+qid,function(res){
 					if(res.code==0){
 						var str = '';
 						res.data.forEach((rs)=>{
