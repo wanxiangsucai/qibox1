@@ -583,9 +583,13 @@ trait ModuleContent
 	            return '你所在用户组,无权在此栏目发布!';
 	        }
 	    }
+	    
+	    $data['ext_id'] = intval($this->get_qun_ext($data['ext_id']));
+	    
 	    if($s_config['ext_id'] && !$data['ext_id']){
 	        $data['ext_id'] = $s_config['ext_id']; //比如论坛栏目自动绑定到圈子
 	    }
+	    
 	    
 	    if(!$this->admin){
 	        if($data['title']){
@@ -627,6 +631,20 @@ trait ModuleContent
 	    }
 
 	    return true;
+	}
+	
+	/**
+	 * 在商家小程序中，如果没有设置ext_id值的话，就自动补上
+	 * @param number $ext_id
+	 * @return number
+	 */
+	protected function get_qun_ext($ext_id=0){
+	    if (!$ext_id && get_wxappAppid()) {
+	        $info = get_wxappinfo(get_wxappAppid());
+	        return $info['qun_id'] ?: 0;
+	    }else{
+	        return $ext_id;
+	    }
 	}
 	
 	/**
@@ -867,6 +885,7 @@ trait ModuleContent
 	    set_cookie('cms_title', md5($data['title']));
 	    set_cookie('cms_content', md5($data['content']));
 	}
+	
 	
 	/**
 	 * 对审核员进行消息通知

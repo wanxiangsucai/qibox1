@@ -204,9 +204,10 @@ class Base
      * 把单选\多选\下拉框架的参数转义为可选项数组
      * @param string $str 可以是类 app\bbs\model\Sort@getTitleList
      * @param array $info 内容信息
+     * @param string $exp 数组分隔符
      * @return void|string|array|unknown[]
      */
-    protected static function options_2array($str='',$info=[]){
+    protected static function options_2array($str='',$info=[],$exp=""){
         if($str==''){
             return ;
         }
@@ -236,7 +237,7 @@ class Base
             $array = Db::name($table_name)->where($map)->column($fields);
         }elseif(preg_match('/("|\[)/',$str)&&is_array($array = json_decode($str,true))){
         }else{
-            $array = str_array($str);
+            $array = str_array($str,$exp);
         }
         return $array;
     }

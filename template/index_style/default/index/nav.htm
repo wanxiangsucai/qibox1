@@ -4,6 +4,8 @@
 		<li>
 			<a href='/' class="home">网站首页</a>
 
+<?php if(!get_wxappAppid()&&!input('qun_id')): ?><!--圈子内判断开始-->
+
 <!-- 频道 -->
 <?php $array = config('system_dirname') ? modules_config(config('system_dirname')):''; if($array): $url=iurl(config('system_dirname').'/index/index'); ?>
 <a href="<?php echo $url; ?>"><?php echo $array['name']; ?></a>
@@ -13,6 +15,8 @@
 <?php $array=[];if($fid&&$_name=sort_config()[$fid]['name'])$array=empty($array=sort_get_father($fid))?[$fid=>$_name]:$array+[$fid=>$_name];foreach($array AS $key=>$name):$url=iurl(config('system_dirname').'/content/index',['fid'=>$key]); ?>
  <a href="<?php echo $url; ?>"><?php echo $name; ?></a>
 <?php endforeach; ?>
+
+<?php endif; ?><!--圈子内判断结束-->
 
 <!-- 自定义标题与链接 -->
 <?php if($link_name!=''): $url=$link_url?$link_url:'#'; ?>

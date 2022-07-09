@@ -637,17 +637,17 @@ $(function(){
         $array=[];
         $field_array = get_field($mid);
         foreach ($field_array AS $rs){            
-            $array[] = self::format_data_field($rs,$info);
+            $array[] = self::format_data_field($rs,$info,"\n");
         }
         return $array;
     }
     
-    public static function format_data_field($rs=[],$info=[]){
+    public static function format_data_field($rs=[],$info=[],$exp=''){
         //$rs['options'] && $rs['options'] = str_array($rs['options']);
         if($rs['type'] == 'usergroup2'||$rs['type'] == 'usergroup3'){    //用户组多选 及单选
             $rs['options'] = 'app\common\model\Group@getTitleList';
         }
-        $rs['options'] = static::options_2array($rs['options'],$info);
+        $rs['options'] = static::options_2array($rs['options'],$info,$exp);
         if($rs['type']=='hidden'){   //隐藏域比较特别些
             $rs['title'] = $rs['value'];
         }

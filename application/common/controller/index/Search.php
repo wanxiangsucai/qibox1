@@ -91,6 +91,16 @@ class Search extends IndexBase
 	    if($data['fid']){
 	        $map['fid'] = $data['fid'];
 	    }
+	    
+	    //只搜索圈子里边的信息
+	    if ($data['qun_id']) {
+	        $map['ext_id'] = $data['qun_id'];
+	    }elseif (get_wxappAppid()) {
+	        $info = get_wxappinfo(get_wxappAppid());
+	        if ($info['qun_id']) {
+	            $map['ext_id'] = $info['qun_id'];
+	        }
+	    }
 	    return $map;
 	}
 
