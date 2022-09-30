@@ -83,6 +83,9 @@ abstract class Order extends IndexBase
      * @return mixed|string
      */
     public function add() {
+        if (!$this->user) {
+            $this->error('请先登录！');
+        }
         
         $listdb = $this->car_model->getList($this->user['uid'],1);  //购物车数据
         
@@ -180,6 +183,7 @@ abstract class Order extends IndexBase
             
             if (!empty($order_ids)) {
                 $url = murl('order/index');
+                $msg = '订单提交成功';
                 if($total_money<0.01){
                     $this->order_model->pay(implode(',', $order_ids));
                 }elseif ($data['ifolpay']==1 && $total_money>0) {
@@ -192,8 +196,9 @@ abstract class Order extends IndexBase
                                     'numcode'=>$data['order_sn'],
                                     'callback_class'=>mymd5('app\\'.config('system_dirname').'\\model\\Order@pay@'.$order_ids),
                             ]);
+                    $msg .= ',请选择支付方式';
                 }
-                $this -> success('订单提交成功,请选择支付方式', $url,['needpay'=>1],1);
+                $this -> success($msg, $url,['needpay'=>1],1);
             } else {
                 $this -> error('订单提交失败');
             }
