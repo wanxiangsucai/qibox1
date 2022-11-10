@@ -105,7 +105,7 @@ class City extends AdminBase
 	    return $form::fetchs();
 	}
 	public function readcity(){
-		$sql = @file_get_contents('https://gitee.com/qibo168/codes/mgop2ze0ayn9t6x8klhfv27/raw?blob_name=0.sql');
+		$sql = @file_get_contents('https://gitcode.net/weixin_42291350/city/-/raw/master/city.sql');
 		if (strlen($sql)>15) {
 			$result=into_sql($sql,true,0);
 			 if($result){
