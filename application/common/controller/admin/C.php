@@ -605,6 +605,11 @@ abstract class C extends AdminBase
             $rs = $this->model->getInfoByid($id , true);
             $outstr.="<tr><td align=\"center\">$rs[id]</td>";
             foreach($fieldDB AS $k=>$v){
+                
+                if( preg_match('/^[\d]{10,}$/', $rs[$k]) || preg_match('/^0[\d]+$/', $rs[$k]) ){    //处理数字被转化为二进制的问题
+                    $rs[$k] = '&nbsp;'.$rs[$k].'&nbsp;';
+                }
+                
                 $outstr.="<td align=\"center\">{$rs[$k]}</td>";
             }
             $outstr.="</tr>";
