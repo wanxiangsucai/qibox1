@@ -893,7 +893,7 @@ trait ModuleContent
 	 * @param array $data
 	 */
 	protected function send_admin_msg($id=0,$data=[]){
-	    if ($data['status']==0 && $this->webdb['status_users']) {
+	    if ($data['status']==0 && $this->webdb['status_users'] && is_array($this->webdb['status_users'])) {
 	        foreach(str_array($this->webdb['status_users'][0]) AS $_uid){
 	            if (!$_uid) {
 	                continue;
