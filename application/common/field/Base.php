@@ -52,7 +52,7 @@ class Base
             
         }elseif(in_array($field['type'],['images','files','image','file','jcrop','images2'])){
             
-            $show = static::format_url($field,$info);
+            $show = is_array($f_value) ? $f_value : static::format_url($field,$info);
             
         }elseif ($field['type'] == 'ueditor') {
             
