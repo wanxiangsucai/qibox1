@@ -74,21 +74,21 @@ return array(
 								                'link'=>['sort_field/index',['mid'=>-3]],
 								                //'power'=>['edit','delete'],
 								        ) ,
-    								    array(
-    								        'title'=>'创作收益日志',
-    								        'link'=>'sell_log/index',
-											'power'=>['delete'],
-    								    ),
-								        array(
-								                'title'=>'用户分享记录',
-								                'link'=>['fxuser/index'],
-								                'power'=>['delete'],
-								        ),
-								        array(
-								                'title'=>'用户分享收益',
-								                'link'=>['fxlog/index'],
-								                'power'=>['delete'],
-								        ),
+//     								    array(
+//     								        'title'=>'创作收益日志',
+//     								        'link'=>'sell_log/index',
+// 											'power'=>['delete'],
+//     								    ),
+// 								        array(
+// 								                'title'=>'用户分享记录',
+// 								                'link'=>['fxuser/index'],
+// 								                'power'=>['delete'],
+// 								        ),
+// 								        array(
+// 								                'title'=>'用户分享收益',
+// 								                'link'=>['fxlog/index'],
+// 								                'power'=>['delete'],
+// 								        ),
 								),
 							),
 				),

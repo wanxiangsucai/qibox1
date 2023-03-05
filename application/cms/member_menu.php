@@ -32,36 +32,36 @@ return array(
 								        'link'=>'mysort/index',
 								        'power'=>'can_post_group',
 								    ),    									
-								    array(
-								        'title'=>'创作收益',
-								        'link'=>'sell_log/index',
-								        'power'=>'can_post_group',
-								    ),
-								    array(
-								        'title'=>'我要分享',
-								        'link'=>'content/fx',
-								        'power'=>'allow_fx_group',
-								    ),
-								    array(
-								        'title'=>'我创建的优惠券',
-								        'link'=>'youhui/index',
-								        'power'=>'allow_fx_group',
-								    ),
-								    array(
-								        'title'=>'我领取的优惠券',
-								        'link'=>'yhlog/index',
+// 								    array(
+// 								        'title'=>'创作收益',
+// 								        'link'=>'sell_log/index',
+// 								        'power'=>'can_post_group',
+// 								    ),
+// 								    array(
+// 								        'title'=>'我要分享',
+// 								        'link'=>'content/fx',
+// 								        'power'=>'allow_fx_group',
+// 								    ),
+// 								    array(
+// 								        'title'=>'我创建的优惠券',
+// 								        'link'=>'youhui/index',
+// 								        'power'=>'allow_fx_group',
+// 								    ),
+// 								    array(
+// 								        'title'=>'我领取的优惠券',
+// 								        'link'=>'yhlog/index',
 								         
-								    ),
-								    array(
-								            'title'=>'我的分享记录',
-								            'link'=>'fxuser/index',
-								            'power'=>'allow_fx_group',
-								    ),
-								    array(
-								                'title'=>'我的分享收益',
-								                'link'=>'fxlog/index',
-								                'power'=>'allow_fx_group',
-								     ),
+// 								    ),
+// 								    array(
+// 								            'title'=>'我的分享记录',
+// 								            'link'=>'fxuser/index',
+// 								            'power'=>'allow_fx_group',
+// 								    ),
+// 								    array(
+// 								                'title'=>'我的分享收益',
+// 								                'link'=>'fxlog/index',
+// 								                'power'=>'allow_fx_group',
+// 								     ),
 								    array(
 								        'title'=>'主题审核管理',
 								        'link'=>'content/manage',
