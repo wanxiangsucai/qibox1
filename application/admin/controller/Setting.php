@@ -463,7 +463,7 @@ class Setting extends AdminBase
         
         //某分类下的所有参数选项
         $list_data = empty($group) ? [] : $this->model->getListByGroup($group,'c_key');
-        
+        $list_data = $this->limit_field($list_data);
         
         //联动字段
         $this->tab_ext['trigger'] = $this->getTrigger($list_data);
@@ -485,6 +485,26 @@ class Setting extends AdminBase
         }
         $this->mid = $group;    //纯属为了模板考虑的
 		return $this->editContent($data);
+    }
+    
+    /**
+     * 隐藏的字段就不显示了
+     * @param array $array
+     * @return unknown
+     */
+    protected function limit_field($array=[]){
+        $ck = false;
+        foreach($array AS $key=>$rs){
+            if (!isset($rs['is_hide']) && !$ck && !table_field('config','is_hide')) {
+                $ck = true;
+                into_sql("ALTER TABLE `qb_config` ADD `is_hide` TINYINT( 1 ) NOT NULL COMMENT '是否隐藏，1是隐藏';
+ALTER TABLE  `qb_config` ADD INDEX (  `is_hide` ) COMMENT  '';");
+            }
+            if($rs['is_hide']){
+                unset($array[$key]);
+            }
+        }
+        return $array;
     }
     
     

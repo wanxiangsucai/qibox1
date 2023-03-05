@@ -50,6 +50,7 @@ class Config extends AdminBase
 	            ['text', 'c_descrip', '介绍描述'],
 	            ['radio', 'ifsys', '是否属于系统全局参数字段','变量值全站通用,不局限于某个插件模块',['否','是'],intval($info['ifsys'])],
 	        ['radio', 'is_open', '是否裸露给外部接口','密钥等重要参数就不能裸露给外部接口调用',['否','是'],intval($info['ifsys'])],
+	        ['radio', 'is_hide', '是否禁用','选择禁用的话，将不在系统参数那里显示，但不影响原来已设置的值',['否','是'],intval($info['is_hide'])],
 	            //['textarea', 'htmlcode', '额外HTML代码'],
 	    ];
 	    
@@ -240,6 +241,7 @@ class Config extends AdminBase
 
 		$this->list_items = [
 				['c_key', '关键字变量名', 'text'],  
+		    ['is_hide', '禁用', 'switch'],
 		    ['is_open', '裸露', 'yesno'],
 				['title', '名称', 'text.edit'],
 				['form_type', '表单类型', 'select2',config('form')],
