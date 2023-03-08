@@ -493,6 +493,17 @@ class Attachment extends IndexBase{
 		//             return $hook_result['data'];
 		//         }
 		if ( config( 'webdb.upload_driver' ) && config( 'webdb.upload_driver' ) != 'local' ) {
+		    
+		    // 图片加水印
+		    if ( in_array( $file_ext,[
+		        'jpeg',
+		        'jpg',
+		        'png',
+		        'bmp',
+		    ] ) && config( 'webdb.is_waterimg' ) && config( 'webdb.waterimg' ) ) {
+		        $this->create_water( $file->getInfo('tmp_name'));
+		    }
+		    
 			$hook_result = \think\Hook::listen( 'upload_driver',$file,[ 'from' => $from,'module' => $module ],true );
 			if ( false !== $hook_result ) {
 				return $hook_result;
@@ -723,10 +734,22 @@ class Attachment extends IndexBase{
 		if ( $array[0] < 400 || $array[1] < 400 ) {   //宽与高,只要有一个小于400,就不要加水印了
 			return;
 		}
-		$thumb_water_pic = PUBLIC_PATH . strstr( config( 'webdb.waterimg' ),'uploads/' );
-		if ( ! is_file( $thumb_water_pic ) ) {
-			return;
+		if (strstr(config( 'webdb.waterimg' ),'://')) {
+		    $thumb_water_pic = RUNTIME_PATH.'waterImg_'.md5(config( 'webdb.waterimg' )).strrchr(config( 'webdb.waterimg' ), ".");
+		    if (!is_file($thumb_water_pic)) {
+		        if(copy(config( 'webdb.waterimg' ), $thumb_water_pic) || file_put_contents($thumb_water_pic, file_get_contents(config( 'webdb.waterimg' ))) ){
+		            
+		        }else{
+		            return;
+		        }
+		    }
+		}else{
+		    $thumb_water_pic = PUBLIC_PATH . strstr( config( 'webdb.waterimg' ),'uploads/' );
+		    if ( ! is_file( $thumb_water_pic ) ) {
+		        return;
+		    }
 		}
+		
 		// 读取图片
 		$image = Image::open( $file );
 		// 添加水印
