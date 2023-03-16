@@ -737,8 +737,9 @@ class Attachment extends IndexBase{
 		if (strstr(config( 'webdb.waterimg' ),'://')) {
 		    $thumb_water_pic = RUNTIME_PATH.'waterImg_'.md5(config( 'webdb.waterimg' )).strrchr(config( 'webdb.waterimg' ), ".");
 		    if (!is_file($thumb_water_pic)) {
-		        if(copy(config( 'webdb.waterimg' ), $thumb_water_pic) || file_put_contents($thumb_water_pic, file_get_contents(config( 'webdb.waterimg' ))) ){
-		            
+		        if(copy(config( 'webdb.waterimg' ), $thumb_water_pic)){
+		        }elseif($string = file_get_contents(config( 'webdb.waterimg' ))){
+		            file_put_contents($thumb_water_pic, $string);
 		        }else{
 		            return;
 		        }

@@ -18,7 +18,7 @@ class Timedtask extends AdminBase
     protected $list_items;
     protected $tab_ext = [
         'page_title'=>'定时任务',
-        'help_msg'=>'注意:定时任务必须要配置好才能生效,<a href="http://help.php168.com/1092543" style="color:blue;" target="_blank">点击查看详细配置说明</a>',
+        'help_msg'=>'注意:定时任务必须要配置好才能生效,<a href="https://www.kancloud.cn/php168/x1_of_qibo/1092543" style="color:blue;" target="_blank">点击查看详细配置说明</a>',
     ];
     protected $types = [
         't_day'=>'每天一次',
