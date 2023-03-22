@@ -110,7 +110,7 @@ class Config extends Model
                         break;
                         // 日期时间
                     case 'date':
-                    case 'time':
+                    //case 'time':
                     case 'datetime':
                         $data[$name] = strtotime($data[$name]);
                         break;
