@@ -77,7 +77,7 @@ btn.addEventListener('error',function (e) {
 
 <script type="text/javascript">
 function goto_wxapp(){
-	wx.miniProgram.navigateTo({ url: "/pages/subscribe/index?template={$template?:config('webdb.wxapp_subscribe_template_id')}&uids={:mymd5($userdb['uid'].','.time())}&url={:urlencode($fromurl)}"});
+	wx.miniProgram.navigateTo({ url: "/pages/subscribe/index?template={$template?:fun('Subscribe@get_template',false)}&uids={:mymd5($userdb['uid'].','.time())}&url={:urlencode($fromurl)}"});
 }
 wx.miniProgram.getEnv(function(res) {	
 	if(res.miniprogram==true){		//在小程序中访问

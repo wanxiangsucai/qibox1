@@ -7,9 +7,10 @@ class Subscribe
 {
     /**
      * 查找用户需要订阅的模板消息ID
+     * @param string $check 是否做判断订阅商家小程序与否。如果订阅过的话，就不返回订阅模板ID
      * @return void|NULL|string|mixed|unknown|array|boolean|NULL
      */
-    public static function get_template(){
+    public static function get_template($if_check=true){
         static $template = null;
         if($template!==null){
             return $template;
@@ -21,7 +22,7 @@ class Subscribe
             if(!$info['wxapp_subscribe_template_id']){
                 return ;
             }
-            if($user && Db::name('qun_weixin')->where('wxapp_appid',get_wxappAppid())->where('uid',$user['uid'])->value('if_dy')){
+            if($if_check && $user && Db::name('qun_weixin')->where('wxapp_appid',get_wxappAppid())->where('uid',$user['uid'])->value('if_dy')){
                 return ;
             }
             $template = $info['wxapp_subscribe_template_id'];
