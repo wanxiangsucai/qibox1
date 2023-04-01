@@ -668,8 +668,8 @@ class Base extends Controller
          * @param array $field_array
          * @param number $rows
          */
-        protected function bak_excel($data,$field_array,$rows=0){
-            $totalpage = '';
+        protected function bak_excel($data,$field_array,$rows=0,$file_name=''){
+            $totalpage = 1;
             if(is_array($data)){
                 $listdb = $data;
             }else{
@@ -692,7 +692,7 @@ class Base extends Controller
                     header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
                     header('Pragma: no-cache');
                     header('Content-Encoding: none');
-                    header('Content-Disposition: attachment; filename=MicrosoftExce.xls');
+                    header('Content-Disposition: attachment; filename='.($file_name?:'MicrosoftExcel').'.xls');
                     header('Content-type: text/csv');
                     echo file_get_contents($path.'1.xls');
                     exit;
@@ -721,7 +721,7 @@ class Base extends Controller
             $outstr="<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body><table width=\"100%\" border=\"1\" align=\"center\" cellpadding=\"5\"><tr>";
             $field_array = ['i'=>'序号']+$field_array;
             foreach($field_array AS $rs){
-                $outstr.="<th bgcolor=\"#A5A0DE\">".(is_array($rs)?$rs['title']:$rs)."</th>";
+                $outstr.="<th bgcolor=\"#C00000\" style=\"color:#ffffff\">".(is_array($rs)?$rs['title']:$rs)."</th>";
             }
             $outstr.="</tr>";
             
@@ -765,7 +765,7 @@ class Base extends Controller
                 header('Last-Modified: '.gmdate('D, d M Y H:i:s',time()).' GMT');
                 header('Pragma: no-cache');
                 header('Content-Encoding: none');
-                header('Content-Disposition: attachment; filename=MicrosoftExcel.xls');
+                header('Content-Disposition: attachment; filename='.($file_name?:'MicrosoftExcel').'.xls');
                 header('Content-type: text/csv');
                 echo $outstr;
                 exit;
@@ -774,7 +774,7 @@ class Base extends Controller
             file_put_contents($filename, $outstr);
             $page++;
             $url = preg_replace("/(\?|&)page=([\d]+)/", '', $this->weburl);
-            $url .= (strstr($url,'?')?'&':'?') . 'page='.$page;
+            $url .= (strstr($url,'?')?'&':'?') . 'page='.$page. '&file_name='.$file_name;
             echo "<META HTTP-EQUIV=REFRESH CONTENT='0;URL={$url}'>正在备份第 {$page} 卷,总共 {$totalpage} 卷";
             exit;
         }
